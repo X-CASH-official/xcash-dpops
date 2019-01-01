@@ -108,7 +108,7 @@ Function prototypes
 */
 
 int parse_json_data(char* data, char* field, char *result);
-int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* http_headers[], size_t http_headers_length, const char* data, const int receive_data_timeout_settings, const char* title);
+int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* data, const int receive_data_timeout_settings, const char* title);
 int string_replace(char *data,const char* str1, const char* str2);
 int send_data(const int socket, char* data, const int appendstring);
 int receive_data(const int socket, char *message, const char* string, const int settings, const int socket_timeout_settings);
@@ -136,20 +136,25 @@ Return: 0 if an error has occured, 1 if successfull
 
 int parse_json_data(char* data, char* field, char *result)
 {
-  int string_length;
-  int settings = 1;
-  // modify the field to add the field syntax
+  // Constants
+  const size_t STRING_LENGTH = strlen(field);   
+
+  // Variables
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-
-  string_length = strlen(field);
+  char* str1;
+  char* str2;
+  int settings = 1;
+  size_t start;  
+  
+  // modify the field to add the field syntax
   memcpy(str,"\"",1);
-  memcpy(str+1,field,string_length);
-  memcpy(str+1+string_length,"\": ",3);
+  memcpy(str+1,field,STRING_LENGTH);
+  memcpy(str+1+STRING_LENGTH,"\": ",3);
   // get the start of the field's data
-  int start = strlen(str);
+  start = strlen(str);
   // get the pointers location to the start of the field
-  char* str1 = strstr(data,str);
+  str1 = strstr(data,str);
   if (str1 == NULL)
   {
      // an error has occured, get the error message
@@ -166,7 +171,7 @@ int parse_json_data(char* data, char* field, char *result)
      }
   }
   // get the end location of the data
-  char* str2 = strstr(str1,"\r\n");
+  str2 = strstr(str1,"\r\n");
   // get the length of the field's data
   const int length = str2 - str1 - start;
   // copy the field's data
@@ -217,8 +222,8 @@ Parameters:
   url - The URL
   port - The port
   http_settings - The HTTP method
-  http_headers - The HTTP headers
-  http_headers_length - The length of the HTTP headers
+  HTTP_HEADERS - The HTTP headers
+  HTTP_HEADERS_LENGTH - The length of the HTTP headers
   data - The request data. If sending a GET request, the data is appended to the url. If sending a POST request, the data is sent in the request body
   receive_data_timeout_settings - The timeout settings for reading the data
   title - A summary of the data sent in the POST request. This text gets printed to the console
@@ -226,12 +231,19 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* http_headers[], size_t http_headers_length, const char* data, const int receive_data_timeout_settings, const char* title)
+int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* data, const int receive_data_timeout_settings, const char* title)
 {
-  // variables
+  // Constants
+  const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};  
+  
+  // Variables
+  char response[BUFFER_SIZE];
+  char buffer2[BUFFER_SIZE];
+  char* post_request_data;
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  struct timeval timeout = {SOCKET_TIMEOUT_SETTINGS, 0};
+  size_t count;  
+  size_t receive_data_result;  
 
   // create the HTTP request
   append_string(message,http_settings);
@@ -245,9 +257,9 @@ int send_http_request(char *result, const char* host, const char* url, const int
   append_string(message," HTTP/1.1\r\nHost: ");
   append_string(message,host);
   append_string(message,"\r\n");
-  for (int count = 0; count < http_headers_length; count++)
+  for (count = 0; count < HTTP_HEADERS_LENGTH; count++)
   {
-    append_string(message,http_headers[count]);
+    append_string(message,HTTP_HEADERS[count]);
     append_string(message,"\r\n");
   }
   if (http_settings == "POST")
@@ -260,16 +272,15 @@ int send_http_request(char *result, const char* host, const char* url, const int
   if (http_settings == "POST")
   {
     append_string(message,data);
-  }
-  char response[BUFFER_SIZE];
+  }  
   memset(&response, 0, sizeof(response));
 
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
   */
-  const int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd < 0)
+  const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
+  if (SOCKET < 0)
   {
     color_print("Error creating socket for sending a post request","red");
     pointer_reset(str);
@@ -281,7 +292,7 @@ int send_http_request(char *result, const char* host, const char* url, const int
   SOL_SOCKET = socket level
   SO_RCVTIMEO = sets a receiving timeout for the socket
   */
-  if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&timeout, sizeof(struct timeval)) < 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) < 0)
   {
     color_print("Error setting socket timeout for sending a post request","red"); 
     pointer_reset(str);
@@ -290,8 +301,8 @@ int send_http_request(char *result, const char* host, const char* url, const int
   }  
 
   // convert the hostname if used, to an IP address
-  const struct hostent* host_name = gethostbyname(host); 
-  if (host_name == NULL)
+  const struct hostent* HOST_NAME = gethostbyname(host); 
+  if (HOST_NAME == NULL)
   {
     memset(str,0,strlen(str));
     memcpy(str,"Error invalid hostname of ",26);
@@ -302,13 +313,12 @@ int send_http_request(char *result, const char* host, const char* url, const int
     return 0;
   }
 
-  // convert the port to a string
-  char buffer2[BUFFER_SIZE];
+  // convert the port to a string  
   sprintf(buffer2,"%d",port);  
 
   // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
-  int buffer2_length = strlen(buffer2);
-  int host_length = strlen(host);
+  const size_t buffer2_length = strlen(buffer2);
+  const size_t host_length = strlen(host);
   
   struct sockaddr_in serv_addr;
   memset(&serv_addr,0,sizeof(serv_addr));
@@ -318,11 +328,11 @@ int send_http_request(char *result, const char* host, const char* url, const int
   use htons to convert the port from host byte order to network byte order short
   */
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)host_name->h_addr_list[0])));
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(port);
 
   // connect to the socket
-  if (connect(sockfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
   {
     memset(str,0,strlen(str));
     memcpy(str,"Error connecting to ",20);
@@ -343,7 +353,7 @@ int send_http_request(char *result, const char* host, const char* url, const int
     
   // send the message
   printf("Sending %s to %s on port %s\r\n",title,host,buffer2);
-  if (send_data(sockfd,message,0) == 0)
+  if (send_data(SOCKET,message,0) == 0)
   {
     memset(str,0,strlen(str));
     memcpy(str,"Error sending data to ",22);
@@ -357,13 +367,22 @@ int send_http_request(char *result, const char* host, const char* url, const int
   }
    
   // get the result
-  if (receive_data(sockfd,message,"{",1,receive_data_timeout_settings) == 0)
+  receive_data_result = receive_data(SOCKET,message,"{",1,receive_data_timeout_settings);
+  if (receive_data_result < 2)
   {
     memset(str,0,strlen(str));
     memcpy(str,"Error receiving data from ",26);
     memcpy(str+26,host,host_length);
     memcpy(str+26+host_length," on port ",9);
     memcpy(str+35+host_length,buffer2,buffer2_length);
+    if (receive_data_result == 1)
+    {
+      memcpy(str+35+host_length+buffer2_length,", because of a timeout issue",28);
+    }
+    else if (receive_data_result == 0)
+    { 
+      memcpy(str+35+host_length+buffer2_length,", because of a potential buffer overflow issue",46);
+    }
     color_print(str,"red"); 
     pointer_reset(str);
     pointer_reset(message);   
@@ -391,14 +410,14 @@ int send_http_request(char *result, const char* host, const char* url, const int
   color_print(str,"green"); 
      
   // close the socket
-  close(sockfd);
+  close(SOCKET);
 
   // parse the HTTP request header from the result
   // check if the result includes a header
   if (strstr(message,"HTTP/") != NULL)
   {
     // the HTTP result does contain a header
-    char* post_request_data = strstr(message,"{");
+    post_request_data = strstr(message,"{");
     memcpy(result+strlen(result),post_request_data,strlen(post_request_data));
   }
   else
@@ -437,10 +456,10 @@ int string_replace(char *data,const char* str1, const char* str2)
     // get a pointer to the start of the string to be replaced
     char* start_str = strstr(datacopy,str1);
     // copy the string from the start of the string to the data to be replaced
-    const int start = strlen(datacopy) - strlen(start_str);
+    const int START = strlen(datacopy) - strlen(start_str);
     // create the new string
-    memcpy(data,datacopy,start);
-    memcpy(data+start,str2,strlen(str2));
+    memcpy(data,datacopy,START);
+    memcpy(data+START,str2,strlen(str2));
     memset(datacopy,0,strlen(datacopy));
     memcpy(datacopy,&start_str[strlen(str1)],strlen(start_str)-strlen(str1));
     append_string(data,datacopy);
@@ -472,11 +491,11 @@ int send_data(const int socket, char* data, const int appendstring)
   {
     memcpy(data+strlen(data),SOCKET_END_STRING,5);
   }    
-  const int total = strlen(data);
+  const int TOTAL = strlen(data);
   int sent = 0;
   int bytes = 0;
   do {
-    bytes = write(socket,data+sent,total-sent);
+    bytes = write(socket,data+sent,TOTAL-sent);
     if (bytes < 0)
     {             
       return 0;
@@ -486,7 +505,7 @@ int send_data(const int socket, char* data, const int appendstring)
       break;
     }
     sent+=bytes;
-    } while (sent < total);
+    } while (sent < TOTAL);
     return 1;
 }
 
@@ -501,19 +520,27 @@ Parameters:
   message - Where the data is stored
   string - The end string to know the socket is done receving data
   settings - 1 if a timeout is needed, otherwise 0
-Return: 0 if an error has occured, 1 if successfull
+Return: 0 if an error would have occured from a buffer overflow, 1 if a timeout has occured, 2 if successful
 -----------------------------------------------------------------------------------------------------------
 */
 
 int receive_data(const int socket, char *message, const char* string, const int settings, const int socket_timeout_settings)
 {
+  // Variables
   int count = 0;
   char buffer [BUFFER_SIZE];
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  memset(message, 0, strlen(message));
+
+  memset(message, 0, strlen(message));  
   for (;;)
   { 
     memset(&buffer, 0, sizeof(buffer));
+    // check the size of the data that were about to receive. If it is over BUFFER_SIZE then dont accept it, since it will cause a buffer overflow
+    if (recvfrom(socket, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) > BUFFER_SIZE)
+    {
+      pointer_reset(data);
+      return 0;
+    }    
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
     recvfrom(socket, buffer, BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
     if (buffer[0] != '\0' && strstr(buffer,string) == NULL)
@@ -543,13 +570,14 @@ int receive_data(const int socket, char *message, const char* string, const int 
       count++;
       if (count > (socket_timeout_settings * 5))
       {
-        return 0;
+        pointer_reset(data);
+        return 1;
       }
     } 
 
     usleep(200000);   
   }
-  return 1;
+  return 2;
 }
 
 
@@ -612,29 +640,29 @@ Main function
 int main()
 {
   // Constants
-  const char* http_headers[] = {"Content-Type: application/json","Accept: application/json"};
-  const size_t http_headers_length = sizeof(http_headers)/sizeof(http_headers[0]);
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"};   
+  const int SOCKET_OPTION = 1;  
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  struct sockaddr_in addr, cl_addr;
-  int len, receive_data_result;
   char buffer[BUFFER_SIZE];
-  char client_address[CLADDR_LEN];
-  const int socket_option = 1;
   char buffer2[BUFFER_SIZE];
-  int string_length;
+  char client_address[CLADDR_LEN];
+  char* string;
+  char* result;
+  char* data;
+  char* data2;
+  char* message; 
+  int len;
+  int receive_data_result; 
+  size_t string_length;
+  struct sockaddr_in addr, cl_addr;
 
   // threads
   pthread_t thread_id;
 
   // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
-  signal(SIGCHLD, SIG_IGN);
- 
-  char* string;
-  char* result;
-  char* data;
-  char* data2;
-  char* message;
+  signal(SIGCHLD, SIG_IGN);  
  
   // allocate the memory we need in the main process, this way when a forked process is created the memory will also be allocated for each forked process
   string = (char*)calloc(BUFFER_SIZE,sizeof(char));  
@@ -647,8 +675,8 @@ int main()
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
   */
-  const int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (sockfd < 0)
+  const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
+  if (SOCKET < 0)
   {
     color_print("Error creating socket","red");
     pointer_reset(string);
@@ -664,7 +692,7 @@ int main()
   SO_REUSEADDR = allows for reuse of the same address, so one can shutdown and restart the program without errros
   SO_REUSEPORT = allows for reuse of the same port, so one can shutdown and restart the program without errros
   */
-  if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &socket_option,sizeof(int)) < 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &SOCKET_OPTION,sizeof(int)) < 0)
   {
     color_print("Error setting socket options","red"); 
     return 0;
@@ -685,7 +713,7 @@ int main()
   addr.sin_port = htons(SEND_DATA_PORT);
  
   // connect to 0.0.0.0
-  if (bind(sockfd, (struct sockaddr *) &addr, sizeof(addr)) < 0)
+  if (bind(SOCKET, (struct sockaddr *) &addr, sizeof(addr)) < 0)
   {
    memset(string,0,strlen(string));
    memcpy(string,"Error connecting to port ",25);
@@ -705,13 +733,13 @@ int main()
 
   printf("Waiting for a connection...\n");
   // set the maximum simultaneous connections
-  listen(sockfd, MAXIMUM_CONNECTIONS);
+  listen(SOCKET, MAXIMUM_CONNECTIONS);
   for (;;)
   {
     len = sizeof(cl_addr);
-    const int newsockfd = accept(sockfd, (struct sockaddr *) &cl_addr, (socklen_t*)&len);
+    const int CLIENT_SOCKET = accept(SOCKET, (struct sockaddr *) &cl_addr, (socklen_t*)&len);
   
-    if (newsockfd < 0)
+    if (CLIENT_SOCKET < 0)
     {
       memset(string,0,strlen(string));
       memcpy(string,"Error accepting connection from ",32);
@@ -743,7 +771,7 @@ int main()
        if (pthread_create(&thread_id, NULL, &total_connection_time_thread, (void *)&parameters) != 0)
        {
          // close the forked process
-         close(newsockfd);
+         close(CLIENT_SOCKET);
          pointer_reset(result);
          pointer_reset(data);
          pointer_reset(data2);
@@ -754,7 +782,7 @@ int main()
        if (pthread_detach(thread_id) != 0)
        {
          // close the forked process
-         close(newsockfd);
+         close(CLIENT_SOCKET);
          pointer_reset(result);
          pointer_reset(data);
          pointer_reset(data2);
@@ -763,48 +791,51 @@ int main()
        }
 
        // close the main socket, since the socket is now copied to the forked process
-       close(sockfd); 
+       close(SOCKET); 
 
        for (;;)
        {
-         int client_address_length = strlen(client_address);
-         int buffer2_length = strlen(buffer2);
+         const size_t  client_address_length = strlen(client_address);
+         const size_t  buffer2_length = strlen(buffer2);
          // receive the data
-         memset(buffer, 0, BUFFER_SIZE);    
-         /* Set the socket options
-         SOL_SOCKET = socket level
-         SO RCVTIMEO = sets a receiving timeout for the socket
-         */
-         receive_data_result = receive_data(newsockfd,buffer,SOCKET_END_STRING,0,TOTAL_CONNECTION_TIME_SETTINGS);
-        if (receive_data_result == 0)
-        {
-          memset(string,0,strlen(string));
-          memcpy(string,"Error receiving data from ",26);
-          memcpy(string+26,client_address,client_address_length);
-          memcpy(string+26+client_address_length," on port ",9);
-          memcpy(string+35+client_address_length,buffer2,buffer2_length);
-          color_print(string,"red"); 
-
-          // close the forked process, since the client had an error sending data       
-          close(newsockfd);
-          pointer_reset(string);
-          pointer_reset(result);
-          pointer_reset(data);
-          pointer_reset(data2);
-          pointer_reset(message);
-          _exit(0);
-        }
-         else
+         memset(buffer, 0, BUFFER_SIZE); 
+         receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,0,TOTAL_CONNECTION_TIME_SETTINGS);
+         if (receive_data_result < 2)
+         {
+           memset(string,0,strlen(string));
+           memcpy(string,"Error receiving data from ",26);
+           memcpy(string+26,client_address,client_address_length);
+           memcpy(string+26+client_address_length," on port ",9);
+           memcpy(string+35+client_address_length,buffer2,buffer2_length);
+           if (receive_data_result == 1)
+           {
+             memcpy(string+35+client_address_length+buffer2_length,", because of a timeout issue",28);
+           }
+           else if (receive_data_result == 0)
+           {
+             memcpy(string+35+client_address_length+buffer2_length,", because of a potential buffer overflow issue",46);
+           }
+           color_print(string,"red"); 
+           // close the forked process, since the client had an error sending data       
+           close(CLIENT_SOCKET);
+           pointer_reset(string);
+           pointer_reset(result);
+           pointer_reset(data);
+           pointer_reset(data2);
+           pointer_reset(message);
+           _exit(0);
+         }
+         else if (receive_data_result == 2)
          {
           // update the parameters, since we have received data from the client
           parameters.data_received = 1;
-         }   
+         }    
 
          // check if a certain type of message has been received
        
        }
      }
-     close(newsockfd);
+     close(CLIENT_SOCKET);
    }
    return 0; 
 }
