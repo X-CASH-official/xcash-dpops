@@ -10,110 +10,8 @@
 #include <signal.h>
 #include <pthread.h>
 
-/*
------------------------------------------------------------------------------------------------------------
-Using define statements instead of constants for increased efficiency
------------------------------------------------------------------------------------------------------------
-*/
-
-#define PORT 18285 // The X-CASH RPC port
-#define SEND_DATA_PORT 18288 // The port that is used by all nodes to send and receive data
-#define CLIENT_AND_SERVER_DATA_PORT 8000 // The port that is used to send data locally between a nodes client and server program
-#define BUFFER_SIZE 64000
-#define CLADDR_LEN 100
-#define MAXIMUM_CONNECTIONS 100 // The maximum connections a node can have at one time
-#define SOCKET_TIMEOUT_SETTINGS 1 // The time in between read calls where there is no data
-#define RECEIVE_DATA_TIMEOUT_SETTINGS 5 // The maximum amount of time to wait for the total data, once data has been read
-#define TOTAL_CONNECTION_TIME_SETTINGS 10 // The total time a client is given to connect to the server and send data
-#define SOCKET_END_STRING "|END|" // End string when sending data between clients, or client to server on the same computer, to signal the end of sending data
-
-/*
------------------------------------------------------------------------------------------------------------
-Using define macros instead of functions for increased efficiency
------------------------------------------------------------------------------------------------------------
-*/
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: color_print
-Description: Prints a string in a color
-Parameters:
-  string - char*
-  color - char*
-Return: Writes the correct code
------------------------------------------------------------------------------------------------------------
-*/
-
-#define color_print(string,color) \
-color == "red" ? printf("\033[1;31m%s\033[0m\n",string) : \
-color == "green" ? printf("\033[1;32m%s\033[0m\n",string) : \
-color == "yellow" ? printf("\033[1;33m%s\033[0m\n",string) : \
-color == "blue" ? printf("\033[1;34m%s\033[0m\n",string) : \
-color == "purple" ? printf("\033[1;35m%s\033[0m\n",string) : \
-color == "lightblue" ? printf("\033[1;36m%s\033[0m\n",string) : \
-printf("%s",string);
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: append_string
-Description: Appends strings securely to stop buffer overflows, and to always null terminate the string 
-Parameters:
-  string1 - char*
-  string2 - char*
-Return: Writes the correct code
------------------------------------------------------------------------------------------------------------
-*/
-
-#define append_string(string1,string2) \
-strncat(string1,string2,BUFFER_SIZE - strlen(string1) - 1);
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: pointer_reset
-Description: Reset the memory used by the pointer, and sets the pointer to NULL to avoid a dangling pointer
-Parameters:
-  pointer - Any pointer type
-Return: Writes the correct code
------------------------------------------------------------------------------------------------------------
-*/
-
-#define pointer_reset(pointer) \
-free(pointer); \
-pointer = NULL;
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Global structures
------------------------------------------------------------------------------------------------------------
-*/
-
-
- struct total_connection_time_thread_parameters {
-    pid_t process_id; // Holds the forked process ID that the client is connected to
-    char* client_address; // Holds the IP address of the client
-    char* port; // Holds the port number of the client 
-    int data_received; // 1 if the server has received data from the client, otherwise 0
-};
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Function prototypes
------------------------------------------------------------------------------------------------------------
-*/
-
-int parse_json_data(char* data, char* field, char *result);
-int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* data, const int receive_data_timeout_settings, const char* title);
-int string_replace(char *data,const char* str1, const char* str2);
-int send_data(const int socket, char* data, const int appendstring);
-int receive_data(const int socket, char *message, const char* string, const int settings, const int socket_timeout_settings);
-// threads
-void* total_connection_time_thread(void* parameters);
+#include "xcash_proof_of_stake_functions_and_macros.h"
+#include "xcash_proof_of_stake_test.h"
 
 
 /*
@@ -137,16 +35,16 @@ Return: 0 if an error has occured, 1 if successfull
 int parse_json_data(char* data, char* field, char *result)
 {
   // Constants
-  const size_t STRING_LENGTH = strlen(field);   
-
+  const size_t STRING_LENGTH = strlen(field);  
+ 
   // Variables
-  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* str1;
   char* str2;
   int settings = 1;
   size_t start;  
-  
+ 
   // modify the field to add the field syntax
   memcpy(str,"\"",1);
   memcpy(str+1,field,STRING_LENGTH);
@@ -174,9 +72,16 @@ int parse_json_data(char* data, char* field, char *result)
   str2 = strstr(str1,"\r\n");
   // get the length of the field's data
   const int length = str2 - str1 - start;
+  if (length <= 0)
+  {
+    memcpy(result,"An error has occured",20);
+    pointer_reset(str);
+    pointer_reset(data2);
+    return settings;
+  }
   // copy the field's data
   memcpy(result,&str1[start],length);
-
+ 
   // check if the return value is a string and contains a , if so remove the [""] from the start and the end, and remove the , from the end
   if (strstr(result,"\"") != NULL && strstr(result,"[") != NULL && strstr(result,",") != NULL)
   {
@@ -191,7 +96,7 @@ int parse_json_data(char* data, char* field, char *result)
   }
   // check if the return value is a string and contains a ,if so remove the "" from the start and the end, and remove the , from the end
   else if (strstr(result,"\"") != NULL && strstr(result,",") != NULL)
-  {   
+  {  
    memcpy(data2,&result[1],strlen(result)-3);
    memcpy(result,data2,strlen(data2)+1);
   }
@@ -211,6 +116,7 @@ int parse_json_data(char* data, char* field, char *result)
   pointer_reset(data2);
   return settings;
 }
+
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -434,6 +340,165 @@ int send_http_request(char *result, const char* host, const char* url, const int
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: send_data_socket
+Description: Send a message through a socket
+Parameters:
+  result - The result from the host
+  host - The host to send the message to
+  port - The port to send the message through
+  data - The message
+  receive_data_timeout_settings - the timeout settings for reading the data
+  title - A summary of the data sent to the host. This text gets printed to the console
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int send_data_socket(char *result, const char* host, const int port, const char* data, const int receive_data_timeout_settings, const char* title)
+{ 
+  // Constants
+  const size_t title_length = strlen(title);
+  const size_t host_length = strlen(host);
+  const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};   
+  
+  // Variables 
+  char buffer2[BUFFER_SIZE];
+  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  int receive_data_result;
+
+  /* Create the socket  
+  AF_INET = IPV4 support
+  SOCK_STREAM = TCP protocol
+  */
+  const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
+  if (SOCKET < 0)
+  {
+    memcpy(str,"Error creating socket for sending data to ",42);
+    memcpy(str+42,host,host_length);
+    color_print(str,"red");
+    pointer_reset(str);
+    pointer_reset(message);
+    return 0;
+  }
+
+  /* Set the socket options
+  SOL_SOCKET = socket level
+  SO_RCVTIMEO = allow the socket to receive a timeout
+  */
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) < 0)
+  {
+    memcpy(str,"Error setting socket timeout for sending data to ",49);
+    memcpy(str+49,host,host_length);
+    color_print(str,"red");
+    pointer_reset(str);
+    pointer_reset(message);
+    return 0;
+  } 
+
+  // convert the hostname if used, to an IP address
+  const struct hostent* host_name = gethostbyname(host); 
+  if (host_name == NULL)
+  {
+    memcpy(str,"Error invalid hostname of ",26);
+    memcpy(str+26,host,host_length);
+    color_print(str,"red");
+    pointer_reset(str);
+    pointer_reset(message);
+    return 0;
+  }
+    
+  // convert the port to a string  
+  sprintf(buffer2,"%d",port); 
+   
+  const size_t buffer2_length = strlen(buffer2);
+  
+  struct sockaddr_in serv_addr;
+  /* setup the connection
+  AF_INET = IPV4
+  use htons to convert the port from host byte order to network byte order short
+  */
+  memset(&serv_addr,0,sizeof(serv_addr));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)host_name->h_addr_list[0])));
+  serv_addr.sin_port = htons(port);
+
+  // connect to the socket
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
+  {
+    memcpy(str,"Error connecting to ",20);
+    memcpy(str+20,host,host_length);
+    memcpy(str+20+host_length," on port ",9);
+    memcpy(str+29+host_length,buffer2,buffer2_length);
+    color_print(str,"red"); 
+    pointer_reset(str);
+    pointer_reset(message);   
+    return 0;
+  }
+  memset(str,0,strlen(str));
+  memcpy(str,"Connected to ",13);
+  memcpy(str+13,host,host_length);
+  memcpy(str+13+host_length," on port ",9);
+  memcpy(str+22+host_length,buffer2,buffer2_length);
+  color_print(str,"green"); 
+
+  // send the message   
+  memcpy(message,title,title_length);
+  memcpy(message+title_length,data,strlen(data));
+  printf("Sending %s to %s on port %s\r\n",title,host,buffer2);
+  if (send_data(SOCKET,message,1) == 0)
+  {
+    memset(str,0,strlen(str));
+    memcpy(str,"Error sending data to ",22);
+    memcpy(str+22,host,host_length);
+    memcpy(str+22+host_length," on port ",9);
+    memcpy(str+31+host_length,buffer2,buffer2_length);
+    color_print(str,"red"); 
+    pointer_reset(str);
+    pointer_reset(message);    
+    return 0;
+  }
+    
+  // get the result
+  receive_data_result = receive_data(SOCKET,message,SOCKET_END_STRING,1,receive_data_timeout_settings);
+  if (receive_data_result < 2)
+  {
+    memset(str,0,strlen(str));
+    memcpy(str,"Error receiving data from ",26);
+    memcpy(str+26,host,host_length);
+    memcpy(str+26+host_length," on port ",9);
+    memcpy(str+35+host_length,buffer2,buffer2_length);
+    if (receive_data_result == 1)
+    {
+      memcpy(str+35+host_length+buffer2_length,", because of a timeout issue",28);
+    }
+    else if (receive_data_result == 0)
+    { 
+      memcpy(str+35+host_length+buffer2_length,", because of a potential buffer overflow issue",46);
+    }
+    color_print(str,"red"); 
+    pointer_reset(str);
+    pointer_reset(message);   
+    return 0;
+  }
+     
+  memcpy(result,message,strlen(message));
+  memset(str,0,strlen(str));
+  memcpy(str,"Received data from ",19);
+  memcpy(str+19,host,host_length);
+  memcpy(str+19+host_length," on port ",9);
+  memcpy(str+28+host_length,buffer2,buffer2_length);
+  color_print(str,"green");
+  
+  // close the socket
+  close(SOCKET);
+
+  pointer_reset(message);
+  return 1;
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: string_replace
 Description: String replace
 Parameters:
@@ -631,13 +696,7 @@ void* total_connection_time_thread(void* parameters)
   return NULL;
 }
 
-/*
------------------------------------------------------------------------------------------------------------
-Main function
------------------------------------------------------------------------------------------------------------
-*/
-
-int main()
+void create_server()
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"};   
@@ -670,7 +729,7 @@ int main()
   data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
+  
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
@@ -695,7 +754,7 @@ int main()
   if (setsockopt(SOCKET, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &SOCKET_OPTION,sizeof(int)) < 0)
   {
     color_print("Error setting socket options","red"); 
-    return 0;
+    exit(0);
   } 
   color_print("Socket created","green");
  
@@ -795,8 +854,8 @@ int main()
 
        for (;;)
        {
-         const size_t  client_address_length = strlen(client_address);
-         const size_t  buffer2_length = strlen(buffer2);
+         const size_t client_address_length = strlen(client_address);
+         const size_t buffer2_length = strlen(buffer2);
          // receive the data
          memset(buffer, 0, BUFFER_SIZE); 
          receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,0,TOTAL_CONNECTION_TIME_SETTINGS);
@@ -832,10 +891,26 @@ int main()
          }    
 
          // check if a certain type of message has been received
+
+          printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
+          // send the message 
+          if (send_data(CLIENT_SOCKET,buffer,1) == 1)
+          {
+            printf("Sent %s to %s on port %s\r\n",buffer,client_address,buffer2);
+          } 
+          else
+          {
+            memset(string,0,strlen(string));
+            memcpy(string,"Error sending data to ",22);
+            memcpy(string+22,client_address,client_address_length);
+            memcpy(string+22+client_address_length," on port ",9);
+            memcpy(string+31+client_address_length,buffer2,buffer2_length);
+            color_print(string,"red"); 
+            continue;
+          } 
        
        }
      }
      close(CLIENT_SOCKET);
    }
-   return 0; 
 }
