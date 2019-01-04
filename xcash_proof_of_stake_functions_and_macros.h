@@ -89,11 +89,11 @@ Function prototypes
 
 int parse_json_data(char* data, char* field, char *result);
 int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* data, const int receive_data_timeout_settings, const char* title);
-int send_data_socket(char *result, const char* host, const int port, const char* data, const int receive_data_timeout_settings, const char* title);
+int send_data_socket(char *result, const char* host, const int port, const char* data, const int receive_data_timeout_settings, const char* title, const int settings);
 int string_replace(char *data,const char* str1, const char* str2);
 int send_data(const int socket, char* data, const int appendstring);
 int receive_data(const int socket, char *message, const char* string, const int settings, const int socket_timeout_settings);
-void create_server();
+int create_server(const int settings);
 // threads
 void* total_connection_time_thread(void* parameters);
 

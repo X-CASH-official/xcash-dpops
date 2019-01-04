@@ -349,11 +349,12 @@ Parameters:
   data - The message
   receive_data_timeout_settings - the timeout settings for reading the data
   title - A summary of the data sent to the host. This text gets printed to the console
+  settings - 1 to display error and success messages, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_data_socket(char *result, const char* host, const int port, const char* data, const int receive_data_timeout_settings, const char* title)
+int send_data_socket(char *result, const char* host, const int port, const char* data, const int receive_data_timeout_settings, const char* title, const int settings)
 { 
   // Constants
   const size_t title_length = strlen(title);
@@ -372,10 +373,13 @@ int send_data_socket(char *result, const char* host, const int port, const char*
   */
   const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
   if (SOCKET < 0)
-  {
-    memcpy(str,"Error creating socket for sending data to ",42);
-    memcpy(str+42,host,host_length);
-    color_print(str,"red");
+  { 
+    if (settings == 1)
+    {
+      memcpy(str,"Error creating socket for sending data to ",42);
+      memcpy(str+42,host,host_length);
+      color_print(str,"red");
+    }
     pointer_reset(str);
     pointer_reset(message);
     return 0;
@@ -387,9 +391,12 @@ int send_data_socket(char *result, const char* host, const int port, const char*
   */
   if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) < 0)
   {
-    memcpy(str,"Error setting socket timeout for sending data to ",49);
-    memcpy(str+49,host,host_length);
-    color_print(str,"red");
+    if (settings == 1)
+    {
+      memcpy(str,"Error setting socket timeout for sending data to ",49);
+      memcpy(str+49,host,host_length);
+      color_print(str,"red");
+    }
     pointer_reset(str);
     pointer_reset(message);
     return 0;
@@ -399,9 +406,12 @@ int send_data_socket(char *result, const char* host, const int port, const char*
   const struct hostent* host_name = gethostbyname(host); 
   if (host_name == NULL)
   {
-    memcpy(str,"Error invalid hostname of ",26);
-    memcpy(str+26,host,host_length);
-    color_print(str,"red");
+    if (settings == 1)
+    {
+      memcpy(str,"Error invalid hostname of ",26);
+      memcpy(str+26,host,host_length);
+      color_print(str,"red");
+    }
     pointer_reset(str);
     pointer_reset(message);
     return 0;
@@ -425,34 +435,46 @@ int send_data_socket(char *result, const char* host, const int port, const char*
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
   {
-    memcpy(str,"Error connecting to ",20);
-    memcpy(str+20,host,host_length);
-    memcpy(str+20+host_length," on port ",9);
-    memcpy(str+29+host_length,buffer2,buffer2_length);
-    color_print(str,"red"); 
+    if (settings == 1)
+    {
+      memcpy(str,"Error connecting to ",20);
+      memcpy(str+20,host,host_length);
+      memcpy(str+20+host_length," on port ",9);
+      memcpy(str+29+host_length,buffer2,buffer2_length);
+      color_print(str,"red"); 
+    }
     pointer_reset(str);
     pointer_reset(message);   
     return 0;
   }
-  memset(str,0,strlen(str));
-  memcpy(str,"Connected to ",13);
-  memcpy(str+13,host,host_length);
-  memcpy(str+13+host_length," on port ",9);
-  memcpy(str+22+host_length,buffer2,buffer2_length);
-  color_print(str,"green"); 
+  if (settings == 1)
+  {
+    memset(str,0,strlen(str));
+    memcpy(str,"Connected to ",13);
+    memcpy(str+13,host,host_length);
+    memcpy(str+13+host_length," on port ",9);
+    memcpy(str+22+host_length,buffer2,buffer2_length);
+    color_print(str,"green"); 
+  }
 
   // send the message   
   memcpy(message,title,title_length);
   memcpy(message+title_length,data,strlen(data));
-  printf("Sending %s to %s on port %s\r\n",title,host,buffer2);
+  if (settings == 1)
+  {
+    printf("Sending %s to %s on port %s\r\n",title,host,buffer2);
+  }
   if (send_data(SOCKET,message,1) == 0)
   {
-    memset(str,0,strlen(str));
-    memcpy(str,"Error sending data to ",22);
-    memcpy(str+22,host,host_length);
-    memcpy(str+22+host_length," on port ",9);
-    memcpy(str+31+host_length,buffer2,buffer2_length);
-    color_print(str,"red"); 
+    if (settings == 1)
+    {
+      memset(str,0,strlen(str));
+      memcpy(str,"Error sending data to ",22);
+      memcpy(str+22,host,host_length);
+      memcpy(str+22+host_length," on port ",9);
+      memcpy(str+31+host_length,buffer2,buffer2_length);
+      color_print(str,"red"); 
+    }
     pointer_reset(str);
     pointer_reset(message);    
     return 0;
@@ -462,32 +484,38 @@ int send_data_socket(char *result, const char* host, const int port, const char*
   receive_data_result = receive_data(SOCKET,message,SOCKET_END_STRING,1,receive_data_timeout_settings);
   if (receive_data_result < 2)
   {
-    memset(str,0,strlen(str));
-    memcpy(str,"Error receiving data from ",26);
-    memcpy(str+26,host,host_length);
-    memcpy(str+26+host_length," on port ",9);
-    memcpy(str+35+host_length,buffer2,buffer2_length);
-    if (receive_data_result == 1)
+    if (settings == 1)
     {
-      memcpy(str+35+host_length+buffer2_length,", because of a timeout issue",28);
+      memset(str,0,strlen(str));
+      memcpy(str,"Error receiving data from ",26);
+      memcpy(str+26,host,host_length);
+      memcpy(str+26+host_length," on port ",9);
+      memcpy(str+35+host_length,buffer2,buffer2_length);
+      if (receive_data_result == 1)
+      {
+        memcpy(str+35+host_length+buffer2_length,", because of a timeout issue",28);
+      }
+      else if (receive_data_result == 0)
+      {   
+        memcpy(str+35+host_length+buffer2_length,", because of a potential buffer overflow issue",46);
+      }
+      color_print(str,"red"); 
     }
-    else if (receive_data_result == 0)
-    { 
-      memcpy(str+35+host_length+buffer2_length,", because of a potential buffer overflow issue",46);
-    }
-    color_print(str,"red"); 
     pointer_reset(str);
     pointer_reset(message);   
     return 0;
   }
      
   memcpy(result,message,strlen(message));
-  memset(str,0,strlen(str));
-  memcpy(str,"Received data from ",19);
-  memcpy(str+19,host,host_length);
-  memcpy(str+19+host_length," on port ",9);
-  memcpy(str+28+host_length,buffer2,buffer2_length);
-  color_print(str,"green");
+  if (settings == 1)
+  {
+    memset(str,0,strlen(str));
+    memcpy(str,"Received data from ",19);
+    memcpy(str+19,host,host_length);
+    memcpy(str+19+host_length," on port ",9);
+    memcpy(str+28+host_length,buffer2,buffer2_length);
+    color_print(str,"green");
+  }
   
   // close the socket
   close(SOCKET);
@@ -505,7 +533,7 @@ Parameters:
   data - The string to replace the data
   str1 - The string to be replaced
   str2 - The string to replace the other string
-Return: 0 if an error has occured, 1 if successfull.
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -666,6 +694,7 @@ Parameters:
 Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
+
 void* total_connection_time_thread(void* parameters)
 {
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -696,7 +725,18 @@ void* total_connection_time_thread(void* parameters)
   return NULL;
 }
 
-void create_server()
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: create_server
+Description: Creates the server
+Parameters:
+  settings - 1 to display error and success messages, otherwise 0
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int create_server(const int settings)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"};   
@@ -737,13 +777,16 @@ void create_server()
   const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
   if (SOCKET < 0)
   {
-    color_print("Error creating socket","red");
+    if (settings == 1)
+    {
+      color_print("Error creating socket","red");
+    }    
     pointer_reset(string);
     pointer_reset(result);
     pointer_reset(data);
     pointer_reset(data2);
     pointer_reset(message);
-    exit(0);
+    return 0;
   }
 
   /* Set the socket options
@@ -753,10 +796,16 @@ void create_server()
   */
   if (setsockopt(SOCKET, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &SOCKET_OPTION,sizeof(int)) < 0)
   {
-    color_print("Error setting socket options","red"); 
-    exit(0);
+    if (settings == 1)
+    {
+      color_print("Error setting socket options","red"); 
+    }
+    return 0;
   } 
-  color_print("Socket created","green");
+  if (settings == 1)
+  {
+    color_print("Socket created","green");
+  }
  
   // convert the port to a string
   sprintf(buffer2,"%d",SEND_DATA_PORT);  
@@ -774,23 +823,29 @@ void create_server()
   // connect to 0.0.0.0
   if (bind(SOCKET, (struct sockaddr *) &addr, sizeof(addr)) < 0)
   {
-   memset(string,0,strlen(string));
-   memcpy(string,"Error connecting to port ",25);
-   memcpy(string+25,buffer2,strlen(buffer2));
-   color_print(string,"red"); 
+   if (settings == 1)
+   {
+     memset(string,0,strlen(string));
+     memcpy(string,"Error connecting to port ",25);
+     memcpy(string+25,buffer2,strlen(buffer2));
+     color_print(string,"red"); 
+   }
    pointer_reset(string);
    pointer_reset(result);
    pointer_reset(data);
    pointer_reset(data2);
    pointer_reset(message);
-   exit(0);
+   return 0;
   } 
-  memset(string,0,strlen(string));
-  memcpy(string,"Connected to port ",18);
-  memcpy(string+18,buffer2,strlen(buffer2));
-  color_print(string,"green");
+  if (settings == 1)
+  {
+    memset(string,0,strlen(string));
+    memcpy(string,"Connected to port ",18);
+    memcpy(string+18,buffer2,strlen(buffer2));
+    color_print(string,"green");
 
-  printf("Waiting for a connection...\n");
+    printf("Waiting for a connection...\n");
+  }
   // set the maximum simultaneous connections
   listen(SOCKET, MAXIMUM_CONNECTIONS);
   for (;;)
@@ -800,54 +855,63 @@ void create_server()
   
     if (CLIENT_SOCKET < 0)
     {
-      memset(string,0,strlen(string));
-      memcpy(string,"Error accepting connection from ",32);
-      memcpy(string+32,inet_ntoa(cl_addr.sin_addr),strlen(inet_ntoa(cl_addr.sin_addr)));
-      memcpy(string+32+strlen(inet_ntoa(cl_addr.sin_addr))," on ",4);
-      memcpy(string+36+strlen(inet_ntoa(cl_addr.sin_addr)),buffer2,strlen(buffer2));
-      color_print(string,"red"); 
+      if (settings == 1)
+      {
+        memset(string,0,strlen(string));
+        memcpy(string,"Error accepting connection from ",32);
+        memcpy(string+32,inet_ntoa(cl_addr.sin_addr),strlen(inet_ntoa(cl_addr.sin_addr)));
+        memcpy(string+32+strlen(inet_ntoa(cl_addr.sin_addr))," on ",4);
+        memcpy(string+36+strlen(inet_ntoa(cl_addr.sin_addr)),buffer2,strlen(buffer2));
+        color_print(string,"red"); 
+      }
       continue;
     }
-    memset(string,0,strlen(string));
-    memcpy(string,"Connection accepted from ",25);
-    memcpy(string+25,inet_ntoa(cl_addr.sin_addr),strlen(inet_ntoa(cl_addr.sin_addr)));
-    memcpy(string+25+strlen(inet_ntoa(cl_addr.sin_addr))," on ",4);
-    memcpy(string+29+strlen(inet_ntoa(cl_addr.sin_addr)),buffer2,strlen(buffer2));
-    color_print(string,"green"); 
+    if (settings == 1)
+    {
+      memset(string,0,strlen(string));
+      memcpy(string,"Connection accepted from ",25);
+      memcpy(string+25,inet_ntoa(cl_addr.sin_addr),strlen(inet_ntoa(cl_addr.sin_addr)));
+      memcpy(string+25+strlen(inet_ntoa(cl_addr.sin_addr))," on ",4);
+      memcpy(string+29+strlen(inet_ntoa(cl_addr.sin_addr)),buffer2,strlen(buffer2));
+      color_print(string,"green"); 
+    }
 
     inet_ntop(AF_INET, &(cl_addr.sin_addr), client_address, CLADDR_LEN);
 
     if (fork() == 0)
-    {
-       // create a struct for the parameters
-       struct total_connection_time_thread_parameters parameters = {
-         getpid(),
-         client_address,
-         buffer2,
-         0
-       };
-       // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
-       if (pthread_create(&thread_id, NULL, &total_connection_time_thread, (void *)&parameters) != 0)
+    {     
+      // create a struct for the parameters
+      struct total_connection_time_thread_parameters parameters = {
+        getpid(),
+        client_address,
+        buffer2,
+        0
+      };
+       if (settings == 1)
        {
-         // close the forked process
-         close(CLIENT_SOCKET);
-         pointer_reset(result);
-         pointer_reset(data);
-         pointer_reset(data2);
-         pointer_reset(message);
-         _exit(0);
-       }
-       // set the thread to dettach once completed, since we do not need to use anything it will return.
-       if (pthread_detach(thread_id) != 0)
-       {
-         // close the forked process
-         close(CLIENT_SOCKET);
-         pointer_reset(result);
-         pointer_reset(data);
-         pointer_reset(data2);
-         pointer_reset(message);
-         _exit(0);
-       }
+         // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
+         if (pthread_create(&thread_id, NULL, &total_connection_time_thread, (void *)&parameters) != 0)
+         {
+           // close the forked process
+           close(CLIENT_SOCKET);
+           pointer_reset(result);
+           pointer_reset(data);
+           pointer_reset(data2);
+           pointer_reset(message);
+           _exit(0);
+         }
+         // set the thread to dettach once completed, since we do not need to use anything it will return.
+         if (pthread_detach(thread_id) != 0)
+         {
+           // close the forked process
+           close(CLIENT_SOCKET);
+           pointer_reset(result);
+           pointer_reset(data);
+           pointer_reset(data2);
+           pointer_reset(message);
+           _exit(0);
+         }
+      }
 
        // close the main socket, since the socket is now copied to the forked process
        close(SOCKET); 
@@ -861,20 +925,23 @@ void create_server()
          receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,0,TOTAL_CONNECTION_TIME_SETTINGS);
          if (receive_data_result < 2)
          {
-           memset(string,0,strlen(string));
-           memcpy(string,"Error receiving data from ",26);
-           memcpy(string+26,client_address,client_address_length);
-           memcpy(string+26+client_address_length," on port ",9);
-           memcpy(string+35+client_address_length,buffer2,buffer2_length);
-           if (receive_data_result == 1)
+           if (settings == 1)
            {
-             memcpy(string+35+client_address_length+buffer2_length,", because of a timeout issue",28);
+             memset(string,0,strlen(string));
+             memcpy(string,"Error receiving data from ",26);
+             memcpy(string+26,client_address,client_address_length);
+             memcpy(string+26+client_address_length," on port ",9);
+             memcpy(string+35+client_address_length,buffer2,buffer2_length);
+             if (receive_data_result == 1)
+             {
+               memcpy(string+35+client_address_length+buffer2_length,", because of a timeout issue",28);
+             }
+             else if (receive_data_result == 0)
+             {
+               memcpy(string+35+client_address_length+buffer2_length,", because of a potential buffer overflow issue",46);
+             }
+             color_print(string,"red"); 
            }
-           else if (receive_data_result == 0)
-           {
-             memcpy(string+35+client_address_length+buffer2_length,", because of a potential buffer overflow issue",46);
-           }
-           color_print(string,"red"); 
            // close the forked process, since the client had an error sending data       
            close(CLIENT_SOCKET);
            pointer_reset(string);
@@ -891,23 +958,43 @@ void create_server()
          }    
 
          // check if a certain type of message has been received
+         
+         if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)
+         {
+           if (send_data(CLIENT_SOCKET,buffer,1) == 1)
+           {
+             return 1;
+           }
+           else
+           {
+             return 0;
+           } 
+         }
+         else if (strstr(buffer,"\"message_settings\": \"TESTNODE_TO_NODES\"") != NULL)
+         {
 
-          printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
-          // send the message 
-          if (send_data(CLIENT_SOCKET,buffer,1) == 1)
-          {
-            printf("Sent %s to %s on port %s\r\n",buffer,client_address,buffer2);
-          } 
-          else
-          {
-            memset(string,0,strlen(string));
-            memcpy(string,"Error sending data to ",22);
-            memcpy(string+22,client_address,client_address_length);
-            memcpy(string+22+client_address_length," on port ",9);
-            memcpy(string+31+client_address_length,buffer2,buffer2_length);
-            color_print(string,"red"); 
-            continue;
-          } 
+         }
+         else
+         {
+           printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
+           // send the message 
+           if (send_data(CLIENT_SOCKET,buffer,1) == 1)
+           {
+             printf("Sent %s to %s on port %s\r\n",buffer,client_address,buffer2);
+           } 
+           else
+           {
+             memset(string,0,strlen(string));
+             memcpy(string,"Error sending data to ",22);
+             memcpy(string+22,client_address,client_address_length);
+             memcpy(string+22+client_address_length," on port ",9);
+             memcpy(string+31+client_address_length,buffer2,buffer2_length);
+             color_print(string,"red"); 
+             continue;
+           } 
+         }
+
+         
        
        }
      }

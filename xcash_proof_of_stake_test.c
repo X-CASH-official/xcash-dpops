@@ -33,6 +33,14 @@ Functions
 -----------------------------------------------------------------------------------------------------------
 */
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: append_string_test
+Description: Test the append_string macro
+Return: The number of passed append_string test
+-----------------------------------------------------------------------------------------------------------
+*/
+
 int append_string_test()
 {  
   #define APPEND_STRING_TOTAL_TEST 4
@@ -121,6 +129,15 @@ int append_string_test()
   } 
   return count_test;
 }
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: parse_json_data_test
+Description: Test the parse_json_data function
+Return: The number of passed parse_json_data test
+-----------------------------------------------------------------------------------------------------------
+*/
 
 int parse_json_data_test()
 {  
@@ -1460,10 +1477,37 @@ int parse_json_data_test()
   return count_test;
 }
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: create_server_on_separate_thread
+Description: Creates the server on a separate thread
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
 
-/*int send_and_receive_data_socket_test()
+void* create_server_on_separate_thread(void* parameters)
+{
+  create_server(0);
+  return NULL;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: send_and_receive_data_socket_test
+Description: Test the create_server, send_data_socket, send_data, receive_data functions
+Return: The number of passed send_and_receive_data_socket test
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int send_and_receive_data_socket_test()
 {  
-  #define SEND_AND_RECEIVE_DATA_SOCKET_TOTAL_TEST 1
+  #define SEND_AND_RECEIVE_DATA_SOCKET_TOTAL_TEST 2
+
+  // Variables
+  pthread_t thread_id;
+  int settings = 1;
 
   // reset the variables
   memset(result_test,0,strlen(result_test));
@@ -1478,30 +1522,69 @@ int parse_json_data_test()
 
   // run the test
   
-  // test for sending data and receiving data using sockets
+  // test for creating the server
+  if (pthread_create(&thread_id, NULL, &create_server_on_separate_thread,NULL) != 0)
+  {
+    color_print("FAILED! Test for creating the server","red");
+    color_print("FAILED! Test for sending and receving data using sockets","red");
+    settings = 0;
+  }
+  if (settings == 1)
+  {
+    if (pthread_detach(thread_id) != 0)
+    {      
+      color_print("FAILED! Test for creating the server","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
+      settings = 0;
+    }  
+  }
+  sleep(1);
+
+  // test for sending and receiving data using sockets
+  if (settings == 1)
+  {
+    if (send_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,"{\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}",TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0) <= 0)
+    {
+      color_print("FAILED! Test for creating the server","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
+      settings = 0;
+    }
+  }
   
-
-  // test for using append_string on a dynamically allocated char
-  append_string(string2_test," ");
-  append_string(string2_test,STR2_TEST);
-  if (strcmp(string2_test,"test string 2 test string 2") == 0)
+  // parse the data
+  if (settings == 1)
   {
-    color_print("PASSED! Test for using append_string on a dynamically allocated char","green");
-    count_test++;
+    if (parse_json_data(result_test,(char*)"message_settings",data_test) == 0)
+    {
+      color_print("FAILED! Test for creating the server","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
+      settings = 0;
+    }
   }
-  else
+  
+  // check if the received data is correct
+  if (settings == 1)
   {
-    color_print("FAILED! Test for using append_string on a dynamically allocated char","red");
+    if (strcmp(data_test,"XCASH_PROOF_OF_STAKE_TEST_DATA") == 0)
+    {
+      color_print("PASSED! Test for creating the server","green");
+      color_print("PASSED! Test for sending and receving data using sockets","green");
+      count_test += 2;
+    }
+    else
+    {
+      color_print("FAILED! Test for creating the server","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
+      settings = 0;
+    }
   }
-
-
 
   // write the end test message
-  if (count_test == APPEND_STRING_TOTAL_TEST)
+  if (count_test == SEND_AND_RECEIVE_DATA_SOCKET_TOTAL_TEST)
   {
     printf("\n");
     color_print(TEST_OUTLINE,"green");
-    printf("\033[1;32mappend_string test - Passed test: %d, Failed test: 0\033[0m\n",APPEND_STRING_TOTAL_TEST);
+    printf("\033[1;32msend_and_receive_data_socket_test - Passed test: %d, Failed test: 0\033[0m\n",SEND_AND_RECEIVE_DATA_SOCKET_TOTAL_TEST);
     color_print(TEST_OUTLINE,"green");
     printf("\n\n");
   }
@@ -1509,17 +1592,25 @@ int parse_json_data_test()
   {
     printf("\n");
     color_print(TEST_OUTLINE,"red");
-    printf("\033[1;31mappend_string test - Passed test: %d, Failed test: %d\033[0m\n",count_test,APPEND_STRING_TOTAL_TEST-count_test);
+    printf("\033[1;31msend_and_receive_data_socket_test - Passed test: %d, Failed test: %d\033[0m\n",count_test,SEND_AND_RECEIVE_DATA_SOCKET_TOTAL_TEST-count_test);
     color_print(TEST_OUTLINE,"red");
     printf("\n\n");
   } 
-  return SEND_AND_RECEIVE_DATA_SOCKET_TOTAL_TEST - count_test;
-}*/
+  return count_test;
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: test
+Description: Run the test
+-----------------------------------------------------------------------------------------------------------
+*/
 
 void test()
 {
   // Constants
-  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 70
+  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 72
 
   // Variables
   int xcash_proof_of_stake_total_passed_test = 0;
@@ -1536,7 +1627,7 @@ void test()
   // run the tests
   xcash_proof_of_stake_total_passed_test += append_string_test();
   xcash_proof_of_stake_total_passed_test += parse_json_data_test();
-  //send_and_receive_data_socket_test();
+  xcash_proof_of_stake_total_passed_test += send_and_receive_data_socket_test();
 
   // write the end test message
   if (xcash_proof_of_stake_total_passed_test == XCASH_PROOF_OF_STAKE_TOTAL_TEST)
@@ -1559,5 +1650,5 @@ void test()
   pointer_reset(string2_test);
   pointer_reset(result_test);
   pointer_reset(data_test);
-
+  exit(0);
 }
