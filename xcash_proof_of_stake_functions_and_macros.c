@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
+#include <time.h> 
 
 #include "xcash_proof_of_stake_functions_and_macros.h"
 #include "xcash_proof_of_stake_test.h"
@@ -35,7 +36,7 @@ Return: 0 if an error has occured, 1 if successfull
 int parse_json_data(char* data, char* field, char *result)
 {
   // Constants
-  const size_t STRING_LENGTH = strlen(field);  
+  const size_t STRING_LENGTH = strnlen(field,BUFFER_SIZE);  
  
   // Variables
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -50,7 +51,7 @@ int parse_json_data(char* data, char* field, char *result)
   memcpy(str+1,field,STRING_LENGTH);
   memcpy(str+1+STRING_LENGTH,"\": ",3);
   // get the start of the field's data
-  start = strlen(str);
+  start = strnlen(str,BUFFER_SIZE);
   // get the pointers location to the start of the field
   str1 = strstr(data,str);
   if (str1 == NULL)
@@ -58,7 +59,7 @@ int parse_json_data(char* data, char* field, char *result)
      // an error has occured, get the error message
      settings = 0;
      str1 = strstr(data,"\"message\": ");
-     start = strlen("\"message\": ");
+     start = 11;
      if (str1 == NULL)
      {
        // their is no error message so return an error
@@ -85,32 +86,32 @@ int parse_json_data(char* data, char* field, char *result)
   // check if the return value is a string and contains a , if so remove the [""] from the start and the end, and remove the , from the end
   if (strstr(result,"\"") != NULL && strstr(result,"[") != NULL && strstr(result,",") != NULL)
   {
-   memcpy(data2,&result[2],strlen(result)-5);
-   memcpy(result,data2,strlen(data2)+1);
+   memcpy(data2,&result[2],strnlen(result,BUFFER_SIZE)-5);
+   memcpy(result,data2,strnlen(data2,BUFFER_SIZE)+1);
   }
   // check if the return value is a string and contains [""], if so remove [""] from the start and the end
   else if (strstr(result,"\"") != NULL && strstr(result,"[") != NULL)
   {
-   memcpy(data2,&result[2],strlen(result)-3);
-   memcpy(result,data2,strlen(data2)+1);
+   memcpy(data2,&result[2],strnlen(result,BUFFER_SIZE)-3);
+   memcpy(result,data2,strnlen(data2,BUFFER_SIZE)+1);
   }
   // check if the return value is a string and contains a ,if so remove the "" from the start and the end, and remove the , from the end
   else if (strstr(result,"\"") != NULL && strstr(result,",") != NULL)
   {  
-   memcpy(data2,&result[1],strlen(result)-3);
-   memcpy(result,data2,strlen(data2)+1);
+   memcpy(data2,&result[1],strnlen(result,BUFFER_SIZE)-3);
+   memcpy(result,data2,strnlen(data2,BUFFER_SIZE)+1);
   }
   // check if the return value is a string, if so remove the "" from the start and the end
   else if (strstr(result,"\"") != NULL)
   {
-   memcpy(data2,&result[1],strlen(result)-2);
-   memcpy(result,data2,strlen(data2)+1);
+   memcpy(data2,&result[1],strnlen(result,BUFFER_SIZE)-2);
+   memcpy(result,data2,strnlen(data2,BUFFER_SIZE)+1);
   }  
   // check if the return value contains , and remove it
   else if (strstr(result,",") != NULL)
   {
-   memcpy(data2,result,strlen(result)-1);
-   memcpy(result,data2,strlen(data2)+1);
+   memcpy(data2,result,strnlen(result,BUFFER_SIZE)-1);
+   memcpy(result,data2,strnlen(data2,BUFFER_SIZE)+1);
   }
   pointer_reset(str);
   pointer_reset(data2);
@@ -137,7 +138,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* data, const int receive_data_timeout_settings, const char* title)
+int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* data, const int receive_data_timeout_settings, const char* title, const int settings)
 {
   // Constants
   const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};  
@@ -171,7 +172,7 @@ int send_http_request(char *result, const char* host, const char* url, const int
   if (http_settings == "POST")
   {
     append_string(message,"Content-Length: ");
-    sprintf(str, "%d", (int)strlen(data));
+    sprintf(str, "%d", (int)strnlen(data,BUFFER_SIZE));
     append_string(message,str);
   } 
   append_string(message,"\r\n\r\n");    
@@ -188,7 +189,10 @@ int send_http_request(char *result, const char* host, const char* url, const int
   const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
   if (SOCKET < 0)
   {
-    color_print("Error creating socket for sending a post request","red");
+    if (settings == 1)
+    {
+      color_print("Error creating socket for sending a post request","red");
+    }
     pointer_reset(str);
     pointer_reset(message);
     return 0;
@@ -200,7 +204,10 @@ int send_http_request(char *result, const char* host, const char* url, const int
   */
   if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) < 0)
   {
-    color_print("Error setting socket timeout for sending a post request","red"); 
+    if (settings == 1)
+    {
+      color_print("Error setting socket timeout for sending a post request","red"); 
+    }
     pointer_reset(str);
     pointer_reset(message);
     return 0;
@@ -210,10 +217,13 @@ int send_http_request(char *result, const char* host, const char* url, const int
   const struct hostent* HOST_NAME = gethostbyname(host); 
   if (HOST_NAME == NULL)
   {
-    memset(str,0,strlen(str));
-    memcpy(str,"Error invalid hostname of ",26);
-    memcpy(str+26,host,strlen(host));
-    color_print(str,"red"); 
+    if (settings == 1)
+    {
+      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memcpy(str,"Error invalid hostname of ",26);
+      memcpy(str+26,host,strnlen(host,BUFFER_SIZE));
+      color_print(str,"red"); 
+    }
     pointer_reset(str);
     pointer_reset(message);
     return 0;
@@ -223,8 +233,8 @@ int send_http_request(char *result, const char* host, const char* url, const int
   sprintf(buffer2,"%d",port);  
 
   // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
-  const size_t buffer2_length = strlen(buffer2);
-  const size_t host_length = strlen(host);
+  const size_t buffer2_length = strnlen(buffer2,BUFFER_SIZE);
+  const size_t host_length = strnlen(host,BUFFER_SIZE);
   
   struct sockaddr_in serv_addr;
   memset(&serv_addr,0,sizeof(serv_addr));
@@ -240,33 +250,45 @@ int send_http_request(char *result, const char* host, const char* url, const int
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
   {
-    memset(str,0,strlen(str));
-    memcpy(str,"Error connecting to ",20);
-    memcpy(str+20,host,host_length);
-    memcpy(str+20+host_length," on port ",9);
-    memcpy(str+29+host_length,buffer2,buffer2_length);
-    color_print(str,"red"); 
+    if (settings == 1)
+    {
+      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memcpy(str,"Error connecting to ",20);
+      memcpy(str+20,host,host_length);
+      memcpy(str+20+host_length," on port ",9);
+      memcpy(str+29+host_length,buffer2,buffer2_length);
+      color_print(str,"red"); 
+    }
     pointer_reset(str);
     pointer_reset(message);   
     return 0;
   }
-  memset(str,0,strlen(str));
-  memcpy(str,"Connected to ",13);
-  memcpy(str+13,host,host_length);
-  memcpy(str+13+host_length," on port ",9);
-  memcpy(str+22+host_length,buffer2,buffer2_length);
-  color_print(str,"green"); 
+  if (settings == 1)
+  {
+    memset(str,0,strnlen(str,BUFFER_SIZE));
+    memcpy(str,"Connected to ",13);
+    memcpy(str+13,host,host_length);
+    memcpy(str+13+host_length," on port ",9);
+    memcpy(str+22+host_length,buffer2,buffer2_length);
+    color_print(str,"green"); 
+  }
     
   // send the message
-  printf("Sending %s to %s on port %s\r\n",title,host,buffer2);
+  if (settings == 1)
+  {
+    printf("Sending %s to %s on port %s\r\n",title,host,buffer2);
+  }
   if (send_data(SOCKET,message,0) == 0)
   {
-    memset(str,0,strlen(str));
-    memcpy(str,"Error sending data to ",22);
-    memcpy(str+22,host,host_length);
-    memcpy(str+22+host_length," on port ",9);
-    memcpy(str+31+host_length,buffer2,buffer2_length);
-    color_print(str,"red"); 
+    if (settings == 1)
+    {
+      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memcpy(str,"Error sending data to ",22);
+      memcpy(str+22,host,host_length);
+      memcpy(str+22+host_length," on port ",9);
+      memcpy(str+31+host_length,buffer2,buffer2_length);
+      color_print(str,"red"); 
+    }
     pointer_reset(str);
     pointer_reset(message);   
     return 0;
@@ -276,20 +298,23 @@ int send_http_request(char *result, const char* host, const char* url, const int
   receive_data_result = receive_data(SOCKET,message,"{",1,receive_data_timeout_settings);
   if (receive_data_result < 2)
   {
-    memset(str,0,strlen(str));
-    memcpy(str,"Error receiving data from ",26);
-    memcpy(str+26,host,host_length);
-    memcpy(str+26+host_length," on port ",9);
-    memcpy(str+35+host_length,buffer2,buffer2_length);
-    if (receive_data_result == 1)
+    if (settings == 1)
     {
-      memcpy(str+35+host_length+buffer2_length,", because of a timeout issue",28);
+      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memcpy(str,"Error receiving data from ",26);
+      memcpy(str+26,host,host_length);
+      memcpy(str+26+host_length," on port ",9);
+      memcpy(str+35+host_length,buffer2,buffer2_length);
+      if (receive_data_result == 1)
+      {
+        memcpy(str+35+host_length+buffer2_length,", because of a timeout issue",28);
+      }
+      else if (receive_data_result == 0)
+      { 
+        memcpy(str+35+host_length+buffer2_length,", because of a potential buffer overflow issue",46);
+      }
+      color_print(str,"red"); 
     }
-    else if (receive_data_result == 0)
-    { 
-      memcpy(str+35+host_length+buffer2_length,", because of a potential buffer overflow issue",46);
-    }
-    color_print(str,"red"); 
     pointer_reset(str);
     pointer_reset(message);   
     return 0;
@@ -298,22 +323,28 @@ int send_http_request(char *result, const char* host, const char* url, const int
   // check if the data recived is correct
   if (strstr(message,"{") == NULL && strstr(message,"error") == NULL)
   {
-    memset(str,0,strlen(str));
-    memcpy(str,"Error receiving data from ",26);
-    memcpy(str+26,host,host_length);
-    memcpy(str+26+host_length," on port ",9);
-    memcpy(str+35+host_length,buffer2,buffer2_length);
-    color_print(str,"red"); 
+    if (settings == 1)
+    {
+      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memcpy(str,"Error receiving data from ",26);
+      memcpy(str+26,host,host_length);
+      memcpy(str+26+host_length," on port ",9);
+      memcpy(str+35+host_length,buffer2,buffer2_length);
+      color_print(str,"red"); 
+    }
     pointer_reset(str);
     pointer_reset(message);  
     return 0;
   }
-  memset(str,0,strlen(str));
-  memcpy(str,"Received data from ",19);
-  memcpy(str+19,host,host_length);
-  memcpy(str+19+host_length," on port ",9);
-  memcpy(str+28+host_length,buffer2,buffer2_length);
-  color_print(str,"green"); 
+  if (settings == 1)
+  {
+    memset(str,0,strnlen(str,BUFFER_SIZE));
+    memcpy(str,"Received data from ",19);
+    memcpy(str+19,host,host_length);
+    memcpy(str+19+host_length," on port ",9);
+    memcpy(str+28+host_length,buffer2,buffer2_length);
+    color_print(str,"green"); 
+  }
      
   // close the socket
   close(SOCKET);
@@ -324,12 +355,12 @@ int send_http_request(char *result, const char* host, const char* url, const int
   {
     // the HTTP result does contain a header
     post_request_data = strstr(message,"{");
-    memcpy(result+strlen(result),post_request_data,strlen(post_request_data));
+    memcpy(result+strnlen(result,BUFFER_SIZE),post_request_data,strnlen(post_request_data,BUFFER_SIZE));
   }
   else
   {
     // the HTTP result does not contain a header
-    memcpy(result+strlen(result),message,strlen(message));
+    memcpy(result+strnlen(result,BUFFER_SIZE),message,strnlen(message,BUFFER_SIZE));
   }
     
   pointer_reset(str);
@@ -357,8 +388,8 @@ Return: 0 if an error has occured, 1 if successfull
 int send_data_socket(char *result, const char* host, const int port, const char* data, const int receive_data_timeout_settings, const char* title, const int settings)
 { 
   // Constants
-  const size_t title_length = strlen(title);
-  const size_t host_length = strlen(host);
+  const size_t title_length = strnlen(title,BUFFER_SIZE);
+  const size_t host_length = strnlen(host,BUFFER_SIZE);
   const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};   
   
   // Variables 
@@ -420,7 +451,7 @@ int send_data_socket(char *result, const char* host, const int port, const char*
   // convert the port to a string  
   sprintf(buffer2,"%d",port); 
    
-  const size_t buffer2_length = strlen(buffer2);
+  const size_t buffer2_length = strnlen(buffer2,BUFFER_SIZE);
   
   struct sockaddr_in serv_addr;
   /* setup the connection
@@ -449,7 +480,7 @@ int send_data_socket(char *result, const char* host, const int port, const char*
   }
   if (settings == 1)
   {
-    memset(str,0,strlen(str));
+    memset(str,0,strnlen(str,BUFFER_SIZE));
     memcpy(str,"Connected to ",13);
     memcpy(str+13,host,host_length);
     memcpy(str+13+host_length," on port ",9);
@@ -457,9 +488,8 @@ int send_data_socket(char *result, const char* host, const int port, const char*
     color_print(str,"green"); 
   }
 
-  // send the message   
-  memcpy(message,title,title_length);
-  memcpy(message+title_length,data,strlen(data));
+  // send the message 
+  memcpy(message,data,strnlen(data,BUFFER_SIZE));
   if (settings == 1)
   {
     printf("Sending %s to %s on port %s\r\n",title,host,buffer2);
@@ -468,7 +498,7 @@ int send_data_socket(char *result, const char* host, const int port, const char*
   {
     if (settings == 1)
     {
-      memset(str,0,strlen(str));
+      memset(str,0,strnlen(str,BUFFER_SIZE));
       memcpy(str,"Error sending data to ",22);
       memcpy(str+22,host,host_length);
       memcpy(str+22+host_length," on port ",9);
@@ -486,7 +516,7 @@ int send_data_socket(char *result, const char* host, const int port, const char*
   {
     if (settings == 1)
     {
-      memset(str,0,strlen(str));
+      memset(str,0,strnlen(str,BUFFER_SIZE));
       memcpy(str,"Error receiving data from ",26);
       memcpy(str+26,host,host_length);
       memcpy(str+26+host_length," on port ",9);
@@ -506,10 +536,10 @@ int send_data_socket(char *result, const char* host, const int port, const char*
     return 0;
   }
      
-  memcpy(result,message,strlen(message));
+  memcpy(result,message,strnlen(message,BUFFER_SIZE));
   if (settings == 1)
   {
-    memset(str,0,strlen(str));
+    memset(str,0,strnlen(str,BUFFER_SIZE));
     memcpy(str,"Received data from ",19);
     memcpy(str+19,host,host_length);
     memcpy(str+19+host_length," on port ",9);
@@ -539,23 +569,74 @@ Return: 0 if an error has occured, 1 if successfull
 
 int string_replace(char *data,const char* str1, const char* str2)
 {
+  #define REPLACE_STRING "|REPLACE_STRING|"
+  
   // check if the str to replace exist in the string
   if (strstr(data,str1) != NULL)
-  {
-    // copy the data to a temporary string and reset the data
+  { 
+    // Variables
+    char* datacount = (char*)calloc(BUFFER_SIZE,sizeof(char));
     char* datacopy = (char*)calloc(BUFFER_SIZE,sizeof(char));
-    memcpy(datacopy,data,strlen(data));
-    memset(data,0,strlen(data));
-    // get a pointer to the start of the string to be replaced
-    char* start_str = strstr(datacopy,str1);
-    // copy the string from the start of the string to the data to be replaced
-    const int START = strlen(datacopy) - strlen(start_str);
-    // create the new string
-    memcpy(data,datacopy,START);
-    memcpy(data+START,str2,strlen(str2));
-    memset(datacopy,0,strlen(datacopy));
-    memcpy(datacopy,&start_str[strlen(str1)],strlen(start_str)-strlen(str1));
-    append_string(data,datacopy);
+    char* string;
+    size_t data_length;
+    size_t str2_length;
+    size_t start;
+    size_t total = 0;
+    size_t count = 0;
+
+    // get the occurences of str1    
+    memcpy(datacount,data,strnlen(data,BUFFER_SIZE));
+    while(datacount = strstr(datacount, str1))
+    {
+      total++;
+      datacount++;
+    } 
+
+    // replace the string with the REPLACE_STRING
+    for (count = 0; count < total; count++)
+    {
+      // reset the variables
+      memset(datacopy,0,strnlen(datacopy,BUFFER_SIZE));
+      data_length = strnlen(data,BUFFER_SIZE);
+      str2_length = strnlen(REPLACE_STRING,BUFFER_SIZE);
+      start = data_length - strnlen(strstr(data,str1),BUFFER_SIZE);
+   
+      // get a pointer to where the rest of the data string should be copied to
+      string = strstr(data,str1)+strnlen(str1,BUFFER_SIZE);
+           
+      // copy the bytes before str1 to the new string
+      memcpy(datacopy,data,start);
+      // copy str2 to the new string
+      memcpy(datacopy+start,REPLACE_STRING,str2_length);
+      // copy the bytes after str1 to the new string
+      memcpy(datacopy+start+str2_length,string,strnlen(string,BUFFER_SIZE));
+      // copy the new string to the string pointer
+      memset(data,0,data_length);
+      memcpy(data,datacopy,strnlen(datacopy,BUFFER_SIZE));
+    }
+    // replace the REPLACE_STRING with str2
+    for (count = 0; count < total; count++)
+    {
+      // reset the variables
+      memset(datacopy,0,strnlen(datacopy,BUFFER_SIZE));
+      data_length = strnlen(data,BUFFER_SIZE);
+      str2_length = strnlen(str2,BUFFER_SIZE);
+      start = data_length - strnlen(strstr(data,REPLACE_STRING),BUFFER_SIZE);
+   
+      // get a pointer to where the rest of the data string should be copied to
+      string = strstr(data,REPLACE_STRING)+strnlen(REPLACE_STRING,BUFFER_SIZE);
+           
+      // copy the bytes before REPLACE_STRING to the new string
+      memcpy(datacopy,data,start);
+      // copy str2 to the new string
+      memcpy(datacopy+start,str2,str2_length);
+      // copy the bytes after REPLACE_STRING to the new string
+      memcpy(datacopy+start+str2_length,string,strnlen(string,BUFFER_SIZE));
+      // copy the new string to the string pointer
+      memset(data,0,data_length);
+      memcpy(data,datacopy,strnlen(datacopy,BUFFER_SIZE));
+    }
+    
     pointer_reset(datacopy);
     return 1;
   }
@@ -582,9 +663,9 @@ int send_data(const int socket, char* data, const int appendstring)
 {
   if (appendstring == 1)
   {
-    memcpy(data+strlen(data),SOCKET_END_STRING,5);
+    memcpy(data+strnlen(data,BUFFER_SIZE),SOCKET_END_STRING,5);
   }    
-  const int TOTAL = strlen(data);
+  const int TOTAL = strnlen(data,BUFFER_SIZE);
   int sent = 0;
   int bytes = 0;
   do {
@@ -624,7 +705,7 @@ int receive_data(const int socket, char *message, const char* string, const int 
   char buffer [BUFFER_SIZE];
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
-  memset(message, 0, strlen(message));  
+  memset(message, 0, strnlen(message,BUFFER_SIZE));  
   for (;;)
   { 
     memset(&buffer, 0, sizeof(buffer));
@@ -649,9 +730,9 @@ int receive_data(const int socket, char *message, const char* string, const int 
       if (strstr(message,SOCKET_END_STRING) != NULL)
       {
         // remove SOCKET_END_STRING from the message
-        memcpy(data,message,strlen(message) - 5);
-        memset(message, 0, strlen(message));
-        memcpy(message,data,strlen(data));
+        memcpy(data,message,strnlen(message,BUFFER_SIZE) - 5);
+        memset(message, 0, strnlen(message,BUFFER_SIZE));
+        memcpy(message,data,strnlen(data,BUFFER_SIZE));
         pointer_reset(data);
       }
       break;
@@ -671,6 +752,343 @@ int receive_data(const int socket, char *message, const char* string, const int 
     usleep(200000);   
   }
   return 2;
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: random_string
+Description: Creates a random string of specified length
+Parameters:
+  result - The string where you want the random string to be saved to
+  length - The length of the random string
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int random_string(char *result, const size_t length)
+{
+  // Constants
+  const size_t minimum = 0;
+  const size_t maximum = 61;
+  
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  
+  memcpy(data,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",62);
+  for (count = 0; count < length; count++)
+  {
+    memcpy(result+count,&data[((rand() % (maximum - minimum + 1)) + minimum)],1);
+  }
+  pointer_reset(data); 
+  return 1;
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_public_address
+Description: Gets the public address of your wallet
+Parameters:
+  result - The string where you want the public address to be saved to
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_public_address(char *result, const int settings)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",settings) <= 0)
+  {  
+    pointer_reset(data);   
+    return 0;
+  }
+  
+  if (parse_json_data(data,(char*)"address",result) == 0)
+  {
+    pointer_reset(data); 
+    return 0;
+  }
+  
+  // check if the returned data is valid
+  if (strnlen(result,BUFFER_SIZE) != XCASH_WALLET_LENGTH && strncmp(result,XCASH_WALLET_PREFIX,3) != 0)
+  {
+     pointer_reset(data); 
+     return 0;
+  }
+
+  pointer_reset(data); 
+  return 1;
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sign_data
+Description: Signs data with your XCA address, for sending data securely
+Parameters:
+  result - The string where you want the xcash_proof_of_stake_signature to be saved to
+  random_data - The random character string that is created and then signed. This is random to increase security
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sign_data(char *message, const int settings)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char* public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* random_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* result = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // get the public address
+  if (get_public_address(public_address,0) == 0)
+  {  
+    pointer_reset(public_address);
+    pointer_reset(random_data); 
+    pointer_reset(result); 
+    pointer_reset(data); 
+    pointer_reset(string);  
+    return 0;
+  }
+
+  // create the random data
+  if (random_string(random_data,RANDOM_STRING_LENGTH) == 0)
+  {
+    pointer_reset(public_address);
+    pointer_reset(random_data); 
+    pointer_reset(result); 
+    pointer_reset(data); 
+    pointer_reset(string);  
+    return 0;
+  }
+
+  // create the message
+  size_t message_length = strnlen(message,BUFFER_SIZE)-1;
+  memcpy(result,message,message_length);
+  memcpy(result+message_length," \"public_address\": \"",20);
+  memcpy(result+message_length+20,public_address,XCASH_WALLET_LENGTH);
+  memcpy(result+message_length+20+XCASH_WALLET_LENGTH,"\",\r\n \"data\": \"",14);
+  memcpy(result+message_length+34+XCASH_WALLET_LENGTH,random_data,RANDOM_STRING_LENGTH);
+  memcpy(result+message_length+34+XCASH_WALLET_LENGTH+RANDOM_STRING_LENGTH,"\",\r\n}",5);
+  if (string_replace(result,"\"","\\\"") == 0)
+  {
+    pointer_reset(public_address);
+    pointer_reset(random_data); 
+    pointer_reset(result); 
+    pointer_reset(data); 
+    pointer_reset(string);  
+    return 0;
+  }
+ 
+
+  // sign_data
+  const size_t result_length = strnlen(result,BUFFER_SIZE);
+  memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
+  memcpy(string+60,result,result_length);
+  memcpy(string+60+result_length,"\"}}",3);
+  memset(result,0,result_length);
+
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",settings) <= 0)
+  {  
+    pointer_reset(public_address);
+    pointer_reset(random_data); 
+    pointer_reset(result); 
+    pointer_reset(data);
+    pointer_reset(string);   
+    return 0;
+  }  
+  if (parse_json_data(data,(char*)"signature",result) == 0)
+  {
+    pointer_reset(public_address);
+    pointer_reset(random_data); 
+    pointer_reset(result); 
+    pointer_reset(data);
+    pointer_reset(string); 
+    return 0;
+  }
+
+  // check if the returned data is valid
+  if (strnlen(result,BUFFER_SIZE) != XCASH_SIGN_DATA_LENGTH && strncmp(result,XCASH_SIGN_DATA_PREFIX,5) != 0)
+  {
+    pointer_reset(public_address);
+    pointer_reset(random_data); 
+    pointer_reset(result); 
+    pointer_reset(data);
+    pointer_reset(string); 
+    return 0;
+  }
+  
+  // create the message
+  message_length = strnlen(message,BUFFER_SIZE) - 1;
+  const size_t xcash_proof_of_stake_signature_length = strnlen(result,BUFFER_SIZE);
+  memcpy(message+message_length," \"public_address\": \"",20);
+  memcpy(message+message_length+20,public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+message_length+20+XCASH_WALLET_LENGTH,"\",\r\n \"data\": \"",14);
+  memcpy(message+message_length+34+XCASH_WALLET_LENGTH,random_data,RANDOM_STRING_LENGTH);
+  memcpy(message+message_length+34+XCASH_WALLET_LENGTH+RANDOM_STRING_LENGTH,"\",\r\n \"xcash_proof_of_stake_signature\": \"",40);
+  memcpy(message+message_length+74+XCASH_WALLET_LENGTH+RANDOM_STRING_LENGTH,result,xcash_proof_of_stake_signature_length);
+  memcpy(message+message_length+74+XCASH_WALLET_LENGTH+RANDOM_STRING_LENGTH+xcash_proof_of_stake_signature_length,"\",\r\n}",5);
+
+  pointer_reset(public_address);
+  pointer_reset(random_data); 
+  pointer_reset(result); 
+  pointer_reset(data);
+  pointer_reset(string); 
+  return 1;
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: verify_data
+Description: Verifies signed data, for receiving data securely
+Parameters:
+  random_data - The signed data
+  public_address - The public address who signed the data
+  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the signed data
+Return: 0 if the signed data is not verified, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int verify_data(char* message, const int settings)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+    
+  // Variables
+  char* public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* xcash_proof_of_stake_signature = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* result = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t message_length = strnlen(message,BUFFER_SIZE) - 134;
+
+  // parse the message
+  if (parse_json_data(message,(char*)"public_address",public_address) == 0)
+  {
+    pointer_reset(public_address);
+    pointer_reset(xcash_proof_of_stake_signature);  
+    pointer_reset(result);
+    pointer_reset(data);
+    pointer_reset(string); 
+    return 0;
+  }
+  if (parse_json_data(message,(char*)"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature) == 0)
+  {
+    pointer_reset(public_address);
+    pointer_reset(xcash_proof_of_stake_signature);  
+    pointer_reset(result);
+    pointer_reset(data);
+    pointer_reset(string); 
+    return 0;
+  }
+
+  // create the message
+  memcpy(result,message,message_length);
+  memcpy(result+message_length,"}",1);
+  if (string_replace(result,"\"","\\\"") == 0)
+  {
+    pointer_reset(public_address);
+    pointer_reset(xcash_proof_of_stake_signature);  
+    pointer_reset(result);
+    pointer_reset(data);
+    pointer_reset(string); 
+    return 0;
+  } 
+    
+  // create the message
+  message_length = strnlen(result,BUFFER_SIZE);
+  memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"verify\",\"params\":{\"data\":\"",62);
+  memcpy(string+62,result,message_length);
+  memcpy(string+62+message_length,"\",\"address\":\"",13);
+  memcpy(string+75+message_length,public_address,XCASH_WALLET_LENGTH);
+  memcpy(string+75+message_length+XCASH_WALLET_LENGTH,"\",\"signature\":\"",15);
+  memcpy(string+90+message_length+XCASH_WALLET_LENGTH,xcash_proof_of_stake_signature,XCASH_SIGN_DATA_LENGTH);
+  memcpy(string+90+message_length+XCASH_WALLET_LENGTH+XCASH_SIGN_DATA_LENGTH,"\"}}",3);
+  memset(result,0,strnlen(result,BUFFER_SIZE));
+
+  if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",settings) <= 0)
+  { 
+    pointer_reset(public_address);
+    pointer_reset(xcash_proof_of_stake_signature);  
+    pointer_reset(result);
+    pointer_reset(data);
+    pointer_reset(string);   
+    return 0;
+  } 
+    
+  if (parse_json_data(result,(char*)"good",data) == 0)
+  {
+    pointer_reset(public_address);
+    pointer_reset(xcash_proof_of_stake_signature);  
+    pointer_reset(result);
+    pointer_reset(data);
+    pointer_reset(string); 
+    return 0;
+  }
+
+  // check if the returned data is valid
+  if (strncmp(data,"true",BUFFER_SIZE) != 0)
+  {
+     pointer_reset(public_address);
+     pointer_reset(xcash_proof_of_stake_signature);  
+     pointer_reset(result);
+     pointer_reset(data);
+     pointer_reset(string); 
+     return 0;
+  }
+ 
+  pointer_reset(public_address);
+  pointer_reset(xcash_proof_of_stake_signature);  
+  pointer_reset(result);
+  pointer_reset(data);
+  pointer_reset(string); 
+  return 1;
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_received_data_xcash_proof_of_stake_test_data
+Description: Runs the code when the server receives the xcash_proof_of_stake_test_data message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_received_data_xcash_proof_of_stake_test_data(const int client_socket, char* message)
+{
+  // verify the message
+  if (verify_data(message,0) == 0)
+  {   
+    return 0;
+  }
+  else
+  {
+    if (send_data(client_socket,message,1) == 1)
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+  }  
 }
 
 
@@ -699,8 +1117,8 @@ void* total_connection_time_thread(void* parameters)
 {
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   struct total_connection_time_thread_parameters* data = parameters;
-  int client_address_length = strlen(data->client_address);
-  int data_port_length = strlen(data->port);
+  int client_address_length = strnlen(data->client_address,BUFFER_SIZE);
+  int data_port_length = strnlen(data->port,BUFFER_SIZE);
   sleep(TOTAL_CONNECTION_TIME_SETTINGS);  
   printf("Total connection time has been reached for %s on port %s\n", data->client_address,data->port); 
   if (data->data_received == 1)
@@ -825,9 +1243,9 @@ int create_server(const int settings)
   {
    if (settings == 1)
    {
-     memset(string,0,strlen(string));
+     memset(string,0,strnlen(string,BUFFER_SIZE));
      memcpy(string,"Error connecting to port ",25);
-     memcpy(string+25,buffer2,strlen(buffer2));
+     memcpy(string+25,buffer2,strnlen(buffer2,BUFFER_SIZE));
      color_print(string,"red"); 
    }
    pointer_reset(string);
@@ -839,9 +1257,9 @@ int create_server(const int settings)
   } 
   if (settings == 1)
   {
-    memset(string,0,strlen(string));
+    memset(string,0,strnlen(string,BUFFER_SIZE));
     memcpy(string,"Connected to port ",18);
-    memcpy(string+18,buffer2,strlen(buffer2));
+    memcpy(string+18,buffer2,strnlen(buffer2,BUFFER_SIZE));
     color_print(string,"green");
 
     printf("Waiting for a connection...\n");
@@ -852,27 +1270,28 @@ int create_server(const int settings)
   {
     len = sizeof(cl_addr);
     const int CLIENT_SOCKET = accept(SOCKET, (struct sockaddr *) &cl_addr, (socklen_t*)&len);
+    const size_t client_address_length = strnlen(inet_ntoa(cl_addr.sin_addr),BUFFER_SIZE);
   
     if (CLIENT_SOCKET < 0)
     {
       if (settings == 1)
       {
-        memset(string,0,strlen(string));
+        memset(string,0,strnlen(string,BUFFER_SIZE));
         memcpy(string,"Error accepting connection from ",32);
-        memcpy(string+32,inet_ntoa(cl_addr.sin_addr),strlen(inet_ntoa(cl_addr.sin_addr)));
-        memcpy(string+32+strlen(inet_ntoa(cl_addr.sin_addr))," on ",4);
-        memcpy(string+36+strlen(inet_ntoa(cl_addr.sin_addr)),buffer2,strlen(buffer2));
+        memcpy(string+32,inet_ntoa(cl_addr.sin_addr),client_address_length);
+        memcpy(string+32+client_address_length," on ",4);
+        memcpy(string+36+client_address_length,buffer2,strnlen(buffer2,BUFFER_SIZE));
         color_print(string,"red"); 
       }
       continue;
     }
     if (settings == 1)
     {
-      memset(string,0,strlen(string));
+      memset(string,0,strnlen(string,BUFFER_SIZE));
       memcpy(string,"Connection accepted from ",25);
-      memcpy(string+25,inet_ntoa(cl_addr.sin_addr),strlen(inet_ntoa(cl_addr.sin_addr)));
-      memcpy(string+25+strlen(inet_ntoa(cl_addr.sin_addr))," on ",4);
-      memcpy(string+29+strlen(inet_ntoa(cl_addr.sin_addr)),buffer2,strlen(buffer2));
+      memcpy(string+25,inet_ntoa(cl_addr.sin_addr),client_address_length);
+      memcpy(string+25+client_address_length," on ",4);
+      memcpy(string+29+client_address_length,buffer2,strnlen(buffer2,BUFFER_SIZE));
       color_print(string,"green"); 
     }
 
@@ -918,8 +1337,8 @@ int create_server(const int settings)
 
        for (;;)
        {
-         const size_t client_address_length = strlen(client_address);
-         const size_t buffer2_length = strlen(buffer2);
+         const size_t client_address_length = strnlen(client_address,BUFFER_SIZE);
+         const size_t buffer2_length = strnlen(buffer2,BUFFER_SIZE);
          // receive the data
          memset(buffer, 0, BUFFER_SIZE); 
          receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,0,TOTAL_CONNECTION_TIME_SETTINGS);
@@ -927,7 +1346,7 @@ int create_server(const int settings)
          {
            if (settings == 1)
            {
-             memset(string,0,strlen(string));
+             memset(string,0,strnlen(string,BUFFER_SIZE));
              memcpy(string,"Error receiving data from ",26);
              memcpy(string+26,client_address,client_address_length);
              memcpy(string+26+client_address_length," on port ",9);
@@ -957,22 +1376,16 @@ int create_server(const int settings)
           parameters.data_received = 1;
          }    
 
-         // check if a certain type of message has been received
-         
+
+
+         // check if a certain type of message has been received         
          if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)
          {
-           if (send_data(CLIENT_SOCKET,buffer,1) == 1)
-           {
-             return 1;
-           }
-           else
-           {
-             return 0;
-           } 
+           server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer);
          }
          else if (strstr(buffer,"\"message_settings\": \"TESTNODE_TO_NODES\"") != NULL)
          {
-
+           //
          }
          else
          {
@@ -984,7 +1397,7 @@ int create_server(const int settings)
            } 
            else
            {
-             memset(string,0,strlen(string));
+             memset(string,0,strnlen(string,BUFFER_SIZE));
              memcpy(string,"Error sending data to ",22);
              memcpy(string+22,client_address,client_address_length);
              memcpy(string+22+client_address_length," on port ",9);

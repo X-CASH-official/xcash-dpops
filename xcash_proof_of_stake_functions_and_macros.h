@@ -9,6 +9,11 @@ Using define statements instead of constants for increased efficiency
 
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
 #define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
+#define XCASH_WALLET_PREFIX "XCA" // The prefix of a XCA address
+#define XCASH_WALLET_LENGTH 98 // The length of a XCA address
+#define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a xcash_proof_of_stake_signature for the signed data
+#define XCASH_SIGN_DATA_LENGTH 93 // The length of a xcash_proof_of_stake_signature for the signed data
+#define RANDOM_STRING_LENGTH 100 // The length of the random string
 #define SEND_DATA_PORT 8000 // The port that is used by all nodes to send and receive data
 #define CLIENT_AND_SERVER_DATA_PORT 18288 // The port that is used to send data locally between a nodes client and server program
 #define BUFFER_SIZE 64000
@@ -88,11 +93,16 @@ Function prototypes
 */
 
 int parse_json_data(char* data, char* field, char *result);
-int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* data, const int receive_data_timeout_settings, const char* title);
+int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* data, const int receive_data_timeout_settings, const char* title, const int settings);
 int send_data_socket(char *result, const char* host, const int port, const char* data, const int receive_data_timeout_settings, const char* title, const int settings);
 int string_replace(char *data,const char* str1, const char* str2);
 int send_data(const int socket, char* data, const int appendstring);
 int receive_data(const int socket, char *message, const char* string, const int settings, const int socket_timeout_settings);
+int random_string(char *result, const size_t length);
+int get_public_address(char *result, const int settings);
+int sign_data(char *message, const int settings);
+int verify_data(char* message, const int settings);
+int server_received_data_xcash_proof_of_stake_test_data(const int client_socket, char* message);
 int create_server(const int settings);
 // threads
 void* total_connection_time_thread(void* parameters);
