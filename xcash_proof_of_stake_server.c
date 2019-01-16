@@ -40,6 +40,7 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
+  // start the server
   if (create_server(1) == 0)
   {
     exit(0);

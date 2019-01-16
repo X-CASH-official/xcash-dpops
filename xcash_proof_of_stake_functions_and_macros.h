@@ -93,17 +93,18 @@ Function prototypes
 */
 
 int parse_json_data(char* data, char* field, char *result);
-int send_http_request(char *result, const char* host, const char* url, const int port, const char* http_settings, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* data, const int receive_data_timeout_settings, const char* title, const int settings);
-int send_data_socket(char *result, const char* host, const int port, const char* data, const int receive_data_timeout_settings, const char* title, const int settings);
-int string_replace(char *data,const char* str1, const char* str2);
-int send_data(const int socket, char* data, const int appendstring);
-int receive_data(const int socket, char *message, const char* string, const int settings, const int socket_timeout_settings);
-int random_string(char *result, const size_t length);
-int get_public_address(char *result, const int settings);
-int sign_data(char *message, const int settings);
-int verify_data(char* message, const int settings);
-int server_received_data_xcash_proof_of_stake_test_data(const int client_socket, char* message);
-int create_server(const int settings);
+int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS);
+int send_data_socket(char *result, const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS);
+int string_replace(char *data, const char* STR1, const char* STR2);
+int send_data(const int SOCKET, char* data, const int APPEND_STRING_SETTINGS);
+int receive_data(const int SOCKET, char *message, const char* STRING, const int RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS, const int RECEIVE_DATA_SOCKET_TIMEOUT);
+int random_string(char *result, const size_t LENGTH);
+int get_public_address(char *result, const int MESSAGE_SETTINGS);
+int get_current_block_height(char *result, const int MESSAGE_SETTINGS);
+int sign_data(char *message, const int MESSAGE_SETTINGS, const char* CURRENT_ROUND_PART, const char* CURRENT_ROUND_PART_BACKUP_NODE);
+int verify_data(char* message, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_SETTINGS, const char* CURRENT_ROUND_PART, const int VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS, const char* CURRENT_ROUND_PART_BACKUP_NODE);
+int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, char* message);
+int create_server(const int MESSAGE_SETTINGS);
 // threads
 void* total_connection_time_thread(void* parameters);
 

@@ -44,6 +44,7 @@ Return: The number of passed append_string test
 
 int append_string_test()
 {  
+  // define macros
   #define APPEND_STRING_TOTAL_TEST 4
 
   // reset the variables
@@ -142,6 +143,7 @@ Return: The number of passed parse_json_data test
 
 int parse_json_data_test()
 {  
+  // define macros
   #define PARSE_JSON_DATA_TOTAL_TEST 66
  
   #define SIGN_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"xcash_proof_of_stake_signature\": \"SIGN_RPC_CALL_TEST_DATA\"\r\n  }\r\n}"
@@ -166,7 +168,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifiying that the sender of the message is the sender.
   */
-  #define TESTNODE_TO_MAINNODES "{\r\n \"message_settings\": \"TESTNODE_TO_MAINNODES\",\r\n \"public_address\": \"TESTNODE_TO_MAINNODES\",\r\n \"data\": \"TESTNODE_TO_MAINNODES\",\r\n \"xcash_proof_of_stake_signature\": \"TESTNODE_TO_MAINNODES\",\r\n \"message\": \"TESTNODE_TO_MAINNODES\"\r\n, \"public_address\": \"TESTNODE_TO_MAINNODES\",\r\n \"data\": \"TESTNODE_TO_MAINNODES\",\r\n \"xcash_proof_of_stake_signature\": \"TESTNODE_TO_MAINNODES\",\r\n}"
+  #define TESTNODE_TO_MAINNODES "{\r\n \"message_settings\": \"TESTNODE_TO_MAINNODES\",\r\n \"message\": \"TESTNODE_TO_MAINNODES\"\r\n, \"public_address\": \"TESTNODE_TO_MAINNODES\",\r\n \"data\": \"TESTNODE_TO_MAINNODES\",\r\n \"xcash_proof_of_stake_signature\": \"TESTNODE_TO_MAINNODES\",\r\n}"
 
   /*
   message_settings - The type of the message
@@ -176,7 +178,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifiying that the sender of the message is the sender.
   */
-  #define NODES_TO_NODES "{\r\n \"message_settings\": \"NODES_TO_NODES\",\r\n \"public_address\": \"NODES_TO_NODES\",\r\n \"data\": \"NODES_TO_NODES\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_NODES\",\r\n \"message\": \"NODES_TO_NODES\",\r\n \"vote_data\": \"NODES_TO_NODES\"\r\n, \"public_address\": \"NODES_TO_NODES\",\r\n \"data\": \"NODES_TO_NODES\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_NODES\",\r\n}"
+  #define NODES_TO_NODES "{\r\n \"message_settings\": \"NODES_TO_NODES\",\r\n \"message\": \"NODES_TO_NODES\",\r\n \"vote_data\": \"NODES_TO_NODES\"\r\n, \"public_address\": \"NODES_TO_NODES\",\r\n \"data\": \"NODES_TO_NODES\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_NODES\",\r\n}"
 
   /*
   message_settings - The type of the message
@@ -186,7 +188,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifiying that the sender of the message is the sender.
   */
-  #define NODES_TO_TESTNODES "{\r\n \"message_settings\": \"NODES_TO_TESTNODES\",\r\n \"public_address\": \"NODES_TO_TESTNODES\",\r\n \"data\": \"NODES_TO_TESTNODES\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_TESTNODES\",\r\n \"message\": \"NODES_TO_TESTNODES\",\r\n \"vote_data\": \"NODES_TO_TESTNODES\"\r\n, \"public_address\": \"NODES_TO_TESTNODES\",\r\n \"data\": \"NODES_TO_TESTNODES\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_TESTNODES\",\r\n}"
+  #define NODES_TO_TESTNODES "{\r\n \"message_settings\": \"NODES_TO_TESTNODES\",\r\n \"message\": \"NODES_TO_TESTNODES\",\r\n \"vote_data\": \"NODES_TO_TESTNODES\"\r\n, \"public_address\": \"NODES_TO_TESTNODES\",\r\n \"data\": \"NODES_TO_TESTNODES\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_TESTNODES\",\r\n}"
 
   /*
   message_settings - The type of the message
@@ -198,7 +200,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifiying that the sender of the message is the sender.
   */
-  #define MAINNODE_TO_NODES_PART_1 "{\r\n \"message_settings\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"public_address\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"message\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"public_key\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"proof\": \"MAINNODE_TO_NODES_PART_1\"\r\n \"beta_string\": \"MAINNODE_TO_NODES_PART_1\"\r\n, \"public_address\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_1\",\r\n}"
+  #define MAINNODE_TO_NODES_PART_1 "{\r\n \"message_settings\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"message\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"public_key\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"proof\": \"MAINNODE_TO_NODES_PART_1\"\r\n \"beta_string\": \"MAINNODE_TO_NODES_PART_1\"\r\n, \"public_address\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_1\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_1\",\r\n}"
 
   /*
   message_settings - The type of the message
@@ -213,7 +215,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifiying that the sender of the message is the sender.
   */
-  #define MAINNODE_TO_NODES_PART_2 "{\r\n \"message_settings\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"public_address\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"message\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"previous_block_hash\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"random_character_string\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"public_key\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"alpha_string\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"proof\": \"MAINNODE_TO_NODES_PART_2\"\r\n \"beta_string\": \"MAINNODE_TO_NODES_PART_2\"\r\n, \"public_address\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_2\",\r\n}"
+  #define MAINNODE_TO_NODES_PART_2 "{\r\n \"message_settings\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"message\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"previous_block_hash\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"random_character_string\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"public_key\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"alpha_string\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"proof\": \"MAINNODE_TO_NODES_PART_2\"\r\n \"beta_string\": \"MAINNODE_TO_NODES_PART_2\"\r\n, \"public_address\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_2\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_2\",\r\n}"
 
   /*
   message_settings - The type of the message
@@ -228,7 +230,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifiying that the sender of the message is the sender.
   */
-  #define MAINNODE_TO_NODES_PART_3 "{\r\n \"message_settings\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"public_address\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"message\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"previous_block_hash\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"random_character_string\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"public_key\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"alpha_string\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"proof\": \"MAINNODE_TO_NODES_PART_3\"\r\n \"beta_string\": \"MAINNODE_TO_NODES_PART_3\"\r\n, \"public_address\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_3\",\r\n}"
+  #define MAINNODE_TO_NODES_PART_3 "{\r\n \"message_settings\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"message\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"previous_block_hash\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"random_character_string\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"public_key\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"alpha_string\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"proof\": \"MAINNODE_TO_NODES_PART_3\"\r\n \"beta_string\": \"MAINNODE_TO_NODES_PART_3\"\r\n, \"public_address\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_3\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_3\",\r\n}"
 
   /*
   message_settings - The type of the message
@@ -241,7 +243,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifiying that the sender of the message is the sender.
   */
-  #define MAINNODE_TO_NODES_PART_4 "{\r\n \"message_settings\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"public_address\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"message\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"public_key\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"alpha_string\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"proof\": \"MAINNODE_TO_NODES_PART_4\"\r\n \"beta_string\": \"MAINNODE_TO_NODES_PART_4\"\r\n, \"public_address\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_4\",\r\n}"
+  #define MAINNODE_TO_NODES_PART_4 "{\r\n \"message_settings\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"message\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"public_key\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"alpha_string\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"proof\": \"MAINNODE_TO_NODES_PART_4\"\r\n \"beta_string\": \"MAINNODE_TO_NODES_PART_4\"\r\n, \"public_address\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"data\": \"MAINNODE_TO_NODES_PART_4\",\r\n \"xcash_proof_of_stake_signature\": \"MAINNODE_TO_NODES_PART_4\",\r\n}"
   
   // reset the variables
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
@@ -1489,6 +1491,7 @@ Return: The number of passed random_string test
 
 int random_string_test()
 {  
+  // define macros
   #define RANDOM_STRING_TOTAL_TEST 1
  
   // reset the variables
@@ -1546,6 +1549,7 @@ Return: The number of passed send_wallet_http_request test
 
 int send_wallet_http_request_test()
 {  
+  // define macros
   #define SEND_WALLET_HTTP_REQUEST_TOTAL_TEST 3
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
 
@@ -1581,7 +1585,7 @@ int send_wallet_http_request_test()
   append_string(result_test,MESSAGE);
 
   // test the sign_data functions
-  if (sign_data(result_test,0) == 1)
+  if (sign_data(result_test,0,"1","0") == 1)
   {   
     color_print("PASSED! Test for sign data to send data securely","green");
     count_test++;
@@ -1592,7 +1596,7 @@ int send_wallet_http_request_test()
   }
   
   // test the verify_data functions
-  if (verify_data(result_test,0) == 1)
+  if (verify_data(result_test,0,1,"1",1,"0") == 1)
   {   
     color_print("PASSED! Test for verify data to receive data securely","green");
     count_test++;
@@ -1636,6 +1640,7 @@ Return: The number of passed string_replace test
 
 int string_replace_test()
 {  
+  // define macros
   #define STRING_REPLACE_TOTAL_TEST 4
 
   // reset the variables
@@ -1781,15 +1786,16 @@ Return: The number of passed send_and_receive_data_socket test
 */
 
 int send_and_receive_data_socket_test()
-{  
-  #define SEND_AND_RECEIVE_DATA_SOCKET_TOTAL_TEST 2
-
+{   
   // Variables
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int settings = 1;
   pthread_t thread_id;
+
+  // define macros
+  #define SEND_AND_RECEIVE_DATA_SOCKET_TOTAL_TEST 2
 
   // reset the variables
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
@@ -1832,7 +1838,7 @@ int send_and_receive_data_socket_test()
   // sign_data
   if (settings == 1)
   {
-    if (sign_data(message,0) == 0)
+    if (sign_data(message,0,"1","0") == 0)
     { 
       color_print("FAILED! Test for creating the server","red");
       color_print("FAILED! Test for sending and receving data using sockets","red");
@@ -1854,7 +1860,7 @@ int send_and_receive_data_socket_test()
   // verify the message
   if (settings == 1)
   {
-    if (verify_data(string,0) == 0)
+    if (verify_data(string,0,1,"1",1,"0") == 0)
     {   
       color_print("FAILED! Test for creating the server","red");
       color_print("FAILED! Test for sending and receving data using sockets","red");
@@ -1928,11 +1934,11 @@ Description: Run the test
 
 void test()
 {
-  // Constants
-  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 80
-
   // Variables
   int xcash_proof_of_stake_total_passed_test = 0;
+
+  // define macros
+  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 80
 
   // write the test message
   color_print("X-CASH Proof Of Stake\nVersion 1.0.0","green");
