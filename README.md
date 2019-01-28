@@ -47,13 +47,32 @@ Then use the make file to build the binary file
 ## Setting up the xcashd and xcash-wallet-RPC
 
 First you will need to run xcashd in the background. Navigate to the folder that contains the xcash binaries, then run  
-`screen -dmS ./xcashd`
+`screen -dmS Daemon ./xcashd`
 
 Next you need to run a xcash-wallet-rpc. This wallet file needs to include the public XCA address you registered on the voting website.
 
 Our recommendation is you use an empty wallet (no X-CASH in it) for this address. This way you will only leave mining rewards that you receive to this address on the VPS, not the entire X-CASH that you have. We also recommend at least once a week you should move the mining reward X-CASH that this wallet collects to your personal wallet.
 
 If your running a shared masternode you will need to leave most of the mining rewards on the VPS, since the [link to shared masternode github repo](link to shared masternode github repo) will automatically pay the people contributing to your node.
+
+To run the rpc wallet you can run  
+`./xcash-wallet-rpc --wallet-file NAME_OF_WALLET_FILE --password WALLET_FILE_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
+
+Just replace NAME_OF_WALLET_FILE with the name of your wallet file and WALLET_FILE_PASSWORD with the password of that wallet file. Make sure to use port 18285 as this is the port that is used in the program.
+
+We suggest you use the screen command to run the program in the background, this way you can still maintenance the server. To do this run  
+`screen -dmS Daemon ./xcashd`
+
+You can also run the RPC wallet this way as well  
+`screen -dmS RPC-Wallet ./xcash-wallet-rpc --wallet-file NAME_OF_WALLET_FILE --password WALLET_FILE_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
+
+To bring the screen from the bacground process to the active process run  
+`screen -x NAME_OF_BACKGROUNDS_SCREEN`
+
+Where NAME_OF_BACKGROUNDS_SCREEN would be Daemon or RPC-Wallet in the above examples.
+
+To exit a screen if it is the active process, you can press Control + C. To exit a screen that is a background process you can run  
+`screen -XS NAME_OF_BACKGROUNDS_SCREEN quit`
 
 
 
@@ -70,3 +89,14 @@ The test will return the number of passed and failed test on the bottom of the c
 ## Running X-CASH Proof of stake
 Then you will need to run the xcash_proof_of_stake. Navigate to the folder that contains the binary, then run  
 `./xcash_proof_of_stake`
+
+We suggest you use the screen command to run the program in the background, this way you can still maintenance the server. To do this run  
+`screen -dmS xcash_proof_of_stake ./xcash_proof_of_stake`
+
+To bring the screen from the bacground process to the active process run  
+`screen -x NAME_OF_BACKGROUNDS_SCREEN`
+
+Where NAME_OF_BACKGROUNDS_SCREEN would be xcash_proof_of_stake in the above example.
+
+To exit a screen if it is the active process, you can press Control + C. To exit a screen that is a background process you can run  
+`screen -XS NAME_OF_BACKGROUNDS_SCREEN quit`
