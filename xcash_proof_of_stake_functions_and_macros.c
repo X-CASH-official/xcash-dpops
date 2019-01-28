@@ -33,10 +33,10 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int parse_json_data(char* data, char* field, char *result)
+int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
 {
   // Constants
-  const size_t STRING_LENGTH = strnlen(field,BUFFER_SIZE);  
+  const size_t STRING_LENGTH = strnlen(FIELD_NAME,BUFFER_SIZE);  
  
   // Variables
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -52,49 +52,53 @@ int parse_json_data(char* data, char* field, char *result)
   str = NULL; \
   free(data2); \
   data2 = NULL; 
+
+  // check if the field is in the data
+  if (strstr(DATA,FIELD_NAME) != NULL)
+  { 
+    // modify the field to add the field syntax
+    memcpy(str,"\"",1);
+    memcpy(str+1,FIELD_NAME,STRING_LENGTH);
+    memcpy(str+1+STRING_LENGTH,"\": ",3);
+    // get the start of the field's data
+    start = strnlen(str,BUFFER_SIZE);
+    // get the pointers location to the start of the field
+    str1 = strstr(DATA,str);
+    if (str1 == NULL)
+    {
+       // an error has occured, get the error message
+       settings = 0;
+       str1 = strstr(DATA,"\"message\": ");
+       start = 11;
+       if (str1 == NULL)
+       {
+         // their is no error message so return an error
+         memcpy(result,"An error has occured",20);
+         pointer_reset_all;
+         return settings;
+       }
+    }
+    // get the end location of the data
+    str2 = strstr(str1,"\r\n");
+    // get the length of the field's data
+    const int LENGTH = str2 - str1 - start;
+    if (LENGTH <= 0)
+    {
+      memcpy(result,"An error has occured",20);
+      pointer_reset_all;
+      return settings;
+    }
+    // copy the field's data
+    memcpy(result,&str1[start],LENGTH);
  
-  // modify the field to add the field syntax
-  memcpy(str,"\"",1);
-  memcpy(str+1,field,STRING_LENGTH);
-  memcpy(str+1+STRING_LENGTH,"\": ",3);
-  // get the start of the field's data
-  start = strnlen(str,BUFFER_SIZE);
-  // get the pointers location to the start of the field
-  str1 = strstr(data,str);
-  if (str1 == NULL)
-  {
-     // an error has occured, get the error message
-     settings = 0;
-     str1 = strstr(data,"\"message\": ");
-     start = 11;
-     if (str1 == NULL)
-     {
-       // their is no error message so return an error
-       memcpy(result,"An error has occured",20);
-       pointer_reset_all;
-       return settings;
-     }
+    // remove all the formating from the result
+    string_replace(result, "\"", "");
+    string_replace(result, ",", "");
+    string_replace(result, "[", "");
+    string_replace(result, "]", "");
+    string_replace(result, "{", "");
+    string_replace(result, "}", "");
   }
-  // get the end location of the data
-  str2 = strstr(str1,"\r\n");
-  // get the length of the field's data
-  const int LENGTH = str2 - str1 - start;
-  if (LENGTH <= 0)
-  {
-    memcpy(result,"An error has occured",20);
-    pointer_reset_all;
-    return settings;
-  }
-  // copy the field's data
-  memcpy(result,&str1[start],LENGTH);
- 
-  // remove all the formating from the result
-  string_replace(result, "\"", "");
-  string_replace(result, ",", "");
-  string_replace(result, "[", "");
-  string_replace(result, "]", "");
-  string_replace(result, "{", "");
-  string_replace(result, "}", "");
 
   pointer_reset_all;
   #undef pointer_reset_all
@@ -122,7 +126,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS)
+int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], const size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS)
 {
   // Constants
   const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};  
@@ -147,7 +151,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   append_string(message,HTTP_SETTINGS);
   append_string(message," ");
   append_string(message,URL);
-  if (HTTP_SETTINGS == "GET")
+  if (strncmp(HTTP_SETTINGS,"GET",BUFFER_SIZE) == 0)
   {
     append_string(message,"?");
     append_string(message,DATA);
@@ -160,14 +164,14 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     append_string(message,HTTP_HEADERS[count]);
     append_string(message,"\r\n");
   }
-  if (HTTP_SETTINGS == "POST")
+  if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
   {
     append_string(message,"Content-Length: ");
     sprintf(str, "%d", (int)strnlen(DATA,BUFFER_SIZE));
     append_string(message,str);
   } 
   append_string(message,"\r\n\r\n");    
-  if (HTTP_SETTINGS == "POST")
+  if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
   {
     append_string(message,DATA);
   }  
@@ -720,7 +724,7 @@ int string_replace(char *data, const char* STR1, const char* STR2)
 
     // get the occurences of STR1    
     memcpy(datacount,data,strnlen(data,BUFFER_SIZE));
-    while(datacount = strstr(datacount, STR1))
+    while((datacount = strstr(datacount, STR1)) != NULL)
     {
       total++;
       datacount++;
@@ -952,7 +956,7 @@ int get_public_address(const int HTTP_SETTINGS)
     return 0;
   }
   
-  if (parse_json_data(data,(char*)"address",xcash_wallet_public_address) == 0)
+  if (parse_json_data(data,"address",xcash_wallet_public_address) == 0)
   {
     pointer_reset(data); 
     return 0;
@@ -1008,7 +1012,7 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
     return 0;
   }
   
-  if (parse_json_data(data,(char*)"blocktemplate_blob",result) == 0)
+  if (parse_json_data(data,"blocktemplate_blob",result) == 0)
   {
     pointer_reset_all;
     return 0;
@@ -1046,7 +1050,7 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
     return 0;
   }
   
-  if (parse_json_data(data,(char*)"count",result) == 0)
+  if (parse_json_data(data,"count",result) == 0)
   {
     pointer_reset(data); 
     return 0;
@@ -1084,7 +1088,7 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
     return 0;
   }
   
-  if (parse_json_data(data,(char*)"hash",result) == 0)
+  if (parse_json_data(data,"hash",result) == 0)
   {
     pointer_reset(data); 
     return 0;
@@ -1186,7 +1190,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     return 0;
   } 
 
-  if (parse_json_data(data,(char*)"signature",result) == 0)
+  if (parse_json_data(data,"signature",result) == 0)
   {
     pointer_reset_all;
     return 0;
@@ -1238,7 +1242,7 @@ Return: 0 if the signed data is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int verify_data(char* message, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS)
+int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
@@ -1255,7 +1259,7 @@ int verify_data(char* message, const int HTTP_SETTINGS, const int VERIFY_CURRENT
   char* result = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  size_t message_length = strnlen(message,BUFFER_SIZE) - 134;
+  size_t message_length = strnlen(MESSAGE,BUFFER_SIZE) - 134;
 
   // define macros
   #define pointer_reset_all \
@@ -1281,7 +1285,7 @@ int verify_data(char* message, const int HTTP_SETTINGS, const int VERIFY_CURRENT
   string = NULL;
 
   // parse the message
-  if (parse_json_data(message,(char*)"message_settings",message_settings) == 0 || parse_json_data(message,(char*)"public_address",public_address) == 0 || parse_json_data(message,(char*)"previous_block_hash",message_previous_block_hash) == 0 || parse_json_data(message,(char*)"current_round_part",message_current_round_part) == 0 || parse_json_data(message,(char*)"current_round_part_backup_node",message_current_round_part_backup_node) == 0 || parse_json_data(message,(char*)"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature) == 0)
+  if (parse_json_data(MESSAGE,"message_settings",message_settings) == 0 || parse_json_data(MESSAGE,"public_address",public_address) == 0 || parse_json_data(MESSAGE,"previous_block_hash",message_previous_block_hash) == 0 || parse_json_data(MESSAGE,"current_round_part",message_current_round_part) == 0 || parse_json_data(MESSAGE,"current_round_part_backup_node",message_current_round_part_backup_node) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature) == 0)
   {
     pointer_reset_all;
     return 0;
@@ -1352,7 +1356,7 @@ int verify_data(char* message, const int HTTP_SETTINGS, const int VERIFY_CURRENT
   }
   
   // create the message
-  memcpy(result,message,message_length);
+  memcpy(result,MESSAGE,message_length);
   memcpy(result+message_length,"}",1);
   if (string_replace(result,"\"","\\\"") == 0)
   {
@@ -1377,7 +1381,7 @@ int verify_data(char* message, const int HTTP_SETTINGS, const int VERIFY_CURRENT
     return 0;
   } 
     
-  if (parse_json_data(result,(char*)"good",data) == 0)
+  if (parse_json_data(result,"good",data) == 0)
   {
     pointer_reset_all;
     return 0;
@@ -1408,14 +1412,14 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-const int read_file(char *result, const char* file_name)
+int read_file(char *result, const char* FILE_NAME)
 {
   // Variables
   FILE* file;
   char data [BUFFER_SIZE];
   
   // check if the file exist
-  file = fopen(file_name,"r");
+  file = fopen(FILE_NAME,"r");
   if (file != NULL)
   {
     // the file exist, read the data in the result
@@ -1444,12 +1448,12 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-const int write_file(const char* data, const char* file_name)
+int write_file(const char* data, const char* FILE_NAME)
 {
   // Variables
   FILE* file;
   
-  file = fopen(file_name,"w");
+  file = fopen(FILE_NAME,"w");
   fprintf(file,"%s",data);
   fclose(file);
   return 1;   
@@ -1518,7 +1522,7 @@ int get_current_consensus_nodes_IP_address()
 
   // parse the data
   memset(message,0,strnlen(message,BUFFER_SIZE));
-  if (parse_json_data(data,(char*)"current_consensus_node_IP_address",message) == 0 || parse_json_data(data2,(char*)"current_consensus_node_IP_address",message2) == 0)
+  if (parse_json_data(data,"current_consensus_node_IP_address",message) == 0 || parse_json_data(data2,"current_consensus_node_IP_address",message2) == 0)
   {
     color_print("Could not parse current_consensus_node_IP_address from the CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS message","red");
     pointer_reset_all;
@@ -1584,18 +1588,16 @@ int get_updated_node_list()
 
   // iniltize the variables
   memset(data,0,strnlen(data,BUFFER_SIZE));
+  memcpy(data,"0",1);
 
   // read the nodes_updated_time.txt
-  if (read_file(data,NODES_UPDATED_TIME_FILE_NAME) == 0 || strncmp(data,"",BUFFER_SIZE))
-  {
-    memcpy(data,"0",1);
-  }
+  read_file(data,NODES_UPDATED_TIME_FILE_NAME);
 
   // create the message
   const size_t DATA_LENGTH = strnlen(data,BUFFER_SIZE);
   memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST\",\r\n \"nodes_updated_time\": \"",98);
-  memcpy(message+102,data,DATA_LENGTH);
-  memcpy(message+102+DATA_LENGTH,"\",\r\n}",5);
+  memcpy(message+98,data,DATA_LENGTH);
+  memcpy(message+98+DATA_LENGTH,"\",\r\n}",5);
   memset(data,0,strnlen(data,BUFFER_SIZE));
 
   // sign_data
@@ -1624,7 +1626,7 @@ int get_updated_node_list()
 
   // parse the data
   memset(message,0,strnlen(message,BUFFER_SIZE));
-  if (parse_json_data(data,(char*)"nodes_name_list",message) == 0 || parse_json_data(data,(char*)"nodes_public_address_list",message2) == 0)
+  if (parse_json_data(data,"nodes_name_list",message) == 0 || parse_json_data(data,"nodes_public_address_list",message2) == 0)
   {
     color_print("Could not parse data from the CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST message","red");
     pointer_reset_all;
@@ -1632,13 +1634,23 @@ int get_updated_node_list()
   }
 
   // check if we need to update the node list
+  memset(nodes_public_address_list,0,strnlen(nodes_public_address_list,BUFFER_SIZE));
+  memset(nodes_name_list,0,strnlen(nodes_name_list,BUFFER_SIZE));
   if (strncmp(message,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message2,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
   {
-    color_print("The node list has been updated successfully\n","green");
+    // update the node list and load the nodes list into the global variables  
+    write_file(message,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME); 
+    write_file(message2,NODES_NAME_LIST_FILE_NAME);     
+    memcpy(nodes_public_address_list,message,strnlen(message,BUFFER_SIZE));
+    memcpy(nodes_name_list,message2,strnlen(message2,BUFFER_SIZE));
+    color_print("The node list has been updated successfully\nLoaded the data, and saved the node list to files\n","green");
   }
   else
   {
-    color_print("The node list is already up to date\n","green");
+    // the node list has already been updated
+    read_file(nodes_public_address_list,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME);
+    read_file(nodes_name_list,NODES_NAME_LIST_FILE_NAME);
+    color_print("The node list is already up to date\nLoaded the current node list from the files.\n","green");
   }
 
   #undef pointer_reset_all
@@ -1658,16 +1670,16 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, char* message)
+int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, char* MESSAGE)
 {
   // verify the message
-  if (verify_data(message,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1,1) == 0)
   {   
     return 0;
   }
   else
   {
-    if (send_data(CLIENT_SOCKET,message,1) == 1)
+    if (send_data(CLIENT_SOCKET,MESSAGE,1) == 1)
     {
       return 1;
     }
@@ -1705,7 +1717,7 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
   }
 
   // parse the message
-  if (parse_json_data(message,(char*)"main_nodes_public_address",data) == 0)
+  if (parse_json_data(message,"main_nodes_public_address",data) == 0)
   {
     // close the forked process
     color_print("Could not parse main_nodes_public_address from the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message","red");
@@ -1715,7 +1727,7 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
   }
   memcpy(main_nodes_public_address,data,strnlen(data,BUFFER_SIZE));
 
-  if (parse_json_data(message,(char*)"current_round_part",data) == 0)
+  if (parse_json_data(message,"current_round_part",data) == 0)
   {
     // close the forked process
     color_print("Could not parse current_round_part from the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message","red");
@@ -1725,7 +1737,7 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
   }
   memcpy(current_round_part,data,strnlen(data,BUFFER_SIZE));
 
-  if (parse_json_data(message,(char*)"current_round_part_backup_node",data) == 0)
+  if (parse_json_data(message,"current_round_part_backup_node",data) == 0)
   {
     // close the forked process
     color_print("Could not parse current_round_part_backup_node from the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message","red");
@@ -1775,6 +1787,7 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
     pointer_reset(data);
     _exit(0);
   }
+  return 1;
 }
 
 
@@ -1800,7 +1813,7 @@ Return: NULL
 */
 
 void* total_connection_time_thread(void* parameters)
-{
+{ 
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   struct total_connection_time_thread_parameters* data = parameters;
   int client_address_length = strnlen(data->client_address,BUFFER_SIZE);
@@ -1826,7 +1839,7 @@ void* total_connection_time_thread(void* parameters)
     color_print(string,"red"); 
   }
   pointer_reset(string);
-  kill((intptr_t)data->process_id, SIGTERM);
+  kill((intptr_t)data->process_id, SIGKILL);  
   return NULL;
 }
 
@@ -1909,7 +1922,6 @@ int create_server(const int MESSAGE_SETTINGS)
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));  
   int len;
   int receive_data_result; 
-  size_t string_length;
   struct sockaddr_in addr, cl_addr;  
 
   // define macros
@@ -2043,9 +2055,7 @@ int create_server(const int MESSAGE_SETTINGS)
         buffer2,
         0
       };
-       if (MESSAGE_SETTINGS == 1)
-       {
-         // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
+          // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
          if (pthread_create(&thread_id, NULL, &total_connection_time_thread, (void *)&parameters) != 0)
          {
            // close the forked process
@@ -2061,7 +2071,7 @@ int create_server(const int MESSAGE_SETTINGS)
            pointer_reset_all;
            _exit(0);
          }
-      }
+      
 
        // close the main socket, since the socket is now copied to the forked process
        close(SOCKET); 

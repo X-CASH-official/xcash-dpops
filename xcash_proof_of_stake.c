@@ -111,17 +111,10 @@ int main(int parameters_count, char* parameters[])
     color_print("Could not get the current consensus nodes IP address\n","red");
     exit(0);    
   }
-
-
-
+  
   // get the updated node list
   printf("Getting the updated node list\n\n");
-  if (get_current_consensus_nodes_IP_address() == 1)
-  {
-       
-    
-  }
-  else
+  if (get_current_consensus_nodes_IP_address() == 0)
   {
     color_print("Could not get the updated node list\n","red");
     exit(0);    

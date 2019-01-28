@@ -15,6 +15,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a xcash_proof_of_stake_signature for the signed data
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a xcash_proof_of_stake_signature for the signed data
 #define CONSENSUS_NODE_PUBLIC_ADDRESS "XCA" // The consensus nodes public address
+#define CONSENSUS_BACKUP_NODE_PUBLIC_ADDRESS "XCA" // The consensus backup nodes public address
 #define CONSENSUS_NODES_IP_ADDRESS "" // The consensus nodes IP address
 #define CONSENSUS_BACKUP_NODES_IP_ADDRESS "" // The consensus backup nodes IP address
 #define RANDOM_STRING_LENGTH 100 // The length of the random string
@@ -61,13 +62,34 @@ Color available values:
 */
 
 #define color_print(string,color) \
-color == "red" ? printf("\033[1;31m%s\033[0m\n",string) : \
-color == "green" ? printf("\033[1;32m%s\033[0m\n",string) : \
-color == "yellow" ? printf("\033[1;33m%s\033[0m\n",string) : \
-color == "blue" ? printf("\033[1;34m%s\033[0m\n",string) : \
-color == "purple" ? printf("\033[1;35m%s\033[0m\n",string) : \
-color == "lightblue" ? printf("\033[1;36m%s\033[0m\n",string) : \
-printf("%s",string);
+if (strncmp(color,"red",BUFFER_SIZE) == 0) \
+{ \
+  printf("\033[1;31m%s\033[0m\n",string); \
+} \
+else if (strncmp(color,"green",BUFFER_SIZE) == 0) \
+{ \
+  printf("\033[1;32m%s\033[0m\n",string); \
+} \
+else if (strncmp(color,"yellow",BUFFER_SIZE) == 0) \
+{ \
+  printf("\033[1;33m%s\033[0m\n",string); \
+} \
+else if (strncmp(color,"blue",BUFFER_SIZE) == 0) \
+{ \
+  printf("\033[1;34m%s\033[0m\n",string); \
+} \
+else if (strncmp(color,"purple",BUFFER_SIZE) == 0) \
+{ \
+  printf("\033[1;35m%s\033[0m\n",string); \
+} \
+else if (strncmp(color,"lightblue",BUFFER_SIZE) == 0) \
+{ \
+  printf("\033[1;36m%s\033[0m\n",string); \
+} \
+else \
+{ \
+  printf("%s",string); \
+}
 
 
 /*
@@ -82,7 +104,7 @@ Return: Writes the correct code
 */
 
 #define append_string(string1,string2) \
-strncat(string1,string2,BUFFER_SIZE - strlen(string1) - 1);
+strncat(string1,string2,BUFFER_SIZE - strnlen(string1,BUFFER_SIZE) - 1);
 
 
 /*
@@ -106,8 +128,8 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int parse_json_data(char* data, char* field, char *result);
-int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS);
+int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result);
+int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], const size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS);
 int send_and_receive_data_socket(char *result, const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS);
 int send_data_socket(const char* HOST, const int PORT, const char* DATA, const char* TITLE, const int MESSAGE_SETTINGS);
 int string_replace(char *data, const char* STR1, const char* STR2);
@@ -119,14 +141,16 @@ int get_block_template(char *result, const int HTTP_SETTINGS);
 int get_current_block_height(char *result, const int MESSAGE_SETTINGS);
 int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS);
 int sign_data(char *message, const int HTTP_SETTINGS);
-int verify_data(char* message, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS);
-const int read_file(char *result, const char* file_name);
-const int write_file(const char* data, const char* file_name);
+int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS);
+int read_file(char *result, const char* FILE_NAME);
+int write_file(const char* data, const char* FILE_NAME);
 int create_server(const int MESSAGE_SETTINGS);
 // server functions
 int get_current_consensus_nodes_IP_address();
 int get_updated_node_list();
 int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, char* message);
+int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, pthread_t thread_id, char* message);
+int create_server(const int MESSAGE_SETTINGS);
 // thread functions
 void* total_connection_time_thread(void* parameters);
 void* mainnode_timeout_thread(void* parameters);
