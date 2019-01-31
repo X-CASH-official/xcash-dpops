@@ -1797,6 +1797,69 @@ Thread functions
 -----------------------------------------------------------------------------------------------------------
 */
 
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: read_file_thread
+Description: Reads a file on a separate thread
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* read_file_thread(void* parameters)
+{
+  struct read_file_thread_parameters* data = parameters;
+  int settings = read_file(data->result, data->FILE_NAME);
+  pthread_exit((void *)(intptr_t)settings);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: write_file_thread
+Description: Writes a file on a separate thread
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* write_file_thread(void* parameters)
+{
+  struct write_file_thread_parameters* data = parameters;
+  int settings = write_file(data->DATA, data->FILE_NAME);
+  pthread_exit((void *)(intptr_t)settings);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: thread_settings
+Description: Waits for a thread to return a value, and returns the value from the thread
+Parameters:
+   thread_id - The thread id of the thread
+Return: The value that the thread returned
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int thread_settings(pthread_t thread_id)
+{
+  void* thread_settings;
+  pthread_join(thread_id, &thread_settings);
+  int settings = (intptr_t)thread_settings;
+  return settings;
+}
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Server Thread functions
+-----------------------------------------------------------------------------------------------------------
+*/
+
+
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: total_connection_time_thread

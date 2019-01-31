@@ -5110,8 +5110,11 @@ Return: The number of passed read_and_write_file test
 
 int read_and_write_file_test()
 {   
+  // Variables
+  pthread_t thread_id;
+
   // define macros
-  #define READ_AND_WRITE_FILE_TEST 2
+  #define READ_AND_WRITE_FILE_TEST 4
   #define NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY "nodes_public_address_list_copy.txt"
   #define MESSAGE "XCASH_PROOF_OF_STAKE_TEST_DATA"
 
@@ -5132,26 +5135,58 @@ int read_and_write_file_test()
   if (write_file(data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0)
   {
     color_print("FAILED! Test for writing the file","red");
-    color_print("FAILED! Test for reading the file","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for writing the file","green");
+    count_test++;
   }
 
   // read the file
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   if (read_file(data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0)
   {
-    color_print("FAILED! Test for writing the file","red");
     color_print("FAILED! Test for reading the file","red");
   }
-
   if (strncmp(data_test,MESSAGE,BUFFER_SIZE) != 0)
   {
-    color_print("FAILED! Test for writing the file","red");
     color_print("FAILED! Test for reading the file","red");
   }
-
-  color_print("PASSED! Test for writing the file","green");
   color_print("PASSED! Test for reading the file","green");
-  count_test = 2;
+  count_test++;
+  remove(NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY);
+
+
+
+  // write the file using a seperate thread  
+  // create a struct for the parameters
+  struct write_file_thread_parameters write_file_thread_parameters = {MESSAGE,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY};
+  pthread_create(&thread_id, NULL, &write_file_thread,(void *)&write_file_thread_parameters);
+  if (thread_settings(thread_id) == 0)
+  {
+    color_print("FAILED! Test for writing the file on a seperate thread","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for writing the file on a seperate thread","green");
+    count_test++;
+  }
+
+   // read the file
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  struct read_file_thread_parameters read_file_thread_parameters = {data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY};
+  pthread_create(&thread_id, NULL, &read_file_thread,(void *)&read_file_thread_parameters);
+  if (thread_settings(thread_id) == 0)
+  {
+    color_print("FAILED! Test for reading the file on a seperate thread","red");
+  }
+  if (strncmp(data_test,MESSAGE,BUFFER_SIZE) != 0)
+  {
+    color_print("FAILED! Test for reading the file on a seperate thread","red");
+  }
+  color_print("PASSED! Test for reading the file on a seperate thread","green");
+  count_test++;
+  remove(NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY);
 
 
 
@@ -5366,7 +5401,7 @@ void test()
   int xcash_proof_of_stake_total_passed_test = 0;
 
   // define macros
-  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 246
+  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 248
 
   // write the test message
   printf("Starting Test\n\n");
