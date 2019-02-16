@@ -1417,23 +1417,25 @@ int read_file(char *result, const char* FILE_NAME)
   // Variables
   FILE* file;
   char data [BUFFER_SIZE];
+  int settings;
   
   // check if the file exist
   file = fopen(FILE_NAME,"r");
   if (file != NULL)
   {
     // the file exist, read the data in the result
-    memset(&data, 0, sizeof(data));
-    fscanf(file, "%s", data);    
-    memset(result,0,strnlen(result,BUFFER_SIZE));
-    memcpy(result,data,strnlen(data,BUFFER_SIZE)); 
-    return 1;
+    fseek(file, 0, SEEK_END);
+    const long file_size = ftell(file);
+    fseek(file, 0, SEEK_SET); 
+    fread(result, file_size, 1, file);
+    settings = 1;
   }
   else
   {
-    return 0;
+    settings = 0;
   }
   fclose(file);
+  return settings;
 }
 
 
@@ -1803,7 +1805,12 @@ Thread functions
 -----------------------------------------------------------------------------------------------------------
 Name: read_file_thread
 Description: Reads a file on a separate thread
-Return: NULL
+Parameters:
+  parameters - A pointer to the read_file_thread_parameters struct
+  struct read_file_thread_parameters
+    result - The data read from the file
+    FILE_NAME - The file name
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -1820,7 +1827,12 @@ void* read_file_thread(void* parameters)
 -----------------------------------------------------------------------------------------------------------
 Name: write_file_thread
 Description: Writes a file on a separate thread
-Return: NULL
+Parameters:
+  parameters - A pointer to the write_file_thread_parameters struct
+  struct write_file_thread_parameters
+    DATA - The data to write to the file
+    FILE_NAME - The file name
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 

@@ -144,7 +144,6 @@ int sign_data(char *message, const int HTTP_SETTINGS);
 int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS);
 int read_file(char *result, const char* FILE_NAME);
 int write_file(const char* data, const char* FILE_NAME);
-int create_server(const int MESSAGE_SETTINGS);
 // server functions
 int get_current_consensus_nodes_IP_address();
 int get_updated_node_list();
