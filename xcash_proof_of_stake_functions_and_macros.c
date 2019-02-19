@@ -1427,7 +1427,7 @@ int read_file(char *result, const char* FILE_NAME)
     fseek(file, 0, SEEK_END);
     const long file_size = ftell(file);
     fseek(file, 0, SEEK_SET); 
-    fread(result, file_size, 1, file);
+    fread(result, sizeof(char), file_size, file);
     settings = 1;
   }
   else
