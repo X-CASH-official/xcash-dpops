@@ -692,6 +692,38 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
 }
 
 
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: string_count
+Description: Counts the occurences of a substring in a string
+Parameters:
+  data - The string to count the occurence in
+  string - The substring to count the occurences of
+Return: The number of occurences of the substring in the string
+-----------------------------------------------------------------------------------------------------------
+*/
+
+size_t string_count(char* data, char* string)
+{
+  // Variables
+  char* datacopy = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count = 0;
+
+  // get the occurences of the string 
+  memcpy(datacopy,data,strnlen(data,BUFFER_SIZE));
+  while((datacopy = strstr(datacopy, string)) != NULL)
+  {
+    count++;
+    datacopy+= strnlen(string,BUFFER_SIZE);
+  } 
+
+  pointer_reset(datacopy);
+  return count;
+}
+
+
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: string_replace
@@ -710,7 +742,6 @@ int string_replace(char *data, const char* STR1, const char* STR2)
   if (strstr(data,STR1) != NULL)
   { 
     // Variables
-    char* datacount = (char*)calloc(BUFFER_SIZE,sizeof(char));
     char* datacopy = (char*)calloc(BUFFER_SIZE,sizeof(char));
     char* string;
     size_t data_length;
@@ -722,13 +753,8 @@ int string_replace(char *data, const char* STR1, const char* STR2)
     // define macros
     #define REPLACE_STRING "|REPLACE_STRING|"  
 
-    // get the occurences of STR1    
-    memcpy(datacount,data,strnlen(data,BUFFER_SIZE));
-    while((datacount = strstr(datacount, STR1)) != NULL)
-    {
-      total++;
-      datacount++;
-    } 
+    // get the occurences of STR1   
+    total = string_count(data,(char*)STR1);
 
     // replace the string with the REPLACE_STRING
     for (count = 0; count < total; count++)
@@ -773,7 +799,7 @@ int string_replace(char *data, const char* STR1, const char* STR2)
       // copy the new string to the string pointer
       memset(data,0,data_length);
       memcpy(data,datacopy,strnlen(datacopy,BUFFER_SIZE));
-    }    
+    }
     pointer_reset(datacopy);
     return 1;
   }

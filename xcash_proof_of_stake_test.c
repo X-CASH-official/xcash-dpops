@@ -4831,6 +4831,71 @@ int random_string_test()
 
 
 
+int string_count_test()
+{  
+  // define macros
+  #define STRING_COUNT_TOTAL_TEST 2
+
+  // reset the variables
+  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  count_test = 0;
+
+  // write the start test message
+  color_print(TEST_OUTLINE,"blue");
+  printf("\033[1;34mstring_count test - Total test: %d\033[0m\n",STRING_COUNT_TOTAL_TEST);
+  color_print(TEST_OUTLINE,"blue");
+  printf("\n");
+
+  // run the test
+  memcpy(result_test,TEST_OUTLINE,strnlen(TEST_OUTLINE,BUFFER_SIZE));
+
+  // test for counting a byte in a string
+  if (string_count(result_test,"-") == strnlen(TEST_OUTLINE,BUFFER_SIZE))  
+  {
+    color_print("PASSED! Test for using string_count to count occurences of a byte in a string","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for using string_count to count occurences of a byte in a string","red");
+  }
+
+  // test for counting multiple bytes in a string
+  if (string_count(result_test,"--") == strnlen(TEST_OUTLINE,BUFFER_SIZE)/2)  
+  {
+    color_print("PASSED! Test for using string_count to count occurences of multiple bytes in a string","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for using string_count to count occurences of multiple bytes a string","red");
+  }
+
+
+
+  // write the end test message
+  if (count_test == STRING_COUNT_TOTAL_TEST)
+  {
+    printf("\n");
+    color_print(TEST_OUTLINE,"green");
+    printf("\033[1;32mstring_count test - Passed test: %d, Failed test: 0\033[0m\n",STRING_COUNT_TOTAL_TEST);
+    color_print(TEST_OUTLINE,"green");
+    printf("\n\n");
+  }
+  else
+  {
+    printf("\n");
+    color_print(TEST_OUTLINE,"red");
+    printf("\033[1;31mstring_count test - Passed test: %d, Failed test: %d\033[0m\n",count_test,STRING_COUNT_TOTAL_TEST-count_test);
+    color_print(TEST_OUTLINE,"red");
+    printf("\n\n");
+  } 
+  return count_test;
+}
+
+
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: string_replace_test
@@ -5401,7 +5466,7 @@ void test()
   int xcash_proof_of_stake_total_passed_test = 0;
 
   // define macros
-  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 248
+  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 250
 
   // write the test message
   printf("Starting Test\n\n");
@@ -5415,6 +5480,7 @@ void test()
   xcash_proof_of_stake_total_passed_test += append_string_test();
   xcash_proof_of_stake_total_passed_test += parse_json_data_test();
   xcash_proof_of_stake_total_passed_test += random_string_test();
+  xcash_proof_of_stake_total_passed_test += string_count_test();
   xcash_proof_of_stake_total_passed_test += string_replace_test(); 
   xcash_proof_of_stake_total_passed_test += send_wallet_http_request_test(); 
   xcash_proof_of_stake_total_passed_test += read_and_write_file_test(); 
