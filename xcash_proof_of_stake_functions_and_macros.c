@@ -704,18 +704,21 @@ Return: The number of occurences of the substring in the string
 -----------------------------------------------------------------------------------------------------------
 */
 
-size_t string_count(char* data, char* string)
+size_t string_count(const char* DATA, const char* STRING)
 {
+  // Constants
+  const size_t STRING_LENGTH = strnlen(STRING,BUFFER_SIZE);
+  
   // Variables
-  char* datacopy = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* datacopy = (char*)calloc(BUFFER_SIZE,sizeof(char));  
   size_t count = 0;
 
   // get the occurences of the string 
-  memcpy(datacopy,data,strnlen(data,BUFFER_SIZE));
-  while((datacopy = strstr(datacopy, string)) != NULL)
+  memcpy(datacopy,DATA,strnlen(DATA,BUFFER_SIZE));
+  while((datacopy = strstr(datacopy, STRING)) != NULL)
   {
     count++;
-    datacopy+= strnlen(string,BUFFER_SIZE);
+    datacopy+= STRING_LENGTH;
   } 
 
   pointer_reset(datacopy);
