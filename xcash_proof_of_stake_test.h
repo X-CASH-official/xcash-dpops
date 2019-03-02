@@ -18,6 +18,7 @@ int send_wallet_http_request_test();
 void* create_server_on_separate_thread();
 int read_and_write_file_test();
 int send_and_receive_data_socket_test();
+int analysing_code_test();
 void test();
 
 #endif
