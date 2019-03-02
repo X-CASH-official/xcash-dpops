@@ -37,7 +37,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
 {
   // Constants
   const size_t STRING_LENGTH = strnlen(FIELD_NAME,BUFFER_SIZE);  
- 
+
   // Variables
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -101,8 +101,9 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
   }
 
   pointer_reset_all;
-  #undef pointer_reset_all
   return settings;
+
+  #undef pointer_reset_all
 }
 
 
@@ -130,7 +131,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 {
   // Constants
   const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};  
-  
+
   // Variables
   char response[BUFFER_SIZE];
   char buffer2[BUFFER_SIZE];
@@ -378,7 +379,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
   const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};   
-  
+
   // Variables 
   char buffer2[BUFFER_SIZE];
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
@@ -809,7 +810,9 @@ int string_replace(char *data, const char* STR1, const char* STR2)
   else
   {
     return 0;
-  }  
+  } 
+
+  #undef REPLACE_STRING
 }
 
 
@@ -950,10 +953,11 @@ int random_string(char *result, const size_t LENGTH)
     memcpy(result+count,&data[((rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM)],1);
   }
   pointer_reset(data); 
+  return 1;
+  
   #undef STRING
   #undef MINIMUM
-  #undef MAXIMUM
-  return 1;
+  #undef MAXIMUM  
 }
 
 
@@ -1000,6 +1004,8 @@ int get_public_address(const int HTTP_SETTINGS)
   
   pointer_reset(data); 
   return 1;
+
+  #undef GET_PUBLIC_ADDRESS_DATA
 }
 
 
@@ -1022,7 +1028,7 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
   // Variables
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  
+
   // define macros
   #define pointer_reset_all \
   free(message); \
@@ -1048,8 +1054,9 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
   }
   
   pointer_reset_all; 
-  #undef pointer_reset_all
   return 1;
+  
+  #undef pointer_reset_all
 }
 
 
@@ -1445,9 +1452,8 @@ int read_file(char *result, const char* FILE_NAME)
 {
   // Variables
   FILE* file;
-  char data [BUFFER_SIZE];
   int settings;
-  
+
   // check if the file exist
   file = fopen(FILE_NAME,"r");
   if (file != NULL)
@@ -1483,7 +1489,7 @@ int write_file(const char* data, const char* FILE_NAME)
 {
   // Variables
   FILE* file;
-  
+
   file = fopen(FILE_NAME,"w");
   fprintf(file,"%s",data);
   fclose(file);
