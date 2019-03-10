@@ -150,6 +150,7 @@ Global Structures
     char* client_address; // Holds the IP address of the client
     char* port; // Holds the port number of the client 
     int data_received; // 1 if the server has received data from the client, otherwise 0
+    int message_settings; // 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 };
 
  struct mainnode_timeout_thread_parameters {

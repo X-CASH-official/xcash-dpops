@@ -1942,6 +1942,7 @@ Parameters:
     client_address - The client's IP address for the forked process
     port - The client's connected port for the forked process
     data_received - 1 if data was received in the timeout time, otherwise 0
+    message_settings - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1952,25 +1953,28 @@ void* total_connection_time_thread(void* parameters)
   struct total_connection_time_thread_parameters* data = parameters;
   int client_address_length = strnlen(data->client_address,BUFFER_SIZE);
   int data_port_length = strnlen(data->port,BUFFER_SIZE);
-  sleep(TOTAL_CONNECTION_TIME_SETTINGS);  
-  printf("Total connection time has been reached for %s on port %s\n", data->client_address,data->port); 
-  if (data->data_received == 1)
+  sleep(TOTAL_CONNECTION_TIME_SETTINGS);    
+  if (data->message_settings == 1)
   {
-    memcpy(string,"Client at ",10);
-    memcpy(string+10,data->client_address,client_address_length);
-    memcpy(string+10+client_address_length," on port ",9);
-    memcpy(string+19+client_address_length,data->port,data_port_length);
-    memcpy(string+19+client_address_length+data_port_length," has sent data in the timeout time",34);
-    color_print(string,"green");
-  }
-  else
-  {
-    memcpy(string,"Client at ",10);
-    memcpy(string+10,data->client_address,client_address_length);
-    memcpy(string+10+client_address_length," on port ",9);
-    memcpy(string+19+client_address_length,data->port,data_port_length);
-    memcpy(string+19+client_address_length+data_port_length," did not send any data in the timeout time",42);
-    color_print(string,"red"); 
+    printf("Total connection time has been reached for %s on port %s\n", data->client_address,data->port); 
+    if (data->data_received == 1)
+    {
+      memcpy(string,"Client at ",10);
+      memcpy(string+10,data->client_address,client_address_length);
+      memcpy(string+10+client_address_length," on port ",9);
+      memcpy(string+19+client_address_length,data->port,data_port_length);
+      memcpy(string+19+client_address_length+data_port_length," has sent data in the timeout time",34);
+      color_print(string,"green");
+    }
+    else
+    {
+      memcpy(string,"Client at ",10);
+      memcpy(string+10,data->client_address,client_address_length);
+      memcpy(string+10+client_address_length," on port ",9);
+      memcpy(string+19+client_address_length,data->port,data_port_length);
+      memcpy(string+19+client_address_length+data_port_length," did not send any data in the timeout time",42);
+      color_print(string,"red"); 
+    }
   }
   pointer_reset(string);
   kill((intptr_t)data->process_id, SIGKILL);  
@@ -2187,7 +2191,8 @@ int create_server(const int MESSAGE_SETTINGS)
         getpid(),
         client_address,
         buffer2,
-        0
+        0,
+        (int)MESSAGE_SETTINGS
       };
           // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
          if (pthread_create(&thread_id, NULL, &total_connection_time_thread, (void *)&parameters) != 0)
