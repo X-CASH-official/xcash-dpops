@@ -445,6 +445,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+49,HOST,HOST_LENGTH);
       color_print(str,"red");
     }
+    close(SOCKET);
     pointer_reset_all;
     return 0;
   } 
@@ -459,6 +460,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+26,HOST,HOST_LENGTH);
       color_print(str,"red");
     }
+    close(SOCKET);
     pointer_reset_all;
     return 0;
   }
@@ -489,7 +491,8 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       color_print(str,"red"); 
     }
-    pointer_reset_all;  
+    close(SOCKET);
+    pointer_reset_all;
     return 0;
   }
   if (MESSAGE_SETTINGS == 1)
@@ -519,7 +522,8 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       color_print(str,"red"); 
     }
-    pointer_reset_all;   
+    close(SOCKET);
+    pointer_reset_all;
     return 0;
   }
     
@@ -544,7 +548,8 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       }
       color_print(str,"red"); 
     }
-    pointer_reset_all; 
+    close(SOCKET);
+    pointer_reset_all;
     return 0;
   }
      
@@ -559,13 +564,13 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     color_print(str,"green");
   }
   
-  // close the socket
   close(SOCKET);
-
   pointer_reset_all;
-  #undef pointer_reset_all
   return 1;
+
+  #undef pointer_reset_all
 }
+
 
 
 /*
@@ -613,6 +618,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
       memcpy(str+42,HOST,HOST_LENGTH);
       color_print(str,"red");
     }
+    close(SOCKET);
     pointer_reset_all;
     return 0;
   }
@@ -629,6 +635,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
       memcpy(str+49,HOST,HOST_LENGTH);
       color_print(str,"red");
     }
+    close(SOCKET);
     pointer_reset_all;
     return 0;
   } 
@@ -643,6 +650,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
       memcpy(str+26,HOST,HOST_LENGTH);
       color_print(str,"red");
     }
+    close(SOCKET);
     pointer_reset_all;
     return 0;
   }
@@ -673,7 +681,8 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       color_print(str,"red"); 
     }
-    pointer_reset_all;  
+    close(SOCKET);
+    pointer_reset_all;
     return 0;
   }
   if (MESSAGE_SETTINGS == 1)
@@ -703,16 +712,16 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       color_print(str,"red"); 
     }
-    pointer_reset_all;   
+    close(SOCKET);
+    pointer_reset_all;
     return 0;
   }
     
-  // close the socket
   close(SOCKET);
-
   pointer_reset_all;
-  #undef pointer_reset_all
   return 1;
+
+  #undef pointer_reset_all
 }
 
 
@@ -1848,6 +1857,7 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
     pointer_reset(data);
     _exit(0);
   }
+  pointer_reset(data);
   return 1;
 }
 
@@ -2032,6 +2042,8 @@ void* mainnode_timeout_thread(void* parameters)
 }
 
 
+
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: create_server
@@ -2053,27 +2065,14 @@ int create_server(const int MESSAGE_SETTINGS)
   char buffer[BUFFER_SIZE];
   char buffer2[BUFFER_SIZE];
   char client_address[BUFFER_SIZE];  
-  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  char* result = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));   
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));  
+  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int len;
   int receive_data_result; 
   struct sockaddr_in addr, cl_addr;  
 
   // define macros
   #define pointer_reset_all \
-  free(string); \
-  string = NULL; \
-  free(result); \
-  result = NULL; \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(message); \
-  message = NULL; 
+  free(string); 
 
   // threads
   pthread_t thread_id;
@@ -2107,6 +2106,8 @@ int create_server(const int MESSAGE_SETTINGS)
     {
       color_print("Error setting socket options","red"); 
     }
+    close(SOCKET);
+    pointer_reset_all;    
     return 0;
   } 
   if (MESSAGE_SETTINGS == 1)
@@ -2137,6 +2138,7 @@ int create_server(const int MESSAGE_SETTINGS)
      memcpy(string+25,buffer2,strnlen(buffer2,BUFFER_SIZE));
      color_print(string,"red"); 
    }
+   close(SOCKET);
    pointer_reset_all;
    return 0;
   } 
@@ -2299,8 +2301,13 @@ int create_server(const int MESSAGE_SETTINGS)
          
        
        }
-     }
-     #undef pointer_reset_all
-     close(CLIENT_SOCKET);
+     }   
+     else
+     {
+       // if the process did not fork, close the client socket
+       close(CLIENT_SOCKET);
+     } 
    }
+   return 1;
+   #undef pointer_reset_all
 }
