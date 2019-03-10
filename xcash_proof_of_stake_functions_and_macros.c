@@ -1452,7 +1452,7 @@ int read_file(char *result, const char* FILE_NAME)
 {
   // Variables
   FILE* file;
-  int settings;
+  int settings = 0;
 
   // check if the file exist
   file = fopen(FILE_NAME,"r");
@@ -1462,14 +1462,10 @@ int read_file(char *result, const char* FILE_NAME)
     fseek(file, 0, SEEK_END);
     const long file_size = ftell(file);
     fseek(file, 0, SEEK_SET); 
-    fread(result, sizeof(char), file_size, file);
+    fread(result, file_size, sizeof(char), file);
+    fclose(file);
     settings = 1;
   }
-  else
-  {
-    settings = 0;
-  }
-  fclose(file);
   return settings;
 }
 
@@ -1479,21 +1475,26 @@ int read_file(char *result, const char* FILE_NAME)
 Name: write_file
 Description: Writes data to a file
 Parameters:
-  data = The data to write to the file
+  DATA = The data to write to the file
   file_name - The file name
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int write_file(const char* data, const char* FILE_NAME)
+int write_file(const char* DATA, const char* FILE_NAME)
 {
   // Variables
   FILE* file;
+  int settings = 0;
 
   file = fopen(FILE_NAME,"w");
-  fprintf(file,"%s",data);
-  fclose(file);
-  return 1;   
+  if (file != NULL)
+  {
+    fprintf(file,"%s",DATA);
+    fclose(file);
+    settings = 1;
+  }
+  return settings;  
 }
 
 
