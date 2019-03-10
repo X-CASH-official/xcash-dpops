@@ -743,21 +743,22 @@ size_t string_count(const char* DATA, const char* STRING)
   const size_t STRING_LENGTH = strnlen(STRING,BUFFER_SIZE);
   
   // Variables
-  char* datacopy = (char*)calloc(BUFFER_SIZE,sizeof(char));  
+  char* datacopy1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  // since were going to be changing where datacopy1 is referencing, we need to create a copy to pointer_reset
+  char* datacopy2 = datacopy1; 
   size_t count = 0;
 
   // get the occurences of the string 
-  memcpy(datacopy,DATA,strnlen(DATA,BUFFER_SIZE));
-  while((datacopy = strstr(datacopy, STRING)) != NULL)
+  memcpy(datacopy1,DATA,strnlen(DATA,BUFFER_SIZE));
+  while((datacopy1 = strstr(datacopy1, STRING)) != NULL)
   {
     count++;
-    datacopy+= STRING_LENGTH;
+    datacopy1+= STRING_LENGTH;
   } 
 
-  pointer_reset(datacopy);
+  pointer_reset(datacopy2);
   return count;
 }
-
 
 
 /*
