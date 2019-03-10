@@ -1,17 +1,15 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-#include <unistd.h>
-#include <signal.h>
-#include "sys/types.h"
-#include "sys/socket.h"
-#include <netdb.h> 
-#include "netinet/in.h"
-#include <arpa/inet.h>
-#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h> 
 
-#include "xcash_proof_of_stake_functions_and_macros.h"
+#include "define_macro_functions.h"
+#include "define_macros.h"
+#include "variables.h"
+
+#include "network_wallet_functions.h"
+#include "server_functions.h"
+
 #include "xcash_proof_of_stake_test.h"
 
 /*
