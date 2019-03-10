@@ -130,7 +130,11 @@ Return: 0 if an error has occured, 1 if successfull
 int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], const size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS)
 {
   // Constants
-  const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};  
+  const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0}; 
+  const size_t HTTP_SETTINGS_LENGTH = strnlen(HTTP_SETTINGS,BUFFER_SIZE);
+  const size_t URL_LENGTH = strnlen(URL,BUFFER_SIZE);
+  const size_t DATA_LENGTH = strnlen(DATA,BUFFER_SIZE);
+  const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE); 
 
   // Variables
   char response[BUFFER_SIZE];
@@ -138,7 +142,8 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   char* post_request_data;
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  size_t count;  
+  size_t count; 
+  size_t counter = 0; 
   size_t receive_data_result; 
 
   // define macros
@@ -146,35 +151,49 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   free(str); \
   str = NULL; \
   free(message); \
-  message = NULL;
+  message = NULL;  
 
   // create the HTTP request
-  append_string(message,HTTP_SETTINGS);
-  append_string(message," ");
-  append_string(message,URL);
+  memcpy(message,HTTP_SETTINGS,HTTP_SETTINGS_LENGTH);
+  counter += HTTP_SETTINGS_LENGTH;
+  memcpy(message+counter," ",1);
+  counter++;
+  memcpy(message+counter,URL,URL_LENGTH);
+  counter += URL_LENGTH;
   if (strncmp(HTTP_SETTINGS,"GET",BUFFER_SIZE) == 0)
   {
-    append_string(message,"?");
-    append_string(message,DATA);
+    memcpy(message+counter,"?",1);
+    counter++;
+    memcpy(message+counter,DATA,DATA_LENGTH);
+    counter += DATA_LENGTH;
   }
-  append_string(message," HTTP/1.1\r\nHost: ");
-  append_string(message,HOST);
-  append_string(message,"\r\n");
+  memcpy(message+counter," HTTP/1.1\r\nHost: ",17);
+  counter += 17;
+  memcpy(message+counter,HOST,HOST_LENGTH);
+  counter += HOST_LENGTH;
+  memcpy(message+counter,"\r\n",2);
+  counter += 2;
   for (count = 0; count < HTTP_HEADERS_LENGTH; count++)
   {
-    append_string(message,HTTP_HEADERS[count]);
-    append_string(message,"\r\n");
+    memcpy(message+counter,HTTP_HEADERS[count],strnlen(HTTP_HEADERS[count],BUFFER_SIZE));
+    counter += strnlen(HTTP_HEADERS[count],BUFFER_SIZE);
+    memcpy(message+counter,"\r\n",2);
+    counter += 2;
   }
   if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
   {
-    append_string(message,"Content-Length: ");
+    memcpy(message+counter,"Content-Length: ",16);
+    counter += 16;
     sprintf(str, "%d", (int)strnlen(DATA,BUFFER_SIZE));
-    append_string(message,str);
+    memcpy(message+counter,str,strnlen(str,BUFFER_SIZE));
+    counter += strnlen(str,BUFFER_SIZE);
   } 
-  append_string(message,"\r\n\r\n");    
+  memcpy(message+counter,"\r\n\r\n",4);   
+  counter += 4; 
   if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
   {
-    append_string(message,DATA);
+    memcpy(message+counter,DATA,DATA_LENGTH);
+    counter += DATA_LENGTH;
   }  
   memset(&response, 0, sizeof(response));
 
@@ -203,6 +222,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     {
       color_print("Error setting socket timeout for sending a post request","red"); 
     }
+    close(SOCKET);
     pointer_reset_all;
     return 0;
   }  
@@ -218,6 +238,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
       color_print(str,"red"); 
     }
+    close(SOCKET);
     pointer_reset_all;
     return 0;
   }
@@ -227,7 +248,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 
   // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
-  const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
   
   struct sockaddr_in serv_addr;
   memset(&serv_addr,0,sizeof(serv_addr));
@@ -252,7 +272,8 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       color_print(str,"red"); 
     }
-    pointer_reset_all; 
+    close(SOCKET);
+    pointer_reset_all;
     return 0;
   }
   if (MESSAGE_SETTINGS == 1)
@@ -281,7 +302,8 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       color_print(str,"red"); 
     }
-    pointer_reset_all;  
+    close(SOCKET);
+    pointer_reset_all;
     return 0;
   }
    
@@ -306,6 +328,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       }
       color_print(str,"red"); 
     }
+    close(SOCKET);
     pointer_reset_all;
     return 0;
   }
@@ -322,7 +345,8 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+35+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       color_print(str,"red"); 
     }
-    pointer_reset_all; 
+    close(SOCKET);
+    pointer_reset_all;
     return 0;
   }
   if (MESSAGE_SETTINGS == 1)
@@ -334,10 +358,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     memcpy(str+28+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
     color_print(str,"green"); 
   }
-     
-  // close the socket
-  close(SOCKET);
-
+  
   // parse the HTTP request header from the result
   // check if the result includes a header
   if (strstr(message,"HTTP/") != NULL)
@@ -352,9 +373,11 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     memcpy(result+strnlen(result,BUFFER_SIZE),message,strnlen(message,BUFFER_SIZE));
   }
     
+  close(SOCKET);
   pointer_reset_all;
-  #undef pointer_reset_all
   return 1;
+
+  #undef pointer_reset_all
 }
 
 
