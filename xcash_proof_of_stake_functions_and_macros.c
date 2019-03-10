@@ -890,12 +890,12 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
     if (buffer[0] != '\0' && strstr(buffer,STRING) == NULL)
     {
       // there is data, but this is not the final data
-      append_string(message,buffer);
+      memcpy(message,buffer,strnlen(buffer,BUFFER_SIZE));
     }
     if (buffer[0] != '\0' && strstr(buffer,STRING) != NULL)
     {
       // there is data, and this is the final data
-      append_string(message,buffer);
+      memcpy(message,buffer,strnlen(buffer,BUFFER_SIZE));
       // if the final message has the SOCKET_END_STRING in the message, remove it
       if (strstr(message,SOCKET_END_STRING) != NULL)
       {
@@ -903,7 +903,6 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
         memcpy(data,message,strnlen(message,BUFFER_SIZE) - 5);
         memset(message, 0, strnlen(message,BUFFER_SIZE));
         memcpy(message,data,strnlen(data,BUFFER_SIZE));
-        pointer_reset(data);
       }
       break;
     }
@@ -921,6 +920,7 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
 
     usleep(200000);   
   }
+  pointer_reset(data);
   return 2;
 }
 
