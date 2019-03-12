@@ -13,7 +13,8 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a xcash_proof_of_stake_signature for the signed data
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a xcash_proof_of_stake_signature for the signed data
 #define MAXIMUM_CONNECTIONS 100 // The maximum connections a node can have at one time
-#define SOCKET_TIMEOUT_SETTINGS 1 // The time in between read calls where there is no data
+#define SOCKET_CONNECTION_TIMEOUT_SETTINGS 1000 // The time in milliseconds, to wait before a connection is cancelled
+#define SOCKET_DATA_TIMEOUT_SETTINGS 1 // The time in between read calls where there is no data
 #define RECEIVE_DATA_TIMEOUT_SETTINGS 5 // The maximum amount of time to wait for the total data, once data has been read
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 #endif

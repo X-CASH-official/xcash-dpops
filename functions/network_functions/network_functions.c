@@ -5,6 +5,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <poll.h>
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
@@ -41,7 +43,7 @@ Return: 0 if an error has occured, 1 if successfull
 int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], const size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS)
 {
   // Constants
-  const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0}; 
+  const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0}; 
   const size_t HTTP_SETTINGS_LENGTH = strnlen(HTTP_SETTINGS,BUFFER_SIZE);
   const size_t URL_LENGTH = strnlen(URL,BUFFER_SIZE);
   const size_t DATA_LENGTH = strnlen(DATA,BUFFER_SIZE);
@@ -56,8 +58,13 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   size_t count; 
   size_t counter = 0; 
   size_t receive_data_result; 
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  socklen_t socket_option_settings = sizeof(socket_settings);
 
   // define macros
+  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
   #define pointer_reset_all \
   free(str); \
   str = NULL; \
@@ -111,10 +118,11 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
+  SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
-  if (SOCKET < 0)
-  {
+  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+  if (SOCKET == -1)
+  { 
     if (MESSAGE_SETTINGS == 1)
     {
       color_print("Error creating socket for sending a post request","red");
@@ -123,11 +131,11 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     return 0;
   }
 
-  /* Set the socket options
+  /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
-  SO_RCVTIMEO = sets a receiving timeout for the socket
+  SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) < 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -160,7 +168,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
-  struct sockaddr_in serv_addr;
   memset(&serv_addr,0,sizeof(serv_addr));
   /* setup the connection
   AF_INET = IPV4
@@ -171,8 +178,38 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(PORT);
 
+  /* set the first poll structure to our socket
+  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+  */
+  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.events = POLLOUT;
+
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  {    
+    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+    {   
+      if (socket_settings != 0)
+      {        
+        if (MESSAGE_SETTINGS == 1)
+        {
+          memset(str,0,strnlen(str,BUFFER_SIZE));
+          memcpy(str,"Error connecting to ",20);
+          memcpy(str+20,HOST,HOST_LENGTH);
+          memcpy(str+20+HOST_LENGTH," on port ",9);
+          memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+          color_print(str,"red"); 
+        }
+        close(SOCKET);
+        pointer_reset_all;
+        return 0;
+      } 
+    }
+  }
+
+  // get the current socket settings
+  socket_settings = fcntl(SOCKET, F_GETFL, NULL);
+  if (socket_settings == -1)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -187,6 +224,25 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     pointer_reset_all;
     return 0;
   }
+
+  // set the socket to blocking mode
+  socket_settings &= (~O_NONBLOCK);
+  if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
+  {
+    if (MESSAGE_SETTINGS == 1)
+    {
+      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memcpy(str,"Error connecting to ",20);
+      memcpy(str+20,HOST,HOST_LENGTH);
+      memcpy(str+20+HOST_LENGTH," on port ",9);
+      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+      color_print(str,"red"); 
+    }
+    close(SOCKET);
+    pointer_reset_all;
+    return 0;
+  }
+
   if (MESSAGE_SETTINGS == 1)
   {
     memset(str,0,strnlen(str,BUFFER_SIZE));
@@ -288,6 +344,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   pointer_reset_all;
   return 1;
 
+  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
   #undef pointer_reset_all
 }
 
@@ -312,15 +369,20 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
 { 
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
-  const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};   
+  const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
 
   // Variables 
   char buffer2[BUFFER_SIZE];
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int receive_data_result;
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  socklen_t socket_option_settings = sizeof(socket_settings);
 
-   // define macros
+  // define macros
+  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
   #define pointer_reset_all \
   free(str); \
   str = NULL; \
@@ -330,9 +392,10 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
+  SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
-  if (SOCKET < 0)
+  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+  if (SOCKET == -1)
   { 
     if (MESSAGE_SETTINGS == 1)
     {
@@ -344,11 +407,11 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     return 0;
   }
 
-  /* Set the socket options
+  /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
-  SO_RCVTIMEO = allow the socket to receive a timeout
+  SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) < 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -381,7 +444,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
    
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
-  struct sockaddr_in serv_addr;
   /* setup the connection
   AF_INET = IPV4
   use htons to convert the port from host byte order to network byte order short
@@ -391,11 +453,42 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(PORT);
 
+  /* set the first poll structure to our socket
+  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+  */
+  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.events = POLLOUT;
+
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  {    
+    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+    {   
+      if (socket_settings != 0)
+      {        
+        if (MESSAGE_SETTINGS == 1)
+        {
+          memset(str,0,strnlen(str,BUFFER_SIZE));
+          memcpy(str,"Error connecting to ",20);
+          memcpy(str+20,HOST,HOST_LENGTH);
+          memcpy(str+20+HOST_LENGTH," on port ",9);
+          memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+          color_print(str,"red"); 
+        }
+        close(SOCKET);
+        pointer_reset_all;
+        return 0;
+      } 
+    }
+  }
+
+  // get the current socket settings
+  socket_settings = fcntl(SOCKET, F_GETFL, NULL);
+  if (socket_settings == -1)
   {
     if (MESSAGE_SETTINGS == 1)
     {
+      memset(str,0,strnlen(str,BUFFER_SIZE));
       memcpy(str,"Error connecting to ",20);
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
@@ -406,6 +499,25 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     pointer_reset_all;
     return 0;
   }
+
+  // set the socket to blocking mode
+  socket_settings &= (~O_NONBLOCK);
+  if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
+  {
+    if (MESSAGE_SETTINGS == 1)
+    {
+      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memcpy(str,"Error connecting to ",20);
+      memcpy(str+20,HOST,HOST_LENGTH);
+      memcpy(str+20+HOST_LENGTH," on port ",9);
+      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+      color_print(str,"red"); 
+    }
+    close(SOCKET);
+    pointer_reset_all;
+    return 0;
+  }
+
   if (MESSAGE_SETTINGS == 1)
   {
     memset(str,0,strnlen(str,BUFFER_SIZE));
@@ -479,6 +591,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   pointer_reset_all;
   return 1;
 
+  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
   #undef pointer_reset_all
 }
 
@@ -502,14 +615,19 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
 { 
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
-  const struct timeval SOCKET_TIMEOUT = {SOCKET_TIMEOUT_SETTINGS, 0};   
+  const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   
   // Variables 
   char buffer2[BUFFER_SIZE];
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  socklen_t socket_option_settings = sizeof(socket_settings);
 
-   // define macros
+  // define macros
+  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
   #define pointer_reset_all \
   free(str); \
   str = NULL; \
@@ -519,9 +637,10 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
+  SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
-  if (SOCKET < 0)
+  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+  if (SOCKET == -1)
   { 
     if (MESSAGE_SETTINGS == 1)
     {
@@ -534,11 +653,11 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
     return 0;
   }
 
-  /* Set the socket options
+  /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
-  SO_RCVTIMEO = allow the socket to receive a timeout
+  SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) < 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -571,7 +690,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
    
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
-  struct sockaddr_in serv_addr;
   /* setup the connection
   AF_INET = IPV4
   use htons to convert the port from host byte order to network byte order short
@@ -581,11 +699,42 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
   serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(PORT);
 
+  /* set the first poll structure to our socket
+  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+  */
+  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.events = POLLOUT;
+
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  {    
+    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+    {   
+      if (socket_settings != 0)
+      {        
+        if (MESSAGE_SETTINGS == 1)
+        {
+          memset(str,0,strnlen(str,BUFFER_SIZE));
+          memcpy(str,"Error connecting to ",20);
+          memcpy(str+20,HOST,HOST_LENGTH);
+          memcpy(str+20+HOST_LENGTH," on port ",9);
+          memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+          color_print(str,"red"); 
+        }
+        close(SOCKET);
+        pointer_reset_all;
+        return 0;
+      } 
+    }
+  }
+
+  // get the current socket settings
+  socket_settings = fcntl(SOCKET, F_GETFL, NULL);
+  if (socket_settings == -1)
   {
     if (MESSAGE_SETTINGS == 1)
     {
+      memset(str,0,strnlen(str,BUFFER_SIZE));
       memcpy(str,"Error connecting to ",20);
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
@@ -596,6 +745,25 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
     pointer_reset_all;
     return 0;
   }
+
+  // set the socket to blocking mode
+  socket_settings &= (~O_NONBLOCK);
+  if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
+  {
+    if (MESSAGE_SETTINGS == 1)
+    {
+      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memcpy(str,"Error connecting to ",20);
+      memcpy(str+20,HOST,HOST_LENGTH);
+      memcpy(str+20+HOST_LENGTH," on port ",9);
+      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+      color_print(str,"red"); 
+    }
+    close(SOCKET);
+    pointer_reset_all;
+    return 0;
+  }
+
   if (MESSAGE_SETTINGS == 1)
   {
     memset(str,0,strnlen(str,BUFFER_SIZE));
@@ -632,6 +800,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
   pointer_reset_all;
   return 1;
 
+  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
   #undef pointer_reset_all
 }
 

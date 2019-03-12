@@ -35,7 +35,7 @@ void test()
   int xcash_proof_of_stake_total_passed_test = 0;
 
   // define macros
-  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 250
+  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 261
 
   // write the test message
   printf("Starting Test\n\n");
@@ -54,7 +54,7 @@ void test()
   xcash_proof_of_stake_total_passed_test += send_wallet_http_request_test(); 
   xcash_proof_of_stake_total_passed_test += read_and_write_file_test(); 
   xcash_proof_of_stake_total_passed_test += send_and_receive_data_socket_test();
-  xcash_proof_of_stake_total_passed_test += reset_variables_allocated_on_the_heap_test();
+  //xcash_proof_of_stake_total_passed_test += reset_variables_allocated_on_the_heap_test();
   //xcash_proof_of_stake_total_passed_test += analysing_code_test(); 
 
   // write the end test message
