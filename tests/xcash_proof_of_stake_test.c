@@ -45,6 +45,24 @@ void test()
   result_test = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   data_test = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  // check if the memory needed was allocated on the heap successfully
+  if (string2_test == NULL || result_test == NULL || data_test == NULL)
+  {
+    if (string2_test != NULL)
+    {
+      pointer_reset(string2_test);
+    }
+    if (result_test != NULL)
+    {
+      pointer_reset(result_test);
+    }
+    if (data_test != NULL)
+    {
+      pointer_reset(data_test);
+    }
+    return;
+  } 
+
   // run the tests
   xcash_proof_of_stake_total_passed_test += append_string_test();
   xcash_proof_of_stake_total_passed_test += parse_json_data_test();

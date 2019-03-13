@@ -34,6 +34,48 @@ int main(int parameters_count, char* parameters[])
   current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  // check if the memory needed was allocated on the heap successfully
+  if (xcash_wallet_public_address == NULL || nodes_public_address_list == NULL || nodes_name_list == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_consensus_nodes_IP_address == NULL || main_nodes_public_address == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
+  {
+    if (xcash_wallet_public_address != NULL)
+    {
+      pointer_reset(xcash_wallet_public_address);
+    }
+    if (nodes_public_address_list != NULL)
+    {
+      pointer_reset(nodes_public_address_list);
+    }
+    if (nodes_name_list != NULL)
+    {
+      pointer_reset(nodes_name_list);
+    }
+    if (nodes_public_address_list_received_data != NULL)
+    {
+      pointer_reset(nodes_public_address_list_received_data);
+    }
+    if (server_message != NULL)
+    {
+      pointer_reset(server_message);
+    }
+    if (current_consensus_nodes_IP_address != NULL)
+    {
+      pointer_reset(current_consensus_nodes_IP_address);
+    }
+    if (main_nodes_public_address != NULL)
+    {
+      pointer_reset(main_nodes_public_address);
+    }
+    if (current_round_part != NULL)
+    {
+      pointer_reset(current_round_part);
+    }
+    if (current_round_part_backup_node != NULL)
+    {
+      pointer_reset(current_round_part_backup_node);
+    }
+    return 0;
+  } 
+
   // set the current_round_part and current_round_part_backup_node to an empty string, this way the node will start at the begining of a round
   memcpy(current_round_part,"",1); 
   memcpy(current_round_part_backup_node,"",1);

@@ -45,6 +45,20 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
   free(data); \
   data = NULL; \
 
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL || data == NULL)
+  {
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    return 0;
+  }
+
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_template\",\"params\":{\"wallet_address\":\"",84);
   memcpy(message+84,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
@@ -89,6 +103,12 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    return 0;
+  }
+
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get current block height",MESSAGE_SETTINGS) <= 0)
   {  
     pointer_reset(data);   
@@ -126,6 +146,12 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
 
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    return 0;
+  }
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_last_block_header\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get previous block hash",MESSAGE_SETTINGS) <= 0)
   {  

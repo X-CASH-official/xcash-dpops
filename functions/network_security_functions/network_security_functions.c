@@ -57,7 +57,31 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   free(string); \
   string = NULL;
 
-
+  // check if the memory needed was allocated on the heap successfully
+  if (previous_block_hash == NULL || random_data == NULL || result == NULL || data == NULL || string == NULL)
+  {
+    if (previous_block_hash != NULL)
+    {
+      pointer_reset(previous_block_hash);
+    }
+    if (random_data != NULL)
+    {
+      pointer_reset(random_data);
+    }
+    if (result != NULL)
+    {
+      pointer_reset(result);
+    }
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (string != NULL)
+    {
+      pointer_reset(string);
+    }
+    return 0;
+  } 
 
   // create the random data
   if (random_string(random_data,RANDOM_STRING_LENGTH) == 0)
@@ -203,6 +227,52 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   data = NULL; \
   free(string); \
   string = NULL;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (message_settings == NULL || public_address == NULL || previous_block_hash == NULL || message_previous_block_hash == NULL || message_current_round_part == NULL || message_current_round_part_backup_node == NULL || xcash_proof_of_stake_signature == NULL || result == NULL || data == NULL || string == NULL)
+  {
+    if (message_settings != NULL)
+    {
+      pointer_reset(message_settings);
+    }
+    if (public_address != NULL)
+    {
+      pointer_reset(public_address);
+    }
+    if (previous_block_hash != NULL)
+    {
+      pointer_reset(previous_block_hash);
+    }
+    if (message_previous_block_hash != NULL)
+    {
+      pointer_reset(message_previous_block_hash);
+    }
+    if (message_current_round_part != NULL)
+    {
+      pointer_reset(message_current_round_part);
+    }
+    if (message_current_round_part_backup_node != NULL)
+    {
+      pointer_reset(message_current_round_part_backup_node);
+    }
+    if (xcash_proof_of_stake_signature != NULL)
+    {
+      pointer_reset(xcash_proof_of_stake_signature);
+    }
+    if (result != NULL)
+    {
+      pointer_reset(result);
+    }
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (string != NULL)
+    {
+      pointer_reset(string);
+    }
+    return 0;
+  } 
 
   // parse the message
   if (parse_json_data(MESSAGE,"message_settings",message_settings) == 0 || parse_json_data(MESSAGE,"public_address",public_address) == 0 || parse_json_data(MESSAGE,"previous_block_hash",message_previous_block_hash) == 0 || parse_json_data(MESSAGE,"current_round_part",message_current_round_part) == 0 || parse_json_data(MESSAGE,"current_round_part_backup_node",message_current_round_part_backup_node) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature) == 0)

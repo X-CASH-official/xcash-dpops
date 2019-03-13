@@ -69,7 +69,21 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   free(str); \
   str = NULL; \
   free(message); \
-  message = NULL;  
+  message = NULL; 
+
+  // check if the memory needed was allocated on the heap successfully
+  if (str == NULL || message == NULL)
+  {
+    if (str != NULL)
+    {
+      pointer_reset(str);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    return 0;
+  } 
 
   // create the HTTP request
   memcpy(message,HTTP_SETTINGS,HTTP_SETTINGS_LENGTH);
@@ -389,6 +403,20 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   free(message); \
   message = NULL;
 
+  // check if the memory needed was allocated on the heap successfully
+  if (str == NULL || message == NULL)
+  {
+    if (str != NULL)
+    {
+      pointer_reset(str);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    return 0;
+  } 
+
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
@@ -634,6 +662,20 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
   free(message); \
   message = NULL;
 
+  // check if the memory needed was allocated on the heap successfully
+  if (str == NULL || message == NULL)
+  {
+    if (str != NULL)
+    {
+      pointer_reset(str);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    return 0;
+  } 
+
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
@@ -864,6 +906,12 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
   int count = 0;
   char buffer [BUFFER_SIZE];
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    return 0;
+  } 
 
   memset(message, 0, strnlen(message,BUFFER_SIZE));  
   for (;;)

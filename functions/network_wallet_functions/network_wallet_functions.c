@@ -36,6 +36,11 @@ int get_public_address(const int HTTP_SETTINGS)
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  if (data == NULL)
+  {
+    return 0;
+  }
+
   // define macros
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
 

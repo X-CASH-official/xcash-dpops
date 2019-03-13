@@ -47,6 +47,11 @@ size_t get_program_memory_usage(char* process_id_file)
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t programs_memory_usage = 0;
 
+  if (data == NULL)
+  {
+    return 0;
+  }
+
   // read the current system memory usage
   file = fopen(process_id_file,"r");
   if (file != NULL)
@@ -101,6 +106,11 @@ int reset_variables_allocated_on_the_heap_test()
   #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 11
   #define GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"blockhashing_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"blocktemplate_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"difficulty\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"expected_reward\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"height\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"prev_hash\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"reserved_offset\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"status\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"untrusted\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\r\n  }\r\n}"
   
+  if (process_id_file == NULL)
+  {
+    return 0;
+  }
+
   // reset the variables
   memset(&string1_test,0,sizeof(string1_test)); 
   memset(string2_test,0,strnlen(string2_test,BUFFER_SIZE)); 

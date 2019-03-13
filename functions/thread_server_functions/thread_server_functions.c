@@ -34,10 +34,18 @@ Return: NULL
 
 void* total_connection_time_thread(void* parameters)
 { 
+  // Variables
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   struct total_connection_time_thread_parameters* data = parameters;
   int client_address_length = strnlen(data->client_address,BUFFER_SIZE);
   int data_port_length = strnlen(data->port,BUFFER_SIZE);
+
+  // check if the memory needed was allocated on the heap successfully
+  if (string == NULL)
+  {
+    return 0;
+  }
+
   sleep(TOTAL_CONNECTION_TIME_SETTINGS);    
   if (data->message_settings == 1)
   {
@@ -85,9 +93,17 @@ Return: NULL
 
 void* mainnode_timeout_thread(void* parameters)
 {
+  // Variables
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   struct mainnode_timeout_thread_parameters* data = parameters;
-  const size_t main_node_length = strnlen(data->main_node,BUFFER_SIZE);
+  size_t main_node_length = strnlen(data->main_node,BUFFER_SIZE);
+
+  // check if the memory needed was allocated on the heap successfully
+  if (string == NULL)
+  {
+    return 0;
+  }
+
   sleep(TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT);  
   printf("Total connection time for the main node has been reached"); 
   if (data->data_received == 1)

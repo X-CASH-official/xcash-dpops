@@ -55,6 +55,28 @@ int get_current_consensus_nodes_IP_address()
   free(message2); \
   message2 = NULL;
 
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || message == NULL || message2 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    if (message2 != NULL)
+    {
+      pointer_reset(message2);
+    }
+    return 0;
+  }
+
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS\",\r\n}",102);
 
@@ -143,6 +165,24 @@ int get_updated_node_list()
   message = NULL; \
   free(message2); \
   message2 = NULL;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || message == NULL || message2 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    if (message2 != NULL)
+    {
+      pointer_reset(message2);
+    }
+    return 0;
+  }
 
   // iniltize the variables
   memset(data,0,strnlen(data,BUFFER_SIZE));
@@ -263,6 +303,12 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    return 0;
+  }
 
   // verify the data
   if (verify_data(message,1,0,0) == 0)
@@ -389,6 +435,12 @@ int create_server(const int MESSAGE_SETTINGS)
 
   // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
   signal(SIGCHLD, SIG_IGN);  
+
+  // check if the memory needed was allocated on the heap successfully
+  if (string == NULL)
+  {
+    return 0;
+  }
     
   /* Create the socket  
   AF_INET = IPV4 support

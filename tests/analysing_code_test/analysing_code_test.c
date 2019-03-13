@@ -82,6 +82,36 @@ int analysing_code_test()
   free(data5); \
   data5 = NULL;
 
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data1 == NULL || data2 == NULL || data3 == NULL || data4 == NULL || data5 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data1 != NULL)
+    {
+      pointer_reset(data1);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    if (data4 != NULL)
+    {
+      pointer_reset(data4);
+    }
+    if (data5 != NULL)
+    {
+      pointer_reset(data5);
+    }
+    return 0;
+  } 
+
   // reset the variables
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   count_test = 0;
