@@ -15,6 +15,7 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
+#include "number_functions.h"
 #include "server_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
@@ -430,6 +431,61 @@ int reset_variables_allocated_on_the_heap_test()
     color_print("All other test will not be run","red");
   }
 
+
+
+  // varint_decode  
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      varint_decode(0xb2750199a302);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! varint_decode has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! varint_decode has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! varint_decode has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! varint_decode has reset all variables allocated on the heap","green");
+          count_test++;
+        } 
+      }    
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
 
 
 
