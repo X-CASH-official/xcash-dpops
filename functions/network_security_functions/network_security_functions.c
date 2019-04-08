@@ -179,9 +179,7 @@ Parameters:
   message - The signed data
   HTTP_SETTINGS - The http settings
   VERIFY_CURRENT_ROUND_PART_SETTINGS - 1 to verify the current_round_part, otherwise 0
-  CURRENT_ROUND_PART - The current round part
   VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS - 1 to verify the current_round_part_backup_node, otherwise 0
-  CURRENT_ROUND_PART_BACKUP_NODE - The current backup node for the current round part
 Return: 0 if the signed data is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
