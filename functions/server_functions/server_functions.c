@@ -315,39 +315,28 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
   {
     // close the forked process
     color_print("Message could not be verified from consensus node for CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    close(CLIENT_SOCKET);
-    pointer_reset(data);
-    _exit(0);
+    return 0;
   }
 
   // parse the message
   if (parse_json_data(message,"main_nodes_public_address",data) == 0)
   {
-    // close the forked process
     color_print("Could not parse main_nodes_public_address from the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message","red");
-    close(CLIENT_SOCKET);
-    pointer_reset(data);
-    _exit(0);
+    return 0;
   }
   memcpy(main_nodes_public_address,data,strnlen(data,BUFFER_SIZE));
 
   if (parse_json_data(message,"current_round_part",data) == 0)
   {
-    // close the forked process
     color_print("Could not parse current_round_part from the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message","red");
-    close(CLIENT_SOCKET);
-    pointer_reset(data);
-    _exit(0);
+    return 0;
   }
   memcpy(current_round_part,data,strnlen(data,BUFFER_SIZE));
 
   if (parse_json_data(message,"current_round_part_backup_node",data) == 0)
   {
-    // close the forked process
     color_print("Could not parse current_round_part_backup_node from the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message","red");
-    close(CLIENT_SOCKET);
-    pointer_reset(data);
-    _exit(0);
+    return 0;
   }
   memcpy(current_round_part_backup_node,data,strnlen(data,BUFFER_SIZE));
 
@@ -378,18 +367,12 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
   // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
   if (pthread_create(&thread_id, NULL, &mainnode_timeout_thread, (void *)&parameters) != 0)
   {
-    // close the forked process
-    close(CLIENT_SOCKET);
-    pointer_reset(data);
-    _exit(0);
+    return 0;
   }
   // set the thread to dettach once completed, since we do not need to use anything it will return.
   if (pthread_detach(thread_id) != 0)
   {
-    // close the forked process
-    close(CLIENT_SOCKET);
-    pointer_reset(data);
-    _exit(0);
+    return 0;
   }
   pointer_reset(data);
   return 1;
@@ -638,11 +621,21 @@ int create_server(const int MESSAGE_SETTINGS)
          // check if a certain type of message has been received         
          if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
          {
-           server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer);
+           if (server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer) == 0)
+           {
+             close(CLIENT_SOCKET);
+             pointer_reset(data);
+             _exit(0);
+           }
          }
          else if (strstr(buffer,"\"message_settings\": \"NODE_TO_CONSENSUS_NODE_RECEIVE_UPDATED_NODE_LIST\"") != NULL && strncmp(server_message,"NODE_TO_CONSENSUS_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
          {
-           server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer);
+           if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer) == 0)
+           {
+             close(CLIENT_SOCKET);
+             pointer_reset(data);
+             _exit(0);
+           }
          }
          else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS\"") != NULL && strncmp(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
          {
@@ -651,12 +644,22 @@ int create_server(const int MESSAGE_SETTINGS)
            {
              if (strstr(buffer,"\"current_round_part\": \"1\"") != NULL && strstr(buffer,"\"current_round_part_backup_node\": \"0\"") != NULL)
              {
-               server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer);
+               if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer) == 0)
+               {
+                 close(CLIENT_SOCKET);
+                 pointer_reset(data);
+                 _exit(0);
+               }               
              }
            }
            else
            {
-             server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer);
+             if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer) == 0)
+             {
+               close(CLIENT_SOCKET);
+               pointer_reset(data);
+               _exit(0);
+             }
            }           
          }
          else

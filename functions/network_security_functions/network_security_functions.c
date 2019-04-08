@@ -25,8 +25,6 @@ Description: Signs data with your XCA address, for sending data securely
 Parameters:
   message - The sign_data
   MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
-  CURRENT_ROUND_PART - The current round part
-  CURRENT_ROUND_PART_BACKUP_NODE - The current backup node for the current round part
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
