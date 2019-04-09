@@ -133,19 +133,20 @@ Return: The number of passed parse_json_data test
 
 int parse_json_data_test()
 {  
+  // Variables
+  int settings = 1;
+
   // define macros
-  #define PARSE_JSON_DATA_TOTAL_TEST 227
+  #define PARSE_JSON_DATA_TOTAL_TEST 31
  
   #define SIGN_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"xcash_proof_of_stake_signature\": \"SIGN_RPC_CALL_TEST_DATA\"\r\n  }\r\n}"
   #define VERIFY_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"good\": VERIFY_RPC_CALL_TEST_DATA\r\n  }\r\n}"
   #define GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"blockhashing_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"blocktemplate_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"difficulty\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"expected_reward\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"height\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"prev_hash\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"reserved_offset\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"status\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"untrusted\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\r\n  }\r\n}"
  
-
-
- /*
+/*
   This message is sent from the Consensus node in the node_to_consensus_node_send_current_consensus_node_IP_address function and received by the nodes in the get_current_consensus_node_IP_address function.
  
-  The purpose of this message is for the Consensus node to send an updated list of nodes to the node. 
+  The purpose of this message is for the Consensus node to send an the current consensus nodes public address to the node. 
  
   message_settings - The type of the message
   current_consensus_node_IP_address - The current consensus nodes IP address.
@@ -163,7 +164,7 @@ int parse_json_data_test()
 /*
   This message is sent from the nodes in the get_current_consensus_node_IP_address function and received by the consensus node in the node_to_consensus_node_send_current_consensus_node_IP_address function.
  
-  The purpose of this message is for the node to get an updated list of nodes from the consensus node.
+  The purpose of this message is for the node to let the consensus node know that it needs the current consensus node IP address.
  
   message_settings - The type of the message
   public_address - The public address of the node that is sending the data.
@@ -183,8 +184,9 @@ int parse_json_data_test()
   The purpose of this message is for the Consensus node to send an updated list of nodes to the node. 
  
   message_settings - The type of the message
-  nodes_name_list - The list of the nodes name list (node1|node2) or UPDATED_NODE_LIST
-  nodes_public_address_list - the list of the nodes public address (node1|node2) or UPDATED_NODE_LIST
+  nodes_name_list - The list of the nodes name list ({"node1":"node1_name"}) or UPDATED_NODE_LIST
+  nodes_public_address_list - the list of the nodes public address ({"node1":"node1_public_address"}) or UPDATED_NODE_LIST
+  nodes_IP_address_list - the list of the nodes IP addresses ({"node1":"node1_IP_address"}) or UPDATED_NODE_LIST
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
@@ -192,7 +194,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"nodes_name_list\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"nodes_public_address_list\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"data\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n}"
+  #define CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"nodes_name_list\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"nodes_public_address_list\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"nodes_IP_address_list\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"data\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\",\r\n}"
 
 
 
@@ -214,8 +216,8 @@ int parse_json_data_test()
 
 
 
-  /*
-  This message is sent from the Consensus node in the send_and_receive_data_socket_consensus_node_to_node function and received by the nodes in the receive_data_socket_consensus_node_to_node function.
+/*
+  This message is sent from the Consensus node in the send_data_socket_consensus_node_to_node function and received by the nodes in the receive_data_socket_consensus_node_to_node function.
  
   The purpose of this message is for the consensus node to let the nodes know who is the main node for this part of the round.
  
@@ -250,26 +252,26 @@ int parse_json_data_test()
  
  
 /*
-  This message is sent from the Consensus node in the send_and_receive_data_socket_consensus_node_to_mainnode function and received by the main node in the consensus_node_to_main_node function.
+  This message is sent from the Consensus node in the send_data_socket_consensus_node_to_mainnode function and received by the main node in the consensus_node_to_main_node function.
  
   The purpose of this message is for the consensus node to let the main node that they are a main node, and they need to start this part of the round.
  
   message_settings - The type of the message.
   message - the part of the round (1-4).
-  vrf_beta_string_part_3_of_round - This is the beta_string from part 3 of the round, and is only including in the message to the block producer in part 4 of the round. For the part of the rounds 1-3 the beta_string ""
+  VRF_block_blob - This is full VRF_block_blob that will be added to the block_blob in the reserve bytes, and is only included in the message to the block producer in part 4 of the round. For the part of the rounds 1-3 the VRF_block_blob ""
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
   current_round_part_backup_node - The current main node in the current round part (0-5)
-  data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
+  data - A random 100 character string. The random data will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
-  */
+*/
   #define CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\",\r\n \"message\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\",\r\n \"vrf_beta_string_part_3_of_round\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\",\r\n \"data\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\",\r\n}"
  
  
  
 /*
-  This message is sent from the main node in the send_and_receive_data_socket_consensus_node_to_mainnode function and received by the nodes in the mainnode_to_node_message_part_1 function.
+  This message is sent from the main node in the send_data_socket_consensus_node_to_mainnode function and received by the nodes in the mainnode_to_node_message_part_1 function.
  
   The purpose of this message is for the main node to send the created data for the part of the round to the nodes, so they can verify the data.
  
@@ -290,14 +292,14 @@ int parse_json_data_test()
  
  
 /*
-  This message is sent from the main node in the send_and_receive_data_socket_consensus_node_to_mainnode function and received by the nodes in the mainnode_to_node_message_part_2 function.
+  This message is sent from the main node in the send_data_socket_consensus_node_to_mainnode function and received by the nodes in the mainnode_to_node_message_part_2 function.
  
   The purpose of this message is for the main node to send the created data for the part of the round to the nodes, so they can verify the data.
  
   message_settings - The type of the message
   vrf_random_character_string - A random 100 character string, used to create the VRF alpha_string.
   vrf_public_key - The VRF public key.
-  vrf_alpha_string - The VRF alpha string. (this is the vrf_random_character_string|previous_block_hash)
+  vrf_alpha_string - The VRF alpha string. (this is the previous_block_hash|vrf_random_character_string)
   vrf_proof - The VRF proof.
   vrf_beta_string - The VRF beta_string.
   public_address - The public address of the node that is sending the data.
@@ -312,14 +314,13 @@ int parse_json_data_test()
  
  
 /*
-  This message is sent from the main node in the send_and_receive_data_socket_consensus_node_to_mainnode function and received by the nodes in the mainnode_to_node_message_part_3 function.
+  This message is sent from the main node in the send_data_socket_consensus_node_to_mainnode function and received by the nodes in the mainnode_to_node_message_part_3 function.
  
   The purpose of this message is for the main node to send the created data for the part of the round to the nodes, so they can verify the data.
  
   message_settings - The type of the message
-  vrf_random_character_string - A random 100 character string, used to create the VRF alpha_string.
-  vrf_public_key - The VRF public key.
-  vrf_alpha_string - The VRF alpha string. (this is the vrf_random_character_string|previous_block_hash)
+  vrf_public_key - The same VRF public key from part 1 of the round.
+  vrf_alpha_string - The VRF alpha string. (this is the vrf_beta_string created in round 2)
   vrf_proof - The VRF proof.
   vrf_beta_string - The VRF beta_string.
   public_address - The public address of the node that is sending the data.
@@ -334,15 +335,12 @@ int parse_json_data_test()
  
  
 /*
-  This message is sent from the main node in the send_and_receive_data_socket_consensus_node_to_mainnode function and received by the nodes in the mainnode_to_node_message_part_4 function.
+  This message is sent from the main node in the send_data_socket_consensus_node_to_mainnode function and received by the nodes in the mainnode_to_node_message_part_4 function.
  
-  The purpose of this message is for the main node to send the created data for the part of the round to the nodes, so they can verify the data.
+  The purpose of this message is for the block producer to send the created block for the part of the round to the nodes, so they can verify the block.
  
   message_settings - The type of the message
-  vrf_public_key - The VRF public key.
-  vrf_alpha_string - The VRF alpha string. (this is the vrf_random_character_string|previous_block_hash)
-  vrf_proof - The VRF proof.
-  vrf_beta_string - The VRF beta_string.
+  block_blob - The block_blob.
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
@@ -350,7 +348,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define MAIN_NODES_TO_NODES_PART_4_OF_ROUND "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"vrf_public_key\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"vrf_alpha_string\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"vrf_proof\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"vrf_beta_string\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"public_address\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"previous_block_hash\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"current_round_part\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"current_round_part_backup_node\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"data\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n}"
+  #define MAIN_NODES_TO_NODES_PART_4_OF_ROUND "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"block_blob\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"public_address\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"previous_block_hash\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"current_round_part\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"current_round_part_backup_node\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"data\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n}"
  
  
  
@@ -361,7 +359,7 @@ int parse_json_data_test()
  
   message_settings - The type of the message
   vote_settings - Valid or Invalid if the data was not verified.
-  vote_data - The SHA 256 data that the node received.
+  vote_data - The SHA2-512 data that the node received.
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
@@ -391,15 +389,15 @@ int parse_json_data_test()
  
  
  
- 
 /*
   This message is sent from the Consensus node in the send_vote_list_to_nodes function and received by the nodes in the receive_vote_list function.
  
   The purpose of this message is for the nodes to get the list of the current top 100 delegates for that 24 hour time period, so they know what delegates are enabled.
  
   message_settings - The type of the message
-  nodes_name_list - The list of the nodes name list (node1|node2)
-  nodes_public_address_list - The list of the nodes public address (node1|node2)
+ nodes_name_list - The list of the nodes name list ({"node1":"node1_name"}) or UPDATED_NODE_LIST
+  nodes_public_address_list - the list of the nodes public address ({"node1":"node1_public_address"}) or UPDATED_NODE_LIST
+  nodes_IP_address_list - the list of the nodes IP addresses ({"node1":"node1_IP_address"}) or UPDATED_NODE_LIST
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
@@ -407,7 +405,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"nodes_name_list\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"nodes_public_address_list\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"data\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n}"
+  #define CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"nodes_name_list\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"nodes_public_address_list\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"nodes_IP_address_list\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"data\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\",\r\n}"
 
 
  
@@ -433,7 +431,9 @@ int parse_json_data_test()
  
   The purpose of this message is for the Consensus node to let the nodes and the main node know that there is a consensus node change, and they should restart.
  
-  message_settings - The type of the message
+  message_settings - The type of the message  
+  consensus_node_public_address - The public address of the new consensus node.
+  consensus_node_IP_address - The IP address of the new consensus node.
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
@@ -441,7 +441,8 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"data\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n}"
+  #define CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"consensus_node_public_address\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"consensus_node_IP_address\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"data\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\",\r\n}"
+ 
  
  
 /*
@@ -461,7 +462,7 @@ int parse_json_data_test()
  
  
  
-/*
+ /*
   This message is sent from the Consensus node in the xcash_proof_of_stake function and received by the consensus node private key in the receive_xcash_proof_of_stake_settings function.
  
   The purpose of this message is for the consensus node to get the xcash_proof_of_stake_settings
@@ -474,7 +475,8 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"data\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n}"
+  #define CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"data\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n}"
+
  
  
  
@@ -492,17 +494,18 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS "{\r\n \"message_settings\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"xcash_proof_of_stake_settings\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"public_address\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"data\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n}"
+  #define BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS "{\r\n \"message_settings\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"xcash_proof_of_stake_settings\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"public_address\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"previous_block_hash\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part_backup_node\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"data\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"xcash_proof_of_stake_signature\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n}"
+
  
  
  
 /*
-  This message is sent from the consensus node in the consensus_node_create_new_block function and received by the consensus node private key in the consensus_node_create_new_block function.
+  This message is sent from the consensus node in the consensus_node_create_new_block function and received by the block validation node in the consensus_node_create_new_block function.
  
   The purpose of this message is for the consensus node to create a block without the delegates
  
   message_settings - The type of the message
-  current_block_template_blob - The current block template blob
+  block_blob - The block blob
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
@@ -510,25 +513,27 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_block_template_blob\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"data\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n}"
+  #define CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"data\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n}"
+
  
  
  
-/*
-  This message is sent from the consensus node private key in the consensus_node_create_new_block function and received by the consensus node in the consensus_node_create_new_block function.
+ /*
+  This message is sent from the block validation node in the consensus_node_create_new_block function and received by the consensus node in the consensus_node_create_new_block function.
  
-  The purpose of this message is for the consensus node private key to sign the previous_block_hash|current_block_template_blob so the block will be valid and can be added to the network to create a block without the delegates
+  The purpose of this message is for the block validation node to sign the block_blob that the consensus node created so the block will be valid and can be added to the network to create a block without the delegates
  
   message_settings - The type of the message
+  block_blob_signature - The block blob signature
   public_address - The public address of the node that is sending the data.
-  message_data_settings - Previous block hash | current block template blob.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
   current_round_part_backup_node - The current main node in the current round part (0-5)
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"message_data_settings\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"data\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n}"
+  #define BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"block_blob_signature\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"data\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n}"
+
  
  
  
@@ -566,13 +571,13 @@ int parse_json_data_test()
  
  
  
-/*
-  This message is sent from the consensus node in the create_new_block function and received by the consensus node private key in the create_new_block function.
+  /*
+  This message is sent from the consensus node in the create_new_block function and received by the block validators in the create_new_block function.
  
   The purpose of this message is for the consensus node to submit the block to the network that the block producer has created.
  
-  message_settings - The type of the message
-  current_block_template_blob - The current block template blob
+  message_settings - The type of the message  
+  block_blob - The block blob
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
@@ -580,25 +585,27 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK\",\r\n \"current_block_template_blob\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK\",\r\n \"data\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK\",\r\n}"
+  #define CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK\",\r\n \"data\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK\",\r\n}"
+
  
  
  
-/*
+  /*
   This message is sent from the consensus node private key in the create_new_block function and received by the consensus node in the create_new_block function.
  
-  The purpose of this message is for the consensus node private key to sign the previous_block_hash|current_block_template_blob so the block will be valid and can be added to the network
+  The purpose of this message is for the block validator to sign the block_blob so the block will be valid and can be added to the network
  
   message_settings - The type of the message
+  block_blob_signature - The block blob signature
   public_address - The public address of the node that is sending the data.
-  message_data_settings - Previous block hash | current block template blob.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
   current_round_part_backup_node - The current main node in the current round part (0-5)
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"message_data_settings\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"data\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n}"
+  #define BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"block_blob_signature\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"data\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK\",\r\n}"
+
  
  
  
@@ -632,8 +639,9 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS "{\r\n \"message_settings\": \"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"public_address\": \"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"previous_block_hash\": \"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part\": \"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part_backup_node\": \"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"data\": \"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"xcash_proof_of_stake_signature\": \"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n}"
+  #define VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS "{\r\n \"message_settings\": \"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"public_address\": \"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"previous_block_hash\": \"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part\": \"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"current_round_part_backup_node\": \"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"data\": \"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n \"xcash_proof_of_stake_signature\": \"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS\",\r\n}"
 
+ 
   // reset the variables
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
@@ -712,4034 +720,1285 @@ int parse_json_data_test()
   }
   printf("\n");
 
-
-
   // test for parsing CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_consensus_node_IP_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }  
-  if (parse_json_data(result_test,"current_consensus_node_IP_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_consensus_node_IP_address from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_consensus_node_IP_address from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing current_consensus_node_IP_address from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
+    color_print("PASSED! Test for parsing NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"nodes_name_list",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"nodes_public_address_list",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"nodes_IP_address_list",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-  }  
-  if (parse_json_data(result_test,"nodes_name_list",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing nodes_name_list from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing nodes_name_list from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-    }
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing nodes_name_list from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-  }  
-  if (parse_json_data(result_test,"nodes_public_address_list",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing nodes_public_address_list from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing nodes_public_address_list from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing nodes_public_address_list from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST","red");
-  }
-  printf("\n");
+  settings = 1;
 
-
-
-  // test for parsing NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST
+    // test for parsing NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"nodes_updated_time",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-  }  
-  if (parse_json_data(result_test,"nodes_updated_time",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing nodes_updated_time from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing nodes_updated_time from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-    }
+    color_print("PASSED! Test for parsing NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing nodes_updated_time from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST","red");
-  }
-  printf("\n");
- 
- 
- 
+  settings = 1;
+
   // test for parsing CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"main_nodes_public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","green");
   }
-  if (parse_json_data(result_test,"main_nodes_public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing main_nodes_public_address from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing main_nodes_public_address from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing main_nodes_public_address from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-    }
+    color_print("PASSED! Test for parsing NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"message",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"VRF_block_blob",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"message",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-    }
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing message from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_beta_string_part_3_of_round",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_beta_string_part_3_of_round from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_beta_string_part_3_of_round from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_beta_string_part_3_of_round from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing MAIN_NODES_TO_NODES_PART_1_OF_ROUND
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,MAIN_NODES_TO_NODES_PART_1_OF_ROUND);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_public_key",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_alpha_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_proof",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_beta_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_public_key",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
+    color_print("PASSED! Test for parsing MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_alpha_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_proof",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_beta_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing MAIN_NODES_TO_NODES_PART_2_OF_ROUND
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,MAIN_NODES_TO_NODES_PART_2_OF_ROUND);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_public_key",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_random_character_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_alpha_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_proof",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_beta_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_random_character_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_random_character_string from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_random_character_string from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
+    color_print("PASSED! Test for parsing MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_random_character_string from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_public_key",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_alpha_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_proof",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_beta_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_2_OF_ROUND","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing MAIN_NODES_TO_NODES_PART_3_OF_ROUND
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,MAIN_NODES_TO_NODES_PART_3_OF_ROUND);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_public_key",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_alpha_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_proof",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vrf_beta_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_random_character_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_random_character_string from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_random_character_string from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
+    color_print("PASSED! Test for parsing MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_random_character_string from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_public_key",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_alpha_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_proof",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_beta_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_3_OF_ROUND","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing MAIN_NODES_TO_NODES_PART_4_OF_ROUND
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,MAIN_NODES_TO_NODES_PART_4_OF_ROUND);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"block_blob",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_public_key",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
+    color_print("PASSED! Test for parsing MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_public_key from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_alpha_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_alpha_string from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_proof",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_proof from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"vrf_beta_string",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vrf_beta_string from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
-  }
-  printf("\n");
+  settings = 1;
 
-
-
-  // test for parsing NODES_TO_NODES_VOTE_RESULTS
+    // test for parsing NODES_TO_NODES_VOTE_RESULTS
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,NODES_TO_NODES_VOTE_RESULTS);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from NODES_TO_NODES_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from NODES_TO_NODES_VOTE_RESULTS","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vote_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vote_data",data_test) == 0 || strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing NODES_TO_NODES_VOTE_RESULTS","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from NODES_TO_NODES_VOTE_RESULTS","red");
-  }  
-  if (parse_json_data(result_test,"vote_settings",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vote_settings from NODES_TO_NODES_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vote_settings from NODES_TO_NODES_VOTE_RESULTS","red");
-    }
+    color_print("PASSED! Test for parsing NODES_TO_NODES_VOTE_RESULTS","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing vote_settings from NODES_TO_NODES_VOTE_RESULTS","red");
-  }  
-  if (parse_json_data(result_test,"vote_data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vote_data from NODES_TO_NODES_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vote_data from NODES_TO_NODES_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing vote_data from NODES_TO_NODES_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from NODES_TO_NODES_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from NODES_TO_NODES_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from NODES_TO_NODES_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from NODES_TO_NODES_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from NODES_TO_NODES_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from NODES_TO_NODES_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from NODES_TO_NODES_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from NODES_TO_NODES_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from NODES_TO_NODES_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from NODES_TO_NODES_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from NODES_TO_NODES_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from NODES_TO_NODES_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from NODES_TO_NODES_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from NODES_TO_NODES_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from NODES_TO_NODES_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from NODES_TO_NODES_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODES_TO_NODES_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODES_TO_NODES_VOTE_RESULTS","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing NODES_TO_CONSENSUS_NODE_VOTE_RESULTS
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,NODES_TO_CONSENSUS_NODE_VOTE_RESULTS);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"vote_result",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  }  
-  if (parse_json_data(result_test,"vote_result",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing vote_result from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing vote_result from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-    }
+    color_print("PASSED! Test for parsing NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing vote_result from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  }  
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"nodes_name_list",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"nodes_public_address_list",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"nodes_IP_address_list",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-  }  
-  if (parse_json_data(result_test,"nodes_name_list",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing nodes_name_list from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing nodes_name_list from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-    }
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
   }
-  else
-  {
-    color_print("FAILED! Test for parsing nodes_name_list from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-  }  
-  if (parse_json_data(result_test,"nodes_public_address_list",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing nodes_public_address_list from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing nodes_public_address_list from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing nodes_public_address_list from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-  }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","green");
   }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"consensus_node_public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"consensus_node_IP_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","green");
   }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","green");
   }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
-  }
-  printf("\n");
+  settings = 1;
 
-
-
-  // test for parsing CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS
+  // test for parsing CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  append_string(result_test,CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  append_string(result_test,CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS);
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","green");
   }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  printf("\n");
+  settings = 1;
 
-
-
-  // test for parsing CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS
+  // test for parsing BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  append_string(result_test,CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  append_string(result_test,BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS);
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_settings",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
+    color_print("PASSED! Test for parsing BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
   }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_settings",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  printf("\n");
+  settings = 1;
 
-
-
-  // test for parsing CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK
+  // test for parsing CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  append_string(result_test,CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  append_string(result_test,CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK);
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"block_blob",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
   }
-  if (parse_json_data(result_test,"current_block_template_blob",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_block_template_blob from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_block_template_blob from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_block_template_blob from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  printf("\n");
+  settings = 1;
 
-
-
-  // test for parsing CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK
+  // test for parsing BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  append_string(result_test,CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  append_string(result_test,BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK);
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"block_blob_signature",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
+    color_print("PASSED! Test for parsing BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
   }
-  if (parse_json_data(result_test,"message_data_settings",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_data_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_data_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing message_data_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","green");
   }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","green");
   }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND","red");
-  }
-  printf("\n");
+  settings = 1;
 
-
-
-  // test for parsing CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK
+  // test for parsing CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  append_string(result_test,CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  append_string(result_test,CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK);
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"block_blob -",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK","green");
   }
-  if (parse_json_data(result_test,"current_block_template_blob",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_block_template_blob from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_block_template_blob from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_block_template_blob from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK","red");
-  }
-  printf("\n");
+  settings = 1;
 
-
-
-  // test for parsing CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK
+  // test for parsing BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  append_string(result_test,CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  append_string(result_test,BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK);
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"block_blob_signature",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
+    color_print("PASSED! Test for parsing BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
   }
-  if (parse_json_data(result_test,"message_data_settings",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_data_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_data_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing message_data_settings from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK","red");
-  }
-  printf("\n");
-
-
+  settings = 1;
 
   // test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   append_string(result_test,CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","green");
   }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES","red");
-  }
-  printf("\n");
+  settings = 1;
 
-
-
-  // test for parsing VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS
+  // test for parsing VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  append_string(result_test,VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS);
-  if (parse_json_data(result_test,"message_settings",data_test) != 0)
+  append_string(result_test,VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS);
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
   {
-    // check if the data is correct
-    if (strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing message_settings from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing message_settings from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) != 0)
+  {
+    settings = 0;
+  }
+  if (settings == 0)
+  {
+    color_print("FAILED! Test for parsing VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
   }
   else
   {
-    color_print("FAILED! Test for parsing message_settings from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
+    color_print("PASSED! Test for parsing VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
   }
-  if (parse_json_data(result_test,"public_address",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing public_address from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing public_address from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing public_address from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing previous_block_hash from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing previous_block_hash from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing previous_block_hash from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing current_round_part_backup_node from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing current_round_part_backup_node from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing current_round_part_backup_node from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"data",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing data from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing data from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing data from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) != 0)
-  {
-    // check if the data is correct
-    if (strncmp(data_test,"VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS",BUFFER_SIZE) == 0)
-    {
-      color_print("PASSED! Test for parsing xcash_proof_of_stake_signature from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-    }
-  }
-  else
-  {
-    color_print("FAILED! Test for parsing xcash_proof_of_stake_signature from VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS","red");
-  }
-  
-  
+  settings = 1;
 
 
-
- 
  
   // write the end test message
   if (count_test == PARSE_JSON_DATA_TOTAL_TEST)
@@ -4781,16 +2040,16 @@ int parse_json_data_test()
   #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE
   #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE
   #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE
-  #undef CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS
-  #undef CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS
-  #undef CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CONSENSUS_NODE_CREATE_NEW_BLOCK
-  #undef CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK
+  #undef CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS
+  #undef BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS
+  #undef CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK
+  #undef BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK
   #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND
   #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND
-  #undef CONSENSUS_NODE_TO_CONSENSUS_NODE_PRIVATE_KEY_CREATE_NEW_BLOCK
-  #undef CONSENSUS_NODE_PRIVATE_KEY_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK
+  #undef CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CREATE_NEW_BLOCK
+  #undef BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_CREATE_NEW_BLOCK
   #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES
-  #undef VOTING_WEBSITE_API_PROGRAM_TO_CONSENSUS_NODE_PRIVATE_KEY_SEND_XCASH_PROOF_OF_STAKE_SETTINGS
+  #undef VOTING_WEBSITE_API_PROGRAM_TO_BLOCK_VALIDATION_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS
 }
 
 
