@@ -153,6 +153,7 @@ int get_updated_node_list()
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
    // define macros
   #define pointer_reset_all \
@@ -161,10 +162,12 @@ int get_updated_node_list()
   free(message); \
   message = NULL; \
   free(message2); \
-  message2 = NULL;
+  message2 = NULL; \
+  free(message3); \
+  message3 = NULL;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || message == NULL || message2 == NULL)
+  if (data == NULL || message == NULL || message2 == NULL || message3 == NULL)
   {
     if (data != NULL)
     {
@@ -178,12 +181,20 @@ int get_updated_node_list()
     {
       pointer_reset(message2);
     }
+    if (message3 != NULL)
+    {
+      pointer_reset(message3);
+    }
     return 0;
   }
 
+  #define GET_UPDATED_NODE_LIST_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
   // iniltize the variables
   memset(data,0,strnlen(data,BUFFER_SIZE));
-  memcpy(data,"0",1);
 
   // read the nodes_updated_time.txt
   read_file(data,NODES_UPDATED_TIME_FILE_NAME);
@@ -198,46 +209,41 @@ int get_updated_node_list()
   // sign_data
   if (sign_data(message,0) == 0)
   { 
-    color_print("Could not sign_data","red");
-    pointer_reset_all;
-    return 0;
+    GET_UPDATED_NODE_LIST_ERROR("Could not sign_data\nFunction: get_updated_node_list\nReceived Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST\nSend Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST");
   }
  
   // send the message to the consensus node and consensus backup node
-  if (send_and_receive_data_socket(data,current_consensus_nodes_IP_address,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",0) == 0)
+  if (send_and_receive_data_socket(data,current_consensus_nodes_IP_address,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"getting last block verifiers update time",0) == 0)
   {
-    color_print("Could not send data to the consensus node","red");
-    pointer_reset_all;
-    return 0; 
+    GET_UPDATED_NODE_LIST_ERROR("Could not send data to the consensus node\nFunction: get_updated_node_list\nReceived Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST\nSend Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST");
   }
   
   // verify the data
   if (verify_data(data,0,1,1) == 0)
   {   
-    color_print("Could not verify data from the consensus node","red");
-    pointer_reset_all;
-    return 0; 
+    GET_UPDATED_NODE_LIST_ERROR("Could not verify data from the consensus node\nFunction: get_updated_node_list\nReceived Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST\nSend Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST");
   }
 
   // parse the data
   memset(message,0,strnlen(message,BUFFER_SIZE));
-  if (parse_json_data(data,"nodes_name_list",message) == 0 || parse_json_data(data,"nodes_public_address_list",message2) == 0)
+  if (parse_json_data(data,"nodes_name_list",message) == 0 || parse_json_data(data,"nodes_public_address_list",message2) == 0 || parse_json_data(data,"nodes_IP_address_list",message3) == 0)
   {
-    color_print("Could not parse data from the CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST message","red");
-    pointer_reset_all;
-    return 0; 
+    GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST\nSend Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST");
   }
 
   // check if we need to update the node list
   memset(nodes_public_address_list,0,strnlen(nodes_public_address_list,BUFFER_SIZE));
   memset(nodes_name_list,0,strnlen(nodes_name_list,BUFFER_SIZE));
-  if (strncmp(message,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message2,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
+  memset(nodes_IP_address_list,0,strnlen(nodes_name_list,BUFFER_SIZE));
+  if (strncmp(message,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message2,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message3,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
   {
     // update the node list and load the nodes list into the global variables  
     write_file(message,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME); 
-    write_file(message2,NODES_NAME_LIST_FILE_NAME);     
+    write_file(message2,NODES_NAME_LIST_FILE_NAME);   
+    write_file(message3,NODES_IP_ADDRESS_LIST_FILE_NAME);   
     memcpy(nodes_public_address_list,message,strnlen(message,BUFFER_SIZE));
     memcpy(nodes_name_list,message2,strnlen(message2,BUFFER_SIZE));
+    memcpy(nodes_IP_address_list,message3,strnlen(message3,BUFFER_SIZE));
     color_print("The node list has been updated successfully\nLoaded the data, and saved the node list to files\n","green");
   }
   else
@@ -245,11 +251,13 @@ int get_updated_node_list()
     // the node list has already been updated
     read_file(nodes_public_address_list,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME);
     read_file(nodes_name_list,NODES_NAME_LIST_FILE_NAME);
+    read_file(nodes_IP_address_list,NODES_IP_ADDRESS_LIST_FILE_NAME);
     color_print("The node list is already up to date\nLoaded the current node list from the files.\n","green");
   }
   return 1;
 
   #undef pointer_reset_all
+  #undef GET_UPDATED_NODE_LIST_ERROR
 }
 
 
