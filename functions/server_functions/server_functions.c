@@ -55,6 +55,12 @@ int get_current_consensus_nodes_IP_address()
   free(message2); \
   message2 = NULL;
 
+  #define GET_CURRENT_CONSENSUS_NODES_IP_ADDRESS_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || message == NULL || message2 == NULL)
   {
@@ -78,44 +84,36 @@ int get_current_consensus_nodes_IP_address()
   }
 
   // create the message
-  memcpy(message,"{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS\",\r\n}",102);
+  memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS\",\r\n}",91);
 
   // sign_data
   if (sign_data(message,0) == 0)
   { 
-    color_print("Could not sign_data","red");
-    pointer_reset_all;
-    return 0;
+    GET_CURRENT_CONSENSUS_NODES_IP_ADDRESS_ERROR("Could not sign_data\nFunction: get_current_consensus_nodes_IP_address\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS");
   }
  
   // send the message to the consensus node and consensus backup node
-  const int SEND_AND_RECEIVE_DATA_SOCKET_DATA1 = send_and_receive_data_socket(data,CONSENSUS_NODES_IP_ADDRESS,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",0);
-  const int SEND_AND_RECEIVE_DATA_SOCKET_DATA2 = send_and_receive_data_socket(data2,CONSENSUS_BACKUP_NODES_IP_ADDRESS,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",0);
+  const int SEND_AND_RECEIVE_DATA_SOCKET_DATA1 = send_and_receive_data_socket(data,CONSENSUS_NODES_IP_ADDRESS,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"get current consensus node IP address",0);
+  const int SEND_AND_RECEIVE_DATA_SOCKET_DATA2 = send_and_receive_data_socket(data2,CONSENSUS_BACKUP_NODES_IP_ADDRESS,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"get current consensus node IP address",0);
 
   // verify the data
   if (verify_data(data,0,1,1) == 0 || verify_data(data2,0,1,1) == 0)
   {   
-    color_print("Could not verify data from the consensus node","red");
-    pointer_reset_all;
-    return 0; 
+    GET_CURRENT_CONSENSUS_NODES_IP_ADDRESS_ERROR("Could not verify data from the consensus node\nFunction: get_current_consensus_nodes_IP_address\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS");
   }
 
   // parse the data
   memset(message,0,strnlen(message,BUFFER_SIZE));
   if (parse_json_data(data,"current_consensus_node_IP_address",message) == 0 || parse_json_data(data2,"current_consensus_node_IP_address",message2) == 0)
   {
-    color_print("Could not parse current_consensus_node_IP_address from the CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS message","red");
-    pointer_reset_all;
-    return 0; 
+    GET_CURRENT_CONSENSUS_NODES_IP_ADDRESS_ERROR("Could not parse current_consensus_node_IP_address from the CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS message\nFunction: get_current_consensus_nodes_IP_address\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS");
   }
   
   // check what consensus node IP address is the current consensus node IP address
   if (SEND_AND_RECEIVE_DATA_SOCKET_DATA1 == 1 && SEND_AND_RECEIVE_DATA_SOCKET_DATA2 == 1 && strncmp(message,message2,BUFFER_SIZE) != 0)
   {
     // The consensus node and the consensus backup node returned different results
-    color_print("The consensus node and the consensus backup node returned different results\n","red");
-    pointer_reset_all;
-    return 0;
+    GET_CURRENT_CONSENSUS_NODES_IP_ADDRESS_ERROR("The consensus node and the consensus backup node returned different results\nFunction: get_current_consensus_nodes_IP_address\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS");
   }
   else if (SEND_AND_RECEIVE_DATA_SOCKET_DATA1 == 1 && SEND_AND_RECEIVE_DATA_SOCKET_DATA2 == 1 && strncmp(message,message2,BUFFER_SIZE) == 0)
   {
@@ -131,13 +129,12 @@ int get_current_consensus_nodes_IP_address()
   }
   else
   {
-    color_print("An error has occured\n","red");
-    pointer_reset_all;
-    return 0; 
+    GET_CURRENT_CONSENSUS_NODES_IP_ADDRESS_ERROR("An error has occured\nFunction: get_current_consensus_nodes_IP_address\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS");
   }
   return 1;
 
   #undef pointer_reset_all
+  #undef GET_CURRENT_CONSENSUS_NODES_IP_ADDRESS_ERROR
 }
 
 
