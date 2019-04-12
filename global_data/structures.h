@@ -30,10 +30,10 @@ Global Structures
 };
 
  struct mainnode_timeout_thread_parameters {
-    const pid_t process_id; // Holds the forked process ID that the client is connected to
+    pid_t process_id; // Holds the forked process ID that the client is connected to
     int data_received; // 1 if the node has received data from the main node, otherwise 0
-    const char* main_node; // The main node (VRF_PUBLIC_AND_PRIVATE_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    const char* current_round_part; // The current round part (1-4).
-    const char* current_round_part_backup_node; // The current main node in the current round part (0-5)
+    char* main_node; // The main node (VRF_PUBLIC_AND_PRIVATE_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
+    char* current_round_part; // The current round part (1-4).
+    char* current_round_part_backup_node; // The current main node in the current round part (0-5)
 };
 #endif

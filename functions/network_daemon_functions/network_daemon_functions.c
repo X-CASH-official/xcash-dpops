@@ -4,6 +4,7 @@
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
+#include "structures.h"
 #include "variables.h"
 
 #include "define_macros_functions.h"

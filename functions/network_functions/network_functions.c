@@ -366,7 +366,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: send_and_receive_data_socket
-Description: Send a message through a socket
+Description: Send a message through a socket and receives data
 Parameters:
   result - The result from the host
   HOST - The host to send the message to

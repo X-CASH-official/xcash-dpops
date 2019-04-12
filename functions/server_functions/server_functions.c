@@ -304,7 +304,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, pthread_t thread_id, char* message)
+int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, struct mainnode_timeout_thread_parameters* parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -315,10 +315,13 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
     return 0;
   }
 
+  // threads
+  pthread_t thread_id;
+
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR(settings) \
   color_print(settings,"red"); \
-  pointer_reset_(data); \
+  pointer_reset(data); \
   return 0;
 
   // verify the data
@@ -364,17 +367,15 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
   {
     memcpy(data,"BLOCK_PRODUCER",14);
   }
-  // create a struct for the parameters
-  struct mainnode_timeout_thread_parameters parameters = {
-    (const pid_t)getpid(),
-    0,
-    (const char*)data,
-    (const char*)current_round_part,
-    (const char*)current_round_part_backup_node,
 
-  };
+  // create a mainnode_timeout_thread_parameters struct since this function will use the mainnode_timeout_thread
+  parameters->data_received = 0;
+  parameters->main_node = data;
+  parameters->current_round_part = current_round_part;
+  parameters->current_round_part_backup_node = current_round_part_backup_node;
+ 
   // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
-  if (pthread_create(&thread_id, NULL, &mainnode_timeout_thread, (void *)&parameters) != 0)
+  if (pthread_create(&thread_id, NULL, &mainnode_timeout_thread, (void *)parameters) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not create the timeout thread\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
   }
@@ -385,8 +386,26 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
   }
 
   // set the next server message
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",35);
+  if (strncmp(current_round_part,"1",BUFFER_SIZE) == 0)
+  {
+    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",35);
+  }
+  else if (strncmp(current_round_part,"2",BUFFER_SIZE) == 0)
+  {
+    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",35);
+  }
+  else if (strncmp(current_round_part,"3",BUFFER_SIZE) == 0)
+  {
+    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",35);
+  }
+  else if (strncmp(current_round_part,"4",BUFFER_SIZE) == 0)
+  {
+    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35);
+  }
 
   pointer_reset(data);
   return 1;
@@ -420,6 +439,7 @@ int create_server(const int MESSAGE_SETTINGS)
   int receive_data_result; 
   struct sockaddr_in addr, cl_addr;  
   struct sockaddr_in serv_addr;
+  struct mainnode_timeout_thread_parameters mainnode_timeout_thread_parameters;
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
@@ -654,19 +674,23 @@ int create_server(const int MESSAGE_SETTINGS)
              SERVER_ERROR(1);
            }
          }
-         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST") != NULL)
-         {
-           if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer) == 0)
-           {
-             SERVER_ERROR(1);
-           }
-         }
          else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS") != NULL)
          {
-           if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer) == 0)
+           // only close the forked process on the timeout in the mainnode_timeout_thread
+           // create a mainnode_timeout_thread_parameters struct since this function will use the mainnode_timeout_thread
+           mainnode_timeout_thread_parameters.process_id = getpid();
+           mainnode_timeout_thread_parameters.data_received = 0;
+           mainnode_timeout_thread_parameters.main_node = "";
+           mainnode_timeout_thread_parameters.current_round_part = "";
+           mainnode_timeout_thread_parameters.current_round_part_backup_node = "";
+           if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,&mainnode_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
-           }
+           }           
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS") != NULL)
+         {
+                   
          } 
          else
          {

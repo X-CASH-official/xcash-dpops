@@ -4,12 +4,14 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <pthread.h>
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
 #include "structures.h"
 #include "variables.h"
 
+#include "network_functions.h"
 #include "thread_server_functions.h"
 
 /*
@@ -72,8 +74,9 @@ void* total_connection_time_thread(void* parameters)
     }
   }
   pointer_reset(string);
-  kill((intptr_t)data->process_id, SIGKILL);  
-  return NULL;
+  // close the client connection
+  kill((intptr_t)data->process_id, SIGKILL); 
+  pthread_exit((void *)(intptr_t)1);
 }
 
 
@@ -118,7 +121,7 @@ void* mainnode_timeout_thread(void* parameters)
     memcpy(string+74+main_node_length,data->current_round_part,1);
     color_print(string,"green");
 
-    // set the next server message
+    // set the next server message since the block verifiers will send the data to each other
     memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
     memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27);  
   }
@@ -130,14 +133,39 @@ void* mainnode_timeout_thread(void* parameters)
     memcpy(string+31+main_node_length,data->current_round_part_backup_node,1);
     memcpy(string+32+main_node_length," in current round part ",23);
     memcpy(string+55+main_node_length,data->current_round_part,1);
-    memcpy(string+56+main_node_length," did not send any data before the timeout",41);
+    memcpy(string+56+main_node_length," did not send any data before the timeout\nSending the NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE message to the consensus node",145);
     color_print(string,"red");  
 
-    // set the next server message
+    // set the next server message since a backup node will have to be selected
     memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",48);  
+    memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",48); 
+
+    // create the message
+    memcpy(string,"{\r\n \"message_settings\": \"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE\",\r\n}",91);
+
+    // sign_data
+    if (sign_data(string,0) == 0)
+    { 
+      color_print("Could not sign_data\nFunction: mainnode_timeout_thread\nSend Message: NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
+    }
+ 
+    // send the message to the consensus node
+    if (send_data_socket(current_consensus_nodes_IP_address,SEND_DATA_PORT,string,"sending NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE to the consensus node",0) == 0)
+    {
+      color_print("Could not send data to the consensus node\n\nFunction: mainnode_timeout_thread\nSend Message: NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
+    } 
   }
   pointer_reset(string);
+
+  // close the client connection
   kill((intptr_t)data->process_id, SIGTERM);
-  return NULL;
+
+  // reset the mainnode_timeout_thread_parameters
+  data->process_id = 0;
+  data->data_received = 0;
+  data->main_node = "";
+  data->current_round_part = "";
+  data->current_round_part_backup_node = "";
+
+  pthread_exit((void *)(intptr_t)1);
 }
