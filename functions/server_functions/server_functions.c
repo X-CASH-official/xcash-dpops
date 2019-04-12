@@ -209,26 +209,26 @@ int get_updated_node_list()
   // sign_data
   if (sign_data(message,0) == 0)
   { 
-    GET_UPDATED_NODE_LIST_ERROR("Could not sign_data\nFunction: get_updated_node_list\nReceived Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST\nSend Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST");
+    GET_UPDATED_NODE_LIST_ERROR("Could not sign_data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
   }
  
   // send the message to the consensus node and consensus backup node
   if (send_and_receive_data_socket(data,current_consensus_nodes_IP_address,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"getting last block verifiers update time",0) == 0)
   {
-    GET_UPDATED_NODE_LIST_ERROR("Could not send data to the consensus node\nFunction: get_updated_node_list\nReceived Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST\nSend Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST");
+    GET_UPDATED_NODE_LIST_ERROR("Could not send data to the consensus node\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
   }
   
   // verify the data
   if (verify_data(data,0,1,1) == 0)
   {   
-    GET_UPDATED_NODE_LIST_ERROR("Could not verify data from the consensus node\nFunction: get_updated_node_list\nReceived Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST\nSend Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST");
+    GET_UPDATED_NODE_LIST_ERROR("Could not verify data from the consensus node\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
   }
 
   // parse the data
   memset(message,0,strnlen(message,BUFFER_SIZE));
   if (parse_json_data(data,"nodes_name_list",message) == 0 || parse_json_data(data,"nodes_public_address_list",message2) == 0 || parse_json_data(data,"nodes_IP_address_list",message3) == 0)
   {
-    GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST\nSend Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST");
+    GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
   }
 
   // check if we need to update the node list
@@ -419,9 +419,22 @@ int create_server(const int MESSAGE_SETTINGS)
   free(string); \
   string = NULL;
 
+  /* Reset the node so it is ready for the next round.
+  close the client socket
+  reset the variables for the forked process
+  reset the current_round_part to 1 and current_round_part_backup_node to 0
+  reset the server_message to CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND|CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS
+  this way the node will sit out the current round, and start the next round.
+  */
   #define SERVER_ERROR(settings) \
   close(SOCKET); \
   pointer_reset_all; \
+  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE)); \
+  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE)); \
+  memcpy(current_round_part,"1",1); \
+  memcpy(current_round_part_backup_node,"0",1); \
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE)); \
+  memcpy(server_message,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND|CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",96); \
   if (settings == 0) \
   { \
     return 0; \
@@ -625,41 +638,27 @@ int create_server(const int MESSAGE_SETTINGS)
 
 
          // check if a certain type of message has been received         
-         if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
+         if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strstr(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA") != NULL)
          {
            if (server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer) == 0)
-           {
+           { 
              SERVER_ERROR(1);
            }
          }
-         else if (strstr(buffer,"\"message_settings\": \"NODE_TO_CONSENSUS_NODE_RECEIVE_UPDATED_NODE_LIST\"") != NULL && strncmp(server_message,"NODE_TO_CONSENSUS_NODE_RECEIVE_UPDATED_NODE_LIST",BUFFER_SIZE) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST") != NULL)
          {
            if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
          }
-         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS\"") != NULL && strncmp(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",BUFFER_SIZE) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS") != NULL)
          {
-           // check to see if the node should start only at the begining of a round
-           if (strncmp(current_round_part,"",strnlen(current_round_part,BUFFER_SIZE)) == 0 && strncmp(current_round_part,"",strnlen(current_round_part,BUFFER_SIZE)) == 0)
+           if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer) == 0)
            {
-             if (strstr(buffer,"\"current_round_part\": \"1\"") != NULL && strstr(buffer,"\"current_round_part_backup_node\": \"0\"") != NULL)
-             {
-               if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer) == 0)
-               {
-                 SERVER_ERROR(1);
-               }               
-             }
+             SERVER_ERROR(1);
            }
-           else
-           {
-             if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,thread_id,buffer) == 0)
-             {
-              SERVER_ERROR(1);
-             }
-           }           
-         }
+         } 
          else
          {
            printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);

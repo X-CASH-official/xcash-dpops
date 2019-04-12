@@ -23,10 +23,14 @@ int main(int parameters_count, char* parameters[])
   // iniltize the random number generator
   srand(time(0));
 
+  // Variables
+  FILE* file;
+
   // iniltize the global variables
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   nodes_public_address_list = (char*)calloc(BUFFER_SIZE,sizeof(char));
   nodes_name_list = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  nodes_IP_address_list = (char*)calloc(BUFFER_SIZE,sizeof(char));
   nodes_public_address_list_received_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   server_message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_consensus_nodes_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -35,7 +39,7 @@ int main(int parameters_count, char* parameters[])
   current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (xcash_wallet_public_address == NULL || nodes_public_address_list == NULL || nodes_name_list == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_consensus_nodes_IP_address == NULL || main_nodes_public_address == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
+  if (xcash_wallet_public_address == NULL || nodes_public_address_list == NULL || nodes_name_list == NULL || nodes_IP_address_list == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_consensus_nodes_IP_address == NULL || main_nodes_public_address == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
   {
     if (xcash_wallet_public_address != NULL)
     {
@@ -48,6 +52,10 @@ int main(int parameters_count, char* parameters[])
     if (nodes_name_list != NULL)
     {
       pointer_reset(nodes_name_list);
+    }
+    if (nodes_IP_address_list != NULL)
+    {
+      pointer_reset(nodes_IP_address_list);
     }
     if (nodes_public_address_list_received_data != NULL)
     {
@@ -76,18 +84,19 @@ int main(int parameters_count, char* parameters[])
     return 0;
   } 
 
-  // set the current_round_part and current_round_part_backup_node to an empty string, this way the node will start at the begining of a round
-  memcpy(current_round_part,"",1); 
-  memcpy(current_round_part_backup_node,"",1);
+  // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
+  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
+  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
+  memcpy(current_round_part,"1",1);
+  memcpy(current_round_part_backup_node,"0",1);
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND|CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",96);
 
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
 
   // write the message
   color_print("X-CASH Proof Of Stake, Version 1.0.0\n","green");
-
-  // set the server_message
-  memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",48);
 
   // get the wallets public address
   printf("Getting the public address\n\n");
@@ -118,6 +127,19 @@ int main(int parameters_count, char* parameters[])
       printf(INVALID_PARAMETERS_ERROR_MESSAGE);
     }
     exit(0);
+  }
+
+  // check if the files are created and if not create them with default values
+  file = fopen(NODES_UPDATED_TIME_FILE_NAME,"r");
+  if (file == NULL)
+  {
+    file = fopen(NODES_UPDATED_TIME_FILE_NAME,"w");
+    fprintf(file,"0");
+    fclose(file);
+  }
+  else
+  {    
+    fclose(file);
   }
 
   // get the current consensus nodes IP address
@@ -159,8 +181,6 @@ int main(int parameters_count, char* parameters[])
     color_print("Could not get the updated node list\n","red");
     exit(0);    
   }
-
-
 
   // start the server
   if (create_server(1) == 0)
