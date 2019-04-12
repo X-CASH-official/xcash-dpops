@@ -8,6 +8,7 @@
 #include "define_macro_functions.h"
 #include "define_macros.h"
 #include "structures.h"
+#include "variables.h"
 
 #include "thread_server_functions.h"
 
@@ -116,6 +117,10 @@ void* mainnode_timeout_thread(void* parameters)
     memcpy(string+51+main_node_length," in current round part ",23);
     memcpy(string+74+main_node_length,data->current_round_part,1);
     color_print(string,"green");
+
+    // set the next server message
+    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27);  
   }
   else
   {
@@ -126,7 +131,11 @@ void* mainnode_timeout_thread(void* parameters)
     memcpy(string+32+main_node_length," in current round part ",23);
     memcpy(string+55+main_node_length,data->current_round_part,1);
     memcpy(string+56+main_node_length," did not send any data before the timeout",41);
-    color_print(string,"red");    
+    color_print(string,"red");  
+
+    // set the next server message
+    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+    memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",48);  
   }
   pointer_reset(string);
   kill((intptr_t)data->process_id, SIGTERM);

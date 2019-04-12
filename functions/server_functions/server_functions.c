@@ -315,42 +315,46 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
     return 0;
   }
 
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_(data); \
+  return 0;
+
   // verify the data
   if (verify_data(message,1,0,0) == 0)
   {
-    // close the forked process
-    color_print("Message could not be verified from consensus node for CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS","red");
-    return 0;
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Message could verify data\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
   }
 
   // parse the message
   if (parse_json_data(message,"main_nodes_public_address",data) == 0)
   {
-    color_print("Could not parse main_nodes_public_address from the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message","red");
-    return 0;
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not parse main_nodes_public_address\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
   }
   memcpy(main_nodes_public_address,data,strnlen(data,BUFFER_SIZE));
+  memset(data,0,strnlen(data,BUFFER_SIZE));
 
   if (parse_json_data(message,"current_round_part",data) == 0)
   {
-    color_print("Could not parse current_round_part from the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message","red");
-    return 0;
-  }
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not parse current_round_part\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
+  }  
   memcpy(current_round_part,data,strnlen(data,BUFFER_SIZE));
+  memset(data,0,strnlen(data,BUFFER_SIZE));
 
   if (parse_json_data(message,"current_round_part_backup_node",data) == 0)
   {
-    color_print("Could not parse current_round_part_backup_node from the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message","red");
-    return 0;
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not parse current_round_part_backup_node\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
   }
   memcpy(current_round_part_backup_node,data,strnlen(data,BUFFER_SIZE));
+  memset(data,0,strnlen(data,BUFFER_SIZE));
 
 
 
   // create a timeout from the time the consensus node lets us know who the main node is for this part of the round, to the time the main node sends us data.
   if (strncmp(current_round_part,"1",BUFFER_SIZE) == 0 || strncmp(current_round_part,"3",BUFFER_SIZE) == 0)
   {
-    memcpy(data,"VRF_PUBLIC_AND_PRIVATE_KEY",26);
+    memcpy(data,"VRF_PUBLIC_AND_SECRET_KEY",25);
   }
   else if (strncmp(current_round_part,"2",BUFFER_SIZE) == 0)
   {
@@ -372,13 +376,18 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, p
   // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
   if (pthread_create(&thread_id, NULL, &mainnode_timeout_thread, (void *)&parameters) != 0)
   {
-    return 0;
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not create the timeout thread\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
   }
-  // set the thread to dettach once completed, since we do not need to use anything it will return.
+  // set the thread to dettach once completed, since we do not need to use anything it will return
   if (pthread_detach(thread_id) != 0)
   {
-    return 0;
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not start the timeout thread in detach mode\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
   }
+
+  // set the next server message
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",35);
+
   pointer_reset(data);
   return 1;
 }
