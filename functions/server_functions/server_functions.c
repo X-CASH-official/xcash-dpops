@@ -1188,30 +1188,83 @@ int server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_no
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round
-Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND message
+Name: server_receive_data_socket_consensus_node_to_node_and_main_node_restart
+Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE or CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES message
 Parameters:
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round(char* message)
+int server_receive_data_socket_consensus_node_to_node_and_main_node_restart(char* message)
 {
   // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_NEW_PART_OF_ROUND(settings) \
+  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_RESTART(settings) \
   color_print(settings,"red"); \
   return 0;
 
   // verify the data
   if (verify_data(message,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_NEW_PART_OF_ROUND("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round\nReceived Message: CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND");
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_RESTART("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_node_and_main_node_restart");
   }
+
+  // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
+  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
+  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
+  memcpy(current_round_part,"1",1);
+  memcpy(current_round_part_backup_node,"0",1);
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS|CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",96);
   
   return 1;
 
-  #undef SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_NEW_PART_OF_ROUND
+  #undef SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_RESTART
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_consensus_node_to_node_and_main_node_message_consensus_node_change
+Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_consensus_node_to_node_and_main_node_message_consensus_node_change(char* message)
+{
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_CONSENSUS_NODE_CHANGE(settings) \
+  color_print(settings,"red"); \
+  return 0;
+
+  // verify the data
+  if (verify_data(message,0,0,0) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_CONSENSUS_NODE_CHANGE("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_node_and_main_node_message_consensus_node_change\nReceived Message: CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE");
+  }
+
+  // parse the data
+  memset(current_consensus_nodes_IP_address,0,strnlen(current_consensus_nodes_IP_address,BUFFER_SIZE));
+  if (parse_json_data(message,"consensus_node_public_address",current_consensus_nodes_IP_address) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_RESTART("Could not parse data\nFunction: server_receive_data_socket_consensus_node_to_node_and_main_node_restart");
+  }
+
+  // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
+  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
+  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
+  memcpy(current_round_part,"1",1);
+  memcpy(current_round_part_backup_node,"0",1);
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS|CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",96);
+
+  return 1;
+
+  #undef SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_CONSENSUS_NODE_CHANGE
 }
 
 
@@ -1551,9 +1604,18 @@ int create_server(const int MESSAGE_SETTINGS)
            server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes(buffer);
            SERVER_ERROR(1);
          } 
-         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND\"") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES\"") != NULL)
          {
            if (server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round(buffer) == 0)
+           {
+             SERVER_ERROR(1);
+           }
+           // close the server
+           break;           
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE\"") != NULL)
+         {
+           if (server_receive_data_socket_consensus_node_to_node_and_main_node_message_consensus_node_change(buffer) == 0)
            {
              SERVER_ERROR(1);
            }
