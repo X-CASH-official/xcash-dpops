@@ -535,7 +535,10 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+    if (memcmp(block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+    }
   }
 
   // start the node_to_node_message_timeout
@@ -646,7 +649,10 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+    if (memcmp(block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+    }
   }
 
   // start the node_to_node_message_timeout
@@ -765,7 +771,10 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+    if (memcmp(block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+    }
   }
 
   // start the node_to_node_message_timeout
@@ -875,7 +884,10 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+    if (memcmp(block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+    }
   }
 
   // start the node_to_node_message_timeout
@@ -1041,7 +1053,10 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"",0);
+    if (memcmp(block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"",0);
+    }
   }
 
   // set the next server message since the block verifiers will send the data to each other
