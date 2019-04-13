@@ -200,6 +200,8 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t message_length = strnlen(MESSAGE,BUFFER_SIZE) - 134;
+  size_t count;
+  int settings = 0;
 
   // define macros
   #define pointer_reset_all \
@@ -296,9 +298,15 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   }    
   if (strncmp(message_settings,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
   {
-    memcpy(data,public_address,XCASH_WALLET_LENGTH);
-    memcpy(data+XCASH_WALLET_LENGTH,"|",1);
-    if (strstr(nodes_public_address_list,data) != NULL)
+    // check if the public address is in the block_verifiers_list struct
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (memcmp(public_address,block_verifiers_list.block_verifiers_public_address,XCASH_WALLET_LENGTH) == 0)
+      {
+        settings = 1;
+      }
+    }
+    if (settings == 0)
     {
       pointer_reset_all;
       return 0;

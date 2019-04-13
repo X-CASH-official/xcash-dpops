@@ -151,14 +151,19 @@ int get_updated_node_list()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  size_t count2;
 
    // define macros
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
+  free(data2); \
+  data2 = NULL; \
   free(message); \
   message = NULL; \
   free(message2); \
@@ -167,11 +172,15 @@ int get_updated_node_list()
   message3 = NULL;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || message == NULL || message2 == NULL || message3 == NULL)
+  if (data == NULL || data2 == NULL || message == NULL || message2 == NULL || message3 == NULL)
   {
     if (data != NULL)
     {
       pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
     }
     if (message != NULL)
     {
@@ -232,28 +241,57 @@ int get_updated_node_list()
   }
 
   // check if we need to update the node list
-  memset(nodes_public_address_list,0,strnlen(nodes_public_address_list,BUFFER_SIZE));
-  memset(nodes_name_list,0,strnlen(nodes_name_list,BUFFER_SIZE));
-  memset(nodes_IP_address_list,0,strnlen(nodes_name_list,BUFFER_SIZE));
   if (strncmp(message,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message2,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message3,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
   {
     // update the node list and load the nodes list into the global variables  
-    write_file(message,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME); 
-    write_file(message2,NODES_NAME_LIST_FILE_NAME);   
-    write_file(message3,NODES_IP_ADDRESS_LIST_FILE_NAME);   
-    memcpy(nodes_public_address_list,message,strnlen(message,BUFFER_SIZE));
-    memcpy(nodes_name_list,message2,strnlen(message2,BUFFER_SIZE));
-    memcpy(nodes_IP_address_list,message3,strnlen(message3,BUFFER_SIZE));
-    color_print("The node list has been updated successfully\nLoaded the data, and saved the node list to files\n","green");
+    write_file(message,NODES_NAME_LIST_FILE_NAME);  
+    write_file(message2,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME);      
+    write_file(message3,NODES_IP_ADDRESS_LIST_FILE_NAME); 
+    color_print("The node list has been updated successfully","green");
   }
   else
   {
-    // the node list has already been updated
-    read_file(nodes_public_address_list,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME);
-    read_file(nodes_name_list,NODES_NAME_LIST_FILE_NAME);
-    read_file(nodes_IP_address_list,NODES_IP_ADDRESS_LIST_FILE_NAME);
-    color_print("The node list is already up to date\nLoaded the current node list from the files.\n","green");
+    // the node list has already been updated    
+    read_file(message,NODES_NAME_LIST_FILE_NAME);
+    read_file(message2,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME);
+    read_file(message3,NODES_IP_ADDRESS_LIST_FILE_NAME);
+    color_print("The node list is already up to date","green");
   }
+
+  // clear any data that was already in the block_verifiers_list struct
+  for (count = 0; count <= BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(block_verifiers_list.block_verifiers_name[count],0,strnlen(block_verifiers_list.block_verifiers_name[count],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
+    memset(block_verifiers_list.block_verifiers_public_address[count],0,strnlen(block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH));
+    memset(block_verifiers_list.block_verifiers_IP_address[count],0,strnlen(block_verifiers_list.block_verifiers_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  }
+
+  // load all of the data into the block_verifiers_list struct
+  for (count = 0, count2 = 1; count < BLOCK_VERIFIERS_AMOUNT; count++, count2++)
+  {
+    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memcpy(data,"node",4);
+    sprintf(data+4,"%zu",count2);
+    if (parse_json_data(message,data,data2) == 0)
+    {
+      GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
+    }
+    memcpy(block_verifiers_list.block_verifiers_name[count],data2,strnlen(data2,BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
+    memset(data2,0,strnlen(data2,BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
+    if (parse_json_data(message2,data,data2) == 0)
+    {
+      GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
+    }
+    memcpy(block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(data2,XCASH_WALLET_LENGTH));
+    memset(data2,0,strnlen(data2,XCASH_WALLET_LENGTH));
+    if (parse_json_data(message3,data,data2) == 0)
+    {
+      GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
+    }
+    memcpy(block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(data2,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    memset(data2,0,strnlen(data2,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  }
+
   return 1;
 
   #undef pointer_reset_all
@@ -299,6 +337,13 @@ int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET,
 Name: server_receive_data_socket_consensus_node_to_node
 Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message
 Parameters:
+  CLIENT_SOCKET - The client socket
+  parameters - A mainnode_timeout_thread_parameters struct
+    pid_t process_id - Holds the forked process ID that the client is connected to
+    int data_received - 1 if the node has received data from the main node, otherwise 0
+    char* main_node - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
+    char* current_round_part - The current round part (1-4).
+    char* current_round_part_backup_node - The current main node in the current round part (0-5)
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
@@ -415,6 +460,101 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, s
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: main_node_to_node_message_part_1
+Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_1_OF_ROUND message
+Parameters:
+  CLIENT_SOCKET - The client socket
+  parameters - A mainnode_timeout_thread_parameters struct
+    pid_t process_id - Holds the forked process ID that the client is connected to
+    int data_received - 1 if the node has received data from the main node, otherwise 0
+    char* main_node - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
+    char* current_round_part - The current round part (1-4).
+    char* current_round_part_backup_node - The current main node in the current round part (0-5)
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int main_node_to_node_message_part_1(const int CLIENT_SOCKET, struct mainnode_timeout_thread_parameters* parameters, char* message)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  int count = 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || data3 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    return 0;
+  }
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // since the block verifier has received data from the main node, we need to stop the mainnode_timeout_thread
+  parameters->data_received = 1;
+
+  // set the next server message since the block verifiers will send the data to each other
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
+
+  // verify the data
+  if (verify_data(message,1,0,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Message could verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // parse the message
+  if (parse_json_data(message,"vrf_public_key",vrf_public_key_part_1) == 0 || parse_json_data(message,"vrf_alpha_string",data) == 0 || parse_json_data(message,"vrf_proof",data2) == 0 || parse_json_data(message,"vrf_beta_string",data3) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // verify the VRF data
+
+  // create the message
+
+  // send the message to all block verifiers
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+  }
+
+  pointer_reset(data);
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: create_server
 Description: Creates the server
 Parameters:
@@ -453,6 +593,7 @@ int create_server(const int MESSAGE_SETTINGS)
   reset the variables for the forked process
   reset the current_round_part to 1 and current_round_part_backup_node to 0
   reset the server_message to CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND|CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS
+  exit the forked process
   this way the node will sit out the current round, and start the next round.
   */
   #define SERVER_ERROR(settings) \
@@ -688,9 +829,20 @@ int create_server(const int MESSAGE_SETTINGS)
              SERVER_ERROR(1);
            }           
          } 
-         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"MAINNODE_TO_NODES_PART_1_OF_ROUND\"") != NULL && strstr(server_message,"MAINNODE_TO_NODES_PART_1_OF_ROUND") != NULL)
          {
-                   
+           if (main_node_to_node_message_part_1(CLIENT_SOCKET,&mainnode_timeout_thread_parameters,buffer) == 0)
+           {
+             SERVER_ERROR(1);
+           }
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND") != NULL)
+         {
+           //consensus_node_to_main_node(CLIENT_SOCKET,buffer);
+           // close the client socket, reset the variables for the forked process, and exit the forked process
+           //close(CLIENT_SOCKET);
+           //pointer_reset_all;
+           //_exit(0);
          } 
          else
          {

@@ -19,6 +19,9 @@ Using define statements instead of constants for increased efficiency
 #define NODES_PUBLIC_ADDRESS_LIST_FILE_NAME "nodes_public_address_list.txt" // The current enabled nodes public address list
 #define NODES_NAME_LIST_FILE_NAME "nodes_name_list.txt" // The current enabled nodes name list
 #define NODES_IP_ADDRESS_LIST_FILE_NAME "nodes_IP_address_list.txt" // The current enabled nodes IP address list
+#define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_NAME_TOTAL_LENGTH 100 // The maximum length of the block verifiers name
+#define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address
 #define TOTAL_CONNECTION_TIME_SETTINGS 30 // The total time a client is given to connect to the server and send data
 #define TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT 10 // The total time given from when the consensus node sends to the node who the main node is, to the time the main node sends the data to the node.
 #define INVALID_PARAMETERS_ERROR_MESSAGE \

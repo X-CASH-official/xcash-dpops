@@ -12,6 +12,7 @@
 #include "variables.h"
 
 #include "network_functions.h"
+#include "network_security_functions.h"
 #include "thread_server_functions.h"
 
 /*
@@ -119,11 +120,7 @@ void* mainnode_timeout_thread(void* parameters)
     memcpy(string+50+main_node_length,data->current_round_part_backup_node,1);
     memcpy(string+51+main_node_length," in current round part ",23);
     memcpy(string+74+main_node_length,data->current_round_part,1);
-    color_print(string,"green");
-
-    // set the next server message since the block verifiers will send the data to each other
-    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27);  
+    color_print(string,"green");     
   }
   else
   {
@@ -157,7 +154,7 @@ void* mainnode_timeout_thread(void* parameters)
   }
   pointer_reset(string);
 
-  // close the client connection
+  // close the client connection, since the consensus node is still connected
   kill((intptr_t)data->process_id, SIGTERM);
 
   // reset the mainnode_timeout_thread_parameters

@@ -1,11 +1,19 @@
 #ifndef STRUCTURES_H_   /* Include guard */
 #define STRUCTURES_H_
 
+#include "define_macros.h"
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Global Structures
 -----------------------------------------------------------------------------------------------------------
 */
+
+struct block_verifiers_list {
+    char* block_verifiers_name[BLOCK_VERIFIERS_AMOUNT];
+    char* block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT];
+    char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT];
+};
 
  // Thread functions
  struct read_file_thread_parameters {
