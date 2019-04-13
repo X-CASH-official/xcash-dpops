@@ -44,4 +44,8 @@ struct block_verifiers_list {
     char* current_round_part; // The current round part (1-4).
     char* current_round_part_backup_node; // The current main node in the current round part (0-5)
 };
+
+struct node_to_node_timeout_thread_parameters {
+    pid_t process_id; // Holds the forked process ID that the client is connected to
+};
 #endif

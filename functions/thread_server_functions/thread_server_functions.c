@@ -111,7 +111,7 @@ void* mainnode_timeout_thread(void* parameters)
   }
 
   sleep(TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT);  
-  printf("Total connection time for the main node has been reached"); 
+  printf("Total connection time for the main node for current round part %s and current round part backup node %s has been reached",current_round_part,current_round_part_backup_node);
   if (data->data_received == 1)
   {
     memcpy(string,"Received data from main node, ",30);
@@ -163,6 +163,45 @@ void* mainnode_timeout_thread(void* parameters)
   data->main_node = "";
   data->current_round_part = "";
   data->current_round_part_backup_node = "";
+
+  pthread_exit((void *)(intptr_t)1);
+}
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: node_to_node_message_timeout_thread
+Description: Closes the forked process after a certain connection timeout. This is so the block verifiers have waited a certain amount of time, and will now count all of the votes
+Parameters:
+  parameters - A pointer to the node_to_node_timeout_thread_parameters struct
+  struct node_to_node_timeout_thread_parameters
+    process_id - The process id of the forked process
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* node_to_node_message_timeout_thread(void* parameters)
+{
+  // Variables
+  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  struct node_to_node_timeout_thread_parameters* data = parameters;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (string == NULL)
+  {
+    return 0;
+  }
+
+  sleep(TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT);  
+  printf("Total connection time for all block verifiers to send data to all other block verifiers for current round part %s and current round part backup node %s has been reached",current_round_part,current_round_part_backup_node); 
+  
+  
+  pointer_reset(string);
+
+  // close the client connection, since the consensus node is still connected
+  kill((intptr_t)data->process_id, SIGTERM);
+
+  // reset the node_to_node_timeout_thread_parameters
+  data->process_id = 0;
 
   pthread_exit((void *)(intptr_t)1);
 }
