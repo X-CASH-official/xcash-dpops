@@ -243,10 +243,14 @@ int get_updated_node_list()
   // check if we need to update the node list
   if (strncmp(message,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message2,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message3,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
   {
+    memset(data,0,strnlen(data,BUFFER_SIZE));
+    sprintf(data,"%ld",time(NULL)); 
+
     // update the node list and load the nodes list into the global variables  
     write_file(message,NODES_NAME_LIST_FILE_NAME);  
     write_file(message2,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME);      
-    write_file(message3,NODES_IP_ADDRESS_LIST_FILE_NAME); 
+    write_file(message3,NODES_IP_ADDRESS_LIST_FILE_NAME);
+    write_file(data,NODES_IP_ADDRESS_LIST_FILE_NAME);  
     color_print("The node list has been updated successfully","green");
   }
   else
@@ -1055,6 +1059,135 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes
+Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes(char* message)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  size_t count2;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || data3 == NULL || message2 == NULL || message3 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    if (message2 != NULL)
+    {
+      pointer_reset(message2);
+    }
+    if (message3 != NULL)
+    {
+      pointer_reset(message3);
+    }
+    return 0;
+  }
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL; \
+  free(message2); \
+  message2 = NULL; \
+  free(message3); \
+  message3 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_MESSAGE_LIST_OF_ENABLED_NODES(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // verify the data
+  if (verify_data(message,0,0,0) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_MESSAGE_LIST_OF_ENABLED_NODES("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes\nReceived Message: CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES");
+  }
+
+  // parse the data
+  memset(message,0,strnlen(message,BUFFER_SIZE));
+  if (parse_json_data(message,"nodes_name_list",data) == 0 || parse_json_data(message,"nodes_public_address_list",data2) == 0 || parse_json_data(message,"nodes_IP_address_list",data3) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_MESSAGE_LIST_OF_ENABLED_NODES("Could not parse data\nFunction: server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes\nReceived Message: CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES");
+  }
+
+  // update the node list and load the nodes list into the global variables  
+  write_file(data,NODES_NAME_LIST_FILE_NAME); 
+  memset(data,0,strnlen(data,BUFFER_SIZE));
+  sprintf(data,"%ld",time(NULL));  
+  write_file(data2,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME);      
+  write_file(data3,NODES_IP_ADDRESS_LIST_FILE_NAME);
+  write_file(data,NODES_IP_ADDRESS_LIST_FILE_NAME);  
+
+  // clear any data that was already in the block_verifiers_list struct
+  for (count = 0; count <= BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(block_verifiers_list.block_verifiers_name[count],0,strnlen(block_verifiers_list.block_verifiers_name[count],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
+    memset(block_verifiers_list.block_verifiers_public_address[count],0,strnlen(block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH));
+    memset(block_verifiers_list.block_verifiers_IP_address[count],0,strnlen(block_verifiers_list.block_verifiers_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  }
+
+  // load all of the data into the block_verifiers_list struct
+  for (count = 0, count2 = 1; count < BLOCK_VERIFIERS_AMOUNT; count++, count2++)
+  {
+    memset(message2,0,strnlen(message2,BUFFER_SIZE));
+    memcpy(message2,"node",4);
+    sprintf(message2+4,"%zu",count2);
+    if (parse_json_data(data,message2,message3) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_MESSAGE_LIST_OF_ENABLED_NODES("Could not parse data\nFunction: server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes\nReceived Message: CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES");
+    }
+    memcpy(block_verifiers_list.block_verifiers_name[count],message3,strnlen(message3,BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
+    memset(message3,0,strnlen(message3,BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
+    if (parse_json_data(data2,message2,message3) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_MESSAGE_LIST_OF_ENABLED_NODES("Could not parse data\nFunction: server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes\nReceived Message: CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES");
+    }
+    memcpy(block_verifiers_list.block_verifiers_public_address[count],message3,strnlen(message3,XCASH_WALLET_LENGTH));
+    memset(message3,0,strnlen(message3,XCASH_WALLET_LENGTH));
+    if (parse_json_data(data3,message2,message3) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_MESSAGE_LIST_OF_ENABLED_NODES("Could not parse data\nFunction: server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes\nReceived Message: CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES");
+    }
+    memcpy(block_verifiers_list.block_verifiers_IP_address[count],message3,strnlen(message3,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    memset(message3,0,strnlen(message3,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  }
+
+  pointer_reset(data);
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_MESSAGE_LIST_OF_ENABLED_NODES
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: create_server
 Description: Creates the server
 Parameters:
@@ -1380,6 +1513,12 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            // close the forked process when done
            server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round(buffer);
+           SERVER_ERROR(1);
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES\"") != NULL)
+         {
+           // close the forked process when done
+           server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes(buffer);
            SERVER_ERROR(1);
          } 
          else
