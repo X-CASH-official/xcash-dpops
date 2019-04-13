@@ -203,11 +203,14 @@ int main(int parameters_count, char* parameters[])
   }
 
   // start the server
-  if (create_server(1) == 0)
+  for (;;)
   {
-    color_print("Could not start the server","red");
-    exit(0);
-  }
+    if (create_server(1) == 0)
+    {
+      color_print("Could not start the server","red");
+      exit(0);
+    }
+  }  
 
   return 0;   
 }

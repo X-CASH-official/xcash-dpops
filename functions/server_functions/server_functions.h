@@ -18,5 +18,6 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
 int server_receive_data_socket_node_to_node(char* message);
 int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round(char* message);
 int server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes(char* message);
+int server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round(char* message);
 int create_server(const int MESSAGE_SETTINGS);
 #endif

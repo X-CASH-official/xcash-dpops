@@ -1188,6 +1188,36 @@ int server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_no
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round
+Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round(char* message)
+{
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_NEW_PART_OF_ROUND(settings) \
+  color_print(settings,"red"); \
+  return 0;
+
+  // verify the data
+  if (verify_data(message,0,0,0) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_NEW_PART_OF_ROUND("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round\nReceived Message: CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND");
+  }
+  
+  return 1;
+
+  #undef SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_NEW_PART_OF_ROUND
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: create_server
 Description: Creates the server
 Parameters:
@@ -1520,6 +1550,15 @@ int create_server(const int MESSAGE_SETTINGS)
            // close the forked process when done
            server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes(buffer);
            SERVER_ERROR(1);
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND\"") != NULL)
+         {
+           if (server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round(buffer) == 0)
+           {
+             SERVER_ERROR(1);
+           }
+           // close the server
+           break;           
          } 
          else
          {
