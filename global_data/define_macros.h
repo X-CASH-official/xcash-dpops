@@ -19,6 +19,7 @@ Using define statements instead of constants for increased efficiency
 #define NODES_PUBLIC_ADDRESS_LIST_FILE_NAME "nodes_public_address_list.txt" // The current enabled nodes public address list
 #define NODES_NAME_LIST_FILE_NAME "nodes_name_list.txt" // The current enabled nodes name list
 #define NODES_IP_ADDRESS_LIST_FILE_NAME "nodes_IP_address_list.txt" // The current enabled nodes IP address list
+#define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid.
 #define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_NAME_TOTAL_LENGTH 100 // The maximum length of the block verifiers name
 #define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address

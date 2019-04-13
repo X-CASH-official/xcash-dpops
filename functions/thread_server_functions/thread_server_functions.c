@@ -191,9 +191,31 @@ void* node_to_node_message_timeout_thread(void* parameters)
     return 0;
   }
 
+  // define macros
+  #define CURRENT_VOTE_RESULTS_VALID_MESSAGE "{\r\n \"message_settings\": \"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS\",\r\n \"vote_result\": \"TRUE\",\r\n}"
+  #define CURRENT_VOTE_RESULTS_INVALID_MESSAGE "{\r\n \"message_settings\": \"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS\",\r\n \"vote_result\": \"FALSE\",\r\n}"
+
   sleep(TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT);  
   printf("Total connection time for all block verifiers to send data to all other block verifiers for current round part %s and current round part backup node %s has been reached",current_round_part,current_round_part_backup_node); 
   
+  // create the message
+
+
+  // sign_data
+  if (sign_data(string,0) == 0)
+  { 
+    color_print("Could not sign_data\nFunction: node_to_node_message_timeout_thread\nSend Message: NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
+  }
+ 
+  // send the message to the consensus node
+  if (send_data_socket(current_consensus_nodes_IP_address,SEND_DATA_PORT,string,"sending NODES_TO_CONSENSUS_NODE_VOTE_RESULTS to the consensus node",0) == 0)
+  {
+    color_print("Could not send data to the consensus node\n\nFunction: node_to_node_message_timeout_thread\nSend Message: NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
+  } 
+
+  // set the next server message since a backup node will have to be selected
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",48); 
   
   pointer_reset(string);
 

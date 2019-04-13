@@ -969,6 +969,92 @@ int server_receive_data_socket_node_to_node(char* message)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round
+Description: Runs the code when the server receives the CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round(char* message)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  int count = 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || data3 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    return 0;
+  }
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // verify the data
+  if (verify_data(message,0,0,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND");
+  }
+
+  // parse the message
+  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
+  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
+  if (parse_json_data(message,"message",data) == 0 || parse_json_data(message,"VRF_block_blob",data2) == 0 || parse_json_data(message,"current_round_part",current_round_part) == 0 || parse_json_data(message,"current_round_part_backup_node",current_round_part_backup_node) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not parse main_nodes_public_address\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND");
+  }
+
+  // create the message
+
+
+  // send the message to all block verifiers
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"",0);
+  }
+
+  // set the next server message since the block verifiers will send the data to each other
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS|CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",96);
+
+  pointer_reset(data);
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: create_server
 Description: Creates the server
 Parameters:
@@ -1286,18 +1372,15 @@ int create_server(const int MESSAGE_SETTINGS)
          } 
          if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && strstr(server_message,"NODES_TO_NODES_VOTE_RESULTS") != NULL)
          {
-           if (server_receive_data_socket_node_to_node(buffer) == 0)
-           { 
-             SERVER_ERROR(1);
-           }
+           // close the forked process when done
+           server_receive_data_socket_node_to_node(buffer);
+           SERVER_ERROR(1);
          }
          else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND") != NULL)
          {
-           //consensus_node_to_main_node(CLIENT_SOCKET,buffer);
-           // close the client socket, reset the variables for the forked process, and exit the forked process
-           //close(CLIENT_SOCKET);
-           //pointer_reset_all;
-           //_exit(0);
+           // close the forked process when done
+           server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round(buffer);
+           SERVER_ERROR(1);
          } 
          else
          {
