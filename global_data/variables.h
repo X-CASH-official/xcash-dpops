@@ -17,6 +17,9 @@ char* current_consensus_nodes_IP_address; // The current consensus nodes IP addr
 char* main_nodes_public_address; // The current main nodes public address
 char* vrf_public_key_part_1; // The VRF public key from part 1 of the round. This must match the VRF public key from part 3 of the round.
 char* vrf_alpha_string_part_2; // The VRF alpha string from part 2 of the round. This must match the VRF alpha string from part 3 of the round.
+char* current_vote_results; // The current part of the round vote.
+char* vote_results_valid; // The current part of the round vote count for a valid vote.
+char* vote_results_invalid; // The current part of the round vote count for a invalid vote.
 char* current_round_part; // The current round part (1-4)
 char* current_round_part_backup_node; // The current main node in the current round part (0-5)
 #endif

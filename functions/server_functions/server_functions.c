@@ -97,7 +97,7 @@ int get_current_consensus_nodes_IP_address()
   const int SEND_AND_RECEIVE_DATA_SOCKET_DATA2 = send_and_receive_data_socket(data2,CONSENSUS_BACKUP_NODES_IP_ADDRESS,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"get current consensus node IP address",0);
 
   // verify the data
-  if (verify_data(data,0,1,1) == 0 || verify_data(data2,0,1,1) == 0)
+  if (verify_data(data,0,0,0) == 0 || verify_data(data2,0,0,0) == 0)
   {   
     GET_CURRENT_CONSENSUS_NODES_IP_ADDRESS_ERROR("Could not verify data from the consensus node\nFunction: get_current_consensus_nodes_IP_address\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_CURRENT_CONSENSUS_NODE_IP_ADDRESS\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS");
   }
@@ -228,7 +228,7 @@ int get_updated_node_list()
   }
   
   // verify the data
-  if (verify_data(data,0,1,1) == 0)
+  if (verify_data(data,0,0,0) == 0)
   {   
     GET_UPDATED_NODE_LIST_ERROR("Could not verify data from the consensus node\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
   }
@@ -337,7 +337,6 @@ int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET,
 Name: server_receive_data_socket_consensus_node_to_node
 Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message
 Parameters:
-  CLIENT_SOCKET - The client socket
   parameters - A mainnode_timeout_thread_parameters struct
     pid_t process_id - Holds the forked process ID that the client is connected to
     int data_received - 1 if the node has received data from the main node, otherwise 0
@@ -349,7 +348,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, struct mainnode_timeout_thread_parameters* parameters, char* message)
+int server_receive_data_socket_consensus_node_to_node(struct mainnode_timeout_thread_parameters* parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -370,9 +369,9 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, s
   return 0;
 
   // verify the data
-  if (verify_data(message,1,0,0) == 0)
+  if (verify_data(message,0,0,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Message could verify data\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
   }
 
   // parse the message
@@ -446,10 +445,9 @@ int server_receive_data_socket_consensus_node_to_node(const int CLIENT_SOCKET, s
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: main_node_to_node_message_part_1
+Name: server_receive_data_socket_main_node_to_node_message_part_1
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_1_OF_ROUND message
 Parameters:
-  CLIENT_SOCKET - The client socket
   mainnode_timeout_thread_parameters - A mainnode_timeout_thread_parameters struct
     pid_t process_id - Holds the forked process ID that the client is connected to
     int data_received - 1 if the node has received data from the main node, otherwise 0
@@ -463,7 +461,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int main_node_to_node_message_part_1(const int CLIENT_SOCKET, struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -514,16 +512,14 @@ int main_node_to_node_message_part_1(const int CLIENT_SOCKET, struct mainnode_ti
   memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
 
   // verify the data
-  if (verify_data(message,1,0,0) == 0)
+  if (verify_data(message,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Message could verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
   memset(vrf_public_key_part_1,0,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  if (parse_json_data(message,"vrf_public_key",vrf_public_key_part_1) == 0 || parse_json_data(message,"vrf_alpha_string",data) == 0 || parse_json_data(message,"vrf_proof",data2) == 0 || parse_json_data(message,"vrf_beta_string",data3) == 0 || parse_json_data(message,"current_round_part",current_round_part) == 0 || parse_json_data(message,"current_round_part_backup_node",current_round_part_backup_node) == 0)
+  if (parse_json_data(message,"vrf_public_key",vrf_public_key_part_1) == 0 || parse_json_data(message,"vrf_alpha_string",data) == 0 || parse_json_data(message,"vrf_proof",data2) == 0 || parse_json_data(message,"vrf_beta_string",data3) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
@@ -560,10 +556,9 @@ int main_node_to_node_message_part_1(const int CLIENT_SOCKET, struct mainnode_ti
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: main_node_to_node_message_part_2
+Name: server_receive_data_socket_main_node_to_node_message_part_2
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_2_OF_ROUND message
 Parameters:
-  CLIENT_SOCKET - The client socket
   mainnode_timeout_thread_parameters - A mainnode_timeout_thread_parameters struct
     pid_t process_id - Holds the forked process ID that the client is connected to
     int data_received - 1 if the node has received data from the main node, otherwise 0
@@ -577,7 +572,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int main_node_to_node_message_part_2(const int CLIENT_SOCKET, struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -628,16 +623,14 @@ int main_node_to_node_message_part_2(const int CLIENT_SOCKET, struct mainnode_ti
   memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
 
   // verify the data
-  if (verify_data(message,1,0,0) == 0)
+  if (verify_data(message,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Message could verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
   memset(vrf_alpha_string_part_2,0,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  if (parse_json_data(message,"vrf_public_key",data) == 0 || parse_json_data(message,"vrf_alpha_string",vrf_alpha_string_part_2) == 0 || parse_json_data(message,"vrf_proof",data2) == 0 || parse_json_data(message,"vrf_beta_string",data3) == 0 || parse_json_data(message,"current_round_part",current_round_part) == 0 || parse_json_data(message,"current_round_part_backup_node",current_round_part_backup_node) == 0)
+  if (parse_json_data(message,"vrf_public_key",data) == 0 || parse_json_data(message,"vrf_alpha_string",vrf_alpha_string_part_2) == 0 || parse_json_data(message,"vrf_proof",data2) == 0 || parse_json_data(message,"vrf_beta_string",data3) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
@@ -674,10 +667,9 @@ int main_node_to_node_message_part_2(const int CLIENT_SOCKET, struct mainnode_ti
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: main_node_to_node_message_part_3
+Name: server_receive_data_socket_main_node_to_node_message_part_3
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_3_OF_ROUND message
 Parameters:
-  CLIENT_SOCKET - The client socket
   mainnode_timeout_thread_parameters - A mainnode_timeout_thread_parameters struct
     pid_t process_id - Holds the forked process ID that the client is connected to
     int data_received - 1 if the node has received data from the main node, otherwise 0
@@ -691,7 +683,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int main_node_to_node_message_part_3(const int CLIENT_SOCKET, struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -749,15 +741,13 @@ int main_node_to_node_message_part_3(const int CLIENT_SOCKET, struct mainnode_ti
   memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
 
   // verify the data
-  if (verify_data(message,1,0,0) == 0)
+  if (verify_data(message,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Message could verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  if (parse_json_data(message,"vrf_public_key",data) == 0 || parse_json_data(message,"vrf_alpha_string",data2) == 0 || parse_json_data(message,"vrf_proof",data3) == 0 || parse_json_data(message,"vrf_beta_string",data4) == 0 || parse_json_data(message,"current_round_part",current_round_part) == 0 || parse_json_data(message,"current_round_part_backup_node",current_round_part_backup_node) == 0)
+  if (parse_json_data(message,"vrf_public_key",data) == 0 || parse_json_data(message,"vrf_alpha_string",data2) == 0 || parse_json_data(message,"vrf_proof",data3) == 0 || parse_json_data(message,"vrf_beta_string",data4) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
@@ -796,10 +786,9 @@ int main_node_to_node_message_part_3(const int CLIENT_SOCKET, struct mainnode_ti
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: main_node_to_node_message_part_4
+Name: server_receive_data_socket_main_node_to_node_message_part_4
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_4_OF_ROUND message
 Parameters:
-  CLIENT_SOCKET - The client socket
   mainnode_timeout_thread_parameters - A mainnode_timeout_thread_parameters struct
     pid_t process_id - Holds the forked process ID that the client is connected to
     int data_received - 1 if the node has received data from the main node, otherwise 0
@@ -813,7 +802,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int main_node_to_node_message_part_4(const int CLIENT_SOCKET, struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -864,15 +853,13 @@ int main_node_to_node_message_part_4(const int CLIENT_SOCKET, struct mainnode_ti
   memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
 
   // verify the data
-  if (verify_data(message,1,0,0) == 0)
+  if (verify_data(message,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Message could verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  if (parse_json_data(message,"block_blob",data) == 0 || parse_json_data(message,"current_round_part",current_round_part) == 0 || parse_json_data(message,"current_round_part_backup_node",current_round_part_backup_node) == 0)
+  if (parse_json_data(message,"block_blob",data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
@@ -903,6 +890,79 @@ int main_node_to_node_message_part_4(const int CLIENT_SOCKET, struct mainnode_ti
 
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_node_to_node
+Description: Runs the code when the server receives the NODES_TO_NODES_VOTE_RESULTS message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_node_to_node(char* message)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || data3 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    return 0;
+  }
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // verify the data
+  if (verify_data(message,0,1,1) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not verify data\nFunction: server_receive_data_socket_node_to_node\nReceived Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // parse the message
+  if (parse_json_data(message,"vote_settings",data) == 0 || parse_json_data(message,"vote_data",data2) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not parse the data\nFunction: server_receive_data_socket_node_to_node\nReceived Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // process the vote data
+
+
+  pointer_reset(data);
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR
 }
 
 
@@ -1179,7 +1239,7 @@ int create_server(const int MESSAGE_SETTINGS)
            mainnode_timeout_thread_parameters.main_node = "";
            mainnode_timeout_thread_parameters.current_round_part = "";
            mainnode_timeout_thread_parameters.current_round_part_backup_node = "";
-           if (server_receive_data_socket_consensus_node_to_node(CLIENT_SOCKET,&mainnode_timeout_thread_parameters,buffer) == 0)
+           if (server_receive_data_socket_consensus_node_to_node(&mainnode_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
            }           
@@ -1189,7 +1249,7 @@ int create_server(const int MESSAGE_SETTINGS)
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (main_node_to_node_message_part_1(CLIENT_SOCKET,&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_1(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
@@ -1199,7 +1259,7 @@ int create_server(const int MESSAGE_SETTINGS)
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (main_node_to_node_message_part_2(CLIENT_SOCKET,&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_2(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
@@ -1209,7 +1269,7 @@ int create_server(const int MESSAGE_SETTINGS)
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (main_node_to_node_message_part_3(CLIENT_SOCKET,&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_3(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
@@ -1219,14 +1279,14 @@ int create_server(const int MESSAGE_SETTINGS)
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (main_node_to_node_message_part_4(CLIENT_SOCKET,&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_4(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
          } 
          if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && strstr(server_message,"NODES_TO_NODES_VOTE_RESULTS") != NULL)
          {
-           if (server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer) == 0)
+           if (server_receive_data_socket_node_to_node(buffer) == 0)
            { 
              SERVER_ERROR(1);
            }
