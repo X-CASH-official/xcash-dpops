@@ -460,12 +460,18 @@ Parameters:
     char* current_round_part_backup_node - The current main node in the current round part (0-5)
   node_to_node_timeout_thread_parameters - A node_to_node_timeout_thread_parameters struct
     pid_t process_id - Holds the forked process ID that the client is connected to
+  current_round_part_consensus_node_data - A current_round_part_consensus_node_data struct
+    char* vrf_public_key - Holds the forked process ID that the client is connected to
+    char* vrf_alpha_string - 1 if the node has received data from the main node, otherwise 0
+    char* vrf_proof - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
+    char* vrf_beta_string - The current round part (1-4).
+    char* block_blob - The current main node in the current round part (0-5)
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, struct current_round_part_consensus_node_data* current_round_part_consensus_node_data, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -530,6 +536,8 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
 
   // verify the VRF data
 
+  // save all of the VRF data to the current_round_part_consensus_node_data struct
+
   // create the message
 
   // send the message to all block verifiers
@@ -574,12 +582,18 @@ Parameters:
     char* current_round_part_backup_node - The current main node in the current round part (0-5)
   node_to_node_timeout_thread_parameters - A node_to_node_timeout_thread_parameters struct
     pid_t process_id - Holds the forked process ID that the client is connected to
+  current_round_part_consensus_node_data - A current_round_part_consensus_node_data struct
+    char* vrf_public_key - Holds the forked process ID that the client is connected to
+    char* vrf_alpha_string - 1 if the node has received data from the main node, otherwise 0
+    char* vrf_proof - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
+    char* vrf_beta_string - The current round part (1-4).
+    char* block_blob - The current main node in the current round part (0-5)
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, struct current_round_part_consensus_node_data* current_round_part_consensus_node_data, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -644,6 +658,8 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
 
   // verify the VRF data
 
+  // save all of the VRF data to the current_round_part_consensus_node_data struct
+
   // create the message
 
   // send the message to all block verifiers
@@ -688,12 +704,18 @@ Parameters:
     char* current_round_part_backup_node - The current main node in the current round part (0-5)
   node_to_node_timeout_thread_parameters - A node_to_node_timeout_thread_parameters struct
     pid_t process_id - Holds the forked process ID that the client is connected to
+  current_round_part_consensus_node_data - A current_round_part_consensus_node_data struct
+    char* vrf_public_key - Holds the forked process ID that the client is connected to
+    char* vrf_alpha_string - 1 if the node has received data from the main node, otherwise 0
+    char* vrf_proof - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
+    char* vrf_beta_string - The current round part (1-4).
+    char* block_blob - The current main node in the current round part (0-5)
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, struct current_round_part_consensus_node_data* current_round_part_consensus_node_data, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -766,6 +788,8 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
 
   // verify the VRF data
 
+  // save all of the VRF data to the current_round_part_consensus_node_data struct
+
   // create the message
 
   // send the message to all block verifiers
@@ -810,12 +834,18 @@ Parameters:
     char* current_round_part_backup_node - The current main node in the current round part (0-5)
   node_to_node_timeout_thread_parameters - A node_to_node_timeout_thread_parameters struct
     pid_t process_id - Holds the forked process ID that the client is connected to
+  current_round_part_consensus_node_data - A current_round_part_consensus_node_data struct
+    char* vrf_public_key - Holds the forked process ID that the client is connected to
+    char* vrf_alpha_string - 1 if the node has received data from the main node, otherwise 0
+    char* vrf_proof - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
+    char* vrf_beta_string - The current round part (1-4).
+    char* block_blob - The current main node in the current round part (0-5)
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, struct current_round_part_consensus_node_data* current_round_part_consensus_node_data, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -878,6 +908,8 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   }
 
   // verify the block
+
+  // save all of the VRF data to the current_round_part_consensus_node_data struct
 
   // create the message
 
@@ -1266,7 +1298,7 @@ int server_receive_data_socket_consensus_node_to_node_and_main_node_message_cons
   memset(current_consensus_nodes_IP_address,0,strnlen(current_consensus_nodes_IP_address,BUFFER_SIZE));
   if (parse_json_data(message,"consensus_node_public_address",current_consensus_nodes_IP_address) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_RESTART("Could not parse data\nFunction: server_receive_data_socket_consensus_node_to_node_and_main_node_restart");
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_CONSENSUS_NODE_CHANGE("Could not parse data\nFunction: server_receive_data_socket_consensus_node_to_node_and_main_node_restart");
   }
 
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
@@ -1566,7 +1598,7 @@ int create_server(const int MESSAGE_SETTINGS)
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_1(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_1(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,&current_round_part_consensus_node_data,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
@@ -1576,7 +1608,7 @@ int create_server(const int MESSAGE_SETTINGS)
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_2(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_2(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,&current_round_part_consensus_node_data,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
@@ -1586,7 +1618,7 @@ int create_server(const int MESSAGE_SETTINGS)
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_3(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_3(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,&current_round_part_consensus_node_data,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
@@ -1596,7 +1628,7 @@ int create_server(const int MESSAGE_SETTINGS)
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_4(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_4(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,&current_round_part_consensus_node_data,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
@@ -1621,7 +1653,7 @@ int create_server(const int MESSAGE_SETTINGS)
          } 
          else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES\"") != NULL)
          {
-           if (server_receive_data_socket_consensus_node_to_node_and_main_node_message_new_part_of_round(buffer) == 0)
+           if (server_receive_data_socket_consensus_node_to_node_and_main_node_restart(buffer) == 0)
            {
              SERVER_ERROR(1);
            }

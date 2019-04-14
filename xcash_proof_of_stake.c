@@ -104,6 +104,13 @@ int main(int parameters_count, char* parameters[])
     block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   }
 
+  // initialize the current_round_part_consensus_node_data struct
+  current_round_part_consensus_node_data.vrf_public_key = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH,sizeof(char));
+  current_round_part_consensus_node_data.vrf_alpha_string = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH,sizeof(char));
+  current_round_part_consensus_node_data.vrf_proof = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH,sizeof(char));
+  current_round_part_consensus_node_data.vrf_beta_string = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH,sizeof(char));
+  current_round_part_consensus_node_data.block_blob = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH,sizeof(char));
+
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
   memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));

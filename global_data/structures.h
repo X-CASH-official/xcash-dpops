@@ -15,6 +15,14 @@ struct block_verifiers_list {
     char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT];
 };
 
+struct current_round_part_consensus_node_data {
+    char* vrf_public_key;
+    char* vrf_alpha_string;
+    char* vrf_proof;
+    char* vrf_beta_string;
+    char* block_blob;
+};
+
  // Thread functions
  struct read_file_thread_parameters {
     char* result; // The data read from the file

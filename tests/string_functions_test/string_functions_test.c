@@ -378,6 +378,11 @@ int parse_json_data_test()
  
   message_settings - The type of the message
   vote_result - TRUE or FALSE
+  vrf_public_key - The VRF public key.
+  vrf_alpha_string - The VRF alpha string.
+  vrf_proof - The VRF proof.
+  vrf_beta_string - The VRF beta_string.
+  block_blob - The block blob.
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
