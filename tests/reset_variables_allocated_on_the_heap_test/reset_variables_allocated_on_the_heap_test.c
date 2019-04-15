@@ -15,7 +15,7 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
-#include "number_functions.h"
+#include "blockchain_functions.h"
 #include "server_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"

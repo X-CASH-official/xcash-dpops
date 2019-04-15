@@ -12,7 +12,7 @@
 #include "analysing_code_test.h"
 #include "file_functions_test.h"
 #include "network_functions_test.h"
-#include "number_functions_test.h"
+#include "blockchain_functions_test.h"
 #include "reset_variables_allocated_on_the_heap_test.h"
 #include "string_functions_test.h"
 #include "xcash_proof_of_stake_test.h"

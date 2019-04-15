@@ -5,11 +5,11 @@
 #include "define_macro_functions.h"
 #include "define_macros.h"
 
-#include "number_functions.h"
+#include "blockchain_functions.h"
 
 #include "define_macros_test.h"
 #include "variables_test.h"
-#include "number_functions_test.h"
+#include "blockchain_functions_test.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
