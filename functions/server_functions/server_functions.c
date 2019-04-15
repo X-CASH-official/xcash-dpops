@@ -540,6 +540,8 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
 
   // create the message
 
+  // sign the message
+
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -661,6 +663,8 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
   // save all of the VRF data to the current_round_part_consensus_node_data struct
 
   // create the message
+
+  // sign the message
 
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -792,6 +796,8 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
 
   // create the message
 
+  // sign the message
+
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -912,6 +918,8 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   // save all of the VRF data to the current_round_part_consensus_node_data struct
 
   // create the message
+
+  // sign the message
 
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1081,6 +1089,8 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
 
   // create the message
 
+  // sign the message
+
 
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1236,7 +1246,7 @@ int server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_no
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_consensus_node_to_node_and_main_node_restart
-Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE or CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES message
+Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE or CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES message
 Parameters:
   message - The message
 Return: 0 if an error has occured, 1 if successfull
@@ -1651,7 +1661,7 @@ int create_server(const int MESSAGE_SETTINGS)
            server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_nodes(buffer);
            SERVER_ERROR(1);
          } 
-         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES\"") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES\"") != NULL)
          {
            if (server_receive_data_socket_consensus_node_to_node_and_main_node_restart(buffer) == 0)
            {

@@ -450,7 +450,7 @@ int parse_json_data_test()
  
  
 /*
-  This message is sent from the Consensus node in the send_xcash_proof_of_stake_message function and received by the nodes and main nodes in the receive_xcash_proof_of_stake function.
+  This message is sent from the Consensus node in the send_consensus_node_needs_to_add_a_block_to_the_network_message function and received by the nodes and main nodes in the server_receive_data_socket_consensus_node_to_node_and_main_node_restart function.
  
   The purpose of this message is for the Consensus node to let the nodes and the main node know that the Consensus node will now create the blocks on the network, due to a possible hack, and they should restart.
  
@@ -462,7 +462,7 @@ int parse_json_data_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\",\r\n \"data\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE\",\r\n}"
+  #define CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE "{\r\n \"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE\",\r\n \"public_address\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE\",\r\n \"previous_block_hash\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE\",\r\n \"current_round_part\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE\",\r\n \"current_round_part_backup_node\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE\",\r\n \"data\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE\",\r\n \"xcash_proof_of_stake_signature\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE\",\r\n}"
  
  
  
@@ -1516,45 +1516,45 @@ int parse_json_data_test()
   }
   settings = 1;
 
-  // test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE
+  // test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  append_string(result_test,CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE);
-  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  append_string(result_test,CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE);
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE",BUFFER_SIZE) != 0)
   {
     settings = 0;
   }
-  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE",BUFFER_SIZE) != 0)
   {
     settings = 0;
   }
-  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE",BUFFER_SIZE) != 0)
   {
     settings = 0;
   }
-  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE",BUFFER_SIZE) != 0)
   {
     settings = 0;
   }
-  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE",BUFFER_SIZE) != 0)
   {
     settings = 0;
   }
-  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE",BUFFER_SIZE) != 0)
   {
     settings = 0;
   }
-  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE",BUFFER_SIZE) != 0)
   {
     settings = 0;
   }
   if (settings == 0)
   {
-    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","red");
+    color_print("FAILED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE","red");
   }
   else
   {
-    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE","green");
+    color_print("PASSED! Test for parsing CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE","green");
   }
   settings = 1;
 
@@ -2039,7 +2039,7 @@ int parse_json_data_test()
   #undef CONSENSUS_NODE_TO_NODES_LIST_OF_ENABLED_NODES
   #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE
   #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CHANGE
-  #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_XCASH_PROOF_OF_STAKE_MESSAGE
+  #undef CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE
   #undef CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_RECEIVE_XCASH_PROOF_OF_STAKE_SETTINGS
   #undef BLOCK_VALIDATION_NODE_TO_CONSENSUS_NODE_SEND_XCASH_PROOF_OF_STAKE_SETTINGS
   #undef CONSENSUS_NODE_TO_BLOCK_VALIDATION_NODE_CONSENSUS_NODE_CREATE_NEW_BLOCK
