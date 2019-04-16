@@ -28,11 +28,11 @@ size_t varint_decode(size_t varint)
   int start = 0;
 
   // get the length
-  if (varint < 0xFF)
+  if (varint <= 0xFF)
   {
-    length = 1;
+    return varint;
   }
-  else if (varint >= 0xFF && varint < 0xFFFF)
+  else if (varint > 0xFF && varint < 0xFFFF)
   {
     length = 2;
   }
