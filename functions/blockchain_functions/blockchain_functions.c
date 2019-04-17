@@ -560,11 +560,13 @@ int blockchain_data_to_network_block_string(char* result)
 -----------------------------------------------------------------------------------------------------------
 Name: verify_network_block_data
 Description: Verifies a blockchain_data struct
+Parameters:
+  SETTINGS - 0 to not verify the block validation signatures, 1 to verify the block validation signatures. The consensus node when submitting the block should be the only time when the block validation signatures are verified
 Return: 0 if an error has occured or it is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int verify_network_block_data()
+int verify_network_block_data(const int SETTINGS)
 {
   // Variables
   size_t count;

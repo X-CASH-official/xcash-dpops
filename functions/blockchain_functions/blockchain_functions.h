@@ -10,5 +10,5 @@ Function prototypes
 size_t varint_decode(size_t varint);
 int network_block_string_to_blockchain_data(char* data);
 int blockchain_data_to_network_block_string(char* result);
-int verify_network_block_data();
+int verify_network_block_data(const int SETTINGS);
 #endif
