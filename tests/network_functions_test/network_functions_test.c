@@ -86,7 +86,7 @@ int send_wallet_http_request_test()
 
   // test the get_block_template function
   memset(data,0,strnlen(data,BUFFER_SIZE));
-  if (get_block_template(data,0) == 1)
+  if (get_block_template(data,"0",0) == 1)
   {   
     color_print("PASSED! Test for getting the block template","green");
     count_test++;

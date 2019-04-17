@@ -499,7 +499,7 @@ int reset_variables_allocated_on_the_heap_test()
       fprintf(stderr,"Current progress for get_block_template: %zu / 1000",count);
       fprintf(stderr,"\r");
       memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-      get_block_template(data_test,0);
+      get_block_template(data_test,"0",0);
       if (count == 0)
       {    
         current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;

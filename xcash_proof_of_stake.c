@@ -111,6 +111,89 @@ int main(int parameters_count, char* parameters[])
   current_round_part_consensus_node_data.vrf_beta_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_round_part_consensus_node_data.block_blob = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  // initialize the VRF_data_block_verifiers struct 
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    VRF_data_block_verifiers.public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    VRF_data_block_verifiers.vrf_public_key_round_part_1[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_proof_round_part_1[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_beta_string_round_part_1[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_public_key_round_part_2[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_proof_round_part_2[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_beta_string_round_part_2[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_public_key_round_part_3[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_proof_round_part_3[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    VRF_data_block_verifiers.vrf_beta_string_round_part_3[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  }
+
+  // initialize the blockchain_data struct 
+  blockchain_data.network_version_data = (char*)calloc(5,sizeof(char));
+  blockchain_data.timestamp_data = (char*)calloc(11,sizeof(char));
+  blockchain_data.previous_block_hash_data = (char*)calloc(65,sizeof(char));
+  blockchain_data.nonce_data = (char*)calloc(9,sizeof(char));
+  blockchain_data.block_reward_transaction_version_data = (char*)calloc(3,sizeof(char));
+  blockchain_data.unlock_block_data = (char*)calloc(9,sizeof(char));
+  blockchain_data.block_reward_input_data = (char*)calloc(3,sizeof(char));
+  blockchain_data.vin_type_data = (char*)calloc(3,sizeof(char));
+  blockchain_data.block_height_data = (char*)calloc(9,sizeof(char));
+  blockchain_data.block_reward_output_data = (char*)calloc(3,sizeof(char));
+  blockchain_data.block_reward_data = (char*)calloc(15,sizeof(char));
+  blockchain_data.stealth_address_output_tag_data = (char*)calloc(3,sizeof(char));
+  blockchain_data.stealth_address_output_data = (char*)calloc(65,sizeof(char));
+  blockchain_data.extra_bytes_size_data = (char*)calloc(5,sizeof(char));
+  blockchain_data.transaction_public_key_tag_data = (char*)calloc(3,sizeof(char));
+  blockchain_data.transaction_public_key_data = (char*)calloc(65,sizeof(char));
+  blockchain_data.extra_nonce_tag_data = (char*)calloc(3,sizeof(char));
+  blockchain_data.reserve_bytes_size_data = (char*)calloc(5,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data = (char*)calloc(41,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name = (char*)calloc(21,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_public_address_data = (char*)calloc(197,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_public_address = (char*)calloc(99,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count_data = (char*)calloc(2,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data = (char*)calloc(249,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names = (char*)calloc(125,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name_data = (char*)calloc(41,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name = (char*)calloc(21,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address_data = (char*)calloc(197,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address = (char*)calloc(99,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_node_backup_count_data = (char*)calloc(2,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names_data = (char*)calloc(249,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names = (char*)calloc(125,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name_data = (char*)calloc(41,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name = (char*)calloc(21,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address_data = (char*)calloc(197,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address = (char*)calloc(99,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count_data = (char*)calloc(2,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names_data = (char*)calloc(249,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names = (char*)calloc(125,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.previous_block_hash_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
+  {
+    blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  }
+  blockchain_data.ringct_version_data = (char*)calloc(3,sizeof(char));
+  blockchain_data.transaction_amount_data = (char*)calloc(5,sizeof(char));
+  for (count = 0; count < 1000000; count++)
+  {
+    blockchain_data.transactions[count] = (char*)calloc(65,sizeof(char));
+  }
+
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
   memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
