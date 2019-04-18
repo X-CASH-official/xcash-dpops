@@ -240,6 +240,11 @@ int get_updated_node_list()
     GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
   }
 
+  // convert the strings to json
+  string_replace(message,"\\\","\");
+  string_replace(message2,"\\\","\");
+  string_replace(message3,"\\\","\");
+
   // check if we need to update the node list
   if (strncmp(message,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message2,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message3,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
   {
