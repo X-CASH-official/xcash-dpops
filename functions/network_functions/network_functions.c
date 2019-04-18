@@ -82,7 +82,8 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     {
       pointer_reset(message);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   } 
 
   // create the HTTP request
@@ -414,7 +415,8 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     {
       pointer_reset(message);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   } 
 
   /* Create the socket  
@@ -673,7 +675,8 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
     {
       pointer_reset(message);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   } 
 
   /* Create the socket  
@@ -910,7 +913,8 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   } 
 
   memset(message, 0, strnlen(message,BUFFER_SIZE));  

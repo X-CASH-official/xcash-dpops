@@ -48,7 +48,8 @@ void* total_connection_time_thread(void* parameters)
   // check if the memory needed was allocated on the heap successfully
   if (string == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   sleep(TOTAL_CONNECTION_TIME_SETTINGS);    
@@ -107,7 +108,8 @@ void* mainnode_timeout_thread(void* parameters)
   // check if the memory needed was allocated on the heap successfully
   if (string == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   sleep(TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT);  
@@ -188,7 +190,8 @@ void* node_to_node_message_timeout_thread(void* parameters)
   // check if the memory needed was allocated on the heap successfully
   if (string == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   sleep(TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT);  

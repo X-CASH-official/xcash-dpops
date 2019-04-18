@@ -78,7 +78,8 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     {
       pointer_reset(string);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   } 
 
   // create the random data
@@ -269,7 +270,8 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     {
       pointer_reset(string);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   } 
 
   // parse the message

@@ -163,7 +163,8 @@ int network_block_string_to_blockchain_data(char* data)
     {
       pointer_reset(data2);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }  
 
   // reset the blockchain_data
@@ -614,7 +615,8 @@ int verify_network_block_data(const int SETTINGS)
     {
       pointer_reset(data2);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   } 
 
   // network_version

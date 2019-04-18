@@ -109,7 +109,8 @@ int analysing_code_test()
     {
       pointer_reset(data5);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   } 
 
   // reset the variables
@@ -120,12 +121,24 @@ int analysing_code_test()
   for (data_count = 0; data_count < 100; data_count++)
   {
     uninitialized_variable_data.data[data_count] = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+
+    if (uninitialized_variable_data.data[data_count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
   }  
   uninitialized_variable_data.count = 0;
 
   for (data_count = 0; data_count < 100; data_count++)
   {
     analysing_code_test_files.data[data_count] = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+
+    if (analysing_code_test_files.data[data_count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
   }  
   memcpy(analysing_code_test_files.data[0],"xcash_proof_of_stake_website_server_test.c",strnlen("xcash_proof_of_stake_website_server_test.c",BUFFER_SIZE));
   analysing_code_test_files.count = 1;
@@ -169,6 +182,11 @@ int analysing_code_test()
         for (count = 0; count < 100; count++)
         {
           uninitialized_variable_data.data[count] = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+          if (uninitialized_variable_data.data[count] == NULL)
+          {
+            color_print("Could not allocate the memory needed on the heap","red");
+            exit(0);
+          }
         }  
         uninitialized_variable_data.count = 0;        
         count = 0;

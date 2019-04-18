@@ -41,7 +41,8 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
   // check if the memory needed was allocated on the heap successfully
   if (str == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // check if the field is in the data
@@ -123,7 +124,8 @@ size_t string_count(const char* DATA, const char* STRING)
   // check if the memory needed was allocated on the heap successfully
   if (datacopy1 == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // get the occurences of the string 
@@ -172,7 +174,8 @@ int string_replace(char *data, const char* STR1, const char* STR2)
     // check if the memory needed was allocated on the heap successfully
     if (datacopy == NULL)
     {
-      return 0;
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
     } 
 
     // get the occurences of STR1   
@@ -261,7 +264,8 @@ int random_string(char *result, const size_t LENGTH)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
   
   memcpy(data,STRING,62);

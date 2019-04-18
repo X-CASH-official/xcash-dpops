@@ -15,10 +15,10 @@ Using define statements instead of constants for increased efficiency
 #define CONSENSUS_BACKUP_NODES_IP_ADDRESS "" // The consensus backup nodes IP address
 #define RANDOM_STRING_LENGTH 100 // The length of the random string
 #define BUFFER_SIZE 64000
-#define NODES_UPDATED_TIME_FILE_NAME "nodes_updated_time.txt" // The last time the node has updated the list of nodes from the consensus node
 #define NODES_PUBLIC_ADDRESS_LIST_FILE_NAME "nodes_public_address_list.txt" // The current enabled nodes public address list
 #define NODES_NAME_LIST_FILE_NAME "nodes_name_list.txt" // The current enabled nodes name list
 #define NODES_IP_ADDRESS_LIST_FILE_NAME "nodes_IP_address_list.txt" // The current enabled nodes IP address list
+#define NODES_UPDATED_TIME_FILE_NAME "nodes_updated_time.txt" // The last time the nodes list was updated
 #define NETWORK_VERSION "0000" // the network version
 #define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "00000000" // the network block nonce used when the block producer creates the block
 #define CONSENSUS_NODE_NETWORK_BLOCK_NONCE "11111111" // the network block nonce used when the consensus node creates the block

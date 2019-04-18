@@ -58,7 +58,8 @@ int get_block_template(char *result, char* reserve_bytes_length, const int HTTP_
     {
       pointer_reset(data);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // create the message
@@ -129,7 +130,8 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
     {
       pointer_reset(data);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // create the message
@@ -191,7 +193,8 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get current block height",MESSAGE_SETTINGS) <= 0)
@@ -235,7 +238,8 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_last_block_header\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get previous block hash",MESSAGE_SETTINGS) <= 0)

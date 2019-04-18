@@ -50,7 +50,8 @@ size_t get_program_memory_usage(char* process_id_file)
 
   if (data == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // read the current system memory usage
@@ -109,7 +110,8 @@ int reset_variables_allocated_on_the_heap_test()
   
   if (process_id_file == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // reset the variables

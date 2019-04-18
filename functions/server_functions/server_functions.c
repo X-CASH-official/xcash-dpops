@@ -80,7 +80,8 @@ int get_current_consensus_nodes_IP_address()
     {
       pointer_reset(message2);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // create the message
@@ -194,7 +195,8 @@ int get_updated_node_list()
     {
       pointer_reset(message3);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   #define GET_UPDATED_NODE_LIST_ERROR(settings) \
@@ -221,7 +223,7 @@ int get_updated_node_list()
     GET_UPDATED_NODE_LIST_ERROR("Could not sign_data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
   }
  
-  // send the message to the consensus node and consensus backup node
+  // send the message to the consensus node
   if (send_and_receive_data_socket(data,current_consensus_nodes_IP_address,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"getting last block verifiers update time",0) == 0)
   {
     GET_UPDATED_NODE_LIST_ERROR("Could not send data to the consensus node\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
@@ -241,9 +243,9 @@ int get_updated_node_list()
   }
 
   // convert the strings to json
-  string_replace(message,"\\\","\");
-  string_replace(message2,"\\\","\");
-  string_replace(message3,"\\\","\");
+  string_replace(message,"\\\"","\"");
+  string_replace(message2,"\\\"","\"");
+  string_replace(message3,"\\\"","\"");
 
   // check if we need to update the node list
   if (strncmp(message,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message2,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0 && strncmp(message3,"UPDATED_NODE_LIST",BUFFER_SIZE) != 0)
@@ -365,7 +367,8 @@ int server_receive_data_socket_consensus_node_to_node(struct mainnode_timeout_th
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // threads
@@ -499,7 +502,8 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
     {
       pointer_reset(data3);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // threads
@@ -623,7 +627,8 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
     {
       pointer_reset(data3);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // threads
@@ -752,7 +757,8 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
     {
       pointer_reset(data3);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // threads
@@ -879,7 +885,8 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
     {
       pointer_reset(data3);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // threads
@@ -987,7 +994,8 @@ int server_receive_data_socket_node_to_node(char* message)
     {
       pointer_reset(data3);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // define macros
@@ -1061,7 +1069,8 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
     {
       pointer_reset(data3);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // define macros
@@ -1163,7 +1172,8 @@ int server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_no
     {
       pointer_reset(message3);
     }
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // define macros
@@ -1402,7 +1412,8 @@ int create_server(const int MESSAGE_SETTINGS)
   // check if the memory needed was allocated on the heap successfully
   if (string == NULL)
   {
-    return 0;
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
     
   /* Create the socket  
