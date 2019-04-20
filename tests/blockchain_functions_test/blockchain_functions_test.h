@@ -1,5 +1,5 @@
-#ifndef NUMBER_FUNCTIONS_TEST_H_   /* Include guard */
-#define NUMBER_FUNCTIONS_TEST_H_
+#ifndef BLOCKCHAIN_FUNCTIONS_TEST_H_   /* Include guard */
+#define BLOCKCHAIN_FUNCTIONS_TEST_H_
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -7,5 +7,5 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int varint_decode_test();
+int blockchain_test();
 #endif

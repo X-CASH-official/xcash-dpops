@@ -126,7 +126,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int network_block_string_to_blockchain_data(char* data)
+int network_block_string_to_blockchain_data(const char* data)
 {
   // Constants
   const size_t DATA_LENGTH = strnlen(data,BUFFER_SIZE);
@@ -562,12 +562,13 @@ int blockchain_data_to_network_block_string(char* result)
 Name: verify_network_block_data
 Description: Verifies a blockchain_data struct
 Parameters:
-  SETTINGS - 0 to not verify the block validation signatures, 1 to verify the block validation signatures. The consensus node when submitting the block should be the only time when the block validation signatures are verified
+  BLOCK_VALIDATION_SIGNATURES_SETTINGS - 0 to not verify the block validation signatures, 1 to verify the block validation signatures. The consensus node when submitting the block should be the only time when the block validation signatures are verified
+  TRANSACTIONS_SETTINGS - 0 to not verify that the transactions are in the network, 1 to verify that the transactions are in the network. The blockchain_test should be the only time when the transactions are not verified
 Return: 0 if an error has occured or it is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int verify_network_block_data(const int SETTINGS)
+int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS,const int TRANSACTIONS_SETTINGS)
 {
   // Variables
   size_t count;

@@ -36,7 +36,7 @@ void test()
   int xcash_proof_of_stake_total_passed_test = 0;
 
   // define macros
-  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 67
+  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 69
 
   // write the test message
   printf("Starting Test\n\n");
@@ -70,7 +70,7 @@ void test()
   xcash_proof_of_stake_total_passed_test += random_string_test();
   xcash_proof_of_stake_total_passed_test += string_count_test();
   xcash_proof_of_stake_total_passed_test += string_replace_test(); 
-  xcash_proof_of_stake_total_passed_test += varint_decode_test(); 
+  xcash_proof_of_stake_total_passed_test += blockchain_test(); 
   xcash_proof_of_stake_total_passed_test += send_wallet_http_request_test(); 
   xcash_proof_of_stake_total_passed_test += read_and_write_file_test(); 
   xcash_proof_of_stake_total_passed_test += send_and_receive_data_socket_test();
