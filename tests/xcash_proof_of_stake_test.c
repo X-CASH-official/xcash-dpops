@@ -15,6 +15,7 @@
 #include "blockchain_functions_test.h"
 #include "reset_variables_allocated_on_the_heap_test.h"
 #include "string_functions_test.h"
+#include "VRF_functions_test.h"
 #include "xcash_proof_of_stake_test.h"
 
 /*
