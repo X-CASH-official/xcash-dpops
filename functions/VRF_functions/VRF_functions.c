@@ -33,7 +33,6 @@ int create_random_VRF_keys(unsigned char *public_key, unsigned char *secret_key)
   // Variables
   unsigned char data[crypto_vrf_SEEDBYTES];
   size_t count;
-  int count2;
 
   // define macros
   #define MINIMUM 1

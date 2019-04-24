@@ -75,6 +75,7 @@ void test()
   xcash_proof_of_stake_total_passed_test += send_wallet_http_request_test(); 
   xcash_proof_of_stake_total_passed_test += read_and_write_file_test(); 
   xcash_proof_of_stake_total_passed_test += send_and_receive_data_socket_test();
+  xcash_proof_of_stake_total_passed_test += VRF_test();
   xcash_proof_of_stake_total_passed_test += reset_variables_allocated_on_the_heap_test();
   //xcash_proof_of_stake_total_passed_test += analysing_code_test(); 
 

@@ -10,33 +10,33 @@ Global Structures
 */
 
 struct block_verifiers_list {
-    char* block_verifiers_name[BLOCK_VERIFIERS_AMOUNT];
-    char* block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT];
-    char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT];
+    char* block_verifiers_name[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers name
+    char* block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers public address
+    char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers IP address
 };
 
 struct current_round_part_consensus_node_data {
-    char* vrf_public_key;
-    char* vrf_alpha_string;
-    char* vrf_proof;
-    char* vrf_beta_string;
-    char* block_blob;
+    char* vrf_public_key; // The VRF public key
+    char* vrf_alpha_string; // The VRF alpha string
+    char* vrf_proof; // The VRF proof
+    char* vrf_beta_string; // The VRF beta string
+    char* block_blob; // The block_blob
 };
 
 struct VRF_data_block_verifiers {
-    char* public_address[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_public_key_round_part_1[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_alpha_string_round_part_1[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_proof_round_part_1[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_beta_string_round_part_1[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_public_key_round_part_2[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_alpha_string_round_part_2[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_proof_round_part_2[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_beta_string_round_part_2[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_public_key_round_part_3[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_alpha_string_round_part_3[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_proof_round_part_3[BLOCK_VERIFIERS_AMOUNT];
-    char* vrf_beta_string_round_part_3[BLOCK_VERIFIERS_AMOUNT];
+    char* public_address[BLOCK_VERIFIERS_AMOUNT]; // The public_address of the block verifier
+    char* vrf_public_key_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The vrf_public_key_round_part_1 that the block verifier received
+    char* vrf_alpha_string_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The vrf_alpha_string_round_part_1 that the block verifier received
+    char* vrf_proof_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The vrf_proof_round_part_1 that the block verifier received
+    char* vrf_beta_string_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The vrf_beta_string_round_part_1 that the block verifier received
+    char* vrf_public_key_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The vrf_public_key_round_part_2 that the block verifier received
+    char* vrf_alpha_string_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The vrf_alpha_string_round_part_2 that the block verifier received
+    char* vrf_proof_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The vrf_proof_round_part_2 that the block verifier received
+    char* vrf_beta_string_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The vrf_beta_string_round_part_2 that the block verifier received
+    char* vrf_public_key_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The vrf_public_key_round_part_3 that the block verifier received
+    char* vrf_alpha_string_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The vrf_alpha_string_round_part_3 that the block verifier received
+    char* vrf_proof_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The vrf_proof_round_part_3 that the block verifier received
+    char* vrf_beta_string_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The vrf_beta_string_round_part_3 that the block verifier received
 };
 
 struct blockchain_reserve_bytes {
@@ -47,7 +47,7 @@ struct blockchain_reserve_bytes {
     char* block_producer_public_address; // The block_producer_public_address_data text
     size_t block_producer_public_address_data_length; // The amount of characters of the block_producer_public_address_data
     char* block_producer_node_backup_count_data; // The block_producer_node_backup_count
-    size_t block_producer_node_backup_count; // The block_producer_node_backup_count_data text
+    char* block_producer_node_backup_count; // The block_producer_node_backup_count_data text
     size_t block_producer_node_backup_count_data_length; // The amount of characters of the block_producer_node_backup_count_data
     char* block_producer_backup_nodes_names_data; // The block_producer_backup_nodes_names
     char* block_producer_backup_nodes_names; // The block_producer_backup_nodes_names_data text
@@ -59,7 +59,7 @@ struct blockchain_reserve_bytes {
     char* vrf_node_public_and_secret_key_public_address; // The vrf_node_public_and_secret_key_public_address_data text
     size_t vrf_node_public_and_secret_key_public_address_data_length; // The amount of characters of the vrf_node_public_and_secret_key_public_address_data
     char* vrf_node_public_and_secret_key_node_backup_count_data; // The vrf_node_public_and_secret_key_node_backup_count
-    size_t vrf_node_public_and_secret_key_node_backup_count; // The vrf_node_public_and_secret_key_node_backup_count_data text
+    char* vrf_node_public_and_secret_key_node_backup_count; // The vrf_node_public_and_secret_key_node_backup_count_data text
     size_t vrf_node_public_and_secret_key_node_backup_count_data_length; // The amount of characters of the vrf_node_public_and_secret_key_node_backup_count_data
     char* vrf_node_public_and_secret_key_backup_nodes_names_data; // The vrf_node_public_and_secret_key_backup_nodes_names
     char* vrf_node_public_and_secret_key_backup_nodes_names; // The vrf_node_public_and_secret_key_backup_nodes_names_data text
@@ -71,7 +71,7 @@ struct blockchain_reserve_bytes {
     char* vrf_node_random_data_public_address; // The vrf_node_random_data_public_address_data text
     size_t vrf_node_random_data_public_address_data_length; // The amount of characters of the vrf_node_random_data_public_address_data
     char* vrf_node_random_data_node_backup_count_data; // The vrf_node_random_data_node_backup_count
-    size_t vrf_node_random_data_node_backup_count; // The vrf_node_random_data_node_backup_count_data text
+    char* vrf_node_random_data_node_backup_count; // The vrf_node_random_data_node_backup_count_data text
     size_t vrf_node_random_data_node_backup_count_data_length; // The amount of characters of the vrf_node_random_data_node_backup_count_data
     char* vrf_node_random_data_backup_nodes_names_data; // The vrf_node_random_data_backup_nodes_names
     char* vrf_node_random_data_backup_nodes_names; // The vrf_node_random_data_backup_nodes_names_data text
@@ -84,22 +84,27 @@ struct blockchain_reserve_bytes {
     size_t vrf_proof_length_round_part_1; // The length of the VRF proof for round part 1
     char* vrf_beta_string_round_part_1; // The VRF beta string (output string) for round part 1
     size_t vrf_beta_string_length_round_part_1; // The length of the VRF beta string (output string) for round part 1
-    char* vrf_public_key_round_part_2; // The VRF public key for round part 2
-    size_t vrf_public_key_length_round_part_2; // The length of the VRF public key for round part 2
+    char* vrf_data_round_part_1; // The VRF data for round part 1
+    char* vrf_public_key_round_part_2; // The VRF public key for round part 1
+    size_t vrf_public_key_length_round_part_2;// The length of the VRF public key for round part 1
     char* vrf_alpha_string_round_part_2; // The VRF alpha string (input string) for round part 2
     size_t vrf_alpha_string_length_round_part_2; // The length of the VRF alpha string (input string) for round part 2
     char* vrf_proof_round_part_2; // The VRF proof for round part 2
     size_t vrf_proof_length_round_part_2; // The length of the VRF proof for round part 2
     char* vrf_beta_string_round_part_2; // The VRF beta string (output string) for round part 2
     size_t vrf_beta_string_length_round_part_2; // The length of the VRF beta string (output string) for round part 2
+    char* vrf_data_round_part_2; // The VRF data for round part 2
     char* vrf_public_key_round_part_3; // The VRF public key for round part 3
-    size_t vrf_public_key_length_round_part_3 ;// The length of the VRF public key for round part 3
+    size_t vrf_public_key_length_round_part_3;// The length of the VRF public key for round part 3
     char* vrf_alpha_string_round_part_3; // The VRF alpha string (input string) for round part 3
     size_t vrf_alpha_string_length_round_part_3; // The length of the VRF alpha string (input string) for round part 3
     char* vrf_proof_round_part_3; // The VRF proof for round part 3
     size_t vrf_proof_length_round_part_3; // The length of the VRF proof for round part 3
     char* vrf_beta_string_round_part_3; // The VRF beta string (output string) for round part 3
     size_t vrf_beta_string_length_round_part_3; // The length of the VRF beta string (output string) for round part 3
+    char* vrf_data_round_part_3; // The VRF data for round part 3
+    char* vrf_data; // The VRF data for all of the round parts
+    size_t vrf_data_length; // The length of the VRF data for all of the round parts
     char* previous_block_hash_data; // The previous_block_hash
     size_t previous_block_hash_data_length; // The amount of characters of the previous_block_hash_data
     char* block_validation_node_signature_data[BLOCK_VALIDATION_NODES_AMOUNT]; // The block_validation_node_signature
@@ -158,6 +163,7 @@ struct blockchain_data {
     size_t transaction_amount_data_length; // The amount of characters of the transaction_amount
     char* transactions[1000000]; // All of the transactions in the block.
 };
+
 
  // Thread functions
  struct read_file_thread_parameters {
