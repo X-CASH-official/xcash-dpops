@@ -20,6 +20,10 @@
 #include "server_functions.h"
 #include "string_functions.h"
 #include "thread_server_functions.h"
+#include "convert.h"
+#include "vrf.h"
+#include "crypto_vrf.h"
+#include "sha512EL.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -479,16 +483,18 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, struct current_round_part_consensus_node_data* current_round_part_consensus_node_data, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
+  if (data == NULL || data2 == NULL || data3 == NULL || message == NULL || message2 == NULL)
   {
     if (data != NULL)
     {
@@ -501,6 +507,14 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
     if (data3 != NULL)
     {
       pointer_reset(data3);
+    }
+    if (message2 != NULL)
+    {
+      pointer_reset(message2);
+    }
+    if (message3 != NULL)
+    {
+      pointer_reset(message3);
     }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -516,7 +530,11 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
   free(data2); \
   data2 = NULL; \
   free(data3); \
-  data3 = NULL;
+  data3 = NULL; \
+  free(message2); \
+  message2 = NULL; \
+  free(message3); \
+  message3 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR(settings) \
   color_print(settings,"red"); \
@@ -533,42 +551,69 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
   // verify the data
   if (verify_data(message,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
   memset(vrf_public_key_part_1,0,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
   if (parse_json_data(message,"vrf_public_key",vrf_public_key_part_1) == 0 || parse_json_data(message,"vrf_alpha_string",data) == 0 || parse_json_data(message,"vrf_proof",data2) == 0 || parse_json_data(message,"vrf_beta_string",data3) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
+  // create the message
+  memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
+
   // verify the VRF data
+  if (crypto_vrf_verify(data3,vrf_public_key_part_1,data2,data,strnlen(data,BUFFER_SIZE)) == 0)
+  {
+    memcpy(message2+75,"valid",5);
+  }
+  else
+  {
+    memcpy(message2+75,"invalid",7);
+  }
+  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
+
+  // SHA2-512 hash all of the VRF data
+  memcpy(message3,vrf_public_key_part_1,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data,strnlen(data,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data,strnlen(data2,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data,strnlen(data3,BUFFER_SIZE));
+  crypto_hash_sha512((unsigned char*)message2+strnlen(message,BUFFER_SIZE),(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
+  
+  memcpy(message2+strnlen(message,BUFFER_SIZE),"\",\r\n}",5); 
 
   // save all of the VRF data to the current_round_part_consensus_node_data struct
+  memcpy(current_round_part_consensus_node_data.vrf_public_key,vrf_public_key_part_1,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
+  memcpy(current_round_part_consensus_node_data.vrf_alpha_string,data,strnlen(data,BUFFER_SIZE));
+  memcpy(current_round_part_consensus_node_data.vrf_proof,data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(current_round_part_consensus_node_data.vrf_beta_string,data3,strnlen(data3,BUFFER_SIZE));
 
-  // create the message
-
-  // sign the message
+  // sign_data
+  if (sign_data(message2,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
 
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     if (memcmp(block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message2,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
     }
   }
 
   // start the node_to_node_message_timeout
   if (pthread_create(&thread_id, NULL, &node_to_node_message_timeout_thread, (void *)node_to_node_timeout_thread_parameters) != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
   // set the thread to dettach once completed, since we do not need to use anything it will return
   if (pthread_detach(thread_id) != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   pointer_reset(data);
@@ -604,7 +649,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, struct current_round_part_consensus_node_data* current_round_part_consensus_node_data, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -658,14 +703,14 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
   // verify the data
   if (verify_data(message,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
   memset(vrf_alpha_string_part_2,0,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
   if (parse_json_data(message,"vrf_public_key",data) == 0 || parse_json_data(message,"vrf_alpha_string",vrf_alpha_string_part_2) == 0 || parse_json_data(message,"vrf_proof",data2) == 0 || parse_json_data(message,"vrf_beta_string",data3) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // verify the VRF data
@@ -688,12 +733,12 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
   // start the node_to_node_message_timeout
   if (pthread_create(&thread_id, NULL, &node_to_node_message_timeout_thread, (void *)node_to_node_timeout_thread_parameters) != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
   // set the thread to dettach once completed, since we do not need to use anything it will return
   if (pthread_detach(thread_id) != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   pointer_reset(data);
@@ -729,7 +774,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, struct current_round_part_consensus_node_data* current_round_part_consensus_node_data, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -790,13 +835,13 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
   // verify the data
   if (verify_data(message,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
   if (parse_json_data(message,"vrf_public_key",data) == 0 || parse_json_data(message,"vrf_alpha_string",data2) == 0 || parse_json_data(message,"vrf_proof",data3) == 0 || parse_json_data(message,"vrf_beta_string",data4) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // check that the vrf_public_key_part_1 and vrf_alpha_string_part_2 match the current vrf_public_key and vrf_alpha_string
@@ -821,12 +866,12 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
   // start the node_to_node_message_timeout
   if (pthread_create(&thread_id, NULL, &node_to_node_message_timeout_thread, (void *)node_to_node_timeout_thread_parameters) != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
   // set the thread to dettach once completed, since we do not need to use anything it will return
   if (pthread_detach(thread_id) != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   pointer_reset(data);
@@ -862,7 +907,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, struct current_round_part_consensus_node_data* current_round_part_consensus_node_data, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -916,13 +961,13 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   // verify the data
   if (verify_data(message,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
   if (parse_json_data(message,"block_blob",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // verify the block
@@ -945,12 +990,12 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   // start the node_to_node_message_timeout
   if (pthread_create(&thread_id, NULL, &node_to_node_message_timeout_thread, (void *)node_to_node_timeout_thread_parameters) != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
   // set the thread to dettach once completed, since we do not need to use anything it will return
   if (pthread_detach(thread_id) != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAINNODE_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   pointer_reset(data);
@@ -1619,42 +1664,42 @@ int create_server(const int MESSAGE_SETTINGS)
              SERVER_ERROR(1);
            }           
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAINNODE_TO_NODES_PART_1_OF_ROUND\"") != NULL && strstr(server_message,"MAINNODE_TO_NODES_PART_1_OF_ROUND") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND") != NULL)
          {
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_1(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,&current_round_part_consensus_node_data,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_1(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAINNODE_TO_NODES_PART_2_OF_ROUND\"") != NULL && strstr(server_message,"MAINNODE_TO_NODES_PART_2_OF_ROUND") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_2_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND") != NULL)
          {
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_2(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,&current_round_part_consensus_node_data,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_2(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAINNODE_TO_NODES_PART_3_OF_ROUND\"") != NULL && strstr(server_message,"MAINNODE_TO_NODES_PART_3_OF_ROUND") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND") != NULL)
          {
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_3(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,&current_round_part_consensus_node_data,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_3(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAINNODE_TO_NODES_PART_4_OF_ROUND\"") != NULL && strstr(server_message,"MAINNODE_TO_NODES_PART_4_OF_ROUND") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND") != NULL)
          {
            // only close the forked process on the timeout in the node_to_node_timeout_thread
            // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
            node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_4(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,&current_round_part_consensus_node_data,buffer) == 0)
+           if (server_receive_data_socket_main_node_to_node_message_part_4(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
            {
              SERVER_ERROR(1);
            }
