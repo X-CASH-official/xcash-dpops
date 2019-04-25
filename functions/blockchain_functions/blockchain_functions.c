@@ -1785,17 +1785,21 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS,con
   }  
 
   // block_validation_node_signature
-  for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
-  { 
-    if (strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count]) == 0)
-    {
-      break;
-    }
-    if (blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length != BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_VALIDATION_NODE_SIGNATURE_DATA_SIZE || memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],"5369675631",10) != 0)
-    {
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string\nInvalid previous block hash\nFunction: verify_network_block_data");
+  if (BLOCK_VALIDATION_SIGNATURES_SETTINGS == 1)
+  {
+    for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
+    { 
+      if (strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count]) == 0)
+      {
+        break;
+      }
+      if (blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length != BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_VALIDATION_NODE_SIGNATURE_DATA_SIZE || memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],"5369675631",10) != 0)
+      {
+        VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string\nInvalid previous block hash\nFunction: verify_network_block_data");
+      }
     }
   }
+  
 
 
 
@@ -1812,10 +1816,14 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS,con
   }
 
   // transactions
-  if (verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,0) == 0)
+  if (TRANSACTIONS_SETTINGS == 1)
   {
-    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string\nInvalid transactions\nFunction: verify_network_block_data");
+    if (verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,0) == 0)
+    {
+      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string\nInvalid transactions\nFunction: verify_network_block_data");
+    }
   }
+  
 
   pointer_reset_all;
   return 1;
