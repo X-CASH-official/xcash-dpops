@@ -37,14 +37,11 @@ int main(int parameters_count, char* parameters[])
   main_nodes_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   vrf_public_key_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   vrf_alpha_string_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  current_vote_results = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  vote_results_valid = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  vote_results_invalid = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_consensus_nodes_IP_address == NULL || main_nodes_public_address == NULL || vrf_public_key_part_1 == NULL || vrf_alpha_string_part_2 == NULL || current_vote_results == NULL || vote_results_valid == NULL || vote_results_invalid == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_consensus_nodes_IP_address == NULL || main_nodes_public_address == NULL || vrf_public_key_part_1 == NULL || vrf_alpha_string_part_2 == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
   {
     if (data != NULL)
     {
@@ -77,18 +74,6 @@ int main(int parameters_count, char* parameters[])
     if (vrf_alpha_string_part_2 != NULL)
     {
       pointer_reset(vrf_alpha_string_part_2);
-    }
-    if (current_vote_results != NULL)
-    {
-      pointer_reset(current_vote_results);
-    }
-    if (vote_results_valid != NULL)
-    {
-      pointer_reset(vote_results_valid);
-    }
-    if (vote_results_invalid != NULL)
-    {
-      pointer_reset(vote_results_invalid);
     }
     if (current_round_part != NULL)
     {
@@ -123,6 +108,11 @@ int main(int parameters_count, char* parameters[])
   current_round_part_consensus_node_data.vrf_proof = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_round_part_consensus_node_data.vrf_beta_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_round_part_consensus_node_data.block_blob = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // initialize the current_round_part_vote_data struct
+  current_round_part_vote_data.current_vote_results = (char*)calloc(DATA_HASH_LENGTH+1,sizeof(char));
+  current_round_part_vote_data.vote_results_valid = 0;
+  current_round_part_vote_data.vote_results_invalid = 0;
 
   if (current_round_part_consensus_node_data.vrf_public_key == NULL || current_round_part_consensus_node_data.vrf_alpha_string == NULL || current_round_part_consensus_node_data.vrf_proof == NULL || current_round_part_consensus_node_data.vrf_beta_string == NULL || current_round_part_consensus_node_data.block_blob == NULL)
   {

@@ -581,7 +581,8 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
   memcpy(message3+strnlen(message3,BUFFER_SIZE),data,strnlen(data,BUFFER_SIZE));
   memcpy(message3+strnlen(message3,BUFFER_SIZE),data2,strnlen(data2,BUFFER_SIZE));
   memcpy(message3+strnlen(message3,BUFFER_SIZE),data3,strnlen(data3,BUFFER_SIZE));
-  crypto_hash_sha512((unsigned char*)message2+strnlen(message,BUFFER_SIZE),(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
+  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
+  memcpy(message2+strnlen(message,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
   
   memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
 
@@ -747,7 +748,8 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
   memcpy(message3+strnlen(message3,BUFFER_SIZE),vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
   memcpy(message3+strnlen(message3,BUFFER_SIZE),data2,strnlen(data2,BUFFER_SIZE));
   memcpy(message3+strnlen(message3,BUFFER_SIZE),data3,strnlen(data3,BUFFER_SIZE));
-  crypto_hash_sha512((unsigned char*)message2+strnlen(message,BUFFER_SIZE),(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
+  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
+  memcpy(message2+strnlen(message,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
   
   memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
 
@@ -919,7 +921,8 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
   memcpy(message3+strnlen(message3,BUFFER_SIZE),data2,strnlen(data2,BUFFER_SIZE));
   memcpy(message3+strnlen(message3,BUFFER_SIZE),data3,strnlen(data3,BUFFER_SIZE));
   memcpy(message3+strnlen(message3,BUFFER_SIZE),data4,strnlen(data4,BUFFER_SIZE));
-  crypto_hash_sha512((unsigned char*)message2+strnlen(message,BUFFER_SIZE),(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
+  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
+  memcpy(message2+strnlen(message,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
   
   memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
 
@@ -1079,7 +1082,8 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
 
   // SHA2-512 hash the network block
-  crypto_hash_sha512((unsigned char*)message2+strnlen(message,BUFFER_SIZE),(const unsigned char*)data,(unsigned long long)strnlen(data,BUFFER_SIZE));
+  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)data,(unsigned long long)strnlen(data,BUFFER_SIZE));
+  memcpy(message2+strnlen(message,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
   
   memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
 
@@ -1184,9 +1188,16 @@ int server_receive_data_socket_node_to_node(char* message)
   }
 
   // process the vote data
+  if (memcmp(data,"valid",5) == 0 && memcmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0)
+  {
+    current_round_part_vote_data.vote_results_valid++;
+  }
+  else
+  {
+    current_round_part_vote_data.vote_results_invalid++;
+  }
 
-
-  pointer_reset(data);
+  pointer_reset_all;
   return 1;
 
   #undef pointer_reset_all

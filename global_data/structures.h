@@ -23,6 +23,12 @@ struct current_round_part_consensus_node_data {
     char* block_blob; // The block_blob
 };
 
+struct current_round_part_vote_data {
+    char* current_vote_results; // The SHA2-512 hash of the vote results that the block verifier calculated
+    int vote_results_valid; // The current part of the round vote count for a valid vote.
+    int vote_results_invalid; // The current part of the round vote count for a invalid vote.
+};
+
 struct VRF_data_block_verifiers {
     char* public_address[BLOCK_VERIFIERS_AMOUNT]; // The public_address of the block verifier
     char* vrf_public_key_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The vrf_public_key_round_part_1 that the block verifier received
