@@ -578,11 +578,11 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
   // SHA2-512 hash all of the VRF data
   memcpy(message3,vrf_public_key_part_1,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
   memcpy(message3+strnlen(message3,BUFFER_SIZE),data,strnlen(data,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data,strnlen(data2,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data,strnlen(data3,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data3,strnlen(data3,BUFFER_SIZE));
   crypto_hash_sha512((unsigned char*)message2+strnlen(message,BUFFER_SIZE),(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
   
-  memcpy(message2+strnlen(message,BUFFER_SIZE),"\",\r\n}",5); 
+  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
 
   // save all of the VRF data to the current_round_part_consensus_node_data struct
   memcpy(current_round_part_consensus_node_data.vrf_public_key,vrf_public_key_part_1,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
@@ -655,10 +655,12 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
+  if (data == NULL || data2 == NULL || data3 == NULL || message == NULL || message2 == NULL)
   {
     if (data != NULL)
     {
@@ -671,6 +673,14 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
     if (data3 != NULL)
     {
       pointer_reset(data3);
+    }
+    if (message2 != NULL)
+    {
+      pointer_reset(message2);
+    }
+    if (message3 != NULL)
+    {
+      pointer_reset(message3);
     }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -686,7 +696,11 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
   free(data2); \
   data2 = NULL; \
   free(data3); \
-  data3 = NULL;
+  data3 = NULL; \
+  free(message2); \
+  message2 = NULL; \
+  free(message3); \
+  message3 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR(settings) \
   color_print(settings,"red"); \
@@ -713,13 +727,40 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
+  // create the message
+  memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
+
   // verify the VRF data
+  if (crypto_vrf_verify(data3,data,data2,vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE)) == 0)
+  {
+    memcpy(message2+75,"valid",5);
+  }
+  else
+  {
+    memcpy(message2+75,"invalid",7);
+  }
+  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
+
+  // SHA2-512 hash all of the VRF data
+  memcpy(message3,data,strnlen(data,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data3,strnlen(data3,BUFFER_SIZE));
+  crypto_hash_sha512((unsigned char*)message2+strnlen(message,BUFFER_SIZE),(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
+  
+  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
 
   // save all of the VRF data to the current_round_part_consensus_node_data struct
+  memcpy(current_round_part_consensus_node_data.vrf_public_key,data,strnlen(data,BUFFER_SIZE));
+  memcpy(current_round_part_consensus_node_data.vrf_alpha_string,vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
+  memcpy(current_round_part_consensus_node_data.vrf_proof,data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(current_round_part_consensus_node_data.vrf_beta_string,data3,strnlen(data3,BUFFER_SIZE));
 
-  // create the message
-
-  // sign the message
+  // sign_data
+  if (sign_data(message2,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
 
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -781,10 +822,12 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data4 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL || data4 == NULL)
+  if (data == NULL || data2 == NULL || data3 == NULL || message == NULL || message2 == NULL)
   {
     if (data != NULL)
     {
@@ -800,7 +843,15 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
     }
     if (data4 != NULL)
     {
-      pointer_reset(data3);
+      pointer_reset(data4);
+    }
+    if (message2 != NULL)
+    {
+      pointer_reset(message2);
+    }
+    if (message3 != NULL)
+    {
+      pointer_reset(message3);
     }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -818,7 +869,11 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
   free(data3); \
   data3 = NULL; \
   free(data4); \
-  data4 = NULL;
+  data4 = NULL; \
+  free(message2); \
+  message2 = NULL; \
+  free(message3); \
+  message3 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR(settings) \
   color_print(settings,"red"); \
@@ -844,15 +899,40 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
-  // check that the vrf_public_key_part_1 and vrf_alpha_string_part_2 match the current vrf_public_key and vrf_alpha_string
+  // create the message
+  memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
 
-  // verify the VRF data
+  // verify the VRF data and check that the vrf_public_key_part_1 and vrf_alpha_string_part_2 match the current vrf_public_key and vrf_alpha_string
+  if (crypto_vrf_verify(data4,data,data3,data2,strnlen(data2,BUFFER_SIZE)) == 0 || memcmp(current_round_part_consensus_node_data.vrf_public_key,data,strnlen(data,BUFFER_SIZE)) != 0 || memcmp(current_round_part_consensus_node_data.vrf_alpha_string,data2,strnlen(data2,BUFFER_SIZE)) != 0)
+  {
+    memcpy(message2+75,"valid",5);
+  }
+  else
+  {
+    memcpy(message2+75,"invalid",7);
+  }
+  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
+
+  // SHA2-512 hash all of the VRF data
+  memcpy(message3,data,strnlen(data,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data3,strnlen(data3,BUFFER_SIZE));
+  memcpy(message3+strnlen(message3,BUFFER_SIZE),data4,strnlen(data4,BUFFER_SIZE));
+  crypto_hash_sha512((unsigned char*)message2+strnlen(message,BUFFER_SIZE),(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
+  
+  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
 
   // save all of the VRF data to the current_round_part_consensus_node_data struct
+  memcpy(current_round_part_consensus_node_data.vrf_public_key,data,strnlen(data,BUFFER_SIZE));
+  memcpy(current_round_part_consensus_node_data.vrf_alpha_string,vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
+  memcpy(current_round_part_consensus_node_data.vrf_proof,data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(current_round_part_consensus_node_data.vrf_beta_string,data3,strnlen(data3,BUFFER_SIZE));
 
-  // create the message
-
-  // sign the message
+  // sign_data
+  if (sign_data(message2,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
 
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -913,6 +993,8 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
 
   // check if the memory needed was allocated on the heap successfully
