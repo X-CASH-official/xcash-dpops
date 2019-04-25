@@ -14,6 +14,9 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "thread_server_functions.h"
+#include "vrf.h"
+#include "crypto_vrf.h"
+#include "VRF_functions.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -198,7 +201,28 @@ void* node_to_node_message_timeout_thread(void* parameters)
   printf("Total connection time for all block verifiers to send data to all other block verifiers for current round part %s and current round part backup node %s has been reached",current_round_part,current_round_part_backup_node); 
   
   // create the message
+  memcpy(string,"{\r\n \"message_settings\": \"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS\",\r\n  \"vote_result\": \"",84);
 
+  // verify the VRF data
+  if (crypto_vrf_verify(current_round_part_consensus_node_data.vrf_beta_string,current_round_part_consensus_node_data.vrf_public_key,current_round_part_consensus_node_data.vrf_proof,current_round_part_consensus_node_data.vrf_alpha_string,strnlen(current_round_part_consensus_node_data.vrf_alpha_string,BUFFER_SIZE)) == 0)
+  {
+    memcpy(string+84,"TRUE",4);
+  }
+  else
+  {
+    memcpy(string+84,"FALSE",5);
+  }
+  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"vrf_public_key\": \"",25);
+  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.vrf_public_key,VRF_PUBLIC_KEY_LENGTH);
+  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"vrf_alpha_string\": \"",27);
+  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.vrf_alpha_string,strnlen(current_round_part_consensus_node_data.vrf_alpha_string,BUFFER_SIZE));
+  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"vrf_proof\": \"",20);
+  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.vrf_proof,VRF_PROOF_LENGTH);
+  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"vrf_beta_string\": \"",26);
+  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.vrf_beta_string,VRF_BETA_LENGTH);
+  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"block_blob\": \"",21);
+  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.block_blob,strnlen(current_round_part_consensus_node_data.block_blob,BUFFER_SIZE));
+  memcpy(string+strnlen(string,BUFFER_SIZE),"\"}",2);
 
   // sign_data
   if (sign_data(string,0) == 0)
