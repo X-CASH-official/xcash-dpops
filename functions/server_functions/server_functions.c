@@ -14,6 +14,7 @@
 #include "variables.h"
 
 #include "define_macros_functions.h"
+#include "blockchain_functions.h"
 #include "file_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
@@ -767,7 +768,7 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
   {
     if (memcmp(block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message2,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
     }
   }
 
@@ -939,7 +940,7 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
   {
     if (memcmp(block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message2,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
     }
   }
 
@@ -994,7 +995,6 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
 
   // check if the memory needed was allocated on the heap successfully
@@ -1012,6 +1012,10 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
     {
       pointer_reset(data3);
     }
+    if (message2 != NULL)
+    {
+      pointer_reset(message2);
+    }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
@@ -1026,7 +1030,9 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   free(data2); \
   data2 = NULL; \
   free(data3); \
-  data3 = NULL;
+  data3 = NULL; \
+  free(message2); \
+  message2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR(settings) \
   color_print(settings,"red"); \
@@ -1052,20 +1058,46 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
-  // verify the block
-
-  // save all of the VRF data to the current_round_part_consensus_node_data struct
-
   // create the message
+  memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
 
-  // sign the message
+  // convert the network_block_string to blockchain_data
+  if (network_block_string_to_blockchain_data(data) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not convert the network_block_string to blockchain_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // verify the network block
+  if (verify_network_block_data(0,1) == 1)
+  {
+    memcpy(message2+75,"valid",5);
+  }
+  else
+  {
+    memcpy(message2+75,"invalid",7);
+  }
+  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
+
+  // SHA2-512 hash the network block
+  crypto_hash_sha512((unsigned char*)message2+strnlen(message,BUFFER_SIZE),(const unsigned char*)data,(unsigned long long)strnlen(data,BUFFER_SIZE));
+  
+  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
+
+  // save the netowrk block to the current_round_part_consensus_node_data struct
+  memcpy(current_round_part_consensus_node_data.block_blob,data,strnlen(data,BUFFER_SIZE));
+
+  // sign_data
+  if (sign_data(message2,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
 
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     if (memcmp(block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+      send_data_socket(block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message2,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
     }
   }
 
