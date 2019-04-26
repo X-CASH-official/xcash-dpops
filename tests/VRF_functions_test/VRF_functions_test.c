@@ -40,11 +40,10 @@ int VRF_test()
   const unsigned char beta_string[crypto_vrf_OUTPUTBYTES] = {0x94,0xf4,0x48,0x7e,0x1b,0x2f,0xec,0x95,0x43,0x09,0xef,0x12,0x89,0xec,0xb2,0xe1,0x50,0x43,0xa2,0x46,0x1e,0xcc,0x7b,0x2a,0xe7,0xd4,0x47,0x06,0x07,0xef,0x82,0xeb,0x1c,0xfa,0x97,0xd8,0x49,0x91,0xfe,0x4a,0x7b,0xfd,0xfd,0x71,0x56,0x06,0xbc,0x27,0xe2,0x96,0x7a,0x6c,0x55,0x7c,0xfb,0x58,0x75,0x87,0x9b,0x67,0x17,0x40,0xb7,0xd8};
 
   // Variables
-	unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
+  unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
-	unsigned char vrf_proof[crypto_vrf_PROOFBYTES];
-	unsigned char vrf_beta[crypto_vrf_OUTPUTBYTES];
-	size_t count;
+  unsigned char vrf_proof[crypto_vrf_PROOFBYTES];
+  unsigned char vrf_beta[crypto_vrf_OUTPUTBYTES];
 
   // define macros
   #define VRF_TOTAL_TEST 7
@@ -63,8 +62,8 @@ int VRF_test()
   // run the test
 
   // create a random VRF public key and secret key
-  memset(vrf_public_key,0,strnlen(vrf_public_key,crypto_vrf_PUBLICKEYBYTES));
-  memset(vrf_secret_key,0,strnlen(vrf_secret_key,crypto_vrf_SECRETKEYBYTES));
+  memset(vrf_public_key,0,strnlen((char*)vrf_public_key,crypto_vrf_PUBLICKEYBYTES));
+  memset(vrf_secret_key,0,strnlen((char*)vrf_secret_key,crypto_vrf_SECRETKEYBYTES));
   if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 1)
   {
     color_print("PASSED! Test for creating a random VRF public key and secret key","green");
@@ -86,7 +85,7 @@ int VRF_test()
   }
 
   // create the VRF proof
-  if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,"\x72",1) == 0)
+  if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,alpha_string,1) == 0 && memcmp(vrf_proof,proof,crypto_vrf_PROOFBYTES) == 0)
   {
     color_print("PASSED! Test for creating the VRF proof","green");
   }
@@ -106,7 +105,7 @@ int VRF_test()
   }
 
   // Create the beta string
-  memset(vrf_beta,0,strnlen(vrf_beta,0));
+  memset(vrf_beta,0,strnlen((char*)vrf_beta,0));
   if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta,(const unsigned char*)vrf_proof) == 0)
   {
     color_print("PASSED! Test for creating the VRF beta string","green");
@@ -127,7 +126,7 @@ int VRF_test()
   }
 
   // check that the proof, beta string, public key and alpha string all correspond to each other
-  if (crypto_vrf_verify((unsigned char*)vrf_beta,(const unsigned char*)vrf_public_key,(const unsigned char*)vrf_proof,"\x72",1) == 0)
+  if (crypto_vrf_verify((unsigned char*)vrf_beta,(const unsigned char*)vrf_public_key,(const unsigned char*)vrf_proof,alpha_string,1) == 0)
   {
     color_print("PASSED! Test for verifying the VRF proof, beta string, public key and alpha string","green");
   }

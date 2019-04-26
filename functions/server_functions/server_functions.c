@@ -277,7 +277,7 @@ int get_updated_node_list()
   }
 
   // clear any data that was already in the block_verifiers_list struct
-  for (count = 0; count <= BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(block_verifiers_list.block_verifiers_name[count],0,strnlen(block_verifiers_list.block_verifiers_name[count],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
     memset(block_verifiers_list.block_verifiers_public_address[count],0,strnlen(block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH));
@@ -1326,7 +1326,7 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
     memcpy(vrf_alpha_string,vrf_public_key,strnlen(vrf_public_key,BUFFER_SIZE));
 
     // create the proof
-    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,vrf_alpha_string,strlen(vrf_alpha_string)) == 1)
+    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,(const unsigned char*)vrf_alpha_string,(unsigned long long)strlen(vrf_alpha_string)) == 1)
     {
       SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
     }
@@ -1561,7 +1561,7 @@ int server_receive_data_socket_consensus_node_to_node_message_list_of_enabled_no
   write_file(data,NODES_IP_ADDRESS_LIST_FILE_NAME);  
 
   // clear any data that was already in the block_verifiers_list struct
-  for (count = 0; count <= BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(block_verifiers_list.block_verifiers_name[count],0,strnlen(block_verifiers_list.block_verifiers_name[count],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
     memset(block_verifiers_list.block_verifiers_public_address[count],0,strnlen(block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH));
@@ -1699,9 +1699,7 @@ Return: 0 if an error has occured, 1 if successfull
 int create_server(const int MESSAGE_SETTINGS)
 {
   // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"};   
-  const int SOCKET_OPTION = 1;  
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+  const int SOCKET_OPTION = 1; 
 
   // Variables
   char buffer[BUFFER_SIZE];
@@ -1710,8 +1708,7 @@ int create_server(const int MESSAGE_SETTINGS)
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   int len;
   int receive_data_result; 
-  struct sockaddr_in addr, cl_addr;  
-  struct sockaddr_in serv_addr;
+  struct sockaddr_in addr, cl_addr; 
   struct mainnode_timeout_thread_parameters mainnode_timeout_thread_parameters;
   struct node_to_node_timeout_thread_parameters node_to_node_timeout_thread_parameters;
 

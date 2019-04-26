@@ -99,8 +99,6 @@ int reset_variables_allocated_on_the_heap_test()
   int current_system_memory_usage = 0;
   int current_memory_usage = 0;
   size_t count = 0;
-  size_t count2 = 0;
-  size_t counter = 0;
   pthread_t thread_id;
   int settings2 = 1;
 

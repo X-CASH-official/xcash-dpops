@@ -24,7 +24,6 @@ int read_file(char *result, const char* FILE_NAME)
 {
   // Variables
   FILE* file;
-  int settings = 0;
 
   // check if the file exist
   file = fopen(FILE_NAME,"r");
@@ -33,14 +32,21 @@ int read_file(char *result, const char* FILE_NAME)
     // the file exist, read the data in the result
     fseek(file, 0, SEEK_END);
     const long file_size = ftell(file);
+    if (file_size != -1)
+    {
+      fclose(file);
+      return 0;
+    }
     fseek(file, 0, SEEK_SET); 
-    fread(result, file_size, sizeof(char), file);
+    if (fread(result, sizeof(char), file_size, file) != (size_t)file_size)
+    {
+      fclose(file);
+      return 0;
+    }
     fclose(file);
-    settings = 1;
   }
-  return settings;
+  return 1;
 }
-
 
 /*
 -----------------------------------------------------------------------------------------------------------
