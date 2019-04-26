@@ -568,7 +568,7 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
   memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
 
   // verify the VRF data
-  if (crypto_vrf_verify(data3,vrf_public_key_part_1,data2,data,strnlen(data,BUFFER_SIZE)) == 0)
+  if (crypto_vrf_verify((unsigned char*)data3,(const unsigned char*)vrf_public_key_part_1,(const unsigned char*)data2,(const unsigned char*)data,(unsigned long long)strnlen(data,BUFFER_SIZE)) == 0)
   {
     memcpy(message2+75,"valid",5);
   }
@@ -735,7 +735,7 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
   memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
 
   // verify the VRF data
-  if (crypto_vrf_verify(data3,data,data2,vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE)) == 0)
+  if (crypto_vrf_verify((unsigned char*)data3,(const unsigned char*)data,(const unsigned char*)data2,(const unsigned char*)vrf_alpha_string_part_2,(unsigned long long)strnlen(vrf_alpha_string_part_2,BUFFER_SIZE)) == 0)
   {
     memcpy(message2+75,"valid",5);
   }
@@ -908,7 +908,7 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
   memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
 
   // verify the VRF data and check that the vrf_public_key_part_1 and vrf_alpha_string_part_2 match the current vrf_public_key and vrf_alpha_string
-  if (crypto_vrf_verify(data4,data,data3,data2,strnlen(data2,BUFFER_SIZE)) == 0 || memcmp(current_round_part_consensus_node_data.vrf_public_key,data,strnlen(data,BUFFER_SIZE)) != 0 || memcmp(current_round_part_consensus_node_data.vrf_alpha_string,data2,strnlen(data2,BUFFER_SIZE)) != 0)
+  if (crypto_vrf_verify((unsigned char*)data4,(const unsigned char*)data,(const unsigned char*)data3,(const unsigned char*)data2,(unsigned long long)strnlen(data2,BUFFER_SIZE)) == 0 || memcmp(current_round_part_consensus_node_data.vrf_public_key,data,strnlen(data,BUFFER_SIZE)) != 0 || memcmp(current_round_part_consensus_node_data.vrf_alpha_string,data2,strnlen(data2,BUFFER_SIZE)) != 0)
   {
     memcpy(message2+75,"valid",5);
   }
@@ -1378,7 +1378,7 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
     memcpy(vrf_alpha_string_part_2,vrf_alpha_string,strnlen(vrf_alpha_string,BUFFER_SIZE));
 
     // create the proof
-    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,"\x72",1) == 1)
+    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,(const unsigned char*)vrf_alpha_string,(unsigned long long)strlen(vrf_alpha_string)) == 1)
     {
       SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
     }
@@ -1403,7 +1403,7 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
   else if (memcmp(current_round_part,"3",1) == 0)
   {
     // create the proof
-    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key_part_1,vrf_alpha_string_part_2,strlen(vrf_alpha_string_part_2)) == 1)
+    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key_part_1,(const unsigned char*)vrf_alpha_string_part_2,(unsigned long long)strlen(vrf_alpha_string_part_2)) == 1)
     {
       SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
     }

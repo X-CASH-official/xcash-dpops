@@ -204,7 +204,7 @@ void* node_to_node_message_timeout_thread(void* parameters)
   memcpy(string,"{\r\n \"message_settings\": \"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS\",\r\n  \"vote_result\": \"",84);
 
   // verify the VRF data
-  if (crypto_vrf_verify(current_round_part_consensus_node_data.vrf_beta_string,current_round_part_consensus_node_data.vrf_public_key,current_round_part_consensus_node_data.vrf_proof,current_round_part_consensus_node_data.vrf_alpha_string,strnlen(current_round_part_consensus_node_data.vrf_alpha_string,BUFFER_SIZE)) == 0)
+  if (crypto_vrf_verify((unsigned char*)current_round_part_consensus_node_data.vrf_beta_string,(const unsigned char*)current_round_part_consensus_node_data.vrf_public_key,(const unsigned char*)current_round_part_consensus_node_data.vrf_proof,(const unsigned char*)current_round_part_consensus_node_data.vrf_alpha_string,(unsigned long long)strnlen(current_round_part_consensus_node_data.vrf_alpha_string,BUFFER_SIZE)) == 0)
   {
     memcpy(string+84,"TRUE",4);
   }
