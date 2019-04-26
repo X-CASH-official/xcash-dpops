@@ -65,7 +65,7 @@ int VRF_test()
   // create a random VRF public key and secret key
   memset(vrf_public_key,0,strnlen(vrf_public_key,crypto_vrf_PUBLICKEYBYTES));
   memset(vrf_secret_key,0,strnlen(vrf_secret_key,crypto_vrf_SECRETKEYBYTES));
-  if (create_random_VRF_keys(vrf_public_key,vrf_secret_key) == 1 && crypto_vrf_is_valid_key(vrf_public_key) == 1)
+  if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 1)
   {
     color_print("PASSED! Test for creating a random VRF public key and secret key","green");
   }
@@ -75,7 +75,7 @@ int VRF_test()
   }
 
   // test if the VRF public key is the correct public key for the test data
-  crypto_vrf_keypair_from_seed(vrf_public_key, vrf_secret_key, data);
+  crypto_vrf_keypair_from_seed((unsigned char*)vrf_public_key, (unsigned char*)vrf_secret_key, (const unsigned char*)data);
   if (memcmp(vrf_public_key,public_key,crypto_vrf_PUBLICKEYBYTES) == 0)
   {
     color_print("PASSED! Test for verifying the VRF public and secret key from the initialization data","green");
@@ -86,7 +86,7 @@ int VRF_test()
   }
 
   // create the VRF proof
-  if (crypto_vrf_prove(vrf_proof,vrf_secret_key,"\x72",1) == 0)
+  if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,"\x72",1) == 0)
   {
     color_print("PASSED! Test for creating the VRF proof","green");
   }
@@ -96,7 +96,7 @@ int VRF_test()
   }
 
   // check if the VRF proof is the correct proof for the test data
-  if (crypto_vrf_proof_to_hash(vrf_beta,vrf_proof) == 0)
+  if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta,(const unsigned char*)vrf_proof) == 0)
   {
     color_print("PASSED! Test for verifying the VRF proof from the secret key and the alpha string","green");
   }
@@ -107,7 +107,7 @@ int VRF_test()
 
   // Create the beta string
   memset(vrf_beta,0,strnlen(vrf_beta,0));
-  if (crypto_vrf_proof_to_hash(vrf_beta,vrf_proof) == 0)
+  if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta,(const unsigned char*)vrf_proof) == 0)
   {
     color_print("PASSED! Test for creating the VRF beta string","green");
   }
@@ -127,7 +127,7 @@ int VRF_test()
   }
 
   // check that the proof, beta string, public key and alpha string all correspond to each other
-  if (crypto_vrf_verify(vrf_beta,vrf_public_key,vrf_proof,"\x72",1) == 0)
+  if (crypto_vrf_verify((unsigned char*)vrf_beta,(const unsigned char*)vrf_public_key,(const unsigned char*)vrf_proof,"\x72",1) == 0)
   {
     color_print("PASSED! Test for verifying the VRF proof, beta string, public key and alpha string","green");
   }

@@ -16,6 +16,7 @@
 #include "define_macros_functions.h"
 #include "blockchain_functions.h"
 #include "file_functions.h"
+#include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "server_functions.h"
@@ -24,6 +25,7 @@
 #include "convert.h"
 #include "vrf.h"
 #include "crypto_vrf.h"
+#include "VRF_functions.h"
 #include "sha512EL.h"
 
 /*
@@ -1222,10 +1224,17 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_public_key = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_secret_key = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_alpha_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_proof = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_beta_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message_copy1;
   int count = 0;
+  int counter = 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
+  if (data == NULL || data2 == NULL || data3 == NULL || vrf_public_key == NULL || vrf_secret_key == NULL || vrf_alpha_string == NULL || vrf_proof == NULL || vrf_beta_string == NULL)
   {
     if (data != NULL)
     {
@@ -1239,18 +1248,51 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
     {
       pointer_reset(data3);
     }
+    if (vrf_public_key != NULL)
+    {
+      pointer_reset(vrf_public_key);
+    }
+    if (vrf_secret_key != NULL)
+    {
+      pointer_reset(vrf_secret_key);
+    }
+    if (vrf_alpha_string != NULL)
+    {
+      pointer_reset(vrf_alpha_string);
+    }
+    if (vrf_proof != NULL)
+    {
+      pointer_reset(vrf_proof);
+    }
+    if (vrf_beta_string != NULL)
+    {
+      pointer_reset(vrf_beta_string);
+    }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
 
   // define macros
+  #define MINIMUM 1
+  #define MAXIMUM 255
+  
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
   free(data2); \
   data2 = NULL; \
   free(data3); \
-  data3 = NULL;
+  data3 = NULL; \
+  free(vrf_public_key); \
+  vrf_public_key = NULL; \
+  free(vrf_secret_key); \
+  vrf_secret_key = NULL; \
+  free(vrf_alpha_string); \
+  vrf_alpha_string = NULL; \
+  free(vrf_proof); \
+  vrf_proof = NULL; \
+  free(vrf_beta_string); \
+  vrf_beta_string = NULL; \
 
   #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND(settings) \
   color_print(settings,"red"); \
@@ -1260,21 +1302,154 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
   // verify the data
   if (verify_data(message,0,0,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND");
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
   }
 
   // parse the message
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
   memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  if (parse_json_data(message,"message",data) == 0 || parse_json_data(message,"VRF_block_blob",data2) == 0 || parse_json_data(message,"current_round_part",current_round_part) == 0 || parse_json_data(message,"current_round_part_backup_node",current_round_part_backup_node) == 0)
+  if (parse_json_data(message,"message",current_round_part) == 0 || parse_json_data(message,"VRF_block_blob",data2) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not parse main_nodes_public_address\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND");
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not parse main_nodes_public_address\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
   }
 
-  // create the message
+  // create the VRF data for this part of the round
+  if (memcmp(current_round_part,"1",1) == 0)
+  {
+    // The VRF private and secret key will create the public and secret key
+    if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 0 || crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF public and secret key\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
 
-  // sign the message
+    // create the alpha string
+    memcpy(vrf_alpha_string,vrf_public_key,strnlen(vrf_public_key,BUFFER_SIZE));
 
+    // create the proof
+    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,vrf_alpha_string,strlen(vrf_alpha_string)) == 1)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+
+    // create the beta string
+    if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta_string,(const unsigned char*)vrf_proof) == 1)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF beta string, or verify the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+
+    // save the VRF public key and secret key
+    memset(vrf_public_key_part_1,0,strlen(vrf_public_key_part_1));
+    memset(vrf_secret_key_part_1,0,strlen(vrf_secret_key_part_1));
+    memcpy(vrf_public_key_part_1,vrf_public_key,strnlen(vrf_public_key,BUFFER_SIZE));
+    memcpy(vrf_secret_key_part_1,vrf_secret_key,strnlen(vrf_secret_key,BUFFER_SIZE));
+
+    // create the message
+    memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_public_key\": \"",84);
+    memcpy(data3,vrf_public_key,strnlen(vrf_public_key,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n \"vrf_alpha_string\": \"",26);
+    memcpy(data3,vrf_alpha_string,strnlen(vrf_alpha_string,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n \"vrf_proof\": \"",26);
+    memcpy(data3,vrf_proof,strnlen(vrf_proof,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n \"vrf_beta_string\": \"",26);
+    memcpy(data3,vrf_beta_string,strnlen(vrf_beta_string,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n}",5);
+  }
+  else if (memcmp(current_round_part,"2",1) == 0)
+  {
+    // The VRF private and secret key will create the public and secret key
+    if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 0 || crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF public and secret key\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+
+    // create the alpha string
+    memset(data,0,strnlen(data,BUFFER_SIZE));
+    if (get_previous_block_hash(data,0) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not get the previous block hash\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+    memcpy(vrf_alpha_string,data,strnlen(data,BUFFER_SIZE));
+    // create the 100 character random string
+    for (count = 0, counter = 0; count < 50; count++, counter +=2)
+    {
+      sprintf(vrf_alpha_string+counter,"%02x",((rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM) & 0xFF);
+    }
+    memset(vrf_alpha_string_part_2,0,strlen(vrf_alpha_string_part_2));
+    memcpy(vrf_alpha_string_part_2,vrf_alpha_string,strnlen(vrf_alpha_string,BUFFER_SIZE));
+
+    // create the proof
+    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,"\x72",1) == 1)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+
+    // create the beta string
+    if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta_string,(const unsigned char*)vrf_proof) == 1)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF beta string, or verify the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+
+    // create the message
+    memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_2_OF_ROUND\",\r\n \"vrf_public_key\": \"",84);
+    memcpy(data3,vrf_public_key,strnlen(vrf_public_key,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n \"vrf_alpha_string\": \"",26);
+    memcpy(data3,vrf_alpha_string,strnlen(vrf_alpha_string,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n \"vrf_proof\": \"",26);
+    memcpy(data3,vrf_proof,strnlen(vrf_proof,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n \"vrf_beta_string\": \"",26);
+    memcpy(data3,vrf_beta_string,strnlen(vrf_beta_string,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n}",5);
+  }
+  else if (memcmp(current_round_part,"3",1) == 0)
+  {
+    // create the proof
+    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key_part_1,vrf_alpha_string_part_2,strlen(vrf_alpha_string_part_2)) == 1)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+
+    // create the beta string
+    if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta_string,(const unsigned char*)vrf_proof) == 1)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF beta string, or verify the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+
+    // create the message
+    memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"vrf_public_key\": \"",84);
+    memcpy(data3,vrf_public_key_part_1,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n \"vrf_alpha_string\": \"",26);
+    memcpy(data3,vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n \"vrf_proof\": \"",26);
+    memcpy(data3,vrf_proof,strnlen(vrf_proof,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n \"vrf_beta_string\": \"",26);
+    memcpy(data3,vrf_beta_string,strnlen(vrf_beta_string,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n}",5);
+  }
+  else if (memcmp(current_round_part,"4",1) == 0)
+  {
+    // get the block template
+    memset(data,0,strnlen(data,BUFFER_SIZE));
+    if (get_block_template(data,MAXIMUM_RESERVE_BYTE_LENGTH,0) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not get the block template\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+
+    // replace the reserve bytes with the received reserve bytes
+    message_copy1 = strstr(data,RESERVE_BYTE_START_STRING);
+    count = strnlen(data,BUFFER_SIZE) - strnlen(message_copy1,BUFFER_SIZE);
+    memcpy(data+count,data2,strnlen(data2,BUFFER_SIZE));
+
+    // create the message
+    memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"block_blob\": \"",80);
+    memcpy(data3,data,strnlen(data,BUFFER_SIZE));
+    memcpy(data3,"\",\r\n}",5);
+  }
+
+  // sign_data
+  if (sign_data(data3,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not sign_data\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+  }
 
   // send the message to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)

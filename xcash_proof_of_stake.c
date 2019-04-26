@@ -36,6 +36,7 @@ int main(int parameters_count, char* parameters[])
   current_consensus_nodes_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
   main_nodes_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   vrf_public_key_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  vrf_secret_key_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   vrf_alpha_string_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
