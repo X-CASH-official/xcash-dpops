@@ -15,6 +15,7 @@
 #include "define_macros_test.h"
 #include "variables_test.h"
 #include "VRF_functions_test.h"
+#include "sha512EL.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -40,13 +41,34 @@ int VRF_test()
   const unsigned char beta_string[crypto_vrf_OUTPUTBYTES] = {0x94,0xf4,0x48,0x7e,0x1b,0x2f,0xec,0x95,0x43,0x09,0xef,0x12,0x89,0xec,0xb2,0xe1,0x50,0x43,0xa2,0x46,0x1e,0xcc,0x7b,0x2a,0xe7,0xd4,0x47,0x06,0x07,0xef,0x82,0xeb,0x1c,0xfa,0x97,0xd8,0x49,0x91,0xfe,0x4a,0x7b,0xfd,0xfd,0x71,0x56,0x06,0xbc,0x27,0xe2,0x96,0x7a,0x6c,0x55,0x7c,0xfb,0x58,0x75,0x87,0x9b,0x67,0x17,0x40,0xb7,0xd8};
 
   // Variables
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  int count;
+  int count2;
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
   unsigned char vrf_proof[crypto_vrf_PROOFBYTES];
   unsigned char vrf_beta[crypto_vrf_OUTPUTBYTES];
 
   // define macros
-  #define VRF_TOTAL_TEST 7
+  #define DATA_HASH_TEXT "X-CASH Proof Of Stake"
+  #define DATA_HASH "92a910aeccda99f96b2bf8833faac13e0085acd6971d303531035e0e674cb1932417267189abc35d6fd151e92442984ed11cdc0652a7d18d11b9707b0ffd48df"
+  #define VRF_TOTAL_TEST 8
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data2 == NULL || data3 == NULL)
+  {
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
 
   // reset the variables
   memset(&string1_test,0,sizeof(string1_test)); 
@@ -133,6 +155,22 @@ int VRF_test()
   else
   {
     color_print("FAILED! Test for verifying the VRF proof, beta string, public key and alpha string","red");
+  }
+
+  // check that the SHA2-512 data hash is correct
+  crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)DATA_HASH_TEXT,21);
+
+  for (count = 0, count2 = 0; count < DATA_HASH_LENGTH / 2; count++, count2 += 2)
+  {
+    sprintf(data3+count2,"%02x",data2[count] & 0xFF);
+  }
+  if (memcmp(data3,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  {
+    color_print("PASSED! Test for verifying the SHA2-512 data hash","green");
+  }
+  else
+  {
+    color_print("FAILED! Test for verifying the SHA2-512 data hash","red");
   }
 
   // write the end test message
