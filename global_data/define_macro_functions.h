@@ -30,27 +30,27 @@ Color available values:
 */
 
 #define color_print(string,color) \
-if (strncmp(color,"red",BUFFER_SIZE) == 0) \
+if (strncmp(color,"red",3) == 0) \
 { \
   printf("\033[1;31m%s\033[0m\n",string); \
 } \
-else if (strncmp(color,"green",BUFFER_SIZE) == 0) \
+else if (memcmp(color,"green",5) == 0) \
 { \
   printf("\033[1;32m%s\033[0m\n",string); \
 } \
-else if (strncmp(color,"yellow",BUFFER_SIZE) == 0) \
+else if (memcmp(color,"yellow",6) == 0) \
 { \
   printf("\033[1;33m%s\033[0m\n",string); \
 } \
-else if (strncmp(color,"blue",BUFFER_SIZE) == 0) \
+else if (memcmp(color,"blue",4) == 0) \
 { \
   printf("\033[1;34m%s\033[0m\n",string); \
 } \
-else if (strncmp(color,"purple",BUFFER_SIZE) == 0) \
+else if (memcmp(color,"purple",6) == 0) \
 { \
   printf("\033[1;35m%s\033[0m\n",string); \
 } \
-else if (strncmp(color,"lightblue",BUFFER_SIZE) == 0) \
+else if (memcmp(color,"lightblue",9) == 0) \
 { \
   printf("\033[1;36m%s\033[0m\n",string); \
 } \
@@ -58,7 +58,6 @@ else \
 { \
   printf("%s",string); \
 }
-
 
 
 /*
