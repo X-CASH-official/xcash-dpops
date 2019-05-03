@@ -54,6 +54,12 @@ int VRF_test()
   #define DATA_HASH_TEXT "X-CASH Proof Of Stake"
   #define DATA_HASH "92a910aeccda99f96b2bf8833faac13e0085acd6971d303531035e0e674cb1932417267189abc35d6fd151e92442984ed11cdc0652a7d18d11b9707b0ffd48df"
   #define VRF_TOTAL_TEST 8
+  
+  #define pointer_reset_all \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL;
 
   // check if the memory needed was allocated on the heap successfully
   if (data2 == NULL || data3 == NULL)
@@ -190,7 +196,9 @@ int VRF_test()
     color_print(TEST_OUTLINE,"red");
     printf("\n\n");
   } 
+  pointer_reset_all;
   return count_test;
 
   #undef VRF_TOTAL_TEST
+  #undef pointer_reset_all
 }
