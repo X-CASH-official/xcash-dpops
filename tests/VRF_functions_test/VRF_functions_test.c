@@ -95,6 +95,7 @@ int VRF_test()
   if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 1)
   {
     color_print("PASSED! Test for creating a random VRF public key and secret key","green");
+    count_test++;
   }
   else
   {
@@ -106,6 +107,7 @@ int VRF_test()
   if (memcmp(vrf_public_key,public_key,crypto_vrf_PUBLICKEYBYTES) == 0)
   {
     color_print("PASSED! Test for verifying the VRF public and secret key from the initialization data","green");
+    count_test++;
   }
   else
   {
@@ -116,6 +118,7 @@ int VRF_test()
   if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,alpha_string,1) == 0 && memcmp(vrf_proof,proof,crypto_vrf_PROOFBYTES) == 0)
   {
     color_print("PASSED! Test for creating the VRF proof","green");
+    count_test++;
   }
   else
   {
@@ -126,6 +129,7 @@ int VRF_test()
   if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta,(const unsigned char*)vrf_proof) == 0)
   {
     color_print("PASSED! Test for verifying the VRF proof from the secret key and the alpha string","green");
+    count_test++;
   }
   else
   {
@@ -137,6 +141,7 @@ int VRF_test()
   if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta,(const unsigned char*)vrf_proof) == 0)
   {
     color_print("PASSED! Test for creating the VRF beta string","green");
+    count_test++;
   }
   else
   {
@@ -147,6 +152,7 @@ int VRF_test()
   if (memcmp(vrf_beta,beta_string,crypto_vrf_OUTPUTBYTES) == 0)
   {
     color_print("PASSED! Test for verifying the VRF beta string from the public key, proof and the alpha string","green");
+    count_test++;
   }
   else
   {
@@ -157,6 +163,7 @@ int VRF_test()
   if (crypto_vrf_verify((unsigned char*)vrf_beta,(const unsigned char*)vrf_public_key,(const unsigned char*)vrf_proof,alpha_string,1) == 0)
   {
     color_print("PASSED! Test for verifying the VRF proof, beta string, public key and alpha string","green");
+    count_test++;
   }
   else
   {
@@ -173,6 +180,7 @@ int VRF_test()
   if (memcmp(data3,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for verifying the SHA2-512 data hash","green");
+    count_test++;
   }
   else
   {
