@@ -113,10 +113,10 @@ Return: The number of occurences of the substring in the string, otherwise 0 if 
 size_t string_count(const char* DATA, const char* STRING)
 {
   // Constants
-  const size_t STRING_LENGTH = strnlen(STRING,BUFFER_SIZE);
+  const size_t STRING_LENGTH = strlen(STRING);
   
   // Variables
-  char* datacopy1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* datacopy1 = (char*)calloc(64000,sizeof(char)); 
   // since were going to be changing where datacopy1 is referencing, we need to create a copy to pointer_reset
   char* datacopy2 = datacopy1; 
   size_t count = 0;
