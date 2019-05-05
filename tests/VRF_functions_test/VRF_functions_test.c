@@ -53,7 +53,7 @@ int VRF_test()
   // define macros
   #define DATA_HASH_TEXT "X-CASH Proof Of Stake"
   #define DATA_HASH "92a910aeccda99f96b2bf8833faac13e0085acd6971d303531035e0e674cb1932417267189abc35d6fd151e92442984ed11cdc0652a7d18d11b9707b0ffd48df"
-  #define VRF_TOTAL_TEST 8
+  #define VRF_TOTAL_TEST 7
   
   #define pointer_reset_all \
   free(data2); \
@@ -90,8 +90,6 @@ int VRF_test()
   // run the test
 
   // create a random VRF public key and secret key
-  memset(vrf_public_key,0,strnlen((char*)vrf_public_key,crypto_vrf_PUBLICKEYBYTES));
-  memset(vrf_secret_key,0,strnlen((char*)vrf_secret_key,crypto_vrf_SECRETKEYBYTES));
   if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 1)
   {
     color_print("PASSED! Test for creating a random VRF public key and secret key","green");
@@ -103,8 +101,10 @@ int VRF_test()
   }
 
   // test if the VRF public key is the correct public key for the test data
+  memset(vrf_public_key,0,strnlen((char*)vrf_public_key,crypto_vrf_PUBLICKEYBYTES));
+  memset(vrf_secret_key,0,strnlen((char*)vrf_secret_key,crypto_vrf_SECRETKEYBYTES));
   crypto_vrf_keypair_from_seed((unsigned char*)vrf_public_key, (unsigned char*)vrf_secret_key, (const unsigned char*)data);
-  if (memcmp(vrf_public_key,public_key,crypto_vrf_PUBLICKEYBYTES) == 0)
+  if (memcmp(vrf_public_key,public_key,crypto_vrf_PUBLICKEYBYTES) == 0 && crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 1)
   {
     color_print("PASSED! Test for verifying the VRF public and secret key from the initialization data","green");
     count_test++;
@@ -125,18 +125,7 @@ int VRF_test()
     color_print("FAILED! Test for creating the VRF proof","red");
   }
 
-  // check if the VRF proof is the correct proof for the test data
-  if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta,(const unsigned char*)vrf_proof) == 0)
-  {
-    color_print("PASSED! Test for verifying the VRF proof from the secret key and the alpha string","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for verifying the VRF proof from the secret key and the alpha string","red");
-  }
-
-  // Create the beta string
+  // create the beta string
   memset(vrf_beta,0,strnlen((char*)vrf_beta,0));
   if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta,(const unsigned char*)vrf_proof) == 0)
   {
