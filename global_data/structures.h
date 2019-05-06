@@ -82,33 +82,45 @@ struct blockchain_reserve_bytes {
     char* vrf_node_random_data_backup_nodes_names_data; // The vrf_node_random_data_backup_nodes_names
     char* vrf_node_random_data_backup_nodes_names; // The vrf_node_random_data_backup_nodes_names_data text
     size_t vrf_node_random_data_backup_nodes_names_data_length; // The amount of characters of the vrf_node_random_data_backup_nodes_names_data
-    char* vrf_public_key_round_part_1; // The VRF public key for round part 1
-    size_t vrf_public_key_length_round_part_1; // The length of the VRF public key for round part 1
-    char* vrf_alpha_string_round_part_1; // The VRF alpha string (input string) for round part 1
-    size_t vrf_alpha_string_length_round_part_1; // The length of the VRF alpha string (input string) for round part 1
-    char* vrf_proof_round_part_1; // The VRF proof for round part 1
-    size_t vrf_proof_length_round_part_1; // The length of the VRF proof for round part 1
-    char* vrf_beta_string_round_part_1; // The VRF beta string (output string) for round part 1
-    size_t vrf_beta_string_length_round_part_1; // The length of the VRF beta string (output string) for round part 1
+    char* vrf_public_key_data_round_part_1; // The VRF public key text for round part 1
+    unsigned char* vrf_public_key_round_part_1; // The VRF public key for round part 1
+    size_t vrf_public_key_data_length_round_part_1; // The length of the VRF public key for round part 1
+    char* vrf_alpha_string_data_round_part_1; // The VRF alpha string (input string) text for round part 1
+    unsigned char* vrf_alpha_string_round_part_1; // The VRF alpha string (input string) for round part 1
+    size_t vrf_alpha_string_data_length_round_part_1; // The length of the VRF alpha string (input string) for round part 1
+    char* vrf_proof_data_round_part_1; // The VRF proof text for round part 1
+    unsigned char* vrf_proof_round_part_1; // The VRF proof for round part 1
+    size_t vrf_proof_data_length_round_part_1; // The length of the VRF proof for round part 1
+    char* vrf_beta_string_data_round_part_1; // The VRF beta string (output string) text for round part 1
+    unsigned char* vrf_beta_string_round_part_1; // The VRF beta string (output string) for round part 1
+    size_t vrf_beta_string_data_length_round_part_1; // The length of the VRF beta string (output string) for round part 1
     char* vrf_data_round_part_1; // The VRF data for round part 1
-    char* vrf_public_key_round_part_2; // The VRF public key for round part 1
-    size_t vrf_public_key_length_round_part_2;// The length of the VRF public key for round part 1
-    char* vrf_alpha_string_round_part_2; // The VRF alpha string (input string) for round part 2
-    size_t vrf_alpha_string_length_round_part_2; // The length of the VRF alpha string (input string) for round part 2
-    char* vrf_proof_round_part_2; // The VRF proof for round part 2
-    size_t vrf_proof_length_round_part_2; // The length of the VRF proof for round part 2
-    char* vrf_beta_string_round_part_2; // The VRF beta string (output string) for round part 2
-    size_t vrf_beta_string_length_round_part_2; // The length of the VRF beta string (output string) for round part 2
+    char* vrf_public_key_data_round_part_2; // The VRF public key text for round part 2
+    unsigned char* vrf_public_key_round_part_2; // The VRF public key for round part 2
+    size_t vrf_public_key_data_length_round_part_2; // The length of the VRF public key for round part 2
+    char* vrf_alpha_string_data_round_part_2; // The VRF alpha string (input string) text for round part 2
+    unsigned char* vrf_alpha_string_round_part_2; // The VRF alpha string (input string) for round part 2
+    size_t vrf_alpha_string_data_length_round_part_2; // The length of the VRF alpha string (input string) for round part 2
+    char* vrf_proof_data_round_part_2; // The VRF proof text for round part 2
+    unsigned char* vrf_proof_round_part_2; // The VRF proof for round part 2
+    size_t vrf_proof_data_length_round_part_2; // The length of the VRF proof for round part 2
+    char* vrf_beta_string_data_round_part_2; // The VRF beta string (output string) text for round part 2
+    unsigned char* vrf_beta_string_round_part_2; // The VRF beta string (output string) for round part 2
+    size_t vrf_beta_string_data_length_round_part_2; // The length of the VRF beta string (output string) for round part 2
     char* vrf_data_round_part_2; // The VRF data for round part 2
-    char* vrf_public_key_round_part_3; // The VRF public key for round part 3
-    size_t vrf_public_key_length_round_part_3;// The length of the VRF public key for round part 3
-    char* vrf_alpha_string_round_part_3; // The VRF alpha string (input string) for round part 3
-    size_t vrf_alpha_string_length_round_part_3; // The length of the VRF alpha string (input string) for round part 3
-    char* vrf_proof_round_part_3; // The VRF proof for round part 3
-    size_t vrf_proof_length_round_part_3; // The length of the VRF proof for round part 3
-    char* vrf_beta_string_round_part_3; // The VRF beta string (output string) for round part 3
-    size_t vrf_beta_string_length_round_part_3; // The length of the VRF beta string (output string) for round part 3
-    char* vrf_data_round_part_3; // The VRF data for round part 3
+    char* vrf_public_key_data_round_part_3; // The VRF public key text for round part 3
+    unsigned char* vrf_public_key_round_part_3; // The VRF public key for round part 3
+    size_t vrf_public_key_data_length_round_part_3; // The length of the VRF public key for round part 3
+    char* vrf_alpha_string_data_round_part_3; // The VRF alpha string (input string) text for round part 3
+    unsigned char* vrf_alpha_string_round_part_3; // The VRF alpha string (input string) for round part 3
+    size_t vrf_alpha_string_data_length_round_part_3; // The length of the VRF alpha string (input string) for round part 3
+    char* vrf_proof_data_round_part_3; // The VRF proof text for round part 3
+    unsigned char* vrf_proof_round_part_3; // The VRF proof for round part 3
+    size_t vrf_proof_data_length_round_part_3; // The length of the VRF proof for round part 3
+    char* vrf_beta_string_data_round_part_3; // The VRF beta string (output string) text for round part 3
+    unsigned char* vrf_beta_string_round_part_3; // The VRF beta string (output string) for round part 3
+    size_t vrf_beta_string_data_length_round_part_3; // The length of the VRF beta string (output string) for round part 3
+    char* vrf_data_round_part_3; // The VRF data for round part 3  
     char* vrf_data; // The VRF data for all of the round parts
     size_t vrf_data_length; // The length of the VRF data for all of the round parts
     char* previous_block_hash_data; // The previous_block_hash
