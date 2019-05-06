@@ -366,21 +366,33 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   memset(blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count,BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_NODE_BACKUP_COUNT_SIZE));
   memset(blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names_data,BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_BACKUP_NODES_NAMES_DATA_SIZE));
   memset(blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names,BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_BACKUP_NODES_NAMES_SIZE));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1,BUFFER_SIZE));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1,BUFFER_SIZE));
   memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1,BUFFER_SIZE));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1,BUFFER_SIZE));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1,BUFFER_SIZE));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1,crypto_vrf_PROOFBYTES));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1,VRF_PROOF_LENGTH));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1,crypto_vrf_OUTPUTBYTES));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1,VRF_BETA_LENGTH));
   memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_1,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_1,11));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2,BUFFER_SIZE));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2,crypto_vrf_PUBLICKEYBYTES));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2,VRF_PUBLIC_KEY_LENGTH));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2,BUFFER_SIZE));
   memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2,BUFFER_SIZE));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2,BUFFER_SIZE));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2,BUFFER_SIZE));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2,crypto_vrf_PROOFBYTES));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2,VRF_PROOF_LENGTH));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2,crypto_vrf_OUTPUTBYTES));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2,VRF_BETA_LENGTH));
   memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_2,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_2,11));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3,BUFFER_SIZE));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3,crypto_vrf_PUBLICKEYBYTES));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3,VRF_PUBLIC_KEY_LENGTH));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3,BUFFER_SIZE));
   memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3,BUFFER_SIZE));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3,BUFFER_SIZE));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3,BUFFER_SIZE));
-  memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,11));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3,crypto_vrf_PROOFBYTES));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3,VRF_PROOF_LENGTH));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3,crypto_vrf_OUTPUTBYTES));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3,VRF_BETA_LENGTH));
+  memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,11));  
   memset(blockchain_data.blockchain_reserve_bytes.vrf_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data,11));
   memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BUFFER_SIZE));
   for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
@@ -767,27 +779,55 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
 
   // vrf_public_key_round_part_1
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_length_round_part_1 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_public_key_length_round_part_1);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_public_key_length_round_part_1 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_1 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_1);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_1; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_1 + 64;
 
   // vrf_alpha_string_round_part_1
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_length_round_part_1 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_length_round_part_1);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_length_round_part_1 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1 + 64;
 
   // vrf_proof_round_part_1
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_length_round_part_1 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_proof_length_round_part_1);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_proof_length_round_part_1 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_1 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_1);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_1; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_1 + 64;
 
   // vrf_beta_string_round_part_1
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_length_round_part_1 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_beta_string_length_round_part_1);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_beta_string_length_round_part_1 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_1 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_1);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_1; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_1 + 64;
 
   // vrf_data_round_part_1
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
@@ -796,27 +836,55 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
 
   // vrf_public_key_round_part_2
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_length_round_part_2 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_public_key_length_round_part_2);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_public_key_length_round_part_2 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_2 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_2);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_2; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_2 + 64;
 
   // vrf_alpha_string_round_part_2
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_length_round_part_2 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_length_round_part_2);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_length_round_part_2 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2 + 64;
 
   // vrf_proof_round_part_2
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_length_round_part_2 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_proof_length_round_part_2);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_proof_length_round_part_2 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_2 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_2);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_2; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_2 + 64;
 
   // vrf_beta_string_round_part_2
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_length_round_part_2 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_beta_string_length_round_part_2);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_beta_string_length_round_part_2 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_2 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_2);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_2; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_2 + 64;
 
   // vrf_data_round_part_2
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
@@ -825,27 +893,55 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
 
   // vrf_public_key_round_part_3
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_length_round_part_3 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_public_key_length_round_part_3);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_public_key_length_round_part_3 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_3 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_3);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_3; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_3 + 64;
 
   // vrf_alpha_string_round_part_3
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_length_round_part_3 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_length_round_part_3);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_length_round_part_3 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3 + 64;
 
   // vrf_proof_round_part_3
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_length_round_part_3 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_proof_length_round_part_3);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_proof_length_round_part_3 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_3 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_3);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_3; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_3 + 64;
 
   // vrf_beta_string_round_part_3
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_length_round_part_3 = (strlen(DATA) - strlen(message_copy1)) - count;
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_beta_string_length_round_part_3);
-  count += blockchain_data.blockchain_reserve_bytes.vrf_beta_string_length_round_part_3 + 64;
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_3 = (strlen(DATA) - strlen(message_copy1)) - count;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3,&DATA[count],blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_3);
+  // convert the hexadecimal string to a string
+  for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_3; count2++, number += 2)
+  {
+    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memcpy(data2,&blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3[number],2);
+    blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3[count2] = (int)strtol(data2, NULL, 16);
+  }
+  count += blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_3 + 64;
 
   // vrf_data_round_part_3
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
