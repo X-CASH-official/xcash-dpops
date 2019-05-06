@@ -2,6 +2,9 @@
 #define STRUCTURES_H_
 
 #include "define_macros.h"
+#include "convert.h"
+#include "vrf.h"
+#include "crypto_vrf.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------

@@ -47,8 +47,9 @@ int VRF_test()
   int count2;
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
-  unsigned char vrf_proof[crypto_vrf_PROOFBYTES];
-  unsigned char vrf_beta[crypto_vrf_OUTPUTBYTES];
+  unsigned char vrf_proof[crypto_vrf_PROOFBYTES];unsigned char vrf_proof2[crypto_vrf_PROOFBYTES];
+  unsigned char* vrf_beta = (unsigned char*)calloc(250,sizeof(char)); unsigned char* vrf_beta2 = (unsigned char*)calloc(250,sizeof(char));
+  unsigned char* alpha = (unsigned char*)calloc(500,sizeof(char)); 
 
   // define macros
   #define DATA_HASH_TEXT "X-CASH Proof Of Stake"
@@ -86,8 +87,6 @@ int VRF_test()
   printf("\033[1;34mVRF test - Total test: %d\033[0m\n",VRF_TOTAL_TEST);
   color_print(TEST_OUTLINE,"blue");
   printf("\n");
-
-  // run the test
 
   // create a random VRF public key and secret key
   if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 1)

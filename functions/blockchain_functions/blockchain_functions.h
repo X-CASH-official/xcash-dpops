@@ -11,5 +11,5 @@ size_t varint_decode(size_t varint);
 int varint_encode(long long int number, char* result);
 int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_HEIGHT);
 int blockchain_data_to_network_block_string(char* result);
-int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS,const int TRANSACTIONS_SETTINGS);
+int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const int TRANSACTIONS_SETTINGS, const char* BLOCK_HEIGHT);
 #endif
