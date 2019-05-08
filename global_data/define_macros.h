@@ -69,7 +69,8 @@ Using define statements instead of constants for increased efficiency
 #define BLOCKCHAIN_RESERVED_BYTES_END "7c424c4f434b434841494e5f52455345525645445f42595445535f454e447c"
 #define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "00000000" // the network block nonce used when the block producer creates the block
 #define CONSENSUS_NODE_NETWORK_BLOCK_NONCE "11111111" // the network block nonce used when the consensus node creates the block
-#define BLOCK_VALIDATION_NODES_AMOUNT 1 // The total amount of block validation nodes
+#define MAXIMUM_TRANSACATIONS_PER_BLOCK 1000000 // The maximum amount of transaction per block
+#define BLOCK_VALIDATION_NODES_AMOUNT 5 // The total amount of block validation nodes
 #define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid.
 #define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
 #define DATA_HASH_LENGTH 128 // The length of the SHA2-512 hash
