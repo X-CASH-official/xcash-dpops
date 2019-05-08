@@ -182,7 +182,7 @@ struct blockchain_data {
     char* transaction_amount_data; // The transaction_amount
     size_t transaction_amount; // Variant decoded transaction_amount
     size_t transaction_amount_data_length; // The amount of characters of the transaction_amount
-    char* transactions[1000000]; // All of the transactions in the block.
+    char* transactions[MAXIMUM_TRANSACATIONS_PER_BLOCK]; // All of the transactions in the block.
 };
 
 

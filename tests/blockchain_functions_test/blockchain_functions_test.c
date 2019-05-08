@@ -4,6 +4,8 @@
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
+#include "variables.h"
+#include "structures.h"
 
 #include "blockchain_functions.h"
 

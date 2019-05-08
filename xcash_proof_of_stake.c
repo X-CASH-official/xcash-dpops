@@ -147,77 +147,77 @@ int main(int parameters_count, char* parameters[])
   }
 
   // initialize the blockchain_data struct 
-  blockchain_data.network_version_data = (char*)calloc(BLOCKCHAIN_DATA_NETWORK_VERSION_DATA_SIZE,sizeof(char));
-  blockchain_data.timestamp_data = (char*)calloc(BLOCKCHAIN_DATA_TIMESTAMP_DATA_SIZE,sizeof(char));
-  blockchain_data.previous_block_hash_data = (char*)calloc(BLOCKCHAIN_DATA_PREVIOUS_BLOCK_HASH_DATA_SIZE,sizeof(char));
-  blockchain_data.nonce_data = (char*)calloc(BLOCKCHAIN_DATA_NONCE_DATA_SIZE,sizeof(char));
-  blockchain_data.block_reward_transaction_version_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCK_REWARD_TRANSACTION_VERSION_DATA_SIZE,sizeof(char));
-  blockchain_data.unlock_block_data = (char*)calloc(BLOCKCHAIN_DATA_UNLOCK_BLOCK_DATA_SIZE,sizeof(char));
-  blockchain_data.block_reward_input_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCK_REWARD_INPUT_DATA_SIZE,sizeof(char));
-  blockchain_data.vin_type_data = (char*)calloc(BLOCKCHAIN_DATA_VIN_TYPE_DATA_SIZE,sizeof(char));
-  blockchain_data.block_height_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCK_HEIGHT_DATA_SIZE,sizeof(char));
-  blockchain_data.block_reward_output_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCK_REWARD_OUTPUT_DATA_SIZE,sizeof(char));
-  blockchain_data.block_reward_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCK_REWARD_DATA_SIZE,sizeof(char));
-  blockchain_data.stealth_address_output_tag_data = (char*)calloc(BLOCKCHAIN_DATA_STEALTH_ADDRESS_OUTPUT_TAG_DATA_SIZE,sizeof(char));
-  blockchain_data.stealth_address_output_data = (char*)calloc(BLOCKCHAIN_DATA_STEALTH_ADDRESS_OUTPUT_DATA_SIZE,sizeof(char));
-  blockchain_data.extra_bytes_size_data = (char*)calloc(BLOCKCHAIN_DATA_EXTRA_BYTES_SIZE_DATA_SIZE,sizeof(char));
-  blockchain_data.transaction_public_key_tag_data = (char*)calloc(BLOCKCHAIN_DATA_TRANSACTION_PUBLIC_KEY_TAG_DATA_SIZE,sizeof(char));
-  blockchain_data.transaction_public_key_data = (char*)calloc(BLOCKCHAIN_DATA_TRANSACTION_PUBLIC_KEY_DATA_SIZE,sizeof(char));
-  blockchain_data.extra_nonce_tag_data = (char*)calloc(BLOCKCHAIN_DATA_EXTRA_NONCE_TAG_DATA_SIZE,sizeof(char));
-  blockchain_data.reserve_bytes_size_data = (char*)calloc(BLOCKCHAIN_DATA_RESERVE_BYTES_SIZE_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_DELEGATES_NAME_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_DELEGATES_NAME_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.block_producer_public_address_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_PUBLIC_ADDRESS_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.block_producer_public_address = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_PUBLIC_ADDRESS_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_NODE_BACKUP_COUNT_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_NODE_BACKUP_COUNT_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_BACKUP_NODES_NAMES_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_BACKUP_NODES_NAMES_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_DELEGATES_NAME_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_DELEGATES_NAME_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_PUBLIC_ADDRESS_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_PUBLIC_ADDRESS_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_node_backup_count_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_NODE_BACKUP_COUNT_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_node_backup_count = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_NODE_BACKUP_COUNT_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_BACKUP_NODES_NAMES_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_BACKUP_NODES_NAMES_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_DELEGATES_NAME_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_DELEGATES_NAME_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_PUBLIC_ADDRESS_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_PUBLIC_ADDRESS_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_NODE_BACKUP_COUNT_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_NODE_BACKUP_COUNT_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names_data = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_BACKUP_NODES_NAMES_DATA_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names = (char*)calloc(BLOCKCHAIN_DATA_BLOCKCHAIN_RESERVE_BYTES_BLOCK_PRODUCER_BACKUP_NODES_NAMES_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1 = (char*)calloc(VRF_PUBLIC_KEY_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1 = (unsigned char*)calloc(VRF_PUBLIC_KEY_LENGTH,sizeof(char));
+  blockchain_data.network_version_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.timestamp_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.previous_block_hash_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.nonce_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.block_reward_transaction_version_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.unlock_block_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.block_reward_input_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.vin_type_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.block_height_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.block_reward_output_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.block_reward_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.stealth_address_output_tag_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.stealth_address_output_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.extra_bytes_size_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.transaction_public_key_tag_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.transaction_public_key_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.extra_nonce_tag_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.reserve_bytes_size_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_public_address_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_public_address = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_node_backup_count_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_node_backup_count = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1 = (char*)calloc(VRF_PROOF_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1 = (unsigned char*)calloc(VRF_PROOF_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1 = (char*)calloc(VRF_BETA_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1 = (unsigned char*)calloc(VRF_BETA_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_1 = (char*)calloc(11,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2 = (char*)calloc(VRF_PUBLIC_KEY_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2 = (unsigned char*)calloc(VRF_PUBLIC_KEY_LENGTH,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2 = (char*)calloc(VRF_PROOF_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2 = (unsigned char*)calloc(VRF_PROOF_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2 = (char*)calloc(VRF_BETA_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2 = (unsigned char*)calloc(VRF_BETA_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_2 = (char*)calloc(11,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3 = (char*)calloc(VRF_PUBLIC_KEY_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3 = (unsigned char*)calloc(VRF_PUBLIC_KEY_LENGTH,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3 = (char*)calloc(VRF_PROOF_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3 = (unsigned char*)calloc(VRF_PROOF_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3 = (char*)calloc(VRF_BETA_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3 = (unsigned char*)calloc(VRF_BETA_LENGTH,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3 = (char*)calloc(11,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_data = (char*)calloc(11,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.previous_block_hash_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.previous_block_hash_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
   if (blockchain_data.network_version_data == NULL || blockchain_data.timestamp_data == NULL || blockchain_data.previous_block_hash_data == NULL || blockchain_data.nonce_data == NULL || blockchain_data.block_reward_transaction_version_data == NULL || blockchain_data.unlock_block_data == NULL || blockchain_data.block_reward_input_data == NULL || blockchain_data.vin_type_data == NULL || blockchain_data.block_height_data == NULL || blockchain_data.block_reward_output_data == NULL || blockchain_data.block_reward_data == NULL || blockchain_data.stealth_address_output_tag_data == NULL || blockchain_data.stealth_address_output_data == NULL || blockchain_data.extra_bytes_size_data == NULL || blockchain_data.transaction_public_key_tag_data == NULL || blockchain_data.transaction_public_key_data == NULL || blockchain_data.extra_nonce_tag_data == NULL || blockchain_data.reserve_bytes_size_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data == NULL || blockchain_data.blockchain_reserve_bytes.previous_block_hash_data == NULL)
@@ -227,8 +227,8 @@ int main(int parameters_count, char* parameters[])
   }
   for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
   {
-    blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-    blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
     if (blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] == NULL)
@@ -237,11 +237,11 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
   }
-  blockchain_data.ringct_version_data = (char*)calloc(3,sizeof(char));
-  blockchain_data.transaction_amount_data = (char*)calloc(5,sizeof(char));
-  for (count = 0; count < 1000000; count++)
+  blockchain_data.ringct_version_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.transaction_amount_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  for (count = 0; count < MAXIMUM_TRANSACATIONS_PER_BLOCK; count++)
   {
-    blockchain_data.transactions[count] = (char*)calloc(65,sizeof(char));
+    blockchain_data.transactions[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
     if (blockchain_data.transactions[count] == NULL)
@@ -250,6 +250,8 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
   }
+
+test();exit(0);
 
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
