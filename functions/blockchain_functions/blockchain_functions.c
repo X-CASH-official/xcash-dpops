@@ -10,6 +10,7 @@
 #include "define_macros_functions.h"
 #include "string_functions.h"
 #include "network_daemon_functions.h"
+#include "network_wallet_functions.h"
 #include "vrf.h"
 #include "crypto_vrf.h"
 #include "VRF_functions.h"
@@ -396,7 +397,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA));  
   memset(blockchain_data.blockchain_reserve_bytes.vrf_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data,BUFFER_SIZE_NETWORK_BLOCK_DATA));
   memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BUFFER_SIZE_NETWORK_BLOCK_DATA));
-  for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VALIDATION_NODES_TOTAL_AMOUNT; count++)
   {
     memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
@@ -1491,7 +1492,7 @@ int blockchain_data_to_network_block_string(char* result)
 
   // block_validation_node_signature_data  
   blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length = BLOCK_VALIDATION_NODE_SIGNED_BLOCK_LENGTH;
-  for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VALIDATION_NODES_TOTAL_AMOUNT; count++)
   {
     // convert the string to hexadecimal
     for (count2 = 0, counter = 0; count2 < XCASH_SIGN_DATA_LENGTH; count2++, counter += 2)
@@ -1499,7 +1500,7 @@ int blockchain_data_to_network_block_string(char* result)
       sprintf(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count]+counter,"%02x",blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count][count2] & 0xFF);
     }
     memcpy(result+strnlen(result,BUFFER_SIZE),blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length);  
-    if (count+1 != BLOCK_VALIDATION_NODES_AMOUNT)
+    if (count+1 != BLOCK_VALIDATION_NODES_TOTAL_AMOUNT)
     {
       memcpy(result+strnlen(result,BUFFER_SIZE),BLOCKCHAIN_DATA_SEGMENT_STRING,64);
     }
@@ -1575,10 +1576,12 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
 {
   // Variables
   size_t count;
+  size_t count2;
   size_t number;
   char* previous_block_hash = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* network_block_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
   #define BLOCK_REWARD_TRANSACTION_VERSION "02"
@@ -1596,7 +1599,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   free(current_block_height); \
   current_block_height = NULL; \
   free(data2); \
-  data2 = NULL;
+  data2 = NULL; \
+  free(network_block_string); \
+  network_block_string = NULL;
 
   #define VERIFY_NETWORK_BLOCK_DATA_ERROR(settings) \
   color_print(settings,"red"); \
@@ -1604,7 +1609,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   return 0; 
 
   // check if the memory needed was allocated on the heap successfully
-  if (previous_block_hash == NULL || current_block_height == NULL || data2 == NULL)
+  if (previous_block_hash == NULL || current_block_height == NULL || data2 == NULL || network_block_string == NULL)
   {
     if (previous_block_hash != NULL)
     {
@@ -1617,6 +1622,10 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     if (data2 != NULL)
     {
       pointer_reset(data2);
+    }
+    if (network_block_string != NULL)
+    {
+      pointer_reset(network_block_string);
     }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -1961,16 +1970,34 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   // block_validation_node_signature
   if (BLOCK_VALIDATION_SIGNATURES_SETTINGS == 1)
   {
-    for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
+    // create a network block string
+    if (blockchain_data_to_network_block_string(network_block_string) == 0)
+    {
+      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string\nThe block was not signed by the required amount of block validation nodes\nFunction: verify_network_block_data");
+    }
+    // replace the block validation signatures with the GET_BLOCK_TEMPLATE_RESERVED_BYTES
+    for (count = 0; count < BLOCK_VALIDATION_NODES_TOTAL_AMOUNT; count++)
     { 
-      if (strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count]) == 0)
+      string_replace(network_block_string,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_RESERVED_BYTES);
+    }
+    for (count = 0, number = 0; count < BLOCK_VALIDATION_NODES_TOTAL_AMOUNT; count++)
+    {       
+      if (blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length == BLOCK_VALIDATION_NODE_SIGNED_BLOCK_LENGTH && memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],"5369675631",10) == 0)
       {
-        break;
+        // check the signed data
+        for (count2 = 0; count2 < BLOCK_VALIDATION_NODES_TOTAL_AMOUNT; count2++)
+        {       
+          if (data_verify(0,block_validation_nodes_list.block_validation_nodes_public_address[count2],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],network_block_string) == 1)
+          {
+            number++;
+            break;
+          }
+        }
       }
-      if (blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length != 186 || memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],"5369675631",10) != 0)
-      {
-        VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string\nInvalid previous block hash\nFunction: verify_network_block_data");
-      }
+    }
+    if (number < BLOCK_VALIDATION_NODES_AMOUNT)
+    {
+      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string\nThe block was not signed by the required amount of block validation nodes\nFunction: verify_network_block_data");
     }
   }
 

@@ -18,6 +18,11 @@ struct block_verifiers_list {
     char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers IP address
 };
 
+struct block_validation_nodes_list {
+    char* block_validation_nodes_public_address[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]; // The block validation nodes public address
+    char* block_validation_nodes_IP_address[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]; // The block validation nodes IP address
+};
+
 struct current_round_part_consensus_node_data {
     char* vrf_public_key; // The VRF public key
     char* vrf_alpha_string; // The VRF alpha string
@@ -128,8 +133,8 @@ struct blockchain_reserve_bytes {
     size_t vrf_data_length; // The length of the VRF data for all of the round parts
     char* previous_block_hash_data; // The previous_block_hash
     size_t previous_block_hash_data_length; // The amount of characters of the previous_block_hash_data
-    char* block_validation_node_signature_data[BLOCK_VALIDATION_NODES_AMOUNT]; // The block_validation_node_signature
-    char* block_validation_node_signature[BLOCK_VALIDATION_NODES_AMOUNT]; // The block_validation_node_signature_data text
+    char* block_validation_node_signature_data[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]; // The block_validation_node_signature
+    char* block_validation_node_signature[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]; // The block_validation_node_signature_data text
     size_t block_validation_node_signature_data_length; // The amount of characters of the block_validation_node_signature_data
 };
 

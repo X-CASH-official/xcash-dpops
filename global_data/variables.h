@@ -13,6 +13,7 @@ Global Variables
 
 char* xcash_wallet_public_address; // Holds your wallets public address
 struct block_verifiers_list block_verifiers_list; // The list of the enabled nodes name, public address and IP address
+struct block_validation_nodes_list block_validation_nodes_list; // The list of block validation nodes public address
 struct current_round_part_consensus_node_data current_round_part_consensus_node_data; // The network block data and VRF data for the current part of the round
 struct current_round_part_vote_data current_round_part_vote_data; // The vote data for the current part of the round
 struct VRF_data_block_verifiers VRF_data_block_verifiers; // The list of all block verifiers received data from the main node

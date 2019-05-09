@@ -103,6 +103,20 @@ int main(int parameters_count, char* parameters[])
     }
   }
 
+  // initialize the block_validation_nodes_list struct 
+  for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
+  {
+    block_validation_nodes_list.block_validation_nodes_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    block_validation_nodes_list.block_validation_nodes_IP_address[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (block_validation_nodes_list.block_validation_nodes_public_address[count] == NULL || block_validation_nodes_list.block_validation_nodes_IP_address[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }  
+
   // initialize the current_round_part_consensus_node_data struct
   current_round_part_consensus_node_data.vrf_public_key = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_round_part_consensus_node_data.vrf_alpha_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -225,7 +239,7 @@ int main(int parameters_count, char* parameters[])
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
-  for (count = 0; count < BLOCK_VALIDATION_NODES_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VALIDATION_NODES_TOTAL_AMOUNT; count++)
   {
     blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
     blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
@@ -241,7 +255,7 @@ int main(int parameters_count, char* parameters[])
   blockchain_data.transaction_amount_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   for (count = 0; count < MAXIMUM_TRANSACATIONS_PER_BLOCK; count++)
   {
-    blockchain_data.transactions[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    blockchain_data.transactions[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_TRANSACTIONS_DATA,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
     if (blockchain_data.transactions[count] == NULL)
@@ -251,7 +265,7 @@ int main(int parameters_count, char* parameters[])
     }
   }
 
-test();exit(0);
+  // Add each block validation nodes data to the block_validation_nodes_list struct
 
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
