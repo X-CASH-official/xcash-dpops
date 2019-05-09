@@ -32,7 +32,7 @@ int read_file(char *result, const char* FILE_NAME)
     // the file exist, read the data in the result
     fseek(file, 0, SEEK_END);
     const long file_size = ftell(file);
-    if (file_size != -1)
+    if (file_size == -1)
     {
       fclose(file);
       return 0;
