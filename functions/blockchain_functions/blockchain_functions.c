@@ -427,8 +427,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
     NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR("Invalid network_block_string\nFunction: network_block_string_to_blockchain_data");
   }
   memcpy(blockchain_data.timestamp_data,&DATA[count-blockchain_data.timestamp_data_length],blockchain_data.timestamp_data_length);
-  sscanf(blockchain_data.timestamp_data, "%zu", &number);
-  blockchain_data.timestamp = varint_decode(number);
+  blockchain_data.timestamp = varint_decode((size_t)strtol(blockchain_data.timestamp_data, NULL, 16));
 
   // previous_block_hash
   blockchain_data.previous_block_hash_data_length = 64;
@@ -968,6 +967,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   for (count3 = 0; count3 < count5; count3++)
   { 
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count3],&DATA[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length);
+    count += blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length + 64;
     // convert the hexadecimal string to a string
     for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length; count2++, number += 2)
     {
@@ -1012,6 +1012,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
     memcpy(blockchain_data.transactions[number],&DATA[count-64],64);
   }
 
+  pointer_reset_all;
   return 1;
 
   #undef pointer_reset_all
