@@ -36,14 +36,15 @@ int get_public_address(const int MESSAGE_SETTINGS)
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  // define macros
+  #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
+
   if (data == NULL)
   {
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
 
-  // define macros
-  #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",MESSAGE_SETTINGS) <= 0)
   {  
@@ -95,6 +96,13 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
   if (data == NULL || data2 == NULL)
   {
     if (data != NULL)
@@ -120,16 +128,18 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data2,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",MESSAGE_SETTINGS) <= 0)
   {  
-    pointer_reset(data);   
+    pointer_reset_all;
     return 0;
   }
   
   if (strstr(data,"\"good\": true") == NULL)
   {
-    pointer_reset(data); 
+    pointer_reset_all;
     return 0;
   }
   
-  pointer_reset(data); 
+  pointer_reset_all;
   return 1;
+
+  #undef pointer_reset_all
 }

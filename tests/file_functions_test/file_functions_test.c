@@ -22,13 +22,13 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: read_and_write_file_test
+Name: file_functions_test
 Description: Test the read_file and write_file functions
-Return: The number of passed read_and_write_file test
+Return: The number of passed file_functions test
 -----------------------------------------------------------------------------------------------------------
 */
 
-int read_and_write_file_test()
+int file_functions_test()
 {   
   // Variables
   pthread_t thread_id;
@@ -44,7 +44,7 @@ int read_and_write_file_test()
 
   // write the start test message
   color_print(TEST_OUTLINE,"blue");
-  printf("\033[1;34mread_and_write_file test - Total test: %d\033[0m\n",READ_AND_WRITE_FILE_TEST);
+  printf("\033[1;34mfile functions test - Total test: %d\033[0m\n",READ_AND_WRITE_FILE_TEST);
   color_print(TEST_OUTLINE,"blue");
   printf("\n");
 
@@ -115,7 +115,7 @@ int read_and_write_file_test()
   {
     printf("\n");
     color_print(TEST_OUTLINE,"green");
-    printf("\033[1;32mread_and_write_file test - Passed test: %d, Failed test: 0\033[0m\n",READ_AND_WRITE_FILE_TEST);
+    printf("\033[1;32mfile functions test - Passed test: %d, Failed test: 0\033[0m\n",READ_AND_WRITE_FILE_TEST);
     color_print(TEST_OUTLINE,"green");
     printf("\n\n");
   }
@@ -123,7 +123,7 @@ int read_and_write_file_test()
   {
     printf("\n");
     color_print(TEST_OUTLINE,"red");
-    printf("\033[1;31mread_and_write_file test - Passed test: %d, Failed test: %d\033[0m\n",count_test,READ_AND_WRITE_FILE_TEST-count_test);
+    printf("\033[1;31mfile functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,READ_AND_WRITE_FILE_TEST-count_test);
     color_print(TEST_OUTLINE,"red");
     printf("\n\n");
   } 

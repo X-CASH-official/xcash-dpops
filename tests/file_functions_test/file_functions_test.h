@@ -7,5 +7,5 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int read_and_write_file_test();
+int file_functions_test();
 #endif

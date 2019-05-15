@@ -21,13 +21,13 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: blockchain_test
+Name: blockchain_functions_test
 Description: Test the blockchain_functions
 Return: The number of passed blockchain test
 -----------------------------------------------------------------------------------------------------------
 */
 
-int blockchain_test()
+int blockchain_functions_test()
 { 
   // Variables
   size_t count;
@@ -99,7 +99,7 @@ int blockchain_test()
 
   // write the start test message
   color_print(TEST_OUTLINE,"blue");
-  printf("\033[1;34mvarint_decode test - Total test: %d\033[0m\n",BLOCKCHAIN_TEST);
+  printf("\033[1;34mblockchain functions test - Total test: %d\033[0m\n",BLOCKCHAIN_TEST);
   color_print(TEST_OUTLINE,"blue");
   printf("\n");
 
@@ -344,7 +344,7 @@ int blockchain_test()
   {
     printf("\n");
     color_print(TEST_OUTLINE,"green");
-    printf("\033[1;32mvarint_decode test - Passed test: %d, Failed test: 0\033[0m\n",BLOCKCHAIN_TEST);
+    printf("\033[1;32mblockchain functions test - Passed test: %d, Failed test: 0\033[0m\n",BLOCKCHAIN_TEST);
     color_print(TEST_OUTLINE,"green");
     printf("\n\n");
   }
@@ -352,7 +352,7 @@ int blockchain_test()
   {
     printf("\n");
     color_print(TEST_OUTLINE,"red");
-    printf("\033[1;31mvarint_decode test - Passed test: %d, Failed test: %d\033[0m\n",count_test,BLOCKCHAIN_TEST-count_test);
+    printf("\033[1;31mblockchain functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,BLOCKCHAIN_TEST-count_test);
     color_print(TEST_OUTLINE,"red");
     printf("\n\n");
   } 

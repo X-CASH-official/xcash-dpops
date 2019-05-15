@@ -1940,12 +1940,11 @@ int create_server(const int MESSAGE_SETTINGS)
 
 
          // check if a certain type of message has been received         
-         if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strstr(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA") != NULL)
+         if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
          {
-           if (server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer) == 0)
-           { 
-             SERVER_ERROR(1);
-           }
+           // close the forked process when done
+           server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer);
+           SERVER_ERROR(1);
          }
          else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS") != NULL)
          {

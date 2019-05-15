@@ -321,7 +321,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
 
   // verify if the previous block hash is correct
   if (get_previous_block_hash(previous_block_hash,0) == 0)
-  {  
+  {
     pointer_reset_all;
     return 0;
   }
@@ -372,7 +372,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memset(result,0,strnlen(result,BUFFER_SIZE));
 
   if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",HTTP_SETTINGS) <= 0)
-  { 
+  {
     pointer_reset_all; 
     return 0;
   } 
