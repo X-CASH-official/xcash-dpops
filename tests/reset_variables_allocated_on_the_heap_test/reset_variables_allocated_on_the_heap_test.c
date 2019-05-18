@@ -3,6 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <mongoc/mongoc.h>
+#include <bson/bson.h>
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
@@ -10,6 +12,7 @@
 #include "variables.h"
 
 #include "define_macros_functions.h"
+#include "database_functions.h"
 #include "file_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
@@ -104,11 +107,16 @@ int reset_variables_allocated_on_the_heap_test()
 
   // Variables
   char* process_id_file = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char** data = (char**)calloc(5 * sizeof(char*),sizeof(char*));
+  char** settings = (char**)calloc(5 * sizeof(char*),sizeof(char*));
   int previous_system_memory_usage = 0;
   int current_system_memory_usage = 0;
   int current_memory_usage = 0;
   size_t count = 0;
   size_t count2 = 0;
+  size_t counter = 0;
+  struct database_document_fields database_data;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
   unsigned char vrf_proof[crypto_vrf_PROOFBYTES];
@@ -118,7 +126,10 @@ int reset_variables_allocated_on_the_heap_test()
   char* transactions[5];
 
   // define macros
-  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 25
+  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 40
+  #define GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"blockhashing_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"blocktemplate_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"difficulty\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"expected_reward\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"height\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"prev_hash\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"reserved_offset\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"status\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"untrusted\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\r\n  }\r\n}"
+  #define DATA1 "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}"
+  #define DATA2 "[{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"},{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}]" 
   #define NETWORK_BLOCK "0d0da5d5f1e00500000000000000000000000000000000000000000000000000000000000000050000000002b5d9ab0101fff9d8ab0101b2cce199a30202b1ae08c48f3b3e9ba6e22d9fdaf289eda8565179ebff7787883ecaf49f1ebdfbd81801159a7ed6a1065b708355d900b06e4e1c47238397723f4d379945b3bcdf10f09702b4187c424c4f434b434841494e5f52455345525645445f42595445535f53544152547c64656c65676174656e616d65317c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c5843413176313851736635504b4c723847467231346a486b6a6766336d506d314d4156627377427339515037467747544c434534537759693831425270327672635631326d614d744377395445314e5a525679796e51336532633362376d785277337c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c307c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c64656c65676174655f6261636b75705f312c64656c65676174655f6261636b75705f322c64656c65676174655f6261636b75705f332c64656c65676174655f6261636b75705f342c64656c65676174655f6261636b75705f357c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c64656c65676174656e616d65327c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c58434131675463557337443761486f32756f533239474445706a4d576b52357a7a514a43337a78437742315231674d4c594263736d70414267575a394d5776764c57585633516868595a39376d63787356383854665a725032564d416d6152514a347c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c307c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c64656c65676174655f6261636b75705f312c64656c65676174655f6261636b75705f322c64656c65676174655f6261636b75705f332c64656c65676174655f6261636b75705f342c64656c65676174655f6261636b75705f357c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c64656c65676174656e616d65337c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c584341313036674d4a6a6e59706b4c70533768546f6544375443625531796464475263427a7173416b35425447327643776e4d7536504c5a6232385a36644543566853587038374d374865505369624c444b4777363433696a4b6e4d774c303536327c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c307c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c64656c65676174655f6261636b75705f312c64656c65676174655f6261636b75705f322c64656c65676174655f6261636b75705f332c64656c65676174655f6261636b75705f342c64656c65676174655f6261636b75705f357c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c7c73a5031d645004add8a0360f3a01302cd7e0a1125842e50b7deca371cf67237c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c7c73a5031d645004add8a0360f3a01302cd7e0a1125842e50b7deca371cf67237c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c5b951935c5066c51f1beef7295aba6856ef5a1c85a2ca14c98a4f8745626a1313a2efab73f452334f3c36aac626b4c12296b1d84925b61831ebeba96b464da6158455118474e7dbeb0234680fba587097c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c310f13ef35d48748ad7057fe55861912fc153221b10633ebdb79460db8dbaa5a2a82796702b2eeef6b3355ebcbb1b8f65a62837d9bb5f64383722ac20f308e5c7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c747275657c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c05f1c69a16ac265377454395bd133c9072b59fa3e0cd652f6f8e8d55fbff19927c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c30303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303035363536676635676866696a64696f76644a4450494f53677a663534683477363532343567643573313032316430673635316466383467643531363531663635643467353836343136643566345a36643534673635643473363534673635346673646734357c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c7f78db0d006639548c88fa9685ba3d0fa64e626d426c37e28ad442f74cb80e39a5ed9b4fb397f01bfbc8f54dd8aea7590d0408ae433d4d111eaef0ed97b9074f608bbb1722abaafa8734616ce7e4350b7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c414079410cb5ed29a0f331a79cbf898d62b1f94c4d4752d4b9519668ada04f2201a277d60f09f8e50a5e4b0342aafdbd718a0761da52f3f7d3f0a38cc8cb05737c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c747275657c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c7c73a5031d645004add8a0360f3a01302cd7e0a1125842e50b7deca371cf67237c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c30303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303035363536676635676866696a64696f76644a4450494f53677a663534683477363532343567643573313032316430673635316466383467643531363531663635643467353836343136643566345a36643534673635643473363534673635346673646734357c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cf7b2033fae04e087bd39478c6e5795bbf4f68a51c79bb6d7c085f86770b57a59ef8e61441ac6f67efa6c5f8286a02922f3fa91fd0d74d036462cc9e9f53ee0f4c8e63375b2b48af034591ba864ee260d7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c0162fc911133879a42732ae5dc6bec484e0a8ad77cba4a8b6af260c84f6c6e42af3d21caee35b78a8a89ea7d88efd877724fc6d493059f4824dd40e866f4941a7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c747275657c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c747275657c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c00000000000000000000000000000000000000000000000000000000000000057c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c5369675631346d3250624c4832597436693672546734574d6a5a4b3842324850624e69347a47464d56534534724362673444634a6e3138486b734e5a58513936557451615272766639757532794a6f376571437a5a57326a6641566e597c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c536967563151615254743652347737365a4c67534a58444d71684561506d4b6b3371414b4e7665524b34486578716e45755557776255626254373241524a683371376a5a7a614345486b54787246593570794d61476942595557426d517c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c5369675631616d716e55546263386448656243535a6b77414362445435434b6e6345555070594743786b4a317861586f393451794b586b685037634258327a616b796434466e7a34617757724834374c3878524e366553376d6f3942727c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c53696756316436315035577774726a54527a4237784850735436676a61476844763539596a6a52477066413863626d38576667687570634b6d637258387171444e43396a4646334b6d46527a7a675845336b36474c314d796d467439627c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c536967563155483236544230354133446441634659574355706d4850394863456e5a577731635645543973576e7a717130353644313175393773374e51694659524b34644866695774624d53614361394d31504d41705854784834564d7c424c4f434b434841494e5f52455345525645445f42595445535f454e447c000500000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000005"
   #define NETWORK_BLOCK_HEIGHT "2813049"
   #define BLOCK_REWARD_TRANSACTION_VERSION "02"
@@ -132,13 +143,139 @@ int reset_variables_allocated_on_the_heap_test()
   #define VARINT_ENCODED_VALUE_1 0xb2f58199a302 // random value
   #define VARINT_DECODED_VALUE_1 78167177906 // random value
   #define DATA_HASH_TEXT "X-CASH Proof Of Stake"
-  #define GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"blockhashing_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"blocktemplate_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"difficulty\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"expected_reward\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"height\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"prev_hash\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"reserved_offset\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"status\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"untrusted\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\r\n  }\r\n}"
-  
+  #define DATABASE_COLLECTION "XCASH_PROOF_OF_STAKE_TEST_DATA"
+  #define MESSAGE "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"}"
+  #define MESSAGE_SETTINGS "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_DATA\"}"
+  #define DATABASE_COLLECTION_STATISTICS_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}"
+  #define DATABASE_COLLECTION_DELEGATES_DATA "{\"public_address\":\"XCA\",\"password\":\"XCA\",\"salt\":\"XCA\",\"session\":\"XCA\",\"total_vote_count\":\"XCA\",\"current_vote_count\":\"XCA\",\"delegate_number\":\"XCA\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"XCA\",\"about\":\"XCA\",\"website\":\"XCA\",\"team\":\"XCA\",\"pool_mode\":\"XCA\",\"fee_structure\":\"XCA\",\"server_settings\":\"XCA\",\"block_producer_eligibility\":\"XCA\",\"online_status\":\"XCA\",\"block_verifier_total_rounds\":\"XCA\",\"block_verifier_online_total_rounds\":\"XCA\",\"block_verifier_online_percentage\":\"XCA\",\"block_producer_total_rounds\":\"XCA\",\"VRF_node_public_and_private_key_total_rounds\":\"XCA\",\"VRF_node_random_data_total_rounds\":\"XCA\",\"block_producer_block_heights\":\"XCA\",\"VRF_node_public_and_private_key_block_heights\":\"XCA\",\"VRF_node_random_data_block_heights\":\"XCA\"}"
+
   if (process_id_file == NULL)
   {
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
+
+  // initialize the database_document_fields struct 
+  for (count = 0; count < 14; count++)
+  {
+    database_data.item[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    
+    if (database_data.item[count] == NULL || database_data.value[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }
+
+  memcpy(database_data.item[0],"username",8);
+  memcpy(database_data.item[1],"most_total_rounds_delegate_name",31);
+  memcpy(database_data.item[2],"most_total_rounds",17);
+  memcpy(database_data.item[3],"best_block_verifier_online_percentage_delegate_name",51);
+  memcpy(database_data.item[4],"best_block_verifier_online_percentage",37);
+  memcpy(database_data.item[5],"most_block_producer_total_rounds_delegate_name",46);
+  memcpy(database_data.item[6],"most_block_producer_total_rounds",32);
+  memcpy(database_data.item[7],"most_VRF_node_public_and_private_key_total_rounds_delegate_name",63);
+  memcpy(database_data.item[8],"most_VRF_node_public_and_private_key_total_rounds",49);
+  memcpy(database_data.item[9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
+  memcpy(database_data.item[10],"most_VRF_node_random_data_total_rounds",38);
+  memcpy(database_data.item[11],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_data.item[12],"total_coins_in_proof_of_stake",29);
+  memcpy(database_data.item[13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+
+  memcpy(database_data.value[0],"XCASH",5);  
+  memcpy(database_data.value[1],"DELEGATE_NAME",13);
+  memcpy(database_data.value[2],"5",1);
+  memcpy(database_data.value[3],"DELEGATE_NAME",13);
+  memcpy(database_data.value[4],"10",2);
+  memcpy(database_data.value[5],"DELEGATE_NAME",13);  
+  memcpy(database_data.value[6],"15",2);
+  memcpy(database_data.value[7],"DELEGATE_NAME",13);  
+  memcpy(database_data.value[8],"5",1);
+  memcpy(database_data.value[9],"DELEGATE_NAME",13);  
+  memcpy(database_data.value[10],"10",2);  
+  memcpy(database_data.value[11],"15",2);
+  memcpy(database_data.value[12],"5",1);
+  memcpy(database_data.value[13],"10",2);
+
+  database_data.count = 14;
+
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < 2; count++)
+  {
+    for (counter = 0; counter < 14; counter++)
+    {
+      database_multiple_documents_fields.item[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      database_multiple_documents_fields.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+      if (database_multiple_documents_fields.item[count][counter] == NULL || database_multiple_documents_fields.value[count][counter] == NULL)
+      {
+        color_print("Could not allocate the memory needed on the heap","red");
+        exit(0);
+      }
+    }
+  }
+
+  memcpy(database_multiple_documents_fields.item[0][0],"username",8);
+  memcpy(database_multiple_documents_fields.item[0][1],"most_total_rounds_delegate_name",31);
+  memcpy(database_multiple_documents_fields.item[0][2],"most_total_rounds",17);
+  memcpy(database_multiple_documents_fields.item[0][3],"best_block_verifier_online_percentage_delegate_name",51);
+  memcpy(database_multiple_documents_fields.item[0][4],"best_block_verifier_online_percentage",37);
+  memcpy(database_multiple_documents_fields.item[0][5],"most_block_producer_total_rounds_delegate_name",46);
+  memcpy(database_multiple_documents_fields.item[0][6],"most_block_producer_total_rounds",32);
+  memcpy(database_multiple_documents_fields.item[0][7],"most_VRF_node_public_and_private_key_total_rounds_delegate_name",63);
+  memcpy(database_multiple_documents_fields.item[0][8],"most_VRF_node_public_and_private_key_total_rounds",49);
+  memcpy(database_multiple_documents_fields.item[0][9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
+  memcpy(database_multiple_documents_fields.item[0][10],"most_VRF_node_random_data_total_rounds",38);
+  memcpy(database_multiple_documents_fields.item[0][11],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_multiple_documents_fields.item[0][12],"total_coins_in_proof_of_stake",29);
+  memcpy(database_multiple_documents_fields.item[0][13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+  memcpy(database_multiple_documents_fields.item[1][0],"username",8);
+  memcpy(database_multiple_documents_fields.item[1][1],"most_total_rounds_delegate_name",31);
+  memcpy(database_multiple_documents_fields.item[1][2],"most_total_rounds",17);
+  memcpy(database_multiple_documents_fields.item[1][3],"best_block_verifier_online_percentage_delegate_name",51);
+  memcpy(database_multiple_documents_fields.item[1][4],"best_block_verifier_online_percentage",37);
+  memcpy(database_multiple_documents_fields.item[1][5],"most_block_producer_total_rounds_delegate_name",46);
+  memcpy(database_multiple_documents_fields.item[1][6],"most_block_producer_total_rounds",32);
+  memcpy(database_multiple_documents_fields.item[1][7],"most_VRF_node_public_and_private_key_total_rounds_delegate_name",63);
+  memcpy(database_multiple_documents_fields.item[1][8],"most_VRF_node_public_and_private_key_total_rounds",49);
+  memcpy(database_multiple_documents_fields.item[1][9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
+  memcpy(database_multiple_documents_fields.item[1][10],"most_VRF_node_random_data_total_rounds",38);
+  memcpy(database_multiple_documents_fields.item[1][11],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_multiple_documents_fields.item[1][12],"total_coins_in_proof_of_stake",29);
+  memcpy(database_multiple_documents_fields.item[1][13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+
+  memcpy(database_multiple_documents_fields.value[0][0],"XCASH",5);  
+  memcpy(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",13);
+  memcpy(database_multiple_documents_fields.value[0][2],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][3],"DELEGATE_NAME",13);
+  memcpy(database_multiple_documents_fields.value[0][4],"10",2);
+  memcpy(database_multiple_documents_fields.value[0][5],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[0][6],"15",2);
+  memcpy(database_multiple_documents_fields.value[0][7],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[0][8],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][9],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[0][10],"10",2);  
+  memcpy(database_multiple_documents_fields.value[0][11],"15",2);
+  memcpy(database_multiple_documents_fields.value[0][12],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][13],"10",2);
+  memcpy(database_multiple_documents_fields.value[1][0],"XCASH",5);  
+  memcpy(database_multiple_documents_fields.value[1][1],"DELEGATE_NAME",13);
+  memcpy(database_multiple_documents_fields.value[1][2],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][3],"DELEGATE_NAME",13);
+  memcpy(database_multiple_documents_fields.value[1][4],"10",2);
+  memcpy(database_multiple_documents_fields.value[1][5],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[1][6],"15",2);
+  memcpy(database_multiple_documents_fields.value[1][7],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[1][8],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][9],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[1][10],"10",2);  
+  memcpy(database_multiple_documents_fields.value[1][11],"15",2);
+  memcpy(database_multiple_documents_fields.value[1][12],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][13],"10",2);
+
+  database_multiple_documents_fields.document_count = 2;
+  database_multiple_documents_fields.database_fields_count = 14;
 
   for (count = 0; count < 5; count++)
   {
@@ -154,6 +291,26 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(process_id_file,"/proc/",6);
   sprintf(process_id_file+6,"%d",getpid());
   memcpy(process_id_file+strnlen(process_id_file,BUFFER_SIZE),"/status",7);
+
+  // initialize the arrays
+  for (count = 0; count < 5; count++)
+  {
+    data[count] = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+    settings[count] = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+
+    if (data[count] == NULL || settings[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }  
+
+  // create the the arrays
+  for (count = 0; count < 5; count++)
+  {
+    sprintf(data[count],"%ld",count);
+    sprintf(settings[count],"%ld",count);
+  }
 
   // write the start test message
   color_print(TEST_OUTLINE,"blue");
@@ -675,6 +832,778 @@ int reset_variables_allocated_on_the_heap_test()
   {
     color_print("All other test will not be run","red");
   }
+
+
+
+  // create_database_connection 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for create_database_connection: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      mongoc_client_destroy(database_client);
+      create_database_connection();
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! create_database_connection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! create_database_connection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! create_database_connection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! create_database_connection has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  // insert_document_into_collection_array 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for insert_document_into_collection_array: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      insert_document_into_collection_array(DATABASE_NAME,DATABASE_COLLECTION,data,settings,5);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! insert_document_into_collection_array has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! insert_document_into_collection_array has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! insert_document_into_collection_array has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! insert_document_into_collection_array has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  // insert_document_into_collection_json 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for insert_document_into_collection_json: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! insert_document_into_collection_json has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! insert_document_into_collection_json has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! insert_document_into_collection_json has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! insert_document_into_collection_json has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  // update_document_from_collection 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for update_document_from_collection: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,MESSAGE_SETTINGS,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! update_document_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! update_document_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! update_document_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! update_document_from_collection has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  // read_document_from_collection 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for read_document_from_collection: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+      read_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE_SETTINGS,data_test,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_document_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_document_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_document_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! read_document_from_collection has reset all variables allocated on the heap","green");
+          count_test++;
+        }  
+      }
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+  // read_document_field_from_collection 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for read_document_field_from_collection: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+      read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE_SETTINGS,"message_settings",data_test,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_document_field_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_document_field_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_document_field_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! read_document_field_from_collection has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);  
+  
+  // read_document_all_fields_from_collection 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for read_document_all_fields_from_collection: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      for (count2 = 0; count2 < 14; count2++)
+      {
+        memset(database_data.item[count2],0,strnlen(database_data.item[count2],BUFFER_SIZE));
+        memset(database_data.value[count2],0,strnlen(database_data.value[count2],BUFFER_SIZE));
+      }
+      read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"{\"username\":\"XCASH\"}",&database_data,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_document_all_fields_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_document_all_fields_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_document_all_fields_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! read_document_all_fields_from_collection has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+  for (count2 = 0; count2 < 14; count2++)
+  {
+    memset(database_data.item[count2],0,strnlen(database_data.item[count2],BUFFER_SIZE));
+    memset(database_data.value[count2],0,strnlen(database_data.value[count2],BUFFER_SIZE));
+  }
+
+  memcpy(database_data.item[0],"username",8);
+  memcpy(database_data.item[1],"most_total_rounds_delegate_name",31);
+  memcpy(database_data.item[2],"most_total_rounds",17);
+  memcpy(database_data.item[3],"best_block_verifier_online_percentage_delegate_name",51);
+  memcpy(database_data.item[4],"best_block_verifier_online_percentage",37);
+  memcpy(database_data.item[5],"most_block_producer_total_rounds_delegate_name",46);
+  memcpy(database_data.item[6],"most_block_producer_total_rounds",32);
+  memcpy(database_data.item[7],"most_VRF_node_public_and_private_key_total_rounds_delegate_name",63);
+  memcpy(database_data.item[8],"most_VRF_node_public_and_private_key_total_rounds",49);
+  memcpy(database_data.item[9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
+  memcpy(database_data.item[10],"most_VRF_node_random_data_total_rounds",38);
+  memcpy(database_data.item[11],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_data.item[12],"total_coins_in_proof_of_stake",29);
+  memcpy(database_data.item[13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+
+  memcpy(database_data.value[0],"XCASH",5);  
+  memcpy(database_data.value[1],"DELEGATE_NAME",13);
+  memcpy(database_data.value[2],"5",1);
+  memcpy(database_data.value[3],"DELEGATE_NAME",13);
+  memcpy(database_data.value[4],"10",2);
+  memcpy(database_data.value[5],"DELEGATE_NAME",13);  
+  memcpy(database_data.value[6],"15",2);
+  memcpy(database_data.value[7],"DELEGATE_NAME",13);  
+  memcpy(database_data.value[8],"5",1);
+  memcpy(database_data.value[9],"DELEGATE_NAME",13);  
+  memcpy(database_data.value[10],"10",2);  
+  memcpy(database_data.value[11],"15",2);
+  memcpy(database_data.value[12],"5",1);
+  memcpy(database_data.value[13],"10",2);
+
+  database_data.count = 14;
+
+
+
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  
+  // read_multiple_documents_all_fields_from_collection 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for read_multiple_documents_all_fields_from_collection: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      for (count2 = 0; count2 < 2; count2++)
+      {
+        for (counter = 0; counter < 14; counter++)
+        {
+          memset(database_multiple_documents_fields.item[count2][counter],0,strnlen(database_multiple_documents_fields.item[count2][counter],BUFFER_SIZE));
+          memset(database_multiple_documents_fields.value[count2][counter],0,strnlen(database_multiple_documents_fields.value[count2][counter],BUFFER_SIZE));
+        }
+      }
+      read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_multiple_documents_all_fields_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_multiple_documents_all_fields_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! read_multiple_documents_all_fields_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! read_multiple_documents_all_fields_from_collection has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+  for (count2 = 0; count2 < 2; count2++)
+  {
+    for (counter = 0; counter < 14; counter++)
+    {
+      memset(database_multiple_documents_fields.item[count2][counter],0,strnlen(database_multiple_documents_fields.item[count2][counter],BUFFER_SIZE));
+      memset(database_multiple_documents_fields.value[count2][counter],0,strnlen(database_multiple_documents_fields.value[count2][counter],BUFFER_SIZE));
+    }
+  }
+
+  memcpy(database_multiple_documents_fields.item[0][0],"username",8);
+  memcpy(database_multiple_documents_fields.item[0][1],"most_total_rounds_delegate_name",31);
+  memcpy(database_multiple_documents_fields.item[0][2],"most_total_rounds",17);
+  memcpy(database_multiple_documents_fields.item[0][3],"best_block_verifier_online_percentage_delegate_name",51);
+  memcpy(database_multiple_documents_fields.item[0][4],"best_block_verifier_online_percentage",37);
+  memcpy(database_multiple_documents_fields.item[0][5],"most_block_producer_total_rounds_delegate_name",46);
+  memcpy(database_multiple_documents_fields.item[0][6],"most_block_producer_total_rounds",32);
+  memcpy(database_multiple_documents_fields.item[0][7],"most_VRF_node_public_and_private_key_total_rounds_delegate_name",63);
+  memcpy(database_multiple_documents_fields.item[0][8],"most_VRF_node_public_and_private_key_total_rounds",49);
+  memcpy(database_multiple_documents_fields.item[0][9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
+  memcpy(database_multiple_documents_fields.item[0][10],"most_VRF_node_random_data_total_rounds",38);
+  memcpy(database_multiple_documents_fields.item[0][11],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_multiple_documents_fields.item[0][12],"total_coins_in_proof_of_stake",29);
+  memcpy(database_multiple_documents_fields.item[0][13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+  memcpy(database_multiple_documents_fields.item[1][0],"username",8);
+  memcpy(database_multiple_documents_fields.item[1][1],"most_total_rounds_delegate_name",31);
+  memcpy(database_multiple_documents_fields.item[1][2],"most_total_rounds",17);
+  memcpy(database_multiple_documents_fields.item[1][3],"best_block_verifier_online_percentage_delegate_name",51);
+  memcpy(database_multiple_documents_fields.item[1][4],"best_block_verifier_online_percentage",37);
+  memcpy(database_multiple_documents_fields.item[1][5],"most_block_producer_total_rounds_delegate_name",46);
+  memcpy(database_multiple_documents_fields.item[1][6],"most_block_producer_total_rounds",32);
+  memcpy(database_multiple_documents_fields.item[1][7],"most_VRF_node_public_and_private_key_total_rounds_delegate_name",63);
+  memcpy(database_multiple_documents_fields.item[1][8],"most_VRF_node_public_and_private_key_total_rounds",49);
+  memcpy(database_multiple_documents_fields.item[1][9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
+  memcpy(database_multiple_documents_fields.item[1][10],"most_VRF_node_random_data_total_rounds",38);
+  memcpy(database_multiple_documents_fields.item[1][11],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_multiple_documents_fields.item[1][12],"total_coins_in_proof_of_stake",29);
+  memcpy(database_multiple_documents_fields.item[1][13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+
+  memcpy(database_multiple_documents_fields.value[0][0],"XCASH",5);  
+  memcpy(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",13);
+  memcpy(database_multiple_documents_fields.value[0][2],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][3],"DELEGATE_NAME",13);
+  memcpy(database_multiple_documents_fields.value[0][4],"10",2);
+  memcpy(database_multiple_documents_fields.value[0][5],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[0][6],"15",2);
+  memcpy(database_multiple_documents_fields.value[0][7],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[0][8],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][9],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[0][10],"10",2);  
+  memcpy(database_multiple_documents_fields.value[0][11],"15",2);
+  memcpy(database_multiple_documents_fields.value[0][12],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][13],"10",2);
+  memcpy(database_multiple_documents_fields.value[1][0],"XCASH",5);  
+  memcpy(database_multiple_documents_fields.value[1][1],"DELEGATE_NAME",13);
+  memcpy(database_multiple_documents_fields.value[1][2],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][3],"DELEGATE_NAME",13);
+  memcpy(database_multiple_documents_fields.value[1][4],"10",2);
+  memcpy(database_multiple_documents_fields.value[1][5],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[1][6],"15",2);
+  memcpy(database_multiple_documents_fields.value[1][7],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[1][8],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][9],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[1][10],"10",2);  
+  memcpy(database_multiple_documents_fields.value[1][11],"15",2);
+  memcpy(database_multiple_documents_fields.value[1][12],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][13],"10",2);
+
+  database_multiple_documents_fields.document_count = 2;
+  database_multiple_documents_fields.database_fields_count = 14;
+
+
+
+  // update_all_documents_from_collection 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for update_all_documents_from_collection: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      update_all_documents_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! update_all_documents_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! update_all_documents_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! update_all_documents_from_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! update_all_documents_from_collection has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  // count_documents_in_collection 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for count_documents_in_collection: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! count_documents_in_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! count_documents_in_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! count_documents_in_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! count_documents_in_collection has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  // count_all_documents_in_collection 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for count_all_documents_in_collection: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! count_all_documents_in_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! count_all_documents_in_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! count_all_documents_in_collection has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! count_all_documents_in_collection has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_DATA,0);
 
   
 

@@ -10,6 +10,7 @@
 #include "define_macros_test.h"
 #include "variables_test.h"
 #include "analysing_code_test.h"
+#include "database_functions_test.h"
 #include "file_functions_test.h"
 #include "network_functions_test.h"
 #include "blockchain_functions_test.h"
@@ -67,6 +68,7 @@ void test()
 
   // run the tests
   xcash_proof_of_stake_total_passed_test += blockchain_functions_test();
+  xcash_proof_of_stake_total_passed_test += database_test(); 
   xcash_proof_of_stake_total_passed_test += file_functions_test();
   xcash_proof_of_stake_total_passed_test += network_functions_test();
   xcash_proof_of_stake_total_passed_test += string_functions_test();

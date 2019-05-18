@@ -11,6 +11,10 @@ Global Variables
 -----------------------------------------------------------------------------------------------------------
 */
 
+// database
+mongoc_client_t* database_client;
+mongoc_client_pool_t* database_client_thread_pool;
+
 char* xcash_wallet_public_address; // Holds your wallets public address
 struct block_verifiers_list block_verifiers_list; // The list of the enabled nodes name, public address and IP address
 struct block_validation_nodes_list block_validation_nodes_list; // The list of block validation nodes public address

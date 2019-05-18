@@ -52,6 +52,9 @@ Using define statements instead of constants for increased efficiency
 #define DATA_HASH_LENGTH 128 // The length of the SHA2-512 hash
 #define BLOCK_VERIFIERS_NAME_TOTAL_LENGTH 100 // The maximum length of the block verifiers name
 #define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address
+#define DATABASE_CONNECTION "mongodb://localhost:27017" // the database connection string
+#define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
+#define DATABASE_ARRAY_COUNT 100 // The maximum amount of parsed item and value from the database
 #define TOTAL_CONNECTION_TIME_SETTINGS 30 // The total time a client is given to connect to the server and send data
 #define TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT 10 // The total time given from when the consensus node sends to the node who the main node is, to the time the main node sends the data to the node.
 #define INVALID_PARAMETERS_ERROR_MESSAGE \

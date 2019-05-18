@@ -2,12 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h> 
+#include <mongoc/mongoc.h>
+#include <bson/bson.h>
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
 #include "structures.h"
 #include "variables.h"
 
+#include "database_functions.h"
 #include "network_wallet_functions.h"
 #include "server_functions.h"
 
@@ -265,6 +268,38 @@ int main(int parameters_count, char* parameters[])
     }
   }
 
+  // initialize the database connection
+  mongoc_init();
+
+  // create a connection to the database
+  if (create_database_connection() == 0)
+  {
+    color_print("Could not create a connection for the database\n","red");
+    mongoc_cleanup();
+    exit(0);
+  }
+
+  // create a pool of connections for the database
+  mongoc_uri_t* uri_thread_pool;
+  bson_error_t error;
+  uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error);
+  if (!uri_thread_pool)
+  {
+    color_print("Could not create a pool of connections for the database\n","red");
+    mongoc_client_destroy(database_client);
+    mongoc_cleanup();
+    exit(0);
+  }
+  database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool);
+  if (!database_client_thread_pool)
+  {
+    color_print("Could not create a thread pool for the database\n","red");
+    mongoc_client_destroy(database_client);
+    mongoc_uri_destroy(uri_thread_pool);
+    mongoc_cleanup();
+    exit(0);
+  }
+
   // Add each block validation nodes data to the block_validation_nodes_list struct
 
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
@@ -305,7 +340,12 @@ int main(int parameters_count, char* parameters[])
     {
       color_print("Invalid parameters\n","red");
       printf(INVALID_PARAMETERS_ERROR_MESSAGE);
-    }
+    }    
+    mongoc_client_destroy(database_client);
+    mongoc_client_pool_destroy(database_client_thread_pool);
+    mongoc_uri_destroy(uri_thread_pool);
+    mongoc_cleanup();
+    pointer_reset(data);
     exit(0);
   }
 
@@ -370,7 +410,12 @@ int main(int parameters_count, char* parameters[])
       color_print("Could not start the server","red");
       exit(0);
     }
-  }  
+  } 
 
-  return 0;   
+  mongoc_client_destroy(database_client);
+  mongoc_client_pool_destroy(database_client_thread_pool);
+  mongoc_uri_destroy(uri_thread_pool);
+  mongoc_cleanup();
+  pointer_reset(data);
+  return 0; 
 }
