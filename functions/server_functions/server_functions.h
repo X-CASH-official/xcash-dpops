@@ -7,6 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
+void start_new_round();
 int get_current_consensus_nodes_IP_address();
 int get_updated_node_list();
 int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, char* message);

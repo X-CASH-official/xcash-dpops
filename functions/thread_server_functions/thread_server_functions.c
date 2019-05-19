@@ -17,6 +17,7 @@
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
+#include "server_functions.h"
 #include "thread_server_functions.h"
 #include "vrf.h"
 #include "crypto_vrf.h"
@@ -142,6 +143,7 @@ void* current_block_height_timer_thread()
   pointer_reset(data);
   pthread_exit((void *)(intptr_t)1);
 }
+
 
 
 /*

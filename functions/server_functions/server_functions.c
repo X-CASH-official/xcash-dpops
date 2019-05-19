@@ -38,6 +38,65 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: start_new_round
+Description: Gets the current block height and determines if a new round has started
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void start_new_round()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  int settings;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // start a new round
+  memset(data,0,strlen(data));
+  memcpy(data,"A new round is starting for block ",34);
+  memcpy(data,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+  color_print(data,"green");
+
+  // reset the variables
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"1",1);
+  memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
+  memcpy(current_round_part_backup_node,"0",1);
+
+  // check if the current block height - 3 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
+  sscanf(current_block_height,"%zu", &count);
+  count = count - 3;
+  memset(data,0,strnlen(data,BUFFER_SIZE));
+  sprintf(data,"%zu",count);
+  settings = get_block_settings(data,0);
+  if (settings == 0)
+  {
+    // an error has occured so wait until the next round
+    return;
+  }
+  else if (settings == 1)
+  {
+    // this is a proof of work block, so this is the start blocks of the network
+    start_current_round_start_blocks();    
+  }
+  else if (settings == 2)
+  {
+    // this is a X-CASH proof of stake block so this is not the start blocks of the network
+    start_current_round();
+  }
+  pointer_reset(data);
+  return;
+}
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_current_consensus_nodes_IP_address
 Description: Gets the current consensus nodes IP address, so the node knows which consensus node to send and receive data from
 Parameters:
