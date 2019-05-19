@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h> 
+#include <pthread.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -13,6 +14,7 @@
 #include "database_functions.h"
 #include "network_wallet_functions.h"
 #include "server_functions.h"
+#include "thread_server_functions.h"
 
 #include "xcash_proof_of_stake_test.h"
 
@@ -31,6 +33,9 @@ int main(int parameters_count, char* parameters[])
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   FILE* file;
   size_t count = 0;
+
+  // threads
+  pthread_t thread_id;
 
   // iniltize the global variables
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
@@ -355,59 +360,17 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
-  // check if the files are created and if not create them with default values
-  file = fopen(NODES_UPDATED_TIME_FILE_NAME,"r");
-  if (file == NULL)
+  // start the block height timer thread
+  if (pthread_create(&thread_id, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id) != 0)
   {
-    file = fopen(NODES_UPDATED_TIME_FILE_NAME,"w");
-    fprintf(file,"0");
-    fclose(file);
-  }
-  else
-  {    
-    fclose(file);
-  }
-
-  // get the current consensus nodes IP address
-  printf("Getting the current consensus nodes IP address\n\n");
-  if (get_current_consensus_nodes_IP_address() == 1)
-  {
-    memcpy(data,"Successfully received the current consensus nodes IP address:\n",61);
-    if (strncmp(current_consensus_nodes_IP_address,CONSENSUS_NODES_IP_ADDRESS,BUFFER_SIZE) == 0)
-    {
-      const size_t CONSENSUS_NODES_IP_ADDRESS_LENGTH = strnlen(CONSENSUS_NODES_IP_ADDRESS,BUFFER_SIZE);
-      memcpy(data,"Successfully received the current consensus nodes IP address:\nConsensus nodes IP address:",90);
-      memcpy(data+90,CONSENSUS_NODES_IP_ADDRESS,CONSENSUS_NODES_IP_ADDRESS_LENGTH);
-      memcpy(data+90+CONSENSUS_NODES_IP_ADDRESS_LENGTH,"\n",1);      
-    }
-    else if (strncmp(current_consensus_nodes_IP_address,CONSENSUS_BACKUP_NODES_IP_ADDRESS,BUFFER_SIZE) == 0)
-    {
-      const size_t CONSENSUS_BACKUP_NODES_IP_ADDRESS_LENGTH = strnlen(CONSENSUS_BACKUP_NODES_IP_ADDRESS,BUFFER_SIZE);
-      memcpy(data,"Successfully received the current consensus nodes IP address:\nConsensus backup nodes IP address:",97);
-      memcpy(data+97,CONSENSUS_BACKUP_NODES_IP_ADDRESS,CONSENSUS_BACKUP_NODES_IP_ADDRESS_LENGTH);
-      memcpy(data+97+CONSENSUS_BACKUP_NODES_IP_ADDRESS_LENGTH,"\n",1);      
-    }
-    else
-    {
-      color_print("Could not get the current consensus nodes IP address\n","red");
-      exit(0); 
-    }
-    color_print(data,"green");
-  }
-  else
-  {
-    color_print("Could not get the current consensus nodes IP address\n","red");
-    exit(0);    
-  }
-  
-  // get the updated node list
-  printf("Getting the updated node list\n\n");
-  if (get_current_consensus_nodes_IP_address() == 0)
-  {
-    color_print("Could not get the updated node list\n","red");
-    exit(0);    
-  }
-
+    color_print("Could not start the current_block_height_timer_thread","red");
+    mongoc_client_destroy(database_client);
+    mongoc_client_pool_destroy(database_client_thread_pool);
+    mongoc_uri_destroy(uri_thread_pool);
+    mongoc_cleanup();
+    pointer_reset(data);
+  } 
+ 
   // start the server
   for (;;)
   {
