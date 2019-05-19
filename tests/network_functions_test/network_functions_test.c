@@ -101,6 +101,21 @@ void network_daemon_test()
     color_print("FAILED! Test for getting the current block height","red");
   }
 
+  // test the get_block_settings function
+  sscanf(data_test, "%zu", &count);
+  count--;
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  sprintf(data_test,"%zu",count);
+  if (get_block_settings(data_test,0) == 1)
+  {   
+    color_print("PASSED! Test for getting the getting the block settings","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for getting the getting the block settings","red");
+  }  
+
   // test the get_previous_block_hash function
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   if (get_previous_block_hash(data_test,0) == 1)
@@ -398,7 +413,7 @@ Return: The number of passed network test
 int network_functions_test()
 {
   // define macros
-  #define NETWORK_TOTAL_TEST 10
+  #define NETWORK_TOTAL_TEST 11
 
   // reset the varaibles
   count_test = 0;

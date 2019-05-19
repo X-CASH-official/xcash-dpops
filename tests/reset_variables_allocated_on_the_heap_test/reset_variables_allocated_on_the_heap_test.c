@@ -579,7 +579,7 @@ int reset_variables_allocated_on_the_heap_test()
 
 
 
-  // verify_network_block_data  
+  /*// verify_network_block_data  
   // read the current system memory usage
   if (settings2 == 1)
   {
@@ -1725,7 +1725,7 @@ int reset_variables_allocated_on_the_heap_test()
   else
   {
     color_print("All other test will not be run","red");
-  }
+  }*/
 
 
 
@@ -1776,6 +1776,68 @@ int reset_variables_allocated_on_the_heap_test()
         else
         {
           color_print("PASSED! get_current_block_height has reset all variables allocated on the heap","green");
+          count_test++;
+        }      
+      } 
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  // get_block_settings 
+  sscanf(data_test, "%zu", &count);
+  count--;
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  sprintf(data_test,"%zu",count);
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for get_block_settings: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      get_block_settings(data_test,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! get_block_settings has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      } 
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! get_block_settings has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      } 
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! get_block_settings has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+        else
+        {
+          color_print("PASSED! get_block_settings has reset all variables allocated on the heap","green");
           count_test++;
         }      
       } 

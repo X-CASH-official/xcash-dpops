@@ -95,6 +95,85 @@ int get_block_template(char *result, char* reserve_bytes_length, const int HTTP_
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_block_settings
+Description: Gets the block settings
+Parameters:
+  block_height - The block height
+  HTTP_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
+Return: 0 if an error has occured, 1 if the block is a proof of work block, 2 if the block is a X-CASH proof of stake block
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_block_settings(char* block_height, const int HTTP_SETTINGS)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // define macros
+  #define BLOCKCHAIN_RESERVED_BYTES_START "7c424c4f434b434841494e5f52455345525645445f42595445535f53544152547c"
+  #define pointer_reset_all \
+  free(message); \
+  message = NULL; \
+  free(data); \
+  data = NULL; \
+
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL || data == NULL)
+  {
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+  
+  // create the message
+  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",68);
+  memcpy(message+68,block_height,strnlen(block_height,BUFFER_SIZE));
+  memcpy(message+68+strnlen(block_height,BUFFER_SIZE),"\"}}",3);
+
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block settings",HTTP_SETTINGS) <= 0)
+  {  
+    pointer_reset_all;
+    return 0;
+  }
+  memset(message,0,strlen(message));
+  
+  if (parse_json_data(data,"blob",message) == 0)
+  {
+    pointer_reset_all;
+    return 0;
+  }
+
+  if (strstr(data,BLOCKCHAIN_RESERVED_BYTES_START) != NULL)
+  {
+    pointer_reset_all; 
+    return 2; 
+  }
+  else
+  {
+    pointer_reset_all; 
+    return 1; 
+  }  
+  
+  #undef BLOCKCHAIN_RESERVED_BYTES_START
+  #undef pointer_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: verify_blockchain_network_transactions
 Description: Gets the transaction details
 Parameters:
