@@ -579,7 +579,7 @@ int reset_variables_allocated_on_the_heap_test()
 
 
 
-  /*// verify_network_block_data  
+  // verify_network_block_data  
   // read the current system memory usage
   if (settings2 == 1)
   {
@@ -1725,7 +1725,7 @@ int reset_variables_allocated_on_the_heap_test()
   else
   {
     color_print("All other test will not be run","red");
-  }*/
+  }
 
 
 

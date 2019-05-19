@@ -31,4 +31,8 @@ char* vrf_secret_key_part_1; // The VRF secret key from part 1 of the round.
 char* vrf_alpha_string_part_2; // The VRF alpha string from part 2 of the round. This must match the VRF alpha string from part 3 of the round.
 char* current_round_part; // The current round part (1-4)
 char* current_round_part_backup_node; // The current main node in the current round part (0-5)
+
+char* current_block_height; // The current block height
+
+
 #endif

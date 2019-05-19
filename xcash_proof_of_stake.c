@@ -44,8 +44,10 @@ int main(int parameters_count, char* parameters[])
   current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_consensus_nodes_IP_address == NULL || main_nodes_public_address == NULL || vrf_public_key_part_1 == NULL || vrf_alpha_string_part_2 == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_consensus_nodes_IP_address == NULL || main_nodes_public_address == NULL || vrf_public_key_part_1 == NULL || vrf_alpha_string_part_2 == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
   {
     if (data != NULL)
     {
@@ -86,6 +88,10 @@ int main(int parameters_count, char* parameters[])
     if (current_round_part_backup_node != NULL)
     {
       pointer_reset(current_round_part_backup_node);
+    }
+    if (current_block_height != NULL)
+    {
+      pointer_reset(current_block_height);
     }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);

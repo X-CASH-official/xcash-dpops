@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
+#include <time.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -13,6 +14,7 @@
 #include "structures.h"
 #include "variables.h"
 
+#include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "thread_server_functions.h"
@@ -83,6 +85,61 @@ void* total_connection_time_thread(void* parameters)
   pointer_reset(string);
   // close the client connection
   kill((intptr_t)data->process_id, SIGKILL); 
+  pthread_exit((void *)(intptr_t)1);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: current_block_height_timer_thread
+Description: Gets the current block height and determines if a new round has started
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* current_block_height_timer_thread()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time; 
+  size_t count;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  for (;;)
+  {
+    start:
+    // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
+    usleep(200000);
+    time(&current_date_and_time);
+    current_UTC_date_and_time = gmtime(&current_date_and_time);
+    if (current_UTC_date_and_time->tm_min % 5 == 0)
+    {
+      // try for the next 5 seconds and if not then a new block is not going to be added to the network
+      for (count = 0; count < 5; count++)
+      {
+        get_current_block_height(data,0);
+        if (memcmp(data,current_block_height,strlen(current_block_height)) != 0)
+        {      
+          // replace the current_block_height variable
+          memset(current_block_height,0,strlen(current_block_height));
+          memcpy(current_block_height,data,strnlen(data,BUFFER_SIZE));
+
+          start_new_round();
+          goto start;
+        }
+        sleep(1);
+      }
+    }
+  }
+  pointer_reset(data);
   pthread_exit((void *)(intptr_t)1);
 }
 
@@ -173,6 +230,8 @@ void* mainnode_timeout_thread(void* parameters)
 
   pthread_exit((void *)(intptr_t)1);
 }
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------

@@ -7,6 +7,9 @@ Using define statements instead of constants for increased efficiency
 -----------------------------------------------------------------------------------------------------------
 */
 
+#define NETWORK_DATA_NODE 0 // 0 if not a network data node, 1 if a network data node
+#define BLOCK_VALIDATION_NODE 0 // 0 if not a block validation data node, 1 if a block validation data node
+
 #define SEND_DATA_PORT 8000 // The port that is used by all nodes to send and receive data
 #define XCASH_WALLET_LENGTH 98 // The length of a XCA address
 #define CONSENSUS_NODE_PUBLIC_ADDRESS "XCA" // The consensus nodes public address
