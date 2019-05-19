@@ -41,7 +41,6 @@ int main(int parameters_count, char* parameters[])
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   nodes_public_address_list_received_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   server_message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  current_consensus_nodes_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
   main_nodes_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   vrf_public_key_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   vrf_secret_key_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
@@ -52,7 +51,7 @@ int main(int parameters_count, char* parameters[])
   current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_consensus_nodes_IP_address == NULL || main_nodes_public_address == NULL || vrf_public_key_part_1 == NULL || vrf_alpha_string_part_2 == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || main_nodes_public_address == NULL || vrf_public_key_part_1 == NULL || vrf_alpha_string_part_2 == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
   {
     if (data != NULL)
     {
@@ -69,10 +68,6 @@ int main(int parameters_count, char* parameters[])
     if (server_message != NULL)
     {
       pointer_reset(server_message);
-    }
-    if (current_consensus_nodes_IP_address != NULL)
-    {
-      pointer_reset(current_consensus_nodes_IP_address);
     }
     if (main_nodes_public_address != NULL)
     {

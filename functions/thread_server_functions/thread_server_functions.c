@@ -203,20 +203,7 @@ void* mainnode_timeout_thread(void* parameters)
     memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
     memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",48); 
 
-    // create the message
-    memcpy(string,"{\r\n \"message_settings\": \"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE\",\r\n}",91);
-
-    // sign_data
-    if (sign_data(string,0) == 0)
-    { 
-      color_print("Could not sign_data\nFunction: mainnode_timeout_thread\nSend Message: NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-    }
- 
-    // send the message to the consensus node
-    if (send_data_socket(current_consensus_nodes_IP_address,SEND_DATA_PORT,string,"sending NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE to the consensus node",0) == 0)
-    {
-      color_print("Could not send data to the consensus node\n\nFunction: mainnode_timeout_thread\nSend Message: NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE","red");
-    } 
+    
   }
   pointer_reset(string);
 
@@ -286,18 +273,6 @@ void* node_to_node_message_timeout_thread(void* parameters)
   memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"block_blob\": \"",21);
   memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.block_blob,strnlen(current_round_part_consensus_node_data.block_blob,BUFFER_SIZE));
   memcpy(string+strnlen(string,BUFFER_SIZE),"\"}",2);
-
-  // sign_data
-  if (sign_data(string,0) == 0)
-  { 
-    color_print("Could not sign_data\nFunction: node_to_node_message_timeout_thread\nSend Message: NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  }
- 
-  // send the message to the consensus node
-  if (send_data_socket(current_consensus_nodes_IP_address,SEND_DATA_PORT,string,"sending NODES_TO_CONSENSUS_NODE_VOTE_RESULTS to the consensus node",0) == 0)
-  {
-    color_print("Could not send data to the consensus node\n\nFunction: node_to_node_message_timeout_thread\nSend Message: NODES_TO_CONSENSUS_NODE_VOTE_RESULTS","red");
-  } 
 
   // set the next server message since a backup node will have to be selected
   memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
