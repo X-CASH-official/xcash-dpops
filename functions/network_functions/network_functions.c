@@ -965,3 +965,79 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
   pointer_reset(data);
   return 2;
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_delegate_online_status
+Description: Sends data to a socket
+Parameters:
+  HOST - The IP address to connect to
+Return: 1 if the IP address is online, 0 if the IP address is offline
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_delegate_online_status(char* HOST)
+{
+  // Variables
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  socklen_t socket_option_settings = sizeof(socket_settings);
+
+  // define macros
+  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
+
+  /* Create the socket  
+  AF_INET = IPV4 support
+  SOCK_STREAM = TCP protocol
+  SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings
+  */
+  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+  if (SOCKET == -1)
+  { 
+    return 0;
+  }
+
+  // convert the hostname if used, to an IP address
+  const struct hostent* HOST_NAME = gethostbyname(HOST); 
+  if (HOST_NAME == NULL)
+  {
+    close(SOCKET);
+    return 0;
+  }  
+  
+  /* setup the connection
+  AF_INET = IPV4
+  use htons to convert the port from host byte order to network byte order short
+  */
+  memset(&serv_addr,0,sizeof(serv_addr));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+  serv_addr.sin_port = htons(SEND_DATA_PORT);
+
+  /* set the first poll structure to our socket
+  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+  */
+  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.events = POLLOUT;
+
+  // connect to the socket
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  {    
+    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+    {   
+      if (socket_settings == 0)
+      {        
+        close(SOCKET);
+        return 1;
+      } 
+    }
+  }
+
+  close(SOCKET);
+  return 0;
+
+  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
+}
