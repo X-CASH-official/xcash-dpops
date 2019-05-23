@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <mongoc/mongoc.h>
-#include <bson/bson.h>
 
 #include "define_macro_functions.h"
 #include "define_macros.h"

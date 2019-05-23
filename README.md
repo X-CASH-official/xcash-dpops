@@ -1,143 +1,102 @@
-# X-CASH Proof of stake
+# X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H Proof of stake
 
-More details will be released soon!
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ore details will be released soon!
 
+## [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]nstallation
 
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]his program will only run on a [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]inux/[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]nix [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] at this time. We recommend installing this on a [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]buntu [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]P[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]/[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]erver (16.04 or 18.04) for the best compatibility.
 
-## Installation
-
-This program will only run on a Linux/Unix OS at this time. We recommend installing this on a Ubuntu VPS/Server (16.04 or 18.04) for the best compatibility.
-
-You will also need to run an X-CASH Daemon and X-CASH RPC wallet on the server. You can either download the latest X-CASH [release](https://github.com/X-CASH-official/X-CASH/releases) or build from [source](https://github.com/X-CASH-official/X-CASH#compiling-x-cash-from-source)
+You will also need to run an X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]aemon and X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H RP[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] wallet on the server. You can either download the latest X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H [release](https://github.com/X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H-official/X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H/releases) or build from [source](https://github.com/X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H-official/X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H#compiling-x-cash-from-source)
 
 
 
-## Compiling X-CASH Proof of stake from source
+## [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ompiling X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H Proof of stake
 
 
 
-### Dependencies
+### [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ependencies
 
-The following table summarizes the tools and libraries required to build. 
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]he following table summarizes the tools and libraries required to build. 
 
-| Dependencies                                 | Min. version  | Ubuntu package            |
+| [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ependencies                                 | [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]in. version  | [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]buntu package            |
 | -------------------------------------------- | ------------- | ------------------------- |
-| GCC                                          | 4.7.3         | `build-essential`         | 
-| CMake                                        | 3.0.0         | `cmake`                   | 
-| pkg-config                                   | any           | `pkg-config`              | 
-| OpenSSL      		                       | any           | `libssl-dev`              |
+| G[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]                                          | 4.7.3         | `build-essential`         | 
+| [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ake                                        | 3.0.0         | `cmake`                   | 
 | Git      		                       | any           | `git`                     |
-| MongoDB                                      | 4.0.3         |  install from binaries    |
-| MongoDB C Driver (includes BSON libary)      | 1.13.1        |  build from source        |
 
 
 
-### Installing MongoDB from binaries
+### [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]loning the repository
 
-Visit [https://www.mongodb.com/download-center/community](https://www.mongodb.com/download-center/community)
-
-Then choose your OS, and make sure the version is the current version and the package is server. Then click on All version binaries. Now find the current version to download. You do not want the debug symbols or the rc version, just the regular current version.
-
-Once you have downloaded the file move the file to a location where you want to keep the binaries, then run this set of commands  
-`tar -xf mongodb-linux-x86_64-*.tgz && rm mongodb-linux-x86_64-*.tgz && sudo mkdir -p /data/db && sudo chmod 770 /data/db && sudo chown $USER /data/db`
+`$ git clone https://github.com/X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H-official/X[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]proof[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]of[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]stake.git`
 
 
 
-### Building the MongoDB C driver from source
+### [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]uild instructions
 
-Visit the offical websites installation instructions at [http://mongoc.org/libmongoc/current/installing.html](http://mongoc.org/libmongoc/current/installing.html)
-You will need to follow the instructions for [Building from a release tarball](http://mongoc.org/libmongoc/current/installing.html#building-from-a-release-tarball) or [Building from git](http://mongoc.org/libmongoc/current/installing.html#building-from-git) since you need the header files, not just the library files.
+X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H Proof of stake uses a [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ake file.
 
-After you have built the MongoDB C driver from source, you will need to run  
-`sudo ldconfig`
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]fter cloning the repository, navigate to the folder  
+`cd X[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]proof[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]of[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]stake`
 
-
-
-### Adding MongoDB to your PATH
-You will probably want to add MongoDB to your path so you can run MonogDB by typing `mongod` at any terminal.
-
-To add MongoDB to your PATH (replace "MongoDB_folder" with the location of the bin folder in the folder you installed MongoDB in  
-`echo -e '\nexport PATH=MongoDB_folder:$PATH' >> ~/.profile && source ~/.profile`
-
-
-
-### Cloning the repository
-
-`$ git clone https://github.com/X-CASH-official/XCASH_proof_of_stake_consensus_node.git`
-
-
-
-### Build instructions
-
-X-CASH Proof of stake uses a Make file.
-
-After cloning the repository, navigate to the folder  
-`cd XCASH_proof_of_stake`
-
-Then use the make file to build the binary file  
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]hen use the make file to build the binary file  
 `make clean ; make`
 
 
 
-## Running MongoDB
-To run MongoDB you will need to navigate to the folder you downloaded the binaries to, and in the bin folder run mongod by running  
-`./mongod`
+## [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]etting up the xcashd and xcash-wallet-RP[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]
 
-If you have already added MongoDB to your path, you can just type in any terminal
-`mongod`
+First you will need to run xcashd in the background. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]avigate to the folder that contains the xcash binaries, then run  
+`screen -dm[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]aemon ./xcashd`
 
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ext you need to run a xcash-wallet-rpc. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]his wallet file needs to include the public X[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] address you registered on the voting website.
 
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ur recommendation is you use an empty wallet (no X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H in it) for this address. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]his way you will only leave mining rewards that you receive to this address on the [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]P[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT], not the entire X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H that you have. We also recommend at least once a week you should move the mining reward X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H that this wallet collects to your personal wallet.
 
-## Setting up the xcashd and xcash-wallet-RPC
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]f your running a shared masternode you will need to leave most of the mining rewards on the [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]P[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT], since the [link to shared masternode github repo](link to shared masternode github repo) will automatically pay the people contributing to your node.
 
-First you will need to run xcashd in the background. Navigate to the folder that contains the xcash binaries, then run  
-`./xcashd`
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o run the rpc wallet you can run  
+`./xcash-wallet-rpc --wallet-file [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]W[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] --password W[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]P[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]W[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]R[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
 
-Next you need to run a xcash-wallet-rpc. Depending on if this is the consensus node or the consensus backup node, you will need to the run the wallet that contains the public address in the [Proof of stake](https://github.com/X-CASH-official/Proof_of_stake) for the CONSENSUS_NODE_PUBLIC_ADDRESS or CONSENSUS_BACKUP_NODE_PUBLIC_ADDRESS
+Just replace [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]W[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] with the name of your wallet file and W[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]P[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]W[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]R[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] with the password of that wallet file. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ake sure to use port 18285 as this is the port that is used in the program.
 
-To run the rpc wallet you can run  
-`./xcash-wallet-rpc --wallet-file NAME_OF_WALLET_FILE --password WALLET_FILE_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
+We suggest you use the screen command to run the program in the background, this way you can still maintenance the server. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o do this run  
+`screen -dm[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]aemon ./xcashd`
 
-Just replace NAME_OF_WALLET_FILE with the name of your wallet file and WALLET_FILE_PASSWORD with the password of that wallet file. Make sure to use port 18285 as this is the port that is used in the program.
+You can also run the RP[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] wallet this way as well  
+`screen -dm[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] RP[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]-Wallet ./xcash-wallet-rpc --wallet-file [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]W[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] --password W[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]P[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]W[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]R[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
 
-We suggest you use the screen command to run the program in the background, this way you can still maintenance the server. To do this run  
-`screen -dmS Daemon ./xcashd`
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o bring the screen from the bacground process to the active process run  
+`screen -x [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]GR[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]R[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]`
 
-You can also run the RPC wallet this way as well  
-`screen -dmS RPC-Wallet ./xcash-wallet-rpc --wallet-file NAME_OF_WALLET_FILE --password WALLET_FILE_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
+Where [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]GR[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]R[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] would be [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]aemon or RP[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]-Wallet in the above examples.
 
-To bring the screen from the bacground process to the active process run  
-`screen -x NAME_OF_BACKGROUNDS_SCREEN`
-
-Where NAME_OF_BACKGROUNDS_SCREEN would be Daemon or RPC-Wallet in the above examples.
-
-To exit a screen if it is the active process, you can press Control + C. To exit a screen that is a background process you can run  
-`screen -XS NAME_OF_BACKGROUNDS_SCREEN quit`
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o exit a screen if it is the active process, you can press [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ontrol + [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o exit a screen that is a background process you can run  
+`screen -X[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]GR[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]R[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] quit`
 
 
 
-## Running X-CASH Proof of stake test
-It is recomeneded to run the X-CASH Proof of stake test before you run the main program. The test will ensure that your system is compatbile, and that you have setup your system correctly.
+## Running X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H Proof of stake test
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]t is recomeneded to run the X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H Proof of stake test before you run the main program. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]he test will ensure that your system is compatbile, and that you have setup your system correctly.
 
-To run the X-CASH Proof of stake test, Navigate to the folder that contains the binary, then run  
-`./xcash_proof_of_stake --test`
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o run the X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H Proof of stake test, [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]avigate to the folder that contains the binary, then run  
+`./xcash[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]proof[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]of[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]stake --test`
 
-The test will return the number of passed and failed test on the bottom of the console. The failed test need to be 0 before you run the node. If the output is not showing 0 for failed test, then you need to scroll through the testing output and find what test failed (It will be red instead of green). If this is a system compatibility test, then you will need to fix the system. If this is a core test that has failed, then you need to possibly rebuild, or contact us with your OS version, and we can look into it.
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]he test will return the number of passed and failed test on the bottom of the console. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]he failed test need to be 0 before you run the node. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]f the output is not showing 0 for failed test, then you need to scroll through the testing output and find what test failed ([BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]t will be red instead of green). [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]f this is a system compatibility test, then you will need to fix the system. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]f this is a core test that has failed, then you need to possibly rebuild, or contact us with your [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] version, and we can look into it.
 
 
 
-## Running X-CASH Proof of stake
+## Running X-[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]H Proof of stake
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]hen you will need to run the xcash[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]proof[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]of[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]stake. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]avigate to the folder that contains the binary, then run  
+`./xcash[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]proof[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]of[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]stake`
 
-Then you will need to run the xcash_proof_of_stake_consensus_node. Navigate to the folder that contains the binary, then run  
-`./xcash_proof_of_stake`
+We suggest you use the screen command to run the program in the background, this way you can still maintenance the server. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o do this run  
+`screen -dm[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] xcash[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]proof[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]of[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]stake ./xcash[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]proof[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]of[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]stake`
 
-We suggest you use the screen command to run the program in the background, this way you can still maintenance the server. To do this run  
-`screen -dmS xcash_proof_of_stake ./xcash_proof_of_stake`
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o bring the screen from the bacground process to the active process run  
+`screen -x [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]GR[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]R[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]`
 
-To bring the screen from the bacground process to the active process run  
-`screen -x NAME_OF_BACKGROUNDS_SCREEN`
+Where [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]GR[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]R[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] would be xcash[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]proof[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]of[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]stake in the above example.
 
-Where NAME_OF_BACKGROUNDS_SCREEN would be xcash_proof_of_stake_consensus_node in the above example.
-
-To exit a screen if it is the active process, you can press Control + C. To exit a screen that is a background process you can run  
-`screen -XS NAME_OF_BACKGROUNDS_SCREEN quit`
+[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o exit a screen if it is the active process, you can press [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]ontrol + [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]. [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]o exit a screen that is a background process you can run  
+`screen -X[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] [BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]F[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]GR[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]R[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT][BLOCK_VALIDATION_NODES_TOTAL_AMOUNT] quit`

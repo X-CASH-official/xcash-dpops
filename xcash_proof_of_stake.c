@@ -41,7 +41,6 @@ int main(int parameters_count, char* parameters[])
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   nodes_public_address_list_received_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   server_message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  main_nodes_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   vrf_public_key_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   vrf_secret_key_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   vrf_alpha_string_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
@@ -51,7 +50,7 @@ int main(int parameters_count, char* parameters[])
   current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || main_nodes_public_address == NULL || vrf_public_key_part_1 == NULL || vrf_alpha_string_part_2 == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || vrf_public_key_part_1 == NULL || vrf_alpha_string_part_2 == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
   {
     if (data != NULL)
     {
@@ -68,10 +67,6 @@ int main(int parameters_count, char* parameters[])
     if (server_message != NULL)
     {
       pointer_reset(server_message);
-    }
-    if (main_nodes_public_address != NULL)
-    {
-      pointer_reset(main_nodes_public_address);
     }
     if (vrf_public_key_part_1 != NULL)
     {
@@ -97,15 +92,45 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   } 
 
-  // initialize the block_verifiers_list struct 
+  // initialize the previous block_verifiers_list struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
-    block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1,sizeof(char));
+    previous_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
+    previous_block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    previous_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
-    if (block_verifiers_list.block_verifiers_name[count] == NULL || block_verifiers_list.block_verifiers_public_address[count] == NULL || block_verifiers_list.block_verifiers_IP_address[count] == NULL)
+    if (previous_block_verifiers_list.block_verifiers_name[count] == NULL || previous_block_verifiers_list.block_verifiers_public_address[count] == NULL || previous_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }
+
+  // initialize the current block_verifiers_list struct 
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    current_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
+    current_block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    current_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (current_block_verifiers_list.block_verifiers_name[count] == NULL || current_block_verifiers_list.block_verifiers_public_address[count] == NULL || current_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }
+
+  // initialize the next block_verifiers_list struct 
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    next_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
+    next_block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    next_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (next_block_verifiers_list.block_verifiers_name[count] == NULL || next_block_verifiers_list.block_verifiers_public_address[count] == NULL || next_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
     {
       color_print("Could not allocate the memory needed on the heap","red");
       exit(0);
@@ -125,6 +150,16 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
   }  
+
+  // initialize the main_nodes_list struct 
+  main_nodes_list.block_producer_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  main_nodes_list.block_producer_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_public_and_secret_key_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  main_nodes_list.vrf_node_public_and_secret_key_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_random_data_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  main_nodes_list.vrf_node_random_data_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_next_main_nodes_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  main_nodes_list.vrf_node_next_main_nodes_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // initialize the current_round_part_consensus_node_data struct
   current_round_part_consensus_node_data.vrf_public_key = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -275,38 +310,9 @@ int main(int parameters_count, char* parameters[])
   }
 
   // initialize the database connection
-  mongoc_init();
-
-  // create a connection to the database
-  if (create_database_connection() == 0)
-  {
-    color_print("Could not create a connection for the database\n","red");
-    mongoc_cleanup();
-    exit(0);
-  }
+  
 
   // create a pool of connections for the database
-  mongoc_uri_t* uri_thread_pool;
-  bson_error_t error;
-  uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error);
-  if (!uri_thread_pool)
-  {
-    color_print("Could not create a pool of connections for the database\n","red");
-    mongoc_client_destroy(database_client);
-    mongoc_cleanup();
-    exit(0);
-  }
-  database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool);
-  if (!database_client_thread_pool)
-  {
-    color_print("Could not create a thread pool for the database\n","red");
-    mongoc_client_destroy(database_client);
-    mongoc_uri_destroy(uri_thread_pool);
-    mongoc_cleanup();
-    exit(0);
-  }
-
-  // Add each block validation nodes data to the block_validation_nodes_list struct
 
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
@@ -346,11 +352,7 @@ int main(int parameters_count, char* parameters[])
     {
       color_print("Invalid parameters\n","red");
       printf(INVALID_PARAMETERS_ERROR_MESSAGE);
-    }    
-    mongoc_client_destroy(database_client);
-    mongoc_client_pool_destroy(database_client_thread_pool);
-    mongoc_uri_destroy(uri_thread_pool);
-    mongoc_cleanup();
+    }  
     pointer_reset(data);
     exit(0);
   }
@@ -359,10 +361,6 @@ int main(int parameters_count, char* parameters[])
   if (pthread_create(&thread_id, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id) != 0)
   {
     color_print("Could not start the current_block_height_timer_thread","red");
-    mongoc_client_destroy(database_client);
-    mongoc_client_pool_destroy(database_client_thread_pool);
-    mongoc_uri_destroy(uri_thread_pool);
-    mongoc_cleanup();
     pointer_reset(data);
   } 
  
@@ -376,10 +374,6 @@ int main(int parameters_count, char* parameters[])
     }
   } 
 
-  mongoc_client_destroy(database_client);
-  mongoc_client_pool_destroy(database_client_thread_pool);
-  mongoc_uri_destroy(uri_thread_pool);
-  mongoc_cleanup();
   pointer_reset(data);
   return 0; 
 }

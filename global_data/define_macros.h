@@ -10,6 +10,12 @@ Using define statements instead of constants for increased efficiency
 #define NETWORK_DATA_NODE 0 // 0 if not a network data node, 1 if a network data node
 #define BLOCK_VALIDATION_NODE 0 // 0 if not a block validation data node, 1 if a block validation data node
 
+#define MAIN_NETWORK_DATA_NODE 0 // 0 if not the main network data node, 1 if the mainnetwork data node
+#define BACKUP_NETWORK_DATA_NODE 0 // 0 if not the backup network data node, 1 if the backup network data node
+
+#define MAIN_NETWORK_DATA_NODE_IP_ADDRESS 0
+#define BACKUP_NETWORK_DATA_NODE_IP_ADDRESS 0
+
 #define SEND_DATA_PORT 8000 // The port that is used by all nodes to send and receive data
 #define XCASH_WALLET_LENGTH 98 // The length of a XCA address
 #define RANDOM_STRING_LENGTH 100 // The length of the random string
@@ -26,6 +32,11 @@ Using define statements instead of constants for increased efficiency
 #define VRF_BETA_LENGTH 128
 #define VRF_DATA_LENGTH 8 // true when the VRF data is verified
 
+// Database
+#define TEST_DATABASE "test_database.txt"
+#define DATABASE_NAME "database.txt"
+
+#define BLOCK_TIME 5 // the block time in minutes
 #define NETWORK_VERSION "0d0d" // the network version
 #define MINIMUM_RESERVE_BYTE_LENGTH 2920  // The minimum amount of reserve bytes
 #define MAXIMUM_RESERVE_BYTE_LENGTH 3194 // The maximum amount of reserve bytes
@@ -47,9 +58,6 @@ Using define statements instead of constants for increased efficiency
 #define DATA_HASH_LENGTH 128 // The length of the SHA2-512 hash
 #define BLOCK_VERIFIERS_NAME_TOTAL_LENGTH 100 // The maximum length of the block verifiers name
 #define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address
-#define DATABASE_CONNECTION "mongodb://localhost:27017" // the database connection string
-#define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
-#define DATABASE_ARRAY_COUNT 100 // The maximum amount of parsed item and value from the database
 #define TOTAL_CONNECTION_TIME_SETTINGS 30 // The total time a client is given to connect to the server and send data
 #define TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT 10 // The total time given from when the consensus node sends to the node who the main node is, to the time the main node sends the data to the node.
 #define INVALID_PARAMETERS_ERROR_MESSAGE \
