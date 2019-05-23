@@ -45,6 +45,9 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
     exit(0);
   }
 
+  // reset the variable
+  memset(result,0,strlen(result));
+
   // check if the field is in the data
   if (strstr(DATA,FIELD_NAME) != NULL)
   { 

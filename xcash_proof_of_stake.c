@@ -25,7 +25,7 @@ Main function
 */
 
 int main(int parameters_count, char* parameters[])
-{
+{test();exit(0);
   // iniltize the random number generator
   srand(time(0));
 
