@@ -2,6 +2,8 @@
 
 More details will be released soon!
 
+
+
 ## Installation
 
 This program will only run on a Linux/Unix OS at this time. We recommend installing this on a Ubuntu VPS/Server (16.04 or 18.04) for the best compatibility.
@@ -10,7 +12,7 @@ You will also need to run an X-CASH Daemon and X-CASH RPC wallet on the server. 
 
 
 
-## Compiling X-CASH Proof of stake
+## Compiling X-CASH Proof of stake from source
 
 
 
@@ -22,13 +24,46 @@ The following table summarizes the tools and libraries required to build.
 | -------------------------------------------- | ------------- | ------------------------- |
 | GCC                                          | 4.7.3         | `build-essential`         | 
 | CMake                                        | 3.0.0         | `cmake`                   | 
+| pkg-config                                   | any           | `pkg-config`              | 
+| OpenSSL      		                       | any           | `libssl-dev`              |
 | Git      		                       | any           | `git`                     |
+| MongoDB                                      | 4.0.3         |  install from binaries    |
+| MongoDB C Driver (includes BSON libary)      | 1.13.1        |  build from source        |
+
+
+
+### Installing MongoDB from binaries
+
+Visit [https://www.mongodb.com/download-center/community](https://www.mongodb.com/download-center/community)
+
+Then choose your OS, and make sure the version is the current version and the package is server. Then click on All version binaries. Now find the current version to download. You do not want the debug symbols or the rc version, just the regular current version.
+
+Once you have downloaded the file move the file to a location where you want to keep the binaries, then run this set of commands  
+`tar -xf mongodb-linux-x86_64-*.tgz && rm mongodb-linux-x86_64-*.tgz && sudo mkdir -p /data/db && sudo chmod 770 /data/db && sudo chown $USER /data/db`
+
+
+
+### Building the MongoDB C driver from source
+
+Visit the offical websites installation instructions at [http://mongoc.org/libmongoc/current/installing.html](http://mongoc.org/libmongoc/current/installing.html)
+You will need to follow the instructions for [Building from a release tarball](http://mongoc.org/libmongoc/current/installing.html#building-from-a-release-tarball) or [Building from git](http://mongoc.org/libmongoc/current/installing.html#building-from-git) since you need the header files, not just the library files.
+
+After you have built the MongoDB C driver from source, you will need to run  
+`sudo ldconfig`
+
+
+
+### Adding MongoDB to your PATH
+You will probably want to add MongoDB to your path so you can run MonogDB by typing `mongod` at any terminal.
+
+To add MongoDB to your PATH (replace "MongoDB_folder" with the location of the bin folder in the folder you installed MongoDB in  
+`echo -e '\nexport PATH=MongoDB_folder:$PATH' >> ~/.profile && source ~/.profile`
 
 
 
 ### Cloning the repository
 
-`$ git clone https://github.com/X-CASH-official/XCASH_proof_of_stake.git`
+`$ git clone https://github.com/X-CASH-official/XCASH_proof_of_stake_consensus_node.git`
 
 
 
@@ -44,16 +79,21 @@ Then use the make file to build the binary file
 
 
 
+## Running MongoDB
+To run MongoDB you will need to navigate to the folder you downloaded the binaries to, and in the bin folder run mongod by running  
+`./mongod`
+
+If you have already added MongoDB to your path, you can just type in any terminal
+`mongod`
+
+
+
 ## Setting up the xcashd and xcash-wallet-RPC
 
 First you will need to run xcashd in the background. Navigate to the folder that contains the xcash binaries, then run  
-`screen -dmS Daemon ./xcashd`
+`./xcashd`
 
-Next you need to run a xcash-wallet-rpc. This wallet file needs to include the public XCA address you registered on the voting website.
-
-Our recommendation is you use an empty wallet (no X-CASH in it) for this address. This way you will only leave mining rewards that you receive to this address on the VPS, not the entire X-CASH that you have. We also recommend at least once a week you should move the mining reward X-CASH that this wallet collects to your personal wallet.
-
-If your running a shared masternode you will need to leave most of the mining rewards on the VPS, since the [link to shared masternode github repo](link to shared masternode github repo) will automatically pay the people contributing to your node.
+Next you need to run a xcash-wallet-rpc. Depending on if this is the consensus node or the consensus backup node, you will need to the run the wallet that contains the public address in the [Proof of stake](https://github.com/X-CASH-official/Proof_of_stake) for the CONSENSUS_NODE_PUBLIC_ADDRESS or CONSENSUS_BACKUP_NODE_PUBLIC_ADDRESS
 
 To run the rpc wallet you can run  
 `./xcash-wallet-rpc --wallet-file NAME_OF_WALLET_FILE --password WALLET_FILE_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
@@ -87,7 +127,8 @@ The test will return the number of passed and failed test on the bottom of the c
 
 
 ## Running X-CASH Proof of stake
-Then you will need to run the xcash_proof_of_stake. Navigate to the folder that contains the binary, then run  
+
+Then you will need to run the xcash_proof_of_stake_consensus_node. Navigate to the folder that contains the binary, then run  
 `./xcash_proof_of_stake`
 
 We suggest you use the screen command to run the program in the background, this way you can still maintenance the server. To do this run  
@@ -96,7 +137,7 @@ We suggest you use the screen command to run the program in the background, this
 To bring the screen from the bacground process to the active process run  
 `screen -x NAME_OF_BACKGROUNDS_SCREEN`
 
-Where NAME_OF_BACKGROUNDS_SCREEN would be xcash_proof_of_stake in the above example.
+Where NAME_OF_BACKGROUNDS_SCREEN would be xcash_proof_of_stake_consensus_node in the above example.
 
 To exit a screen if it is the active process, you can press Control + C. To exit a screen that is a background process you can run  
 `screen -XS NAME_OF_BACKGROUNDS_SCREEN quit`

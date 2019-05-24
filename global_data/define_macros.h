@@ -33,8 +33,9 @@ Using define statements instead of constants for increased efficiency
 #define VRF_DATA_LENGTH 8 // true when the VRF data is verified
 
 // Database
-#define TEST_DATABASE "test_database.txt"
-#define DATABASE_NAME "database.txt"
+#define DATABASE_CONNECTION "mongodb://localhost:27017" // the database connection string
+#define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
+#define DATABASE_ARRAY_COUNT 100 // The maximum amount of parsed item and value from the database
 
 #define BLOCK_TIME 5 // the block time in minutes
 #define NETWORK_VERSION "0d0d" // the network version

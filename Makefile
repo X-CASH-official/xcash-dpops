@@ -1,7 +1,7 @@
 CPP=gcc
 CFLAGS= -Ifunctions/blockchain_functions/ -Ifunctions/database_functions/ -Ifunctions/file_functions/ -Ifunctions/global_data/ -Ifunctions/network_daemon_functions/ -Ifunctions/network_functions/ -Ifunctions/network_security_functions/ -Ifunctions/network_wallet_functions/ -Ifunctions/server_functions/ -Ifunctions/string_functions/ -Ifunctions/thread_functions/ -Ifunctions/thread_server_functions/ -Ifunctions/VRF_functions/ -Iglobal_data -Itests -Itests/analysing_code_test/ -Itests/blockchain_functions_test/ -Itests/database_functions_test/ -Itests/file_functions_test/ -Itests/global_data/ -Itests/network_functions_test/ -Itests/reset_variables_allocated_on_the_heap_test/ -Itests/string_functions_test/ -Itests/VRF_functions_test/ -I/usr/local/include/libbson-1.0 -I/usr/local/include/libmongoc-1.0
 
-LDFLAGS= -lpthread
+LDFLAGS= -lmongoc-1.0 -lbson-1.0 -lpthread
 
 all: xcash_proof_of_stake
 

@@ -226,6 +226,108 @@ struct blockchain_data {
 
 
 // database struct
+struct database_document_fields {
+    size_t count; // The amount of items in the database_document_fields struct
+    char* item[100]; // The item
+    char* value[100]; // The value
+};
+
+struct database_multiple_documents_fields {
+    size_t document_count; // The amount of documents in the database_multiple_documents_fields
+    size_t database_fields_count; // The amount of items in each document
+    char* item[DATABASE_ARRAY_COUNT][DATABASE_ARRAY_COUNT]; // The item
+    char* value[DATABASE_ARRAY_COUNT][DATABASE_ARRAY_COUNT]; // The value
+};
+
+
+
+ // Thread functions
+ struct read_file_thread_parameters {
+    char* result; // The data read from the file
+    const char* FILE_NAME; // The file name
+};
+
+ struct write_file_thread_parameters {
+    const char* DATA; // The data to write to the file
+    const char* FILE_NAME; // The file name
+};
+
+struct insert_document_into_collection_json_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+    const char* DATA; // The json data to insert into the collection
+};
+
+struct read_document_from_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+    const char* DATA; // The json data to use to search the collection for
+    char *result; // The document read from the collection
+};
+
+struct read_document_field_from_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+    const char* DATA; // The json data to use to search the collection for
+    const char* FIELD_NAME; // The field of the document data to read
+    char *result; // The document data read from the collection
+};
+
+struct read_document_all_fields_from_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+    const char* DATA; // The json data to use to search the collection for
+    struct database_document_fields* result; // A pointer to the database_document_fields struct
+};
+
+struct read_multiple_documents_all_fields_from_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name,
+    const char* DATA; // The data to search for in each document, set to "" for all items
+    struct database_multiple_documents_fields* result; // A pointer to the database_multiple_documents_fields struct
+    const size_t DOCUMENT_COUNT_START; // The document to start at when reading the data
+    const size_t DOCUMENT_COUNT_TOTAL; // The total amount of documents to read
+};
+
+struct update_document_from_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+    const char* DATA; // The json data to use to search the collection for
+    const char* FIELD_NAME_AND_DATA; // The json data to use to update the document
+};
+
+struct update_all_documents_from_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+    const char* DATA; // The json data to use to update the documents
+};
+
+struct delete_document_from_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+    const char* DATA; // The json data to use to delete the document
+};
+
+struct delete_collection_from_database_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+};
+
+struct count_documents_in_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+    const char* DATA; // The json data to use to search the collection for
+};
+
+struct count_all_documents_in_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+};
+
+struct update_delegates_online_status_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+};
 
 
 
