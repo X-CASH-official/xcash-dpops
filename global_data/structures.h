@@ -30,11 +30,6 @@ struct next_block_verifiers_list {
     char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers IP address
 };
 
-struct block_validation_nodes_list {
-    char* block_validation_nodes_public_address[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]; // The block validation nodes public address
-    char* block_validation_nodes_IP_address[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]; // The block validation nodes IP address
-};
-
 struct main_nodes_list {
     char* block_producer_public_address; // The block producers public address
     char* block_producer_IP_address; // The block producers IP address
@@ -113,6 +108,18 @@ struct blockchain_reserve_bytes {
     char* vrf_node_random_data_backup_nodes_names_data; // The vrf_node_random_data_backup_nodes_names
     char* vrf_node_random_data_backup_nodes_names; // The vrf_node_random_data_backup_nodes_names_data text
     size_t vrf_node_random_data_backup_nodes_names_data_length; // The amount of characters of the vrf_node_random_data_backup_nodes_names_data
+    char* vrf_node_next_main_nodes_delegates_name_data; // The vrf_node_next_main_nodes_delegates_name
+    char* vrf_node_next_main_nodes_delegates_name; // The vrf_node_next_main_nodes_delegates_name_data text
+    size_t vrf_node_next_main_nodes_delegates_name_data_length; // The amount of characters of the vrf_node_next_main_nodes_delegates_name_data
+    char* vrf_node_next_main_nodes_public_address_data; // The vrf_node_next_main_nodes_public_address
+    char* vrf_node_next_main_nodes_public_address; // The vrf_node_next_main_nodes_public_address_data text
+    size_t vrf_node_next_main_nodes_public_address_data_length; // The amount of characters of the vrf_node_next_main_nodes_public_address_data
+    char* vrf_node_next_main_nodes_node_backup_count_data; // The vrf_node_next_main_nodes_node_backup_count
+    char* vrf_node_next_main_nodes_node_backup_count; // The vrf_node_next_main_nodes_node_backup_count_data text
+    size_t vrf_node_next_main_nodes_node_backup_count_data_length; // The amount of characters of the vrf_node_next_main_nodes_node_backup_count_data
+    char* vrf_node_next_main_nodes_backup_nodes_names_data; // The vrf_node_next_main_nodes_backup_nodes_names
+    char* vrf_node_next_main_nodes_backup_nodes_names; // The vrf_node_next_main_nodes_backup_nodes_names_data text
+    size_t vrf_node_next_main_nodes_backup_nodes_names_data_length; // The amount of characters of the vrf_node_next_main_nodes_backup_nodes_names_data
     char* vrf_public_key_data_round_part_1; // The VRF public key text for round part 1
     unsigned char* vrf_public_key_round_part_1; // The VRF public key for round part 1
     size_t vrf_public_key_data_length_round_part_1; // The length of the VRF public key for round part 1
@@ -154,10 +161,13 @@ struct blockchain_reserve_bytes {
     char* vrf_data_round_part_3; // The VRF data for round part 3  
     char* vrf_data; // The VRF data for all of the round parts
     size_t vrf_data_length; // The length of the VRF data for all of the round parts
+    char* next_block_verifiers_public_address_data[BLOCK_VERIFIERS_AMOUNT]; // The next_block_verifiers_public_address
+    char* next_block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT]; // The next_block_verifiers_public_address_data text
+    size_t next_block_verifiers_public_address_data_length; // The amount of characters of the next_block_verifiers_public_address_data
     char* previous_block_hash_data; // The previous_block_hash
     size_t previous_block_hash_data_length; // The amount of characters of the previous_block_hash_data
-    char* block_validation_node_signature_data[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]; // The block_validation_node_signature
-    char* block_validation_node_signature[BLOCK_VALIDATION_NODES_TOTAL_AMOUNT]; // The block_validation_node_signature_data text
+    char* block_validation_node_signature_data[BLOCK_VERIFIERS_AMOUNT]; // The block_validation_node_signature
+    char* block_validation_node_signature[BLOCK_VERIFIERS_AMOUNT]; // The block_validation_node_signature_data text
     size_t block_validation_node_signature_data_length; // The amount of characters of the block_validation_node_signature_data
 };
 

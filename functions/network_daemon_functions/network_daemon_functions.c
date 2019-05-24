@@ -31,12 +31,11 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int get_block_template(char *result, char* reserve_bytes_length, const int HTTP_SETTINGS)
+int get_block_template(char *result, const int HTTP_SETTINGS)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-  const size_t RESERVE_BYTES_LENGTH = strnlen(reserve_bytes_length,BUFFER_SIZE);
 
   // Variables
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -67,9 +66,7 @@ int get_block_template(char *result, char* reserve_bytes_length, const int HTTP_
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_template\",\"params\":{\"wallet_address\":\"",84);
   memcpy(message+84,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(message+84+XCASH_WALLET_LENGTH,"\",\"reserve_size\":",17);
-  memcpy(message+101+XCASH_WALLET_LENGTH,reserve_bytes_length,RESERVE_BYTES_LENGTH);
-  memcpy(message+101+XCASH_WALLET_LENGTH+RESERVE_BYTES_LENGTH,"}",1);
+  memcpy(message+84+XCASH_WALLET_LENGTH,"\",\"reserve_size\":128}",21);
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block template",HTTP_SETTINGS) <= 0)
   {  

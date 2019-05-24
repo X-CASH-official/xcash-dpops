@@ -392,7 +392,7 @@ int reset_variables_allocated_on_the_heap_test()
       memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA));  
       memset(blockchain_data.blockchain_reserve_bytes.vrf_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data,BUFFER_SIZE_NETWORK_BLOCK_DATA));
       memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BUFFER_SIZE_NETWORK_BLOCK_DATA));
-      for (count2 = 0; count2 < BLOCK_VALIDATION_NODES_TOTAL_AMOUNT; count2++)
+      for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
       {
         memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count2],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count2],BUFFER_SIZE_NETWORK_BLOCK_DATA));
         memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],BUFFER_SIZE_NETWORK_BLOCK_DATA));
@@ -462,7 +462,7 @@ int reset_variables_allocated_on_the_heap_test()
     {
       fprintf(stderr,"Current progress for verify_network_block_data: %zu / 1000",count);
       fprintf(stderr,"\r");
-      verify_network_block_data(0,0,0,NETWORK_BLOCK_HEIGHT);
+      verify_network_block_data(0,0,0,NETWORK_BLOCK_HEIGHT,"");
       if (count == 0)
       {    
         current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
@@ -587,7 +587,7 @@ int reset_variables_allocated_on_the_heap_test()
     memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA));  
     memset(blockchain_data.blockchain_reserve_bytes.vrf_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data,BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BUFFER_SIZE_NETWORK_BLOCK_DATA));
-    for (count2 = 0; count2 < BLOCK_VALIDATION_NODES_TOTAL_AMOUNT; count2++)
+    for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
     {
       memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count2],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count2],BUFFER_SIZE_NETWORK_BLOCK_DATA));
       memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],BUFFER_SIZE_NETWORK_BLOCK_DATA));
@@ -721,7 +721,7 @@ int reset_variables_allocated_on_the_heap_test()
       fprintf(stderr,"Current progress for get_block_template: %zu / 1000",count);
       fprintf(stderr,"\r");
       memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-      get_block_template(data_test,"0",0);
+      get_block_template(data_test,0);
       if (count == 0)
       {    
         current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;

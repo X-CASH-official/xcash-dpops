@@ -61,7 +61,7 @@ void network_daemon_test()
   // run the test
 
   // test the get_block_template function
-  if (get_block_template(data_test,"0",0) == 1)
+  if (get_block_template(data_test,0) == 1)
   {   
     color_print("PASSED! Test for getting the block template","green");
     count_test++;

@@ -1784,7 +1784,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   }
 
   // verify the network block
-  if (verify_network_block_data(0,1,1,"0") == 1)
+  if (verify_network_block_data(0,1,1,"0","") == 1)
   {
     memcpy(message2+75,"valid",5);
   }
@@ -2140,7 +2140,7 @@ int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of
   {
     // get the block template
     memset(data,0,strnlen(data,BUFFER_SIZE));
-    if (get_block_template(data,MAXIMUM_RESERVE_BYTE_TEXT_LENGTH,0) == 0)
+    if (get_block_template(data,0) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not get the block template\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
     }

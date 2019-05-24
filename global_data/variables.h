@@ -15,7 +15,6 @@ char* xcash_wallet_public_address; // Holds your wallets public address
 struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round
 struct next_block_verifiers_list next_block_verifiers_list; // The list of block verifiers name, public address and IP address for the next round
-struct block_validation_nodes_list block_validation_nodes_list; // The list of block validation nodes public address
 struct main_nodes_list main_nodes_list; // The list of main nodes public address and IP address
 struct current_round_part_consensus_node_data current_round_part_consensus_node_data; // The network block data and VRF data for the current part of the round
 struct current_round_part_vote_data current_round_part_vote_data; // The vote data for the current part of the round
