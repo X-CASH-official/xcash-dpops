@@ -195,7 +195,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* read_multiple_documents_all_fields_from_collection_thread(void* parameters)
 {
   struct read_multiple_documents_all_fields_from_collection_thread_parameters* data = parameters;
-  int settings = read_multiple_documents_all_fields_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->result, data->DOCUMENT_COUNT_START, data->DOCUMENT_COUNT_TOTAL, 1);
+  int settings = read_multiple_documents_all_fields_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->result, data->DOCUMENT_COUNT_START, data->DOCUMENT_COUNT_TOTAL, data->DOCUMENT_OPTIONS, data->DOCUMENT_OPTIONS_DATA, 1);
   pthread_exit((void *)(intptr_t)settings);
 }
 

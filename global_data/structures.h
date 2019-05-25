@@ -287,6 +287,8 @@ struct read_multiple_documents_all_fields_from_collection_thread_parameters {
     struct database_multiple_documents_fields* result; // A pointer to the database_multiple_documents_fields struct
     const size_t DOCUMENT_COUNT_START; // The document to start at when reading the data
     const size_t DOCUMENT_COUNT_TOTAL; // The total amount of documents to read
+    const int DOCUMENT_OPTIONS; // 1 to use the sort document option, 0 to not use the document option
+    const char* DOCUMENT_OPTIONS_DATA; // The item to sort the documents in the collection
 };
 
 struct update_document_from_collection_thread_parameters {

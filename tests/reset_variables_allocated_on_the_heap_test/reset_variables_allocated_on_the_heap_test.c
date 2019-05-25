@@ -1310,7 +1310,7 @@ int reset_variables_allocated_on_the_heap_test()
           memset(database_multiple_documents_fields.value[count2][counter],0,strnlen(database_multiple_documents_fields.value[count2][counter],BUFFER_SIZE));
         }
       }
-      read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0);
+      read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0,"",0);
       if (count == 0)
       {    
         current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;

@@ -263,14 +263,14 @@ void data_network_node_save_previous_round_statistics()
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: add_delegate_round_statistics
+Name: add_block_verifiers_round_statistics
 Description: Adds the block verifier statistics to the database after adding the block to the network
 -----------------------------------------------------------------------------------------------------------
 */
 
 void add_block_verifiers_round_statistics()
 {
-  /*// Variables
+  // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -510,7 +510,7 @@ void add_block_verifiers_round_statistics()
   return;
 
   #undef pointer_reset_all
-  #undef ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR*/
+  #undef ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR
 }
 
 
@@ -525,7 +525,10 @@ Description: Adds the round statistics to the database after adding the block to
 
 void add_round_statistics()
 {
-  /*// Variables
+  // Constants
+  const bson_t* current_document;
+
+  // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -562,6 +565,9 @@ void add_round_statistics()
   double total;
   double total2;
   double total3;
+  mongoc_collection_t* collection;
+  mongoc_cursor_t* document_settings;
+  bson_t* document = NULL;  
   char* message;
   char* message_copy1;
   char* message_copy2;
@@ -917,7 +923,7 @@ void add_round_statistics()
 
   #undef MESSAGE
   #undef pointer_reset_all
-  #undef ADD_ROUND_STATISTICS_ERROR*/
+  #undef ADD_ROUND_STATISTICS_ERROR
 }
 
 
@@ -933,7 +939,7 @@ Return: 0 if an error has occured, 1 if successfull
 
 int get_updated_node_list()
 {
-  /*// Variables
+  // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -987,47 +993,11 @@ int get_updated_node_list()
   pointer_reset_all; \
   return 0;
 
-  // iniltize the variables
-  memset(data,0,strnlen(data,BUFFER_SIZE));  
-
-  // clear any data that was already in the block_verifiers_list struct
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    memset(block_verifiers_list.block_verifiers_name[count],0,strnlen(block_verifiers_list.block_verifiers_name[count],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
-    memset(block_verifiers_list.block_verifiers_public_address[count],0,strnlen(block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH));
-    memset(block_verifiers_list.block_verifiers_IP_address[count],0,strnlen(block_verifiers_list.block_verifiers_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-  }
-
-  // load all of the data into the block_verifiers_list struct
-  for (count = 0, count2 = 1; count < BLOCK_VERIFIERS_AMOUNT; count++, count2++)
-  {
-    memset(data,0,strnlen(data,BUFFER_SIZE));
-    memcpy(data,"node",4);
-    sprintf(data+4,"%zu",count2);
-    if (parse_json_data(message,data,data2) == 0)
-    {
-      GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
-    }
-    memcpy(block_verifiers_list.block_verifiers_name[count],data2,strnlen(data2,BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
-    memset(data2,0,strnlen(data2,BLOCK_VERIFIERS_NAME_TOTAL_LENGTH));
-    if (parse_json_data(message2,data,data2) == 0)
-    {
-      GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
-    }
-    memcpy(block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(data2,XCASH_WALLET_LENGTH));
-    memset(data2,0,strnlen(data2,XCASH_WALLET_LENGTH));
-    if (parse_json_data(message3,data,data2) == 0)
-    {
-      GET_UPDATED_NODE_LIST_ERROR("Could not parse data\nFunction: get_updated_node_list\nReceived Message: CONSENSUS_NODE_TO_NODE_RECEIVE_UPDATED_NODE_LIST\nSend Message: NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST");
-    }
-    memcpy(block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(data2,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-    memset(data2,0,strnlen(data2,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-  }
-
+  
   return 1;
 
   #undef pointer_reset_all
-  #undef GET_UPDATED_NODE_LIST_ERROR*/
+  #undef GET_UPDATED_NODE_LIST_ERROR
 }
 
 

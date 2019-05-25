@@ -35,7 +35,9 @@ int main(int parameters_count, char* parameters[])
   size_t count = 0;
 
   // threads
-  pthread_t thread_id;
+  pthread_t thread_id_1;
+  pthread_t thread_id_2;
+  pthread_t thread_id_3;
 
   // iniltize the global variables
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
@@ -347,6 +349,8 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
+test();exit(0);
+
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
   memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
@@ -395,9 +399,31 @@ int main(int parameters_count, char* parameters[])
   }
 
   // start the block height timer thread
-  if (pthread_create(&thread_id, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id) != 0)
+  if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
     color_print("Could not start the current_block_height_timer_thread","red");
+    mongoc_client_destroy(database_client);
+    mongoc_client_pool_destroy(database_client_thread_pool);
+    mongoc_uri_destroy(uri_thread_pool);
+    mongoc_cleanup();
+    pointer_reset(data);
+  } 
+
+  // start the check_reserve_proofs_timer_thread
+  if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
+  {
+    color_print("Could not start the check_reserve_proofs_timer_thread","red");
+    mongoc_client_destroy(database_client);
+    mongoc_client_pool_destroy(database_client_thread_pool);
+    mongoc_uri_destroy(uri_thread_pool);
+    mongoc_cleanup();
+    pointer_reset(data);
+  } 
+
+  // start the check_delegates_online_status_timer_thread
+  if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
+  {
+    color_print("Could not start the check_delegates_online_status_timer_thread","red");
     mongoc_client_destroy(database_client);
     mongoc_client_pool_destroy(database_client_thread_pool);
     mongoc_uri_destroy(uri_thread_pool);

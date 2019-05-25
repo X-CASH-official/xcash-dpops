@@ -14,6 +14,7 @@
 #include "structures.h"
 #include "variables.h"
 
+#include "database_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
@@ -100,6 +101,104 @@ Return: NULL
 */
 
 void* current_block_height_timer_thread()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time; 
+  size_t count;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  for (;;)
+  {
+    start:
+    // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
+    usleep(200000);
+    time(&current_date_and_time);
+    current_UTC_date_and_time = gmtime(&current_date_and_time);
+    if (current_UTC_date_and_time->tm_min % 5 == 0)
+    {
+      // try for the next 5 seconds and if not then a new block is not going to be added to the network
+      for (count = 0; count < 5; count++)
+      {
+        get_current_block_height(data,0);
+        if (memcmp(data,current_block_height,strlen(current_block_height)) != 0)
+        {      
+          // replace the current_block_height variable
+          memset(current_block_height,0,strlen(current_block_height));
+          memcpy(current_block_height,data,strnlen(data,BUFFER_SIZE));
+
+          start_new_round();
+          goto start;
+        }
+        sleep(1);
+      }
+    }
+  }
+  pointer_reset(data);
+  pthread_exit((void *)(intptr_t)1);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: check_reserve_proofs_timer_thread
+Description: Randomly selects a reserve proof from the database and will check if it is valid
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* check_reserve_proofs_timer_thread()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time; 
+  int count;
+
+
+  for (;;)
+  {
+    time(&current_date_and_time);
+    current_UTC_date_and_time = gmtime(&current_date_and_time);
+    if (current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
+    {
+      sleep(10);
+    }
+
+    // select a random reserve proofs collection
+    memset(data,0,strlen(data));
+    memcpy(data,"reserve_proofs_",15);
+    sprintf(data+15,"%d",((rand() % (50 - 1 + 1)) + 1)); 
+
+    // get how many documents are in the collection
+    count = count_all_documents_in_collection(DATABASE_NAME,data,0);
+
+    //
+      
+  }
+  pointer_reset(data);
+  pthread_exit((void *)(intptr_t)1);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: check_delegates_online_status_timer_thread
+Description: Checks the top 150 delegates every round to update their online status
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* check_delegates_online_status_timer_thread()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));

@@ -38,7 +38,7 @@ int database_test()
   pthread_t thread_id;
 
   // define macros
-  #define DATABASE_TEST 25
+  #define DATABASE_TEST 26
   #define DATA_COUNT 5
   #define DATABASE_COLLECTION "XCASH_PROOF_OF_STAKE_TEST_DATA"
   #define MESSAGE "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"}"
@@ -383,7 +383,7 @@ int database_test()
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0) == 1)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0,"",0) == 1)
   {
     if (strncmp(database_multiple_documents_fields.item[0][0],"username",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][0],"XCASH",BUFFER_SIZE) == 0 &&
         strncmp(database_multiple_documents_fields.item[0][1],"most_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
@@ -427,6 +427,68 @@ int database_test()
     color_print("FAILED! Test for reading multiple documents from a collection and parsing all fields","red");
   }
 
+  // read multiple documents in the collection using the sort document option and parse all fields
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,"{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"data\":10}",0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,"{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"data\":15}",0);
+
+  // reset the database_multiple_documents_fields struct 
+  for (count = 0; count < 2; count++)
+  {
+    for (counter = 0; counter < 14; counter++)
+    {
+      memset(database_multiple_documents_fields.item[count][counter],0,strlen(database_multiple_documents_fields.item[count][counter]));
+      memset(database_multiple_documents_fields.value[count][counter],0,strlen(database_multiple_documents_fields.value[count][counter]));
+    }
+  }
+  database_multiple_documents_fields.document_count = 0;
+  database_multiple_documents_fields.database_fields_count = 0;
+
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,1,"data",0) == 1)
+  {
+    if (strncmp(database_multiple_documents_fields.item[0][0],"username",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][0],"XCASH",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][1],"most_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][2],"most_total_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][2],"5",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][3],"best_block_verifier_online_percentage_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][3],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][4],"best_block_verifier_online_percentage",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][4],"10",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][5],"most_block_producer_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][5],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][6],"most_block_producer_total_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][6],"15",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][7],"most_VRF_node_public_and_private_key_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][7],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][8],"most_VRF_node_public_and_private_key_total_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][8],"5",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][9],"most_VRF_node_random_data_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][9],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][10],"most_VRF_node_random_data_total_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][10],"10",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][11],"total_XCASH_proof_of_stake_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][11],"15",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][12],"total_coins_in_proof_of_stake",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][12],"5",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[0][13],"data",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][13],"15",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][0],"username",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][0],"XCASH",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][1],"most_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][1],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][2],"most_total_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][2],"5",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][3],"best_block_verifier_online_percentage_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][3],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][4],"best_block_verifier_online_percentage",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][4],"10",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][5],"most_block_producer_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][5],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][6],"most_block_producer_total_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][6],"15",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][7],"most_VRF_node_public_and_private_key_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][7],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][8],"most_VRF_node_public_and_private_key_total_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][8],"5",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][9],"most_VRF_node_random_data_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][9],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][10],"most_VRF_node_random_data_total_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][10],"10",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][11],"total_XCASH_proof_of_stake_rounds",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][11],"15",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][12],"total_coins_in_proof_of_stake",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][12],"5",BUFFER_SIZE) == 0 &&
+        strncmp(database_multiple_documents_fields.item[1][13],"data",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[1][13],"10",BUFFER_SIZE) == 0)
+    {
+      color_print("PASSED! Test for reading multiple documents from a collection using the sort document option and parsing all fields","green");
+      count_test++;
+    }
+    else
+    {
+      color_print("FAILED! Test for reading multiple documents from a collection using the sort document option and parsing all fields","red");
+    }    
+  }
+  else
+  {
+    color_print("FAILED! Test for reading multiple documents from a collection using the sort document option and parsing all fields","red");
+  }
+
   for (count = 0; count < 2; count++)
   {
     for (counter = 0; counter < 14; counter++)
@@ -460,7 +522,7 @@ int database_test()
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
-  struct read_multiple_documents_all_fields_from_collection_thread_parameters read_multiple_documents_all_fields_from_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2};
+  struct read_multiple_documents_all_fields_from_collection_thread_parameters read_multiple_documents_all_fields_from_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0,""};
   pthread_create(&thread_id, NULL, &read_multiple_documents_all_fields_from_collection_thread,(void *)&read_multiple_documents_all_fields_from_collection_thread_parameters);
   if (thread_settings(thread_id) == 1)
   { 

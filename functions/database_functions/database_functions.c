@@ -196,14 +196,13 @@ Parameters:
   DATABASE - The database name
   COLLECTION - The collection name
   DATA - The json data to use to search the collection for
-  DOCUMENT_OPTIONS - The optional document settings, set to "" to not use any document settings
   result - The document read from the collection
   THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int read_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const char* DOCUMENT_OPTIONS, char *result, const int THREAD_SETTINGS)
+int read_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, char *result, const int THREAD_SETTINGS)
 {
   // Constants
   const bson_t* current_document;
@@ -214,13 +213,11 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
   mongoc_cursor_t* document_settings = NULL;
   bson_error_t error;
   bson_t* document = NULL;  
-  bson_t* document_options = NULL;  
   char* message;
 
   // define macros
   #define database_reset_all \
   bson_destroy(document); \
-  bson_destroy(document_options); \
   mongoc_cursor_destroy(document_settings); \
   mongoc_collection_destroy(collection); \
   if (THREAD_SETTINGS == 1) \
@@ -251,22 +248,8 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
     database_reset_all;
     return 0;
   }
-
-  if (memcmp(DOCUMENT_OPTIONS,"",1) != 0)
-  {
-    document_options = bson_new_from_json((const uint8_t *)DOCUMENT_OPTIONS, -1, &error);
-    if (!document_options)
-    {
-      database_reset_all;
-      return 0;
-    }
-    document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
-  }
-  else
-  {
-    document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
-  }
-  
+ 
+  document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
   while (mongoc_cursor_next(document_settings, &current_document))
   {
     message = bson_as_canonical_extended_json(current_document, NULL);
@@ -306,7 +289,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
   bson_error_t error;
-  bson_t* document = NULL;  
+  bson_t* document = NULL; 
   char* message;
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   char* settings = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -370,7 +353,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     database_reset_all;
     return 0;
   }
- 
+
   document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
   while (mongoc_cursor_next(document_settings, &current_document))
   {
@@ -533,7 +516,8 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
   bson_error_t error;
-  bson_t* document = NULL;  
+  bson_t* document = NULL; 
+  bson_t* document_options = NULL; 
   char* message;
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
@@ -621,12 +605,14 @@ Parameters:
     value[100][100] - The database document values
   DOCUMENT_COUNT_START - The document to start at when reading the data
   DOCUMENT_COUNT_TOTAL - The total amount of documents to read
+  DOCUMENT_OPTIONS - 1 to use the sort document option, 0 to not use the document option
+  DOCUMENT_OPTIONS_DATA - The item to sort the documents in the collection
   THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int read_multiple_documents_all_fields_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, struct database_multiple_documents_fields* result, const size_t DOCUMENT_COUNT_START, const size_t DOCUMENT_COUNT_TOTAL, const int THREAD_SETTINGS)
+int read_multiple_documents_all_fields_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, struct database_multiple_documents_fields* result, const size_t DOCUMENT_COUNT_START, const size_t DOCUMENT_COUNT_TOTAL, const int DOCUMENT_OPTIONS, const char* DOCUMENT_OPTIONS_DATA, const int THREAD_SETTINGS)
 {
   // Constants
   const bson_t* current_document;
@@ -636,6 +622,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
   bson_t* document = NULL;  
+  bson_t* document_options = NULL;
   char* message;
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count = 1;
@@ -683,8 +670,13 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     database_reset_all;
     return 0;
   }
+
+  if (DOCUMENT_OPTIONS == 1)
+  {
+    document_options = BCON_NEW("sort", "{", DOCUMENT_OPTIONS_DATA, BCON_INT32(-1), "}");
+  }
  
-  document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+  document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
   while (mongoc_cursor_next(document_settings, &current_document))
   {    
     if (count >= DOCUMENT_COUNT_START)
@@ -696,7 +688,10 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
 
       if ((strncmp(DATA,"",BUFFER_SIZE) == 0) || (strncmp(DATA,"",BUFFER_SIZE) != 0 && strstr(data,DATA) != NULL))
       {
-        // parse the json data
+        string_replace(data,"{ \"$numberInt\" : ","");
+        string_replace(data,"} ","");
+
+        // parse the json data        
         database_multiple_documents_parse_json_data(data,result,counter);
         counter++;
         result->document_count++;
