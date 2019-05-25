@@ -517,7 +517,6 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   mongoc_cursor_t* document_settings = NULL;
   bson_error_t error;
   bson_t* document = NULL; 
-  bson_t* document_options = NULL; 
   char* message;
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
@@ -631,6 +630,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   // define macros
   #define database_reset_all \
   bson_destroy(document); \
+  bson_destroy(document_options); \
   mongoc_cursor_destroy(document_settings); \
   mongoc_collection_destroy(collection); \
   if (THREAD_SETTINGS == 1) \

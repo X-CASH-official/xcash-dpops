@@ -162,6 +162,23 @@ void* check_reserve_proofs_timer_thread()
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time; 
   int count;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < 4; count++)
+  {
+    database_multiple_documents_fields.item[0][count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    database_multiple_documents_fields.value[0][count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    if (database_multiple_documents_fields.item[0][count] == NULL || database_multiple_documents_fields.value[0][count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  } 
+  database_multiple_documents_fields.document_count = 0;
+  database_multiple_documents_fields.database_fields_count = 0;
+
 
 
   for (;;)
@@ -173,15 +190,28 @@ void* check_reserve_proofs_timer_thread()
       sleep(10);
     }
 
+    // reset the database_multiple_documents_fields
+    for (count = 0; count < 4; count++)
+    {
+      memset(database_multiple_documents_fields.item[0][count],0,strlen(database_multiple_documents_fields.item[0][count]));
+      memset(database_multiple_documents_fields.value[0][count],0,strlen(database_multiple_documents_fields.value[0][count]));
+    }
+
     // select a random reserve proofs collection
     memset(data,0,strlen(data));
     memcpy(data,"reserve_proofs_",15);
     sprintf(data+15,"%d",((rand() % (50 - 1 + 1)) + 1)); 
 
-    // get how many documents are in the collection
-    count = count_all_documents_in_collection(DATABASE_NAME,data,0);
+    // select a random document in the collection
+    count = ((rand() % (count_all_documents_in_collection(DATABASE_NAME,data,0) - 1 + 1)) + 1);
 
-    //
+    // get a random document from the collection
+    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,"",&database_multiple_documents_fields,count,1,0,"",0) == 1)
+    {
+      // check if the reserve proof is valid
+
+    }
+
       
   }
   pointer_reset(data);

@@ -219,7 +219,7 @@ void general_network_test()
   if (pthread_create(&thread_id, NULL, &create_server_on_separate_thread,NULL) != 0)
   {
     color_print("FAILED! Test for creating the server","red");
-    color_print("FAILED! Test for sending and receving data using sockets","red");
+    color_print("FAILED! 1Test for sending and receving data using sockets","red");
     settings = 0;
   }
   if (settings == 1)
@@ -227,7 +227,7 @@ void general_network_test()
     if (pthread_detach(thread_id) != 0)
     {      
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! 2Test for sending and receving data using sockets","red");
       settings = 0;
     }  
   }
@@ -246,7 +246,7 @@ void general_network_test()
     if (sign_data(message,0) == 0)
     { 
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! 3Test for sending and receving data using sockets","red");
     }
   }
  
@@ -255,7 +255,7 @@ void general_network_test()
     if (send_and_receive_data_socket(string,"127.0.0.1",SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0) <= 0)
     {
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! 4Test for sending and receving data using sockets","red");
       settings = 0;
     }
   }
@@ -268,7 +268,7 @@ void general_network_test()
     if (verify_data(string,0,1,1) == 0)
     {   
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! 5Test for sending and receving data using sockets","red");
       settings = 0;
     }
   }
@@ -279,7 +279,7 @@ void general_network_test()
     if (parse_json_data(string,"message_settings",data_test) == 0)
     {
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! 6Test for sending and receving data using sockets","red");
       settings = 0;
     }
   }
@@ -290,13 +290,13 @@ void general_network_test()
     if (strncmp(data_test,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
     {
       color_print("PASSED! Test for creating the server","green");
-      color_print("PASSED! Test for sending and receving data using sockets","green");
+      color_print("PASSED! 7Test for sending and receving data using sockets","green");
       count_test += 2;
     }
     else
     {
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! 8Test for sending and receving data using sockets","red");
       settings = 0;
     }
   }
@@ -376,6 +376,11 @@ Return: The number of passed network_wallet test
 
 void network_wallet_test()
 { 
+  // define macros
+  #define CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS "XCA1va68ZVYVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rk16g7dYjbcKDwsAggp8Z1dNjPgcCzkcV7hDg99Wtk8nyUBBK4K7"
+  #define CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT"
+  #define CHECK_RESERVE_PROOF_TEST_AMOUNT "10"
+  
   // test the get_public_address function
   memset(xcash_wallet_public_address,0,strnlen(xcash_wallet_public_address,BUFFER_SIZE));
   if (get_public_address(0) == 1)
@@ -398,6 +403,22 @@ void network_wallet_test()
   {
     color_print("FAILED! Test for data verify","red");
   }
+
+  // test the check_reserve_proofs function
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  if (check_reserve_proofs(data_test,CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS,CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF,0) == 1 && memcmp(data_test,CHECK_RESERVE_PROOF_TEST_AMOUNT,2) == 0)
+  {   
+    color_print("PASSED! Test for check reserve proofs","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for check reserve proofs","red");
+  }
+
+  #undef CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS
+  #undef CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF
+  #undef CHECK_RESERVE_PROOF_TEST_AMOUNT
 }
 
 
@@ -413,7 +434,7 @@ Return: The number of passed network test
 int network_functions_test()
 {
   // define macros
-  #define NETWORK_TOTAL_TEST 11
+  #define NETWORK_TOTAL_TEST 12
 
   // reset the varaibles
   count_test = 0;

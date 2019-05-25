@@ -145,3 +145,75 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
 
   #undef pointer_reset_all
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: check_reserve_proof
+Description: Checks a reserve proof
+Parameters:
+  result - The amount for the reserve proof
+  public_address - The public address that created the reserve proof
+  reserve_proof - The reserve proof
+  HTTP_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
+Return: 0 if an error has occured or if the reserve proof is invalid, 1 if the reserve proof is valid
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_reserve_proofs(char *result, char* public_address, char* reserve_proof, const int HTTP_SETTINGS)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+  const size_t RESERVE_PROOF_LENGTH = strnlen(reserve_proof,BUFFER_SIZE);
+
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  size_t counter;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
+  if (data == NULL || data2 == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // create the message
+  memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"check_reserve_proof\",\"params\":{\"address\":\"",78);
+  memcpy(data+78,public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+176,"\",\"message\":\"\",\"signature\":\"",28);
+  memcpy(data+204,reserve_proof,RESERVE_PROOF_LENGTH);
+  memcpy(data+204+RESERVE_PROOF_LENGTH,"\"}}",3);
+
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"check reserve proof",HTTP_SETTINGS) <= 0)
+  {  
+    pointer_reset_all;   
+    return 0;
+  }
+
+  // check if the reserve proof is valid
+  if (strstr(data2,"\"good\": true") == NULL || strstr(data2,"\"spent\": 0") == NULL)
+  {  
+    pointer_reset_all;   
+    return 0;
+  }
+
+  // parse the message
+  if (parse_json_data(data2,"total",result) == 0)
+  {
+    pointer_reset_all;   
+    return 0;
+  }
+  
+  pointer_reset_all;
+  return 1;
+}
