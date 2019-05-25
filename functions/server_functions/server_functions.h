@@ -15,6 +15,7 @@ void add_block_verifiers_round_statistics();
 void add_round_statistics();
 int get_updated_node_list();
 int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, char* message);
+int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs(const char* message);
 int server_receive_data_socket_consensus_node_to_node(struct mainnode_timeout_thread_parameters* parameters, char* message);
 int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message);
 int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message);

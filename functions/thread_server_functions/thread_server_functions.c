@@ -18,6 +18,7 @@
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
+#include "network_wallet_functions.h"
 #include "server_functions.h"
 #include "thread_server_functions.h"
 #include "vrf.h"
@@ -159,10 +160,43 @@ void* check_reserve_proofs_timer_thread()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message = (char*)calloc(15728640,sizeof(char)); // 15 MB
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time; 
   int count;
+  int count2;
+  size_t block_verifiers_score;
+  int settings;
   struct database_multiple_documents_fields database_multiple_documents_fields;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(message); \
+  message = NULL;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || message == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+     if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 4; count++)
@@ -187,8 +221,103 @@ void* check_reserve_proofs_timer_thread()
     current_UTC_date_and_time = gmtime(&current_date_and_time);
     if (current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
     {
+      // send the invalid_reserve_proofs struct to all block verifiers
+      // create the message
+      memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\",\r\n \"public_address_that_created_the_reserve_proof\": \"",137);
+      count = 137;
+      for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+      {
+        memcpy(message+count,invalid_reserve_proofs.public_address[count],strnlen(invalid_reserve_proofs.public_address[count],XCASH_WALLET_LENGTH));
+        count += strnlen(invalid_reserve_proofs.public_address[count],XCASH_WALLET_LENGTH);
+        memcpy(message+count,"|",1);
+        count += 1;
+      }
+      memcpy(message+count-1,"\",\r\n \"reserve_proof\": \"",23);
+      count += 23;
+      for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+      {
+        memcpy(message+count,invalid_reserve_proofs.reserve_proof[count],strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF));
+        count += strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF);
+        memcpy(message+count,"|",1);
+        count += 1;
+      }
+      memcpy(message+count-1,"\",\r\n}",5);
+
+      // sign_data
+      memset(data,0,strlen(data));
+      if (sign_data(message,0) == 0)
+      { 
+        color_print("Could not sign_data. This means the reserve proofs database might be unsynced, and you might have to sync them.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
+      }
+
+      // send the message to all block verifiers
+      for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+      {
+        if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+        {
+          send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message,"",0);
+        }
+      }
+      
+      // wait for all of the other block verifiers to send you their invalid_reserve_proofs
       sleep(10);
+
+      // at this point the block verifier will have added all other reserve proofs to the invalid_reserve_proofs struct, so now we need to delete all of the reserve proofs in the collections
+      for (count = 1; count <= 50; count++)
+      {
+        memset(data,0,strlen(data));
+        memcpy(data,"reserve_proofs_",15);
+        sprintf(data+15,"%d",count);
+        for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+        {
+          memset(message,0,strlen(message));
+          memcpy(message,"{\"reserve_proof\":\"",18);
+          memcpy(message+18,invalid_reserve_proofs.reserve_proof[count],strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF));
+          memcpy(message+18+strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF),"\"}",2);
+          delete_document_from_collection(DATABASE_NAME,data,"",0)
+        }       
+      }
+
+      // update all of the block verifiers score
+      for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+      {
+        // create the message
+        memset(message,0,strlen(message));
+        memcpy(message,"{\"public_address\":\"",18);
+        memcpy(message+18,invalid_reserve_proofs.block_verifier_public_address[count2],strnlen(invalid_reserve_proofs.block_verifier_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(message+18+strnlen(invalid_reserve_proofs.block_verifier_public_address[count2],XCASH_WALLET_LENGTH),"\"}",2);
+
+        // get the block verifiers score
+        memset(data2,0,strlen(data2));
+        if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifiers_score",data2,0) == 0)
+        {
+          color_print("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync them.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
+        }
+        sscanf(data2, "%zu", &block_verifiers_score);
+        block_verifiers_score++;
+
+        memset(data,0,strlen(data));
+        memcpy(data,"{\"block_verifiers_score\":\"",26);
+        sprintf(data2+26,"%zu",block_verifiers_score);
+        memcpy(data+strlen(data),"\"}",2);
+
+        if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
+        {
+          color_print("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync them.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
+        }
+      }
+      
+      // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
+      for (count = 0; count < 100; count++)
+      {
+        memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
+        memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));
+        memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count]));      
+      }
+      invalid_reserve_proofs.count = 0;
     }
+
+
 
     // reset the database_multiple_documents_fields
     for (count = 0; count < 4; count++)
@@ -209,13 +338,36 @@ void* check_reserve_proofs_timer_thread()
     if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,"",&database_multiple_documents_fields,count,1,0,"",0) == 1)
     {
       // check if the reserve proof is valid
+      memset(data,0,strlen(data));
+      if (check_reserve_proofs(data,database_multiple_documents_fields.value[0][0],database_multiple_documents_fields.value[0][3],0) == 0)
+      {
+        // the proof is invalid, check if it is a unique reserve proof
+        for (count = 0, settings = 1; count < invalid_reserve_proofs.count; count++)
+        {
+          if (strncmp(invalid_reserve_proofs.reserve_proof[count],database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF) == 0)
+          {
+            settings = 0;
+          }
+        }
 
+        if (settings != 0)
+        {
+          // add the reserve proof to the invalid_reserve_proofs struct
+          memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+          memcpy(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count],database_multiple_documents_fields.value[0][0],XCASH_WALLET_LENGTH);
+          memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],database_multiple_documents_fields.value[0][3],strnlen(database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF));
+          invalid_reserve_proofs.count++;
+        }        
+      }
     }
 
       
   }
-  pointer_reset(data);
+  pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);
+
+  #undef pointer_reset_all
+  #undef CHECK_RESERVE_PROOFS_TIMER_ERROR
 }
 
 

@@ -223,7 +223,12 @@ struct blockchain_data {
     char* transactions[MAXIMUM_TRANSACATIONS_PER_BLOCK]; // All of the transactions in the block.
 };
 
-
+struct invalid_reserve_proofs {  
+    char* block_verifier_public_address[100]; // The block verifiers public address that added the reserve proof
+    char* public_address[100]; // The public address that created the reserve proof
+    char* reserve_proof[100]; // The reserve proof
+    int count; // The amount of reserve proofs in the invalid_reserve_proofs struct
+};
 
 // database struct
 struct database_document_fields {

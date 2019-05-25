@@ -22,6 +22,7 @@
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
+#include "network_wallet_functions.h"
 #include "server_functions.h"
 #include "string_functions.h"
 #include "thread_server_functions.h"
@@ -1031,6 +1032,144 @@ int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET,
       return 0;
     }
   }  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_received_data_xcash_proof_of_stake_test_data
+Description: Runs the code when the server receives the xcash_proof_of_stake_test_data message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs(const char* MESSAGE)
+{
+  // Variables
+  char* block_verifiers_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  char* public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  char* reserve_proof = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  char* data = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  char* data2 = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  char* data3 = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  // since were going to be changing where data and data2 are referencing, we need to create a copy to pointer_reset
+  char* datacopy = data; 
+  char* datacopy2 = data2; 
+  size_t count;
+  size_t count2 = string_count(MESSAGE,"|") + 1;
+  size_t count3;
+  int settings;
+
+  // define macros
+  #define pointer_reset_all \
+  free(block_verifiers_public_address); \
+  block_verifiers_public_address = NULL; \
+  free(public_address); \
+  public_address = NULL; \
+  free(reserve_proof); \
+  reserve_proof = NULL; \
+  free(datacopy); \
+  datacopy = NULL; \
+  free(datacopy2); \
+  datacopy2 = NULL; \
+  free(data3); \
+  data3 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (block_verifiers_public_address = NULL || public_address == NULL || reserve_proof == NULL || data == NULL || data2 == NULL || data3 == NULL)
+  {
+    if (block_verifiers_public_address != NULL)
+    {
+      pointer_reset(block_verifiers_public_address);
+    }
+    if (public_address != NULL)
+    {
+      pointer_reset(public_address);
+    }
+    if (reserve_proof != NULL)
+    {
+      pointer_reset(reserve_proof);
+    }
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // verify the message
+  if (verify_data(MESSAGE,0,0,0) == 0)
+  {   
+    return 0;
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"public_address",block_verifiers_public_address) == 0 || parse_json_data(MESSAGE,"public_address_that_created_the_reserve_proof",data) == 0 || parse_json_data(MESSAGE,"reserve_proof",data2) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS");
+  }
+
+  // loop through all of the reserve proofs and only check reserve proofs that are not already in the invalid reserve proofs struct
+  for (count = 0; count < count2; count++)
+  {
+    // get the public address
+    memset(public_address,0,strlen(public_address));
+    memcpy(public_address,data,strnlen(strstr(data,"|"),XCASH_WALLET_LENGTH));
+    data = strstr(data,"|") + 1;
+
+    // get the reserve proof
+    memset(reserve_proof,0,strlen(reserve_proof));
+    memcpy(reserve_proof,data2,strnlen(strstr(data2,"|"),BUFFER_SIZE_RESERVE_PROOF));
+    data2 = strstr(data2,"|") + 1;
+
+    // check if the reserve proof is unique and formated correctly
+    if (memcmp(reserve_proof,"ReserveProofV1",14) == 0)
+    {
+      for (count3 = 0, settings = 1; count3 < invalid_reserve_proofs.count; count3++)
+      {
+        if (strncmp(invalid_reserve_proofs.reserve_proof[count3],reserve_proof,BUFFER_SIZE_RESERVE_PROOF) == 0)
+        {
+          settings = 0;
+        }
+      }
+      if (settings == 1)
+      {
+        // check if the reserve proof is valid
+        memset(data3,0,strlen(data3));
+        if (check_reserve_proofs(data3,public_address,reserve_proof,0) == 0)
+        {
+          // add the reserve proof to the invalid_reserve_proofs struct
+          memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],block_verifiers_public_address,strnlen(block_verifiers_public_address,XCASH_WALLET_LENGTH));
+          memcpy(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count],public_address,strnlen(public_address,XCASH_WALLET_LENGTH));
+          memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
+          invalid_reserve_proofs.count++;
+        }
+      }
+    } 
+  }
+
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR
 }
 
 
@@ -2216,6 +2355,8 @@ int create_server(const int MESSAGE_SETTINGS)
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   int len;
   int receive_data_result; 
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time; 
   struct sockaddr_in addr, cl_addr; 
   struct mainnode_timeout_thread_parameters mainnode_timeout_thread_parameters;
   struct node_to_node_timeout_thread_parameters node_to_node_timeout_thread_parameters;
@@ -2443,30 +2584,24 @@ int create_server(const int MESSAGE_SETTINGS)
          {
           // update the parameters, since we have received data from the client
           parameters.data_received = 1;
-         }    
+         }   
 
-
+         // get the current time
+         time(&current_date_and_time);
+         current_UTC_date_and_time = gmtime(&current_date_and_time);
 
          // check if a certain type of message has been received         
          if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
          {
-           // close the forked process when done
            server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer);
-           SERVER_ERROR(1);
+           close(SOCKET);
+           pointer_reset_all;
          }
-         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
          {
-           // only close the forked process on the timeout in the mainnode_timeout_thread
-           // create a mainnode_timeout_thread_parameters struct since this function will use the mainnode_timeout_thread
-           mainnode_timeout_thread_parameters.process_id = getpid();
-           mainnode_timeout_thread_parameters.data_received = 0;
-           mainnode_timeout_thread_parameters.main_node = "";
-           mainnode_timeout_thread_parameters.current_round_part = "";
-           mainnode_timeout_thread_parameters.current_round_part_backup_node = "";
-           if (server_receive_data_socket_consensus_node_to_node(&mainnode_timeout_thread_parameters,buffer) == 0)
-           {
-             SERVER_ERROR(1);
-           }           
+           server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
          } 
          else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND") != NULL)
          {

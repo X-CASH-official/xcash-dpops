@@ -24,6 +24,7 @@ struct current_round_part_consensus_node_data current_round_part_consensus_node_
 struct current_round_part_vote_data current_round_part_vote_data; // The vote data for the current part of the round
 struct VRF_data_block_verifiers VRF_data_block_verifiers; // The list of all block verifiers received data from the main node
 struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
+struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 char* nodes_public_address_list_received_data; // The list of enabled nodes public address that have sent data, to prevent multiple votes (node1|node2|)
 char* server_message; // The message the server should run. It will ignore any other messages.
 char* vrf_public_key_part_1; // The VRF public key from part 1 of the round. This must match the VRF public key from part 3 of the round.
