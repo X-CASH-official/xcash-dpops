@@ -196,13 +196,14 @@ Parameters:
   DATABASE - The database name
   COLLECTION - The collection name
   DATA - The json data to use to search the collection for
+  DOCUMENT_OPTIONS - The optional document settings, set to "" to not use any document settings
   result - The document read from the collection
   THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int read_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, char *result, const int THREAD_SETTINGS)
+int read_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const char* DOCUMENT_OPTIONS, char *result, const int THREAD_SETTINGS)
 {
   // Constants
   const bson_t* current_document;
@@ -213,11 +214,13 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
   mongoc_cursor_t* document_settings = NULL;
   bson_error_t error;
   bson_t* document = NULL;  
+  bson_t* document_options = NULL;  
   char* message;
 
   // define macros
   #define database_reset_all \
   bson_destroy(document); \
+  bson_destroy(document_options); \
   mongoc_cursor_destroy(document_settings); \
   mongoc_collection_destroy(collection); \
   if (THREAD_SETTINGS == 1) \
@@ -248,8 +251,22 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
     database_reset_all;
     return 0;
   }
- 
-  document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+
+  if (memcmp(DOCUMENT_OPTIONS,"",1) != 0)
+  {
+    document_options = bson_new_from_json((const uint8_t *)DOCUMENT_OPTIONS, -1, &error);
+    if (!document_options)
+    {
+      database_reset_all;
+      return 0;
+    }
+    document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
+  }
+  else
+  {
+    document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+  }
+  
   while (mongoc_cursor_next(document_settings, &current_document))
   {
     message = bson_as_canonical_extended_json(current_document, NULL);

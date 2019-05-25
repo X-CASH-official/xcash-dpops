@@ -10,7 +10,7 @@ Function prototypes
 int create_database_connection();
 int insert_document_into_collection_array(const char* DATABASE, const char* COLLECTION, char** field_name_array, char** field_data_array, const size_t DATA_COUNT);
 int insert_document_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS);
-int read_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, char *result, const int THREAD_SETTINGS);
+int read_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const char* DOCUMENT_OPTIONS, char *result, const int THREAD_SETTINGS);
 int read_document_field_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const char* FIELD_NAME, char *result, const int THREAD_SETTINGS);
 int database_document_parse_json_data(char* data, struct database_document_fields* result);
 int database_multiple_documents_parse_json_data(char* data, struct database_multiple_documents_fields* result, const int document_count);
