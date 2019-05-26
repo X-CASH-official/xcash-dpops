@@ -931,6 +931,313 @@ void add_round_statistics()
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: calculate_main_nodes_roles
+Description: Calculates the main nodes roles for the round
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int calculate_main_nodes_roles()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  int count2;
+  int count3;
+  int counter;
+  int main_nodes_count;
+  int number[64];
+  int settings = 1;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || data3 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+  
+  sscanf(current_block_height,"%zu", &count);
+  count--;
+  sprintf(data2,"%zu",count);
+
+  // calculate the database to get the reserve byte data
+  count2 = count / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
+  memcpy(data,"reserve_bytes_",14);
+  sprintf(data,"%d",count2);
+
+  // create the message
+  memcpy(data3,"{\"block_height\":\"",17);
+  memcpy(data3,data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(data3,"\"}",2);
+
+  // get the reserve byte data
+  memset(data2,0,strlen(data2));
+  if (read_document_field_from_collection(DATABASE_NAME,data,data3,"reserve_bytes",data2,0) == 0)
+  {
+    color_print("Could not get the previous blocks reserve bytes\nFunction: calculate_main_nodes_roles","red");
+    return 0;
+  }
+
+  // get the vrf_beta_string_data_round_part_3
+  memset(data3,0,strlen(data3));
+  if (parse_reserve_bytes_data(data3,data2,29,VRF_BETA_LENGTH) == 0)
+  {
+    color_print("Could not get the previous blocks reserve bytes\nFunction: calculate_main_nodes_roles","red");
+    return 0;
+  }
+
+  for (count = 0, count3 = 0, main_nodes_count = 0; count < VRF_BETA_LENGTH || main_nodes_count == 24; count += 2)
+  {
+    memset(data,0,strlen(data));
+    memcpy(data,&data3[count],2);
+    count2 = (int)strtol(data, NULL, 16);  
+   
+    for (counter = 0, settings = 0; counter < count3; counter++)
+    {
+      // check if this number has already been calculated
+      if (number[counter] == count2 % 100)
+      {
+        settings = 1;
+      }
+    }
+    // if it is not in the range of 01 - C8 or it has already been calculated then skip the byte
+    if (count2 != 0 && count2 <= 200 && settings == 0)
+    {
+      count2 = count2 % 100;
+      if (main_nodes_count == 0)
+      {
+        // calculate the block_producer
+        memset(main_nodes_list.block_producer_public_address,0,strlen(main_nodes_list.block_producer_public_address));
+        memset(main_nodes_list.block_producer_IP_address,0,strlen(main_nodes_list.block_producer_IP_address));
+        memcpy(main_nodes_list.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 1)
+      {
+        // calculate the block_producer_backup_block_verifier_1
+        memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_1_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_1_IP_address));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 2)
+      {
+        // calculate the block_producer_backup_block_verifier_2
+        memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_2_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_2_IP_address));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 3)
+      {
+        // calculate the block_producer_backup_block_verifier_3
+        memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_3_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_3_IP_address));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 4)
+      {
+        // calculate the block_producer_backup_block_verifier_4
+        memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_4_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_4_IP_address));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 5)
+      {
+        // calculate the block_producer_backup_block_verifier_5
+        memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_5_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_5_IP_address));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }     
+      if (main_nodes_count == 6)
+      {
+        // calculate the vrf_node_public_and_secret_key
+        memset(main_nodes_list.vrf_node_public_and_secret_key_public_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_public_address));
+        memset(main_nodes_list.vrf_node_public_and_secret_key_IP_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_IP_address));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 7)
+      {
+        // calculate the vrf_node_public_and_secret_key_backup_block_verifier_1
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_public_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_public_address));
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_IP_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_IP_address));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 8)
+      {
+        // calculate the vrf_node_public_and_secret_key_backup_block_verifier_2
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_public_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_public_address));
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_IP_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_IP_address));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 9)
+      {
+        // calculate the vrf_node_public_and_secret_key_backup_block_verifier_3
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_public_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_public_address));
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_IP_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_IP_address));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 10)
+      {
+        // calculate the vrf_node_public_and_secret_key_backup_block_verifier_4
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_public_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_public_address));
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_IP_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_IP_address));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 11)
+      {
+        // calculate the vrf_node_public_and_secret_key_backup_block_verifier_5
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_public_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_public_address));
+        memset(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_IP_address,0,strlen(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_IP_address));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 12)
+      {
+        // calculate the vrf_node_random_data
+        memset(main_nodes_list.vrf_node_random_data_public_address,0,strlen(main_nodes_list.vrf_node_random_data_public_address));
+        memset(main_nodes_list.vrf_node_random_data_IP_address,0,strlen(main_nodes_list.vrf_node_random_data_IP_address));
+        memcpy(main_nodes_list.vrf_node_random_data_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_random_data_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 13)
+      {
+        // calculate the vrf_node_random_data_backup_block_verifier_1
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address));
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_IP_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_IP_address));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 14)
+      {
+        // calculate the vrf_node_random_data_backup_block_verifier_2
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_2_public_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_2_public_address));
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_2_IP_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_2_IP_address));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_2_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 15)
+      {
+        // calculate the vrf_node_random_data_backup_block_verifier_3
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_3_public_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_3_public_address));
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_3_IP_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_3_IP_address));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_3_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 16)
+      {
+        // calculate the vrf_node_random_data_backup_block_verifier_4
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_4_public_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_4_public_address));
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_4_IP_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_4_IP_address));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_4_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 17)
+      {
+        // calculate the vrf_node_random_data_backup_block_verifier_5
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_5_public_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_5_public_address));
+        memset(main_nodes_list.vrf_node_random_data_backup_block_verifier_5_IP_address,0,strlen(main_nodes_list.vrf_node_random_data_backup_block_verifier_5_IP_address));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_random_data_backup_block_verifier_5_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 18)
+      {
+        // calculate the vrf_node_next_main_nodes
+        memset(main_nodes_list.vrf_node_next_main_nodes_public_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_public_address));
+        memset(main_nodes_list.vrf_node_next_main_nodes_IP_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_IP_address));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 19)
+      {
+        // calculate the vrf_node_next_main_nodes_backup_block_verifier_1
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_public_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_public_address));
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_IP_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_IP_address));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 20)
+      {
+        // calculate the vrf_node_next_main_nodes_backup_block_verifier_2
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_public_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_public_address));
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_IP_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_IP_address));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 21)
+      {
+        // calculate the vrf_node_next_main_nodes_backup_block_verifier_3
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_public_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_public_address));
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_IP_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_IP_address));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 22)
+      {
+        // calculate the vrf_node_next_main_nodes_backup_block_verifier_4
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_public_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_public_address));
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_IP_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_IP_address));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      }
+      if (main_nodes_count == 23)
+      {
+        // calculate the vrf_node_next_main_nodes_backup_block_verifier_5
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_public_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_public_address));
+        memset(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_IP_address,0,strlen(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_IP_address));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+      } 
+      // add the number to the number array
+      number[count3] = count2;
+      count3++;
+      main_nodes_count++;
+    }
+    if (((count + 2) == VRF_BETA_LENGTH) && (main_nodes_count != 24))
+    {
+      color_print("The main nodes calculation process has run out of bytes to read\nFunction: calculate_main_nodes_roles","red");
+    }
+  }
+  return 1;
+
+  #undef pointer_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_updated_node_list
 Description: Gets the updated node list, so it will know what nodes to accept data from
 Parameters:
@@ -1085,7 +1392,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   return 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (block_verifiers_public_address = NULL || public_address == NULL || reserve_proof == NULL || data == NULL || data2 == NULL || data3 == NULL)
+  if (block_verifiers_public_address == NULL || public_address == NULL || reserve_proof == NULL || data == NULL || data2 == NULL || data3 == NULL)
   {
     if (block_verifiers_public_address != NULL)
     {
@@ -2596,12 +2903,14 @@ int create_server(const int MESSAGE_SETTINGS)
            server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer);
            close(SOCKET);
            pointer_reset_all;
+           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
            close(SOCKET);
            pointer_reset_all; 
+           _exit(0);
          } 
          else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND") != NULL)
          {

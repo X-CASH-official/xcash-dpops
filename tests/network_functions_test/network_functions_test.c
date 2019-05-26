@@ -219,7 +219,7 @@ void general_network_test()
   if (pthread_create(&thread_id, NULL, &create_server_on_separate_thread,NULL) != 0)
   {
     color_print("FAILED! Test for creating the server","red");
-    color_print("FAILED! 1Test for sending and receving data using sockets","red");
+    color_print("FAILED! Test for sending and receving data using sockets","red");
     settings = 0;
   }
   if (settings == 1)
@@ -227,7 +227,7 @@ void general_network_test()
     if (pthread_detach(thread_id) != 0)
     {      
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! 2Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
       settings = 0;
     }  
   }
@@ -246,16 +246,17 @@ void general_network_test()
     if (sign_data(message,0) == 0)
     { 
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! 3Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
     }
   }
  
   if (settings == 1)
   {
+    memset(string,0,strlen(string));
     if (send_and_receive_data_socket(string,"127.0.0.1",SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0) <= 0)
     {
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! 4Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
       settings = 0;
     }
   }
@@ -268,7 +269,7 @@ void general_network_test()
     if (verify_data(string,0,1,1) == 0)
     {   
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! 5Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
       settings = 0;
     }
   }
@@ -279,7 +280,7 @@ void general_network_test()
     if (parse_json_data(string,"message_settings",data_test) == 0)
     {
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! 6Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
       settings = 0;
     }
   }
@@ -290,13 +291,13 @@ void general_network_test()
     if (strncmp(data_test,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
     {
       color_print("PASSED! Test for creating the server","green");
-      color_print("PASSED! 7Test for sending and receving data using sockets","green");
+      color_print("PASSED! Test for sending and receving data using sockets","green");
       count_test += 2;
     }
     else
     {
       color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! 8Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for sending and receving data using sockets","red");
       settings = 0;
     }
   }

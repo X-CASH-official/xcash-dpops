@@ -217,7 +217,6 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
 
 
 
-
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: string_count

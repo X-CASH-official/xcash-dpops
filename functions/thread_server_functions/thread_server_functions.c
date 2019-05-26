@@ -274,7 +274,7 @@ void* check_reserve_proofs_timer_thread()
           memcpy(message,"{\"reserve_proof\":\"",18);
           memcpy(message+18,invalid_reserve_proofs.reserve_proof[count],strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF));
           memcpy(message+18+strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF),"\"}",2);
-          delete_document_from_collection(DATABASE_NAME,data,"",0)
+          delete_document_from_collection(DATABASE_NAME,data,"",0);
         }       
       }
 
@@ -359,9 +359,7 @@ void* check_reserve_proofs_timer_thread()
           invalid_reserve_proofs.count++;
         }        
       }
-    }
-
-      
+    }      
   }
   pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);

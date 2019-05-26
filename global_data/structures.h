@@ -33,12 +33,52 @@ struct next_block_verifiers_list {
 struct main_nodes_list {
     char* block_producer_public_address; // The block producers public address
     char* block_producer_IP_address; // The block producers IP address
+    char* block_producer_backup_block_verifier_1_public_address; // The block producers backup node 1 public address
+    char* block_producer_backup_block_verifier_1_IP_address; // The block producers backup node 1 IP address
+    char* block_producer_backup_block_verifier_2_public_address; // The block producers backup node 2 public address
+    char* block_producer_backup_block_verifier_2_IP_address; // The block producers backup node 2 IP address
+    char* block_producer_backup_block_verifier_3_public_address; // The block producers backup node 3 public address
+    char* block_producer_backup_block_verifier_3_IP_address; // The block producers backup node 3 IP address
+    char* block_producer_backup_block_verifier_4_public_address; // The block producers backup node 4 public address
+    char* block_producer_backup_block_verifier_4_IP_address; // The block producers backup node 4 IP address
+    char* block_producer_backup_block_verifier_5_public_address; // The block producers backup node 5 public address
+    char* block_producer_backup_block_verifier_5_IP_address; // The block producers backup node 5 IP address
     char* vrf_node_public_and_secret_key_public_address; // The vrf node public and secret key public address
     char* vrf_node_public_and_secret_key_IP_address; // The vrf node public and secret key IP address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_1_public_address; // The vrf node public and secret key backup node 1 public address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_1_IP_address; // The vrf node public and secret key backup node 1 IP address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_2_public_address; // The vrf node public and secret key backup node 2 public address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_2_IP_address; // The vrf node public and secret key backup node 2 IP address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_3_public_address; // The vrf node public and secret key backup node 3 public address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_3_IP_address; // The vrf node public and secret key backup node 3 IP address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_4_public_address; // The vrf node public and secret key backup node 4 public address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_4_IP_address; // The vrf node public and secret key backup node 4 IP address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_5_public_address; // The vrf node public and secret key backup node 5 public address
+    char* vrf_node_public_and_secret_key_backup_block_verifier_5_IP_address; // The vrf node public and secret key backup node 5 IP address
     char* vrf_node_random_data_public_address; // The vrf node random data public address
     char* vrf_node_random_data_IP_address; // The vrf node random data IP address
+    char* vrf_node_random_data_backup_block_verifier_1_public_address; // The vrf random data backup node 1 public address
+    char* vrf_node_random_data_backup_block_verifier_1_IP_address; // The vrf random data backup node 1 IP address
+    char* vrf_node_random_data_backup_block_verifier_2_public_address; // The vrf random data backup node 2 public address
+    char* vrf_node_random_data_backup_block_verifier_2_IP_address; // The vrf random data backup node 2 IP address
+    char* vrf_node_random_data_backup_block_verifier_3_public_address; // The vrf random data backup node 3 public address
+    char* vrf_node_random_data_backup_block_verifier_3_IP_address; // The vrf random data backup node 3 IP address
+    char* vrf_node_random_data_backup_block_verifier_4_public_address; // The vrf random data backup node 4 public address
+    char* vrf_node_random_data_backup_block_verifier_4_IP_address; // The vrf random data backup node 4 IP address
+    char* vrf_node_random_data_backup_block_verifier_5_public_address; // The vrf random data backup node 5 public address
+    char* vrf_node_random_data_backup_block_verifier_5_IP_address; // The vrf random data backup node 5 IP address
     char* vrf_node_next_main_nodes_public_address; // The vrf node next main nodes public address
     char* vrf_node_next_main_nodes_IP_address; // The vrf node next main nodes IP address
+    char* vrf_node_next_main_nodes_backup_block_verifier_1_public_address; // The vrf node next main nodes backup node 1 public address
+    char* vrf_node_next_main_nodes_backup_block_verifier_1_IP_address; // The vrf node next main nodes backup node 1 IP address
+    char* vrf_node_next_main_nodes_backup_block_verifier_2_public_address; // The vrf node next main nodes backup node 2 public address
+    char* vrf_node_next_main_nodes_backup_block_verifier_2_IP_address; // The vrf node next main nodes backup node 2 IP address
+    char* vrf_node_next_main_nodes_backup_block_verifier_3_public_address; // The vrf node next main nodes backup node 3 public address
+    char* vrf_node_next_main_nodes_backup_block_verifier_3_IP_address; // The vrf node next main nodes backup node 3 IP address
+    char* vrf_node_next_main_nodes_backup_block_verifier_4_public_address; // The vrf node next main nodes backup node 4 public address
+    char* vrf_node_next_main_nodes_backup_block_verifier_4_IP_address; // The vrf node next main nodes backup node 4 IP address
+    char* vrf_node_next_main_nodes_backup_block_verifier_5_public_address; // The vrf node next main nodes backup node 5 public address
+    char* vrf_node_next_main_nodes_backup_block_verifier_5_IP_address; // The vrf node next main nodes backup node 5 IP address
 };
 
 struct current_round_part_consensus_node_data {

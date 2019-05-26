@@ -27,7 +27,6 @@ Name: get_block_template
 Description: Gets the block template for creating a new block
 Parameters:
   result - The block template
-  reserve_bytes_length - The amount of reserve bytes to use in creating the block template
   HTTP_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
@@ -112,7 +111,6 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
-  #define BLOCKCHAIN_RESERVED_BYTES_START "7c424c4f434b434841494e5f52455345525645445f42595445535f53544152547c"
   #define pointer_reset_all \
   free(message); \
   message = NULL; \
@@ -163,7 +161,6 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
     return 1; 
   }  
   
-  #undef BLOCKCHAIN_RESERVED_BYTES_START
   #undef pointer_reset_all
 }
 
@@ -232,11 +229,11 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   }
 
   memset(reserve_byte_data_hash,0,strlen(reserve_byte_data_hash));
-  memcpy(reserve_byte_data_hash,&data[strlen(data) - (strlen(strstr(data,BLOCKCHAIN_RESERVED_BYTES_DATA)) - 62)],128);
-
-  pointer_reset_all; 
-  return 1;
+  memcpy(reserve_byte_data_hash,&data[strlen(data) - (strlen(strstr(data,BLOCKCHAIN_RESERVED_BYTES_START_DATA)) - 62)],128);
   
+  pointer_reset_all;
+  return 1;
+
   #undef pointer_reset_all
 }
 

@@ -2400,6 +2400,67 @@ int reset_variables_allocated_on_the_heap_test()
 
 
 
+  // parse_reserve_bytes_data   
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+    memcpy(data_test,"XCASH_PROOF_OF_STAKE_TEST_DATA7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cXCASH_PROOF_OF_STAKE_TEST_DATA7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cXCASH_PROOF_OF_STAKE_TEST_DATA7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cXCASH_PROOF_OF_STAKE_TEST_DATA7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cXCASH_PROOF_OF_STAKE_TEST_DATA7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cXCASH_PROOF_OF_STAKE_TEST_DATA7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cXCASH_PROOF_OF_STAKE_TEST_DATA7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cXCASH_PROOF_OF_STAKE_TEST_DATA7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cXCASH_PROOF_OF_STAKE_TEST_DATA7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477cXCASH_PROOF_OF_STAKE_TEST_DATA",876);
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for parse_reserve_bytes_data: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+      parse_reserve_bytes_data(result_test,data_test,5,30);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! parse_reserve_bytes_data has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! parse_reserve_bytes_data has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 250 && current_memory_usage > 0)
+        {
+          color_print("FAILED! parse_reserve_bytes_data has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! parse_reserve_bytes_data has reset all variables allocated on the heap","green");
+          count_test++;
+        } 
+      }    
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
   // random_string   
   // read the current system memory usage
   if (settings2 == 1)
