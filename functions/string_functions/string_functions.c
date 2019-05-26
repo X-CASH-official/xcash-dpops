@@ -357,6 +357,55 @@ int string_replace(char *data, const char* STR1, const char* STR2)
 
 
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: parse_reserve_bytes_data
+Description: Parses the reserve bytes data to read any item in the reserve bytes
+Parameters:
+  result - The result
+  RESERVE_BYTES - The reserve bytes
+  ITEM - The item to get the reserve bytes data for
+  LENGTH - The legnth of the item
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM, const size_t LENGTH)
+{  
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  // since were going to be changing where data is referencing, we need to create a copy to pointer_reset
+  char* datacopy = data; 
+  int count;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  memcpy(data,RESERVE_BYTES,strnlen(RESERVE_BYTES,BUFFER_SIZE));
+
+  // error check
+  if (ITEM > string_count(RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_STRING))
+  {
+    return 0;
+  }
+
+  for (count = 0; count < ITEM; count++)
+  {
+    data = strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING) + strlen(BLOCKCHAIN_DATA_SEGMENT_STRING);
+  }  
+  memset(result,0,strlen(result));
+  memcpy(result,data,LENGTH);
+
+  pointer_reset(datacopy);
+  return 1;
+}
+
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------
