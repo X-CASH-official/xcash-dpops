@@ -11,6 +11,10 @@
 #include "database_functions.h"
 #include "network_functions.h"
 #include "string_functions.h"
+#include "vrf.h"
+#include "crypto_vrf.h"
+#include "VRF_functions.h"
+#include "sha512EL.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -1168,6 +1172,270 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
   database_reset_all;
   return count;
 
+  #undef database_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_database_data_hash
+Description: Gets a database data hash
+Parameters:
+  DATABASE - The database name
+  COLLECTION - The collection name. If reserve_proofs or reserve_bytes without a number it will get a database hash of all of the reserve_proofs or reserve_bytes
+  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_database_data_hash(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS)
+{
+  // Constants
+  const bson_t* current_document;
+
+  // Variables
+  mongoc_client_t* database_client_thread = NULL;
+  mongoc_collection_t* collection;
+  mongoc_cursor_t* document_settings = NULL;
+  bson_t* document = NULL;  
+  bson_error_t error;
+  char* message;
+  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* reserve_proofs_data_hash[50];
+  char* reserve_bytes_data_hash[10000];
+  size_t count;
+  size_t count2;
+  size_t count3;
+  size_t counter;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  for (count = 0; count < 50; count++) \
+  { \
+    pointer_reset(reserve_proofs_data_hash[count]); \
+  } \
+  for (count = 0; count < 10000; count++) \
+  { \
+    pointer_reset(reserve_bytes_data_hash[count]); \
+  }
+
+  #define database_reset_all \
+  bson_destroy(document); \
+  mongoc_cursor_destroy(document_settings); \
+  mongoc_collection_destroy(collection); \
+  if (THREAD_SETTINGS == 1) \
+  { \
+    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
+  }
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  } 
+
+  // initialize the reserve_proofs_data_hash
+  for (count = 0; count < 50; count++)
+  {
+    reserve_proofs_data_hash[count] = (char*)calloc(DATA_HASH_LENGTH+1,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (reserve_proofs_data_hash[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }
+
+  // initialize the reserve_bytes_data_hash
+  for (count = 0; count < 10000; count++)
+  {
+    reserve_bytes_data_hash[count] = (char*)calloc(DATA_HASH_LENGTH+1,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (reserve_bytes_data_hash[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }
+
+  // check if we need to create a database connection, or use the global database connection
+  if (THREAD_SETTINGS == 1)
+  {
+    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
+    if (!database_client_thread)
+    {
+      pointer_reset_all;
+      return 0;
+    }
+  }
+  
+  document = bson_new();
+  if (!document)
+  {
+    pointer_reset_all;
+    database_reset_all;
+    return 0;
+  }
+
+
+
+  // reserve proofs all
+  if (strncmp(COLLECTION,"reserve_proofs",BUFFER_SIZE) == 0)
+  {      
+    for (count == 1; count <= 50; count++)
+    {
+      memset(data2,0,strlen(data2));
+      memcpy(data2,"reserve_proofs_",15);  
+      sprintf(data2+15,"%zu",count);
+
+      // set the collection
+      if (THREAD_SETTINGS == 0)
+      {
+        collection = mongoc_client_get_collection(database_client, DATABASE, data2);
+      }
+      else
+      {
+         collection = mongoc_client_get_collection(database_client_thread, DATABASE, data2);
+      }
+
+      memset(data,0,strnlen(data,52428800));
+      count2 = 0;
+
+      document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+      while (mongoc_cursor_next(document_settings, &current_document))
+      { 
+        // get the current document  
+        message = bson_as_canonical_extended_json(current_document, NULL);
+        memcpy(data+count2,message,strnlen(message,BUFFER_SIZE));
+        bson_free(message);
+        count2 += strnlen(message,52428800);
+      }
+      // get the data hash of the collection
+      crypto_hash_sha512((unsigned char*)reserve_proofs_data_hash[count],(const unsigned char*)data,strnlen(data,52428800));
+    }
+
+    // get the data hash of the all of the reserve proofs data hash
+    memset(data,0,strnlen(data,52428800));
+    count2 = 0;
+
+    for (count == 0; count < 50; count++)
+    {
+      memcpy(data+count2,reserve_proofs_data_hash[count],DATA_HASH_LENGTH);
+      count2 += DATA_HASH_LENGTH;
+    }
+
+    // get the data hash of the collection
+    memset(data2,0,strlen(data2));
+    crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,strnlen(data,52428800));
+  }
+
+
+
+  // reserve bytes all
+  else if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
+  { 
+    sscanf(current_block_height,"%zu", &count3);
+    counter = count3 / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
+    for (count == 1; count <= counter; count++)
+    {
+      memset(data2,0,strlen(data2));
+      memcpy(data2,"reserve_bytes_",14);  
+      sprintf(data2+14,"%zu",count);
+
+      // set the collection
+      if (THREAD_SETTINGS == 0)
+      {
+        collection = mongoc_client_get_collection(database_client, DATABASE, data2);
+      }
+      else
+      {
+         collection = mongoc_client_get_collection(database_client_thread, DATABASE, data2);
+      }
+
+      memset(data,0,strnlen(data,52428800));
+      count2 = 0;
+
+      document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+      while (mongoc_cursor_next(document_settings, &current_document))
+      { 
+        // get the current document  
+        message = bson_as_canonical_extended_json(current_document, NULL);
+        memcpy(data+count2,message,strnlen(message,BUFFER_SIZE));
+        bson_free(message);
+        count2 += strnlen(message,52428800);
+      }
+      // get the data hash of the collection
+      crypto_hash_sha512((unsigned char*)reserve_bytes_data_hash[count],(const unsigned char*)data,strnlen(data,52428800));
+    }
+
+    // get the data hash of the all of the reserve bytes data hash
+    memset(data,0,strnlen(data,52428800));
+    count2 = 0;
+
+    for (count == 0; count < counter; count++)
+    {
+      memcpy(data+count2,reserve_bytes_data_hash[count],DATA_HASH_LENGTH);
+      count2 += DATA_HASH_LENGTH;
+    }
+
+    // get the data hash of the collection
+    memset(data2,0,strlen(data2));
+    crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,strnlen(data,52428800));
+  }
+
+
+
+  else
+  {
+    // set the collection
+    if (THREAD_SETTINGS == 0)
+    {
+      collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
+    }
+    else
+    {
+       collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+    }
+
+    memset(data,0,strnlen(data,52428800));
+    count2 = 0;
+
+    document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+    while (mongoc_cursor_next(document_settings, &current_document))
+    { 
+      // get the current document  
+      message = bson_as_canonical_extended_json(current_document, NULL);
+      memcpy(data+count2,message,strnlen(message,BUFFER_SIZE));
+      bson_free(message);
+      count2 += strnlen(message,52428800);
+    }
+    // get the data hash of the collection
+    memset(data2,0,strlen(data2));
+    crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,strnlen(data,52428800));
+  }
+
+  pointer_reset_all;
+  database_reset_all;
+  return 1;
+
+  #undef pointer_reset_all
   #undef database_reset_all
 }
 
