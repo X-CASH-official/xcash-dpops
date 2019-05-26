@@ -1384,7 +1384,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
     memcpy(data+count,"|",1);
     count += 1;
   }
-  memcpy(data+count,"\"}",2);
+  memcpy(data+count,"\",\r\n}",5);
   
   // sign_data
   if (sign_data(data,0) == 0)

@@ -158,7 +158,7 @@ int reset_variables_allocated_on_the_heap_test()
   }
 
   // initialize the database_document_fields struct 
-  for (count = 0; count < 14; count++)
+  for (count = 0; count < 16; count++)
   {
     database_data.item[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
     database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -181,9 +181,11 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_data.item[8],"most_VRF_node_public_and_private_key_total_rounds",49);
   memcpy(database_data.item[9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
   memcpy(database_data.item[10],"most_VRF_node_random_data_total_rounds",38);
-  memcpy(database_data.item[11],"total_XCASH_proof_of_stake_rounds",33);
-  memcpy(database_data.item[12],"total_coins_in_proof_of_stake",29);
-  memcpy(database_data.item[13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+  memcpy(database_data.item[11],"most_VRF_node_next_main_nodes_total_rounds_delegate_name",56);
+  memcpy(database_data.item[12],"most_VRF_node_next_main_nodes_total_rounds",42);
+  memcpy(database_data.item[13],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_data.item[14],"total_coins_in_proof_of_stake",29);
+  memcpy(database_data.item[15],"total_circulating_supply_percentage_in_proof_of_stake",53);
 
   memcpy(database_data.value[0],"XCASH",5);  
   memcpy(database_data.value[1],"DELEGATE_NAME",13);
@@ -196,16 +198,18 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_data.value[8],"5",1);
   memcpy(database_data.value[9],"DELEGATE_NAME",13);  
   memcpy(database_data.value[10],"10",2);  
-  memcpy(database_data.value[11],"15",2);
-  memcpy(database_data.value[12],"5",1);
-  memcpy(database_data.value[13],"10",2);
+  memcpy(database_data.value[11],"DELEGATE_NAME",13);  
+  memcpy(database_data.value[12],"15",2);  
+  memcpy(database_data.value[13],"5",2);
+  memcpy(database_data.value[14],"10",1);
+  memcpy(database_data.value[15],"15",2);
 
-  database_data.count = 14;
+  database_data.count = 16;
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 2; count++)
   {
-    for (counter = 0; counter < 14; counter++)
+    for (counter = 0; counter < 16; counter++)
     {
       database_multiple_documents_fields.item[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
       database_multiple_documents_fields.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -229,9 +233,11 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_multiple_documents_fields.item[0][8],"most_VRF_node_public_and_private_key_total_rounds",49);
   memcpy(database_multiple_documents_fields.item[0][9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
   memcpy(database_multiple_documents_fields.item[0][10],"most_VRF_node_random_data_total_rounds",38);
-  memcpy(database_multiple_documents_fields.item[0][11],"total_XCASH_proof_of_stake_rounds",33);
-  memcpy(database_multiple_documents_fields.item[0][12],"total_coins_in_proof_of_stake",29);
-  memcpy(database_multiple_documents_fields.item[0][13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+  memcpy(database_multiple_documents_fields.item[0][11],"most_VRF_node_next_main_nodes_total_rounds_delegate_name",56);
+  memcpy(database_multiple_documents_fields.item[0][12],"most_VRF_node_next_main_nodes_total_rounds",42);
+  memcpy(database_multiple_documents_fields.item[0][13],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_multiple_documents_fields.item[0][14],"total_coins_in_proof_of_stake",29);
+  memcpy(database_multiple_documents_fields.item[0][15],"total_circulating_supply_percentage_in_proof_of_stake",53);
   memcpy(database_multiple_documents_fields.item[1][0],"username",8);
   memcpy(database_multiple_documents_fields.item[1][1],"most_total_rounds_delegate_name",31);
   memcpy(database_multiple_documents_fields.item[1][2],"most_total_rounds",17);
@@ -243,9 +249,11 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_multiple_documents_fields.item[1][8],"most_VRF_node_public_and_private_key_total_rounds",49);
   memcpy(database_multiple_documents_fields.item[1][9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
   memcpy(database_multiple_documents_fields.item[1][10],"most_VRF_node_random_data_total_rounds",38);
-  memcpy(database_multiple_documents_fields.item[1][11],"total_XCASH_proof_of_stake_rounds",33);
-  memcpy(database_multiple_documents_fields.item[1][12],"total_coins_in_proof_of_stake",29);
-  memcpy(database_multiple_documents_fields.item[1][13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+  memcpy(database_multiple_documents_fields.item[1][11],"most_VRF_node_next_main_nodes_total_rounds_delegate_name",56);
+  memcpy(database_multiple_documents_fields.item[1][12],"most_VRF_node_next_main_nodes_total_rounds",42);
+  memcpy(database_multiple_documents_fields.item[1][13],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_multiple_documents_fields.item[1][14],"total_coins_in_proof_of_stake",29);
+  memcpy(database_multiple_documents_fields.item[1][15],"total_circulating_supply_percentage_in_proof_of_stake",53);
 
   memcpy(database_multiple_documents_fields.value[0][0],"XCASH",5);  
   memcpy(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",13);
@@ -258,9 +266,11 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_multiple_documents_fields.value[0][8],"5",1);
   memcpy(database_multiple_documents_fields.value[0][9],"DELEGATE_NAME",13);  
   memcpy(database_multiple_documents_fields.value[0][10],"10",2);  
-  memcpy(database_multiple_documents_fields.value[0][11],"15",2);
-  memcpy(database_multiple_documents_fields.value[0][12],"5",1);
-  memcpy(database_multiple_documents_fields.value[0][13],"10",2);
+  memcpy(database_multiple_documents_fields.value[0][11],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[0][12],"15",2);  
+  memcpy(database_multiple_documents_fields.value[0][13],"5",2);
+  memcpy(database_multiple_documents_fields.value[0][14],"10",1);
+  memcpy(database_multiple_documents_fields.value[0][15],"15",2);
   memcpy(database_multiple_documents_fields.value[1][0],"XCASH",5);  
   memcpy(database_multiple_documents_fields.value[1][1],"DELEGATE_NAME",13);
   memcpy(database_multiple_documents_fields.value[1][2],"5",1);
@@ -272,12 +282,14 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_multiple_documents_fields.value[1][8],"5",1);
   memcpy(database_multiple_documents_fields.value[1][9],"DELEGATE_NAME",13);  
   memcpy(database_multiple_documents_fields.value[1][10],"10",2);  
-  memcpy(database_multiple_documents_fields.value[1][11],"15",2);
-  memcpy(database_multiple_documents_fields.value[1][12],"5",1);
-  memcpy(database_multiple_documents_fields.value[1][13],"10",2);
+  memcpy(database_multiple_documents_fields.value[1][11],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[1][12],"15",2);  
+  memcpy(database_multiple_documents_fields.value[1][13],"5",2);
+  memcpy(database_multiple_documents_fields.value[1][14],"10",1);
+  memcpy(database_multiple_documents_fields.value[1][15],"15",2);
 
   database_multiple_documents_fields.document_count = 2;
-  database_multiple_documents_fields.database_fields_count = 14;
+  database_multiple_documents_fields.database_fields_count = 16;
 
   for (count = 0; count < 5; count++)
   {
@@ -1251,13 +1263,13 @@ int reset_variables_allocated_on_the_heap_test()
     color_print("All other test will not be run","red");
   }
 
-  for (count2 = 0; count2 < 14; count2++)
+  for (count2 = 0; count2 < 16; count2++)
   {
     memset(database_data.item[count2],0,strnlen(database_data.item[count2],BUFFER_SIZE));
     memset(database_data.value[count2],0,strnlen(database_data.value[count2],BUFFER_SIZE));
   }
 
-  memcpy(database_data.item[0],"username",8);
+   memcpy(database_data.item[0],"username",8);
   memcpy(database_data.item[1],"most_total_rounds_delegate_name",31);
   memcpy(database_data.item[2],"most_total_rounds",17);
   memcpy(database_data.item[3],"best_block_verifier_online_percentage_delegate_name",51);
@@ -1268,9 +1280,11 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_data.item[8],"most_VRF_node_public_and_private_key_total_rounds",49);
   memcpy(database_data.item[9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
   memcpy(database_data.item[10],"most_VRF_node_random_data_total_rounds",38);
-  memcpy(database_data.item[11],"total_XCASH_proof_of_stake_rounds",33);
-  memcpy(database_data.item[12],"total_coins_in_proof_of_stake",29);
-  memcpy(database_data.item[13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+  memcpy(database_data.item[11],"most_VRF_node_next_main_nodes_total_rounds_delegate_name",56);
+  memcpy(database_data.item[12],"most_VRF_node_next_main_nodes_total_rounds",42);
+  memcpy(database_data.item[13],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_data.item[14],"total_coins_in_proof_of_stake",29);
+  memcpy(database_data.item[15],"total_circulating_supply_percentage_in_proof_of_stake",53);
 
   memcpy(database_data.value[0],"XCASH",5);  
   memcpy(database_data.value[1],"DELEGATE_NAME",13);
@@ -1283,11 +1297,13 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_data.value[8],"5",1);
   memcpy(database_data.value[9],"DELEGATE_NAME",13);  
   memcpy(database_data.value[10],"10",2);  
-  memcpy(database_data.value[11],"15",2);
-  memcpy(database_data.value[12],"5",1);
-  memcpy(database_data.value[13],"10",2);
+  memcpy(database_data.value[11],"DELEGATE_NAME",13);  
+  memcpy(database_data.value[12],"15",2);  
+  memcpy(database_data.value[13],"5",2);
+  memcpy(database_data.value[14],"10",1);
+  memcpy(database_data.value[15],"15",2);
 
-  database_data.count = 14;
+  database_data.count = 16;
 
 
 
@@ -1361,7 +1377,7 @@ int reset_variables_allocated_on_the_heap_test()
 
   for (count2 = 0; count2 < 2; count2++)
   {
-    for (counter = 0; counter < 14; counter++)
+    for (counter = 0; counter < 16; counter++)
     {
       memset(database_multiple_documents_fields.item[count2][counter],0,strnlen(database_multiple_documents_fields.item[count2][counter],BUFFER_SIZE));
       memset(database_multiple_documents_fields.value[count2][counter],0,strnlen(database_multiple_documents_fields.value[count2][counter],BUFFER_SIZE));
@@ -1379,9 +1395,11 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_multiple_documents_fields.item[0][8],"most_VRF_node_public_and_private_key_total_rounds",49);
   memcpy(database_multiple_documents_fields.item[0][9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
   memcpy(database_multiple_documents_fields.item[0][10],"most_VRF_node_random_data_total_rounds",38);
-  memcpy(database_multiple_documents_fields.item[0][11],"total_XCASH_proof_of_stake_rounds",33);
-  memcpy(database_multiple_documents_fields.item[0][12],"total_coins_in_proof_of_stake",29);
-  memcpy(database_multiple_documents_fields.item[0][13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+  memcpy(database_multiple_documents_fields.item[0][11],"most_VRF_node_next_main_nodes_total_rounds_delegate_name",56);
+  memcpy(database_multiple_documents_fields.item[0][12],"most_VRF_node_next_main_nodes_total_rounds",42);
+  memcpy(database_multiple_documents_fields.item[0][13],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_multiple_documents_fields.item[0][14],"total_coins_in_proof_of_stake",29);
+  memcpy(database_multiple_documents_fields.item[0][15],"total_circulating_supply_percentage_in_proof_of_stake",53);
   memcpy(database_multiple_documents_fields.item[1][0],"username",8);
   memcpy(database_multiple_documents_fields.item[1][1],"most_total_rounds_delegate_name",31);
   memcpy(database_multiple_documents_fields.item[1][2],"most_total_rounds",17);
@@ -1393,9 +1411,11 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_multiple_documents_fields.item[1][8],"most_VRF_node_public_and_private_key_total_rounds",49);
   memcpy(database_multiple_documents_fields.item[1][9],"most_VRF_node_random_data_total_rounds_delegate_name",52);
   memcpy(database_multiple_documents_fields.item[1][10],"most_VRF_node_random_data_total_rounds",38);
-  memcpy(database_multiple_documents_fields.item[1][11],"total_XCASH_proof_of_stake_rounds",33);
-  memcpy(database_multiple_documents_fields.item[1][12],"total_coins_in_proof_of_stake",29);
-  memcpy(database_multiple_documents_fields.item[1][13],"total_circulating_supply_percentage_in_proof_of_stake",53);
+  memcpy(database_multiple_documents_fields.item[1][11],"most_VRF_node_next_main_nodes_total_rounds_delegate_name",56);
+  memcpy(database_multiple_documents_fields.item[1][12],"most_VRF_node_next_main_nodes_total_rounds",42);
+  memcpy(database_multiple_documents_fields.item[1][13],"total_XCASH_proof_of_stake_rounds",33);
+  memcpy(database_multiple_documents_fields.item[1][14],"total_coins_in_proof_of_stake",29);
+  memcpy(database_multiple_documents_fields.item[1][15],"total_circulating_supply_percentage_in_proof_of_stake",53);
 
   memcpy(database_multiple_documents_fields.value[0][0],"XCASH",5);  
   memcpy(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",13);
@@ -1408,9 +1428,11 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_multiple_documents_fields.value[0][8],"5",1);
   memcpy(database_multiple_documents_fields.value[0][9],"DELEGATE_NAME",13);  
   memcpy(database_multiple_documents_fields.value[0][10],"10",2);  
-  memcpy(database_multiple_documents_fields.value[0][11],"15",2);
-  memcpy(database_multiple_documents_fields.value[0][12],"5",1);
-  memcpy(database_multiple_documents_fields.value[0][13],"10",2);
+  memcpy(database_multiple_documents_fields.value[0][11],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[0][12],"15",2);  
+  memcpy(database_multiple_documents_fields.value[0][13],"5",2);
+  memcpy(database_multiple_documents_fields.value[0][14],"10",1);
+  memcpy(database_multiple_documents_fields.value[0][15],"15",2);
   memcpy(database_multiple_documents_fields.value[1][0],"XCASH",5);  
   memcpy(database_multiple_documents_fields.value[1][1],"DELEGATE_NAME",13);
   memcpy(database_multiple_documents_fields.value[1][2],"5",1);
@@ -1422,12 +1444,14 @@ int reset_variables_allocated_on_the_heap_test()
   memcpy(database_multiple_documents_fields.value[1][8],"5",1);
   memcpy(database_multiple_documents_fields.value[1][9],"DELEGATE_NAME",13);  
   memcpy(database_multiple_documents_fields.value[1][10],"10",2);  
-  memcpy(database_multiple_documents_fields.value[1][11],"15",2);
-  memcpy(database_multiple_documents_fields.value[1][12],"5",1);
-  memcpy(database_multiple_documents_fields.value[1][13],"10",2);
+  memcpy(database_multiple_documents_fields.value[1][11],"DELEGATE_NAME",13);  
+  memcpy(database_multiple_documents_fields.value[1][12],"15",2);  
+  memcpy(database_multiple_documents_fields.value[1][13],"5",2);
+  memcpy(database_multiple_documents_fields.value[1][14],"10",1);
+  memcpy(database_multiple_documents_fields.value[1][15],"15",2);
 
   database_multiple_documents_fields.document_count = 2;
-  database_multiple_documents_fields.database_fields_count = 14;
+  database_multiple_documents_fields.database_fields_count = 16;
 
 
 
@@ -1593,6 +1617,64 @@ int reset_variables_allocated_on_the_heap_test()
         else
         {
           color_print("PASSED! count_all_documents_in_collection has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  // get_database_data_hash 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for get_database_data_hash: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! get_database_data_hash has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! get_database_data_hash has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! get_database_data_hash has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! get_database_data_hash has reset all variables allocated on the heap","green");
           count_test++;
         }   
       }  
@@ -3170,7 +3252,7 @@ int reset_variables_allocated_on_the_heap_test()
 
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
 
-  for (count = 0; count < 14; count++)
+  for (count = 0; count < 16; count++)
   {
     pointer_reset(database_data.item[count]);
     pointer_reset(database_data.value[count]);
@@ -3178,7 +3260,7 @@ int reset_variables_allocated_on_the_heap_test()
 
   for (count = 0; count < 2; count++)
   {
-    for (counter = 0; counter < 14; counter++)
+    for (counter = 0; counter < 16; counter++)
     {
       pointer_reset(database_multiple_documents_fields.item[count][counter]);
       pointer_reset(database_multiple_documents_fields.value[count][counter]);

@@ -171,7 +171,7 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   }
 
   document = bson_new();
-  BSON_APPEND_OID(document, "_id", &oid);
+  //BSON_APPEND_OID(document, "_id", &oid);
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
   {
@@ -1182,6 +1182,7 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
 Name: get_database_data_hash
 Description: Gets a database data hash
 Parameters:
+  data_hash - The data hash
   DATABASE - The database name
   COLLECTION - The collection name. If reserve_proofs or reserve_bytes without a number it will get a database hash of all of the reserve_proofs or reserve_bytes
   THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
@@ -1189,7 +1190,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int get_database_data_hash(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS)
+int get_database_data_hash(char *data_hash, const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS)
 {
   // Constants
   const bson_t* current_document;
@@ -1323,9 +1324,16 @@ int get_database_data_hash(const char* DATABASE, const char* COLLECTION, const i
       { 
         // get the current document  
         message = bson_as_canonical_extended_json(current_document, NULL);
-        memcpy(data+count2,message,strnlen(message,BUFFER_SIZE));
+        if (strnlen(data,52428800) == 0)
+        {
+          memcpy(data+strnlen(data,52428800),"{",1);
+        }
+        else
+        {
+          memcpy(data+strnlen(data,52428800),",{",2);
+        }
+        memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
         bson_free(message);
-        count2 += strnlen(message,52428800);
       }
       // get the data hash of the collection
       crypto_hash_sha512((unsigned char*)reserve_proofs_data_hash[count],(const unsigned char*)data,strnlen(data,52428800));
@@ -1377,9 +1385,16 @@ int get_database_data_hash(const char* DATABASE, const char* COLLECTION, const i
       { 
         // get the current document  
         message = bson_as_canonical_extended_json(current_document, NULL);
-        memcpy(data+count2,message,strnlen(message,BUFFER_SIZE));
+        if (strnlen(data,52428800) == 0)
+        {
+          memcpy(data+strnlen(data,52428800),"{",1);
+        }
+        else
+        {
+          memcpy(data+strnlen(data,52428800),",{",2);
+        }
+        memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
         bson_free(message);
-        count2 += strnlen(message,52428800);
       }
       // get the data hash of the collection
       crypto_hash_sha512((unsigned char*)reserve_bytes_data_hash[count],(const unsigned char*)data,strnlen(data,52428800));
@@ -1422,13 +1437,27 @@ int get_database_data_hash(const char* DATABASE, const char* COLLECTION, const i
     { 
       // get the current document  
       message = bson_as_canonical_extended_json(current_document, NULL);
-      memcpy(data+count2,message,strnlen(message,BUFFER_SIZE));
+      if (strnlen(data,52428800) == 0)
+      {
+        memcpy(data+strnlen(data,52428800),"{",1);
+      }
+      else
+      {
+        memcpy(data+strnlen(data,52428800),",{",2);
+      }
+      memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
       bson_free(message);
-      count2 += strnlen(message,52428800);
     }
     // get the data hash of the collection
     memset(data2,0,strlen(data2));
     crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,strnlen(data,52428800));
+  }
+
+  // convert the data hash to a string
+  memset(data_hash,0,strlen(data_hash));
+  for (count = 0, count2 = 0; count < DATA_HASH_LENGTH / 2; count++, count2 += 2)
+  {
+    sprintf(data_hash+count2,"%02x",data2[count] & 0xFF);
   }
 
   pointer_reset_all;
