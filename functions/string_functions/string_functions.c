@@ -154,6 +154,69 @@ int create_json_data_from_database_document_array(struct database_document_field
 
 
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: create_json_data_from_database_multiple_documents_array
+Description: Counts the occurences of a string
+Parameters:
+  database_data - A database_document_fields struct
+  struct database_multiple_documents_fields
+    document_count - The number of documents
+    database_fields_count - The number of items in the database document
+    item[100][100] - The database document items
+    value[100][100] - The database document values
+  result - Where the result is stored
+  document_fields - The document fields to not include in the json data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int create_json_data_from_database_multiple_documents_array(struct database_multiple_documents_fields* database_data, char* result, const char* DOCUMENT_FIELDS)
+{
+  // Variables
+  size_t count = 0;
+  size_t counter = 0;
+  size_t data_count = 1;
+  size_t item_length;
+  size_t value_length; 
+
+  memcpy(result,"[",1); 
+  
+  for (count = 0; count < database_data->document_count; count++)
+  {
+    memcpy(result+data_count,"{",1); 
+    data_count++;
+    for (counter = 0; counter < database_data->database_fields_count; counter++)
+    {
+      if (strstr(DOCUMENT_FIELDS,database_data->item[count][counter]) == NULL)
+      {
+        // get the length of the item and the value
+        item_length = strnlen(database_data->item[count][counter],BUFFER_SIZE);
+        value_length = strnlen(database_data->value[count][counter],BUFFER_SIZE);
+        // copy the item and the value to the json string
+        memcpy(result+data_count,"\"",1);
+        data_count++;
+        memcpy(result+data_count,database_data->item[count][counter],item_length);
+        data_count += item_length;
+        memcpy(result+data_count,"\":\"",3);
+        data_count += 3; 
+        memcpy(result+data_count,database_data->value[count][counter],value_length);
+        data_count += value_length;
+        memcpy(result+data_count,"\"",1);
+        data_count++;
+        memcpy(result+data_count,",",1);
+        data_count++;
+      }      
+    }
+    memcpy(result+data_count-1,"},",2);
+    data_count += 1;    
+  }
+  memcpy(result+data_count-1,"]",1);
+  return 1;
+}
+
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------
