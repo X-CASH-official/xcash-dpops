@@ -247,7 +247,7 @@ void* check_reserve_proofs_timer_thread()
       memset(data,0,strlen(data));
       if (sign_data(message,0) == 0)
       { 
-        color_print("Could not sign_data. This means the reserve proofs database might be unsynced, and you might have to sync them.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
+        color_print("Could not sign_data. This means the reserve proofs database might be unsynced, and you might have to sync the database.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
       }
 
       // send the message to all block verifiers
@@ -291,7 +291,7 @@ void* check_reserve_proofs_timer_thread()
         memset(data2,0,strlen(data2));
         if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifiers_score",data2,0) == 0)
         {
-          color_print("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync them.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
+          color_print("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync the database.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
         }
         sscanf(data2, "%zu", &block_verifiers_score);
         block_verifiers_score++;
@@ -303,7 +303,7 @@ void* check_reserve_proofs_timer_thread()
 
         if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
         {
-          color_print("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync them.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
+          color_print("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync the database.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
         }
       }
       
@@ -367,7 +367,6 @@ void* check_reserve_proofs_timer_thread()
   pthread_exit((void *)(intptr_t)1);
 
   #undef pointer_reset_all
-  #undef CHECK_RESERVE_PROOFS_TIMER_ERROR
 }
 
 
@@ -383,46 +382,111 @@ Return: NULL
 void* check_delegates_online_status_timer_thread()
 {
   // Variables
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time; 
   size_t count;
+  size_t count2;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(message); \
+  message = NULL;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
+  if (message == NULL || data == NULL)
   {
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
 
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < 150; count++)
+  {
+    for (count2 = 0; count2 < 23; count2++)
+    {
+      database_multiple_documents_fields.item[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    }    
+
+    if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  } 
+  database_multiple_documents_fields.document_count = 0;
+  database_multiple_documents_fields.database_fields_count = 0;
+
+
+
   for (;;)
   {
-    start:
-    // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
-    usleep(200000);
     time(&current_date_and_time);
     current_UTC_date_and_time = gmtime(&current_date_and_time);
     if (current_UTC_date_and_time->tm_min % 5 == 0)
     {
-      // try for the next 5 seconds and if not then a new block is not going to be added to the network
-      for (count = 0; count < 5; count++)
+      // get the top 150 delegates by total votes
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,"delegates","",&database_multiple_documents_fields,1,150,1,"total_vote_count",0) == 0)
       {
-        get_current_block_height(data,0);
-        if (memcmp(data,current_block_height,strlen(current_block_height)) != 0)
-        {      
-          // replace the current_block_height variable
-          memset(current_block_height,0,strlen(current_block_height));
-          memcpy(current_block_height,data,strnlen(data,BUFFER_SIZE));
-
-          start_new_round();
-          goto start;
-        }
-        sleep(1);
+        color_print("Could not get the top 150 delegates to check their online status. This means the delegates database might be unsynced, and you might have to sync the database.\nFunction: check_delegates_online_status_timer_thread","red");
       }
+
+      // check the online status of the top 150 delegates
+      for (count = 0; count < 150; count++)
+      {
+         // create the message
+         memset(message,0,strnlen(message,BUFFER_SIZE));
+         memcpy(message,"{\"public_address\":\"",19);
+         memcpy(message+19,database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);
+         memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
+
+         if (get_delegate_online_status(database_multiple_documents_fields.value[count][2]) == 1)
+         {
+           memset(data,0,strnlen(data,BUFFER_SIZE));
+           memcpy(data,"{\"online_status\":\"true\"}",24);
+         }
+         else
+         {
+           memset(data,0,strnlen(data,BUFFER_SIZE));
+           memcpy(data,"{\"online_status\":\"false\"}",25);
+         }   
+         if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
+         {
+           color_print("Could not update a delegates online online status. This means the delegates database might be unsynced, and you might have to sync the database.\nFunction: check_delegates_online_status_timer_thread","red");
+         }     
+       }
+
+      // reset the database_multiple_documents_fields
+      for (count = 0; count < 150; count++)
+      {
+        for (count2 = 0; count2 < 23; count2++)
+        {
+          memset(database_multiple_documents_fields.item[count][count2],0,strlen(database_multiple_documents_fields.item[count][count2]));
+          memset(database_multiple_documents_fields.value[count][count2],0,strlen(database_multiple_documents_fields.value[count][count2]));
+        }
+      }
+      database_multiple_documents_fields.document_count = 0;
+      database_multiple_documents_fields.database_fields_count = 0;
     }
+    sleep(1);
   }
-  pointer_reset(data);
+  pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);
+
+  #undef pointer_reset_all
 }
 
 
