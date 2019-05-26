@@ -2459,6 +2459,126 @@ int reset_variables_allocated_on_the_heap_test()
 
 
 
+  // create_json_data_from_database_document_array   
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for create_json_data_from_database_document_array: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+      memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+      create_json_data_from_database_document_array(&database_data,result_test,"");
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! create_json_data_from_database_document_array has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! create_json_data_from_database_document_array has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! create_json_data_from_database_document_array has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! create_json_data_from_database_document_array has reset all variables allocated on the heap","green");
+          count_test++;
+        } 
+      }    
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
+  // create_json_data_from_database_multiple_documents_array   
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for create_json_data_from_database_multiple_documents_array: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+      memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+      create_json_data_from_database_multiple_documents_array(&database_multiple_documents_fields,data_test,"");
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! create_json_data_from_database_multiple_documents_array has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! create_json_data_from_database_multiple_documents_array has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! create_json_data_from_database_multiple_documents_array has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! create_json_data_from_database_multiple_documents_array has reset all variables allocated on the heap","green");
+          count_test++;
+        } 
+      }    
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
 
   // string_count   
   // read the current system memory usage
