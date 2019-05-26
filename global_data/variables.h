@@ -15,6 +15,9 @@ Global Variables
 mongoc_client_t* database_client;
 mongoc_client_pool_t* database_client_thread_pool;
 
+// network data nodes
+int network_data_node_settings; // 1 if a network data node, 0 if not a network data node
+
 char* xcash_wallet_public_address; // Holds your wallets public address
 struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round

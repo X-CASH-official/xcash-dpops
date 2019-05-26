@@ -93,6 +93,8 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   } 
 
+  network_data_node_settings = 0;
+
   // initialize the previous block_verifiers_list struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -430,6 +432,10 @@ int main(int parameters_count, char* parameters[])
     if (strncmp(parameters[1],"--test",BUFFER_SIZE) == 0)
     {
       test();
+    }
+    else if (strncmp(parameters[1],"--network_data_node",BUFFER_SIZE) == 0)
+    {
+      network_data_node_settings = 1;
     }
     else
     {

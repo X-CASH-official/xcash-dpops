@@ -124,7 +124,7 @@ void start_current_round_start_blocks()
   }
 
   // check if the block verifier is a network data node
-  if (MAIN_NETWORK_DATA_NODE == 0)
+  if (network_data_node_settings == 0)
   {
     color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round","red");
     return;
@@ -165,7 +165,7 @@ void start_current_round()
   }
 
   // check if the block verifier is a network data node
-  if (NETWORK_DATA_NODE == 1)
+  if (network_data_node_settings == 1)
   {
     color_print("Your block verifier is a data network node.\nSaving the previous rounds statistics to the database","green");
     data_network_node_save_previous_round_statistics();
@@ -219,7 +219,7 @@ Return: NULL
 
 void data_network_node_save_previous_round_statistics()
 {
-  // Variables
+  /*// Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
   int settings;
@@ -231,8 +231,8 @@ void data_network_node_save_previous_round_statistics()
     exit(0);
   }
 
-  // check if the block verifier is the mian network data node
-  if (MAIN_NETWORK_DATA_NODE == 0)
+  // check if the block verifier is the main network data node
+  if (network_data_node == 0)
   {
     color_print("Your block verifier is not the main data network node so your block verifier will check to see if the main network data node is online","red");
     if (get_delegate_online_status(MAIN_NETWORK_DATA_NODE_IP_ADDRESS) == 0)
@@ -257,7 +257,7 @@ void data_network_node_save_previous_round_statistics()
   }
   
   pointer_reset(data);
-  return;
+  return;*/
 }
 
 
@@ -1345,7 +1345,69 @@ int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET,
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: server_received_data_xcash_proof_of_stake_test_data
+Name: server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list
+Description: Runs the code when the server receives the xcash_proof_of_stake_test_data message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(const int CLIENT_SOCKET, char* MESSAGE)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  size_t count2;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset(data); \
+  return 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // create the message
+  memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_list\": \"",114);
+  count = 114;
+  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+  {
+    memcpy(data+count,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+    count += strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE);
+    memcpy(data+count,"|",1);
+    count += 1;
+  }
+  memcpy(data+count,"\"}",2);
+  
+  // sign_data
+  if (sign_data(data,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data\nFunction: server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list\nReceive Message: NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\nSend Message: NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST");
+  }
+
+  // send the data
+  if (send_data(CLIENT_SOCKET,data,1) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list\nReceive Message: NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\nSend Message: NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST");
+  }
+
+  return 1;
+
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST
 Description: Runs the code when the server receives the xcash_proof_of_stake_test_data message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
@@ -2905,13 +2967,20 @@ int create_server(const int MESSAGE_SETTINGS)
            pointer_reset_all;
            _exit(0);
          }
+         else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
+         {
+           server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET,buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         } 
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
            close(SOCKET);
            pointer_reset_all; 
            _exit(0);
-         } 
+         }          
          else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND") != NULL)
          {
            // only close the forked process on the timeout in the node_to_node_timeout_thread

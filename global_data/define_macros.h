@@ -7,14 +7,9 @@ Using define statements instead of constants for increased efficiency
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define NETWORK_DATA_NODE 0 // 0 if not a network data node, 1 if a network data node
-#define BLOCK_VALIDATION_NODE 0 // 0 if not a block validation data node, 1 if a block validation data node
-
-#define MAIN_NETWORK_DATA_NODE 0 // 0 if not the main network data node, 1 if the mainnetwork data node
-#define BACKUP_NETWORK_DATA_NODE 0 // 0 if not the backup network data node, 1 if the backup network data node
-
-#define MAIN_NETWORK_DATA_NODE_IP_ADDRESS 0
-#define BACKUP_NETWORK_DATA_NODE_IP_ADDRESS 0
+// network data nodes
+#define NETWORK_DATA_NODE_IP_ADDRESS_1 0
+#define NETWORK_DATA_NODE_IP_ADDRESS_2 0
 
 #define SEND_DATA_PORT 8000 // The port that is used by all nodes to send and receive data
 #define XCASH_WALLET_LENGTH 98 // The length of a XCA address
@@ -61,5 +56,6 @@ Using define statements instead of constants for increased efficiency
 #define TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT 10 // The total time given from when the consensus node sends to the node who the main node is, to the time the main node sends the data to the node.
 #define INVALID_PARAMETERS_ERROR_MESSAGE \
 "Parameters\n" \
-"--test - Run the test to make sure the program is compatible with your system\n"
+"--test - Run the test to make sure the program is compatible with your system\n" \
+"--network_data_node - Only use this option if your a network data node\n"
 #endif
