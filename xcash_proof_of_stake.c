@@ -125,7 +125,7 @@ int main(int parameters_count, char* parameters[])
     }
   }
 
-  // initialize the next block_verifiers_list struct 
+  // initialize the next_block_verifiers_list struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     next_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
@@ -139,6 +139,22 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
   }
+
+  // initialize the synced_block_verifiers_IP_addresses struct 
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    synced_block_verifiers_IP_addresses.IP_address[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    synced_block_verifiers_IP_addresses.vote_settings[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (next_block_verifiers_list.block_verifiers_name[count] == NULL || next_block_verifiers_list.block_verifiers_public_address[count] == NULL || next_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }
+  synced_block_verifiers_IP_addresses.vote_settings_true = 0;
+  synced_block_verifiers_IP_addresses.vote_settings_false = 0;
 
   // initialize the main_nodes_list struct 
   main_nodes_list.block_producer_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
