@@ -312,6 +312,12 @@ struct insert_document_into_collection_json_thread_parameters {
     const char* DATA; // The json data to insert into the collection
 };
 
+struct insert_multiple_documents_into_collection_json_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+    const char* DATA; // The json data to insert into the collection
+};
+
 struct read_document_from_collection_thread_parameters {
     const char* DATABASE; // The database name
     const char* COLLECTION; // The collection name
@@ -376,6 +382,12 @@ struct count_documents_in_collection_thread_parameters {
 };
 
 struct count_all_documents_in_collection_thread_parameters {
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+};
+
+struct get_database_data_hash_thread_parameters {
+    char *data_hash; // The data hash
     const char* DATABASE; // The database name
     const char* COLLECTION; // The collection name
 };

@@ -1173,7 +1173,7 @@ int sync_reserve_proofs_database()
   free(data2); \
   data2 = NULL; \
   free(data3); \
-  data3 = NULL; \
+  data3 = NULL;
   
   #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(settings) \
   color_print(settings,"red"); \

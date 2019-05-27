@@ -1686,6 +1686,68 @@ int reset_variables_allocated_on_the_heap_test()
   }
 
 
+
+  // insert_multiple_documents_into_collection_json 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);    
+    memcpy(data_test,DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+    memcpy(data_test+strlen(data_test),",",1);
+    memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for insert_multiple_documents_into_collection_json: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! insert_multiple_documents_into_collection_json has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! insert_multiple_documents_into_collection_json has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! insert_multiple_documents_into_collection_json has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! insert_multiple_documents_into_collection_json has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
   insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_DATA,0);
 

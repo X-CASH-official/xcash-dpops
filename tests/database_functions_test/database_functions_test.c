@@ -38,7 +38,7 @@ int database_test()
   pthread_t thread_id;
 
   // define macros
-  #define DATABASE_TEST 26
+  #define DATABASE_TEST 30
   #define DATA_COUNT 5
   #define DATABASE_COLLECTION "XCASH_PROOF_OF_STAKE_TEST_DATA"
   #define MESSAGE "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"}"
@@ -748,14 +748,67 @@ int database_test()
   if (get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION,0) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for getting the database hash","green");
+    count_test++;
   }
   else
   {
     color_print("FAILED! Test for getting the database hash","red");
-    count_test++;
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+
+  // get the database data hash on a separate thread
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  struct get_database_data_hash_thread_parameters get_database_data_hash_thread_parameters = {data_test,DATABASE_NAME,DATABASE_COLLECTION};
+  pthread_create(&thread_id, NULL, &get_database_data_hash_thread,(void *)&get_database_data_hash_thread_parameters);
+  if (thread_settings(thread_id) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  {
+    color_print("PASSED! Test for getting the database hash on a separate thread","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for getting the database hash on a separate thread","red");
+  }
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+
+  // insert multiple documents into the collection using json data
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  memcpy(data_test,DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+  memcpy(data_test+strlen(data_test),",",1);
+  memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+  if (insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data_test,0) == 1 && get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION,0) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  {
+    color_print("PASSED! Test for inserting multiple documents into a collection using json data","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for inserting multiple documents into a collection using json data","red");    
+  }
+
+  // insert multiple documents into the collection using json data on a separate thread
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  memcpy(data_test,DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+  memcpy(data_test+strlen(data_test),",",1);
+  memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+  struct insert_multiple_documents_into_collection_json_thread_parameters insert_multiple_documents_into_collection_json_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,data_test};
+  pthread_create(&thread_id, NULL, &insert_multiple_documents_into_collection_json_thread,(void *)&insert_multiple_documents_into_collection_json_thread_parameters);
+  if (thread_settings(thread_id) == 1 && get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION,0) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  {
+    color_print("PASSED! Test for inserting multiple documents into a collection using json data on a separate thread","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for inserting multiple documents into a collection using json data on a separate thread","red");    
+  }
   
   // write the end test message
   if (count_test == DATABASE_TEST)

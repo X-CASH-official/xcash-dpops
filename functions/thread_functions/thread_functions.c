@@ -94,6 +94,29 @@ void* insert_document_into_collection_json_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: insert_multiple_documents_into_collection_json_thread
+Description: Inserts multiple documents into the collection in the database from json data on a separate thread
+Parameters:
+  parameters - A pointer to the insert_document_into_collection_json_thread_parameters struct
+  struct insert_document_into_collection_json_thread_parameters
+    DATABASE - The database name
+    COLLECTION - The collection name
+    DATA - The json data to insert into the collection
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* insert_multiple_documents_into_collection_json_thread(void* parameters)
+{
+  struct insert_multiple_documents_into_collection_json_thread_parameters* data = parameters;
+  int settings = insert_multiple_documents_into_collection_json(data->DATABASE, data->COLLECTION, data->DATA, 1);
+  pthread_exit((void *)(intptr_t)settings);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: read_document_from_collection_thread
 Description: Reads a document from the collection on a separate thread
 Parameters:
@@ -333,6 +356,29 @@ void* count_all_documents_in_collection_thread(void* parameters)
 {
   struct count_all_documents_in_collection_thread_parameters* data = parameters;
   int settings = count_all_documents_in_collection(data->DATABASE, data->COLLECTION, 1);
+  pthread_exit((void *)(intptr_t)settings);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_database_data_hash_thread
+Description: Gets a database data hash on a separate thread
+Parameters:
+  parameters - A pointer to the get_database_data_hash_thread_parameters struct
+  struct get_database_data_hash_thread_parameters
+    data_hash - The data hash
+    DATABASE - The database name
+    COLLECTION - The collection name. If reserve_proofs or reserve_bytes without a number it will get a database hash of all of the reserve_proofs or reserve_bytes
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* get_database_data_hash_thread(void* parameters)
+{
+  struct get_database_data_hash_thread_parameters* data = parameters;
+  int settings = get_database_data_hash(data->data_hash, data->DATABASE, data->COLLECTION, 1);
   pthread_exit((void *)(intptr_t)settings);
 }
 

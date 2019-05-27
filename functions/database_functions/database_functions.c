@@ -194,6 +194,127 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: insert_multiple_documents_into_collection_json
+Description: Inserts a document into the collection in the database from json data
+Parameters:
+  DATABASE - The database name
+  COLLECTION - The collection name
+  DATA - The json data to insert into the collection
+  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int insert_multiple_documents_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS)
+{
+  // Variables
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
+  char* datacopy = data2; 
+  mongoc_client_t* database_client_thread;
+  mongoc_collection_t* collection;
+  bson_error_t error;
+  bson_oid_t oid;
+  bson_t* document;
+  size_t count;
+  size_t count2;
+
+  // define macros
+  #define pointer_reset_all \
+  free(datacopy); \
+  datacopy = NULL; \
+  free(data3); \
+  data3 = NULL; 
+
+  #define database_reset_all \
+  bson_destroy(document); \
+  mongoc_collection_destroy(collection); \
+  if (THREAD_SETTINGS == 1) \
+  { \
+    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
+  }
+
+  if (data2 == NULL || data3 == NULL)
+  {
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // check if we need to create a database connection, or use the global database connection
+  if (THREAD_SETTINGS == 0)
+  {
+    // set the collection
+    collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
+  }
+  else
+  {
+    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
+    if (!database_client_thread)
+    {
+      return 0;
+    }
+    // set the collection
+    collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+  }
+
+  // create a copy of the data since were going to be changing where the data is referencing
+  memcpy(data2,DATA,strnlen(DATA,BUFFER_SIZE));
+
+  // count how many documents are in the data
+  count = string_count(DATA,"},") + 1;
+
+  for (count2 = 0; count2 < count; count2++)
+  {
+    // get the document
+    if ((count2+1) != count)
+    {
+      memset(data3,0,strlen(data3));
+      memcpy(data3,data2,strnlen(strstr(data2,"},"),BUFFER_SIZE)-2);
+      data2 = strstr(data2,"},") + 2;     
+    }
+    else
+    {
+      memset(data3,0,strlen(data3));
+      memcpy(data3,data2,strnlen(data2,BUFFER_SIZE));
+    }
+
+    document = bson_new_from_json((const uint8_t *)data3, -1, &error);
+    if (!document)
+    {
+      pointer_reset_all;
+      database_reset_all;
+      return 0;
+    }
+
+    if (!mongoc_collection_insert_one(collection, document, NULL, NULL, &error))
+    {
+      pointer_reset_all;
+      database_reset_all;
+      return 0;
+    }
+  }
+  
+  pointer_reset_all;
+  database_reset_all;
+  return 1;
+
+  #undef pointer_reset_all
+  #undef database_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: read_document_from_collection
 Description: Reads a document from the collection
 Parameters:
