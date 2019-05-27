@@ -2494,7 +2494,7 @@ int reset_variables_allocated_on_the_heap_test()
       fprintf(stderr,"\r");
       memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
       memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-      append_string(result_test,GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA);
+      memcpy(result_test,GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,strnlen(GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,BUFFER_SIZE));
       parse_json_data(result_test,"blocktemplate_blob",data_test);
       if (count == 0)
       {    
@@ -2856,16 +2856,16 @@ int reset_variables_allocated_on_the_heap_test()
       fprintf(stderr,"Current progress for string_replace: %zu / 1000",count);
       fprintf(stderr,"\r");
       memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-      append_string(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}");
+      memcpy(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}",49);
       string_replace(result_test,"string_replace_test","string_replace");
       memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-      append_string(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}");
+      memcpy(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}",49);
       string_replace(result_test,"\"","\\\"");
       memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-      append_string(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}");
+      memcpy(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}",49);
       string_replace(result_test,"_test","");
       memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-      append_string(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}");
+      memcpy(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}",44);
       string_replace(result_test,"string_replace_test","");
       if (count == 0)
       {    

@@ -1537,19 +1537,19 @@ int string_functions_test()
 
   // test for string replace
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-  append_string(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}");
+  memcpy(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}",49);
   if (string_replace(result_test,"string_replace_test","string_replace") == 1 && strncmp(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}",BUFFER_SIZE) == 0)
   {
     memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-    append_string(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}");
+    memcpy(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}",49);
      if (string_replace(result_test,"\"","\\\"") == 1 && strncmp(result_test,"{\r\n \\\"message_settings\\\": \\\"string_replace_test\\\",\r\n}",BUFFER_SIZE) == 0)
      {
        memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-       append_string(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}");
+       memcpy(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}",49);
        if (string_replace(result_test,"_test","") == 1 && strncmp(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}",BUFFER_SIZE) == 0)
        {
          memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-         append_string(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}");
+         memcpy(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}",44);
          if (string_replace(result_test,"string_replace_test","") == 0 && strncmp(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}",BUFFER_SIZE) == 0)
          {    
            color_print("PASSED! Test for string replace","green");

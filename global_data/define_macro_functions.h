@@ -63,21 +63,6 @@ else \
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: append_string
-Description: Appends strings securely to stop buffer overflows, and to always null terminate the string 
-Parameters:
-  string1 - char*
-  string2 - char*
-Return: Writes the correct code
------------------------------------------------------------------------------------------------------------
-*/
-
-#define append_string(string1,string2) \
-strncat(string1,string2,BUFFER_SIZE - strnlen(string1,BUFFER_SIZE) - 1);
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: pointer_reset
 Description: Reset the memory used by the pointer, and sets the pointer to NULL to avoid a dangling pointer
 Parameters:

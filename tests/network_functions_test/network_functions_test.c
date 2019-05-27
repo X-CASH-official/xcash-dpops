@@ -238,7 +238,7 @@ void general_network_test()
   // test for sending and receiving data using sockets
   // create the message
   memset(message,0,strnlen(message,BUFFER_SIZE));
-  append_string(message,MESSAGE);
+  memcpy(message,MESSAGE,strnlen(MESSAGE,BUFFER_SIZE));
 
   // sign_data
   if (settings == 1)
@@ -339,7 +339,7 @@ void network_security_test()
   
   // create the message
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-  append_string(result_test,MESSAGE);
+  memcpy(result_test,MESSAGE,strnlen(MESSAGE,BUFFER_SIZE));
 
   // test the sign_data functions
   if (sign_data(result_test,0) == 1)
