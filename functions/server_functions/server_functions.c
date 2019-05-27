@@ -1354,7 +1354,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(const int CLIENT_SOCKET, char* MESSAGE)
+int server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(const int CLIENT_SOCKET)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1512,7 +1512,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
     // check if the reserve proof is unique and formated correctly
     if (memcmp(reserve_proof,"ReserveProofV1",14) == 0)
     {
-      for (count3 = 0, settings = 1; count3 < invalid_reserve_proofs.count; count3++)
+      for (count3 = 0, settings = 1; (int)count3 < invalid_reserve_proofs.count; count3++)
       {
         if (strncmp(invalid_reserve_proofs.reserve_proof[count3],reserve_proof,BUFFER_SIZE_RESERVE_PROOF) == 0)
         {
@@ -2969,7 +2969,7 @@ int create_server(const int MESSAGE_SETTINGS)
          }
          else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
          {
-           server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET,buffer);
+           server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET);
            close(SOCKET);
            pointer_reset_all; 
            _exit(0);

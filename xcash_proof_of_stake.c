@@ -31,7 +31,6 @@ int main(int parameters_count, char* parameters[])
 
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  FILE* file;
   size_t count = 0;
 
   // threads

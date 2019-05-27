@@ -387,7 +387,7 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
   memcpy(data,RESERVE_BYTES,strnlen(RESERVE_BYTES,BUFFER_SIZE));
 
   // error check
-  if (ITEM > string_count(RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_STRING))
+  if (ITEM > (int)string_count(RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_STRING))
   {
     return 0;
   }

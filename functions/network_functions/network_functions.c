@@ -993,7 +993,6 @@ int sync_check_reserve_proofs_database()
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
   char* datacopy = data2; 
   size_t count;
-  int settings;
 
   // define macros
   #define pointer_reset_all \

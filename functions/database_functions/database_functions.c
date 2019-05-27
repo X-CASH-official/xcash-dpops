@@ -141,7 +141,6 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   mongoc_client_t* database_client_thread;
   mongoc_collection_t* collection;
   bson_error_t error;
-  bson_oid_t oid;
   bson_t* document;
 
   // define macros
@@ -170,8 +169,6 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
 
-  document = bson_new();
-  //BSON_APPEND_OID(document, "_id", &oid);
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
   {
@@ -215,7 +212,6 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   mongoc_client_t* database_client_thread;
   mongoc_collection_t* collection;
   bson_error_t error;
-  bson_oid_t oid;
   bson_t* document;
   size_t count;
   size_t count2;
@@ -1318,10 +1314,9 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
   // Variables
   mongoc_client_t* database_client_thread = NULL;
-  mongoc_collection_t* collection;
+  mongoc_collection_t* collection = NULL;
   mongoc_cursor_t* document_settings = NULL;
   bson_t* document = NULL;  
-  bson_error_t error;
   char* message;
   char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1421,7 +1416,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   // reserve proofs all
   if (strncmp(COLLECTION,"reserve_proofs",BUFFER_SIZE) == 0)
   {      
-    for (count == 1; count <= 50; count++)
+    for (count = 1; count <= 50; count++)
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
@@ -1464,7 +1459,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     memset(data,0,strnlen(data,52428800));
     count2 = 0;
 
-    for (count == 0; count < 50; count++)
+    for (count = 0; count < 50; count++)
     {
       memcpy(data+count2,reserve_proofs_data_hash[count],DATA_HASH_LENGTH);
       count2 += DATA_HASH_LENGTH;
@@ -1482,7 +1477,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   { 
     sscanf(current_block_height,"%zu", &count3);
     counter = count3 / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
-    for (count == 1; count <= counter; count++)
+    for (count = 1; count <= counter; count++)
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);  
@@ -1525,7 +1520,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     memset(data,0,strnlen(data,52428800));
     count2 = 0;
 
-    for (count == 0; count < counter; count++)
+    for (count = 0; count < counter; count++)
     {
       memcpy(data+count2,reserve_bytes_data_hash[count],DATA_HASH_LENGTH);
       count2 += DATA_HASH_LENGTH;

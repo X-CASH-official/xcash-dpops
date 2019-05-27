@@ -27,10 +27,7 @@ Return: The number of passed string_functions test
 */
 
 int string_functions_test()
-{  
-  // Variables
-  int settings = 1;
-
+{
   // define macros
   #define STRING_FUNCTIONS_TOTAL_TEST 48
 

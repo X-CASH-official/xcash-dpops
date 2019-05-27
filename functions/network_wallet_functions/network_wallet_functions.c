@@ -171,8 +171,6 @@ int check_reserve_proofs(char *result, char* public_address, char* reserve_proof
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  size_t count;
-  size_t counter;
 
   // define macros
   #define pointer_reset_all \
