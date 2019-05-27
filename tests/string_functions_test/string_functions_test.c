@@ -370,8 +370,7 @@ int string_functions_test()
   The purpose of this message is for a block verifiers to check if they are synced up to the reserve bytes decentralized database
  
   message_settings - The type of the message
-  file - The file number
-  data_hash - The data hash of the file
+  data_hash - The data hash of the reserve_bytes database
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (1-4).
