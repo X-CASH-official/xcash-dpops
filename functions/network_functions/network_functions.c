@@ -1061,8 +1061,9 @@ int sync_check_reserve_proofs_database()
   {
     goto start;
   }
+  memset(data3,0,strlen(data3));
 
-  if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+  if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
     memcpy(data2,"Could not receive data from network data node ",46);
     memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
@@ -1071,6 +1072,18 @@ int sync_check_reserve_proofs_database()
     memset(data2,0,strlen(data2));
     goto start;
   }
+
+  if (verify_data(data3,0,0,0) == 0)
+  {
+    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not verify data\nFunction: sync_check_reserve_proofs_database");
+  }
+
+  // parse the message
+  memset(data2,0,strlen(data2));
+  if (parse_json_data(data3,"block_verifiers_list",data2) == 0)
+  {
+    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not parse the message\nFunction: sync_check_reserve_proofs_database");
+  } 
 
   // parse the block verifiers IP addresses
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1411,8 +1424,9 @@ int sync_check_reserve_bytes_database()
   {
     goto start;
   }
+  memset(data3,0,strlen(data3));
 
-  if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+  if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
     memcpy(data2,"Could not receive data from network data node ",46);
     memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
@@ -1421,6 +1435,18 @@ int sync_check_reserve_bytes_database()
     memset(data2,0,strlen(data2));
     goto start;
   }
+
+  if (verify_data(data3,0,0,0) == 0)
+  {
+    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not verify data\nFunction: sync_check_reserve_bytes_database");
+  }
+
+  // parse the message
+  memset(data2,0,strlen(data2));
+  if (parse_json_data(data3,"block_verifiers_list",data2) == 0)
+  {
+    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not parse the message\nFunction: sync_check_reserve_bytes_database");
+  } 
 
   // parse the block verifiers IP addresses
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1766,8 +1792,9 @@ int sync_check_delegates_database()
   {
     goto start;
   }
+  memset(data3,0,strlen(data3));
 
-  if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+  if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
     memcpy(data2,"Could not receive data from network data node ",46);
     memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
@@ -1776,6 +1803,18 @@ int sync_check_delegates_database()
     memset(data2,0,strlen(data2));
     goto start;
   }
+
+  if (verify_data(data3,0,0,0) == 0)
+  {
+    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not verify data\nFunction: sync_check_delegates_database");
+  }
+
+  // parse the message
+  memset(data2,0,strlen(data2));
+  if (parse_json_data(data3,"block_verifiers_list",data2) == 0)
+  {
+    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not parse the message\nFunction: sync_check_delegates_database");
+  } 
 
   // parse the block verifiers IP addresses
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -2055,8 +2094,9 @@ int sync_check_statistics_database()
   {
     goto start;
   }
+  memset(data3,0,strlen(data3));
 
-  if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+  if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
     memcpy(data2,"Could not receive data from network data node ",46);
     memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
@@ -2065,6 +2105,18 @@ int sync_check_statistics_database()
     memset(data2,0,strlen(data2));
     goto start;
   }
+
+  if (verify_data(data3,0,0,0) == 0)
+  {
+    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not verify data\nFunction: sync_check_statistics_database");
+  }
+
+  // parse the message
+  memset(data2,0,strlen(data2));
+  if (parse_json_data(data3,"block_verifiers_list",data2) == 0)
+  {
+    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not parse the message\nFunction: sync_check_statistics_database");
+  } 
 
   // parse the block verifiers IP addresses
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
