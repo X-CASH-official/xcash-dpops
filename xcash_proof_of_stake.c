@@ -92,14 +92,12 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   } 
 
-  network_data_node_settings = 0;
-
   // initialize the previous block_verifiers_list struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     previous_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
     previous_block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    previous_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1,sizeof(char));
+    previous_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
     if (previous_block_verifiers_list.block_verifiers_name[count] == NULL || previous_block_verifiers_list.block_verifiers_public_address[count] == NULL || previous_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
@@ -114,7 +112,7 @@ int main(int parameters_count, char* parameters[])
   {
     current_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
     current_block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    current_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1,sizeof(char));
+    current_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
     if (current_block_verifiers_list.block_verifiers_name[count] == NULL || current_block_verifiers_list.block_verifiers_public_address[count] == NULL || current_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
@@ -129,7 +127,7 @@ int main(int parameters_count, char* parameters[])
   {
     next_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
     next_block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    next_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1,sizeof(char));
+    next_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
     if (next_block_verifiers_list.block_verifiers_name[count] == NULL || next_block_verifiers_list.block_verifiers_public_address[count] == NULL || next_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
@@ -142,7 +140,7 @@ int main(int parameters_count, char* parameters[])
   // initialize the synced_block_verifiers_IP_addresses struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    synced_block_verifiers_IP_addresses.IP_address[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    synced_block_verifiers_IP_addresses.IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
     synced_block_verifiers_IP_addresses.vote_settings[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
@@ -159,51 +157,65 @@ int main(int parameters_count, char* parameters[])
   main_nodes_list.block_producer_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   main_nodes_list.block_producer_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
   main_nodes_list.block_producer_backup_block_verifier_1_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_1_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.block_producer_backup_block_verifier_1_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.block_producer_backup_block_verifier_2_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_2_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.block_producer_backup_block_verifier_2_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.block_producer_backup_block_verifier_3_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_3_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.block_producer_backup_block_verifier_3_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.block_producer_backup_block_verifier_4_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_4_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.block_producer_backup_block_verifier_4_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.block_producer_backup_block_verifier_5_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_5_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.block_producer_backup_block_verifier_5_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_public_and_secret_key_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   main_nodes_list.vrf_node_public_and_secret_key_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
   main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_random_data_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   main_nodes_list.vrf_node_random_data_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
   main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_1_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_random_data_backup_block_verifier_1_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_random_data_backup_block_verifier_2_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_2_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_random_data_backup_block_verifier_2_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_random_data_backup_block_verifier_3_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_3_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_random_data_backup_block_verifier_3_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_random_data_backup_block_verifier_4_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_4_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_random_data_backup_block_verifier_4_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_random_data_backup_block_verifier_5_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_5_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_random_data_backup_block_verifier_5_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_next_main_nodes_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   main_nodes_list.vrf_node_next_main_nodes_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
   main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
+
+  // initialize the network_data_nodes_list struct
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    network_data_nodes_list.network_data_nodes_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    network_data_nodes_list.network_data_nodes_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (network_data_nodes_list.network_data_nodes_public_address[count] == NULL || network_data_nodes_list.network_data_nodes_IP_address[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }
 
   // initialize the current_round_part_consensus_node_data struct
   current_round_part_consensus_node_data.vrf_public_key = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -448,10 +460,6 @@ int main(int parameters_count, char* parameters[])
     {
       test();
     }
-    else if (strncmp(parameters[1],"--network_data_node",BUFFER_SIZE) == 0)
-    {
-      network_data_node_settings = 1;
-    }
     else
     {
       color_print("Invalid parameters\n","red");
@@ -463,6 +471,31 @@ int main(int parameters_count, char* parameters[])
     mongoc_cleanup();
     pointer_reset(data);
     exit(0);
+  }
+
+  // get the block verifiers IP address
+  memset(data,0,strlen(data));
+  memcpy(data,"{\"public_address\":\"",19);
+  memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+117,"\"}",2);
+  if (read_document_field_from_collection(DATABASE_NAME,"delegates",data,"IP_address",block_verifiers_IP_address,0) == 0)
+  {
+    color_print("Could not get the block verifiers IP address","red");
+    mongoc_client_destroy(database_client);
+    mongoc_client_pool_destroy(database_client_thread_pool);
+    mongoc_uri_destroy(uri_thread_pool);
+    mongoc_cleanup();
+    pointer_reset(data);
+  }
+
+  // check if the block verifier is a network data node
+  network_data_node_settings = 0;
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    if (strncmp(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_public_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+    {
+      network_data_node_settings = 1;
+    }
   }
 
   // start the block height timer thread

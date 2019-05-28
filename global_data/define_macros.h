@@ -7,10 +7,6 @@ Using define statements instead of constants for increased efficiency
 -----------------------------------------------------------------------------------------------------------
 */
 
-// network data nodes
-#define NETWORK_DATA_NODE_IP_ADDRESS_1 0
-#define NETWORK_DATA_NODE_IP_ADDRESS_2 0
-
 #define SEND_DATA_PORT 8000 // The port that is used by all nodes to send and receive data
 #define XCASH_WALLET_LENGTH 98 // The length of a XCA address
 #define RANDOM_STRING_LENGTH 100 // The length of the random string
@@ -19,8 +15,9 @@ Using define statements instead of constants for increased efficiency
 #define BUFFER_SIZE 64000
 #define BUFFER_SIZE_RESERVE_PROOF 10000
 #define BUFFER_SIZE_NETWORK_BLOCK_DATA 500
-#define DATA_HASH_LENGTH 128
+#define DATA_HASH_LENGTH 128 // The length of the SHA2-512 hash
 #define BUFFER_SIZE_NETWORK_BLOCK_TRANSACTIONS_DATA 100
+#define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address
 
 // VRF
 #define VRF_PUBLIC_KEY_LENGTH 64
@@ -33,6 +30,9 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_CONNECTION "mongodb://localhost:27017" // the database connection string
 #define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
 #define DATABASE_ARRAY_COUNT 100 // The maximum amount of parsed item and value from the database
+
+// network data nodes
+#define NETWORK_DATA_NODES_AMOUNT 100 // The amount of block verifiers
 
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 0 // the start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // the block time in minutes
@@ -51,13 +51,10 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_TRANSACATIONS_PER_BLOCK 1000000 // The maximum amount of transaction per block
 #define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid.
 #define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
-#define DATA_HASH_LENGTH 128 // The length of the SHA2-512 hash
 #define BLOCK_VERIFIERS_NAME_TOTAL_LENGTH 100 // The maximum length of the block verifiers name
-#define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address
 #define TOTAL_CONNECTION_TIME_SETTINGS 30 // The total time a client is given to connect to the server and send data
 #define TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT 10 // The total time given from when the consensus node sends to the node who the main node is, to the time the main node sends the data to the node.
 #define INVALID_PARAMETERS_ERROR_MESSAGE \
 "Parameters\n" \
-"--test - Run the test to make sure the program is compatible with your system\n" \
-"--network_data_node - Only use this option if your a network data node\n"
+"--test - Run the test to make sure the program is compatible with your system\n"
 #endif

@@ -30,7 +30,7 @@ Color available values:
 */
 
 #define color_print(string,color) \
-if (strncmp(color,"red",3) == 0) \
+if (memcmp(color,"red",3) == 0) \
 { \
   printf("\033[1;31m%s\033[0m\n",string); \
 } \

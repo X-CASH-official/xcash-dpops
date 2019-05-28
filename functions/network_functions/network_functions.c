@@ -1053,21 +1053,23 @@ int sync_check_reserve_proofs_database()
     SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_reserve_proofs_database");
   }
 
+  start:
+
   // send the message to a random network data node
-  count = (int)((rand() % (2 - 1 + 1)) + 1);
-  if (count == 1)
+  count = (int)((rand() % (NETWORK_DATA_NODES_AMOUNT - 1 + 1)) + 1);
+  if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
   {
-    if (send_and_receive_data_socket(data2,NETWORK_DATA_NODE_IP_ADDRESS_1,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
-    {
-      SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from network data node 1\nFunction: sync_check_reserve_proofs_database");
-    }
+    goto start;
   }
-  else if (count == 2)
+
+  if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
-    if (send_and_receive_data_socket(data2,NETWORK_DATA_NODE_IP_ADDRESS_2,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
-    {
-      SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from network data node 2\nFunction: sync_check_reserve_proofs_database");
-    }
+    memcpy(data2,"Could not receive data from network data node ",46);
+    memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    memcpy(data2,"\nConnecting to a different network data node",44);
+    color_print(data2,"red");
+    memset(data2,0,strlen(data2));
+    goto start;
   }
 
   // parse the block verifiers IP addresses
@@ -1213,7 +1215,7 @@ int sync_reserve_proofs_database()
 
     // select a random block verifier from the majority vote settings to sync the database from
     count = (int)(rand() % 99);
-    if (memcmp(synced_block_verifiers_IP_addresses.vote_settings[count],"true",4) != 0)
+    if (memcmp(synced_block_verifiers_IP_addresses.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers_IP_addresses.IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       goto start;
     }
@@ -1403,21 +1405,23 @@ int sync_check_reserve_bytes_database()
     SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_reserve_bytes_database");
   }
 
+  start:
+
   // send the message to a random network data node
-  count = (int)((rand() % (2 - 1 + 1)) + 1);
-  if (count == 1)
+  count = (int)((rand() % (NETWORK_DATA_NODES_AMOUNT - 1 + 1)) + 1);
+  if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
   {
-    if (send_and_receive_data_socket(data2,NETWORK_DATA_NODE_IP_ADDRESS_1,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
-    {
-      SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from network data node 1\nFunction: sync_check_reserve_bytes_database");
-    }
+    goto start;
   }
-  else if (count == 2)
+
+  if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
-    if (send_and_receive_data_socket(data2,NETWORK_DATA_NODE_IP_ADDRESS_2,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
-    {
-      SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from network data node 2\nFunction: sync_check_reserve_bytes_database");
-    }
+    memcpy(data2,"Could not receive data from network data node ",46);
+    memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    memcpy(data2,"\nConnecting to a different network data node",44);
+    color_print(data2,"red");
+    memset(data2,0,strlen(data2));
+    goto start;
   }
 
   // parse the block verifiers IP addresses
@@ -1568,7 +1572,7 @@ int sync_reserve_bytes_database()
 
     // select a random block verifier from the majority vote settings to sync the database from
     count = (int)(rand() % 99);
-    if (memcmp(synced_block_verifiers_IP_addresses.vote_settings[count],"true",4) != 0)
+    if (memcmp(synced_block_verifiers_IP_addresses.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers_IP_addresses.IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       goto start;
     }
@@ -1758,21 +1762,23 @@ int sync_check_delegates_database()
     SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_delegates_database");
   }
 
+  start:
+
   // send the message to a random network data node
-  count = (int)((rand() % (2 - 1 + 1)) + 1);
-  if (count == 1)
+  count = (int)((rand() % (NETWORK_DATA_NODES_AMOUNT - 1 + 1)) + 1);
+  if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
   {
-    if (send_and_receive_data_socket(data2,NETWORK_DATA_NODE_IP_ADDRESS_1,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
-    {
-      SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not receive data from network data node 1\nFunction: sync_check_delegates_database");
-    }
+    goto start;
   }
-  else if (count == 2)
+
+  if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
-    if (send_and_receive_data_socket(data2,NETWORK_DATA_NODE_IP_ADDRESS_2,SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
-    {
-      SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not receive data from network data node 2\nFunction: sync_check_delegates_database");
-    }
+    memcpy(data2,"Could not receive data from network data node ",46);
+    memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    memcpy(data2,"\nConnecting to a different network data node",44);
+    color_print(data2,"red");
+    memset(data2,0,strlen(data2));
+    goto start;
   }
 
   // parse the block verifiers IP addresses
@@ -1909,7 +1915,7 @@ int sync_delegates_database()
 
   // select a random block verifier from the majority vote settings to sync the database from
   count = (int)(rand() % 99);
-  if (memcmp(synced_block_verifiers_IP_addresses.vote_settings[count],"true",4) != 0)
+  if (memcmp(synced_block_verifiers_IP_addresses.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers_IP_addresses.IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
   {
     goto start;
   }

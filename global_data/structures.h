@@ -37,8 +37,6 @@ struct synced_block_verifiers_IP_addresses {
     int vote_settings_false; // The amount of block verifiers that voted false
 };
 
-
-
 struct main_nodes_list {
     char* block_producer_public_address; // The block producers public address
     char* block_producer_IP_address; // The block producers IP address
@@ -88,6 +86,11 @@ struct main_nodes_list {
     char* vrf_node_next_main_nodes_backup_block_verifier_4_IP_address; // The vrf node next main nodes backup node 4 IP address
     char* vrf_node_next_main_nodes_backup_block_verifier_5_public_address; // The vrf node next main nodes backup node 5 public address
     char* vrf_node_next_main_nodes_backup_block_verifier_5_IP_address; // The vrf node next main nodes backup node 5 IP address
+};
+
+struct network_data_nodes_list {
+    char* network_data_nodes_public_address[NETWORK_DATA_NODES_AMOUNT]; // The block verifiers public address
+    char* network_data_nodes_IP_address[NETWORK_DATA_NODES_AMOUNT]; // The block verifiers IP address
 };
 
 struct current_round_part_consensus_node_data {
