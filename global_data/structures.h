@@ -389,6 +389,12 @@ struct count_all_documents_in_collection_thread_parameters {
     const char* COLLECTION; // The collection name
 };
 
+struct get_database_data_thread_parameters {
+    char *database_data; // The database data
+    const char* DATABASE; // The database name
+    const char* COLLECTION; // The collection name
+};
+
 struct get_database_data_hash_thread_parameters {
     char *data_hash; // The data hash
     const char* DATABASE; // The database name

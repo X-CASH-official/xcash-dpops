@@ -1623,6 +1623,64 @@ int reset_variables_allocated_on_the_heap_test()
 
 
 
+  // get_database_data 
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for get_database_data: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      get_database_data(data_test,DATABASE_NAME,DATABASE_COLLECTION,0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! get_database_data has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! get_database_data has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 100 && current_memory_usage > 0)
+        {
+          color_print("FAILED! get_database_data has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! get_database_data has reset all variables allocated on the heap","green");
+          count_test++;
+        }   
+      }  
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
   // get_database_data_hash 
   // read the current system memory usage
   if (settings2 == 1)

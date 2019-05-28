@@ -38,7 +38,7 @@ int database_test()
   pthread_t thread_id;
 
   // define macros
-  #define DATABASE_TEST 30
+  #define DATABASE_TEST 32
   #define DATA_COUNT 5
   #define DATABASE_COLLECTION "XCASH_PROOF_OF_STAKE_TEST_DATA"
   #define MESSAGE "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"}"
@@ -747,12 +747,12 @@ int database_test()
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   if (get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION,0) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
-    color_print("PASSED! Test for getting the database hash","green");
+    color_print("PASSED! Test for getting the database data hash","green");
     count_test++;
   }
   else
   {
-    color_print("FAILED! Test for getting the database hash","red");
+    color_print("FAILED! Test for getting the database data hash","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
@@ -766,12 +766,12 @@ int database_test()
   pthread_create(&thread_id, NULL, &get_database_data_hash_thread,(void *)&get_database_data_hash_thread_parameters);
   if (thread_settings(thread_id) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
-    color_print("PASSED! Test for getting the database hash on a separate thread","green");
+    color_print("PASSED! Test for getting the database data hash on a separate thread","green");
     count_test++;
   }
   else
   {
-    color_print("FAILED! Test for getting the database hash on a separate thread","red");
+    color_print("FAILED! Test for getting the database data hash on a separate thread","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
@@ -809,6 +809,35 @@ int database_test()
   {
     color_print("FAILED! Test for inserting multiple documents into a collection using json data on a separate thread","red");    
   }
+
+  // get the database data
+  memset(result_test,0,strlen(result_test));
+  if (get_database_data(result_test,DATABASE_NAME,DATABASE_COLLECTION,0) == 1 && strncmp("{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\", \"most_VRF_node_public_and_private_key_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_public_and_private_key_total_rounds\" : \"5\", \"most_VRF_node_random_data_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_random_data_total_rounds\" : \"10\", \"most_VRF_node_next_main_nodes_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_next_main_nodes_total_rounds\" : \"15\", \"total_XCASH_proof_of_stake_rounds\" : \"5\", \"total_coins_in_proof_of_stake\" : \"10\", \"total_circulating_supply_percentage_in_proof_of_stake\" : \"15\" },{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\", \"most_VRF_node_public_and_private_key_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_public_and_private_key_total_rounds\" : \"5\", \"most_VRF_node_random_data_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_random_data_total_rounds\" : \"10\", \"most_VRF_node_next_main_nodes_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_next_main_nodes_total_rounds\" : \"15\", \"total_XCASH_proof_of_stake_rounds\" : \"5\", \"total_coins_in_proof_of_stake\" : \"10\", \"total_circulating_supply_percentage_in_proof_of_stake\" : \"15\" }",result_test,BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for getting the database data","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for getting the database data","red");
+  }
+
+  // get the database data on a separate thread
+  memset(result_test,0,strlen(result_test));
+  struct get_database_data_thread_parameters get_database_data_thread_parameters = {result_test,DATABASE_NAME,DATABASE_COLLECTION};
+  pthread_create(&thread_id, NULL, &get_database_data_thread,(void *)&get_database_data_thread_parameters);
+  if (thread_settings(thread_id) == 1 && strncmp("{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\", \"most_VRF_node_public_and_private_key_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_public_and_private_key_total_rounds\" : \"5\", \"most_VRF_node_random_data_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_random_data_total_rounds\" : \"10\", \"most_VRF_node_next_main_nodes_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_next_main_nodes_total_rounds\" : \"15\", \"total_XCASH_proof_of_stake_rounds\" : \"5\", \"total_coins_in_proof_of_stake\" : \"10\", \"total_circulating_supply_percentage_in_proof_of_stake\" : \"15\" },{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\", \"most_VRF_node_public_and_private_key_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_public_and_private_key_total_rounds\" : \"5\", \"most_VRF_node_random_data_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_random_data_total_rounds\" : \"10\", \"most_VRF_node_next_main_nodes_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_VRF_node_next_main_nodes_total_rounds\" : \"15\", \"total_XCASH_proof_of_stake_rounds\" : \"5\", \"total_coins_in_proof_of_stake\" : \"10\", \"total_circulating_supply_percentage_in_proof_of_stake\" : \"15\" }",result_test,BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for getting the database data on a separate thread","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for getting the database data on a separate thread","red");
+  }
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
   
   // write the end test message
   if (count_test == DATABASE_TEST)

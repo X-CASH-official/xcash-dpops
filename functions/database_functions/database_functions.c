@@ -1318,7 +1318,6 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   mongoc_cursor_t* document_settings = NULL;
   bson_t* document = NULL;  
   char* message;
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
 
   // define macros
   #define database_reset_all \
@@ -1329,13 +1328,6 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  } 
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -1348,7 +1340,6 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
-      pointer_reset(data);
       return 0;
     }
     // set the collection
@@ -1358,7 +1349,6 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   document = bson_new();
   if (!document)
   {
-    pointer_reset(data);
     database_reset_all;
     return 0;
   }
@@ -1368,19 +1358,18 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   { 
     // get the current document  
     message = bson_as_canonical_extended_json(current_document, NULL);
-    if (strnlen(data,52428800) == 0)
+    if (strnlen(database_data,52428800) == 0)
     {
-      memcpy(data+strnlen(data,52428800),"{",1);
+      memcpy(database_data+strnlen(database_data,52428800),"{",1);
     }
     else
     {
-      memcpy(data+strnlen(data,52428800),",{",2);
+      memcpy(database_data+strnlen(database_data,52428800),",{",2);
     }
-    memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
+    memcpy(database_data+strnlen(database_data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
     bson_free(message);
   }
-
-  pointer_reset(data);
+  
   database_reset_all;
   return 1;
 
