@@ -1296,6 +1296,101 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_database_data
+Description: Gets the database data
+Parameters:
+  database_data - The database data
+  DATABASE - The database name
+  COLLECTION - The collection name
+  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_database_data(char *database_data, const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS)
+{
+  // Constants
+  const bson_t* current_document;
+
+  // Variables
+  mongoc_client_t* database_client_thread = NULL;
+  mongoc_collection_t* collection = NULL;
+  mongoc_cursor_t* document_settings = NULL;
+  bson_t* document = NULL;  
+  char* message;
+  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
+
+  // define macros
+  #define database_reset_all \
+  bson_destroy(document); \
+  mongoc_cursor_destroy(document_settings); \
+  mongoc_collection_destroy(collection); \
+  if (THREAD_SETTINGS == 1) \
+  { \
+    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
+  }
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  } 
+
+  // check if we need to create a database connection, or use the global database connection
+  if (THREAD_SETTINGS == 0)
+  {
+    // set the collection
+    collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
+  }
+  else
+  {
+    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
+    if (!database_client_thread)
+    {
+      pointer_reset(data);
+      return 0;
+    }
+    // set the collection
+    collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+  }
+
+  document = bson_new();
+  if (!document)
+  {
+    pointer_reset(data);
+    database_reset_all;
+    return 0;
+  }
+
+  document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+  while (mongoc_cursor_next(document_settings, &current_document))
+  { 
+    // get the current document  
+    message = bson_as_canonical_extended_json(current_document, NULL);
+    if (strnlen(data,52428800) == 0)
+    {
+      memcpy(data+strnlen(data,52428800),"{",1);
+    }
+    else
+    {
+      memcpy(data+strnlen(data,52428800),",{",2);
+    }
+    memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
+    bson_free(message);
+  }
+
+  pointer_reset(data);
+  database_reset_all;
+  return 1;
+
+  #undef database_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_database_data_hash
 Description: Gets a database data hash
 Parameters:
