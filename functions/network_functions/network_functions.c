@@ -1102,6 +1102,7 @@ int sync_check_reserve_proofs_database()
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"data_hash\": \"",124);
   memcpy(message+124,data,DATA_HASH_LENGTH);
+  memcpy(message+252,"\"}",2);
 
   // sign_data
   if (sign_data(message,0) == 0)
@@ -1465,6 +1466,7 @@ int sync_check_reserve_bytes_database()
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"data_hash\": \"",123);
   memcpy(message+123,data,DATA_HASH_LENGTH);
+  memcpy(message+251,"\"}",2);
 
   // sign_data
   if (sign_data(message,0) == 0)
@@ -1833,6 +1835,7 @@ int sync_check_delegates_database()
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",115);
   memcpy(message+115,data,DATA_HASH_LENGTH);
+  memcpy(message+243,"\"}",2);
 
   // sign_data
   if (sign_data(message,0) == 0)
@@ -2133,8 +2136,9 @@ int sync_check_statistics_database()
   }
 
   // create the message
-  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",115);
-  memcpy(message+115,data,DATA_HASH_LENGTH);
+  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",116);
+  memcpy(message+116,data,DATA_HASH_LENGTH);
+  memcpy(message+244,"\"}",2);
 
   // sign_data
   if (sign_data(message,0) == 0)

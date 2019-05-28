@@ -1346,10 +1346,9 @@ int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET,
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list
-Description: Runs the code when the server receives the xcash_proof_of_stake_test_data message
+Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1407,7 +1406,102 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST
+Name: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // verify the message
+  if (verify_data(MESSAGE,0,0,0) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"data_hash",data) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+  }
+
+  // get the database data hash for the reserve proofs database
+  memset(data2,0,strlen(data2));
+  if (get_database_data_hash(data2,DATABASE_NAME,"reserve_proofs",0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+  }
+
+  // create the message
+  if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
+  {
+    memset(data,0,strlen(data));
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\"}",146);
+  }
+  else
+  {
+    memset(data,0,strlen(data));
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\"}",147);
+  }
+  
+  // sign_data
+  if (sign_data(data,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+  }
+
+  // send the data
+  if (send_data(CLIENT_SOCKET,data,1) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+  }
+
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs
 Description: Runs the code when the server receives the xcash_proof_of_stake_test_data message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
@@ -1487,7 +1581,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    return 0;
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS");
   }
 
   // parse the message
@@ -2959,7 +3053,7 @@ int create_server(const int MESSAGE_SETTINGS)
          time(&current_date_and_time);
          current_UTC_date_and_time = gmtime(&current_date_and_time);
 
-         // check if a certain type of message has been received         
+         // check if a certain type of message has been received 
          if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
          {
            server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer);
@@ -2974,6 +3068,13 @@ int create_server(const int MESSAGE_SETTINGS)
            pointer_reset_all; 
            _exit(0);
          } 
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
+         {
+           server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         }  
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
