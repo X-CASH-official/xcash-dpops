@@ -1256,7 +1256,7 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
 
-   // check if we need to create a database connection, or use the global database connection
+  // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
   {
     // set the collection
