@@ -199,6 +199,7 @@ void* check_reserve_proofs_timer_thread()
   }
 
   reserve_proofs_settings = 1;
+  main_network_data_node_create_block = 0;
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 4; count++)

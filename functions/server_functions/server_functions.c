@@ -53,6 +53,12 @@ void start_new_round()
   size_t count;
   int settings;
 
+  // define macros
+  #define START_NEW_ROUND_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset(data); \
+  return;
+
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
@@ -81,13 +87,17 @@ void start_new_round()
   if (settings == 0)
   {
     // an error has occured so wait until the next round
-    color_print("Could not get a previous blocks settings. Your block verifier will now sit out for the remainder of the round","red");
-    return;
+    START_NEW_ROUND_ERROR("Could not get a previous blocks settings. Your block verifier will now sit out for the remainder of the round\nFunction: start_new_round");
   }
   else if (settings == 1)
   {
     // this is a proof of work block, so this is the start blocks of the network
     color_print("The current block is on of the first three blocks on the network, meaning the data network node will create this block","green");
+
+    // set the main_network_data_node_create_block so the main network data node can create the block
+    memset(server_message,0,strlen(server_message));
+    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35);
+    main_network_data_node_create_block = 1;
     start_current_round_start_blocks();    
   }
   else if (settings == 2)
@@ -97,6 +107,8 @@ void start_new_round()
   }
   pointer_reset(data);
   return;
+
+  #undef START_NEW_ROUND_ERROR
 }
 
 
@@ -113,29 +125,270 @@ void start_current_round_start_blocks()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  size_t count;
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time; 
+  size_t count; 
+  size_t count2; 
+  unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
   int settings;
 
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
+  #define START_CURRENT_ROUND_START_BLOCKS_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return;
+
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
+  if (data == NULL || data2 == NULL)
   {
+    if (data == NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 == NULL)
+    {
+      pointer_reset(data2);
+    }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
-
-  // check if the block verifier is a network data node
-  if (network_data_node_settings == 0)
+  
+  // check if the block verifier is the main network data node
+  if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
   {
-    color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round","red");
-    return;
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round");
+  } 
+
+  color_print("Your block verifier is the main data network node so your block verifier will create the block\nWaiting until 4 minutes and 40 seconds of the round","green");
+
+  for (;;)
+  {
+    usleep(200000);
+    time(&current_date_and_time);
+    current_UTC_date_and_time = gmtime(&current_date_and_time);
+    if (current_UTC_date_and_time->tm_min == 4 && current_UTC_date_and_time->tm_sec == 40)
+    {
+      break;
+    }
   }
 
-  color_print("Your block verifier is the main data network node so your block verifier will create the block","green");
+  // get a block template
+  if (get_block_template(data,0) == 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not get a block template\nFunction: start_current_round_start_blocks");
+  }
 
-  // create the block with the reserve bytes
+  // convert the network_block_string to blockchain_data
+  if (network_block_string_to_blockchain_data(data,"0") == 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the network_block_string to blockchain_data\nFunction: start_current_round_start_blocks");
+  }
+
+  // change the nonce to the CONSENSUS_NODE_NETWORK_BLOCK_NONCE
+  memset(blockchain_data.nonce_data,0,strnlen(blockchain_data.nonce_data,9));
+  memcpy(blockchain_data.nonce_data,CONSENSUS_NODE_NETWORK_BLOCK_NONCE,8);
+
+  // create the VRF data round part 1
+  if (create_random_VRF_keys(VRF_data.vrf_public_key_round_part_1,VRF_data.vrf_secret_key_round_part_1) == 1 && crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_1) != 1)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_public_key_round_part_1 or vrf_secret_key_round_part_1\nFunction: start_current_round_start_blocks");
+  }
+  memcpy(VRF_data.vrf_alpha_string_round_part_1,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
+  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_1,(const unsigned char*)VRF_data.vrf_secret_key_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strlen(VRF_data.vrf_alpha_string_round_part_1)) != 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_proof_round_part_1\nFunction: start_current_round_start_blocks");
+  }
+  if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_1,(const unsigned char*)VRF_data.vrf_proof_round_part_1) != 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the beta_string_round_part_1\nFunction: start_current_round_start_blocks");
+  }
+  if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_1,(const unsigned char*)VRF_data.vrf_public_key_round_part_1,(const unsigned char*)VRF_data.vrf_proof_round_part_1,VRF_data.vrf_alpha_string_round_part_1,crypto_vrf_PUBLICKEYBYTES) != 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the VRF data for round part 1\nFunction: start_current_round_start_blocks");
+  }
+
+  // create the VRF data round part 2  
+  if (create_random_VRF_keys(VRF_data.vrf_public_key_round_part_2,vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_2) != 1)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_public_key_round_part_2 or vrf_secret_key_round_part_1\nFunction: start_current_round_start_blocks");
+  }
+  if (get_previous_block_hash(data,0) == 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not get the previous block hash\nFunction: start_current_round_start_blocks");
+  }  
+  memcpy(VRF_data.vrf_alpha_string_round_part_2,data,64);
+  memset(data,0,strlen(data));
+  if (random_string(data,100) == 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not geta random string for the vrf_alpha_string_round_part_2 \nFunction: start_current_round_start_blocks");
+  }
+  memcpy(VRF_data.vrf_alpha_string_round_part_2+64,data,100);
+  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_2,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_2,strlen(VRF_data.vrf_alpha_string_round_part_2)) != 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_proof_round_part_2\nFunction: start_current_round_start_blocks");
+  }
+  if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_2,(const unsigned char*)VRF_data.vrf_proof_round_part_2) != 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the beta_string_round_part_2\nFunction: start_current_round_start_blocks");
+  }
+  if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_2,(const unsigned char*)VRF_data.vrf_public_key_round_part_2,(const unsigned char*)VRF_data.vrf_proof_round_part_2,VRF_data.vrf_alpha_string_round_part_2,crypto_vrf_PUBLICKEYBYTES) != 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the VRF data for round part 2\nFunction: start_current_round_start_blocks");
+  }
+
+  // create the VRF data round part 3  
+  memcpy(VRF_data.vrf_public_key_round_part_3,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
+  memcpy(VRF_data.vrf_alpha_string_round_part_3,VRF_data.vrf_alpha_string_round_part_1,164);
+  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_3,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_3,strlen(VRF_data.vrf_alpha_string_round_part_3)) != 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_proof_round_part_3\nFunction: start_current_round_start_blocks");
+  }
+  if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_3,(const unsigned char*)VRF_data.vrf_proof_round_part_3) != 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the beta_string_round_part_3\nFunction: start_current_round_start_blocks");
+  }
+  if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_3,(const unsigned char*)VRF_data.vrf_public_key_round_part_3,(const unsigned char*)VRF_data.vrf_proof_round_part_3,VRF_data.vrf_alpha_string_round_part_3,crypto_vrf_PUBLICKEYBYTES) != 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the VRF data for round part 2\nFunction: start_current_round_start_blocks");
+  }
+
+  // convert all of the VRF data to a string
+  for (count2 = 0, count = 0; count2 < crypto_vrf_SECRETKEYBYTES; count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_secret_key_data_round_part_1+count,"%02x",VRF_data.vrf_secret_key_round_part_1[count2] & 0xFF);
+  }  
+  for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_public_key_data_round_part_1+count,"%02x",VRF_data.vrf_public_key_round_part_1[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_1); count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_alpha_string_data_round_part_1+count,"%02x",VRF_data.vrf_alpha_string_round_part_1[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_proof_data_round_part_1+count,"%02x",VRF_data.vrf_proof_round_part_1[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_beta_string_round_part_1); count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_beta_string_data_round_part_1+count,"%02x",VRF_data.vrf_beta_string_round_part_1[count2] & 0xFF);
+  } 
+  for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_public_key_data_round_part_2+count,"%02x",VRF_data.vrf_public_key_round_part_2[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_2); count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_alpha_string_data_round_part_2+count,"%02x",VRF_data.vrf_alpha_string_round_part_2[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_proof_data_round_part_2+count,"%02x",VRF_data.vrf_proof_round_part_2[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_beta_string_round_part_2); count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_beta_string_data_round_part_2+count,"%02x",VRF_data.vrf_beta_string_round_part_2[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_public_key_data_round_part_3+count,"%02x",VRF_data.vrf_public_key_round_part_3[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_3); count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_alpha_string_data_round_part_3+count,"%02x",VRF_data.vrf_alpha_string_round_part_3[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_proof_data_round_part_3+count,"%02x",VRF_data.vrf_proof_round_part_3[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
+  {
+    sprintf(VRF_data.vrf_beta_string_data_round_part_3+count,"%02x",VRF_data.vrf_beta_string_round_part_3[count2] & 0xFF);
+  }
+
+  // add the VRF_data struct to the blockchain_data struct
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_1 = VRF_PUBLIC_KEY_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1,VRF_data.vrf_public_key_data_round_part_1,VRF_PUBLIC_KEY_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
+  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1 = strnlen(VRF_data.vrf_alpha_string_data_round_part_1,BUFFER_SIZE_NETWORK_BLOCK_DATA);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1,VRF_data.vrf_alpha_string_data_round_part_1,blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strnlen(VRF_data.vrf_alpha_string_round_part_1,BUFFER_SIZE_NETWORK_BLOCK_DATA);
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_1 = VRF_PROOF_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1,VRF_data.vrf_proof_data_round_part_1,VRF_PROOF_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1,VRF_data.vrf_proof_round_part_1,crypto_vrf_PROOFBYTES);
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_1 = VRF_BETA_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1,VRF_data.vrf_beta_string_data_round_part_1,VRF_BETA_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1,VRF_data.vrf_beta_string_round_part_1,crypto_vrf_OUTPUTBYTES);
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_2 = VRF_PUBLIC_KEY_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2,VRF_data.vrf_public_key_data_round_part_2,VRF_PUBLIC_KEY_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2,VRF_data.vrf_public_key_round_part_2,crypto_vrf_PUBLICKEYBYTES);
+  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2 = strnlen(VRF_data.vrf_alpha_string_data_round_part_2,BUFFER_SIZE_NETWORK_BLOCK_DATA);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2,VRF_data.vrf_alpha_string_data_round_part_2,blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2,VRF_data.vrf_alpha_string_round_part_2,strnlen(VRF_data.vrf_alpha_string_round_part_2,BUFFER_SIZE_NETWORK_BLOCK_DATA);
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_2 = VRF_PROOF_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2,VRF_data.vrf_proof_data_round_part_2,VRF_PROOF_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2,VRF_data.vrf_proof_round_part_2,crypto_vrf_PROOFBYTES);
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_2 = VRF_BETA_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2,VRF_data.vrf_beta_string_data_round_part_2,VRF_BETA_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2,VRF_data.vrf_beta_string_round_part_2,crypto_vrf_OUTPUTBYTES);
+  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_3 = VRF_PUBLIC_KEY_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3,VRF_data.vrf_public_key_data_round_part_3,VRF_PUBLIC_KEY_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3,VRF_data.vrf_public_key_round_part_3,crypto_vrf_PUBLICKEYBYTES);
+  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3 = strnlen(VRF_data.vrf_alpha_string_data_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3,VRF_data.vrf_alpha_string_data_round_part_3,blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3,VRF_data.vrf_alpha_string_round_part_3,strnlen(VRF_data.vrf_alpha_string_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA);
+  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_3 = VRF_PROOF_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3,VRF_data.vrf_proof_data_round_part_3,VRF_PROOF_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3,VRF_data.vrf_proof_round_part_3,crypto_vrf_PROOFBYTES);
+  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_3 = VRF_BETA_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3,VRF_data.vrf_beta_string_data_round_part_3,VRF_BETA_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3,VRF_data.vrf_beta_string_round_part_3,crypto_vrf_OUTPUTBYTES);  
+
+  // add the block_validation_node_signature_data_length to the blockchain_data
+  blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length = BLOCK_VALIDATION_NODE_SIGNED_BLOCK_LENGTH;
+
+  // add 0's for the block validation nodes signature
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_RESERVED_BYTES,BLOCK_VALIDATION_NODE_SIGNED_BLOCK_LENGTH);
+  }
+
+  // convert the blockchain_data to a network_block_string
+  memset(data,0,strlen(data));
+  if (blockchain_data_to_network_block_string(data) == 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the blockchain_data to a network_block_string\nFunction: start_current_round_start_blocks");
+  }
+
+  // create the message
+  memcpy(data2,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"block_blob\": \"",126);
+  memcpy(data2,data,strnlen(data,BUFFER_SIZE));
+  memcpy(data2,"\",\r\n}",5);
+
+  // sign_data
+  if (sign_data(data2,0) == 0)
+  { 
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign data\nFunction: start_current_round_start_blocks");
+  }
+
+  // send the network block string to the block verifiers so they can sign the network block string
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data2,"",0);
+  }
   
   pointer_reset(data);
   return;
+
+  #undef pointer_reset_all
+  #undef START_CURRENT_ROUND_START_BLOCKS_ERROR
 }
 
 
@@ -156,6 +409,12 @@ void start_current_round()
   struct tm* current_UTC_date_and_time; 
   size_t count;
   int settings;
+
+  // define macros
+  #define START_CURRENT_ROUND_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset(data); \
+  return;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
@@ -205,6 +464,8 @@ void start_current_round()
   
   pointer_reset(data);
   return;
+
+  #undef START_CURRENT_ROUND_ERROR
 }
 
 
@@ -1957,6 +2218,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"",139);
   memcpy(data+139,data2,strnlen(data2,52428800));
+  memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
   if (sign_data(data,0) == 0)
@@ -4484,6 +4746,13 @@ int create_server(const int MESSAGE_SETTINGS)
          else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\"") != NULL)
          {
            server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(CLIENT_SOCKET,(const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35) == 0)
+         {
+           server_receive_data_socket_main_node_to_node_message_part_4(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
            pointer_reset_all; 
            _exit(0);
