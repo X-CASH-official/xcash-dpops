@@ -280,6 +280,7 @@ void add_block_verifiers_round_statistics()
   size_t number;
 
   // define macros
+  #define DATABASE_COLLECTION "delegates"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -322,7 +323,7 @@ void add_block_verifiers_round_statistics()
 
     // add one to the block_verifier_total_rounds for every block verifier
     memset(data,0,strnlen(data,BUFFER_SIZE));
-    if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifier_total_rounds",data,0) == 0)
+    if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data,0) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_total_rounds from the database\nFunction: add_block_verifiers_round_statistics");
     }
@@ -333,7 +334,7 @@ void add_block_verifiers_round_statistics()
     memcpy(data,"{\"block_verifier_total_rounds\":\"",32);
     sprintf(data+32,"%zu",number); 
     memcpy(data+32+count2,"\"}",2);
-    if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
+    if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_total_rounds in the database\nFunction: add_block_verifiers_round_statistics");
     }
@@ -342,7 +343,7 @@ void add_block_verifiers_round_statistics()
     if (send_data_socket(previous_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,"","checking if the block verifier is online",0) == 1)
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
-      if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifier_online_total_rounds",data,0) == 0)
+      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_online_total_rounds",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_online_total_rounds from the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -353,7 +354,7 @@ void add_block_verifiers_round_statistics()
       memcpy(data,"{\"block_verifier_online_total_rounds\":\"",39);
       sprintf(data+39,"%zu",number); 
       memcpy(data+39+count2,"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
+      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -363,7 +364,7 @@ void add_block_verifiers_round_statistics()
     if (memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_public_and_secret_key_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
-      if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"VRF_node_public_and_private_key_total_rounds",data,0) == 0)
+      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"VRF_node_public_and_private_key_total_rounds",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the VRF_node_public_and_private_key_total_rounds from the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -374,13 +375,13 @@ void add_block_verifiers_round_statistics()
       memcpy(data,"{\"VRF_node_public_and_private_key_total_rounds\":\"",49);
       sprintf(data+49,"%zu",number); 
       memcpy(data+49+count2,"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
+      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the VRF_node_public_and_private_key_total_rounds in the database\nFunction: add_block_verifiers_round_statistics");
       }
 
       memset(data,0,strnlen(data,BUFFER_SIZE));
-      if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"VRF_node_public_and_private_key_block_heights",data,0) == 0)
+      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"VRF_node_public_and_private_key_block_heights",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the VRF_node_public_and_private_key_block_heights from the database\nFunction: add_block_verifiers_round_statistics");
       }      
@@ -390,7 +391,7 @@ void add_block_verifiers_round_statistics()
       memcpy(data2,"{\"VRF_node_public_and_private_key_block_heights\":\"",50);
       memcpy(data2+50,data,strnlen(data,BUFFER_SIZE));
       memcpy(data2+50+strnlen(data,BUFFER_SIZE),"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,"delegates",message,data2,0) == 0)
+      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the VRF_node_public_and_private_key_block_heights in the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -400,7 +401,7 @@ void add_block_verifiers_round_statistics()
     if (memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_random_data_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
-      if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"VRF_node_random_data_total_rounds",data,0) == 0)
+      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"VRF_node_random_data_total_rounds",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the VRF_node_random_data_total_rounds from the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -411,13 +412,13 @@ void add_block_verifiers_round_statistics()
       memcpy(data,"{\"VRF_node_random_data_total_rounds\":\"",38);
       sprintf(data+38,"%zu",number); 
       memcpy(data+38+count2,"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
+      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the VRF_node_random_data_total_rounds in the database\nFunction: add_block_verifiers_round_statistics");
       }
 
       memset(data,0,strnlen(data,BUFFER_SIZE));
-      if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"VRF_node_random_data_block_heights",data,0) == 0)
+      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"VRF_node_random_data_block_heights",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the VRF_node_random_data_block_heights from the database\nFunction: add_block_verifiers_round_statistics");
       }      
@@ -427,7 +428,7 @@ void add_block_verifiers_round_statistics()
       memcpy(data2,"{\"VRF_node_random_data_block_heights\":\"",39);
       memcpy(data2+39,data,strnlen(data,BUFFER_SIZE));
       memcpy(data2+39+strnlen(data,BUFFER_SIZE),"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,"delegates",message,data2,0) == 0)
+      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the VRF_node_random_data_block_heights in the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -437,7 +438,7 @@ void add_block_verifiers_round_statistics()
     if (memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_next_main_nodes_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
-      if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"VRF_node_next_main_nodes_total_rounds",data,0) == 0)
+      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"VRF_node_next_main_nodes_total_rounds",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the VRF_node_next_main_nodes_total_rounds from the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -448,13 +449,13 @@ void add_block_verifiers_round_statistics()
       memcpy(data,"{\"VRF_node_next_main_nodes_total_rounds\":\"",42);
       sprintf(data+42,"%zu",number); 
       memcpy(data+42+count2,"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
+      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the VRF_node_next_main_nodes_total_rounds in the database\nFunction: add_block_verifiers_round_statistics");
       }
 
       memset(data,0,strnlen(data,BUFFER_SIZE));
-      if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"VRF_node_next_main_nodes_block_heights",data,0) == 0)
+      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"VRF_node_next_main_nodes_block_heights",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the VRF_node_next_main_nodes_block_heights from the database\nFunction: add_block_verifiers_round_statistics");
       }      
@@ -464,7 +465,7 @@ void add_block_verifiers_round_statistics()
       memcpy(data2,"{\"VRF_node_next_main_nodes_block_heights\":\"",43);
       memcpy(data2+43,data,strnlen(data,BUFFER_SIZE));
       memcpy(data2+43+strnlen(data,BUFFER_SIZE),"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,"delegates",message,data2,0) == 0)
+      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the VRF_node_next_main_nodes_block_heights in the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -474,7 +475,7 @@ void add_block_verifiers_round_statistics()
     if (memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
-      if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_producer_total_rounds",data,0) == 0)
+      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_total_rounds",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_total_rounds from the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -485,13 +486,13 @@ void add_block_verifiers_round_statistics()
       memcpy(data,"{\"block_producer_total_rounds\":\"",39);
       sprintf(data+39,"%zu",number); 
       memcpy(data+39+count2,"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
+      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_total_rounds in the database\nFunction: add_block_verifiers_round_statistics");
       }
 
       memset(data,0,strnlen(data,BUFFER_SIZE));
-      if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_producer_block_heights",data,0) == 0)
+      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_block_heights",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database\nFunction: add_block_verifiers_round_statistics");
       }      
@@ -501,7 +502,7 @@ void add_block_verifiers_round_statistics()
       memcpy(data2,"{\"block_producer_block_heights\":\"",33);
       memcpy(data2+33,data,strnlen(data,BUFFER_SIZE));
       memcpy(data2+33+strnlen(data,BUFFER_SIZE),"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,"delegates",message,data2,0) == 0)
+      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database\nFunction: add_block_verifiers_round_statistics");
       }
@@ -510,6 +511,7 @@ void add_block_verifiers_round_statistics()
 
   return;
 
+  #undef DATABASE_COLLECTION
   #undef pointer_reset_all
   #undef ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR
 }
@@ -575,6 +577,7 @@ void add_round_statistics()
 
   // define macros
   #define MESSAGE "{\"username\":\"xcash\"}"
+  #define DATABASE_COLLECTION "statistics"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -728,7 +731,7 @@ void add_round_statistics()
   }  
   
   // set the collection
-  collection = mongoc_client_get_collection(database_client, DATABASE_NAME, "delegates");
+  collection = mongoc_client_get_collection(database_client, DATABASE_NAME,"delegates");
   document = bson_new(); 
   document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
   while (mongoc_cursor_next(document_settings, &current_document))
@@ -915,13 +918,14 @@ void add_round_statistics()
   memcpy(message12+strnlen(message6,BUFFER_SIZE),"\"}",2);
 
   // update the database
-  if (update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message6,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message7,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message8,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message9,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message10,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message11,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message12,0) == 0)
+  if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message6,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message7,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message8,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message9,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message10,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message11,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message12,0) == 0)
   {
     ADD_ROUND_STATISTICS_ERROR("Could not update the round statistics in the database\nFunction: add_round_statistics");
   }
 
   return;
 
+  #undef DATABASE_COLLECTION
   #undef MESSAGE
   #undef pointer_reset_all
   #undef ADD_ROUND_STATISTICS_ERROR
@@ -2094,6 +2098,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
 
   // define macros
+  #define DATABASE_COLLECTION "delegates"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -2128,7 +2133,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   // get the database data for the reserve bytes database
   memset(data2,0,strlen(data2));
-  if (get_database_data(data2,DATABASE_NAME,"delegates",0) == 0)
+  if (get_database_data(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE");
   }
@@ -2152,6 +2157,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   return 1;
 
+  #undef DATABASE_COLLECTION
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR
 }
@@ -2278,6 +2284,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
 
   // define macros
+  #define DATABASE_COLLECTION "statistics"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -2312,7 +2319,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
 
   // get the database data for the reserve bytes database
   memset(data2,0,strlen(data2));
-  if (get_database_data(data2,DATABASE_NAME,"statistics",0) == 0)
+  if (get_database_data(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE");
   }
@@ -2336,6 +2343,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
 
   return 1;
 
+  #undef DATABASE_COLLECTION
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR
 }
@@ -2834,6 +2842,119 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   #undef DATABASE_COLLECTION
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_nodes_to_block_verifiers_update_delegates
+Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* delegate_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* item = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* value = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(delegate_public_address); \
+  delegate_public_address = NULL; \
+  free(item); \
+  item = NULL; \
+  free(value); \
+  value = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || delegate_public_address == NULL || item == NULL || value == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (delegate_public_address != NULL)
+    {
+      pointer_reset(delegate_public_address);
+    }
+    if (item != NULL)
+    {
+      pointer_reset(item);
+    }
+    if (value != NULL)
+    {
+      pointer_reset(value);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // verify the message
+  if (verify_data(MESSAGE,0,0,0) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_update_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"public_address",delegate_public_address) == 0 || parse_json_data(MESSAGE,"item",item) == 0 || parse_json_data(MESSAGE,"value",value) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_update_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE");
+  }
+
+  // error check
+  if (memcmp(item,"IP_address",10) != 0 && memcmp(item,"about",5) != 0 && memcmp(item,"website",7) != 0 && memcmp(item,"team",4) != 0 && memcmp(item,"pool_mode",9) != 0 && memcmp(item,"fee_structure",13) != 0 && memcmp(item,"server_settings",15) != 0)
+  {
+    send_data(CLIENT_SOCKET,"false",1);
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update\nFunction: server_receive_data_socket_nodes_to_block_verifiers_update_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE");
+  }
+
+  // create the message
+  memcpy(data,"{\"public_address\":\"",19);
+  memcpy(data+19,delegate_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
+
+  memcpy(data2,"{\"",2);
+  memcpy(data2+2,item,strnlen(item,BUFFER_SIZE));
+  memcpy(data+strlen(data),"\":\"",3);
+  memcpy(data2+strlen(data),value,strnlen(value,BUFFER_SIZE));
+  memcpy(data2+strlen(data2),"\"}",2);
+
+  // update the delegate in the database
+  if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,data2,0) == 0)
+  {
+    send_data(CLIENT_SOCKET,"false",1);
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database\nFunction: server_receive_data_socket_nodes_to_block_verifiers_update_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE");
+  }
+
+  send_data(CLIENT_SOCKET,"true",1);
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR
 }
 
 
