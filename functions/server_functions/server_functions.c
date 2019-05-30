@@ -2344,8 +2344,170 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof
+Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char* delegates_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  char* public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  char* reserve_proof = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  int settings;
+
+  // define macros
+  #define pointer_reset_all \
+  free(delegates_public_address); \
+  delegates_public_address = NULL; \
+  free(public_address); \
+  public_address = NULL; \
+  free(reserve_proof); \
+  reserve_proof = NULL; \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (delegates_public_address == NULL || public_address == NULL || reserve_proof == NULL || data == NULL || data2 == NULL)
+  {
+    if (delegates_public_address != NULL)
+    {
+      pointer_reset(delegates_public_address);
+    }
+    if (public_address != NULL)
+    {
+      pointer_reset(public_address);
+    }
+    if (reserve_proof != NULL)
+    {
+      pointer_reset(reserve_proof);
+    }
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // verify the message
+  if (verify_data(MESSAGE,0,0,0) == 0)
+  {   
+    send_data(CLIENT_SOCKET,"Could not verify the message",1);
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not verify the message\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"delegates_public_address",delegates_public_address) == 0 || parse_json_data(MESSAGE,"public_address",public_address) == 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof) == 0)
+  {
+    send_data(CLIENT_SOCKET,"Could not parse the message",1);
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not parse the message\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+  }
+
+  // create the message
+  memcpy(data,"{\"reserve_proof\":\"",18);
+  memcpy(data+18,reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
+  memcpy(data+strlen(data),"\"}",2);
+
+  // check if the reserve proof is in the database
+  for (count = 1; count <= 50; count++)
+  {
+    memset(data2,0,strlen(data2));
+    memcpy(data2,"reserve_proofs_",15);
+    sprintf(data+15,"%zu",count);
+    if (count_documents_in_collection(DATABASE_NAME,data2,data,0) > 0)
+    {
+      settings = 1;
+    }
+  }
+
+  if (settings == 1)
+  {
+    send_data(CLIENT_SOCKET,"The reserve proof is already in the database",1);
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+  }
+
+  // check if the reserve proof is valid and the spent amount is 0
+  memset(data2,0,strlen(data2));
+  if (check_reserve_proofs(data2,public_address,reserve_proof,0) == 0)
+  {
+    send_data(CLIENT_SOCKET,"The reserve proof is invalid",1);
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is invalid\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+  }  
+
+  // create the message
+  memset(data,0,strlen(data));
+  memcpy(data,"{\"public_address_created_reserve_proof\":\"",41);
+  memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\",\"public_address_voted_for\":\"",30);
+  memcpy(data+strlen(data),delegates_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\",\"total\":\"",11);
+  memcpy(data+strlen(data),data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(data+strlen(data),"\",\"reserve_proof\":\"",19);
+  memcpy(data+strlen(data),data2,strnlen(data2,BUFFER_SIZE_RESERVE_PROOF));
+  memcpy(data+strlen(data),"\"}",2);
+
+  // add the reserve proof to the database
+  for (count = 1; count <= 50; count++)
+  {
+    memset(data2,0,strlen(data2));
+    memcpy(data2,"reserve_proofs_",15);
+    sprintf(data+15,"%zu",count);
+    if (count_documents_in_collection(DATABASE_NAME,data2,data,0) < 1000)
+    {
+      // check the reserve_proofs_settings
+      if (reserve_proofs_settings == 1)
+      {
+        if (insert_document_into_collection_json(DATABASE_NAME,data,data2,0) == 1)
+        {
+          send_data(CLIENT_SOCKET,"The vote was successfully added to the database",1);
+          break;
+        }
+        else
+        {
+          send_data(CLIENT_SOCKET,"The vote could not be added to the database",1);
+          SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+        }
+      }
+      else
+      {
+        send_data(CLIENT_SOCKET,"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",1);
+        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+      }      
+    }
+  }
+
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs
-Description: Runs the code when the server receives the xcash_proof_of_stake_test_data message
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   message - The message
@@ -3981,6 +4143,13 @@ int create_server(const int MESSAGE_SETTINGS)
            pointer_reset_all; 
            _exit(0);
          }
+         else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\"") != NULL)
+         {
+           server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(CLIENT_SOCKET,(const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         } 
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);

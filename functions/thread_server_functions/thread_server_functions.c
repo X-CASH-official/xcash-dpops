@@ -198,6 +198,8 @@ void* check_reserve_proofs_timer_thread()
     exit(0);
   }
 
+  reserve_proofs_settings = 1;
+
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 4; count++)
   {
@@ -262,6 +264,9 @@ void* check_reserve_proofs_timer_thread()
       // wait for all of the other block verifiers to send you their invalid_reserve_proofs
       sleep(10);
 
+      // set the reserve_proofs_settings so their are no reserve proofs added to the database
+      reserve_proofs_settings = 0;
+
       // at this point the block verifier will have added all other reserve proofs to the invalid_reserve_proofs struct, so now we need to delete all of the reserve proofs in the collections
       for (count = 1; count <= 50; count++)
       {
@@ -277,6 +282,9 @@ void* check_reserve_proofs_timer_thread()
           delete_document_from_collection(DATABASE_NAME,data,"",0);
         }       
       }
+
+      // set the reserve_proofs_settings so reserve proofs can be added to the database
+      reserve_proofs_settings = 1;
 
       // update all of the block verifiers score
       for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)

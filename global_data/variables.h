@@ -40,6 +40,7 @@ char* current_round_part; // The current round part (1-4)
 char* current_round_part_backup_node; // The current main node in the current round part (0-5)
 
 char* current_block_height; // The current block height
+int reserve_proofs_settings; // 1 if reserve proofs can be added to the database, 0 if not
 
 
 #endif
