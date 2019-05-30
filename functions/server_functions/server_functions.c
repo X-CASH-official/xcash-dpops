@@ -2641,6 +2641,114 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
 }
 
 
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_nodes_to_block_verifiers_register_delegates
+Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* delegate_name = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* delegate_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* delegates_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(delegate_name); \
+  delegate_name = NULL; \
+  free(delegate_public_address); \
+  delegate_public_address = NULL; \
+  free(delegates_IP_address); \
+  delegates_IP_address = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || delegate_name == NULL || delegate_public_address == NULL || delegates_IP_address == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (delegate_name != NULL)
+    {
+      pointer_reset(delegate_name);
+    }
+    if (delegate_public_address != NULL)
+    {
+      pointer_reset(delegate_public_address);
+    }
+    if (delegates_IP_address != NULL)
+    {
+      pointer_reset(delegates_IP_address);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // verify the message
+  if (verify_data(MESSAGE,0,0,0) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_register_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"delegate_name",delegate_name) == 0 || parse_json_data(MESSAGE,"public_address",delegate_public_address) == 0 || parse_json_data(MESSAGE,"delegates_IP_address",delegates_IP_address) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_register_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE");
+  }
+
+  // create the message
+  memcpy(data,"{\"public_address\":\"",19);
+  memcpy(data+19,delegate_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
+
+  // check if the delegate is already registered
+  if (count_documents_in_collection(DATABASE_NAME,"delegates",data,0) != 0)
+  {
+    send_data(CLIENT_SOCKET,"false",1);
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate is already registered\nFunction: server_receive_data_socket_nodes_to_block_verifiers_register_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE");
+  }
+
+  // create the message
+  memset(data,0,strlen(data));
+  memcpy(data,"{\"public_address\":\"",19);
+  memcpy(data+strlen(data),delegate_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\",\"delegate_name\":\"",30);
+  memcpy(data+strlen(data),delegate_name,strnlen(delegate_name,BUFFER_SIZE));
+  memcpy(data+strlen(data),"\",\"IP_address\":\"",11);
+  memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  memcpy(data+strlen(data),"\"}",2);
+
+  // add the delegate to the database
+  if (insert_document_into_collection_json(DATABASE_NAME,"delegates",data,0) == 0)
+  {
+    send_data(CLIENT_SOCKET,"false",1);
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database\nFunction: server_receive_data_socket_nodes_to_block_verifiers_register_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE");
+  }
+
+  send_data(CLIENT_SOCKET,"true",1);
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR
+}
+
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_consensus_node_to_node
@@ -4153,6 +4261,13 @@ int create_server(const int MESSAGE_SETTINGS)
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         }  
+         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
+         {
+           server_receive_data_socket_nodes_to_block_verifiers_register_delegates(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
            pointer_reset_all; 
            _exit(0);
