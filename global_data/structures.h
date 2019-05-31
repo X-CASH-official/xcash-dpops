@@ -134,8 +134,6 @@ struct VRF_data_block_verifiers {
     unsigned char* vrf_proof_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF proof for round part 3
     char* vrf_beta_string_data_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF beta string (output string) text for round part 3
     unsigned char* vrf_beta_string_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF beta string (output string) for round part 3
-    char* block_blob_signature[BLOCK_VERIFIERS_AMOUNT]; // The signed block data
-    char* block_blob_signature_data_hash[BLOCK_VERIFIERS_AMOUNT]; // The data hash of the signed block data
 };
 
 struct VRF_data {
@@ -165,7 +163,8 @@ struct VRF_data {
     unsigned char* vrf_proof_round_part_3; // The VRF proof for round part 3
     char* vrf_beta_string_data_round_part_3; // The VRF beta string (output string) text for round part 3
     unsigned char* vrf_beta_string_round_part_3; // The VRF beta string (output string) for round part 3
-    char* block_blob_signature[BLOCK_VERIFIERS_AMOUNT]; // The signed block data
+    char* block_blob_signature[BLOCK_VERIFIERS_AMOUNT]; // The signed block data text
+    char* block_blob_signature_data[BLOCK_VERIFIERS_AMOUNT]; // The signed block data
     char* block_blob; // The block_blob that the block producer creates to send to the consensus node
 };
 

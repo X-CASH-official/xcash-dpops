@@ -106,10 +106,9 @@ void start_new_round()
     memset(VRF_data_block_verifiers.vrf_proof_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_3[count]));
     memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count]));
     memset(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count]));
-    memset(VRF_data_block_verifiers.block_blob_signature[count],0,strlen(VRF_data_block_verifiers.block_blob_signature[count]));
-    memset(VRF_data_block_verifiers.block_blob_signature_data_hash[count],0,strlen(VRF_data_block_verifiers.block_blob_signature_data_hash[count]));
 
     memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));  
+    memset(VRF_data.block_blob_signature_data[count],0,strlen(VRF_data.block_blob_signature_data[count]));  
     
     memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
     memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));
@@ -536,6 +535,130 @@ void start_current_round()
 
   #undef START_CURRENT_ROUND_ERROR
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: update_block_verifiers_list
+Description: Updates the block verifiers list struct
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int update_block_verifiers_list()
+{
+  // Variables
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  size_t count;
+  size_t count2;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  #define UPDATE_BLOCK_VERIFIERS_ERROR(settings) \
+  color_print(settings,"red"); 
+  return 0;
+
+  // reset the previous_block_verifiers_list struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(previous_block_verifiers_list.block_verifiers_name[count],0,strlen(previous_block_verifiers_list.block_verifiers_name[count]));
+    memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,strlen(previous_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,strlen(previous_block_verifiers_list.block_verifiers_IP_address[count]));
+  }
+
+  // copy the current_block_verifiers_list to the previous_block_verifiers_list
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memcpy(previous_block_verifiers_list.block_verifiers_name[count],current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+    memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count],strnlen(current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH+1));
+    memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  }
+
+  // reset the current_block_verifiers_list struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(current_block_verifiers_list.block_verifiers_name[count],0,strlen(current_block_verifiers_list.block_verifiers_name[count]));
+    memset(current_block_verifiers_list.block_verifiers_public_address[count],0,strlen(current_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,strlen(current_block_verifiers_list.block_verifiers_IP_address[count]));
+  }  
+
+  // copy the next_block_verifiers_list to the current_block_verifiers_list
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memcpy(current_block_verifiers_list.block_verifiers_name[count],next_block_verifiers_list.block_verifiers_name[count],strnlen(next_block_verifiers_list.block_verifiers_name[count],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+    memcpy(current_block_verifiers_list.block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],strnlen(next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH+1));
+    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],next_block_verifiers_list.block_verifiers_IP_address[count],strnlen(next_block_verifiers_list.block_verifiers_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  }
+
+  // reset the next_block_verifiers_list struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(next_block_verifiers_list.block_verifiers_name[count],0,strlen(next_block_verifiers_list.block_verifiers_name[count]));
+    memset(next_block_verifiers_list.block_verifiers_public_address[count],0,strlen(next_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,strlen(next_block_verifiers_list.block_verifiers_IP_address[count]));
+  }
+
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    for (count2 = 0; count2 < 23; count2++)
+    {
+      database_multiple_documents_fields.item[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    }    
+
+    if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  } 
+  database_multiple_documents_fields.document_count = 0;
+  database_multiple_documents_fields.database_fields_count = 0;
+
+  // get the top 100 delegates by total votes
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_AMOUNT,1,"total_vote_count",0) == 0)
+  {
+    UPDATE_BLOCK_VERIFIERS_ERROR("Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round\nFunction: update_block_verifiers_list");
+  }
+
+  // copy the database_multiple_documents_fields to the next_block_verifiers_list
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    for (count2 = 0; count2 < 23; count2++)
+    {
+      if (memcmp(database_multiple_documents_fields.item[count][count2],"delegate_name",13) == 0)
+      {
+        memcpy(next_block_verifiers_list.block_verifiers_name[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+      }
+      if (memcmp(database_multiple_documents_fields.item[count][count2],"public_address",13) == 0)
+      {
+        memcpy(next_block_verifiers_list.block_verifiers_public_address[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+      }
+      if (memcmp(database_multiple_documents_fields.item[count][count2],"IP_address",13) == 0)
+      {
+        memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+      }
+    }
+  }
+
+  // reset the database_multiple_documents_fields
+  for (count = 0; count < 150; count++)
+  {
+    for (count2 = 0; count2 < 23; count2++)
+    {
+      pointer_reset(database_multiple_documents_fields.item[count][count2]);
+      pointer_reset(database_multiple_documents_fields.value[count][count2]);
+    }
+  }
+  
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef UPDATE_BLOCK_VERIFIERS_ERROR
+}
+
 
 
 
@@ -3925,6 +4048,9 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
+  int count2 = 0;
+  int count3 = 0;
+  int counter = 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || data3 == NULL)
@@ -4088,13 +4214,75 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // wait for the block verifiers to process the votes
   sleep(10);
 
-  // process the vote results
-  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  // check if at least 67 of the block verifiers signed the data
+  if (BLOCK_VERIFIERS_AMOUNT - counter < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     restart_round();
   }
 
+  // at this point the block is created and verified so we can update our block verifiers list
+
+  // convert the network block string to a blockchain_data
+  if (network_block_string_to_blockchain_data(VRF_data.block_blob,"0") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // add all of the next_block_verifiers_list public addresses to the network block string
+
+  // add all of the block_blob_signature to the network block string
   
+
+
+
+
+
+  // create the data hash of all of the signatures
+  memset(data3,0,strlen(data3));
+  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memcpy(data3+count2,VRF_data.block_blob_signature_data[count],186);
+    count2 += 186;
+  }
+
+  // reset the current_round_part_vote_data.vote_results_valid struct
+  memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
+  current_round_part_vote_data.vote_results_valid = 0;
+  current_round_part_vote_data.vote_results_invalid = 0;
+
+  // get the data hash of the signed data
+  memset(data,0,strlen(data));
+  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)data3,(unsigned long long)strnlen(data3,BUFFER_SIZE));
+
+  // create the message
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
+  memcpy(data3+99,data,DATA_HASH_LENGTH);
+  memcpy(data3+227,"\",\r\n}",5);
+
+  // sign_data
+  if (sign_data(data3,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // send the message to all block verifiers
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+    }
+  }
+
+  // wait for the block verifiers to process the votes
+  sleep(10);
+
+  // process the vote results
+  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    restart_round();
+  }  
 
   pointer_reset(data);
   return 1;

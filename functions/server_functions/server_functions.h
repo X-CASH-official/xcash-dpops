@@ -10,6 +10,7 @@ Function prototypes
 void start_new_round();
 void start_current_round_start_blocks();
 void start_current_round();
+int update_block_verifiers_list();
 void data_network_node_save_previous_round_statistics();
 void add_block_verifiers_round_statistics();
 void add_round_statistics();
