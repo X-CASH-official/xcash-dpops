@@ -26,7 +26,7 @@ struct next_block_verifiers_list next_block_verifiers_list; // The list of block
 struct synced_block_verifiers_IP_addresses synced_block_verifiers_IP_addresses; // The list of block verifiers for syncing the databases
 struct main_nodes_list main_nodes_list; // The list of main nodes public address and IP address
 struct network_data_nodes_list network_data_nodes_list; // The network data nodes
-struct current_round_part_consensus_node_data current_round_part_consensus_node_data; // The network block data and VRF data for the current part of the round
+struct current_round_part_backup_node_data current_round_part_backup_node_data; // The current_round_part_backup_node for each round part
 struct current_round_part_vote_data current_round_part_vote_data; // The vote data for the current part of the round
 struct VRF_data_block_verifiers VRF_data_block_verifiers; // The list of all block verifiers received data from the main node
 struct VRF_data VRF_data; // The list of all of the VRF data to send to the block producer.

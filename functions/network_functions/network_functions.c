@@ -1343,11 +1343,13 @@ int sync_reserve_proofs_database()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_reserve_bytes_database
 Description: Checks if the block verifier needs to sync the reserve bytes database
+Parameters:
+  BLOCK_HEIGHT - The block height
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_check_reserve_bytes_database()
+int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
 {
   // Variables
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1504,7 +1506,7 @@ int sync_check_reserve_bytes_database()
   if (synced_block_verifiers_IP_addresses.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     color_print("The reserve bytes database is not synced","red");
-    if (sync_reserve_bytes_database() == 0)
+    if (sync_reserve_bytes_database(BLOCK_HEIGHT) == 0)
     {
       color_print("Could not sync the reserve bytes database","red");
       pointer_reset_all;
@@ -1527,11 +1529,13 @@ int sync_check_reserve_bytes_database()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_reserve_bytes_database
 Description: Syncs the reserve bytes database
+Parameters:
+  BLOCK_HEIGHT - The block height
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_bytes_database()
+int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
 {
   // Variables
   char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
@@ -1587,7 +1591,7 @@ int sync_reserve_bytes_database()
   }
 
   // get the current reserve bytes database
-  sscanf(current_block_height,"%zu", &number);
+  sscanf(BLOCK_HEIGHT,"%zu", &number);
   number = (XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT - number) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
 
   for (count2 = 0; count2 <= number; count2++)

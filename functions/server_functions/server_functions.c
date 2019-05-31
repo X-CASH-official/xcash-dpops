@@ -72,11 +72,23 @@ void start_new_round()
   memcpy(data,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
   color_print(data,"green");
 
+  // update all of the databases 
+  color_print("Updating the previous rounds data in the databases","green");
+  if (update_databases() == 0)
+  {
+     START_NEW_ROUND_ERROR("Could not update the databases. This means that your database is out of sync, and you need to resync your databases\nFunction: start_new_round");
+  }
+
   // reset the variables
   memset(current_round_part,0,strlen(current_round_part));
   memcpy(current_round_part,"1",1);
   memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
   memcpy(current_round_part_backup_node,"0",1);
+
+  memset(current_round_part_backup_node_data.current_round_part_1_backup_node,0,strlen(current_round_part_backup_node_data.current_round_part_1_backup_node));
+  memset(current_round_part_backup_node_data.current_round_part_2_backup_node,0,strlen(current_round_part_backup_node_data.current_round_part_2_backup_node));
+  memset(current_round_part_backup_node_data.current_round_part_3_backup_node,0,strlen(current_round_part_backup_node_data.current_round_part_3_backup_node));
+  memset(current_round_part_backup_node_data.current_round_part_4_backup_node,0,strlen(current_round_part_backup_node_data.current_round_part_4_backup_node));
   
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -142,8 +154,6 @@ void start_new_round()
   memset(VRF_data.vrf_beta_string_data_round_part_3,0,strlen(VRF_data.vrf_beta_string_data_round_part_3));
   memset(VRF_data.vrf_beta_string_round_part_3,0,strlen(VRF_data.vrf_beta_string_round_part_3));
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
-
-
 
   // check if the current block height - 3 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
   sscanf(current_block_height,"%zu", &count);
@@ -660,6 +670,103 @@ int update_block_verifiers_list()
 
 
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: update_databases
+Description: Updates the databases
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int update_databases()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  size_t count2;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL)
+  {
+    if (data == NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 == NULL)
+    {
+      pointer_reset(data2);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // get the previous block height
+  sscanf(current_block_height, "%zu", &count);
+  count--;
+  sprintf(data,"%zu",count);
+
+  // update the databases from the last rounds statistics
+  // create the message
+  memcpy(data2,"{\"block_height\":\"",17);
+  memcpy(data2+strlen(data2),data,strnlen(data,BUFFER_SIZE));
+  memcpy(data2+strlen(data2),"\",\"reserve_bytes_data_hash\":\"",29);
+  memcpy(data2+strlen(data2),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
+  memcpy(data2+strlen(data2),"\",\"reserve_bytes\":\"",19);
+  memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
+  memcpy(data2+strlen(data2),"\"}",2);
+
+  memcpy(data3,"reserve_bytes_",14);
+  count2 = count / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME; 
+  sprintf(data3+14,"%zu",count2);
+
+  insert_document_into_collection_json(DATABASE_NAME,data3,data2,0);
+  add_block_verifiers_round_statistics(data);
+  add_round_statistics();
+
+
+  
+  // check if your reserve bytes database is synced
+  if (sync_check_reserve_bytes_database(data) == 0)
+  {
+    color_print("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.\nFunction: update_databases","red");
+  }
+  // wait for the other block verifiers to sync the databse
+  sleep(10);
+
+  // check if your delegates database is synced
+  if (sync_check_delegates_database() == 0)
+  {
+    color_print("Could not check if the delegates database is updated. This means you might need to sync the delegates database.\nFunction: update_databases","red");
+  }
+  // wait for the other block verifiers to sync the databse
+  sleep(10);
+
+  // check if your statistics database is synced
+  if (sync_check_statistics_database() == 0)
+  {
+    color_print("Could not check if the statistics database is updated. This means you might need to sync the statistics database.\nFunction: update_databases","red");
+  }
+  // wait for the other block verifiers to sync the databse
+  sleep(10);
+  
+  return 1;
+
+  #undef pointer_reset_all
+}
+
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -718,10 +825,12 @@ void data_network_node_save_previous_round_statistics()
 -----------------------------------------------------------------------------------------------------------
 Name: add_block_verifiers_round_statistics
 Description: Adds the block verifier statistics to the database after adding the block to the network
+Parameters:
+  BLOCK_HEIGHT - The block height
 -----------------------------------------------------------------------------------------------------------
 */
 
-void add_block_verifiers_round_statistics()
+void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -813,7 +922,7 @@ void add_block_verifiers_round_statistics()
     }
 
     // add one to the VRF_node_public_and_private_key_total_rounds and the current block height to the VRF_node_public_and_private_key_block_heights if the public address is the block producer
-    if (memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_public_and_secret_key_public_address,XCASH_WALLET_LENGTH) == 0)
+    if ((memcmp(current_round_part_backup_node_data.current_round_part_2_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_random_data_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_2_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_2_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_random_data_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_2_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_random_data_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_2_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_random_data_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_2_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_random_data_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"VRF_node_public_and_private_key_total_rounds",data,0) == 0)
@@ -838,7 +947,7 @@ void add_block_verifiers_round_statistics()
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the VRF_node_public_and_private_key_block_heights from the database\nFunction: add_block_verifiers_round_statistics");
       }      
       memcpy(data,",",1);
-      memcpy(data+1,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+      memcpy(data+1,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,BUFFER_SIZE));
       memset(data2,0,strnlen(data2,BUFFER_SIZE));
       memcpy(data2,"{\"VRF_node_public_and_private_key_block_heights\":\"",50);
       memcpy(data2+50,data,strnlen(data,BUFFER_SIZE));
@@ -875,7 +984,7 @@ void add_block_verifiers_round_statistics()
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the VRF_node_random_data_block_heights from the database\nFunction: add_block_verifiers_round_statistics");
       }      
       memcpy(data,",",1);
-      memcpy(data+1,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+      memcpy(data+1,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,BUFFER_SIZE));
       memset(data2,0,strnlen(data2,BUFFER_SIZE));
       memcpy(data2,"{\"VRF_node_random_data_block_heights\":\"",39);
       memcpy(data2+39,data,strnlen(data,BUFFER_SIZE));
@@ -886,8 +995,8 @@ void add_block_verifiers_round_statistics()
       }
     }
 
-    // add one to the VRF_node_public_and_private_key_total_rounds and the current block height to the VRF_node_public_and_private_key_block_heights if the public address is the block producer
-    if (memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_next_main_nodes_public_address,XCASH_WALLET_LENGTH) == 0)
+    // add one to the VRF_node_next_main_nodes_total_rounds and the current block height to the VRF_node_public_and_private_key_block_heights if the public address is the block producer
+    if ((memcmp(current_round_part_backup_node_data.current_round_part_3_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_next_main_nodes_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_3_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_3_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_3_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_3_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_3_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"VRF_node_next_main_nodes_total_rounds",data,0) == 0)
@@ -912,7 +1021,7 @@ void add_block_verifiers_round_statistics()
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the VRF_node_next_main_nodes_block_heights from the database\nFunction: add_block_verifiers_round_statistics");
       }      
       memcpy(data,",",1);
-      memcpy(data+1,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+      memcpy(data+1,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,BUFFER_SIZE));
       memset(data2,0,strnlen(data2,BUFFER_SIZE));
       memcpy(data2,"{\"VRF_node_next_main_nodes_block_heights\":\"",43);
       memcpy(data2+43,data,strnlen(data,BUFFER_SIZE));
@@ -924,7 +1033,7 @@ void add_block_verifiers_round_statistics()
     }
 
     // add one to the block_producer_total_rounds and the current block height to the block_producer_block_heights if the public address is the block producer
-    if (memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0)
+    if ((memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_total_rounds",data,0) == 0)
@@ -949,7 +1058,7 @@ void add_block_verifiers_round_statistics()
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database\nFunction: add_block_verifiers_round_statistics");
       }      
       memcpy(data,",",1);
-      memcpy(data+1,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+      memcpy(data+1,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,BUFFER_SIZE));
       memset(data2,0,strnlen(data2,BUFFER_SIZE));
       memcpy(data2,"{\"block_producer_block_heights\":\"",33);
       memcpy(data2+33,data,strnlen(data,BUFFER_SIZE));
@@ -3548,143 +3657,7 @@ Return: 0 if an error has occured, 1 if successfull
 
 int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
-  // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  int count = 0;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL || message == NULL || message2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    if (message2 != NULL)
-    {
-      pointer_reset(message2);
-    }
-    if (message3 != NULL)
-    {
-      pointer_reset(message3);
-    }
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
-  // threads
-  pthread_t thread_id;
-
-  // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL; \
-  free(message2); \
-  message2 = NULL; \
-  free(message3); \
-  message3 = NULL;
-
-  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR(settings) \
-  color_print(settings,"red"); \
-  pointer_reset_all; \
-  return 0;
-
-  // since the block verifier has received data from the main node, we need to stop the mainnode_timeout_thread
-  mainnode_timeout_thread_parameters->data_received = 1;
-
-  // set the next server message since the block verifiers will send the data to each other
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
-
-  // verify the data
-  if (verify_data(message,0,1,1) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  // parse the message
-  memset(vrf_public_key_part_1,0,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
-  if (parse_json_data(message,"vrf_public_key",vrf_public_key_part_1) == 0 || parse_json_data(message,"vrf_alpha_string",data) == 0 || parse_json_data(message,"vrf_proof",data2) == 0 || parse_json_data(message,"vrf_beta_string",data3) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  // create the message
-  memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
-
-  // verify the VRF data
-  if (crypto_vrf_verify((unsigned char*)data3,(const unsigned char*)vrf_public_key_part_1,(const unsigned char*)data2,(const unsigned char*)data,(unsigned long long)strnlen(data,BUFFER_SIZE)) == 0)
-  {
-    memcpy(message2+75,"valid",5);
-  }
-  else
-  {
-    memcpy(message2+75,"invalid",7);
-  }
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
-
-  // SHA2-512 hash all of the VRF data
-  memcpy(message3,vrf_public_key_part_1,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data,strnlen(data,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data2,strnlen(data2,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data3,strnlen(data3,BUFFER_SIZE));
-  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
-  memcpy(message2+strnlen(message,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
   
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
-
-  // save all of the VRF data to the current_round_part_consensus_node_data struct
-  memcpy(current_round_part_consensus_node_data.vrf_public_key,vrf_public_key_part_1,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
-  memcpy(current_round_part_consensus_node_data.vrf_alpha_string,data,strnlen(data,BUFFER_SIZE));
-  memcpy(current_round_part_consensus_node_data.vrf_proof,data2,strnlen(data2,BUFFER_SIZE));
-  memcpy(current_round_part_consensus_node_data.vrf_beta_string,data3,strnlen(data3,BUFFER_SIZE));
-
-  // sign_data
-  if (sign_data(message2,0) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  // send the message to all block verifiers
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message2,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
-    }
-  }
-
-  // start the node_to_node_message_timeout
-  if (pthread_create(&thread_id, NULL, &node_to_node_message_timeout_thread, (void *)node_to_node_timeout_thread_parameters) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-  // set the thread to dettach once completed, since we do not need to use anything it will return
-  if (pthread_detach(thread_id) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  pointer_reset(data);
-  return 1;
-
-  #undef pointer_reset_all
-  #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR
 }
 
 
@@ -3715,143 +3688,7 @@ Return: 0 if an error has occured, 1 if successfull
 
 int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
-  // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  int count = 0;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL || message == NULL || message2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    if (message2 != NULL)
-    {
-      pointer_reset(message2);
-    }
-    if (message3 != NULL)
-    {
-      pointer_reset(message3);
-    }
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
-  // threads
-  pthread_t thread_id;
-
-  // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL; \
-  free(message2); \
-  message2 = NULL; \
-  free(message3); \
-  message3 = NULL;
-
-  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR(settings) \
-  color_print(settings,"red"); \
-  pointer_reset_all; \
-  return 0;
-
-  // since the block verifier has received data from the main node, we need to stop the mainnode_timeout_thread
-  mainnode_timeout_thread_parameters->data_received = 1;
-
-  // set the next server message since the block verifiers will send the data to each other
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
-
-  // verify the data
-  if (verify_data(message,0,1,1) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  // parse the message
-  memset(vrf_alpha_string_part_2,0,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
-  if (parse_json_data(message,"vrf_public_key",data) == 0 || parse_json_data(message,"vrf_alpha_string",vrf_alpha_string_part_2) == 0 || parse_json_data(message,"vrf_proof",data2) == 0 || parse_json_data(message,"vrf_beta_string",data3) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  // create the message
-  memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
-
-  // verify the VRF data
-  if (crypto_vrf_verify((unsigned char*)data3,(const unsigned char*)data,(const unsigned char*)data2,(const unsigned char*)vrf_alpha_string_part_2,(unsigned long long)strnlen(vrf_alpha_string_part_2,BUFFER_SIZE)) == 0)
-  {
-    memcpy(message2+75,"valid",5);
-  }
-  else
-  {
-    memcpy(message2+75,"invalid",7);
-  }
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
-
-  // SHA2-512 hash all of the VRF data
-  memcpy(message3,data,strnlen(data,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data2,strnlen(data2,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data3,strnlen(data3,BUFFER_SIZE));
-  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
-  memcpy(message2+strnlen(message,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
   
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
-
-  // save all of the VRF data to the current_round_part_consensus_node_data struct
-  memcpy(current_round_part_consensus_node_data.vrf_public_key,data,strnlen(data,BUFFER_SIZE));
-  memcpy(current_round_part_consensus_node_data.vrf_alpha_string,vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
-  memcpy(current_round_part_consensus_node_data.vrf_proof,data2,strnlen(data2,BUFFER_SIZE));
-  memcpy(current_round_part_consensus_node_data.vrf_beta_string,data3,strnlen(data3,BUFFER_SIZE));
-
-  // sign_data
-  if (sign_data(message2,0) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  // send the message to all block verifiers
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message2,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
-    }
-  }
-
-  // start the node_to_node_message_timeout
-  if (pthread_create(&thread_id, NULL, &node_to_node_message_timeout_thread, (void *)node_to_node_timeout_thread_parameters) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-  // set the thread to dettach once completed, since we do not need to use anything it will return
-  if (pthread_detach(thread_id) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  pointer_reset(data);
-  return 1;
-
-  #undef pointer_reset_all
-  #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR
 }
 
 
@@ -3882,149 +3719,7 @@ Return: 0 if an error has occured, 1 if successfull
 
 int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
 {
-  // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data4 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  int count = 0;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL || message == NULL || message2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    if (data4 != NULL)
-    {
-      pointer_reset(data4);
-    }
-    if (message2 != NULL)
-    {
-      pointer_reset(message2);
-    }
-    if (message3 != NULL)
-    {
-      pointer_reset(message3);
-    }
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
-  // threads
-  pthread_t thread_id;
-
-  // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL; \
-  free(data4); \
-  data4 = NULL; \
-  free(message2); \
-  message2 = NULL; \
-  free(message3); \
-  message3 = NULL;
-
-  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR(settings) \
-  color_print(settings,"red"); \
-  pointer_reset_all; \
-  return 0;
-
-  // since the block verifier has received data from the main node, we need to stop the mainnode_timeout_thread
-  mainnode_timeout_thread_parameters->data_received = 1;
-
-  // set the next server message since the block verifiers will send the data to each other
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
-
-  // verify the data
-  if (verify_data(message,0,1,1) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  // parse the message
-  if (parse_json_data(message,"vrf_public_key",data) == 0 || parse_json_data(message,"vrf_alpha_string",data2) == 0 || parse_json_data(message,"vrf_proof",data3) == 0 || parse_json_data(message,"vrf_beta_string",data4) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  // create the message
-  memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
-
-  // verify the VRF data and check that the vrf_public_key_part_1 and vrf_alpha_string_part_2 match the current vrf_public_key and vrf_alpha_string
-  if (crypto_vrf_verify((unsigned char*)data4,(const unsigned char*)data,(const unsigned char*)data3,(const unsigned char*)data2,(unsigned long long)strnlen(data2,BUFFER_SIZE)) == 0 || memcmp(current_round_part_consensus_node_data.vrf_public_key,data,strnlen(data,BUFFER_SIZE)) != 0 || memcmp(current_round_part_consensus_node_data.vrf_alpha_string,data2,strnlen(data2,BUFFER_SIZE)) != 0)
-  {
-    memcpy(message2+75,"valid",5);
-  }
-  else
-  {
-    memcpy(message2+75,"invalid",7);
-  }
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
-
-  // SHA2-512 hash all of the VRF data
-  memcpy(message3,data,strnlen(data,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data2,strnlen(data2,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data3,strnlen(data3,BUFFER_SIZE));
-  memcpy(message3+strnlen(message3,BUFFER_SIZE),data4,strnlen(data4,BUFFER_SIZE));
-  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)message3,(unsigned long long)strnlen(message3,BUFFER_SIZE));
-  memcpy(message2+strnlen(message,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
   
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
-
-  // save all of the VRF data to the current_round_part_consensus_node_data struct
-  memcpy(current_round_part_consensus_node_data.vrf_public_key,data,strnlen(data,BUFFER_SIZE));
-  memcpy(current_round_part_consensus_node_data.vrf_alpha_string,vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
-  memcpy(current_round_part_consensus_node_data.vrf_proof,data2,strnlen(data2,BUFFER_SIZE));
-  memcpy(current_round_part_consensus_node_data.vrf_beta_string,data3,strnlen(data3,BUFFER_SIZE));
-
-  // sign_data
-  if (sign_data(message2,0) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  // send the message to all block verifiers
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message2,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
-    }
-  }
-
-  // start the node_to_node_message_timeout
-  if (pthread_create(&thread_id, NULL, &node_to_node_message_timeout_thread, (void *)node_to_node_timeout_thread_parameters) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-  // set the thread to dettach once completed, since we do not need to use anything it will return
-  if (pthread_detach(thread_id) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-
-  pointer_reset(data);
-  return 1;
-
-  #undef pointer_reset_all
-  #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR
 }
 
 
@@ -4091,13 +3786,13 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // verify the data
   if (verify_data(MESSAGE,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"block_blob",data) == 0 || parse_json_data(MESSAGE,"public_address",data2) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // create the message
@@ -4106,7 +3801,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // convert the network_block_string to blockchain_data
   if (network_block_string_to_blockchain_data(data,"0") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not convert the network_block_string to blockchain_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not convert the network_block_string to blockchain_data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // check if the public_address is the correct main node
@@ -4157,7 +3852,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // sign_data
   if (sign_data(data3,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // send the message to all block verifiers
@@ -4182,7 +3877,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   memset(data,0,strlen(data));
   if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign the network block string\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign the network block string\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // create the message
@@ -4194,7 +3889,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // sign_data
   if (sign_data(data3,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // set the server message
@@ -4224,29 +3919,29 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // at this point the block is created and verified so we can update our block verifiers list as this block will be added to the network
   if (update_block_verifiers_list() == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not update the block verifiers list\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not update the block verifiers list\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // convert the network_block_string to a blockchain_data
   if (network_block_string_to_blockchain_data(VRF_data.block_blob,"0") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // add all of the next_block_verifiers_list public addresses and block_blob_signature to the network block string
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count),0,strlen(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[0]));
-    memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count]);
-    memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count),0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[0]));
-    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count]);
+    memset(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],0,strlen(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[0]));
+    memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],strnlen(next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH+1));
+    memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[0]));
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],strnlen(VRF_data.block_blob_signature[count],BUFFER_SIZE));
   }
 
   // convert the blockchain_data to a network_block_string
   memset(data3,0,strlen(data3));
   if (blockchain_data_to_network_block_string(data3) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not convert the blockchain_data to a network_block_string\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not convert the blockchain_data to a network_block_string\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
@@ -4270,7 +3965,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // sign_data
   if (sign_data(data3,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // send the message to all block verifiers
@@ -4291,6 +3986,13 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
     restart_round();
   } 
 
+  // save the current_round_part_backup_node
+  memcpy(current_round_part_backup_node_data.current_round_part_4_backup_node,current_round_part_backup_node,1);
+
+  // copy the reserve bytes data hash
+  memcpy(VRF_data.reserve_bytes_data_hash,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+
+  // copy the current block height to calculate when the block hash been submitted to the network
   memset(data3,0,strlen(data3));
   memcpy(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
 

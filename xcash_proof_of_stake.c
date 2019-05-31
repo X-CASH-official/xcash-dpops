@@ -218,19 +218,24 @@ int main(int parameters_count, char* parameters[])
     }
   }
 
-  // initialize the current_round_part_consensus_node_data struct
-  current_round_part_consensus_node_data.vrf_public_key = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  current_round_part_consensus_node_data.vrf_alpha_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  current_round_part_consensus_node_data.vrf_proof = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  current_round_part_consensus_node_data.vrf_beta_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  current_round_part_consensus_node_data.block_blob = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  // initialize the round_part_backup_node_data struct
+  current_round_part_backup_node_data.current_round_part_1_backup_node = (char*)calloc(2,sizeof(char));
+  current_round_part_backup_node_data.current_round_part_2_backup_node = (char*)calloc(2,sizeof(char));
+  current_round_part_backup_node_data.current_round_part_3_backup_node = (char*)calloc(2,sizeof(char));
+  current_round_part_backup_node_data.current_round_part_4_backup_node = (char*)calloc(2,sizeof(char));
+
+  if (current_round_part_backup_node_data.current_round_part_1_backup_node == NULL || current_round_part_backup_node_data.current_round_part_2_backup_node == NULL || current_round_part_backup_node_data.current_round_part_3_backup_node == NULL || current_round_part_backup_node_data.current_round_part_4_backup_node == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
 
   // initialize the current_round_part_vote_data struct
   current_round_part_vote_data.current_vote_results = (char*)calloc(DATA_HASH_LENGTH+1,sizeof(char));
   current_round_part_vote_data.vote_results_valid = 0;
   current_round_part_vote_data.vote_results_invalid = 0;
 
-  if (current_round_part_consensus_node_data.vrf_public_key == NULL || current_round_part_consensus_node_data.vrf_alpha_string == NULL || current_round_part_consensus_node_data.vrf_proof == NULL || current_round_part_consensus_node_data.vrf_beta_string == NULL || current_round_part_consensus_node_data.block_blob == NULL)
+  if (current_round_part_vote_data.current_vote_results == NULL)
   {
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -302,6 +307,7 @@ int main(int parameters_count, char* parameters[])
   VRF_data.vrf_beta_string_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   VRF_data.vrf_beta_string_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   VRF_data.block_blob = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  VRF_data.reserve_bytes_data_hash = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
   if (VRF_data.vrf_secret_key_data_round_part_1 == NULL || VRF_data.vrf_secret_key_round_part_1 == NULL || VRF_data.vrf_public_key_data_round_part_1 == NULL || VRF_data.vrf_public_key_round_part_1 == NULL || VRF_data.vrf_alpha_string_data_round_part_1 == NULL || VRF_data.vrf_alpha_string_round_part_1 == NULL || VRF_data.vrf_proof_data_round_part_1 == NULL || VRF_data.vrf_proof_round_part_1 == NULL || VRF_data.vrf_beta_string_data_round_part_1 == NULL || VRF_data.vrf_beta_string_round_part_1 == NULL || VRF_data.vrf_public_key_data_round_part_2 == NULL || VRF_data.vrf_public_key_round_part_2 == NULL || VRF_data.vrf_alpha_string_data_round_part_2 == NULL || VRF_data.vrf_alpha_string_round_part_2 == NULL || VRF_data.vrf_proof_data_round_part_2 == NULL || VRF_data.vrf_proof_round_part_2 == NULL || VRF_data.vrf_beta_string_data_round_part_2 == NULL || VRF_data.vrf_beta_string_round_part_2 == NULL || VRF_data.vrf_public_key_data_round_part_3 == NULL || VRF_data.vrf_public_key_round_part_3 == NULL || VRF_data.vrf_alpha_string_data_round_part_3 == NULL || VRF_data.vrf_alpha_string_round_part_3 == NULL || VRF_data.vrf_proof_data_round_part_3 == NULL || VRF_data.vrf_proof_round_part_3 == NULL || VRF_data.vrf_beta_string_data_round_part_3 == NULL || VRF_data.vrf_beta_string_round_part_3 == NULL || VRF_data.block_blob == NULL)

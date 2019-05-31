@@ -93,12 +93,11 @@ struct network_data_nodes_list {
     char* network_data_nodes_IP_address[NETWORK_DATA_NODES_AMOUNT]; // The block verifiers IP address
 };
 
-struct current_round_part_consensus_node_data {
-    char* vrf_public_key; // The VRF public key
-    char* vrf_alpha_string; // The VRF alpha string
-    char* vrf_proof; // The VRF proof
-    char* vrf_beta_string; // The VRF beta string
-    char* block_blob; // The block_blob
+struct current_round_part_backup_node_data {
+    char* current_round_part_1_backup_node;
+    char* current_round_part_2_backup_node;
+    char* current_round_part_3_backup_node;
+    char* current_round_part_4_backup_node;
 };
 
 struct current_round_part_vote_data {
@@ -164,8 +163,8 @@ struct VRF_data {
     char* vrf_beta_string_data_round_part_3; // The VRF beta string (output string) text for round part 3
     unsigned char* vrf_beta_string_round_part_3; // The VRF beta string (output string) for round part 3
     char* block_blob_signature[BLOCK_VERIFIERS_AMOUNT]; // The signed block data text
-    char* block_blob_signature_data[BLOCK_VERIFIERS_AMOUNT]; // The signed block data
     char* block_blob; // The block_blob that the block producer creates to send to the consensus node
+    char* reserve_bytes_data_hash; // The reserve bytes data hash
 };
 
 struct blockchain_reserve_bytes {

@@ -588,55 +588,5 @@ Return: NULL
 
 void* node_to_node_message_timeout_thread(void* parameters)
 {
-  // Variables
-  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  struct node_to_node_timeout_thread_parameters* data = parameters;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (string == NULL)
-  {
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
-  sleep(TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT);  
-  printf("Total connection time for all block verifiers to send data to all other block verifiers for current round part %s and current round part backup node %s has been reached",current_round_part,current_round_part_backup_node); 
   
-  // create the message
-  memcpy(string,"{\r\n \"message_settings\": \"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS\",\r\n  \"vote_result\": \"",84);
-
-  // verify the VRF data
-  if (crypto_vrf_verify((unsigned char*)current_round_part_consensus_node_data.vrf_beta_string,(const unsigned char*)current_round_part_consensus_node_data.vrf_public_key,(const unsigned char*)current_round_part_consensus_node_data.vrf_proof,(const unsigned char*)current_round_part_consensus_node_data.vrf_alpha_string,(unsigned long long)strnlen(current_round_part_consensus_node_data.vrf_alpha_string,BUFFER_SIZE)) == 0)
-  {
-    memcpy(string+84,"TRUE",4);
-  }
-  else
-  {
-    memcpy(string+84,"FALSE",5);
-  }
-  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"vrf_public_key\": \"",25);
-  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.vrf_public_key,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"vrf_alpha_string\": \"",27);
-  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.vrf_alpha_string,strnlen(current_round_part_consensus_node_data.vrf_alpha_string,BUFFER_SIZE));
-  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"vrf_proof\": \"",20);
-  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.vrf_proof,VRF_PROOF_LENGTH);
-  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"vrf_beta_string\": \"",26);
-  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.vrf_beta_string,VRF_BETA_LENGTH);
-  memcpy(string+strnlen(string,BUFFER_SIZE),"\",\r\n  \"block_blob\": \"",21);
-  memcpy(string+strnlen(string,BUFFER_SIZE),current_round_part_consensus_node_data.block_blob,strnlen(current_round_part_consensus_node_data.block_blob,BUFFER_SIZE));
-  memcpy(string+strnlen(string,BUFFER_SIZE),"\"}",2);
-
-  // set the next server message since a backup node will have to be selected
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",48); 
-  
-  pointer_reset(string);
-
-  // close the client connection, since the consensus node is still connected
-  kill((intptr_t)data->process_id, SIGTERM);
-
-  // reset the node_to_node_timeout_thread_parameters
-  data->process_id = 0;
-
-  pthread_exit((void *)(intptr_t)1);
 }
