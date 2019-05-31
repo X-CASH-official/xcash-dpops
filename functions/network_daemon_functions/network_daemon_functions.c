@@ -91,6 +91,58 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: submit_block_template
+Description: Adds a network block to the network
+Parameters:
+  data - The block_blob
+  MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int submit_block_template(char* data, const int HTTP_SETTINGS)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+  const size_t DATA_LENGTH = strnlen(data,BUFFER_SIZE);
+
+  // Variables
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // create the message
+  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"submit_block\",\"params\":[\"",61);
+  memcpy(message+61,data,DATA_LENGTH);
+  memcpy(message+61+DATA_LENGTH,"\"]}",3);
+  memset(data,0,strnlen(data,BUFFER_SIZE));
+
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"submit block template",HTTP_SETTINGS) <= 0)
+  {  
+    pointer_reset(message);
+    return 0;
+  }
+  
+  if (strstr(data,"error") != NULL)
+  {
+    pointer_reset(message);
+    return 0;
+  }
+  
+  pointer_reset(message); 
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_block_settings
 Description: Gets the block settings
 Parameters:

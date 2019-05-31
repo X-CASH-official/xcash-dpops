@@ -107,8 +107,7 @@ void start_new_round()
     memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count]));
     memset(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count]));
 
-    memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));  
-    memset(VRF_data.block_blob_signature_data[count],0,strlen(VRF_data.block_blob_signature_data[count]));  
+    memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); 
     
     memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
     memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));

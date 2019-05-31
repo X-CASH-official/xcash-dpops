@@ -313,10 +313,9 @@ int main(int parameters_count, char* parameters[])
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     VRF_data.block_blob_signature[count] = (char*)calloc(XCASH_SIGN_DATA_LENGTH+1,sizeof(char));
-    VRF_data.block_blob_signature_data[count] = (char*)calloc(187,sizeof(char));
    
     // check if the memory needed was allocated on the heap successfully
-    if (VRF_data.block_blob_signature[count] == NULL || VRF_data.block_blob_signature_data[count] == NULL)
+    if (VRF_data.block_blob_signature[count] == NULL)
     {
       color_print("Could not allocate the memory needed on the heap","red");
       exit(0);
