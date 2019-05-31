@@ -3918,13 +3918,12 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_4(const int CLIENT_SOCKET, const char* MESSAGE)
+int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESSAGE)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
 
   // check if the memory needed was allocated on the heap successfully
@@ -3942,10 +3941,6 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const int CLIENT
     {
       pointer_reset(data3);
     }
-    if (message2 != NULL)
-    {
-      pointer_reset(message2);
-    }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
@@ -3957,9 +3952,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const int CLIENT
   free(data2); \
   data2 = NULL; \
   free(data3); \
-  data3 = NULL; \
-  free(message2); \
-  message2 = NULL;
+  data3 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR(settings) \
   color_print(settings,"red"); \
@@ -3977,13 +3970,13 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const int CLIENT
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob",data) == 0)
+  if (parse_json_data(MESSAGE,"block_blob",data) == 0 || parse_json_data(MESSAGE,"public_address",data2) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // create the message
-  memcpy(message2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
+  memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"",75);
 
   // convert the network_block_string to blockchain_data
   if (network_block_string_to_blockchain_data(data,"0") == 0)
@@ -3991,28 +3984,53 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const int CLIENT
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not convert the network_block_string to blockchain_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
-  // verify the network block
-  if (verify_network_block_data(0,1,1,"0","") == 1)
+  // check if the public_address is the correct main node
+  if (main_network_data_node_create_block == 1 && memcmp(network_data_nodes_list.network_data_nodes_public_address[0],data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1)
   {
-    memcpy(message2+75,"valid",5);
+    memcpy(data3+75,"valid",5);
+  }
+  else if (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1)
+  {
+    memcpy(data3+75,"valid",5);
+  }
+  else if (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1)
+  {
+    memcpy(data3+75,"valid",5);
+  }
+  else if (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1)
+  {
+    memcpy(data3+75,"valid",5);
+  }
+  else if (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1)
+  {
+    memcpy(data3+75,"valid",5);
+  }
+  else if (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1)
+  {
+    memcpy(data3+75,"valid",5);
+  }
+  else if (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1)
+  {
+    memcpy(data3+75,"valid",5);
   }
   else
   {
-    memcpy(message2+75,"invalid",7);
+    memcpy(data3+75,"invalid",7);
   }
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
+ 
+  memcpy(data3+strnlen(data3,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
 
   // SHA2-512 hash the received message
   crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(data3+strnlen(data3,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
 
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
+  memcpy(data3+strnlen(data3,BUFFER_SIZE),"\",\r\n}",5); 
 
   // save the VRF_data struct
   memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
 
   // sign_data
-  if (sign_data(message2,0) == 0)
+  if (sign_data(data3,0) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
@@ -4022,9 +4040,61 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const int CLIENT
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message2,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
+      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
     }
   }
+
+  // wait for the block verifiers to process the votes
+  sleep(10);
+
+  // process the vote results
+  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    restart_round();
+  }
+
+  // sign the network block string
+  memset(data,0,strlen(data));
+  if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign the network block string\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // create the message
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
+  memcpy(data3+110,data,XCASH_SIGN_DATA_LENGTH);
+  memcpy(data3+203,"\",\r\n }",8);
+
+  // sign_data
+  if (sign_data(data3,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // set the server message
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",27); 
+
+  // send the message to all block verifiers
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+    }
+  }
+
+  // wait for the block verifiers to process the votes
+  sleep(10);
+
+  // process the vote results
+  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    restart_round();
+  }
+
+  
 
   pointer_reset(data);
   return 1;
@@ -4112,6 +4182,80 @@ int server_receive_data_socket_node_to_node(char* message)
 
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature(const char* message)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  // verify the data
+  if (verify_data(message,0,1,1) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not verify data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE");
+  }
+
+  // parse the message
+  if (parse_json_data(message,"block_blob_signature",data) == 0 || parse_json_data(message,"public_address",data2) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not parse the data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE");
+  }
+
+  // process the vote data
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
+    {
+      memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
+    }
+  }  
+
+  pointer_reset_all;
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR
 }
 
 
@@ -4789,9 +4933,23 @@ int create_server(const int MESSAGE_SETTINGS)
            pointer_reset_all; 
            _exit(0);
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\"") != NULL)
          {
-           server_receive_data_socket_main_node_to_node_message_part_4(CLIENT_SOCKET,(const char*)buffer);
+           server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35) == 0)
+         {
+           server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",35) == 0)
+         {
+           server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
            close(SOCKET);
            pointer_reset_all; 
            _exit(0);

@@ -2477,6 +2477,64 @@ int reset_variables_allocated_on_the_heap_test()
 
 
 
+  // sign_network_block_string   
+  // read the current system memory usage
+  if (settings2 == 1)
+  {
+    previous_system_memory_usage = get_program_memory_usage(process_id_file);
+    for (count = 0; count <= 1000; count++)
+    {
+      fprintf(stderr,"Current progress for sign_network_block_string: %zu / 1000",count);
+      fprintf(stderr,"\r");
+      sign_network_block_string(data_test,"X-CASH",0);
+      if (count == 0)
+      {    
+        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
+      }
+      if (count == 10)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
+        {
+          color_print("FAILED! sign_network_block_string has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }      
+      }
+      if (count == 100)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
+        {
+          color_print("FAILED! sign_network_block_string has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }  
+      }
+      if (count == 1000)
+      {
+        current_system_memory_usage = get_program_memory_usage(process_id_file);
+        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 250 && current_memory_usage > 0)
+        {
+          color_print("FAILED! sign_network_block_string has not reset all variables allocated on the heap","red");
+          settings2 = 0;
+          break;
+        }
+        else
+        {
+          color_print("PASSED! sign_network_block_string has reset all variables allocated on the heap","green");
+          count_test++;
+        } 
+      }    
+    }
+  }
+  else
+  {
+    color_print("All other test will not be run","red");
+  }
+
+
+
    // check_reserve_proofs   
   // read the current system memory usage
   if (settings2 == 1)
