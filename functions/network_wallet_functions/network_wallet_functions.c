@@ -77,6 +77,75 @@ int get_public_address(const int MESSAGE_SETTINGS)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sign_network_block_string
+Description: Signs the network block string
+Parameters:
+  data - The signed data
+  message - The sign_data
+  MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sign_network_block_string(char *data, char* message, const int HTTP_SETTINGS)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+  // define macros
+  #define pointer_reset_all \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data2 == NULL || data3 == NULL)
+  {
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  } 
+
+  // sign_data
+  memcpy(data2,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
+  memcpy(data2+60,message,strnlen(message,BUFFER_SIZE));
+  memcpy(data2+strlen(data2),"\"}}",3);
+
+  if (send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data2,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
+  {  
+    pointer_reset_all;
+    return 0;
+  } 
+
+  if (parse_json_data(data3,"signature",data) == 0)
+  {
+    pointer_reset_all;
+    return 0;
+  }
+
+  pointer_reset_all;
+  return 1;
+  
+  #undef pointer_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: data_verify
 Description: Verifies data
 Parameters:

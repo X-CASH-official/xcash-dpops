@@ -8,6 +8,7 @@ Function prototypes
 */
 
 int get_public_address(const int MESSAGE_SETTINGS);
+int sign_network_block_string(char *data, char* message, const int HTTP_SETTINGS);
 int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const char* DATA_SIGNATURE, const char* DATA);
 int check_reserve_proofs(char *result, char* public_address, char* reserve_proof, const int HTTP_SETTINGS);
 #endif
