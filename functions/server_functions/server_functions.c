@@ -77,6 +77,75 @@ void start_new_round()
   memcpy(current_round_part,"1",1);
   memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
   memcpy(current_round_part_backup_node,"0",1);
+  
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count]));
+    memset(VRF_data_block_verifiers.block_blob_signature[count],0,strlen(VRF_data_block_verifiers.block_blob_signature[count]));
+    memset(VRF_data_block_verifiers.block_blob_signature_data_hash[count],0,strlen(VRF_data_block_verifiers.block_blob_signature_data_hash[count]));
+
+    memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));  
+    
+    memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
+    memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));
+    memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count]));
+  }
+
+  // reset the VRF_data struct
+  memset(VRF_data.vrf_secret_key_data_round_part_1,0,strlen(VRF_data.vrf_secret_key_data_round_part_1));
+  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen(VRF_data.vrf_secret_key_round_part_1));
+  memset(VRF_data.vrf_public_key_data_round_part_1,0,strlen(VRF_data.vrf_public_key_data_round_part_1));
+  memset(VRF_data.vrf_public_key_round_part_1,0,strlen(VRF_data.vrf_public_key_round_part_1));
+  memset(VRF_data.vrf_alpha_string_data_round_part_1,0,strlen(VRF_data.vrf_alpha_string_data_round_part_1));
+  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen(VRF_data.vrf_alpha_string_round_part_1));
+  memset(VRF_data.vrf_proof_data_round_part_1,0,strlen(VRF_data.vrf_proof_data_round_part_1));
+  memset(VRF_data.vrf_proof_round_part_1,0,strlen(VRF_data.vrf_proof_round_part_1));
+  memset(VRF_data.vrf_beta_string_data_round_part_1,0,strlen(VRF_data.vrf_beta_string_data_round_part_1));
+  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen(VRF_data.vrf_beta_string_round_part_1));
+  memset(VRF_data.vrf_public_key_data_round_part_2,0,strlen(VRF_data.vrf_public_key_data_round_part_2));
+  memset(VRF_data.vrf_public_key_round_part_2,0,strlen(VRF_data.vrf_public_key_round_part_2));
+  memset(VRF_data.vrf_alpha_string_data_round_part_2,0,strlen(VRF_data.vrf_alpha_string_data_round_part_2));
+  memset(VRF_data.vrf_alpha_string_round_part_2,0,strlen(VRF_data.vrf_alpha_string_round_part_2));
+  memset(VRF_data.vrf_proof_data_round_part_2,0,strlen(VRF_data.vrf_proof_data_round_part_2));
+  memset(VRF_data.vrf_proof_round_part_2,0,strlen(VRF_data.vrf_proof_round_part_2));
+  memset(VRF_data.vrf_beta_string_data_round_part_2,0,strlen(VRF_data.vrf_beta_string_data_round_part_2));
+  memset(VRF_data.vrf_beta_string_round_part_2,0,strlen(VRF_data.vrf_beta_string_round_part_2));
+  memset(VRF_data.vrf_public_key_data_round_part_3,0,strlen(VRF_data.vrf_public_key_data_round_part_3));
+  memset(VRF_data.vrf_public_key_round_part_3,0,strlen(VRF_data.vrf_public_key_round_part_3));
+  memset(VRF_data.vrf_alpha_string_data_round_part_3,0,strlen(VRF_data.vrf_alpha_string_data_round_part_3));
+  memset(VRF_data.vrf_alpha_string_round_part_3,0,strlen(VRF_data.vrf_alpha_string_round_part_3));
+  memset(VRF_data.vrf_proof_data_round_part_3,0,strlen(VRF_data.vrf_proof_data_round_part_3));
+  memset(VRF_data.vrf_proof_round_part_3,0,strlen(VRF_data.vrf_proof_round_part_3));
+  memset(VRF_data.vrf_beta_string_data_round_part_3,0,strlen(VRF_data.vrf_beta_string_data_round_part_3));
+  memset(VRF_data.vrf_beta_string_round_part_3,0,strlen(VRF_data.vrf_beta_string_round_part_3));
+  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+
+
 
   // check if the current block height - 3 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
   sscanf(current_block_height,"%zu", &count);
@@ -319,7 +388,7 @@ void start_current_round_start_blocks()
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1 = strnlen(VRF_data.vrf_alpha_string_data_round_part_1,BUFFER_SIZE_NETWORK_BLOCK_DATA);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1,VRF_data.vrf_alpha_string_data_round_part_1,blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1);
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strnlen(VRF_data.vrf_alpha_string_round_part_1,BUFFER_SIZE_NETWORK_BLOCK_DATA);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strnlen(VRF_data.vrf_alpha_string_round_part_1,BUFFER_SIZE_NETWORK_BLOCK_DATA));
   blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_1 = VRF_PROOF_LENGTH;
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1,VRF_data.vrf_proof_data_round_part_1,VRF_PROOF_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1,VRF_data.vrf_proof_round_part_1,crypto_vrf_PROOFBYTES);
@@ -331,7 +400,7 @@ void start_current_round_start_blocks()
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2,VRF_data.vrf_public_key_round_part_2,crypto_vrf_PUBLICKEYBYTES);
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2 = strnlen(VRF_data.vrf_alpha_string_data_round_part_2,BUFFER_SIZE_NETWORK_BLOCK_DATA);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2,VRF_data.vrf_alpha_string_data_round_part_2,blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2);
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2,VRF_data.vrf_alpha_string_round_part_2,strnlen(VRF_data.vrf_alpha_string_round_part_2,BUFFER_SIZE_NETWORK_BLOCK_DATA);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2,VRF_data.vrf_alpha_string_round_part_2,strnlen(VRF_data.vrf_alpha_string_round_part_2,BUFFER_SIZE_NETWORK_BLOCK_DATA));
   blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_2 = VRF_PROOF_LENGTH;
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2,VRF_data.vrf_proof_data_round_part_2,VRF_PROOF_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2,VRF_data.vrf_proof_round_part_2,crypto_vrf_PROOFBYTES);
@@ -343,7 +412,7 @@ void start_current_round_start_blocks()
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3,VRF_data.vrf_public_key_round_part_3,crypto_vrf_PUBLICKEYBYTES);
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3 = strnlen(VRF_data.vrf_alpha_string_data_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3,VRF_data.vrf_alpha_string_data_round_part_3,blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3);
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3,VRF_data.vrf_alpha_string_round_part_3,strnlen(VRF_data.vrf_alpha_string_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3,VRF_data.vrf_alpha_string_round_part_3,strnlen(VRF_data.vrf_alpha_string_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA));
   blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_3 = VRF_PROOF_LENGTH;
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3,VRF_data.vrf_proof_data_round_part_3,VRF_PROOF_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3,VRF_data.vrf_proof_round_part_3,crypto_vrf_PROOFBYTES);
@@ -3843,26 +3912,13 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
 Name: server_receive_data_socket_main_node_to_node_message_part_4
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_4_OF_ROUND message
 Parameters:
-  mainnode_timeout_thread_parameters - A mainnode_timeout_thread_parameters struct
-    pid_t process_id - Holds the forked process ID that the client is connected to
-    int data_received - 1 if the node has received data from the main node, otherwise 0
-    char* main_node - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* current_round_part - The current round part (1-4).
-    char* current_round_part_backup_node - The current main node in the current round part (0-5)
-  node_to_node_timeout_thread_parameters - A node_to_node_timeout_thread_parameters struct
-    pid_t process_id - Holds the forked process ID that the client is connected to
-  current_round_part_consensus_node_data - A current_round_part_consensus_node_data struct
-    char* vrf_public_key - Holds the forked process ID that the client is connected to
-    char* vrf_alpha_string - 1 if the node has received data from the main node, otherwise 0
-    char* vrf_proof - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* vrf_beta_string - The current round part (1-4).
-    char* block_blob - The current main node in the current round part (0-5)
+  CLIENT_SOCKET - The socket to send data to
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_4(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -3894,9 +3950,6 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
     exit(0);
   }
 
-  // threads
-  pthread_t thread_id;
-
   // define macros
   #define pointer_reset_all \
   free(data); \
@@ -3913,21 +3966,18 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   pointer_reset_all; \
   return 0;
 
-  // since the block verifier has received data from the main node, we need to stop the mainnode_timeout_thread
-  mainnode_timeout_thread_parameters->data_received = 1;
-
   // set the next server message since the block verifiers will send the data to each other
   memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
   memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
 
   // verify the data
-  if (verify_data(message,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
-  if (parse_json_data(message,"block_blob",data) == 0)
+  if (parse_json_data(MESSAGE,"block_blob",data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
@@ -3952,14 +4002,14 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
   }
   memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n \"vote_data\": \"",19);
 
-  // SHA2-512 hash the network block
-  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)data,(unsigned long long)strnlen(data,BUFFER_SIZE));
-  memcpy(message2+strnlen(message,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
-  
+  // SHA2-512 hash the received message
+  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
+  memcpy(message2+strnlen(message2,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+
   memcpy(message2+strnlen(message2,BUFFER_SIZE),"\",\r\n}",5); 
 
-  // save the netowrk block to the current_round_part_consensus_node_data struct
-  memcpy(current_round_part_consensus_node_data.block_blob,data,strnlen(data,BUFFER_SIZE));
+  // save the VRF_data struct
+  memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
 
   // sign_data
   if (sign_data(message2,0) == 0)
@@ -3974,17 +4024,6 @@ int server_receive_data_socket_main_node_to_node_message_part_4(struct mainnode_
     {
       send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,message2,"sending NODES_TO_NODES_VOTE_RESULTS to the block verifiers",0);
     }
-  }
-
-  // start the node_to_node_message_timeout
-  if (pthread_create(&thread_id, NULL, &node_to_node_message_timeout_thread, (void *)node_to_node_timeout_thread_parameters) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not create the timeout thread\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
-  }
-  // set the thread to dettach once completed, since we do not need to use anything it will return
-  if (pthread_detach(thread_id) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not start the timeout thread in detach mode\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   pointer_reset(data);
@@ -4786,17 +4825,7 @@ int create_server(const int MESSAGE_SETTINGS)
            {
              SERVER_ERROR(1);
            }
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND") != NULL)
-         {
-           // only close the forked process on the timeout in the node_to_node_timeout_thread
-           // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
-           node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_4(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
-           {
-             SERVER_ERROR(1);
-           }
-         } 
+         }
          if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && strstr(server_message,"NODES_TO_NODES_VOTE_RESULTS") != NULL)
          {
            // close the forked process when done
