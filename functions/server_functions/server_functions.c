@@ -4219,37 +4219,45 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
     restart_round();
   }
 
-  // at this point the block is created and verified so we can update our block verifiers list
 
-  // convert the network block string to a blockchain_data
+
+  // at this point the block is created and verified so we can update our block verifiers list as this block will be added to the network
+  if (update_block_verifiers_list() == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not update the block verifiers list\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  // convert the network_block_string to a blockchain_data
   if (network_block_string_to_blockchain_data(VRF_data.block_blob,"0") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
-  // add all of the next_block_verifiers_list public addresses to the network block string
-
-  // add all of the block_blob_signature to the network block string
-  
-
-
-
-
-
-  // create the data hash of all of the signatures
-  memset(data3,0,strlen(data3));
-  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  // add all of the next_block_verifiers_list public addresses and block_blob_signature to the network block string
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memcpy(data3+count2,VRF_data.block_blob_signature_data[count],186);
-    count2 += 186;
+    memset(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count),0,strlen(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[0]));
+    memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count]);
+    memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count),0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[0]));
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count]);
   }
+
+  // convert the blockchain_data to a network_block_string
+  memset(data3,0,strlen(data3));
+  if (blockchain_data_to_network_block_string(data3) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not convert the blockchain_data to a network_block_string\nFunction: mainnode_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND\nSend Message: NODES_TO_NODES_VOTE_RESULTS");
+  }
+
+  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+  memcpy(VRF_data.block_blob,data3,strnlen(data3,BUFFER_SIZE));
 
   // reset the current_round_part_vote_data.vote_results_valid struct
   memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
   current_round_part_vote_data.vote_results_valid = 0;
   current_round_part_vote_data.vote_results_invalid = 0;
 
-  // get the data hash of the signed data
+  // get the data hash of the network block string
   memset(data,0,strlen(data));
   crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)data3,(unsigned long long)strnlen(data3,BUFFER_SIZE));
 
@@ -4281,6 +4289,59 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     restart_round();
+  } 
+
+  memset(data3,0,strlen(data3));
+  memcpy(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+
+  // have the block producer submit the block to the network
+  if (main_network_data_node_create_block == 1)
+  {
+    submit_block_template(VRF_data.block_blob,0);
+  }
+  else
+  {
+    if (memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      submit_block_template(VRF_data.block_blob,0);
+    }
+    else if (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      submit_block_template(VRF_data.block_blob,0);
+    }
+    else if (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      submit_block_template(VRF_data.block_blob,0);
+    }
+    else if (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      submit_block_template(VRF_data.block_blob,0);
+    }
+    else if (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      submit_block_template(VRF_data.block_blob,0);
+    }
+    else if (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      submit_block_template(VRF_data.block_blob,0);
+    }
+  }  
+  sleep(2);
+  if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) == 0)
+  {
+    // the block was not submitted to the network. Loop through each network data node until it is submitted to the network
+    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      if (network_data_node_settings == 1 && memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+      {
+        submit_block_template(VRF_data.block_blob,0);
+        if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) != 0)
+        {
+          break;
+        }
+      }
+      sleep(2);
+    }    
   }  
 
   pointer_reset(data);
