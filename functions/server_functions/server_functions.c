@@ -4371,6 +4371,165 @@ Return: 0 if an error has occured, 1 if successfull
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_main_node_to_node_message_part_1
+Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_1_OF_ROUND message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_main_node_to_node_message_part_1(const char* MESSAGE)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_secret_key_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_public_key_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_alpha_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_proof_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* vrf_beta_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_secret_key_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_public_key_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_alpha_string_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_proof_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_beta_string_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  size_t count2;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || vrf_secret_key_data_round_part_1 == NULL || vrf_public_key_data_round_part_1 == NULL || vrf_alpha_string_data_round_part_1 == NULL || vrf_proof_data_round_part_1 == NULL || vrf_beta_string_data_round_part_1 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (vrf_secret_key_data_round_part_1 != NULL)
+    {
+      pointer_reset(vrf_secret_key_data_round_part_1);
+    }
+    if (vrf_public_key_data_round_part_1 != NULL)
+    {
+      pointer_reset(vrf_public_key_data_round_part_1);
+    }
+    if (vrf_alpha_string_data_round_part_1 != NULL)
+    {
+      pointer_reset(vrf_alpha_string_data_round_part_1);
+    }
+     if (vrf_proof_data_round_part_1 != NULL)
+    {
+      pointer_reset(vrf_proof_data_round_part_1);
+    }
+     if (vrf_beta_string_data_round_part_1 != NULL)
+    {
+      pointer_reset(vrf_beta_string_data_round_part_1);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(vrf_secret_key_data_round_part_1); \
+  vrf_secret_key_data_round_part_1 = NULL; \
+  free(vrf_public_key_data_round_part_1); \
+  vrf_public_key_data_round_part_1 = NULL; \
+  free(vrf_alpha_string_data_round_part_1); \
+  vrf_alpha_string_data_round_part_1 = NULL; \
+  free(vrf_proof_data_round_part_1); \
+  vrf_proof_data_round_part_1 = NULL; \
+  free(vrf_beta_string_data_round_part_1); \
+  vrf_beta_string_data_round_part_1 = NULL;  
+
+  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen(VRF_data.vrf_secret_key_round_part_1));
+  memset(VRF_data.vrf_secret_key_data_round_part_1,0,strlen(VRF_data.vrf_secret_key_data_round_part_1));
+  memset(VRF_data.vrf_public_key_round_part_1,0,strlen(VRF_data.vrf_public_key_round_part_1));
+  memset(VRF_data.vrf_public_key_data_round_part_1,0,strlen(VRF_data.vrf_public_key_data_round_part_1));
+  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen(VRF_data.vrf_alpha_string_round_part_1));
+  memset(VRF_data.vrf_alpha_string_data_round_part_1,0,strlen(VRF_data.vrf_alpha_string_data_round_part_1));
+  memset(VRF_data.vrf_proof_round_part_1,0,strlen(VRF_data.vrf_proof_round_part_1));
+  memset(VRF_data.vrf_proof_data_round_part_1,0,strlen(VRF_data.vrf_proof_data_round_part_1));
+  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen(VRF_data.vrf_beta_string_round_part_1));
+  memset(VRF_data.vrf_beta_string_data_round_part_1,0,strlen(VRF_data.vrf_beta_string_data_round_part_1));
+
+  // verify the data
+  if (verify_data(MESSAGE,0,1,1) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not verify data\nFunction: server_receive_data_socket_main_node_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"vrf_secret_key",vrf_secret_key_data_round_part_1) == 0 || parse_json_data(MESSAGE,"vrf_public_key",vrf_public_key_data_round_part_1) == 0 || parse_json_data(MESSAGE,"vrf_alpha_string",vrf_alpha_string_data_round_part_1) == 0 || parse_json_data(MESSAGE,"vrf_proof",vrf_proof_data_round_part_1) == 0 || parse_json_data(MESSAGE,"vrf_beta_string",vrf_beta_string_data_round_part_1) == 0 || parse_json_data(MESSAGE,"public_address",data) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("Could not parse the data\nFunction: server_receive_data_socket_main_node_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND");
+  }
+
+  // check if the public_address is the correct main node
+  if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_public_address,data,XCASH_WALLET_LENGTH) == 0))
+  {  
+    for (count = 0, count2 = 0; count < VRF_PUBLIC_KEY_LENGTH; count2++, count += 2)
+    {
+      memset(data,0,strlen(data));
+      memcpy(data,&vrf_public_key_data_round_part_1[count],2);
+      vrf_public_key_round_part_1[count2] = (int)strtol(data, NULL, 16);
+    }
+    for (count = 0, count2 = 0; count < strlen(vrf_alpha_string_data_round_part_1); count2++, count += 2)
+    {
+      memset(data,0,strlen(data));
+      memcpy(data,&vrf_alpha_string_data_round_part_1[count],2);
+      vrf_alpha_string_round_part_1[count2] = (int)strtol(data, NULL, 16);
+    }
+    for (count = 0, count2 = 0; count < VRF_PROOF_LENGTH; count2++, count += 2)
+    {
+      memset(data,0,strlen(data));
+      memcpy(data,&vrf_proof_data_round_part_1[count],2);
+      vrf_proof_round_part_1[count2] = (int)strtol(data, NULL, 16);
+    }
+    for (count = 0, count2 = 0; count < VRF_BETA_LENGTH; count2++, count += 2)
+    {
+      memset(data,0,strlen(data));
+      memcpy(data,&vrf_beta_string_data_round_part_1[count],2);
+      vrf_beta_string_round_part_1[count2] = (int)strtol(data, NULL, 16);
+    }
+    // verify the VRF data
+    if (crypto_vrf_verify(vrf_beta_string_round_part_1,(const unsigned char*)vrf_public_key_round_part_1,(const unsigned char*)vrf_proof_round_part_1,vrf_alpha_string_round_part_1,strlen(vrf_alpha_string_round_part_1)) != 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("The MAIN_NODES_TO_NODES_PART_1_OF_ROUND message is invalid\nFunction: server_receive_data_socket_main_node_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND");
+    }
+    
+    memcpy(VRF_data.vrf_secret_key_round_part_1,vrf_secret_key_round_part_1,strlen(vrf_secret_key_round_part_1));
+    memcpy(VRF_data.vrf_secret_key_data_round_part_1,vrf_secret_key_data_round_part_1,strlen(vrf_secret_key_data_round_part_1));
+    memcpy(VRF_data.vrf_public_key_round_part_1,vrf_public_key_round_part_1,strlen(vrf_public_key_round_part_1));
+    memcpy(VRF_data.vrf_public_key_data_round_part_1,vrf_public_key_data_round_part_1,strlen(vrf_public_key_data_round_part_1));
+    memcpy(VRF_data.vrf_alpha_string_round_part_1,vrf_alpha_string_round_part_1,strlen(vrf_alpha_string_round_part_1));
+    memcpy(VRF_data.vrf_alpha_string_data_round_part_1,vrf_alpha_string_data_round_part_1,strlen(vrf_alpha_string_data_round_part_1));
+    memcpy(VRF_data.vrf_proof_round_part_1,vrf_proof_round_part_1,strlen(vrf_proof_round_part_1));
+    memcpy(VRF_data.vrf_proof_data_round_part_1,vrf_proof_data_round_part_1,strlen(vrf_proof_data_round_part_1));
+    memcpy(VRF_data.vrf_beta_string_round_part_1,vrf_beta_string_round_part_1,strlen(vrf_beta_string_round_part_1));
+    memcpy(VRF_data.vrf_beta_string_data_round_part_1,vrf_beta_string_data_round_part_1,strlen(vrf_beta_string_data_round_part_1));
+
+    // SHA2-512 hash the received message
+    memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
+    crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
+  }
+
+  pointer_reset_all;
+  return 1;
+
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_main_node_to_node_message_part_2
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_2_OF_ROUND message
 Parameters:
@@ -4461,7 +4620,7 @@ int server_receive_data_socket_main_node_to_node_message_part_2(const char* MESS
   }
 
   // check if the public_address is the correct main node
-  if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_public_address,data,XCASH_WALLET_LENGTH) == 0))
+  if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_2_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_2_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_4_public_address,data,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_5_public_address,data,XCASH_WALLET_LENGTH) == 0))
   {    
     // check that the vrf_alpha_string_data_round_part_2 is the previous block hash and the random string
     memset(data,0,strlen(data));
