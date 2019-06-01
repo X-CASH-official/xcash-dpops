@@ -4384,9 +4384,13 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  size_t count2;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
+  if (data == NULL || data2 == NULL || data3 == NULL || message == NULL)
   {
     if (data != NULL)
     {
@@ -4395,6 +4399,14 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
     if (data2 != NULL)
     {
       pointer_reset(data2);
+    }
+     if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+     if (message != NULL)
+    {
+      pointer_reset(message);
     }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -4405,7 +4417,11 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   free(data); \
   data = NULL; \
   free(data2); \
-  data2 = NULL;  
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL; \
+  free(message); \
+  message = NULL;  
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR(settings) \
   color_print(settings,"red"); \
@@ -4428,13 +4444,34 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
 
   // check if the public_address is the correct main node
   if ((main_network_data_node_create_block == 1 && memcmp(network_data_nodes_list.network_data_nodes_public_address[0],data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1) || (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1) || (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1) || (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1) || (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1) || (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1) || (main_network_data_node_create_block == 0 && memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,data2,XCASH_WALLET_LENGTH) == 0 && verify_network_block_data(0,1,1,"0","") == 1))
-  {
+  {    
+    // get the previous network block string
+    sscanf(current_block_height,"%zu", &count);
+    count--;
+    sprintf(data3,"%zu",count);
+    count2 = count / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
+    memcpy(message,"{\"block_height\":\"",17);
+    memcpy(message+17,data3,strnlen(data3,BUFFER_SIZE));
+    memcpy(message+strlen(message),"\"}",2);
+    memset(data3,0,strlen(data3));
+    memcpy(data3,"reserve_bytes_",14);
+    sprintf(data3+14,"%zu",count2);
+    memset(data2,0,strlen(data2));
+    if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,0) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not get the previous blocks reserve bytes\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
+    // verify the block
+    if (network_block_string_to_blockchain_data(data,"0") == 0 || verify_network_block_data(1,1,1,"0",data2) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("The block is invalid\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    }
     memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
-  }
 
-  // SHA2-512 hash the received message
-  memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
-  crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
+    // SHA2-512 hash the received message
+    memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
+    crypto_hash_sha512((unsigned char*)current_round_part_vote_data.current_vote_results,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
+  }
 
   pointer_reset_all;
   return 1;
