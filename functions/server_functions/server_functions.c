@@ -2451,7 +2451,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, char* MESSAGE)
+int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // verify the message
   if (verify_data(MESSAGE,0,1,1) == 0)
@@ -2460,7 +2460,7 @@ int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET,
   }
   else
   {
-    if (send_data(CLIENT_SOCKET,MESSAGE,1) == 1)
+    if (send_data(CLIENT_SOCKET,(char*)MESSAGE,1) == 1)
     {
       return 1;
     }
@@ -4085,142 +4085,18 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
 }
 
 
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_consensus_node_to_node
-Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS message
-Parameters:
-  parameters - A mainnode_timeout_thread_parameters struct
-    pid_t process_id - Holds the forked process ID that the client is connected to
-    int data_received - 1 if the node has received data from the main node, otherwise 0
-    char* main_node - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* current_round_part - The current round part (1-4).
-    char* current_round_part_backup_node - The current main node in the current round part (0-5)
-  message - The message
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int server_receive_data_socket_consensus_node_to_node(struct mainnode_timeout_thread_parameters* parameters, char* message)
-{
-  // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
-  // threads
-  pthread_t thread_id;
-
-  // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR(settings) \
-  color_print(settings,"red"); \
-  pointer_reset(data); \
-  return 0;
-
-  // verify the data
-  if (verify_data(message,0,0,0) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
-  }
-
-  // parse the message
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  if (parse_json_data(message,"current_round_part",current_round_part) == 0 || parse_json_data(message,"current_round_part_backup_node",current_round_part_backup_node) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not parse main_nodes_public_address\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
-  }
-  memset(data,0,strnlen(data,BUFFER_SIZE));
-
-  // create a timeout from the time the consensus node lets us know who the main node is for this part of the round, to the time the main node sends us data.
-  if (strncmp(current_round_part,"1",BUFFER_SIZE) == 0 || strncmp(current_round_part,"3",BUFFER_SIZE) == 0)
-  {
-    memcpy(data,"VRF_PUBLIC_AND_SECRET_KEY",25);
-  }
-  else if (strncmp(current_round_part,"2",BUFFER_SIZE) == 0)
-  {
-    memcpy(data,"VRF_RANDOM_DATA",15);
-  }
-  else if (strncmp(current_round_part,"4",BUFFER_SIZE) == 0)
-  {
-    memcpy(data,"BLOCK_PRODUCER",14);
-  }
-
-  // create a mainnode_timeout_thread_parameters struct since this function will use the mainnode_timeout_thread
-  parameters->data_received = 0;
-  parameters->main_node = data;
-  parameters->current_round_part = current_round_part;
-  parameters->current_round_part_backup_node = current_round_part_backup_node;
- 
-  // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
-  if (pthread_create(&thread_id, NULL, &mainnode_timeout_thread, (void *)parameters) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not create the timeout thread\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
-  }
-  // set the thread to dettach once completed, since we do not need to use anything it will return
-  if (pthread_detach(thread_id) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_ERROR("Could not start the timeout thread in detach mode\nFunction: server_receive_data_socket_consensus_node_to_node\nReceived Message: CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS");
-  }
-
-  // set the next server message
-  if (strncmp(current_round_part,"1",BUFFER_SIZE) == 0)
-  {
-    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",35);
-  }
-  else if (strncmp(current_round_part,"2",BUFFER_SIZE) == 0)
-  {
-    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",35);
-  }
-  else if (strncmp(current_round_part,"3",BUFFER_SIZE) == 0)
-  {
-    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",35);
-  }
-  else if (strncmp(current_round_part,"4",BUFFER_SIZE) == 0)
-  {
-    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35);
-  }
-
-  pointer_reset(data);
-  return 1;
-}
-
-
 
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_main_node_to_node_message_part_1
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_1_OF_ROUND message
 Parameters:
-  mainnode_timeout_thread_parameters - A mainnode_timeout_thread_parameters struct
-    pid_t process_id - Holds the forked process ID that the client is connected to
-    int data_received - 1 if the node has received data from the main node, otherwise 0
-    char* main_node - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* current_round_part - The current round part (1-4).
-    char* current_round_part_backup_node - The current main node in the current round part (0-5)
-  node_to_node_timeout_thread_parameters - A node_to_node_timeout_thread_parameters struct
-    pid_t process_id - Holds the forked process ID that the client is connected to
-  current_round_part_consensus_node_data - A current_round_part_consensus_node_data struct
-    char* vrf_public_key - Holds the forked process ID that the client is connected to
-    char* vrf_alpha_string - 1 if the node has received data from the main node, otherwise 0
-    char* vrf_proof - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* vrf_beta_string - The current round part (1-4).
-    char* block_blob - The current main node in the current round part (0-5)
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_1(const char* MESSAGE)
 {
   // Variables
   time_t current_date_and_time;
@@ -4312,26 +4188,12 @@ int server_receive_data_socket_main_node_to_node_message_part_1(struct mainnode_
 Name: server_receive_data_socket_main_node_to_node_message_part_2
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_2_OF_ROUND message
 Parameters:
-  mainnode_timeout_thread_parameters - A mainnode_timeout_thread_parameters struct
-    pid_t process_id - Holds the forked process ID that the client is connected to
-    int data_received - 1 if the node has received data from the main node, otherwise 0
-    char* main_node - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* current_round_part - The current round part (1-4).
-    char* current_round_part_backup_node - The current main node in the current round part (0-5)
-  node_to_node_timeout_thread_parameters - A node_to_node_timeout_thread_parameters struct
-    pid_t process_id - Holds the forked process ID that the client is connected to
-  current_round_part_consensus_node_data - A current_round_part_consensus_node_data struct
-    char* vrf_public_key - Holds the forked process ID that the client is connected to
-    char* vrf_alpha_string - 1 if the node has received data from the main node, otherwise 0
-    char* vrf_proof - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* vrf_beta_string - The current round part (1-4).
-    char* block_blob - The current main node in the current round part (0-5)
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_2(const char* MESSAGE)
 {
   // Variables
   time_t current_date_and_time;
@@ -4419,26 +4281,12 @@ int server_receive_data_socket_main_node_to_node_message_part_2(struct mainnode_
 Name: server_receive_data_socket_main_node_to_node_message_part_3
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_3_OF_ROUND message
 Parameters:
-  mainnode_timeout_thread_parameters - A mainnode_timeout_thread_parameters struct
-    pid_t process_id - Holds the forked process ID that the client is connected to
-    int data_received - 1 if the node has received data from the main node, otherwise 0
-    char* main_node - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* current_round_part - The current round part (1-4).
-    char* current_round_part_backup_node - The current main node in the current round part (0-5)
-  node_to_node_timeout_thread_parameters - A node_to_node_timeout_thread_parameters struct
-    pid_t process_id - Holds the forked process ID that the client is connected to
-  current_round_part_consensus_node_data - A current_round_part_consensus_node_data struct
-    char* vrf_public_key - Holds the forked process ID that the client is connected to
-    char* vrf_alpha_string - 1 if the node has received data from the main node, otherwise 0
-    char* vrf_proof - The main node (VRF_PUBLIC_AND_SECRET_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* vrf_beta_string - The current round part (1-4).
-    char* block_blob - The current main node in the current round part (0-5)
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_timeout_thread_parameters* mainnode_timeout_thread_parameters, struct node_to_node_timeout_thread_parameters* node_to_node_timeout_thread_parameters, char* message)
+int server_receive_data_socket_main_node_to_node_message_part_3(const char* MESSAGE)
 {
   // Variables
   time_t current_date_and_time;
@@ -4526,7 +4374,6 @@ int server_receive_data_socket_main_node_to_node_message_part_3(struct mainnode_
 Name: server_receive_data_socket_main_node_to_node_message_part_4
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_4_OF_ROUND message
 Parameters:
-  CLIENT_SOCKET - The socket to send data to
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
@@ -4603,20 +4450,19 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
 Name: server_receive_data_socket_node_to_node
 Description: Runs the code when the server receives the NODES_TO_NODES_VOTE_RESULTS message
 Parameters:
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_node_to_node(char* message)
+int server_receive_data_socket_node_to_node(const char* MESSAGE)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
+  if (data == NULL || data2 == NULL)
   {
     if (data != NULL)
     {
@@ -4625,10 +4471,6 @@ int server_receive_data_socket_node_to_node(char* message)
     if (data2 != NULL)
     {
       pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
     }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -4639,9 +4481,7 @@ int server_receive_data_socket_node_to_node(char* message)
   free(data); \
   data = NULL; \
   free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL;
+  data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR(settings) \
   color_print(settings,"red"); \
@@ -4649,13 +4489,13 @@ int server_receive_data_socket_node_to_node(char* message)
   return 0;
 
   // verify the data
-  if (verify_data(message,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not verify data\nFunction: server_receive_data_socket_node_to_node\nReceived Message: NODES_TO_NODES_VOTE_RESULTS");
   }
 
   // parse the message
-  if (parse_json_data(message,"vote_settings",data) == 0 || parse_json_data(message,"vote_data",data2) == 0)
+  if (parse_json_data(MESSAGE,"vote_settings",data) == 0 || parse_json_data(MESSAGE,"vote_data",data2) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not parse the data\nFunction: server_receive_data_socket_node_to_node\nReceived Message: NODES_TO_NODES_VOTE_RESULTS");
   }
@@ -4684,12 +4524,12 @@ int server_receive_data_socket_node_to_node(char* message)
 Name: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE message
 Parameters:
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature(const char* message)
+int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature(const char* MESSAGE)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -4724,13 +4564,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   return 0;
 
   // verify the data
-  if (verify_data(message,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not verify data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE");
   }
 
   // parse the message
-  if (parse_json_data(message,"block_blob_signature",data) == 0 || parse_json_data(message,"public_address",data2) == 0)
+  if (parse_json_data(MESSAGE,"block_blob_signature",data) == 0 || parse_json_data(MESSAGE,"public_address",data2) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not parse the data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE");
   }
@@ -4749,309 +4589,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
 
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round
-Description: Runs the code when the server receives the CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND message
-Parameters:
-  message - The message
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round(char* message)
-{
-  // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* vrf_public_key = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* vrf_secret_key = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* vrf_alpha_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* vrf_proof = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* vrf_beta_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message_copy1;
-  int count = 0;
-  int counter = 0;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL || vrf_public_key == NULL || vrf_secret_key == NULL || vrf_alpha_string == NULL || vrf_proof == NULL || vrf_beta_string == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    if (vrf_public_key != NULL)
-    {
-      pointer_reset(vrf_public_key);
-    }
-    if (vrf_secret_key != NULL)
-    {
-      pointer_reset(vrf_secret_key);
-    }
-    if (vrf_alpha_string != NULL)
-    {
-      pointer_reset(vrf_alpha_string);
-    }
-    if (vrf_proof != NULL)
-    {
-      pointer_reset(vrf_proof);
-    }
-    if (vrf_beta_string != NULL)
-    {
-      pointer_reset(vrf_beta_string);
-    }
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
-  // define macros
-  #define MINIMUM 1
-  #define MAXIMUM 255
-  
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL; \
-  free(vrf_public_key); \
-  vrf_public_key = NULL; \
-  free(vrf_secret_key); \
-  vrf_secret_key = NULL; \
-  free(vrf_alpha_string); \
-  vrf_alpha_string = NULL; \
-  free(vrf_proof); \
-  vrf_proof = NULL; \
-  free(vrf_beta_string); \
-  vrf_beta_string = NULL; \
-
-  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND(settings) \
-  color_print(settings,"red"); \
-  pointer_reset_all; \
-  return 0;
-
-  // verify the data
-  if (verify_data(message,0,0,0) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-  }
-
-  // parse the message
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  if (parse_json_data(message,"message",current_round_part) == 0 || parse_json_data(message,"VRF_block_blob",data2) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not parse main_nodes_public_address\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-  }
-
-  // create the VRF data for this part of the round
-  if (memcmp(current_round_part,"1",1) == 0)
-  {
-    // The VRF private and secret key will create the public and secret key
-    if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 0 || crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF public and secret key\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-
-    // create the alpha string
-    memcpy(vrf_alpha_string,vrf_public_key,strnlen(vrf_public_key,BUFFER_SIZE));
-
-    // create the proof
-    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,(const unsigned char*)vrf_alpha_string,(unsigned long long)strlen(vrf_alpha_string)) == 1)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-
-    // create the beta string
-    if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta_string,(const unsigned char*)vrf_proof) == 1)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF beta string, or verify the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-
-    // save the VRF public key and secret key
-    memset(vrf_public_key_part_1,0,strlen(vrf_public_key_part_1));
-    memset(vrf_secret_key_part_1,0,strlen(vrf_secret_key_part_1));
-    memcpy(vrf_public_key_part_1,vrf_public_key,strnlen(vrf_public_key,BUFFER_SIZE));
-    memcpy(vrf_secret_key_part_1,vrf_secret_key,strnlen(vrf_secret_key,BUFFER_SIZE));
-
-    // create the message
-    memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_public_key\": \"",84);
-    memcpy(data3,vrf_public_key,strnlen(vrf_public_key,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n \"vrf_alpha_string\": \"",26);
-    memcpy(data3,vrf_alpha_string,strnlen(vrf_alpha_string,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n \"vrf_proof\": \"",26);
-    memcpy(data3,vrf_proof,strnlen(vrf_proof,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n \"vrf_beta_string\": \"",26);
-    memcpy(data3,vrf_beta_string,strnlen(vrf_beta_string,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n}",5);
-  }
-  else if (memcmp(current_round_part,"2",1) == 0)
-  {
-    // The VRF private and secret key will create the public and secret key
-    if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 0 || crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF public and secret key\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-
-    // create the alpha string
-    memset(data,0,strnlen(data,BUFFER_SIZE));
-    if (get_previous_block_hash(data,0) == 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not get the previous block hash\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-    memcpy(vrf_alpha_string,data,strnlen(data,BUFFER_SIZE));
-    // create the 100 character random string
-    for (count = 0, counter = 0; count < 50; count++, counter +=2)
-    {
-      sprintf(vrf_alpha_string+counter,"%02x",((rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM) & 0xFF);
-    }
-    memset(vrf_alpha_string_part_2,0,strlen(vrf_alpha_string_part_2));
-    memcpy(vrf_alpha_string_part_2,vrf_alpha_string,strnlen(vrf_alpha_string,BUFFER_SIZE));
-
-    // create the proof
-    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,(const unsigned char*)vrf_alpha_string,(unsigned long long)strlen(vrf_alpha_string)) == 1)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-
-    // create the beta string
-    if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta_string,(const unsigned char*)vrf_proof) == 1)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF beta string, or verify the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-
-    // create the message
-    memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_2_OF_ROUND\",\r\n \"vrf_public_key\": \"",84);
-    memcpy(data3,vrf_public_key,strnlen(vrf_public_key,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n \"vrf_alpha_string\": \"",26);
-    memcpy(data3,vrf_alpha_string,strnlen(vrf_alpha_string,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n \"vrf_proof\": \"",26);
-    memcpy(data3,vrf_proof,strnlen(vrf_proof,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n \"vrf_beta_string\": \"",26);
-    memcpy(data3,vrf_beta_string,strnlen(vrf_beta_string,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n}",5);
-  }
-  else if (memcmp(current_round_part,"3",1) == 0)
-  {
-    // create the proof
-    if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key_part_1,(const unsigned char*)vrf_alpha_string_part_2,(unsigned long long)strlen(vrf_alpha_string_part_2)) == 1)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-
-    // create the beta string
-    if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta_string,(const unsigned char*)vrf_proof) == 1)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not create the VRF beta string, or verify the VRF proof\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-
-    // create the message
-    memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"vrf_public_key\": \"",84);
-    memcpy(data3,vrf_public_key_part_1,strnlen(vrf_public_key_part_1,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n \"vrf_alpha_string\": \"",26);
-    memcpy(data3,vrf_alpha_string_part_2,strnlen(vrf_alpha_string_part_2,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n \"vrf_proof\": \"",26);
-    memcpy(data3,vrf_proof,strnlen(vrf_proof,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n \"vrf_beta_string\": \"",26);
-    memcpy(data3,vrf_beta_string,strnlen(vrf_beta_string,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n}",5);
-  }
-  else if (memcmp(current_round_part,"4",1) == 0)
-  {
-    // get the block template
-    memset(data,0,strnlen(data,BUFFER_SIZE));
-    if (get_block_template(data,0) == 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not get the block template\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-    }
-
-    // replace the reserve bytes with the received reserve bytes
-    message_copy1 = strstr(data,RESERVE_BYTE_START_STRING);
-    count = strnlen(data,BUFFER_SIZE) - strnlen(message_copy1,BUFFER_SIZE);
-    memcpy(data+count,data2,strnlen(data2,BUFFER_SIZE));
-
-    // create the message
-    memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"block_blob\": \"",80);
-    memcpy(data3,data,strnlen(data,BUFFER_SIZE));
-    memcpy(data3,"\",\r\n}",5);
-  }
-
-  // sign_data
-  if (sign_data(data3,0) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND("Could not sign_data\nFunction: server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round\nReceived Message: CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\nSend Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND|MAIN_NODES_TO_NODES_PART_2_OF_ROUND|MAIN_NODES_TO_NODES_PART_3_OF_ROUND|MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
-  }
-
-  // send the message to all block verifiers
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data,"",0);
-    }
-  }
-
-  // set the next server message since the block verifiers will send the data to each other
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS|CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",96);
-
-  pointer_reset(data);
-  return 1;
-
-  #undef pointer_reset_all
-  #undef SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_MAIN_NODE_MESSAGE_START_PART_OF_ROUND
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_consensus_node_to_node_and_main_node_restart
-Description: Runs the code when the server receives the CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE, CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE or CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES message
-Parameters:
-  message - The message
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int server_receive_data_socket_consensus_node_to_node_and_main_node_restart(char* message)
-{
-  // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_RESTART(settings) \
-  color_print(settings,"red"); \
-  return 0;
-
-  // verify the data
-  if (verify_data(message,0,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_RESTART("Could not verify data\nFunction: server_receive_data_socket_consensus_node_to_node_and_main_node_restart");
-  }
-
-  // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  memcpy(current_round_part,"1",1);
-  memcpy(current_round_part_backup_node,"0",1);
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS|CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",96);
-  
-  return 1;
-
-  #undef SERVER_RECEIVE_DATA_SOCKET_CONSENSUS_NODE_TO_NODE_AND_MAIN_NODE_MESSAGE_RESTART
 }
 
 
@@ -5316,7 +4853,7 @@ int create_server(const int MESSAGE_SETTINGS)
          // check if a certain type of message has been received 
          if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
          {
-           server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,buffer);
+           server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
            pointer_reset_all;
            _exit(0);
@@ -5433,6 +4970,27 @@ int create_server(const int MESSAGE_SETTINGS)
            pointer_reset_all; 
            _exit(0);
          } 
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\"") != NULL && memcmp(current_round_part,"1",1) == 0 && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",35) == 0)
+         {
+           server_receive_data_socket_main_node_to_node_message_part_1((const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_2_OF_ROUND\"") != NULL && memcmp(current_round_part,"2",1) == 0 && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",35) == 0)
+         {
+           server_receive_data_socket_main_node_to_node_message_part_2((const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         } 
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\"") != NULL && memcmp(current_round_part,"3",1) == 0 && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",35) == 0)
+         {
+           server_receive_data_socket_main_node_to_node_message_part_3((const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
+         } 
          else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35) == 0)
          {
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
@@ -5446,57 +5004,13 @@ int create_server(const int MESSAGE_SETTINGS)
            close(SOCKET);
            pointer_reset_all; 
            _exit(0);
-         }          
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND") != NULL)
-         {
-           // only close the forked process on the timeout in the node_to_node_timeout_thread
-           // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
-           node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_1(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
-           {
-             SERVER_ERROR(1);
-           }
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_2_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND") != NULL)
-         {
-           // only close the forked process on the timeout in the node_to_node_timeout_thread
-           // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
-           node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_2(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
-           {
-             SERVER_ERROR(1);
-           }
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\"") != NULL && strstr(server_message,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND") != NULL)
-         {
-           // only close the forked process on the timeout in the node_to_node_timeout_thread
-           // create a node_to_node_timeout_thread_parameters struct since this function will use the node_to_node_timeout_thread
-           node_to_node_timeout_thread_parameters.process_id = getpid();
-           if (server_receive_data_socket_main_node_to_node_message_part_3(&mainnode_timeout_thread_parameters,&node_to_node_timeout_thread_parameters,buffer) == 0)
-           {
-             SERVER_ERROR(1);
-           }
-         }
+         }  
          if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && strstr(server_message,"NODES_TO_NODES_VOTE_RESULTS") != NULL)
          {
-           // close the forked process when done
-           server_receive_data_socket_node_to_node(buffer);
-           SERVER_ERROR(1);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND\"") != NULL && strstr(server_message,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND") != NULL)
-         {
-           // close the forked process when done
-           server_receive_data_socket_consensus_node_to_main_node_message_start_part_of_round(buffer);
-           SERVER_ERROR(1);
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEW_PART_OF_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_NEXT_ROUND\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_ROUND_CHANGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_CONSENSUS_NODE_CREATE_NEW_BLOCK_MESSAGE\"") != NULL || strstr(buffer,"\"message_settings\": \"CONSENSUS_NODE_TO_NODES_AND_MAIN_NODES_RECALCULATING_VOTES\"") != NULL)
-         {
-           if (server_receive_data_socket_consensus_node_to_node_and_main_node_restart(buffer) == 0)
-           {
-             SERVER_ERROR(1);
-           }
-           // close the server
-           break;           
+           server_receive_data_socket_node_to_node((const char*)buffer);
+           close(SOCKET);
+           pointer_reset_all; 
+           _exit(0);
          }
          else
          {
