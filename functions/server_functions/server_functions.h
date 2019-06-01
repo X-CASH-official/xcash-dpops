@@ -17,6 +17,7 @@ void data_network_node_save_previous_round_statistics();
 void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT);
 void add_round_statistics();
 int calculate_main_nodes_roles();
+int calculate_main_node_data();
 int get_updated_node_list();
 int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, char* message);
 int server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(const int CLIENT_SOCKET);

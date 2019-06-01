@@ -2181,6 +2181,193 @@ int calculate_main_nodes_roles()
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: calculate_main_node_data
+Description: Calculates the main node data for the round
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int calculate_main_node_data()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
+  size_t count;
+  size_t count2;
+
+  // define macros
+  #define CALCULATE_MAIN_NODES_DATA_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset(data); \
+  return 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // check if the block verifier is the main node
+  if (memcmp(current_round_part,"1",1) == 0)
+  {
+    if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
+    {
+      // create the VRF data round part 1
+      if (create_random_VRF_keys(VRF_data.vrf_public_key_round_part_1,VRF_data.vrf_secret_key_round_part_1) == 1 && crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_1) != 1)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the vrf_public_key_round_part_1 or vrf_secret_key_round_part_1\nFunction: calculate_main_node_data");
+      }
+      memcpy(VRF_data.vrf_alpha_string_round_part_1,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
+      if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_1,(const unsigned char*)VRF_data.vrf_secret_key_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strlen(VRF_data.vrf_alpha_string_round_part_1)) != 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the vrf_proof_round_part_1\nFunction: calculate_main_node_data");
+      }
+      if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_1,(const unsigned char*)VRF_data.vrf_proof_round_part_1) != 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the beta_string_round_part_1\nFunction: calculate_main_node_data");
+      }
+      if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_1,(const unsigned char*)VRF_data.vrf_public_key_round_part_1,(const unsigned char*)VRF_data.vrf_proof_round_part_1,VRF_data.vrf_alpha_string_round_part_1,crypto_vrf_PUBLICKEYBYTES) != 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the VRF data for round part 1\nFunction: calculate_main_node_data");
+      }
+
+      // convert all of the VRF data to a string
+      for (count2 = 0, count = 0; count2 < crypto_vrf_SECRETKEYBYTES; count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_secret_key_data_round_part_1+count,"%02x",VRF_data.vrf_secret_key_round_part_1[count2] & 0xFF);
+      }  
+      for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_public_key_data_round_part_1+count,"%02x",VRF_data.vrf_public_key_round_part_1[count2] & 0xFF);
+      }
+      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_1); count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_alpha_string_data_round_part_1+count,"%02x",VRF_data.vrf_alpha_string_round_part_1[count2] & 0xFF);
+      }
+      for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_proof_data_round_part_1+count,"%02x",VRF_data.vrf_proof_round_part_1[count2] & 0xFF);
+      }
+      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_beta_string_round_part_1); count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_beta_string_data_round_part_1+count,"%02x",VRF_data.vrf_beta_string_round_part_1[count2] & 0xFF);
+      } 
+    }
+  }
+  else if (memcmp(current_round_part,"2",1) == 0)
+  {
+    if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
+    {
+      // create the VRF data round part 2  
+      if (create_random_VRF_keys(VRF_data.vrf_public_key_round_part_2,vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_2) != 1)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the vrf_public_key_round_part_2 or vrf_secret_key_round_part_1\nFunction: calculate_main_node_data");
+      }
+      if (get_previous_block_hash(data,0) == 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not get the previous block hash\nFunction: calculate_main_node_data");
+      }  
+      memcpy(VRF_data.vrf_alpha_string_round_part_2,data,64);
+      memset(data,0,strlen(data));
+      if (random_string(data,100) == 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not geta random string for the vrf_alpha_string_round_part_2 \nFunction: calculate_main_node_data");
+      }
+      memcpy(VRF_data.vrf_alpha_string_round_part_2+64,data,100);
+      if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_2,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_2,strlen(VRF_data.vrf_alpha_string_round_part_2)) != 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the vrf_proof_round_part_2\nFunction: calculate_main_node_data");
+      }
+      if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_2,(const unsigned char*)VRF_data.vrf_proof_round_part_2) != 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the beta_string_round_part_2\nFunction: calculate_main_node_data");
+      }
+      if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_2,(const unsigned char*)VRF_data.vrf_public_key_round_part_2,(const unsigned char*)VRF_data.vrf_proof_round_part_2,VRF_data.vrf_alpha_string_round_part_2,crypto_vrf_PUBLICKEYBYTES) != 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the VRF data for round part 2\nFunction: calculate_main_node_data");
+      }
+
+      // convert all of the VRF data to a string
+      for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_public_key_data_round_part_2+count,"%02x",VRF_data.vrf_public_key_round_part_2[count2] & 0xFF);
+      }
+      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_2); count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_alpha_string_data_round_part_2+count,"%02x",VRF_data.vrf_alpha_string_round_part_2[count2] & 0xFF);
+      }
+      for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_proof_data_round_part_2+count,"%02x",VRF_data.vrf_proof_round_part_2[count2] & 0xFF);
+      }
+      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_beta_string_round_part_2); count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_beta_string_data_round_part_2+count,"%02x",VRF_data.vrf_beta_string_round_part_2[count2] & 0xFF);
+      }
+    }
+  }
+  else if (memcmp(current_round_part,"3",1) == 0)
+  {
+    if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
+    {
+      // create the VRF data round part 3  
+      memcpy(VRF_data.vrf_public_key_round_part_3,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
+      memcpy(VRF_data.vrf_alpha_string_round_part_3,VRF_data.vrf_alpha_string_round_part_1,164);
+      if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_3,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_3,strlen(VRF_data.vrf_alpha_string_round_part_3)) != 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the vrf_proof_round_part_3\nFunction: calculate_main_node_data");
+      }
+      if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_3,(const unsigned char*)VRF_data.vrf_proof_round_part_3) != 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the beta_string_round_part_3\nFunction: calculate_main_node_data");
+      }
+      if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_3,(const unsigned char*)VRF_data.vrf_public_key_round_part_3,(const unsigned char*)VRF_data.vrf_proof_round_part_3,VRF_data.vrf_alpha_string_round_part_3,crypto_vrf_PUBLICKEYBYTES) != 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the VRF data for round part 2\nFunction: calculate_main_node_data");
+      }
+
+      // convert all of the VRF data to a string
+      for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_public_key_data_round_part_3+count,"%02x",VRF_data.vrf_public_key_round_part_3[count2] & 0xFF);
+      }  
+      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_3); count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_alpha_string_data_round_part_3+count,"%02x",VRF_data.vrf_alpha_string_round_part_3[count2] & 0xFF);
+      }
+      for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+      {
+        sprintf(VRF_data.vrf_proof_data_round_part_3+count,"%02x",VRF_data.vrf_proof_round_part_3[count2] & 0xFF);
+      }
+      for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
+      {
+       sprintf(VRF_data.vrf_beta_string_data_round_part_3+count,"%02x",VRF_data.vrf_beta_string_round_part_3[count2] & 0xFF);
+      }
+    }    
+  }
+  else if (memcmp(current_round_part,"4",1) == 0)
+  {
+    if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
+    {
+      // get a block template
+      if (get_block_template(VRF_data.block_blob,0) == 0)
+      {
+        CALCULATE_MAIN_NODES_DATA_ERROR("Could not get a block template\nFunction: calculate_main_node_data");
+      }
+    }
+  }
+  
+  pointer_reset(data);
+  return 1;
+
+  #undef CALCULATE_MAIN_NODES_DATA_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_updated_node_list
 Description: Gets the updated node list, so it will know what nodes to accept data from
 Parameters:
