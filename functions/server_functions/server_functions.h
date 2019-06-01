@@ -10,6 +10,7 @@ Function prototypes
 void start_new_round();
 void start_current_round_start_blocks();
 void start_current_round();
+int start_part_3_of_round();
 int start_part_4_of_round();
 int update_block_verifiers_list();
 int update_databases();

@@ -63,7 +63,6 @@ int string_functions_test()
   The purpose of this message is for the main node to send the created data for the part of the round to the nodes, so they can verify the data.
  
   message_settings - The type of the message
-  vrf_random_character_string - A random 100 character string, used to create the VRF alpha_string.
   vrf_public_key - The VRF public key.
   vrf_alpha_string - The VRF alpha string. (this is the previous_block_hash|vrf_random_character_string)
   vrf_proof - The VRF proof.
