@@ -550,6 +550,226 @@ void start_current_round()
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: start_part_1_of_round
+Description: Runs the start_part_1_of_round code
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int start_part_1_of_round()
+{
+  // Variables
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time; 
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  int count = 0;
+  int count2 = 0;
+  int count3 = 0;
+  int counter = 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || data3 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL;
+
+  #define START_PART_1_OF_ROUND_ERROR(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return 0;
+
+  #define RESTART_ROUND \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    memset(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count])); \
+  } \
+  memset(VRF_data.vrf_secret_key_data_round_part_1,0,strlen(VRF_data.vrf_secret_key_data_round_part_1)); \
+  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen(VRF_data.vrf_secret_key_round_part_1)); \
+  memset(VRF_data.vrf_public_key_data_round_part_1,0,strlen(VRF_data.vrf_public_key_data_round_part_1)); \
+  memset(VRF_data.vrf_public_key_round_part_1,0,strlen(VRF_data.vrf_public_key_round_part_1)); \
+  memset(VRF_data.vrf_alpha_string_data_round_part_1,0,strlen(VRF_data.vrf_alpha_string_data_round_part_1)); \
+  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen(VRF_data.vrf_alpha_string_round_part_1)); \
+  memset(VRF_data.vrf_proof_data_round_part_1,0,strlen(VRF_data.vrf_proof_data_round_part_1)); \
+  memset(VRF_data.vrf_proof_round_part_1,0,strlen(VRF_data.vrf_proof_round_part_1)); \
+  memset(VRF_data.vrf_beta_string_data_round_part_1,0,strlen(VRF_data.vrf_beta_string_data_round_part_1)); \
+  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen(VRF_data.vrf_beta_string_round_part_1)); \
+  if (memcmp(current_round_part_backup_node,"0",1) == 0) \
+  { \
+    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memcpy(current_round_part_backup_node,"1",1);  \
+  } \
+  else if (memcmp(current_round_part_backup_node,"1",1) == 0) \
+  { \
+    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memcpy(current_round_part_backup_node,"2",1); \
+  } \
+  else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
+  { \
+    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memcpy(current_round_part_backup_node,"3",1); \
+  } \
+  else if (memcmp(current_round_part_backup_node,"3",1) == 0) \
+  { \
+    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memcpy(current_round_part_backup_node,"4",1); \
+  } \
+  else if (memcmp(current_round_part_backup_node,"4",1) == 0) \
+  { \
+    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memcpy(current_round_part_backup_node,"5",1); \
+  } \
+  else if (memcmp(current_round_part_backup_node,"5",1) == 0) \
+  { \
+    if (memcmp(current_round_part,"4",1) != 0) \
+    { \
+      color_print("Waiting until 4 minutes and 40 seconds of the round to synchronize all block verifiers","green"); \
+      for (;;) \
+      { \
+        usleep(200000); \
+        time(&current_date_and_time); \
+        current_UTC_date_and_time = gmtime(&current_date_and_time); \
+        if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec == 40) \
+        { \
+          break; \
+        } \
+      } \
+    } \
+    main_network_data_node_create_block = 1; \
+    memset(current_round_part,0,strlen(current_round_part)); \
+    memcpy(current_round_part,"4",1); \
+    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memcpy(current_round_part_backup_node,"0",1); \
+    calculate_main_node_data(); \
+  } 
+
+  calculate_main_node_data();
+
+  // set the next server message since the block verifiers will send the data to each other
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
+
+  // send the main node data to all of the block verifiers if the block verifier is the main node
+  if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.vrf_node_random_data_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
+  {
+    // create the message
+    memcpy(data,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_secret_key\": \"",84);
+    memcpy(data+strlen(data),VRF_data.vrf_secret_key_data_round_part_1,VRF_SECRET_KEY_LENGTH);
+    memcpy(data+strlen(data),"\",\"vrf_public_key\":\"",21);
+    memcpy(data+strlen(data),VRF_data.vrf_public_key_data_round_part_1,VRF_PUBLIC_KEY_LENGTH);
+    memcpy(data+strlen(data),"\",\"vrf_alpha_string\":\"",22);
+    memcpy(data+strlen(data),VRF_data.vrf_alpha_string_data_round_part_1,strnlen(VRF_data.vrf_alpha_string_data_round_part_1,BUFFER_SIZE));
+    memcpy(data+strlen(data),"\",\"vrf_proof\":\"",22);
+    memcpy(data+strlen(data),VRF_data.vrf_proof_data_round_part_1,VRF_PROOF_LENGTH);
+    memcpy(data+strlen(data),"\",\"vrf_beta_string\":\"",22);
+    memcpy(data+strlen(data),VRF_data.vrf_beta_string_data_round_part_1,VRF_BETA_LENGTH);
+    memcpy(data+strlen(data),"\"}",2);
+
+    // sign_data
+    if (sign_data(data,0) == 0)
+    { 
+      START_PART_1_OF_ROUND_ERROR("Could not sign_data\nFunction: start_part_1_of_round");
+    }
+
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+      {
+        send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+      }
+    }
+  }
+
+  // wait for the block verifiers to process main node data
+  sleep(10);
+
+
+
+  // at this point all block verifiers and the main node should have the same main node data
+
+  // check if the main node data is valid
+  if (memcmp(VRF_data.vrf_public_key_data_round_part_1,"",1) == 0)
+  {
+    RESTART_ROUND;
+  }
+
+  // check if all of the block verifiers have the same main node data
+
+  // create the message
+  memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
+  memcpy(data3+strnlen(data3,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(data3+strnlen(data3,BUFFER_SIZE),"\",\r\n}",5); 
+
+  // sign_data
+  if (sign_data(data3,0) == 0)
+  { 
+    START_PART_1_OF_ROUND_ERROR("Could not sign_data\nFunction: server_receive_data_socket_main_node_to_node_message_part_1\nFunction: start_part_1_of_round");
+  }
+
+  // send the message to all block verifiers
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+    }
+  }
+
+  // wait for the block verifiers to process the votes
+  sleep(10);
+
+  // process the vote results
+  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    RESTART_ROUND;
+  }
+
+  // at this point is has been voted on that all block verifiers have the same main node data and the data is valid
+  
+  pointer_reset_all;
+  return 1;
+
+  #undef pointer_reset_all
+  #undef START_PART_1_OF_ROUND_ERROR
+  #undef RESTART_ROUND
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: start_part_2_of_round
 Description: Runs the start_part_2_of_round code
 Return: 0 if an error has occured, 1 if successfull
@@ -602,7 +822,7 @@ int start_part_2_of_round()
   pointer_reset_all; \
   return 0;
 
-   #define RESTART_ROUND \
+  #define RESTART_ROUND \
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count])); \
@@ -686,9 +906,9 @@ int start_part_2_of_round()
     memcpy(data+148,"\",\"vrf_alpha_string\":\"",22);
     memcpy(data+170,VRF_data.vrf_alpha_string_data_round_part_2,strnlen(VRF_data.vrf_alpha_string_data_round_part_2,BUFFER_SIZE));
     memcpy(data+strlen(data),"\",\"vrf_proof\":\"",22);
-    memcpy(data+strlen(data),VRF_data.vrf_alpha_string_data_round_part_2,strnlen(VRF_data.vrf_alpha_string_data_round_part_2,BUFFER_SIZE));
+    memcpy(data+strlen(data),VRF_data.vrf_proof_data_round_part_2,VRF_PROOF_LENGTH);
     memcpy(data+strlen(data),"\",\"vrf_beta_string\":\"",22);
-    memcpy(data+strlen(data),VRF_data.vrf_alpha_string_data_round_part_2,strnlen(VRF_data.vrf_alpha_string_data_round_part_2,BUFFER_SIZE));
+    memcpy(data+strlen(data),VRF_data.vrf_beta_string_data_round_part_2,VRF_BETA_LENGTH);
     memcpy(data+strlen(data),"\"}",2);
 
     // sign_data
@@ -900,9 +1120,9 @@ int start_part_3_of_round()
     memcpy(data+148,"\",\"vrf_alpha_string\":\"",22);
     memcpy(data+170,VRF_data.vrf_alpha_string_data_round_part_3,strnlen(VRF_data.vrf_alpha_string_data_round_part_3,BUFFER_SIZE));
     memcpy(data+strlen(data),"\",\"vrf_proof\":\"",22);
-    memcpy(data+strlen(data),VRF_data.vrf_alpha_string_data_round_part_3,strnlen(VRF_data.vrf_alpha_string_data_round_part_3,BUFFER_SIZE));
+    memcpy(data+strlen(data),VRF_data.vrf_proof_data_round_part_3,VRF_PROOF_LENGTH);
     memcpy(data+strlen(data),"\",\"vrf_beta_string\":\"",22);
-    memcpy(data+strlen(data),VRF_data.vrf_alpha_string_data_round_part_3,strnlen(VRF_data.vrf_alpha_string_data_round_part_3,BUFFER_SIZE));
+    memcpy(data+strlen(data),VRF_data.vrf_beta_string_data_round_part_3,VRF_BETA_LENGTH);
     memcpy(data+strlen(data),"\"}",2);
 
     // sign_data
@@ -4512,102 +4732,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR
 }
 
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_main_node_to_node_message_part_1
-Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_1_OF_ROUND message
-Parameters:
-  message - The message
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-/*int server_receive_data_socket_main_node_to_node_message_part_1(const char* MESSAGE)
-{
-  // Variables
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time; 
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  
-  // define macros
-  #define RESTART_ROUND \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    memset(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count])); \
-  } \
-  memset(VRF_data.vrf_secret_key_data_round_part_1,0,strlen(VRF_data.vrf_secret_key_data_round_part_1)); \
-  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen(VRF_data.vrf_secret_key_round_part_1)); \
-  memset(VRF_data.vrf_public_key_data_round_part_1,0,strlen(VRF_data.vrf_public_key_data_round_part_1)); \
-  memset(VRF_data.vrf_public_key_round_part_1,0,strlen(VRF_data.vrf_public_key_round_part_1)); \
-  memset(VRF_data.vrf_alpha_string_data_round_part_1,0,strlen(VRF_data.vrf_alpha_string_data_round_part_1)); \
-  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen(VRF_data.vrf_alpha_string_round_part_1)); \
-  memset(VRF_data.vrf_proof_data_round_part_1,0,strlen(VRF_data.vrf_proof_data_round_part_1)); \
-  memset(VRF_data.vrf_proof_round_part_1,0,strlen(VRF_data.vrf_proof_round_part_1)); \
-  memset(VRF_data.vrf_beta_string_data_round_part_1,0,strlen(VRF_data.vrf_beta_string_data_round_part_1)); \
-  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen(VRF_data.vrf_beta_string_round_part_1)); \
-  if (memcmp(current_round_part_backup_node,"0",1) == 0) \
-  { \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"1",1);  \
-  } \
-  else if (memcmp(current_round_part_backup_node,"1",1) == 0) \
-  { \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"2",1); \
-  } \
-  else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
-  { \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"3",1); \
-  } \
-  else if (memcmp(current_round_part_backup_node,"3",1) == 0) \
-  { \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"4",1); \
-  } \
-  else if (memcmp(current_round_part_backup_node,"4",1) == 0) \
-  { \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"5",1); \
-  } \
-  else if (memcmp(current_round_part_backup_node,"5",1) == 0) \
-  { \
-    if (memcmp(current_round_part,"4",1) != 0) \
-    { \
-      color_print("Waiting until 4 minutes and 40 seconds of the round to synchronize all block verifiers","green"); \
-      for (;;) \
-      { \
-        usleep(200000); \
-        time(&current_date_and_time); \
-        current_UTC_date_and_time = gmtime(&current_date_and_time); \
-        if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec == 40) \
-        { \
-          break; \
-        } \
-      } \
-    } \
-    main_network_data_node_create_block = 1; \
-    memset(current_round_part,0,strlen(current_round_part)); \
-    memcpy(current_round_part,"4",1); \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"0",1); \
-    calculate_main_node_data(); \
-  } 
-
-  return 0;
-  #undef RESTART_ROUND 
-}*/
 
 
 /*
