@@ -74,11 +74,13 @@ void start_new_round()
 
   // update all of the databases 
   color_print("Updating the previous rounds data in the databases","green");
-  if (update_databases() == 0)
-  {
-     START_NEW_ROUND_ERROR("Could not update the databases. This means that your database is out of sync, and you need to resync your databases\nFunction: start_new_round");
-  }
+  update_databases();
 
+  // check to make sure all of the databases are synced
+  color_print("Checking if databases are synced","green");
+  check_if_databases_are_synced();  
+  START_NEW_ROUND_ERROR("Could not check if the databases are synced. This means that your database is out of sync, and you need to resync your databases\nFunction: start_new_round");
+  
   // reset the variables
   memset(current_round_part,0,strlen(current_round_part));
   memcpy(current_round_part,"1",1);
@@ -173,15 +175,48 @@ void start_new_round()
     color_print("The current block is on of the first three blocks on the network, meaning the data network node will create this block","green");
 
     // set the main_network_data_node_create_block so the main network data node can create the block
-    memset(server_message,0,strlen(server_message));
-    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35);
     main_network_data_node_create_block = 1;
-    start_current_round_start_blocks();    
+    start_current_round_start_blocks(); 
+    start_part_4_of_round();   
   }
   else if (settings == 2)
   {
     // this is a X-CASH proof of stake block so this is not the start blocks of the network
-    start_current_round();
+    if (calculate_main_nodes_roles() == 0)
+    {
+      // set the main_network_data_node_create_block so the main network data node can create the block
+      main_network_data_node_create_block = 1;
+      start_current_round_start_blocks(); 
+      start_part_4_of_round();   
+    }
+    if (start_part_1_of_round() == 0)
+    {
+      // set the main_network_data_node_create_block so the main network data node can create the block
+      main_network_data_node_create_block = 1;
+      start_current_round_start_blocks(); 
+      start_part_4_of_round();   
+    }
+    if (start_part_2_of_round() == 0)
+    {
+      // set the main_network_data_node_create_block so the main network data node can create the block
+      main_network_data_node_create_block = 1;
+      start_current_round_start_blocks(); 
+      start_part_4_of_round();   
+    }
+    if (start_part_3_of_round() == 0)
+    {
+      // set the main_network_data_node_create_block so the main network data node can create the block
+      main_network_data_node_create_block = 1;
+      start_current_round_start_blocks(); 
+      start_part_4_of_round();   
+    }
+    if (start_part_4_of_round() == 0)
+    {
+      // set the main_network_data_node_create_block so the main network data node can create the block
+      main_network_data_node_create_block = 1;
+      start_current_round_start_blocks(); 
+      start_part_4_of_round();   
+    }
   }
   pointer_reset(data);
   return;
@@ -440,26 +475,9 @@ void start_current_round_start_blocks()
 
   // convert the blockchain_data to a network_block_string
   memset(data,0,strlen(data));
-  if (blockchain_data_to_network_block_string(data) == 0)
+  if (blockchain_data_to_network_block_string(VRF_data.block_blob) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the blockchain_data to a network_block_string\nFunction: start_current_round_start_blocks");
-  }
-
-  // create the message
-  memcpy(data2,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"block_blob\": \"",126);
-  memcpy(data2,data,strnlen(data,BUFFER_SIZE));
-  memcpy(data2,"\",\r\n}",5);
-
-  // sign_data
-  if (sign_data(data2,0) == 0)
-  { 
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign data\nFunction: start_current_round_start_blocks");
-  }
-
-  // send the network block string to the block verifiers so they can sign the network block string
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data2,"",0);
   }
   
   pointer_reset(data);
@@ -467,83 +485,6 @@ void start_current_round_start_blocks()
 
   #undef pointer_reset_all
   #undef START_CURRENT_ROUND_START_BLOCKS_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: start_current_round
-Description: Runs the current round
-Return: NULL
------------------------------------------------------------------------------------------------------------
-*/
-
-void start_current_round()
-{
-  // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time; 
-  size_t count;
-  int settings;
-
-  // define macros
-  #define START_CURRENT_ROUND_ERROR(settings) \
-  color_print(settings,"red"); \
-  pointer_reset(data); \
-  return;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
-  // check if the block verifier is a network data node
-  if (network_data_node_settings == 1)
-  {
-    color_print("Your block verifier is a data network node.\nSaving the previous rounds statistics to the database","green");
-    data_network_node_save_previous_round_statistics();
-    // wait until 0 minutes and 10 seconds of this round
-    for (;;)
-    {
-      usleep(200000);
-      time(&current_date_and_time);
-      current_UTC_date_and_time = gmtime(&current_date_and_time);
-      if (current_UTC_date_and_time->tm_sec == 10)
-      {
-       goto start;
-      }
-    }
-  }
-  else
-  {
-    color_print("Your block verifier is not the main data network node waiting until 0 minutes and 10 seconds of this round, for the data network node to save the previous rounds statistics to the database","red");
-  }
-
-  // wait until 0 minutes and 10 seconds of this round
-  color_print("Waiting until 0 minutes and 10 seconds of the round to synchronize all block verifiers","green");
-  for (;;)
-  {
-    usleep(200000);
-    time(&current_date_and_time);
-    current_UTC_date_and_time = gmtime(&current_date_and_time);
-    if (current_UTC_date_and_time->tm_sec == 10)
-    {
-     goto start;
-    }
-  }
-
-  start:
-
-  // calculate main nodes roles
-  
-  pointer_reset(data);
-  return;
-
-  #undef START_CURRENT_ROUND_ERROR
 }
 
 
@@ -672,8 +613,13 @@ int start_part_1_of_round()
     memcpy(current_round_part,"4",1); \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"0",1); \
-    calculate_main_node_data(); \
-  } 
+    start_part_4_of_round(); \
+    pointer_reset_all; \
+    return 1; \
+  } \
+  goto start;
+
+  start:
 
   calculate_main_node_data();
 
@@ -888,8 +834,13 @@ int start_part_2_of_round()
     memcpy(current_round_part,"4",1); \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"0",1); \
-    calculate_main_node_data(); \
-  }  
+    start_part_4_of_round(); \
+    pointer_reset_all; \
+    return 1; \
+  } \
+  goto start;
+
+  start:
 
   calculate_main_node_data();
 
@@ -1102,8 +1053,13 @@ int start_part_3_of_round()
     memcpy(current_round_part,"4",1); \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"0",1); \
-    calculate_main_node_data(); \
-  } 
+    start_part_4_of_round(); \
+    pointer_reset_all; \
+    return 1; \
+  } \
+  goto start;
+
+  start:
 
   calculate_main_node_data();
 
@@ -1303,8 +1259,10 @@ int start_part_4_of_round()
     memcpy(current_round_part,"4",1); \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"0",1); \
-    calculate_main_node_data(); \
-  }  
+  } \
+  goto start;  
+
+  start:
 
   calculate_main_node_data();
 
@@ -1429,10 +1387,7 @@ int start_part_4_of_round()
   // at this point all block verifiers have signed the block and have all of the other block verifiers signed data
 
   // update the block verifiers list as this block will be added to the network
-  if (update_block_verifiers_list() == 0)
-  {
-    START_PART_4_OF_ROUND_ERROR("Could not update the block verifiers list\nFunction: start_part_4_of_round");
-  }
+  update_block_verifiers_list();
 
   // convert the network_block_string to a blockchain_data
   if (network_block_string_to_blockchain_data(VRF_data.block_blob,"0") == 0)
@@ -1577,11 +1532,10 @@ int start_part_4_of_round()
 -----------------------------------------------------------------------------------------------------------
 Name: update_block_verifiers_list
 Description: Updates the block verifiers list struct
-Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-int update_block_verifiers_list()
+void update_block_verifiers_list()
 {
   // Variables
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -1592,7 +1546,7 @@ int update_block_verifiers_list()
   #define DATABASE_COLLECTION "delegates"
   #define UPDATE_BLOCK_VERIFIERS_ERROR(settings) \
   color_print(settings,"red"); 
-  return 0;
+  return;
 
   // reset the previous_block_verifiers_list struct
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1688,7 +1642,7 @@ int update_block_verifiers_list()
     }
   }
   
-  return 1;
+  return;
 
   #undef DATABASE_COLLECTION
   #undef UPDATE_BLOCK_VERIFIERS_ERROR
@@ -1700,11 +1654,10 @@ int update_block_verifiers_list()
 -----------------------------------------------------------------------------------------------------------
 Name: update_databases
 Description: Updates the databases
-Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-int update_databases()
+void update_databases()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1785,64 +1738,11 @@ int update_databases()
   }
   // wait for the other block verifiers to sync the databse
   sleep(10);
-  
-  return 1;
+
+  pointer_reset_all;  
+  return;
 
   #undef pointer_reset_all
-}
-
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: data_network_node_save_previous_round_statistics
-Description: Save the previous round statistics
-Return: NULL
------------------------------------------------------------------------------------------------------------
-*/
-
-void data_network_node_save_previous_round_statistics()
-{
-  /*// Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  size_t count;
-  int settings;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
-  // check if the block verifier is the main network data node
-  if (network_data_node == 0)
-  {
-    color_print("Your block verifier is not the main data network node so your block verifier will check to see if the main network data node is online","red");
-    if (get_delegate_online_status(MAIN_NETWORK_DATA_NODE_IP_ADDRESS) == 0)
-    {
-      // check again to make sure the main network data node is offline
-      sleep(2);
-      if (get_delegate_online_status(MAIN_NETWORK_DATA_NODE_IP_ADDRESS) == 0)
-      {
-        // the main network data node is offline, so save the previous round statistics to the database
-        color_print("The main network data node is offline, so your block verifier will save the previous round statistics to the database","green");
-        add_block_verifiers_round_statistics();
-        add_round_statistics();        
-      }
-    }
-  }
-  else
-  {
-    // save the previous round statistics to the database
-    color_print("Your block verifier is the main data network node so your block verifier will save the previous round statistics to the database","green");
-    add_block_verifiers_round_statistics();
-    add_round_statistics();
-  }
-  
-  pointer_reset(data);
-  return;*/
 }
 
 
@@ -2522,6 +2422,54 @@ void add_round_statistics()
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_if_databases_are_synced
+Description: Checks if the databases are synced, and if not syncs the databases
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void check_if_databases_are_synced()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+
+  // get the previous block height
+  sscanf(current_block_height, "%zu", &count);
+  count--;
+  sprintf(data,"%zu",count);
+
+  // check if your reserve bytes database is synced
+  if (sync_check_reserve_bytes_database(data) == 0)
+  {
+    color_print("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.\nFunction: update_databases","red");
+  }
+  // wait for the other block verifiers to sync the databse
+  sleep(10);
+
+  // check if your delegates database is synced
+  if (sync_check_delegates_database() == 0)
+  {
+    color_print("Could not check if the delegates database is updated. This means you might need to sync the delegates database.\nFunction: update_databases","red");
+  }
+  // wait for the other block verifiers to sync the databse
+  sleep(10);
+
+  // check if your statistics database is synced
+  if (sync_check_statistics_database() == 0)
+  {
+    color_print("Could not check if the statistics database is updated. This means you might need to sync the statistics database.\nFunction: update_databases","red");
+  }
+  // wait for the other block verifiers to sync the databse
+  sleep(10);
+
+  pointer_reset(data);
+  return;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: calculate_main_nodes_roles
 Description: Calculates the main nodes roles for the round
 Return: 0 if an error has occured, 1 if successfull
@@ -3010,80 +2958,6 @@ int calculate_main_node_data()
   return 1;
 
   #undef CALCULATE_MAIN_NODES_DATA_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: get_updated_node_list
-Description: Gets the updated node list, so it will know what nodes to accept data from
-Parameters:
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int get_updated_node_list()
-{
-  // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  size_t count;
-  size_t count2;
-
-   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(message); \
-  message = NULL; \
-  free(message2); \
-  message2 = NULL; \
-  free(message3); \
-  message3 = NULL;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || message == NULL || message2 == NULL || message3 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (message2 != NULL)
-    {
-      pointer_reset(message2);
-    }
-    if (message3 != NULL)
-    {
-      pointer_reset(message3);
-    }
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
-  #define GET_UPDATED_NODE_LIST_ERROR(settings) \
-  color_print(settings,"red"); \
-  pointer_reset_all; \
-  return 0;
-
-  
-  return 1;
-
-  #undef pointer_reset_all
-  #undef GET_UPDATED_NODE_LIST_ERROR
 }
 
 
