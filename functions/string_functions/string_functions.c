@@ -19,8 +19,8 @@ Functions
 Name: parse_json_data
 Description: Parses json data
 Parameters:
-  data - The json data to parse
-  field - The field you want to parse
+  DATA - The json data to parse
+  FIELD_NAME - The field you want to parse
   result - Where the result is stored
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
@@ -222,8 +222,8 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
 Name: string_count
 Description: Counts the occurences of a substring in a string
 Parameters:
-  data - The string to count the occurence in
-  string - The substring to count the occurences of
+  DATA - The string to count the occurence in
+  STRING - The substring to count the occurences of
 Return: The number of occurences of the substring in the string, otherwise 0 if an error has occured
 -----------------------------------------------------------------------------------------------------------
 */

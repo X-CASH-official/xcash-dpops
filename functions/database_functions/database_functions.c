@@ -513,7 +513,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
 Name: database_document_parse_json_data_
 Description: Parses the json data from the database
 Parameters:
-  data - The json data from the database
+  DATA - The json data from the database
   result - A database_document_fields struct
   struct database_document_fields
     count - The number of items in the database document
@@ -524,7 +524,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int database_document_parse_json_data(char* data, struct database_document_fields* result)
+int database_document_parse_json_data(const char* DATA, struct database_document_fields* result)
 {
   // Variables
   char* data2;
@@ -532,10 +532,10 @@ int database_document_parse_json_data(char* data, struct database_document_field
   size_t count = 0;
 
   // get the parameter count
-  result->count = string_count(data,":") - 2;
+  result->count = string_count(DATA,":") - 2;
 
   // get the first item  
-  data2 = strstr(data,",") + 3;
+  data2 = strstr(DATA,",") + 3;
   data3 = strstr(data2,"\"");
   memcpy(result->item[0],data2,strnlen(data2,BUFFER_SIZE)-strnlen(data3,BUFFER_SIZE)); 
   
@@ -563,7 +563,7 @@ int database_document_parse_json_data(char* data, struct database_document_field
 Name: database_multiple_documents_parse_json_data
 Description: Parses the json data from the database
 Parameters:
-  data - The json data from the database
+  DATA - The json data from the database
   result - A database_document_fields struct
   struct database_multiple_documents_fields
     document_count - The number of documents
@@ -575,7 +575,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int database_multiple_documents_parse_json_data(char* data, struct database_multiple_documents_fields* result, const int document_count)
+int database_multiple_documents_parse_json_data(const char* DATA, struct database_multiple_documents_fields* result, const int document_count)
 {
   // Variables
   char* data2;
@@ -583,10 +583,10 @@ int database_multiple_documents_parse_json_data(char* data, struct database_mult
   size_t count = 0;
 
   // get the parameter count
-  result->database_fields_count = string_count(data,":") - 2;
+  result->database_fields_count = string_count(DATA,":") - 2;
 
   // get the first item  
-  data2 = strstr(data,",") + 3;
+  data2 = strstr(DATA,",") + 3;
   data3 = strstr(data2,"\"");
   memcpy(result->item[document_count][0],data2,strnlen(data2,BUFFER_SIZE)-strnlen(data3,BUFFER_SIZE)); 
   
@@ -1352,6 +1352,8 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     database_reset_all;
     return 0;
   }
+
+  memset(database_data,0,strlen(database_data));
 
   document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
   while (mongoc_cursor_next(document_settings, &current_document))

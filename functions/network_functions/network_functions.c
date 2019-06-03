@@ -1910,7 +1910,6 @@ int sync_delegates_database()
   char* data = (char*)calloc(10485760,sizeof(char));  // 10 MB
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
-  size_t count2;
 
   // define macros
   #define pointer_reset_all \
@@ -2213,7 +2212,6 @@ int sync_statistics_database()
   char* data = (char*)calloc(10485760,sizeof(char));  // 10 MB
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
-  size_t count2;
 
   // define macros
   #define pointer_reset_all \
@@ -2328,7 +2326,7 @@ Return: 1 if the IP address is online, 0 if the IP address is offline
 -----------------------------------------------------------------------------------------------------------
 */
 
-int get_delegate_online_status(char* HOST)
+int get_delegate_online_status(const char* HOST)
 {
   // Variables
   struct sockaddr_in serv_addr;

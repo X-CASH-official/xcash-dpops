@@ -81,13 +81,13 @@ Name: sign_network_block_string
 Description: Signs the network block string
 Parameters:
   data - The signed data
-  message - The sign_data
+  MESSAGE - The sign_data
   MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sign_network_block_string(char *data, char* message, const int HTTP_SETTINGS)
+int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SETTINGS)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
@@ -121,7 +121,7 @@ int sign_network_block_string(char *data, char* message, const int HTTP_SETTINGS
 
   // sign_data
   memcpy(data2,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
-  memcpy(data2+60,message,strnlen(message,BUFFER_SIZE));
+  memcpy(data2+60,MESSAGE,strnlen(MESSAGE,BUFFER_SIZE));
   memcpy(data2+strlen(data2),"\"}}",3);
 
   if (send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data2,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
@@ -224,19 +224,19 @@ Name: check_reserve_proof
 Description: Checks a reserve proof
 Parameters:
   result - The amount for the reserve proof
-  public_address - The public address that created the reserve proof
-  reserve_proof - The reserve proof
+  PUBLIC_ADDRESS - The public address that created the reserve proof
+  RESERVE_PROOF - The reserve proof
   HTTP_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 Return: 0 if an error has occured or if the reserve proof is invalid, 1 if the reserve proof is valid
 -----------------------------------------------------------------------------------------------------------
 */
 
-int check_reserve_proofs(char *result, char* public_address, char* reserve_proof, const int HTTP_SETTINGS)
+int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* RESERVE_PROOF, const int HTTP_SETTINGS)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-  const size_t RESERVE_PROOF_LENGTH = strnlen(reserve_proof,BUFFER_SIZE);
+  const size_t RESERVE_PROOF_LENGTH = strnlen(RESERVE_PROOF,BUFFER_SIZE);
 
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -257,9 +257,9 @@ int check_reserve_proofs(char *result, char* public_address, char* reserve_proof
 
   // create the message
   memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"check_reserve_proof\",\"params\":{\"address\":\"",78);
-  memcpy(data+78,public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+78,PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
   memcpy(data+176,"\",\"message\":\"\",\"signature\":\"",28);
-  memcpy(data+204,reserve_proof,RESERVE_PROOF_LENGTH);
+  memcpy(data+204,RESERVE_PROOF,RESERVE_PROOF_LENGTH);
   memcpy(data+204+RESERVE_PROOF_LENGTH,"\"}}",3);
 
   if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"check reserve proof",HTTP_SETTINGS) <= 0)

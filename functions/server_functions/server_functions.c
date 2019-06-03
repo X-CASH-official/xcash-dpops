@@ -95,31 +95,31 @@ void start_new_round()
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_secret_key_round_part_1[count]));
     memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_1[count]));
     memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count]));
     memset(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_1[count]));
     memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count]));
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_1[count]));
     memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_2[count]));
     memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count]));
     memset(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_2[count]));
     memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count]));
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_2[count]));
     memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_3[count]));
     memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count]));
     memset(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_3[count]));
     memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count]));
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_3[count]));
 
     memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); 
     
@@ -130,31 +130,31 @@ void start_new_round()
 
   // reset the VRF_data struct
   memset(VRF_data.vrf_secret_key_data_round_part_1,0,strlen(VRF_data.vrf_secret_key_data_round_part_1));
-  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen(VRF_data.vrf_secret_key_round_part_1));
+  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen((const char*)VRF_data.vrf_secret_key_round_part_1));
   memset(VRF_data.vrf_public_key_data_round_part_1,0,strlen(VRF_data.vrf_public_key_data_round_part_1));
-  memset(VRF_data.vrf_public_key_round_part_1,0,strlen(VRF_data.vrf_public_key_round_part_1));
+  memset(VRF_data.vrf_public_key_round_part_1,0,strlen((const char*)VRF_data.vrf_public_key_round_part_1));
   memset(VRF_data.vrf_alpha_string_data_round_part_1,0,strlen(VRF_data.vrf_alpha_string_data_round_part_1));
-  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen(VRF_data.vrf_alpha_string_round_part_1));
+  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_1));
   memset(VRF_data.vrf_proof_data_round_part_1,0,strlen(VRF_data.vrf_proof_data_round_part_1));
-  memset(VRF_data.vrf_proof_round_part_1,0,strlen(VRF_data.vrf_proof_round_part_1));
+  memset(VRF_data.vrf_proof_round_part_1,0,strlen((const char*)VRF_data.vrf_proof_round_part_1));
   memset(VRF_data.vrf_beta_string_data_round_part_1,0,strlen(VRF_data.vrf_beta_string_data_round_part_1));
-  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen(VRF_data.vrf_beta_string_round_part_1));
+  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_1));
   memset(VRF_data.vrf_public_key_data_round_part_2,0,strlen(VRF_data.vrf_public_key_data_round_part_2));
-  memset(VRF_data.vrf_public_key_round_part_2,0,strlen(VRF_data.vrf_public_key_round_part_2));
+  memset(VRF_data.vrf_public_key_round_part_2,0,strlen((const char*)VRF_data.vrf_public_key_round_part_2));
   memset(VRF_data.vrf_alpha_string_data_round_part_2,0,strlen(VRF_data.vrf_alpha_string_data_round_part_2));
-  memset(VRF_data.vrf_alpha_string_round_part_2,0,strlen(VRF_data.vrf_alpha_string_round_part_2));
+  memset(VRF_data.vrf_alpha_string_round_part_2,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_2));
   memset(VRF_data.vrf_proof_data_round_part_2,0,strlen(VRF_data.vrf_proof_data_round_part_2));
-  memset(VRF_data.vrf_proof_round_part_2,0,strlen(VRF_data.vrf_proof_round_part_2));
+  memset(VRF_data.vrf_proof_round_part_2,0,strlen((const char*)VRF_data.vrf_proof_round_part_2));
   memset(VRF_data.vrf_beta_string_data_round_part_2,0,strlen(VRF_data.vrf_beta_string_data_round_part_2));
-  memset(VRF_data.vrf_beta_string_round_part_2,0,strlen(VRF_data.vrf_beta_string_round_part_2));
+  memset(VRF_data.vrf_beta_string_round_part_2,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_2));
   memset(VRF_data.vrf_public_key_data_round_part_3,0,strlen(VRF_data.vrf_public_key_data_round_part_3));
-  memset(VRF_data.vrf_public_key_round_part_3,0,strlen(VRF_data.vrf_public_key_round_part_3));
+  memset(VRF_data.vrf_public_key_round_part_3,0,strlen((const char*)VRF_data.vrf_public_key_round_part_3));
   memset(VRF_data.vrf_alpha_string_data_round_part_3,0,strlen(VRF_data.vrf_alpha_string_data_round_part_3));
-  memset(VRF_data.vrf_alpha_string_round_part_3,0,strlen(VRF_data.vrf_alpha_string_round_part_3));
+  memset(VRF_data.vrf_alpha_string_round_part_3,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_3));
   memset(VRF_data.vrf_proof_data_round_part_3,0,strlen(VRF_data.vrf_proof_data_round_part_3));
-  memset(VRF_data.vrf_proof_round_part_3,0,strlen(VRF_data.vrf_proof_round_part_3));
+  memset(VRF_data.vrf_proof_round_part_3,0,strlen((const char*)VRF_data.vrf_proof_round_part_3));
   memset(VRF_data.vrf_beta_string_data_round_part_3,0,strlen(VRF_data.vrf_beta_string_data_round_part_3));
-  memset(VRF_data.vrf_beta_string_round_part_3,0,strlen(VRF_data.vrf_beta_string_round_part_3));
+  memset(VRF_data.vrf_beta_string_round_part_3,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_3));
   memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash));
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
@@ -244,7 +244,6 @@ void start_current_round_start_blocks()
   size_t count; 
   size_t count2; 
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
-  int settings;
 
   // define macros
   #define pointer_reset_all \
@@ -299,7 +298,7 @@ void start_current_round_start_blocks()
   }
 
   // convert the network_block_string to blockchain_data
-  if (network_block_string_to_blockchain_data(data,"0") == 0)
+  if (network_block_string_to_blockchain_data((const char*)data,"0") == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the network_block_string to blockchain_data\nFunction: start_current_round_start_blocks");
   }
@@ -314,7 +313,7 @@ void start_current_round_start_blocks()
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_public_key_round_part_1 or vrf_secret_key_round_part_1\nFunction: start_current_round_start_blocks");
   }
   memcpy(VRF_data.vrf_alpha_string_round_part_1,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
-  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_1,(const unsigned char*)VRF_data.vrf_secret_key_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strlen(VRF_data.vrf_alpha_string_round_part_1)) != 0)
+  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_1,(const unsigned char*)VRF_data.vrf_secret_key_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strlen((const char*)VRF_data.vrf_alpha_string_round_part_1)) != 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_proof_round_part_1\nFunction: start_current_round_start_blocks");
   }
@@ -343,7 +342,7 @@ void start_current_round_start_blocks()
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not geta random string for the vrf_alpha_string_round_part_2 \nFunction: start_current_round_start_blocks");
   }
   memcpy(VRF_data.vrf_alpha_string_round_part_2+64,data,100);
-  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_2,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_2,strlen(VRF_data.vrf_alpha_string_round_part_2)) != 0)
+  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_2,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_2,strlen((const char*)VRF_data.vrf_alpha_string_round_part_2)) != 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_proof_round_part_2\nFunction: start_current_round_start_blocks");
   }
@@ -359,7 +358,7 @@ void start_current_round_start_blocks()
   // create the VRF data round part 3  
   memcpy(VRF_data.vrf_public_key_round_part_3,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
   memcpy(VRF_data.vrf_alpha_string_round_part_3,VRF_data.vrf_alpha_string_round_part_1,164);
-  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_3,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_3,strlen(VRF_data.vrf_alpha_string_round_part_3)) != 0)
+  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_3,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_3,strlen((const char*)VRF_data.vrf_alpha_string_round_part_3)) != 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_proof_round_part_3\nFunction: start_current_round_start_blocks");
   }
@@ -381,7 +380,7 @@ void start_current_round_start_blocks()
   {
     sprintf(VRF_data.vrf_public_key_data_round_part_1+count,"%02x",VRF_data.vrf_public_key_round_part_1[count2] & 0xFF);
   }
-  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_1); count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < strlen((const char*)VRF_data.vrf_alpha_string_round_part_1); count2++, count += 2)
   {
     sprintf(VRF_data.vrf_alpha_string_data_round_part_1+count,"%02x",VRF_data.vrf_alpha_string_round_part_1[count2] & 0xFF);
   }
@@ -389,7 +388,7 @@ void start_current_round_start_blocks()
   {
     sprintf(VRF_data.vrf_proof_data_round_part_1+count,"%02x",VRF_data.vrf_proof_round_part_1[count2] & 0xFF);
   }
-  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_beta_string_round_part_1); count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
   {
     sprintf(VRF_data.vrf_beta_string_data_round_part_1+count,"%02x",VRF_data.vrf_beta_string_round_part_1[count2] & 0xFF);
   } 
@@ -397,7 +396,7 @@ void start_current_round_start_blocks()
   {
     sprintf(VRF_data.vrf_public_key_data_round_part_2+count,"%02x",VRF_data.vrf_public_key_round_part_2[count2] & 0xFF);
   }
-  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_2); count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < strlen((const char*)VRF_data.vrf_alpha_string_round_part_2); count2++, count += 2)
   {
     sprintf(VRF_data.vrf_alpha_string_data_round_part_2+count,"%02x",VRF_data.vrf_alpha_string_round_part_2[count2] & 0xFF);
   }
@@ -405,7 +404,7 @@ void start_current_round_start_blocks()
   {
     sprintf(VRF_data.vrf_proof_data_round_part_2+count,"%02x",VRF_data.vrf_proof_round_part_2[count2] & 0xFF);
   }
-  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_beta_string_round_part_2); count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
   {
     sprintf(VRF_data.vrf_beta_string_data_round_part_2+count,"%02x",VRF_data.vrf_beta_string_round_part_2[count2] & 0xFF);
   }
@@ -413,7 +412,7 @@ void start_current_round_start_blocks()
   {
     sprintf(VRF_data.vrf_public_key_data_round_part_3+count,"%02x",VRF_data.vrf_public_key_round_part_3[count2] & 0xFF);
   }
-  for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_3); count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < strlen((const char*)VRF_data.vrf_alpha_string_round_part_3); count2++, count += 2)
   {
     sprintf(VRF_data.vrf_alpha_string_data_round_part_3+count,"%02x",VRF_data.vrf_alpha_string_round_part_3[count2] & 0xFF);
   }
@@ -432,7 +431,7 @@ void start_current_round_start_blocks()
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1 = strnlen(VRF_data.vrf_alpha_string_data_round_part_1,BUFFER_SIZE_NETWORK_BLOCK_DATA);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1,VRF_data.vrf_alpha_string_data_round_part_1,blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_1);
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strnlen(VRF_data.vrf_alpha_string_round_part_1,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strnlen((const char*)VRF_data.vrf_alpha_string_round_part_1,BUFFER_SIZE_NETWORK_BLOCK_DATA));
   blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_1 = VRF_PROOF_LENGTH;
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1,VRF_data.vrf_proof_data_round_part_1,VRF_PROOF_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1,VRF_data.vrf_proof_round_part_1,crypto_vrf_PROOFBYTES);
@@ -444,7 +443,7 @@ void start_current_round_start_blocks()
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2,VRF_data.vrf_public_key_round_part_2,crypto_vrf_PUBLICKEYBYTES);
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2 = strnlen(VRF_data.vrf_alpha_string_data_round_part_2,BUFFER_SIZE_NETWORK_BLOCK_DATA);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2,VRF_data.vrf_alpha_string_data_round_part_2,blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_2);
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2,VRF_data.vrf_alpha_string_round_part_2,strnlen(VRF_data.vrf_alpha_string_round_part_2,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2,VRF_data.vrf_alpha_string_round_part_2,strnlen((const char*)VRF_data.vrf_alpha_string_round_part_2,BUFFER_SIZE_NETWORK_BLOCK_DATA));
   blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_2 = VRF_PROOF_LENGTH;
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2,VRF_data.vrf_proof_data_round_part_2,VRF_PROOF_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2,VRF_data.vrf_proof_round_part_2,crypto_vrf_PROOFBYTES);
@@ -456,7 +455,7 @@ void start_current_round_start_blocks()
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3,VRF_data.vrf_public_key_round_part_3,crypto_vrf_PUBLICKEYBYTES);
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3 = strnlen(VRF_data.vrf_alpha_string_data_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3,VRF_data.vrf_alpha_string_data_round_part_3,blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_3);
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3,VRF_data.vrf_alpha_string_round_part_3,strnlen(VRF_data.vrf_alpha_string_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3,VRF_data.vrf_alpha_string_round_part_3,strnlen((const char*)VRF_data.vrf_alpha_string_round_part_3,BUFFER_SIZE_NETWORK_BLOCK_DATA));
   blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_3 = VRF_PROOF_LENGTH;
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3,VRF_data.vrf_proof_data_round_part_3,VRF_PROOF_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3,VRF_data.vrf_proof_round_part_3,crypto_vrf_PROOFBYTES);
@@ -506,9 +505,6 @@ int start_part_1_of_round()
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
-  int count2 = 0;
-  int count3 = 0;
-  int counter = 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || data3 == NULL)
@@ -547,26 +543,26 @@ int start_part_1_of_round()
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_secret_key_round_part_1[count])); \
     memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_1[count])); \
     memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count])); \
     memset(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_1[count])); \
     memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count])); \
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_1[count])); \
   } \
   memset(VRF_data.vrf_secret_key_data_round_part_1,0,strlen(VRF_data.vrf_secret_key_data_round_part_1)); \
-  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen(VRF_data.vrf_secret_key_round_part_1)); \
+  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen((const char*)VRF_data.vrf_secret_key_round_part_1)); \
   memset(VRF_data.vrf_public_key_data_round_part_1,0,strlen(VRF_data.vrf_public_key_data_round_part_1)); \
-  memset(VRF_data.vrf_public_key_round_part_1,0,strlen(VRF_data.vrf_public_key_round_part_1)); \
+  memset(VRF_data.vrf_public_key_round_part_1,0,strlen((const char*)VRF_data.vrf_public_key_round_part_1)); \
   memset(VRF_data.vrf_alpha_string_data_round_part_1,0,strlen(VRF_data.vrf_alpha_string_data_round_part_1)); \
-  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen(VRF_data.vrf_alpha_string_round_part_1)); \
+  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_1)); \
   memset(VRF_data.vrf_proof_data_round_part_1,0,strlen(VRF_data.vrf_proof_data_round_part_1)); \
-  memset(VRF_data.vrf_proof_round_part_1,0,strlen(VRF_data.vrf_proof_round_part_1)); \
+  memset(VRF_data.vrf_proof_round_part_1,0,strlen((const char*)VRF_data.vrf_proof_round_part_1)); \
   memset(VRF_data.vrf_beta_string_data_round_part_1,0,strlen(VRF_data.vrf_beta_string_data_round_part_1)); \
-  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen(VRF_data.vrf_beta_string_round_part_1)); \
+  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_1)); \
   if (memcmp(current_round_part_backup_node,"0",1) == 0) \
   { \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
@@ -653,7 +649,7 @@ int start_part_1_of_round()
     {
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
       {
-        send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+        send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
       }
     }
   }
@@ -689,7 +685,7 @@ int start_part_1_of_round()
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+      send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
     }
   }
 
@@ -731,9 +727,6 @@ int start_part_2_of_round()
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
-  int count2 = 0;
-  int count3 = 0;
-  int counter = 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || data3 == NULL)
@@ -772,22 +765,22 @@ int start_part_2_of_round()
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_2[count])); \
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_2[count])); \
     memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count])); \
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count])); \
     memset(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_2[count])); \
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_2[count])); \
     memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count])); \
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_2[count])); \
   } \
   memset(VRF_data.vrf_public_key_data_round_part_2,0,strlen(VRF_data.vrf_public_key_data_round_part_2)); \
-  memset(VRF_data.vrf_public_key_round_part_2,0,strlen(VRF_data.vrf_public_key_round_part_2)); \
+  memset(VRF_data.vrf_public_key_round_part_2,0,strlen((const char*)VRF_data.vrf_public_key_round_part_2)); \
   memset(VRF_data.vrf_alpha_string_data_round_part_2,0,strlen(VRF_data.vrf_alpha_string_data_round_part_2)); \
-  memset(VRF_data.vrf_alpha_string_round_part_2,0,strlen(VRF_data.vrf_alpha_string_round_part_2)); \
+  memset(VRF_data.vrf_alpha_string_round_part_2,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_2)); \
   memset(VRF_data.vrf_proof_data_round_part_2,0,strlen(VRF_data.vrf_proof_data_round_part_2)); \
-  memset(VRF_data.vrf_proof_round_part_2,0,strlen(VRF_data.vrf_proof_round_part_2)); \
+  memset(VRF_data.vrf_proof_round_part_2,0,strlen((const char*)VRF_data.vrf_proof_round_part_2)); \
   memset(VRF_data.vrf_beta_string_data_round_part_2,0,strlen(VRF_data.vrf_beta_string_data_round_part_2)); \
-  memset(VRF_data.vrf_beta_string_round_part_2,0,strlen(VRF_data.vrf_beta_string_round_part_2)); \
+  memset(VRF_data.vrf_beta_string_round_part_2,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_2)); \
   if (memcmp(current_round_part_backup_node,"0",1) == 0) \
   { \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
@@ -872,7 +865,7 @@ int start_part_2_of_round()
     {
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
       {
-        send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+        send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
       }
     }
   }
@@ -908,7 +901,7 @@ int start_part_2_of_round()
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+      send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
     }
   }
 
@@ -950,9 +943,6 @@ int start_part_3_of_round()
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
-  int count2 = 0;
-  int count3 = 0;
-  int counter = 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || data3 == NULL)
@@ -991,22 +981,22 @@ int start_part_3_of_round()
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_round_part_3[count])); \
+    memset(VRF_data_block_verifiers.vrf_public_key_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_3[count])); \
     memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count])); \
+    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count])); \
     memset(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_proof_round_part_3[count])); \
+    memset(VRF_data_block_verifiers.vrf_proof_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_3[count])); \
     memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count])); \
+    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_3[count])); \
   } \
   memset(VRF_data.vrf_public_key_data_round_part_3,0,strlen(VRF_data.vrf_public_key_data_round_part_3)); \
-  memset(VRF_data.vrf_public_key_round_part_3,0,strlen(VRF_data.vrf_public_key_round_part_3)); \
+  memset(VRF_data.vrf_public_key_round_part_3,0,strlen((const char*)VRF_data.vrf_public_key_round_part_3)); \
   memset(VRF_data.vrf_alpha_string_data_round_part_3,0,strlen(VRF_data.vrf_alpha_string_data_round_part_3)); \
-  memset(VRF_data.vrf_alpha_string_round_part_3,0,strlen(VRF_data.vrf_alpha_string_round_part_3)); \
+  memset(VRF_data.vrf_alpha_string_round_part_3,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_3)); \
   memset(VRF_data.vrf_proof_data_round_part_3,0,strlen(VRF_data.vrf_proof_data_round_part_3)); \
-  memset(VRF_data.vrf_proof_round_part_3,0,strlen(VRF_data.vrf_proof_round_part_3)); \
+  memset(VRF_data.vrf_proof_round_part_3,0,strlen((const char*)VRF_data.vrf_proof_round_part_3)); \
   memset(VRF_data.vrf_beta_string_data_round_part_3,0,strlen(VRF_data.vrf_beta_string_data_round_part_3)); \
-  memset(VRF_data.vrf_beta_string_round_part_3,0,strlen(VRF_data.vrf_beta_string_round_part_3)); \
+  memset(VRF_data.vrf_beta_string_round_part_3,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_3)); \
   if (memcmp(current_round_part_backup_node,"0",1) == 0) \
   { \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
@@ -1091,7 +1081,7 @@ int start_part_3_of_round()
     {
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
       {
-        send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+        send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
       }
     }
   }
@@ -1127,7 +1117,7 @@ int start_part_3_of_round()
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+      send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
     }
   }
 
@@ -1169,9 +1159,7 @@ int start_part_4_of_round()
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   int count = 0;
-  int count2 = 0;
-  int count3 = 0;
-  int counter = 0;
+  int counter;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || data3 == NULL)
@@ -1324,7 +1312,7 @@ int start_part_4_of_round()
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+      send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
     }
   }
 
@@ -1369,7 +1357,7 @@ int start_part_4_of_round()
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+      send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
     }
   }
 
@@ -1377,7 +1365,14 @@ int start_part_4_of_round()
   sleep(10);
 
   // check if at least 67 of the block verifiers signed the data
-  if (BLOCK_VERIFIERS_AMOUNT - counter < BLOCK_VERIFIERS_VALID_AMOUNT)
+  for (count = 0, counter = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(VRF_data.block_blob_signature[count],"SigV1",5) == 0)
+    {
+      counter++;
+    }
+  }
+  if (counter < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     RESTART_ROUND;
   }
@@ -1441,7 +1436,7 @@ int start_part_4_of_round()
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
+      send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
     }
   }
 
@@ -1710,13 +1705,13 @@ void update_databases()
   sprintf(data3+14,"%zu",count2);
 
   insert_document_into_collection_json(DATABASE_NAME,data3,data2,0);
-  add_block_verifiers_round_statistics(data);
+  add_block_verifiers_round_statistics((const char*)data);
   add_round_statistics();
 
 
   
   // check if your reserve bytes database is synced
-  if (sync_check_reserve_bytes_database(data) == 0)
+  if (sync_check_reserve_bytes_database((const char*)data) == 0)
   {
     color_print("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.\nFunction: update_databases","red");
   }
@@ -1827,7 +1822,7 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     }
 
     // add one to the block_verifier_online_total_rounds for every block verifier that is currently online
-    if (send_data_socket(previous_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,"","checking if the block verifier is online",0) == 1)
+    if (send_data_socket((const char*)previous_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,"","checking if the block verifier is online",0) == 1)
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_online_total_rounds",data,0) == 0)
@@ -2439,7 +2434,7 @@ void check_if_databases_are_synced()
   sprintf(data,"%zu",count);
 
   // check if your reserve bytes database is synced
-  if (sync_check_reserve_bytes_database(data) == 0)
+  if (sync_check_reserve_bytes_database((const char*)data) == 0)
   {
     color_print("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.\nFunction: update_databases","red");
   }
@@ -2542,7 +2537,7 @@ int calculate_main_nodes_roles()
 
   // get the vrf_beta_string_data_round_part_3
   memset(data3,0,strlen(data3));
-  if (parse_reserve_bytes_data(data3,data2,29,VRF_BETA_LENGTH) == 0)
+  if (parse_reserve_bytes_data(data3,(const char*)data2,29,VRF_BETA_LENGTH) == 0)
   {
     color_print("Could not get the previous blocks reserve bytes\nFunction: calculate_main_nodes_roles","red");
     return 0;
@@ -2815,7 +2810,7 @@ int calculate_main_node_data()
         CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the vrf_public_key_round_part_1 or vrf_secret_key_round_part_1\nFunction: calculate_main_node_data");
       }
       memcpy(VRF_data.vrf_alpha_string_round_part_1,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
-      if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_1,(const unsigned char*)VRF_data.vrf_secret_key_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strlen(VRF_data.vrf_alpha_string_round_part_1)) != 0)
+      if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_1,(const unsigned char*)VRF_data.vrf_secret_key_round_part_1,VRF_data.vrf_alpha_string_round_part_1,strlen((const char*)VRF_data.vrf_alpha_string_round_part_1)) != 0)
       {
         CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the vrf_proof_round_part_1\nFunction: calculate_main_node_data");
       }
@@ -2837,7 +2832,7 @@ int calculate_main_node_data()
       {
         sprintf(VRF_data.vrf_public_key_data_round_part_1+count,"%02x",VRF_data.vrf_public_key_round_part_1[count2] & 0xFF);
       }
-      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_1); count2++, count += 2)
+      for (count2 = 0, count = 0; count2 < strlen((const char*)VRF_data.vrf_alpha_string_round_part_1); count2++, count += 2)
       {
         sprintf(VRF_data.vrf_alpha_string_data_round_part_1+count,"%02x",VRF_data.vrf_alpha_string_round_part_1[count2] & 0xFF);
       }
@@ -2845,7 +2840,7 @@ int calculate_main_node_data()
       {
         sprintf(VRF_data.vrf_proof_data_round_part_1+count,"%02x",VRF_data.vrf_proof_round_part_1[count2] & 0xFF);
       }
-      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_beta_string_round_part_1); count2++, count += 2)
+      for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
       {
         sprintf(VRF_data.vrf_beta_string_data_round_part_1+count,"%02x",VRF_data.vrf_beta_string_round_part_1[count2] & 0xFF);
       } 
@@ -2871,7 +2866,7 @@ int calculate_main_node_data()
         CALCULATE_MAIN_NODES_DATA_ERROR("Could not geta random string for the vrf_alpha_string_round_part_2 \nFunction: calculate_main_node_data");
       }
       memcpy(VRF_data.vrf_alpha_string_round_part_2+64,data,100);
-      if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_2,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_2,strlen(VRF_data.vrf_alpha_string_round_part_2)) != 0)
+      if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_2,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_2,strlen((const char*)VRF_data.vrf_alpha_string_round_part_2)) != 0)
       {
         CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the vrf_proof_round_part_2\nFunction: calculate_main_node_data");
       }
@@ -2889,7 +2884,7 @@ int calculate_main_node_data()
       {
         sprintf(VRF_data.vrf_public_key_data_round_part_2+count,"%02x",VRF_data.vrf_public_key_round_part_2[count2] & 0xFF);
       }
-      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_2); count2++, count += 2)
+      for (count2 = 0, count = 0; count2 < strlen((const char*)VRF_data.vrf_alpha_string_round_part_2); count2++, count += 2)
       {
         sprintf(VRF_data.vrf_alpha_string_data_round_part_2+count,"%02x",VRF_data.vrf_alpha_string_round_part_2[count2] & 0xFF);
       }
@@ -2897,7 +2892,7 @@ int calculate_main_node_data()
       {
         sprintf(VRF_data.vrf_proof_data_round_part_2+count,"%02x",VRF_data.vrf_proof_round_part_2[count2] & 0xFF);
       }
-      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_beta_string_round_part_2); count2++, count += 2)
+      for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
       {
         sprintf(VRF_data.vrf_beta_string_data_round_part_2+count,"%02x",VRF_data.vrf_beta_string_round_part_2[count2] & 0xFF);
       }
@@ -2910,7 +2905,7 @@ int calculate_main_node_data()
       // create the VRF data round part 3  
       memcpy(VRF_data.vrf_public_key_round_part_3,VRF_data.vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
       memcpy(VRF_data.vrf_alpha_string_round_part_3,VRF_data.vrf_alpha_string_round_part_1,164);
-      if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_3,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_3,strlen(VRF_data.vrf_alpha_string_round_part_3)) != 0)
+      if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_3,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_3,strlen((const char*)VRF_data.vrf_alpha_string_round_part_3)) != 0)
       {
         CALCULATE_MAIN_NODES_DATA_ERROR("Could not create the vrf_proof_round_part_3\nFunction: calculate_main_node_data");
       }
@@ -2928,7 +2923,7 @@ int calculate_main_node_data()
       {
         sprintf(VRF_data.vrf_public_key_data_round_part_3+count,"%02x",VRF_data.vrf_public_key_round_part_3[count2] & 0xFF);
       }  
-      for (count2 = 0, count = 0; count2 < strlen(VRF_data.vrf_alpha_string_round_part_3); count2++, count += 2)
+      for (count2 = 0, count = 0; count2 < strlen((const char*)VRF_data.vrf_alpha_string_round_part_3); count2++, count += 2)
       {
         sprintf(VRF_data.vrf_alpha_string_data_round_part_3+count,"%02x",VRF_data.vrf_alpha_string_round_part_3[count2] & 0xFF);
       }
@@ -4018,8 +4013,8 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   char* reserve_proof = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
-  int settings;
 
   // define macros
   #define pointer_reset_all \
@@ -4032,7 +4027,9 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   free(data); \
   data = NULL; \
   free(data2); \
-  data2 = NULL;
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL; \
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR(settings) \
   color_print(settings,"red"); \
@@ -4062,6 +4059,10 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     {
       pointer_reset(data2);
     }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
@@ -4085,22 +4086,28 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(data+18,reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
   memcpy(data+strlen(data),"\"}",2);
 
-  // check if the reserve proof is in the database
+  memcpy(data3,"{\"public_address_created_reserve_proof\":\"",41);
+  memcpy(data3+41,reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
+  memcpy(data3+strlen(data3),"\"}",2);
+
+  // check if the reserve proof is in the database or if the public address that created the reserve proof is in the database
   for (count = 1; count <= 50; count++)
   {
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     sprintf(data+15,"%zu",count);
-    if (count_documents_in_collection(DATABASE_NAME,data2,data,0) > 0)
+    if (count_documents_in_collection(DATABASE_NAME,data2,data,0) != 0)
     {
-      settings = 1;
+      send_data(CLIENT_SOCKET,"The reserve proof is already in the database",1);
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+      break;
     }
-  }
-
-  if (settings == 1)
-  {
-    send_data(CLIENT_SOCKET,"The reserve proof is already in the database",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+    if (count_documents_in_collection(DATABASE_NAME,data2,data3,0) != 0)
+    {
+      send_data(CLIENT_SOCKET,"Your public address has already created a reserve proof.\n\nIf you have already changed your vote, please allow up to one block for your current vote to be invalidated",1);
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+      break;
+    }
   }
 
   // check if the reserve proof is valid and the spent amount is 0
@@ -4627,11 +4634,11 @@ int server_receive_data_socket_main_node_to_node_message_part_1(const char* MESS
   char* vrf_alpha_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* vrf_proof_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* vrf_beta_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_secret_key_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_public_key_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_alpha_string_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_proof_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_beta_string_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_secret_key_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_public_key_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_alpha_string_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_proof_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_beta_string_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
 
@@ -4686,15 +4693,15 @@ int server_receive_data_socket_main_node_to_node_message_part_1(const char* MESS
   pointer_reset_all; \
   return 0;
 
-  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen(VRF_data.vrf_secret_key_round_part_1));
+  memset(VRF_data.vrf_secret_key_round_part_1,0,strlen((const char*)VRF_data.vrf_secret_key_round_part_1));
   memset(VRF_data.vrf_secret_key_data_round_part_1,0,strlen(VRF_data.vrf_secret_key_data_round_part_1));
-  memset(VRF_data.vrf_public_key_round_part_1,0,strlen(VRF_data.vrf_public_key_round_part_1));
+  memset(VRF_data.vrf_public_key_round_part_1,0,strlen((const char*)VRF_data.vrf_public_key_round_part_1));
   memset(VRF_data.vrf_public_key_data_round_part_1,0,strlen(VRF_data.vrf_public_key_data_round_part_1));
-  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen(VRF_data.vrf_alpha_string_round_part_1));
+  memset(VRF_data.vrf_alpha_string_round_part_1,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_1));
   memset(VRF_data.vrf_alpha_string_data_round_part_1,0,strlen(VRF_data.vrf_alpha_string_data_round_part_1));
-  memset(VRF_data.vrf_proof_round_part_1,0,strlen(VRF_data.vrf_proof_round_part_1));
+  memset(VRF_data.vrf_proof_round_part_1,0,strlen((const char*)VRF_data.vrf_proof_round_part_1));
   memset(VRF_data.vrf_proof_data_round_part_1,0,strlen(VRF_data.vrf_proof_data_round_part_1));
-  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen(VRF_data.vrf_beta_string_round_part_1));
+  memset(VRF_data.vrf_beta_string_round_part_1,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_1));
   memset(VRF_data.vrf_beta_string_data_round_part_1,0,strlen(VRF_data.vrf_beta_string_data_round_part_1));
 
   // verify the data
@@ -4737,21 +4744,21 @@ int server_receive_data_socket_main_node_to_node_message_part_1(const char* MESS
       vrf_beta_string_round_part_1[count2] = (int)strtol(data, NULL, 16);
     }
     // verify the VRF data
-    if (crypto_vrf_verify(vrf_beta_string_round_part_1,(const unsigned char*)vrf_public_key_round_part_1,(const unsigned char*)vrf_proof_round_part_1,vrf_alpha_string_round_part_1,strlen(vrf_alpha_string_round_part_1)) != 0)
+    if (crypto_vrf_verify(vrf_beta_string_round_part_1,(const unsigned char*)vrf_public_key_round_part_1,(const unsigned char*)vrf_proof_round_part_1,vrf_alpha_string_round_part_1,strlen((const char*)vrf_alpha_string_round_part_1)) != 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_1_ERROR("The MAIN_NODES_TO_NODES_PART_1_OF_ROUND message is invalid\nFunction: server_receive_data_socket_main_node_to_node_message_part_1\nReceived Message: MAIN_NODES_TO_NODES_PART_1_OF_ROUND");
     }
     
-    memcpy(VRF_data.vrf_secret_key_round_part_1,vrf_secret_key_round_part_1,strlen(vrf_secret_key_round_part_1));
-    memcpy(VRF_data.vrf_secret_key_data_round_part_1,vrf_secret_key_data_round_part_1,strlen(vrf_secret_key_data_round_part_1));
-    memcpy(VRF_data.vrf_public_key_round_part_1,vrf_public_key_round_part_1,strlen(vrf_public_key_round_part_1));
-    memcpy(VRF_data.vrf_public_key_data_round_part_1,vrf_public_key_data_round_part_1,strlen(vrf_public_key_data_round_part_1));
-    memcpy(VRF_data.vrf_alpha_string_round_part_1,vrf_alpha_string_round_part_1,strlen(vrf_alpha_string_round_part_1));
-    memcpy(VRF_data.vrf_alpha_string_data_round_part_1,vrf_alpha_string_data_round_part_1,strlen(vrf_alpha_string_data_round_part_1));
-    memcpy(VRF_data.vrf_proof_round_part_1,vrf_proof_round_part_1,strlen(vrf_proof_round_part_1));
-    memcpy(VRF_data.vrf_proof_data_round_part_1,vrf_proof_data_round_part_1,strlen(vrf_proof_data_round_part_1));
-    memcpy(VRF_data.vrf_beta_string_round_part_1,vrf_beta_string_round_part_1,strlen(vrf_beta_string_round_part_1));
-    memcpy(VRF_data.vrf_beta_string_data_round_part_1,vrf_beta_string_data_round_part_1,strlen(vrf_beta_string_data_round_part_1));
+    memcpy(VRF_data.vrf_secret_key_round_part_1,vrf_secret_key_round_part_1,crypto_vrf_SECRETKEYBYTES);
+    memcpy(VRF_data.vrf_secret_key_data_round_part_1,vrf_secret_key_data_round_part_1,VRF_SECRET_KEY_LENGTH);
+    memcpy(VRF_data.vrf_public_key_round_part_1,vrf_public_key_round_part_1,crypto_vrf_PUBLICKEYBYTES);
+    memcpy(VRF_data.vrf_public_key_data_round_part_1,vrf_public_key_data_round_part_1,VRF_PUBLIC_KEY_LENGTH);
+    memcpy(VRF_data.vrf_alpha_string_round_part_1,vrf_alpha_string_round_part_1,strlen((const char*)vrf_alpha_string_round_part_1));
+    memcpy(VRF_data.vrf_alpha_string_data_round_part_1,vrf_alpha_string_data_round_part_1,strlen((const char*)vrf_alpha_string_data_round_part_1));
+    memcpy(VRF_data.vrf_proof_round_part_1,vrf_proof_round_part_1,crypto_vrf_PROOFBYTES);
+    memcpy(VRF_data.vrf_proof_data_round_part_1,vrf_proof_data_round_part_1,VRF_PROOF_LENGTH);
+    memcpy(VRF_data.vrf_beta_string_round_part_1,vrf_beta_string_round_part_1,crypto_vrf_OUTPUTBYTES);
+    memcpy(VRF_data.vrf_beta_string_data_round_part_1,vrf_beta_string_data_round_part_1,VRF_BETA_LENGTH);
 
     // SHA2-512 hash the received message
     memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
@@ -4785,10 +4792,10 @@ int server_receive_data_socket_main_node_to_node_message_part_2(const char* MESS
   char* vrf_alpha_string_data_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* vrf_proof_data_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* vrf_beta_string_data_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_public_key_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_alpha_string_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_proof_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_beta_string_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_public_key_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_alpha_string_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_proof_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_beta_string_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
 
@@ -4837,13 +4844,13 @@ int server_receive_data_socket_main_node_to_node_message_part_2(const char* MESS
   pointer_reset_all; \
   return 0;
 
-  memset(VRF_data.vrf_public_key_round_part_2,0,strlen(VRF_data.vrf_public_key_round_part_2));
+  memset(VRF_data.vrf_public_key_round_part_2,0,strlen((const char*)VRF_data.vrf_public_key_round_part_2));
   memset(VRF_data.vrf_public_key_data_round_part_2,0,strlen(VRF_data.vrf_public_key_data_round_part_2));
-  memset(VRF_data.vrf_alpha_string_round_part_2,0,strlen(VRF_data.vrf_alpha_string_round_part_2));
+  memset(VRF_data.vrf_alpha_string_round_part_2,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_2));
   memset(VRF_data.vrf_alpha_string_data_round_part_2,0,strlen(VRF_data.vrf_alpha_string_data_round_part_2));
-  memset(VRF_data.vrf_proof_round_part_2,0,strlen(VRF_data.vrf_proof_round_part_2));
+  memset(VRF_data.vrf_proof_round_part_2,0,strlen((const char*)VRF_data.vrf_proof_round_part_2));
   memset(VRF_data.vrf_proof_data_round_part_2,0,strlen(VRF_data.vrf_proof_data_round_part_2));
-  memset(VRF_data.vrf_beta_string_round_part_2,0,strlen(VRF_data.vrf_beta_string_round_part_2));
+  memset(VRF_data.vrf_beta_string_round_part_2,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_2));
   memset(VRF_data.vrf_beta_string_data_round_part_2,0,strlen(VRF_data.vrf_beta_string_data_round_part_2));
 
   // verify the data
@@ -4896,19 +4903,19 @@ int server_receive_data_socket_main_node_to_node_message_part_2(const char* MESS
       vrf_beta_string_round_part_2[count2] = (int)strtol(data, NULL, 16);
     }
     // verify the VRF data
-    if (crypto_vrf_verify(vrf_beta_string_round_part_2,(const unsigned char*)vrf_public_key_round_part_2,(const unsigned char*)vrf_proof_round_part_2,vrf_alpha_string_round_part_2,strlen(vrf_alpha_string_round_part_2)) != 0)
+    if (crypto_vrf_verify(vrf_beta_string_round_part_2,(const unsigned char*)vrf_public_key_round_part_2,(const unsigned char*)vrf_proof_round_part_2,vrf_alpha_string_round_part_2,strlen((const char*)vrf_alpha_string_round_part_2)) != 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_2_ERROR("The MAIN_NODES_TO_NODES_PART_2_OF_ROUND message is invalid\nFunction: server_receive_data_socket_main_node_to_node_message_part_2\nReceived Message: MAIN_NODES_TO_NODES_PART_2_OF_ROUND");
     }
     
-    memcpy(VRF_data.vrf_public_key_round_part_2,vrf_public_key_round_part_2,strlen(vrf_public_key_round_part_2));
-    memcpy(VRF_data.vrf_public_key_data_round_part_2,vrf_public_key_data_round_part_2,strlen(vrf_public_key_data_round_part_2));
-    memcpy(VRF_data.vrf_alpha_string_round_part_2,vrf_alpha_string_round_part_2,strlen(vrf_alpha_string_round_part_2));
-    memcpy(VRF_data.vrf_alpha_string_data_round_part_2,vrf_alpha_string_data_round_part_2,strlen(vrf_alpha_string_data_round_part_2));
-    memcpy(VRF_data.vrf_proof_round_part_2,vrf_proof_round_part_2,strlen(vrf_proof_round_part_2));
-    memcpy(VRF_data.vrf_proof_data_round_part_2,vrf_proof_data_round_part_2,strlen(vrf_proof_data_round_part_2));
-    memcpy(VRF_data.vrf_beta_string_round_part_2,vrf_beta_string_round_part_2,strlen(vrf_beta_string_round_part_2));
-    memcpy(VRF_data.vrf_beta_string_data_round_part_2,vrf_beta_string_data_round_part_2,strlen(vrf_beta_string_data_round_part_2));
+    memcpy(VRF_data.vrf_public_key_round_part_2,vrf_public_key_round_part_2,crypto_vrf_PUBLICKEYBYTES);
+    memcpy(VRF_data.vrf_public_key_data_round_part_2,vrf_public_key_data_round_part_2,VRF_PUBLIC_KEY_LENGTH);
+    memcpy(VRF_data.vrf_alpha_string_round_part_2,vrf_alpha_string_round_part_2,strlen((const char*)vrf_alpha_string_round_part_2));
+    memcpy(VRF_data.vrf_alpha_string_data_round_part_2,vrf_alpha_string_data_round_part_2,strlen((const char*)vrf_alpha_string_data_round_part_2));
+    memcpy(VRF_data.vrf_proof_round_part_2,vrf_proof_round_part_2,crypto_vrf_PROOFBYTES);
+    memcpy(VRF_data.vrf_proof_data_round_part_2,vrf_proof_data_round_part_2,VRF_PROOF_LENGTH);
+    memcpy(VRF_data.vrf_beta_string_round_part_2,vrf_beta_string_round_part_2,crypto_vrf_OUTPUTBYTES);
+    memcpy(VRF_data.vrf_beta_string_data_round_part_2,vrf_beta_string_data_round_part_2,VRF_BETA_LENGTH);
 
     // SHA2-512 hash the received message
     memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
@@ -4942,10 +4949,10 @@ int server_receive_data_socket_main_node_to_node_message_part_3(const char* MESS
   char* vrf_alpha_string_data_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* vrf_proof_data_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* vrf_beta_string_data_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_public_key_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_alpha_string_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_proof_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  unsigned char* vrf_beta_string_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_public_key_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_alpha_string_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_proof_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* vrf_beta_string_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
 
@@ -4994,13 +5001,13 @@ int server_receive_data_socket_main_node_to_node_message_part_3(const char* MESS
   pointer_reset_all; \
   return 0;
 
-  memset(VRF_data.vrf_public_key_round_part_3,0,strlen(VRF_data.vrf_public_key_round_part_3));
+  memset(VRF_data.vrf_public_key_round_part_3,0,strlen((const char*)VRF_data.vrf_public_key_round_part_3));
   memset(VRF_data.vrf_public_key_data_round_part_3,0,strlen(VRF_data.vrf_public_key_data_round_part_3));
-  memset(VRF_data.vrf_alpha_string_round_part_3,0,strlen(VRF_data.vrf_alpha_string_round_part_3));
+  memset(VRF_data.vrf_alpha_string_round_part_3,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_3));
   memset(VRF_data.vrf_alpha_string_data_round_part_3,0,strlen(VRF_data.vrf_alpha_string_data_round_part_3));
-  memset(VRF_data.vrf_proof_round_part_3,0,strlen(VRF_data.vrf_proof_round_part_3));
+  memset(VRF_data.vrf_proof_round_part_3,0,strlen((const char*)VRF_data.vrf_proof_round_part_3));
   memset(VRF_data.vrf_proof_data_round_part_3,0,strlen(VRF_data.vrf_proof_data_round_part_3));
-  memset(VRF_data.vrf_beta_string_round_part_3,0,strlen(VRF_data.vrf_beta_string_round_part_3));
+  memset(VRF_data.vrf_beta_string_round_part_3,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_3));
   memset(VRF_data.vrf_beta_string_data_round_part_3,0,strlen(VRF_data.vrf_beta_string_data_round_part_3));
 
   // verify the data
@@ -5048,19 +5055,19 @@ int server_receive_data_socket_main_node_to_node_message_part_3(const char* MESS
       vrf_beta_string_round_part_3[count2] = (int)strtol(data, NULL, 16);
     }
     // verify the VRF data
-    if (crypto_vrf_verify(vrf_beta_string_round_part_3,(const unsigned char*)vrf_public_key_round_part_3,(const unsigned char*)vrf_proof_round_part_3,vrf_alpha_string_round_part_3,strlen(vrf_alpha_string_round_part_3)) != 0)
+    if (crypto_vrf_verify(vrf_beta_string_round_part_3,(const unsigned char*)vrf_public_key_round_part_3,(const unsigned char*)vrf_proof_round_part_3,vrf_alpha_string_round_part_3,strlen((const char*)vrf_alpha_string_round_part_3)) != 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_3_ERROR("The MAIN_NODES_TO_NODES_PART_3_OF_ROUND message is invalid\nFunction: server_receive_data_socket_main_node_to_node_message_part_3\nReceived Message: MAIN_NODES_TO_NODES_PART_3_OF_ROUND");
     }
     
-    memcpy(VRF_data.vrf_public_key_round_part_3,vrf_public_key_round_part_3,strlen(vrf_public_key_round_part_3));
-    memcpy(VRF_data.vrf_public_key_data_round_part_3,vrf_public_key_data_round_part_3,strlen(vrf_public_key_data_round_part_3));
-    memcpy(VRF_data.vrf_alpha_string_round_part_3,vrf_alpha_string_round_part_3,strlen(vrf_alpha_string_round_part_3));
-    memcpy(VRF_data.vrf_alpha_string_data_round_part_3,vrf_alpha_string_data_round_part_3,strlen(vrf_alpha_string_data_round_part_3));
-    memcpy(VRF_data.vrf_proof_round_part_3,vrf_proof_round_part_3,strlen(vrf_proof_round_part_3));
-    memcpy(VRF_data.vrf_proof_data_round_part_3,vrf_proof_data_round_part_3,strlen(vrf_proof_data_round_part_3));
-    memcpy(VRF_data.vrf_beta_string_round_part_3,vrf_beta_string_round_part_3,strlen(vrf_beta_string_round_part_3));
-    memcpy(VRF_data.vrf_beta_string_data_round_part_3,vrf_beta_string_data_round_part_3,strlen(vrf_beta_string_data_round_part_3));
+    memcpy(VRF_data.vrf_public_key_round_part_3,vrf_public_key_round_part_3,crypto_vrf_PUBLICKEYBYTES);
+    memcpy(VRF_data.vrf_public_key_data_round_part_3,vrf_public_key_data_round_part_3,VRF_PUBLIC_KEY_LENGTH);
+    memcpy(VRF_data.vrf_alpha_string_round_part_3,vrf_alpha_string_round_part_3,strlen((const char*)vrf_alpha_string_round_part_3));
+    memcpy(VRF_data.vrf_alpha_string_data_round_part_3,vrf_alpha_string_data_round_part_3,strlen((const char*)vrf_alpha_string_data_round_part_3));
+    memcpy(VRF_data.vrf_proof_round_part_3,vrf_proof_round_part_3,crypto_vrf_PROOFBYTES);
+    memcpy(VRF_data.vrf_proof_data_round_part_3,vrf_proof_data_round_part_3,VRF_PROOF_LENGTH);
+    memcpy(VRF_data.vrf_beta_string_round_part_3,vrf_beta_string_round_part_3,crypto_vrf_OUTPUTBYTES);
+    memcpy(VRF_data.vrf_beta_string_data_round_part_3,vrf_beta_string_data_round_part_3,VRF_BETA_LENGTH);
 
     // SHA2-512 hash the received message
     memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
@@ -5362,8 +5369,6 @@ int create_server(const int MESSAGE_SETTINGS)
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time; 
   struct sockaddr_in addr, cl_addr; 
-  struct mainnode_timeout_thread_parameters mainnode_timeout_thread_parameters;
-  struct node_to_node_timeout_thread_parameters node_to_node_timeout_thread_parameters;
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
@@ -5397,9 +5402,6 @@ int create_server(const int MESSAGE_SETTINGS)
   { \
     _exit(0); \
   }  
-  
-  // threads
-  pthread_t thread_id;
 
   // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
   signal(SIGCHLD, SIG_IGN);  
@@ -5531,29 +5533,7 @@ int create_server(const int MESSAGE_SETTINGS)
    
 
     if (fork() == 0)
-    {     
-      // create a struct for the parameters
-      struct total_connection_time_thread_parameters parameters = {
-        getpid(),
-        client_address,
-        buffer2,
-        0,
-        (int)MESSAGE_SETTINGS
-      };
-          // create a timeout for this connection, since we need to limit the amount of time a client has to send data from once it connected
-         if (pthread_create(&thread_id, NULL, &total_connection_time_thread, (void *)&parameters) != 0)
-         {
-           // close the forked process
-           SERVER_ERROR(1);
-         }
-         // set the thread to dettach once completed, since we do not need to use anything it will return.
-         if (pthread_detach(thread_id) != 0)
-         {
-           // close the forked process
-           SERVER_ERROR(1);
-         }
-      
-
+    { 
        // close the main socket, since the socket is now copied to the forked process
        close(SOCKET); 
 
@@ -5583,12 +5563,7 @@ int create_server(const int MESSAGE_SETTINGS)
            }
            // close the forked process, since the client had an error sending data       
            SERVER_ERROR(1);
-         }
-         else if (receive_data_result == 2)
-         {
-          // update the parameters, since we have received data from the client
-          parameters.data_received = 1;
-         }   
+         }           
 
          // get the current time
          time(&current_date_and_time);

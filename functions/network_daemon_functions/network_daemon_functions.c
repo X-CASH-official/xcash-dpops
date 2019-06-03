@@ -224,7 +224,7 @@ Name: get_block_reserve_byte_data_hash
 Description: Gets the previous blocks reserve byte data hash
 Parameters:
   reserve_byte_data_hash - The reserve byte data hash
-  block_height - The block height
+  BLOCK_HEIGHT - The block height
   HTTP_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 Return: 0 if an error has occured, 1 if the block is a proof of work block, 2 if the block is a X-CASH proof of stake block
 -----------------------------------------------------------------------------------------------------------

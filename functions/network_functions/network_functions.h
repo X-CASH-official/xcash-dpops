@@ -20,5 +20,5 @@ int sync_check_delegates_database();
 int sync_delegates_database();
 int sync_check_statistics_database();
 int sync_statistics_database();
-int get_delegate_online_status(char* HOST);
+int get_delegate_online_status(const char* HOST);
 #endif

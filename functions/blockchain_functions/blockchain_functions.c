@@ -43,7 +43,7 @@ int varint_encode(long long int number, char* result)
   size_t count2 = 0;
   int binary_numbers[8];
   int binary_number_copy;
-  long long int number_copy = number;  
+  long long int number_copy = (long long int)number;  
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)

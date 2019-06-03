@@ -120,7 +120,7 @@ int reset_variables_allocated_on_the_heap_test()
   char* transactions[5];
 
   // define macros
-  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 40
+  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 46
   #define GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"blockhashing_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"blocktemplate_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"difficulty\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"expected_reward\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"height\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"prev_hash\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"reserved_offset\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"status\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"untrusted\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\r\n  }\r\n}"
   #define DATA1 "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}"
   #define DATA2 "[{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"},{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}]" 
@@ -843,7 +843,7 @@ int reset_variables_allocated_on_the_heap_test()
 
 
 
-// create_database_connection 
+  // create_database_connection 
   // read the current system memory usage
   if (settings2 == 1)
   {
@@ -1263,7 +1263,7 @@ int reset_variables_allocated_on_the_heap_test()
     memset(database_data.value[count2],0,strnlen(database_data.value[count2],BUFFER_SIZE));
   }
 
-   memcpy(database_data.item[0],"username",8);
+  memcpy(database_data.item[0],"username",8);
   memcpy(database_data.item[1],"most_total_rounds_delegate_name",31);
   memcpy(database_data.item[2],"most_total_rounds",17);
   memcpy(database_data.item[3],"best_block_verifier_online_percentage_delegate_name",51);
@@ -2241,7 +2241,7 @@ int reset_variables_allocated_on_the_heap_test()
       memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
       memcpy(data_test,"{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}",60);
       sign_data(data_test,0);
-      verify_data(data_test,0,1,1);
+      verify_data((const char*)data_test,0,1,1);
       if (count == 0)
       {    
         current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
@@ -2311,8 +2311,8 @@ int reset_variables_allocated_on_the_heap_test()
       memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
       memcpy(data_test,"{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}",60);
       sign_data(data_test,0);
-      send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0);
-      verify_data(result_test,0,1,1);
+      send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,(const char*)data_test,TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0);
+      verify_data((const char*)result_test,0,1,1);
       if (count == 0)
       {    
         current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
@@ -2361,7 +2361,7 @@ int reset_variables_allocated_on_the_heap_test()
 
 
 
-  // get_public_address   
+ /* // get_public_address   
   // read the current system memory usage
   if (settings2 == 1)
   {
@@ -3375,7 +3375,8 @@ int reset_variables_allocated_on_the_heap_test()
     {
       fprintf(stderr,"Current progress for crypto_hash_sha512: %zu / 1000",count);
       fprintf(stderr,"\r");
-      crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)DATA_HASH_TEXT,21);
+      memset(data_test,0,strlen(data_test));
+      crypto_hash_sha512((unsigned char*)data_test,(const unsigned char*)DATA_HASH_TEXT,21);
       if (count == 0)
       {    
         current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
@@ -3420,7 +3421,7 @@ int reset_variables_allocated_on_the_heap_test()
   else
   {
     color_print("All other test will not be run","red");
-  }
+  }*/
 
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
 
