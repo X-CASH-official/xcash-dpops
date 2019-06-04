@@ -38,7 +38,7 @@ int database_test()
   pthread_t thread_id;
 
   // define macros
-  #define DATABASE_TEST 32
+  #define DATABASE_TEST 30
   #define DATA_COUNT 5
   #define DATABASE_COLLECTION "XCASH_PROOF_OF_STAKE_TEST_DATA"
   #define MESSAGE "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"}"
@@ -715,30 +715,6 @@ int database_test()
   }
 
   insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_DATA,0);
-
-  // update delegates online status
-  if (update_delegates_online_status(DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
-  {
-    color_print("FAILED! Test for updating delegates online status","red");
-  }
-  else
-  {
-    color_print("PASSED! Test for updating delegates online status","green");
-    count_test++;
-  }
-
-  // update delegates online status on a separate thread
-  struct update_delegates_online_status_thread_parameters update_delegates_online_status_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION};
-  pthread_create(&thread_id, NULL, &update_delegates_online_status_thread,(void *)&update_delegates_online_status_thread_parameters);
-  if (thread_settings(thread_id) == 0)
-  {
-    color_print("FAILED! Test for updating delegates online status on a separate thread","red");
-  }
-  else
-  {
-    color_print("PASSED! Test for updating delegates online status on a separate thread","green");
-    count_test++;
-  }
 
   // get the database data hash
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
