@@ -4091,17 +4091,19 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(data3+41,reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
   memcpy(data3+strlen(data3),"\"}",2);
 
-  // check if the reserve proof is in the database or if the public address that created the reserve proof is in the database
   for (count = 1; count <= 50; count++)
   {
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     sprintf(data2+15,"%zu",count);
+
+    // check if the reserve proof is in the database
     if (count_documents_in_collection(DATABASE_NAME,data2,data,0) != 0)
     {
       send_data(CLIENT_SOCKET,"The reserve proof is already in the database",1);
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
     }
+    // check if another proof from the public address is already in the database
     if (count_documents_in_collection(DATABASE_NAME,data2,data3,0) != 0)
     {      
       settings = 1;
@@ -4117,20 +4119,24 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }  
 
   // remove any reserve proofs that were created by the public address
-  for (count = 1; count <= 50; count++)
+  if (settings == 1)
   {
-    memset(data2,0,strlen(data2));
-    memcpy(data2,"reserve_proofs_",15);
-    sprintf(data2+15,"%zu",count);
-    if (count_documents_in_collection(DATABASE_NAME,data2,data3,0) > 0)
+    for (count = 1; count <= 50; count++)
     {
-      if (delete_document_from_collection(DATABASE_NAME,data2,data3,0) == 0)
+      memset(data2,0,strlen(data2));
+      memcpy(data2,"reserve_proofs_",15);
+      sprintf(data2+15,"%zu",count);
+      if (count_documents_in_collection(DATABASE_NAME,data2,data3,0) > 0)
       {
-        send_data(CLIENT_SOCKET,"The previous reserve proof could not be cancelled for this public address. Please wait a few minutes and try again.",1);
-        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The previous reserve proof could not be cancelled for this public address\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+        if (delete_document_from_collection(DATABASE_NAME,data2,data3,0) == 0)
+        {
+          send_data(CLIENT_SOCKET,"The previous reserve proof could not be cancelled for this public address. Please wait a few minutes and try again.",1);
+          SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The previous reserve proof could not be cancelled for this public address\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+        }
       }
     }
   }
+  
 
   // create the message
   memset(data,0,strlen(data));
