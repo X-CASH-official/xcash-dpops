@@ -63,7 +63,7 @@ To add MongoDB to your PATH (replace "MongoDB_folder" with the location of the b
 
 ### Cloning the repository
 
-`$ git clone https://github.com/X-CASH-official/XCASH_proof_of_stake_consensus_node.git`
+`$ git clone https://github.com/X-CASH-official/XCASH_proof_of_stake.git`
 
 
 
