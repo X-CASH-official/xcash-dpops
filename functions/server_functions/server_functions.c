@@ -94,33 +94,6 @@ void start_new_round()
   
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_secret_key_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_secret_key_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_secret_key_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_1[count]));
-    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_2[count]));
-    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count]));
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_3[count]));
-
     memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); 
     
     memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
@@ -620,17 +593,6 @@ int start_part_1_of_round()
   return 0;
 
   #define RESTART_ROUND \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_1[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_1[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_1[count])); \
-  } \
   memset(VRF_data.vrf_public_key_data_round_part_1,0,strlen(VRF_data.vrf_public_key_data_round_part_1)); \
   memset(VRF_data.vrf_public_key_round_part_1,0,strlen((const char*)VRF_data.vrf_public_key_round_part_1)); \
   memset(VRF_data.vrf_alpha_string_data_round_part_1,0,strlen(VRF_data.vrf_alpha_string_data_round_part_1)); \
@@ -836,17 +798,6 @@ int start_part_2_of_round()
   return 0;
 
   #define RESTART_ROUND \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_2[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_2[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_2[count])); \
-  } \
   memset(VRF_data.vrf_public_key_data_round_part_2,0,strlen(VRF_data.vrf_public_key_data_round_part_2)); \
   memset(VRF_data.vrf_public_key_round_part_2,0,strlen((const char*)VRF_data.vrf_public_key_round_part_2)); \
   memset(VRF_data.vrf_alpha_string_data_round_part_2,0,strlen(VRF_data.vrf_alpha_string_data_round_part_2)); \
@@ -1052,17 +1003,6 @@ int start_part_3_of_round()
   return 0;
 
   #define RESTART_ROUND \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    memset(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_public_key_data_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_public_key_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_public_key_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_alpha_string_data_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_alpha_string_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_proof_data_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_proof_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_proof_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count],0,strlen(VRF_data_block_verifiers.vrf_beta_string_data_round_part_3[count])); \
-    memset(VRF_data_block_verifiers.vrf_beta_string_round_part_3[count],0,strlen((const char*)VRF_data_block_verifiers.vrf_beta_string_round_part_3[count])); \
-  } \
   memset(VRF_data.vrf_public_key_data_round_part_3,0,strlen(VRF_data.vrf_public_key_data_round_part_3)); \
   memset(VRF_data.vrf_public_key_round_part_3,0,strlen((const char*)VRF_data.vrf_public_key_round_part_3)); \
   memset(VRF_data.vrf_alpha_string_data_round_part_3,0,strlen(VRF_data.vrf_alpha_string_data_round_part_3)); \

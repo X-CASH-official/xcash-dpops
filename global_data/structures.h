@@ -106,35 +106,6 @@ struct current_round_part_vote_data {
     int vote_results_invalid; // The current part of the round vote count for a invalid vote.
 };
 
-struct VRF_data_block_verifiers {
-    char* vrf_secret_key_data_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key text for round part 1
-    unsigned char* vrf_secret_key_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key for round part 1
-    char* vrf_public_key_data_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key text for round part 1
-    unsigned char* vrf_public_key_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key for round part 1
-    char* vrf_alpha_string_data_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF alpha string (input string) text for round part 1
-    unsigned char* vrf_alpha_string_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF alpha string (input string) for round part 1
-    char* vrf_proof_data_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF proof text for round part 1
-    unsigned char* vrf_proof_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF proof for round part 1
-    char* vrf_beta_string_data_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF beta string (output string) text for round part 1
-    unsigned char* vrf_beta_string_round_part_1[BLOCK_VERIFIERS_AMOUNT]; // The VRF beta string (output string) for round part 1
-    char* vrf_public_key_data_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key text for round part 2
-    unsigned char* vrf_public_key_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key for round part 2
-    char* vrf_alpha_string_data_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The VRF alpha string (input string) text for round part 2
-    unsigned char* vrf_alpha_string_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The VRF alpha string (input string) for round part 2
-    char* vrf_proof_data_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The VRF proof text for round part 2
-    unsigned char* vrf_proof_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The VRF proof for round part 2
-    char* vrf_beta_string_data_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The VRF beta string (output string) text for round part 2
-    unsigned char* vrf_beta_string_round_part_2[BLOCK_VERIFIERS_AMOUNT]; // The VRF beta string (output string) for round part 2
-    char* vrf_public_key_data_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key text for round part 3
-    unsigned char* vrf_public_key_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key for round part 3
-    char* vrf_alpha_string_data_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF alpha string (input string) text for round part 3
-    unsigned char* vrf_alpha_string_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF alpha string (input string) for round part 3
-    char* vrf_proof_data_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF proof text for round part 3
-    unsigned char* vrf_proof_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF proof for round part 3
-    char* vrf_beta_string_data_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF beta string (output string) text for round part 3
-    unsigned char* vrf_beta_string_round_part_3[BLOCK_VERIFIERS_AMOUNT]; // The VRF beta string (output string) for round part 3
-};
-
 struct VRF_data {    
     char* vrf_public_key_data_round_part_1; // The VRF public key text for round part 1
     unsigned char* vrf_public_key_round_part_1; // The VRF public key for round part 1
