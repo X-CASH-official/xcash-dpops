@@ -38,7 +38,7 @@ void test()
   int xcash_proof_of_stake_total_passed_test = 0;
 
   // define macros
-  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 149
+  #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 150
 
   // write the test message
   printf("Starting Test\n\n");
