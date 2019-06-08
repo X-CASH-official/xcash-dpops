@@ -29,7 +29,7 @@ Return: The number of passed string_functions test
 int string_functions_test()
 {
   // define macros
-  #define STRING_FUNCTIONS_TOTAL_TEST 46
+  #define STRING_FUNCTIONS_TOTAL_TEST 45
 
   #define DATA1 "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}"
   #define DATA2 "[{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"},{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}]"
@@ -44,7 +44,8 @@ int string_functions_test()
  
   message_settings - The type of the message
   vrf_public_key - The VRF public key.
-  vrf_alpha_string - The VRF alpha string
+  vrf_secret_key – The VRF secret key.
+  vrf_alpha_string - The VRF alpha string. (this is the vrf_public_key for this part of the round)
   vrf_proof - The VRF proof.
   vrf_beta_string - The VRF beta_string.
   public_address - The public address of the node that is sending the data.
@@ -54,7 +55,7 @@ int string_functions_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define MAIN_NODES_TO_NODES_PART_1_OF_ROUND "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_public_key\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_alpha_string\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_proof\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_beta_string\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"public_address\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"previous_block_hash\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"current_round_part\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"current_round_part_backup_node\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"data\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n}"
+  #define MAIN_NODES_TO_NODES_PART_1_OF_ROUND "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_public_key\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_secret_key\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_alpha_string\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_proof\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"vrf_beta_string\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"public_address\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"previous_block_hash\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"current_round_part\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"current_round_part_backup_node\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"data\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NODES_TO_NODES_PART_1_OF_ROUND\",\r\n}"
  
  
  
@@ -63,7 +64,7 @@ int string_functions_test()
  
   message_settings - The type of the message
   vrf_public_key - The VRF public key.
-  vrf_alpha_string - The VRF alpha string
+  vrf_alpha_string - The VRF alpha string. (this is the previous_block_hash|vrf_random_character_string)
   vrf_proof - The VRF proof.
   vrf_beta_string - The VRF beta_string.
   public_address - The public address of the node that is sending the data.
@@ -81,8 +82,8 @@ int string_functions_test()
   The purpose of this message is for the main node to send the created data for the part of the round to the nodes, so they can verify the data.
  
   message_settings - The type of the message
-  vrf_public_key - The VRF public key.
-  vrf_alpha_string - The VRF alpha string
+  vrf_public_key - The same VRF public key from part 1 of the round.
+  vrf_alpha_string - The VRF alpha string. (this is the vrf_beta_string created in round 2)
   vrf_proof - The VRF proof.
   vrf_beta_string - The VRF beta_string.
   public_address - The public address of the node that is sending the data.
@@ -94,27 +95,8 @@ int string_functions_test()
   */
   #define MAIN_NODES_TO_NODES_PART_3_OF_ROUND "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"vrf_random_character_string\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"vrf_public_key\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"vrf_alpha_string\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"vrf_proof\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"vrf_beta_string\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"public_address\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"previous_block_hash\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"current_round_part\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"current_round_part_backup_node\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"data\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NODES_TO_NODES_PART_3_OF_ROUND\",\r\n}"
  
-
-
- /* 
-  The purpose of this message is for the main node to send the created data for the part of the round to the nodes, so they can verify the data.
- 
-  message_settings - The type of the message
-  vrf_public_key - The VRF public key.
-  vrf_alpha_string - The VRF alpha string
-  vrf_proof - The VRF proof.
-  vrf_beta_string - The VRF beta_string.
-  public_address - The public address of the node that is sending the data.
-  previous_block_hash - The previous block hash.
-  current_round_part - The current round part (1-4).
-  current_round_part_backup_node - The current main node in the current round part (0-5)
-  data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
-  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
-  */
-  #define MAIN_NODES_TO_NODES_PART_4_OF_ROUND "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"vrf_random_character_string\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"vrf_public_key\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"vrf_alpha_string\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"vrf_proof\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"vrf_beta_string\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"public_address\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"previous_block_hash\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"current_round_part\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"current_round_part_backup_node\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"data\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n}"
  
  
-
 /* 
   The purpose of this message is for the block producer to send the created block for the part of the round to the nodes, so they can verify the block.
  
@@ -127,7 +109,7 @@ int string_functions_test()
   data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"data\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n}"
+  #define MAIN_NODES_TO_NODES_PART_4_OF_ROUND "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"block_blob\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"public_address\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"previous_block_hash\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"current_round_part\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"current_round_part_backup_node\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"data\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\",\r\n}"
 
  
  
@@ -188,13 +170,9 @@ int string_functions_test()
   delegate_name - The delegate name
   delegates_IP_address - The delegates IP address
   public_address - The public address of the node that is sending the data.
-  previous_block_hash - The previous block hash.
-  current_round_part - The current round part (1-4).
-  current_round_part_backup_node - The current main node in the current round part (0-5)
-  data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"delegate_name\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"delegates_IP_address\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"previous_block_hash\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"current_round_part\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"current_round_part_backup_node\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"data\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n}"
+  #define NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"delegate_name\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"delegates_IP_address\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n}"
 
 
 
@@ -204,13 +182,9 @@ int string_functions_test()
 
   message_settings - The type of the message
   public_address - The public address of the node that is sending the data.
-  previous_block_hash - The previous block hash.
-  current_round_part - The current round part (1-4).
-  current_round_part_backup_node - The current main node in the current round part (0-5)
-  data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegate_name\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegate_public_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegates_IP_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"previous_block_hash\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"current_round_part\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"current_round_part_backup_node\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"data\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n}"
+  #define NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegate_name\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegate_public_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegates_IP_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n}"
 
 
 
@@ -222,13 +196,9 @@ int string_functions_test()
   item - The field name to update (about, website, team, pool_mode, fee_structure, server_settings)
   value - The field names value
   public_address - The public address of the node that is sending the data.
-  previous_block_hash - The previous block hash.
-  current_round_part - The current round part (1-4).
-  current_round_part_backup_node - The current main node in the current round part (0-5)
-  data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"item\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"value\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"previous_block_hash\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"current_round_part\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"current_round_part_backup_node\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"data\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n}"
+  #define NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"item\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"value\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n}"
 
 
 
@@ -320,10 +290,9 @@ int string_functions_test()
   delegates_public_address - The delegates public address
   reserve_proof - The reserve proof
   public_address - The public address of the node that is sending the data.
-  data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF "{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"delegates_public_address\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"reserve_proof\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"public_address\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"data\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"xcash_proof_of_stake_signature\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n}"
+  #define NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF "{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"delegates_public_address\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"reserve_proof\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"public_address\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"xcash_proof_of_stake_signature\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n}"
 
 
  
@@ -732,7 +701,7 @@ int string_functions_test()
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(result_test,MAIN_NODES_TO_NODES_PART_1_OF_ROUND,strnlen(MAIN_NODES_TO_NODES_PART_1_OF_ROUND,BUFFER_SIZE));
-  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_public_key",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_alpha_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_proof",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_beta_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_public_key",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_secret_key",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_alpha_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_proof",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_beta_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) != 0)
   {
     color_print("FAILED! Test for parsing MAIN_NODES_TO_NODES_PART_1_OF_ROUND","red");
   }
@@ -774,27 +743,13 @@ int string_functions_test()
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(result_test,MAIN_NODES_TO_NODES_PART_4_OF_ROUND,strnlen(MAIN_NODES_TO_NODES_PART_4_OF_ROUND,BUFFER_SIZE));
-  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_public_key",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_alpha_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_proof",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"vrf_beta_string",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"block_blob",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) != 0)
   {
     color_print("FAILED! Test for parsing MAIN_NODES_TO_NODES_PART_4_OF_ROUND","red");
   }
   else
   {
     color_print("PASSED! Test for parsing MAIN_NODES_TO_NODES_PART_4_OF_ROUND","green");
-    count_test++;
-  }
-
-  // test for parsing MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK
-  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  memcpy(result_test,MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK,strnlen(MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK,BUFFER_SIZE));
-  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"block_blob",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) != 0)
-  {
-    color_print("FAILED! Test for parsing MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK","red");
-  }
-  else
-  {
-    color_print("PASSED! Test for parsing MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK","green");
     count_test++;
   }
 
@@ -844,7 +799,7 @@ int string_functions_test()
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(result_test,NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE,strnlen(NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE,BUFFER_SIZE));
-  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"delegate_name",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"delegates_IP_address",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"delegate_name",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"delegates_IP_address",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0)
   {
     color_print("FAILED! Test for parsing NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE","red");
   }
@@ -858,7 +813,7 @@ int string_functions_test()
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(result_test,NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE,strnlen(NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE,BUFFER_SIZE));
-  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0)
   {
     color_print("FAILED! Test for parsing NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE","red");
   }
@@ -872,7 +827,7 @@ int string_functions_test()
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(result_test,NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE,strnlen(NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE,BUFFER_SIZE));
-  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"item",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"value",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"item",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"value",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0)
   {
     color_print("FAILED! Test for parsing NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE","red");
   }
@@ -956,7 +911,7 @@ int string_functions_test()
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(result_test,NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF,strnlen(NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF,BUFFER_SIZE));
-  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 || parse_json_data(result_test,"delegates_public_address",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 || parse_json_data(result_test,"reserve_proof",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0)
+  if (parse_json_data(result_test,"message_settings",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 || parse_json_data(result_test,"delegates_public_address",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 || parse_json_data(result_test,"reserve_proof",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0)
   {
     color_print("FAILED! Test for parsing NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF","red");
   }
