@@ -1047,12 +1047,6 @@ int sync_check_reserve_proofs_database()
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}",89);
 
-  // sign_data
-  if (sign_data(message,0) == 0)
-  { 
-    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_reserve_proofs_database");
-  }
-
   start:
 
   // send the message to a random network data node
@@ -1412,12 +1406,6 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
 
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}",89);
-
-  // sign_data
-  if (sign_data(message,0) == 0)
-  { 
-    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_reserve_bytes_database");
-  }
 
   start:
 
@@ -1784,12 +1772,6 @@ int sync_check_delegates_database()
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}",89);
 
-  // sign_data
-  if (sign_data(message,0) == 0)
-  { 
-    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_delegates_database");
-  }
-
   start:
 
   // send the message to a random network data node
@@ -2085,12 +2067,6 @@ int sync_check_statistics_database()
 
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}",89);
-
-  // sign_data
-  if (sign_data(message,0) == 0)
-  { 
-    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_statistics_database");
-  }
 
   start:
 
