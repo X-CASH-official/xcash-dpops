@@ -691,6 +691,10 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     message = bson_as_canonical_extended_json(current_document, NULL);
     memcpy(data,message,strnlen(message,BUFFER_SIZE));
     bson_free(message);
+
+    string_replace(data,"{ \"$numberInt\" : ","");
+    string_replace(data," }, ",", ");
+
     count = 1;
   }
 
@@ -810,7 +814,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
       if ((strncmp(DATA,"",BUFFER_SIZE) == 0) || (strncmp(DATA,"",BUFFER_SIZE) != 0 && strstr(data,DATA) != NULL))
       {
         string_replace(data,"{ \"$numberInt\" : ","");
-        string_replace(data,"} ","");
+        string_replace(data," }, ",", ");
 
         // parse the json data        
         database_multiple_documents_parse_json_data(data,result,counter);
