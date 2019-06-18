@@ -120,15 +120,25 @@ Return: 0 if an error has occured, 1 if successfull
 int create_json_data_from_database_document_array(struct database_document_fields* database_data, char* result, const char* DOCUMENT_FIELDS)
 {
   // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count = 0;
   size_t counter = 1;
   size_t item_length;
   size_t value_length;
 
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    return 0;
+  }
+
   memcpy(result,"{",1); 
   for (count = 0; count < database_data->count; count++)
   {
-    if (strstr(DOCUMENT_FIELDS,database_data->item[count]) == NULL)
+    memset(data,0,strlen(data));
+    memcpy(data,database_data->item[count],strnlen(database_data->item[count],BUFFER_SIZE));
+    memcpy(data+strlen(data),"|",1);
+    if (strstr(DOCUMENT_FIELDS,data) == NULL)
     {
       // get the length of the item and the value
       item_length = strnlen(database_data->item[count],BUFFER_SIZE);
@@ -149,6 +159,7 @@ int create_json_data_from_database_document_array(struct database_document_field
     }
   }
   memcpy(result+counter-1,"}",1);
+  pointer_reset(data);
   return 1;
 }
 
@@ -174,11 +185,18 @@ Return: 0 if an error has occured, 1 if successfull
 int create_json_data_from_database_multiple_documents_array(struct database_multiple_documents_fields* database_data, char* result, const char* DOCUMENT_FIELDS)
 {
   // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count = 0;
   size_t counter = 0;
   size_t data_count = 1;
   size_t item_length;
   size_t value_length; 
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    return 0;
+  }
 
   memcpy(result,"[",1); 
   
@@ -188,7 +206,10 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
     data_count++;
     for (counter = 0; counter < database_data->database_fields_count; counter++)
     {
-      if (strstr(DOCUMENT_FIELDS,database_data->item[count][counter]) == NULL)
+      memset(data,0,strlen(data));
+      memcpy(data,database_data->item[count][counter],strnlen(database_data->item[count][counter],BUFFER_SIZE));
+      memcpy(data+strlen(data),"|",1);
+      if (strstr(DOCUMENT_FIELDS,data) == NULL)
       {
         // get the length of the item and the value
         item_length = strnlen(database_data->item[count][counter],BUFFER_SIZE);
@@ -212,6 +233,7 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
     data_count += 1;    
   }
   memcpy(result+data_count-1,"]",1);
+  pointer_reset(data);
   return 1;
 }
 
