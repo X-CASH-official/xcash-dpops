@@ -74,7 +74,7 @@ void test()
   xcash_proof_of_stake_total_passed_test += string_functions_test();
   xcash_proof_of_stake_total_passed_test += VRF_functions_test();
   xcash_proof_of_stake_total_passed_test += reset_variables_allocated_on_the_heap_test();
-  //xcash_proof_of_stake_total_passed_test += analysing_code_test();
+  xcash_proof_of_stake_total_passed_test += analysing_code_test();
 
   // write the end test message
   if (xcash_proof_of_stake_total_passed_test == XCASH_PROOF_OF_STAKE_TOTAL_TEST)

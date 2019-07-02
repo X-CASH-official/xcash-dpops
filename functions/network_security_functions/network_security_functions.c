@@ -284,7 +284,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   }
 
   // check that the block verifier that sent the data is the correct main node
-  if ((strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_1_OF_ROUND",BUFFER_SIZE) == 0 && strncmp(public_address,main_nodes_list.vrf_node_public_and_secret_key_public_address,BUFFER_SIZE) != 0) || (strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_2_OF_ROUND",BUFFER_SIZE) == 0 && strncmp(public_address,main_nodes_list.vrf_node_random_data_public_address,BUFFER_SIZE) != 0) || (strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_3_OF_ROUND",BUFFER_SIZE) == 0 && strncmp(public_address,main_nodes_list.vrf_node_next_main_nodes_public_address,BUFFER_SIZE) != 0) || (strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0 && strncmp(public_address,main_nodes_list.block_producer_public_address,BUFFER_SIZE) != 0))
+  if (strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0 && strncmp(public_address,main_nodes_list.block_producer_public_address,BUFFER_SIZE) != 0)
   {
     pointer_reset_all;
     return 0;

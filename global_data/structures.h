@@ -49,43 +49,7 @@ struct main_nodes_list {
     char* block_producer_backup_block_verifier_4_public_address; // The block producers backup node 4 public address
     char* block_producer_backup_block_verifier_4_IP_address; // The block producers backup node 4 IP address
     char* block_producer_backup_block_verifier_5_public_address; // The block producers backup node 5 public address
-    char* block_producer_backup_block_verifier_5_IP_address; // The block producers backup node 5 IP address
-    char* vrf_node_public_and_secret_key_public_address; // The vrf node public and secret key public address
-    char* vrf_node_public_and_secret_key_IP_address; // The vrf node public and secret key IP address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_1_public_address; // The vrf node public and secret key backup node 1 public address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_1_IP_address; // The vrf node public and secret key backup node 1 IP address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_2_public_address; // The vrf node public and secret key backup node 2 public address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_2_IP_address; // The vrf node public and secret key backup node 2 IP address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_3_public_address; // The vrf node public and secret key backup node 3 public address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_3_IP_address; // The vrf node public and secret key backup node 3 IP address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_4_public_address; // The vrf node public and secret key backup node 4 public address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_4_IP_address; // The vrf node public and secret key backup node 4 IP address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_5_public_address; // The vrf node public and secret key backup node 5 public address
-    char* vrf_node_public_and_secret_key_backup_block_verifier_5_IP_address; // The vrf node public and secret key backup node 5 IP address
-    char* vrf_node_random_data_public_address; // The vrf node random data public address
-    char* vrf_node_random_data_IP_address; // The vrf node random data IP address
-    char* vrf_node_random_data_backup_block_verifier_1_public_address; // The vrf random data backup node 1 public address
-    char* vrf_node_random_data_backup_block_verifier_1_IP_address; // The vrf random data backup node 1 IP address
-    char* vrf_node_random_data_backup_block_verifier_2_public_address; // The vrf random data backup node 2 public address
-    char* vrf_node_random_data_backup_block_verifier_2_IP_address; // The vrf random data backup node 2 IP address
-    char* vrf_node_random_data_backup_block_verifier_3_public_address; // The vrf random data backup node 3 public address
-    char* vrf_node_random_data_backup_block_verifier_3_IP_address; // The vrf random data backup node 3 IP address
-    char* vrf_node_random_data_backup_block_verifier_4_public_address; // The vrf random data backup node 4 public address
-    char* vrf_node_random_data_backup_block_verifier_4_IP_address; // The vrf random data backup node 4 IP address
-    char* vrf_node_random_data_backup_block_verifier_5_public_address; // The vrf random data backup node 5 public address
-    char* vrf_node_random_data_backup_block_verifier_5_IP_address; // The vrf random data backup node 5 IP address
-    char* vrf_node_next_main_nodes_public_address; // The vrf node next main nodes public address
-    char* vrf_node_next_main_nodes_IP_address; // The vrf node next main nodes IP address
-    char* vrf_node_next_main_nodes_backup_block_verifier_1_public_address; // The vrf node next main nodes backup node 1 public address
-    char* vrf_node_next_main_nodes_backup_block_verifier_1_IP_address; // The vrf node next main nodes backup node 1 IP address
-    char* vrf_node_next_main_nodes_backup_block_verifier_2_public_address; // The vrf node next main nodes backup node 2 public address
-    char* vrf_node_next_main_nodes_backup_block_verifier_2_IP_address; // The vrf node next main nodes backup node 2 IP address
-    char* vrf_node_next_main_nodes_backup_block_verifier_3_public_address; // The vrf node next main nodes backup node 3 public address
-    char* vrf_node_next_main_nodes_backup_block_verifier_3_IP_address; // The vrf node next main nodes backup node 3 IP address
-    char* vrf_node_next_main_nodes_backup_block_verifier_4_public_address; // The vrf node next main nodes backup node 4 public address
-    char* vrf_node_next_main_nodes_backup_block_verifier_4_IP_address; // The vrf node next main nodes backup node 4 IP address
-    char* vrf_node_next_main_nodes_backup_block_verifier_5_public_address; // The vrf node next main nodes backup node 5 public address
-    char* vrf_node_next_main_nodes_backup_block_verifier_5_IP_address; // The vrf node next main nodes backup node 5 IP address
+    char* block_producer_backup_block_verifier_5_IP_address; // The block producers backup node 5 IP address    
 };
 
 struct network_data_nodes_list {
@@ -94,9 +58,6 @@ struct network_data_nodes_list {
 };
 
 struct current_round_part_backup_node_data {
-    char* current_round_part_1_backup_node;
-    char* current_round_part_2_backup_node;
-    char* current_round_part_3_backup_node;
     char* current_round_part_4_backup_node;
 };
 
@@ -106,31 +67,9 @@ struct current_round_part_vote_data {
     int vote_results_invalid; // The current part of the round vote count for a invalid vote.
 };
 
-struct VRF_data {    
-    char* vrf_public_key_data_round_part_1; // The VRF public key text for round part 1
-    unsigned char* vrf_public_key_round_part_1; // The VRF public key for round part 1
-    char* vrf_alpha_string_data_round_part_1; // The VRF alpha string (input string) text for round part 1
-    unsigned char* vrf_alpha_string_round_part_1; // The VRF alpha string (input string) for round part 1
-    char* vrf_proof_data_round_part_1; // The VRF proof text for round part 1
-    unsigned char* vrf_proof_round_part_1; // The VRF proof for round part 1
-    char* vrf_beta_string_data_round_part_1; // The VRF beta string (output string) text for round part 1
-    unsigned char* vrf_beta_string_round_part_1; // The VRF beta string (output string) for round part 1
-    char* vrf_public_key_data_round_part_2; // The VRF public key text for round part 2
-    unsigned char* vrf_public_key_round_part_2; // The VRF public key for round part 2
-    char* vrf_alpha_string_data_round_part_2; // The VRF alpha string (input string) text for round part 2
-    unsigned char* vrf_alpha_string_round_part_2; // The VRF alpha string (input string) for round part 2
-    char* vrf_proof_data_round_part_2; // The VRF proof text for round part 2
-    unsigned char* vrf_proof_round_part_2; // The VRF proof for round part 2
-    char* vrf_beta_string_data_round_part_2; // The VRF beta string (output string) text for round part 2
-    unsigned char* vrf_beta_string_round_part_2; // The VRF beta string (output string) for round part 2
-    char* vrf_public_key_data_round_part_3; // The VRF public key text for round part 3
-    unsigned char* vrf_public_key_round_part_3; // The VRF public key for round part 3
-    char* vrf_alpha_string_data_round_part_3; // The VRF alpha string (input string) text for round part 3
-    unsigned char* vrf_alpha_string_round_part_3; // The VRF alpha string (input string) for round part 3
-    char* vrf_proof_data_round_part_3; // The VRF proof text for round part 3
-    unsigned char* vrf_proof_round_part_3; // The VRF proof for round part 3
-    char* vrf_beta_string_data_round_part_3; // The VRF beta string (output string) text for round part 3
-    unsigned char* vrf_beta_string_round_part_3; // The VRF beta string (output string) for round part 3
+struct VRF_data { 
+    char* vrf_secret_key_data_round_part_4; // The VRF secret key text for round part 4
+    unsigned char* vrf_secret_key_round_part_4; // The VRF secret key for round part 4
     char* vrf_public_key_data_round_part_4; // The VRF public key text for round part 4
     unsigned char* vrf_public_key_round_part_4; // The VRF public key for round part 4
     char* vrf_alpha_string_data_round_part_4; // The VRF alpha string (input string) text for round part 4
@@ -139,6 +78,11 @@ struct VRF_data {
     unsigned char* vrf_proof_round_part_4; // The VRF proof for round part 4
     char* vrf_beta_string_data_round_part_4; // The VRF beta string (output string) text for round part 4
     unsigned char* vrf_beta_string_round_part_4; // The VRF beta string (output string) for round part 4
+    char* block_verifiers_vrf_secret_key_data[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key text that all of the block verifiers create
+    unsigned char* block_verifiers_vrf_secret_key[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key that all of the block verifiers create
+    char* block_verifiers_vrf_public_key_data[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key text that all of the block verifiers create
+    unsigned char* block_verifiers_vrf_public_key[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key that all of the block verifiers create
+    char* block_verifiers_random_data[BLOCK_VERIFIERS_AMOUNT]; // The random data that all of the block verifiers create
     char* block_blob_signature[BLOCK_VERIFIERS_AMOUNT]; // The signed block data text
     char* block_blob; // The block_blob that the block producer creates to send to the consensus node
     char* reserve_bytes_data_hash; // The reserve bytes data hash
@@ -156,82 +100,10 @@ struct blockchain_reserve_bytes {
     size_t block_producer_node_backup_count_data_length; // The amount of characters of the block_producer_node_backup_count_data
     char* block_producer_backup_nodes_names_data; // The block_producer_backup_nodes_names
     char* block_producer_backup_nodes_names; // The block_producer_backup_nodes_names_data text
-    size_t block_producer_backup_nodes_names_data_length; // The amount of characters of the block_producer_backup_nodes_names_data
-    char* vrf_node_public_and_secret_key_delegates_name_data; // The vrf_node_public_and_secret_key_delegates_name
-    char* vrf_node_public_and_secret_key_delegates_name; // The vrf_node_public_and_secret_key_delegates_name_data text
-    size_t vrf_node_public_and_secret_key_delegates_name_data_length; // The amount of characters of the vrf_node_public_and_secret_key_delegates_name_data
-    char* vrf_node_public_and_secret_key_public_address_data; // The vrf_node_public_and_secret_key_public_address
-    char* vrf_node_public_and_secret_key_public_address; // The vrf_node_public_and_secret_key_public_address_data text
-    size_t vrf_node_public_and_secret_key_public_address_data_length; // The amount of characters of the vrf_node_public_and_secret_key_public_address_data
-    char* vrf_node_public_and_secret_key_node_backup_count_data; // The vrf_node_public_and_secret_key_node_backup_count
-    char* vrf_node_public_and_secret_key_node_backup_count; // The vrf_node_public_and_secret_key_node_backup_count_data text
-    size_t vrf_node_public_and_secret_key_node_backup_count_data_length; // The amount of characters of the vrf_node_public_and_secret_key_node_backup_count_data
-    char* vrf_node_public_and_secret_key_backup_nodes_names_data; // The vrf_node_public_and_secret_key_backup_nodes_names
-    char* vrf_node_public_and_secret_key_backup_nodes_names; // The vrf_node_public_and_secret_key_backup_nodes_names_data text
-    size_t vrf_node_public_and_secret_key_backup_nodes_names_data_length; // The amount of characters of the vrf_node_public_and_secret_key_backup_nodes_names_data
-    char* vrf_node_random_data_delegates_name_data; // The vrf_node_random_data_delegates_name
-    char* vrf_node_random_data_delegates_name; // The vrf_node_random_data_delegates_name_data text
-    size_t vrf_node_random_data_delegates_name_data_length; // The amount of characters of the vrf_node_random_data_delegates_name_data
-    char* vrf_node_random_data_public_address_data; // The vrf_node_random_data_public_address
-    char* vrf_node_random_data_public_address; // The vrf_node_random_data_public_address_data text
-    size_t vrf_node_random_data_public_address_data_length; // The amount of characters of the vrf_node_random_data_public_address_data
-    char* vrf_node_random_data_node_backup_count_data; // The vrf_node_random_data_node_backup_count
-    char* vrf_node_random_data_node_backup_count; // The vrf_node_random_data_node_backup_count_data text
-    size_t vrf_node_random_data_node_backup_count_data_length; // The amount of characters of the vrf_node_random_data_node_backup_count_data
-    char* vrf_node_random_data_backup_nodes_names_data; // The vrf_node_random_data_backup_nodes_names
-    char* vrf_node_random_data_backup_nodes_names; // The vrf_node_random_data_backup_nodes_names_data text
-    size_t vrf_node_random_data_backup_nodes_names_data_length; // The amount of characters of the vrf_node_random_data_backup_nodes_names_data
-    char* vrf_node_next_main_nodes_delegates_name_data; // The vrf_node_next_main_nodes_delegates_name
-    char* vrf_node_next_main_nodes_delegates_name; // The vrf_node_next_main_nodes_delegates_name_data text
-    size_t vrf_node_next_main_nodes_delegates_name_data_length; // The amount of characters of the vrf_node_next_main_nodes_delegates_name_data
-    char* vrf_node_next_main_nodes_public_address_data; // The vrf_node_next_main_nodes_public_address
-    char* vrf_node_next_main_nodes_public_address; // The vrf_node_next_main_nodes_public_address_data text
-    size_t vrf_node_next_main_nodes_public_address_data_length; // The amount of characters of the vrf_node_next_main_nodes_public_address_data
-    char* vrf_node_next_main_nodes_node_backup_count_data; // The vrf_node_next_main_nodes_node_backup_count
-    char* vrf_node_next_main_nodes_node_backup_count; // The vrf_node_next_main_nodes_node_backup_count_data text
-    size_t vrf_node_next_main_nodes_node_backup_count_data_length; // The amount of characters of the vrf_node_next_main_nodes_node_backup_count_data
-    char* vrf_node_next_main_nodes_backup_nodes_names_data; // The vrf_node_next_main_nodes_backup_nodes_names
-    char* vrf_node_next_main_nodes_backup_nodes_names; // The vrf_node_next_main_nodes_backup_nodes_names_data text
-    size_t vrf_node_next_main_nodes_backup_nodes_names_data_length; // The amount of characters of the vrf_node_next_main_nodes_backup_nodes_names_data
-    char* vrf_public_key_data_round_part_1; // The VRF public key text for round part 1
-    unsigned char* vrf_public_key_round_part_1; // The VRF public key for round part 1
-    size_t vrf_public_key_data_length_round_part_1; // The length of the VRF public key for round part 1
-    char* vrf_alpha_string_data_round_part_1; // The VRF alpha string (input string) text for round part 1
-    unsigned char* vrf_alpha_string_round_part_1; // The VRF alpha string (input string) for round part 1
-    size_t vrf_alpha_string_data_length_round_part_1; // The length of the VRF alpha string (input string) for round part 1
-    char* vrf_proof_data_round_part_1; // The VRF proof text for round part 1
-    unsigned char* vrf_proof_round_part_1; // The VRF proof for round part 1
-    size_t vrf_proof_data_length_round_part_1; // The length of the VRF proof for round part 1
-    char* vrf_beta_string_data_round_part_1; // The VRF beta string (output string) text for round part 1
-    unsigned char* vrf_beta_string_round_part_1; // The VRF beta string (output string) for round part 1
-    size_t vrf_beta_string_data_length_round_part_1; // The length of the VRF beta string (output string) for round part 1
-    char* vrf_data_round_part_1; // The VRF data for round part 1
-    char* vrf_public_key_data_round_part_2; // The VRF public key text for round part 2
-    unsigned char* vrf_public_key_round_part_2; // The VRF public key for round part 2
-    size_t vrf_public_key_data_length_round_part_2; // The length of the VRF public key for round part 2
-    char* vrf_alpha_string_data_round_part_2; // The VRF alpha string (input string) text for round part 2
-    unsigned char* vrf_alpha_string_round_part_2; // The VRF alpha string (input string) for round part 2
-    size_t vrf_alpha_string_data_length_round_part_2; // The length of the VRF alpha string (input string) for round part 2
-    char* vrf_proof_data_round_part_2; // The VRF proof text for round part 2
-    unsigned char* vrf_proof_round_part_2; // The VRF proof for round part 2
-    size_t vrf_proof_data_length_round_part_2; // The length of the VRF proof for round part 2
-    char* vrf_beta_string_data_round_part_2; // The VRF beta string (output string) text for round part 2
-    unsigned char* vrf_beta_string_round_part_2; // The VRF beta string (output string) for round part 2
-    size_t vrf_beta_string_data_length_round_part_2; // The length of the VRF beta string (output string) for round part 2
-    char* vrf_data_round_part_2; // The VRF data for round part 2
-    char* vrf_public_key_data_round_part_3; // The VRF public key text for round part 3
-    unsigned char* vrf_public_key_round_part_3; // The VRF public key for round part 3
-    size_t vrf_public_key_data_length_round_part_3; // The length of the VRF public key for round part 3
-    char* vrf_alpha_string_data_round_part_3; // The VRF alpha string (input string) text for round part 3
-    unsigned char* vrf_alpha_string_round_part_3; // The VRF alpha string (input string) for round part 3
-    size_t vrf_alpha_string_data_length_round_part_3; // The length of the VRF alpha string (input string) for round part 3
-    char* vrf_proof_data_round_part_3; // The VRF proof text for round part 3
-    unsigned char* vrf_proof_round_part_3; // The VRF proof for round part 3
-    size_t vrf_proof_data_length_round_part_3; // The length of the VRF proof for round part 3
-    char* vrf_beta_string_data_round_part_3; // The VRF beta string (output string) text for round part 3
-    unsigned char* vrf_beta_string_round_part_3; // The VRF beta string (output string) for round part 3
-    size_t vrf_beta_string_data_length_round_part_3; // The length of the VRF beta string (output string) for round part 3
-    char* vrf_data_round_part_3; // The VRF data for round part 3  
+    size_t block_producer_backup_nodes_names_data_length; // The amount of characters of the block_producer_backup_nodes_names_data 
+    char* vrf_secret_key_data_round_part_4; // The VRF secret key text for round part 3
+    unsigned char* vrf_secret_key_round_part_4; // The VRF secret key for round part 3
+    size_t vrf_secret_key_data_length_round_part_4; // The length of the VRF public key for round part 3   
     char* vrf_public_key_data_round_part_4; // The VRF public key text for round part 3
     unsigned char* vrf_public_key_round_part_4; // The VRF public key for round part 3
     size_t vrf_public_key_data_length_round_part_4; // The length of the VRF public key for round part 3
@@ -247,6 +119,15 @@ struct blockchain_reserve_bytes {
     char* vrf_data_round_part_4; // The VRF data for round part 3  
     char* vrf_data; // The VRF data for all of the round parts
     size_t vrf_data_length; // The length of the VRF data for all of the round parts
+    char* block_verifiers_vrf_secret_key_data[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key text that all of the block verifiers create
+    unsigned char* block_verifiers_vrf_secret_key[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key that all of the block verifiers create
+    size_t block_verifiers_vrf_secret_key_data_length; // The amount of characters of the block_verifiers_vrf_secret_key_data
+    char* block_verifiers_vrf_public_key_data[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key text that all of the block verifiers create
+    unsigned char* block_verifiers_vrf_public_key[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key that all of the block verifiers create
+    size_t block_verifiers_vrf_public_key_data_length; // The amount of characters of the block_verifiers_vrf_public_key_data
+    char* block_verifiers_random_data[BLOCK_VERIFIERS_AMOUNT]; // The random data that all of the block verifiers create
+    char* block_verifiers_random_data_text[BLOCK_VERIFIERS_AMOUNT]; // The random data text that all of the block verifiers create
+    size_t block_verifiers_random_data_length; // The amount of characters of the block_verifiers_random_data
     char* next_block_verifiers_public_address_data[BLOCK_VERIFIERS_AMOUNT]; // The next_block_verifiers_public_address
     char* next_block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT]; // The next_block_verifiers_public_address_data text
     size_t next_block_verifiers_public_address_data_length; // The amount of characters of the next_block_verifiers_public_address_data

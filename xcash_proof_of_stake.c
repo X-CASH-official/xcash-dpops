@@ -42,16 +42,13 @@ int main(int parameters_count, char* parameters[])
   // iniltize the global variables
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   nodes_public_address_list_received_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  server_message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  vrf_public_key_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  vrf_secret_key_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  vrf_alpha_string_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  server_message = (char*)calloc(BUFFER_SIZE,sizeof(char));  
   current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || vrf_public_key_part_1 == NULL || vrf_alpha_string_part_2 == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
   {
     if (data != NULL)
     {
@@ -68,14 +65,6 @@ int main(int parameters_count, char* parameters[])
     if (server_message != NULL)
     {
       pointer_reset(server_message);
-    }
-    if (vrf_public_key_part_1 != NULL)
-    {
-      pointer_reset(vrf_public_key_part_1);
-    }
-    if (vrf_alpha_string_part_2 != NULL)
-    {
-      pointer_reset(vrf_alpha_string_part_2);
     }
     if (current_round_part != NULL)
     {
@@ -167,42 +156,6 @@ int main(int parameters_count, char* parameters[])
   main_nodes_list.block_producer_backup_block_verifier_4_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
   main_nodes_list.block_producer_backup_block_verifier_5_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   main_nodes_list.block_producer_backup_block_verifier_5_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_1_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_2_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_3_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_4_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_public_and_secret_key_backup_block_verifier_5_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_random_data_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_1_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_1_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_2_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_2_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_3_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_3_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_4_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_4_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_5_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_random_data_backup_block_verifier_5_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_1_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_2_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_3_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_4_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.vrf_node_next_main_nodes_backup_block_verifier_5_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
 
   // initialize the network_data_nodes_list struct
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
@@ -219,12 +172,9 @@ int main(int parameters_count, char* parameters[])
   }
 
   // initialize the round_part_backup_node_data struct
-  current_round_part_backup_node_data.current_round_part_1_backup_node = (char*)calloc(2,sizeof(char));
-  current_round_part_backup_node_data.current_round_part_2_backup_node = (char*)calloc(2,sizeof(char));
-  current_round_part_backup_node_data.current_round_part_3_backup_node = (char*)calloc(2,sizeof(char));
   current_round_part_backup_node_data.current_round_part_4_backup_node = (char*)calloc(2,sizeof(char));
 
-  if (current_round_part_backup_node_data.current_round_part_1_backup_node == NULL || current_round_part_backup_node_data.current_round_part_2_backup_node == NULL || current_round_part_backup_node_data.current_round_part_3_backup_node == NULL || current_round_part_backup_node_data.current_round_part_4_backup_node == NULL)
+  if (current_round_part_backup_node_data.current_round_part_4_backup_node == NULL)
   {
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -242,30 +192,6 @@ int main(int parameters_count, char* parameters[])
   }
 
   // initialize the VRF_data struct 
-  VRF_data.vrf_public_key_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_public_key_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_alpha_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  VRF_data.vrf_alpha_string_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  VRF_data.vrf_proof_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_proof_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_beta_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_beta_string_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_public_key_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_public_key_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_alpha_string_data_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  VRF_data.vrf_alpha_string_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  VRF_data.vrf_proof_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_proof_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_beta_string_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_beta_string_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_public_key_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_public_key_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_alpha_string_data_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  VRF_data.vrf_alpha_string_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  VRF_data.vrf_proof_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_proof_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_beta_string_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  VRF_data.vrf_beta_string_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   VRF_data.vrf_public_key_data_round_part_4 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   VRF_data.vrf_public_key_round_part_4 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   VRF_data.vrf_alpha_string_data_round_part_4 = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -278,7 +204,7 @@ int main(int parameters_count, char* parameters[])
   VRF_data.reserve_bytes_data_hash = (char*)calloc(DATA_HASH_LENGTH,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (VRF_data.vrf_public_key_data_round_part_1 == NULL || VRF_data.vrf_public_key_round_part_1 == NULL || VRF_data.vrf_alpha_string_data_round_part_1 == NULL || VRF_data.vrf_alpha_string_round_part_1 == NULL || VRF_data.vrf_proof_data_round_part_1 == NULL || VRF_data.vrf_proof_round_part_1 == NULL || VRF_data.vrf_beta_string_data_round_part_1 == NULL || VRF_data.vrf_beta_string_round_part_1 == NULL || VRF_data.vrf_public_key_data_round_part_2 == NULL || VRF_data.vrf_public_key_round_part_2 == NULL || VRF_data.vrf_alpha_string_data_round_part_2 == NULL || VRF_data.vrf_alpha_string_round_part_2 == NULL || VRF_data.vrf_proof_data_round_part_2 == NULL || VRF_data.vrf_proof_round_part_2 == NULL || VRF_data.vrf_beta_string_data_round_part_2 == NULL || VRF_data.vrf_beta_string_round_part_2 == NULL || VRF_data.vrf_public_key_data_round_part_3 == NULL || VRF_data.vrf_public_key_round_part_3 == NULL || VRF_data.vrf_alpha_string_data_round_part_3 == NULL || VRF_data.vrf_alpha_string_round_part_3 == NULL || VRF_data.vrf_proof_data_round_part_3 == NULL || VRF_data.vrf_proof_round_part_3 == NULL || VRF_data.vrf_beta_string_data_round_part_3 == NULL || VRF_data.vrf_beta_string_round_part_3 == NULL || VRF_data.vrf_public_key_data_round_part_4 == NULL || VRF_data.vrf_public_key_round_part_4 == NULL || VRF_data.vrf_alpha_string_data_round_part_4 == NULL || VRF_data.vrf_alpha_string_round_part_4 == NULL || VRF_data.vrf_proof_data_round_part_4 == NULL || VRF_data.vrf_proof_round_part_4 == NULL || VRF_data.vrf_beta_string_data_round_part_4 == NULL || VRF_data.vrf_beta_string_round_part_4 == NULL || VRF_data.block_blob == NULL)
+  if (VRF_data.vrf_public_key_data_round_part_4 == NULL || VRF_data.vrf_public_key_round_part_4 == NULL || VRF_data.vrf_alpha_string_data_round_part_4 == NULL || VRF_data.vrf_alpha_string_round_part_4 == NULL || VRF_data.vrf_proof_data_round_part_4 == NULL || VRF_data.vrf_proof_round_part_4 == NULL || VRF_data.vrf_beta_string_data_round_part_4 == NULL || VRF_data.vrf_beta_string_round_part_4 == NULL || VRF_data.block_blob == NULL)
   {
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -286,10 +212,15 @@ int main(int parameters_count, char* parameters[])
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
+    VRF_data.block_verifiers_vrf_secret_key_data[count] = (char*)calloc(VRF_SECRET_KEY_LENGTH+1,sizeof(char));
+    VRF_data.block_verifiers_vrf_secret_key[count] = (unsigned char*)calloc(crypto_vrf_SECRETKEYBYTES+1,sizeof(char));
+    VRF_data.block_verifiers_vrf_public_key_data[count] = (char*)calloc(VRF_PUBLIC_KEY_LENGTH+1,sizeof(char));
+    VRF_data.block_verifiers_vrf_public_key[count] = (unsigned char*)calloc(crypto_vrf_PUBLICKEYBYTES+1,sizeof(char));
+    VRF_data.block_verifiers_random_data[count] = (char*)calloc(RANDOM_STRING_LENGTH+1,sizeof(char));
     VRF_data.block_blob_signature[count] = (char*)calloc(XCASH_SIGN_DATA_LENGTH+1,sizeof(char));
    
     // check if the memory needed was allocated on the heap successfully
-    if (VRF_data.block_blob_signature[count] == NULL)
+    if (VRF_data.block_blob_signature[count] == NULL || VRF_data.block_verifiers_random_data[count] == NULL)
     {
       color_print("Could not allocate the memory needed on the heap","red");
       exit(0);
@@ -323,59 +254,9 @@ int main(int parameters_count, char* parameters[])
   blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_node_backup_count_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_node_backup_count = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_delegates_name_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_delegates_name = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_public_address_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_public_address = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_node_backup_count_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_node_backup_count = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_backup_nodes_names_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_backup_nodes_names = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_1 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_2 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-  blockchain_data.blockchain_reserve_bytes.vrf_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));  
+  blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  blockchain_data.blockchain_reserve_bytes.vrf_secret_key_round_part_4 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4 = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -389,7 +270,7 @@ int main(int parameters_count, char* parameters[])
   blockchain_data.blockchain_reserve_bytes.previous_block_hash_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (blockchain_data.network_version_data == NULL || blockchain_data.timestamp_data == NULL || blockchain_data.previous_block_hash_data == NULL || blockchain_data.nonce_data == NULL || blockchain_data.block_reward_transaction_version_data == NULL || blockchain_data.unlock_block_data == NULL || blockchain_data.block_reward_input_data == NULL || blockchain_data.vin_type_data == NULL || blockchain_data.block_height_data == NULL || blockchain_data.block_reward_output_data == NULL || blockchain_data.block_reward_data == NULL || blockchain_data.stealth_address_output_tag_data == NULL || blockchain_data.stealth_address_output_data == NULL || blockchain_data.extra_bytes_size_data == NULL || blockchain_data.transaction_public_key_tag_data == NULL || blockchain_data.transaction_public_key_data == NULL || blockchain_data.extra_nonce_tag_data == NULL || blockchain_data.reserve_bytes_size_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_public_address == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_public_and_secret_key_backup_nodes_names == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_public_address == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_random_data_backup_nodes_names == NULL  || blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_public_address == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_node_next_main_nodes_backup_nodes_names == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_1 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_2 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_3 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data == NULL || blockchain_data.blockchain_reserve_bytes.previous_block_hash_data == NULL)
+  if (blockchain_data.network_version_data == NULL || blockchain_data.timestamp_data == NULL || blockchain_data.previous_block_hash_data == NULL || blockchain_data.nonce_data == NULL || blockchain_data.block_reward_transaction_version_data == NULL || blockchain_data.unlock_block_data == NULL || blockchain_data.block_reward_input_data == NULL || blockchain_data.vin_type_data == NULL || blockchain_data.block_height_data == NULL || blockchain_data.block_reward_output_data == NULL || blockchain_data.block_reward_data == NULL || blockchain_data.stealth_address_output_tag_data == NULL || blockchain_data.stealth_address_output_data == NULL || blockchain_data.extra_bytes_size_data == NULL || blockchain_data.transaction_public_key_tag_data == NULL || blockchain_data.transaction_public_key_data == NULL || blockchain_data.extra_nonce_tag_data == NULL || blockchain_data.reserve_bytes_size_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data == NULL || blockchain_data.blockchain_reserve_bytes.previous_block_hash_data == NULL)
   {
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
@@ -398,21 +279,17 @@ int main(int parameters_count, char* parameters[])
   {
     blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
     blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count] == NULL)
-    {
-      color_print("Could not allocate the memory needed on the heap","red");
-      exit(0);
-    }
-  }
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
     blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
     blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count] = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count] = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
-    if (blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] == NULL)
+    if (blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count] == NULL)
     {
       color_print("Could not allocate the memory needed on the heap","red");
       exit(0);
