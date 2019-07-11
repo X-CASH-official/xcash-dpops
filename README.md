@@ -1,8 +1,19 @@
 # X-CASH Proof of stake
 
-More details will be released soon!
+X-CASH Proof of stake is a variation of DPOS and DBFT. The key features of X-CASH proof of stake are:
 
+* The top 100 delegates are elected as block verifiers
+* Reserve proof based voting/staking system
+* A minimum of 2 million X-CASH is needed to vote for a delegate
 
+* The election process is every block, meaning a new vote will get counted for the next block
+* No need to cancel a vote, as it will automatically get cancelled if you change your vote to a different delegate
+* No lockup times, the coins always remain in your wallet and you can use them at any time, although moving them from your wallet will cancel your entire staking vote.
+* No fees for voting, and you can revote or switch your vote as many times as you like.
+
+* Using a variation of Delegated Byzantine Fault tolerance consensus
+* DBFT allows for 33% of the elected block verifiers to stop working, and the system will still be able to produce a new block
+* Using Verifiable Random Functions to select the next block producer in the system. This allows for a random, but provable way of selecting the next block producer.
 
 ## Installation
 
