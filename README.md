@@ -19,6 +19,22 @@ X-CASH Proof of stake is a variation of DPOS and DBFT. The key features of X-CAS
 
 This program will only run on a Linux/Unix OS at this time. We recommend installing this on a Ubuntu VPS/Server (16.04 or 18.04) for the best compatibility.
 
+Minimum System Requirements:
+Operating System: Ubuntu 18.04 VPS/server or higher
+CPU: At least 2 threads
+RAM: 2GB
+Hard drive: 50GB
+Bandwidth Transfer: 500GB per month
+Bandwidth Speed: At least 100 Mbps
+
+Recommended System Requirements:
+Operating System: Ubuntu 18.04 VPS/server or higher
+CPU: At least 4 threads
+RAM: 4GB
+Hard drive: 100GB
+Bandwidth Transfer: 2TB per month
+Bandwidth Speed: At least 100 Mbps
+
 You will also need to run an X-CASH Daemon and X-CASH RPC wallet on the server. You can either download the latest X-CASH [release](https://github.com/X-CASH-official/X-CASH/releases) or build from [source](https://github.com/X-CASH-official/X-CASH#compiling-x-cash-from-source)
 
 
