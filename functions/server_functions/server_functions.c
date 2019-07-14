@@ -1719,6 +1719,14 @@ void check_if_databases_are_synced()
   count--;
   sprintf(data,"%zu",count);
 
+  // check if your rreserve proofs database is synced
+  if (sync_check_reserve_proofs_database() == 0)
+  {
+    color_print("Could not check if the reserve proofs database is updated. This means you might need to sync the reserve proofs database.\nFunction: update_databases","red");
+  }
+  // wait for the other block verifiers to sync the databse
+  sleep(10);
+
   // check if your reserve bytes database is synced
   if (sync_check_reserve_bytes_database((const char*)data) == 0)
   {
