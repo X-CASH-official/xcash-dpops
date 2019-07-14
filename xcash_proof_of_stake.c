@@ -39,6 +39,13 @@ int main(int parameters_count, char* parameters[])
   pthread_t thread_id_2;
   pthread_t thread_id_3;
 
+  // define macros
+  #define database_reset \
+  mongoc_client_destroy(database_client); \
+  mongoc_client_pool_destroy(database_client_thread_pool); \
+  mongoc_uri_destroy(uri_thread_pool); \
+  mongoc_cleanup();
+
   // iniltize the global variables
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   nodes_public_address_list_received_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -170,6 +177,12 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
   }
+
+  // add the network_data_nodes
+  memcpy(network_data_nodes_list.network_data_nodes_public_address[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
+  memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],"10.10.10.1",10);
+  memcpy(network_data_nodes_list.network_data_nodes_public_address[1],"XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B",XCASH_WALLET_LENGTH);
+  memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],"10.10.10.2",10);
 
   // initialize the round_part_backup_node_data struct
   current_round_part_backup_node_data.current_round_part_4_backup_node = (char*)calloc(2,sizeof(char));
@@ -389,10 +402,7 @@ int main(int parameters_count, char* parameters[])
       color_print("Invalid parameters\n","red");
       printf(INVALID_PARAMETERS_ERROR_MESSAGE);
     }  
-    mongoc_client_destroy(database_client);
-    mongoc_client_pool_destroy(database_client_thread_pool);
-    mongoc_uri_destroy(uri_thread_pool);
-    mongoc_cleanup();
+    database_reset;
     pointer_reset(data);
     exit(0);
   }
@@ -405,10 +415,7 @@ int main(int parameters_count, char* parameters[])
   if (read_document_field_from_collection(DATABASE_NAME,"delegates",data,"IP_address",block_verifiers_IP_address,0) == 0)
   {
     color_print("Could not get the block verifiers IP address","red");
-    mongoc_client_destroy(database_client);
-    mongoc_client_pool_destroy(database_client_thread_pool);
-    mongoc_uri_destroy(uri_thread_pool);
-    mongoc_cleanup();
+    database_reset;
     pointer_reset(data);
   }
 
@@ -426,10 +433,7 @@ int main(int parameters_count, char* parameters[])
   if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
     color_print("Could not start the current_block_height_timer_thread","red");
-    mongoc_client_destroy(database_client);
-    mongoc_client_pool_destroy(database_client_thread_pool);
-    mongoc_uri_destroy(uri_thread_pool);
-    mongoc_cleanup();
+    database_reset;
     pointer_reset(data);
   } 
 
@@ -437,10 +441,7 @@ int main(int parameters_count, char* parameters[])
   if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
   {
     color_print("Could not start the check_reserve_proofs_timer_thread","red");
-    mongoc_client_destroy(database_client);
-    mongoc_client_pool_destroy(database_client_thread_pool);
-    mongoc_uri_destroy(uri_thread_pool);
-    mongoc_cleanup();
+    database_reset;
     pointer_reset(data);
   } 
 
@@ -448,10 +449,7 @@ int main(int parameters_count, char* parameters[])
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
     color_print("Could not start the check_delegates_online_status_timer_thread","red");
-    mongoc_client_destroy(database_client);
-    mongoc_client_pool_destroy(database_client_thread_pool);
-    mongoc_uri_destroy(uri_thread_pool);
-    mongoc_cleanup();
+    database_reset;
     pointer_reset(data);
   } 
  
@@ -461,18 +459,14 @@ int main(int parameters_count, char* parameters[])
     if (create_server(1) == 0)
     {
       color_print("Could not start the server","red");
-      mongoc_client_destroy(database_client);
-      mongoc_client_pool_destroy(database_client_thread_pool);
-      mongoc_uri_destroy(uri_thread_pool);
-      mongoc_cleanup();
+      database_reset;
       exit(0);
     }
   } 
 
+  database_reset;
   pointer_reset(data);
-  mongoc_client_destroy(database_client);
-  mongoc_client_pool_destroy(database_client_thread_pool);
-  mongoc_uri_destroy(uri_thread_pool);
-  mongoc_cleanup();
   return 0; 
+
+  #undef database_reset
 }
