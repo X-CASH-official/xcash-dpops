@@ -48,6 +48,7 @@ int main(int parameters_count, char* parameters[])
 
   // iniltize the global variables
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  block_verifiers_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char)); 
   nodes_public_address_list_received_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   server_message = (char*)calloc(BUFFER_SIZE,sizeof(char));  
   current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
@@ -55,7 +56,7 @@ int main(int parameters_count, char* parameters[])
   current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || nodes_public_address_list_received_data == NULL || server_message == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
   {
     if (data != NULL)
     {
@@ -64,6 +65,10 @@ int main(int parameters_count, char* parameters[])
     if (xcash_wallet_public_address != NULL)
     {
       pointer_reset(xcash_wallet_public_address);
+    }
+    if (block_verifiers_IP_address != NULL)
+    {
+      pointer_reset(block_verifiers_IP_address);
     }
     if (nodes_public_address_list_received_data != NULL)
     {
@@ -443,14 +448,6 @@ int main(int parameters_count, char* parameters[])
   if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
     color_print("Could not start the current_block_height_timer_thread","red");
-    database_reset;
-    pointer_reset(data);
-  } 
-
-  // start the check_reserve_proofs_timer_thread
-  if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
-  {
-    color_print("Could not start the check_reserve_proofs_timer_thread","red");
     database_reset;
     pointer_reset(data);
   } 

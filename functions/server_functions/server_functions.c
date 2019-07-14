@@ -1779,28 +1779,28 @@ void sync_all_databases()
   {
     color_print("Could not sync the reserve proof database","red");
     pointer_reset(data);
-    return 0;
+    return;
   }
 
-  if (sync_reserve_bytes_database() == 0)
+  if (sync_reserve_bytes_database(data) == 0)
   {
     color_print("Could not sync the reserve bytes database","red");
     pointer_reset(data);
-    return 0;
+    return;
   }
 
   if (sync_delegates_database() == 0)
   {
     color_print("Could not sync the delegates database","red");
     pointer_reset(data);
-    return 0;
+    return;
   }
 
   if (sync_statistics_database() == 0)
   {
     color_print("Could not sync the statistics database","red");
     pointer_reset(data);
-    return 0;
+    return;
   }
 
   pointer_reset(data);

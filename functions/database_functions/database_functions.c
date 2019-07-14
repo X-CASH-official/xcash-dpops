@@ -494,6 +494,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
 
     message_copy1 = strstr(data2,settings) + strnlen(settings,BUFFER_SIZE);
     message_copy2 = strstr(message_copy1,"\"");
+    memset(result,0,strlen(result));
     memcpy(result,message_copy1,message_copy2 - message_copy1);
   }
   
