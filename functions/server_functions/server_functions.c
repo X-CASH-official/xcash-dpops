@@ -1759,6 +1759,58 @@ void check_if_databases_are_synced()
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sync_all_databases
+Description: Sync all of the databases. Used when a block verifier does not have any of the databases
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void sync_all_databases()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+
+  // get the previous block height
+  sscanf(current_block_height, "%zu", &count);
+  count--;
+  sprintf(data,"%zu",count);
+
+  if (sync_reserve_proofs_database() == 0)
+  {
+    color_print("Could not sync the reserve proof database","red");
+    pointer_reset(data);
+    return 0;
+  }
+
+  if (sync_reserve_bytes_database() == 0)
+  {
+    color_print("Could not sync the reserve bytes database","red");
+    pointer_reset(data);
+    return 0;
+  }
+
+  if (sync_delegates_database() == 0)
+  {
+    color_print("Could not sync the delegates database","red");
+    pointer_reset(data);
+    return 0;
+  }
+
+  if (sync_statistics_database() == 0)
+  {
+    color_print("Could not sync the statistics database","red");
+    pointer_reset(data);
+    return 0;
+  }
+
+  pointer_reset(data);
+  return;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: calculate_main_nodes_roles
 Description: Calculates the main nodes roles for the round
 Return: 0 if an error has occured, 1 if successfull

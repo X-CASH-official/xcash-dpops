@@ -407,6 +407,8 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
+  start:
+
   // get the block verifiers IP address
   memset(data,0,strlen(data));
   memcpy(data,"{\"public_address\":\"",19);
@@ -417,6 +419,14 @@ int main(int parameters_count, char* parameters[])
     color_print("Could not get the block verifiers IP address","red");
     database_reset;
     pointer_reset(data);
+  }
+
+  // check if the block verifier has any of the databases
+  if (memcmp(block_verifiers_IP_address,"",1) == 0)
+  {
+    // sync all of the databases
+    sync_all_databases();
+    goto start;
   }
 
   // check if the block verifier is a network data node
