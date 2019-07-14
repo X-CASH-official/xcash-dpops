@@ -4372,7 +4372,7 @@ int create_server(const int MESSAGE_SETTINGS)
     memcpy(string+18,buffer2,strnlen(buffer2,BUFFER_SIZE));
     color_print(string,"green");
 
-    printf("Waiting for a connection...\n");
+    printf("Waiting for a connection...\n\n");
   }
 
   // set the maximum simultaneous connections

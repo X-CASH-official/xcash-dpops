@@ -184,10 +184,10 @@ int main(int parameters_count, char* parameters[])
   }
 
   // add the network_data_nodes
-  memcpy(network_data_nodes_list.network_data_nodes_public_address[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
-  memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],"10.10.10.1",10);
-  memcpy(network_data_nodes_list.network_data_nodes_public_address[1],"XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B",XCASH_WALLET_LENGTH);
-  memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],"10.10.10.2",10);
+  memcpy(network_data_nodes_list.network_data_nodes_public_address[0],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],NETWORK_DATA_NODE_1_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_1_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  memcpy(network_data_nodes_list.network_data_nodes_public_address[1],NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],NETWORK_DATA_NODE_2_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_2_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
 
   // initialize the round_part_backup_node_data struct
   current_round_part_backup_node_data.current_round_part_4_backup_node = (char*)calloc(2,sizeof(char));
@@ -380,7 +380,7 @@ int main(int parameters_count, char* parameters[])
   color_print("X-CASH Proof Of Stake, Version 1.0.0\n","green");
 
   // get the wallets public address
-  printf("Getting the public address\n\n");
+  printf("Getting the public address\n");
   if (get_public_address(0) == 1)
   {  
     // print the public address
