@@ -191,17 +191,17 @@ struct blockchain_data {
 };
 
 struct invalid_reserve_proofs {  
-    char* block_verifier_public_address[100]; // The block verifiers public address that added the reserve proof
-    char* public_address[100]; // The public address that created the reserve proof
-    char* reserve_proof[100]; // The reserve proof
+    char* block_verifier_public_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers public address that added the reserve proof
+    char* public_address[BLOCK_VERIFIERS_AMOUNT]; // The public address that created the reserve proof
+    char* reserve_proof[BLOCK_VERIFIERS_AMOUNT]; // The reserve proof
     int count; // The amount of reserve proofs in the invalid_reserve_proofs struct
 };
 
 // database struct
 struct database_document_fields {
     size_t count; // The amount of items in the database_document_fields struct
-    char* item[100]; // The item
-    char* value[100]; // The value
+    char* item[DATABASE_ARRAY_COUNT]; // The item
+    char* value[DATABASE_ARRAY_COUNT]; // The value
 };
 
 struct database_multiple_documents_fields {

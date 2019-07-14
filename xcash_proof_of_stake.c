@@ -452,6 +452,14 @@ int main(int parameters_count, char* parameters[])
     pointer_reset(data);
   } 
 
+  // start the check_reserve_proofs_timer_thread
+  if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
+  {
+    color_print("Could not start the check_reserve_proofs_timer_thread","red");
+    database_reset;
+    pointer_reset(data);
+  } 
+
   // start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
