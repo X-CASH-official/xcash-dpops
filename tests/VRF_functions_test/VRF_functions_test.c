@@ -12,7 +12,6 @@
 #include "crypto_vrf.h"
 #include "VRF_functions.h"
 
-#include "define_macros_test.h"
 #include "variables_test.h"
 #include "VRF_functions_test.h"
 #include "sha512EL.h"

@@ -58,6 +58,9 @@ Using define statements instead of constants for increased efficiency
 #define BLOCK_VERIFIERS_NAME_TOTAL_LENGTH 100 // The maximum length of the block verifiers name
 #define TOTAL_CONNECTION_TIME_SETTINGS 30 // The total time a client is given to connect to the server and send data
 #define TOTAL_CONNECTION_TIME_SETTINGS_MAIN_NODE_TIMEOUT 10 // The total time given from when the consensus node sends to the node who the main node is, to the time the main node sends the data to the node.
+
+// Test
+#define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"
 #define INVALID_PARAMETERS_ERROR_MESSAGE \
 "Parameters\n" \
 "--test - Run the test to make sure the program is compatible with your system\n"

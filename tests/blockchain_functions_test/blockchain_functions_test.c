@@ -11,7 +11,6 @@
 
 #include "blockchain_functions.h"
 
-#include "define_macros_test.h"
 #include "variables_test.h"
 #include "blockchain_functions_test.h"
 

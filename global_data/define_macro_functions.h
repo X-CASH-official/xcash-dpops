@@ -16,7 +16,6 @@ Description: Prints a string in a color
 Parameters:
   string - char*
   color - char*
-Return: Writes the correct code
 
 Color available values:
   red = Error
@@ -63,11 +62,27 @@ else \
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: print_start_message
+Parameters:
+  string - the message
+Description: Prints the start message of a section
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define print_start_message(string) \
+printf("\n"); \
+color_print(TEST_OUTLINE,"blue"); \
+printf("\033[1;34m%s\033[0m\n",string); \
+color_print(TEST_OUTLINE,"blue");
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: pointer_reset
 Description: Reset the memory used by the pointer, and sets the pointer to NULL to avoid a dangling pointer
 Parameters:
   pointer - Any pointer type
-Return: Writes the correct code
 -----------------------------------------------------------------------------------------------------------
 */
 

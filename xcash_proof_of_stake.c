@@ -430,6 +430,7 @@ int main(int parameters_count, char* parameters[])
   if (memcmp(block_verifiers_IP_address,"",1) == 0)
   {
     // check if all of the databases are synced
+    color_print("Could not find your IP address in the database. This is because your database is out of sync, or you have not registered as a delegate.\nIf this process loops a few times, then make sure you have registred by visting the delegates website.","red");
     check_if_databases_are_synced();
     goto start;
   }
@@ -444,6 +445,8 @@ int main(int parameters_count, char* parameters[])
     }
   }
 
+  print_start_message("Starting all of the threads");
+
   // start the block height timer thread
   if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
@@ -451,6 +454,8 @@ int main(int parameters_count, char* parameters[])
     database_reset;
     pointer_reset(data);
   } 
+
+  color_print("Started the current block height timer thread","green");
 
   // start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
@@ -460,6 +465,8 @@ int main(int parameters_count, char* parameters[])
     pointer_reset(data);
   } 
 
+  color_print("Started the check reserve proofs timer thread","green");
+
   // start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
@@ -467,6 +474,8 @@ int main(int parameters_count, char* parameters[])
     database_reset;
     pointer_reset(data);
   } 
+
+  color_print("Started the check delegates online status timer thread","green");
  
   // start the server
   for (;;)

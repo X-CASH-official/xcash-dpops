@@ -27,7 +27,6 @@
 #include "VRF_functions.h"
 #include "sha512EL.h"
 
-#include "define_macros_test.h"
 #include "variables_test.h"
 #include "network_functions_test.h"
 #include "reset_variables_allocated_on_the_heap_test.h"

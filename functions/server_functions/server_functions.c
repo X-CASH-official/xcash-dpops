@@ -4245,6 +4245,8 @@ int create_server(const int MESSAGE_SETTINGS)
     _exit(0); \
   }  
 
+  print_start_message("Starting all of the threads");
+
   // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
   signal(SIGCHLD, SIG_IGN);  
 

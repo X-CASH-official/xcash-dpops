@@ -10,7 +10,6 @@
 #include "file_functions.h"
 #include "thread_functions.h"
 
-#include "define_macros_test.h"
 #include "variables_test.h"
 #include "file_functions_test.h"
 

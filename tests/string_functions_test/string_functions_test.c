@@ -8,7 +8,6 @@
 
 #include "string_functions.h"
 
-#include "define_macros_test.h"
 #include "variables_test.h"
 #include "string_functions_test.h"
 
