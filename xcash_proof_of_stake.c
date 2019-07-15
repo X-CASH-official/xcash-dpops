@@ -429,8 +429,8 @@ int main(int parameters_count, char* parameters[])
   // check if the block verifier has any of the databases
   if (memcmp(block_verifiers_IP_address,"",1) == 0)
   {
-    // sync all of the databases
-    sync_all_databases();
+    // check if all of the databases are synced
+    check_if_databases_are_synced();
     goto start;
   }
 
