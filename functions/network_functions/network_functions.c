@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <time.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -1033,6 +1034,8 @@ int sync_check_reserve_proofs_database()
     exit(0);
   }
 
+  print_start_message("Checking if the reserve proofs database is synced");
+
   // reset the block_verifiers_IP_addresses 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -1042,28 +1045,37 @@ int sync_check_reserve_proofs_database()
   synced_block_verifiers_IP_addresses.vote_settings_true = 0;
   synced_block_verifiers_IP_addresses.vote_settings_false = 0;
 
-  color_print("Connecting to a random network data node to get a list of current block verifiers","green");
-
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}",89);
 
   start:
+  printf("Connecting to a random network data node to get a list of current block verifiers\n");
 
   // send the message to a random network data node
-  count = (int)((rand() % (NETWORK_DATA_NODES_AMOUNT - 1 + 1)) + 1);
-  if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+  do
   {
-    goto start;
-  }
+    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+  } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+  
+  // get the current time
+  time(&current_date_and_time);
+  current_UTC_date_and_time = gmtime(&current_date_and_time);
+
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"Connecting to network data node ",32);
+  memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
+  memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
+  printf("%s\n",data3);
   memset(data3,0,strlen(data3));
 
   if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
     memcpy(data2,"Could not receive data from network data node ",46);
-    memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-    memcpy(data2,"\nConnecting to a different network data node",44);
+    memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     color_print(data2,"red");
     memset(data2,0,strlen(data2));
+    printf("Connecting to a different network data node\n\n");
     goto start;
   }
 
@@ -1402,28 +1414,31 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
   synced_block_verifiers_IP_addresses.vote_settings_true = 0;
   synced_block_verifiers_IP_addresses.vote_settings_false = 0;
 
-  color_print("Connecting to a random network data node to get a list of current block verifiers","green");
-
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}",89);
 
   start:
+  printf("Connecting to a random network data node to get a list of current block verifiers\n");
 
   // send the message to a random network data node
-  count = (int)((rand() % (NETWORK_DATA_NODES_AMOUNT - 1 + 1)) + 1);
-  if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+  do
   {
-    goto start;
-  }
+    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+  } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"Connecting to network data node ",32);
+  memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST \n",74);
+  printf("%s",data3);
   memset(data3,0,strlen(data3));
 
   if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
     memcpy(data2,"Could not receive data from network data node ",46);
-    memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-    memcpy(data2,"\nConnecting to a different network data node",44);
+    memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     color_print(data2,"red");
     memset(data2,0,strlen(data2));
+    printf("Connecting to a different network data node\n\n");
     goto start;
   }
 
@@ -1767,28 +1782,31 @@ int sync_check_delegates_database()
   synced_block_verifiers_IP_addresses.vote_settings_true = 0;
   synced_block_verifiers_IP_addresses.vote_settings_false = 0;
 
-  color_print("Connecting to a random network data node to get a list of current block verifiers","green");
-
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}",89);
 
   start:
+  printf("Connecting to a random network data node to get a list of current block verifiers\n");
 
   // send the message to a random network data node
-  count = (int)((rand() % (NETWORK_DATA_NODES_AMOUNT - 1 + 1)) + 1);
-  if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+  do
   {
-    goto start;
-  }
+    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+  } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"Connecting to network data node ",32);
+  memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST \n",74);
+  printf("%s",data3);
   memset(data3,0,strlen(data3));
 
   if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
     memcpy(data2,"Could not receive data from network data node ",46);
-    memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-    memcpy(data2,"\nConnecting to a different network data node",44);
+    memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     color_print(data2,"red");
     memset(data2,0,strlen(data2));
+    printf("Connecting to a different network data node\n\n");
     goto start;
   }
 
@@ -2054,6 +2072,8 @@ int sync_check_statistics_database()
     exit(0);
   }
 
+  print_start_message("Checking if the statistics database is synced");
+
   // reset the block_verifiers_IP_addresses 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -2061,30 +2081,30 @@ int sync_check_statistics_database()
     memset(synced_block_verifiers_IP_addresses.vote_settings[count],0,strlen(synced_block_verifiers_IP_addresses.vote_settings[count]));
   }
   synced_block_verifiers_IP_addresses.vote_settings_true = 0;
-  synced_block_verifiers_IP_addresses.vote_settings_false = 0;
-
-  color_print("Connecting to a random network data node to get a list of current block verifiers","green");
-
-  // create the message
-  memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}",89);
+  synced_block_verifiers_IP_addresses.vote_settings_false = 0; 
 
   start:
+  printf("Connecting to a random network data node to get a list of current block verifiers\n");
 
   // send the message to a random network data node
-  count = (int)((rand() % (NETWORK_DATA_NODES_AMOUNT - 1 + 1)) + 1);
-  if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+  do
   {
-    goto start;
-  }
+    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+  } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"Connecting to network data node ",32);
+  memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST \n",74);
+  printf("%s",data3);
   memset(data3,0,strlen(data3));
 
   if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
     memcpy(data2,"Could not receive data from network data node ",46);
-    memcpy(data2,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-    memcpy(data2,"\nConnecting to a different network data node",44);
+    memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     color_print(data2,"red");
     memset(data2,0,strlen(data2));
+    printf("Connecting to a different network data node\n\n");
     goto start;
   }
 

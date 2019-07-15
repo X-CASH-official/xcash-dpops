@@ -386,7 +386,6 @@ int main(int parameters_count, char* parameters[])
     // print the public address
     memcpy(data,"Successfully received the public address:",41);
     memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-    memcpy(data+41+XCASH_WALLET_LENGTH,"\n",1);
     color_print(data,"green");
   }
   else
@@ -427,10 +426,10 @@ int main(int parameters_count, char* parameters[])
   }
 
   // check if the block verifier has any of the databases
-  if (memcmp(block_verifiers_IP_address,"",1) == 0)
+  if (strncmp(block_verifiers_IP_address,"",1) == 0)
   {
     // check if all of the databases are synced
-    color_print("Could not find your IP address in the database. This is because your database is out of sync, or you have not registered as a delegate.\nIf this process loops a few times, then make sure you have registred by visting the delegates website.","red");
+    color_print("\nCould not find your IP address in the database. This is because your database is out of sync, or you have not registered as a delegate.\nIf this process loops a few times, then make sure you have registered by visting the delegates website.","red");
     check_if_databases_are_synced();
     goto start;
   }
@@ -439,7 +438,7 @@ int main(int parameters_count, char* parameters[])
   network_data_node_settings = 0;
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
-    if (strncmp(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_public_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+    if (strncmp(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       network_data_node_settings = 1;
     }

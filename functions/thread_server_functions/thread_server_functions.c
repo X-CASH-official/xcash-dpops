@@ -43,8 +43,6 @@ void* current_block_height_timer_thread()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time; 
   size_t count;
 
   // check if the memory needed was allocated on the heap successfully
@@ -59,8 +57,7 @@ void* current_block_height_timer_thread()
     start:
     // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
     usleep(200000);
-    time(&current_date_and_time);
-    current_UTC_date_and_time = gmtime(&current_date_and_time);
+    get_current_UTC_time;
     if (current_UTC_date_and_time->tm_min % 5 == 0)
     {
       // try for the next 5 seconds and if not then a new block is not going to be added to the network
@@ -100,8 +97,6 @@ void* check_reserve_proofs_timer_thread()
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message = (char*)calloc(15728640,sizeof(char)); // 15 MB
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time; 
   int count;
   int count2;
   size_t block_verifiers_score;
@@ -158,8 +153,7 @@ void* check_reserve_proofs_timer_thread()
 
   for (;;)
   {
-    time(&current_date_and_time);
-    current_UTC_date_and_time = gmtime(&current_date_and_time);
+    get_current_UTC_time;
     if (current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
     {
       // send the invalid_reserve_proofs struct to all block verifiers
@@ -329,8 +323,6 @@ void* check_delegates_online_status_timer_thread()
   // Variables
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time; 
   size_t count;
   size_t count2;
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -362,15 +354,14 @@ void* check_delegates_online_status_timer_thread()
   {
     for (count2 = 0; count2 < 23; count2++)
     {
-      database_multiple_documents_fields.item[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-      database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-    }    
-
-    if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
-    {
-      color_print("Could not allocate the memory needed on the heap","red");
-      exit(0);
-    }
+      database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+      database_multiple_documents_fields.value[count][count2] = (char*)calloc(100,sizeof(char));
+      if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
+      {
+        color_print("Could not allocate the memory needed on the heap","red");
+        exit(0);
+      }
+    } 
   } 
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
@@ -379,8 +370,7 @@ void* check_delegates_online_status_timer_thread()
 
   for (;;)
   {
-    time(&current_date_and_time);
-    current_UTC_date_and_time = gmtime(&current_date_and_time);
+    get_current_UTC_time;
     if (current_UTC_date_and_time->tm_min % 5 == 0)
     {
       // get the top 150 delegates by total votes

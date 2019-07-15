@@ -32,7 +32,7 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_ARRAY_COUNT 150 // The maximum amount of parsed item and value from the database
 
 // network data nodes
-#define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
+#define NETWORK_DATA_NODES_AMOUNT 2 // The amount of network data nodes
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP" // the first network data nodes public address
 #define NETWORK_DATA_NODE_1_IP_ADDRESS "10.10.10.1" // the first network data nodes IP address
 #define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS "XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B" // the second network data nodes public address

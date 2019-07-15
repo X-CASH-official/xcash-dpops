@@ -16,6 +16,7 @@ Description: Prints a string in a color
 Parameters:
   string - char*
   color - char*
+Return: Writes the correct code
 
 Color available values:
   red = Error
@@ -79,10 +80,24 @@ color_print(TEST_OUTLINE,"blue");
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_current_UTC_time
+Description: Gets the current UTC time
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define get_current_UTC_time \
+time(&current_date_and_time); \
+current_UTC_date_and_time = gmtime(&current_date_and_time);
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: pointer_reset
 Description: Reset the memory used by the pointer, and sets the pointer to NULL to avoid a dangling pointer
 Parameters:
   pointer - Any pointer type
+Return: Writes the correct code
 -----------------------------------------------------------------------------------------------------------
 */
 
