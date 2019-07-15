@@ -168,7 +168,7 @@ void* check_reserve_proofs_timer_thread()
         count += 1;
       }
       memcpy(message+count-1,"\",\r\n \"reserve_proof\": \"",23);
-      count += 23;
+      count += 17;
       for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
       {
         memcpy(message+count,invalid_reserve_proofs.reserve_proof[count],strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF));
@@ -352,7 +352,7 @@ void* check_delegates_online_status_timer_thread()
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 150; count++)
   {
-    for (count2 = 0; count2 < 23; count2++)
+    for (count2 = 0; count2 < 17; count2++)
     {
       database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
       database_multiple_documents_fields.value[count][count2] = (char*)calloc(100,sizeof(char));
@@ -407,7 +407,7 @@ void* check_delegates_online_status_timer_thread()
       // reset the database_multiple_documents_fields
       for (count = 0; count < 150; count++)
       {
-        for (count2 = 0; count2 < 23; count2++)
+        for (count2 = 0; count2 < 17; count2++)
         {
           memset(database_multiple_documents_fields.item[count][count2],0,strlen(database_multiple_documents_fields.item[count][count2]));
           memset(database_multiple_documents_fields.value[count][count2],0,strlen(database_multiple_documents_fields.value[count][count2]));

@@ -74,6 +74,9 @@ Description: Prints the start message of a section
 printf("\n"); \
 color_print(TEST_OUTLINE,"blue"); \
 printf("\033[1;34m%s\033[0m\n",string); \
+time(&current_date_and_time); \
+current_UTC_date_and_time = gmtime(&current_date_and_time); \
+printf("\033[1;34m%s\033[0m",asctime(current_UTC_date_and_time)); \
 color_print(TEST_OUTLINE,"blue");
 
 

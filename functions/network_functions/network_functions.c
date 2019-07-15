@@ -978,6 +978,312 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sync_all_block_verifiers_list
+Description: Sync the previous, current and next block verifiers from a network data node. This function is only run at startup, since after that the database is used to get the block verifiers list
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void sync_all_block_verifiers_list()
+{
+  // Variables
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
+  char* datacopy = data2; 
+  size_t count;
+  size_t count2;
+
+  // define macros
+  #define pointer_reset_all \
+  free(message); \
+  message = NULL; \
+  free(datacopy); \
+  datacopy = NULL; \
+  free(data3); \
+  data3 = NULL;
+  
+  #define SYNC_ALL_BLOCK_VERIFIERS_LIST(settings) \
+  color_print(settings,"red"); \
+  pointer_reset_all; \
+  return;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL || data2 == NULL || data3 == NULL)
+  {
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // reset the previous current and next block verifiers list
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(previous_block_verifiers_list.block_verifiers_name[count],0,strlen(previous_block_verifiers_list.block_verifiers_name[count]));
+    memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,strlen(previous_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,strlen(previous_block_verifiers_list.block_verifiers_IP_address[count]));
+    memset(current_block_verifiers_list.block_verifiers_name[count],0,strlen(current_block_verifiers_list.block_verifiers_name[count]));
+    memset(current_block_verifiers_list.block_verifiers_public_address[count],0,strlen(current_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,strlen(current_block_verifiers_list.block_verifiers_IP_address[count]));
+    memset(next_block_verifiers_list.block_verifiers_name[count],0,strlen(next_block_verifiers_list.block_verifiers_name[count]));
+    memset(next_block_verifiers_list.block_verifiers_public_address[count],0,strlen(next_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,strlen(next_block_verifiers_list.block_verifiers_IP_address[count]));
+  }
+
+  if (network_data_node_settings == 0)
+  {
+    print_start_message("Syncing the previous, current and next block verifiers directly from a network data node, to be able to update the database");
+
+    // create the message
+    memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\",\r\n}",103);
+
+    start:
+    printf("Connecting to a random network data node to get a list of previous, current and next block verifiers\n");
+
+    // send the message to a random network data node
+    do
+    {
+      count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+    } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+  
+    // get the current time
+    get_current_UTC_time;
+
+    memset(data3,0,strlen(data3));
+    memcpy(data3,"Connecting to network data node ",32);
+    memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",73);
+    memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
+    printf("%s\n",data3);
+    memset(data3,0,strlen(data3));
+
+    if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+    {
+      memcpy(data2,"Could not receive data from network data node ",46);
+      memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+      color_print(data2,"red");
+      memset(data2,0,strlen(data2));
+      printf("Connecting to a different network data node\n\n");
+      goto start;
+    }
+
+    if (verify_data(data3,0,0,0) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not verify data\nFunction: sync_all_block_verifiers_list");
+    }
+ 
+    // parse the message
+    memset(data2,0,strlen(data2));
+    if (parse_json_data(data3,"previous_block_verifiers_name_list",data2) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+    } 
+
+    // parse the previous_block_verifiers_name_list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(previous_block_verifiers_list.block_verifiers_name[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      data2 = strstr(data2,"|") + 1;
+    }
+
+    memset(data2,0,strlen(data2));
+    if (parse_json_data(data3,"previous_block_verifiers_public_address_list",data2) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+    } 
+
+    // parse the previous_block_verifiers_public_address_list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      data2 = strstr(data2,"|") + 1;
+    }
+
+    memset(data2,0,strlen(data2));
+    if (parse_json_data(data3,"previous_block_verifiers_IP_address_list",data2) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+    } 
+
+    // parse the previous_block_verifiers_IP_address_list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      data2 = strstr(data2,"|") + 1;
+    }
+
+    // parse the message
+    memset(data2,0,strlen(data2));
+    if (parse_json_data(data3,"current_block_verifiers_name_list",data2) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+    } 
+
+    // parse the current_block_verifiers_name_list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(current_block_verifiers_list.block_verifiers_name[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      data2 = strstr(data2,"|") + 1;
+    }
+
+    memset(data2,0,strlen(data2));
+    if (parse_json_data(data3,"current_block_verifiers_public_address_list",data2) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+    } 
+
+    // parse the current_block_verifiers_public_address_list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(current_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      data2 = strstr(data2,"|") + 1;
+    }
+
+    memset(data2,0,strlen(data2));
+    if (parse_json_data(data3,"current_block_verifiers_IP_address_list",data2) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+    } 
+
+    // parse the current_block_verifiers_IP_address_list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      data2 = strstr(data2,"|") + 1;
+    }
+
+    // parse the message
+    memset(data2,0,strlen(data2));
+    if (parse_json_data(data3,"next_block_verifiers_name_list",data2) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+    } 
+
+    // parse the next_block_verifiers_name_list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(next_block_verifiers_list.block_verifiers_name[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      data2 = strstr(data2,"|") + 1;
+    }
+
+    memset(data2,0,strlen(data2));
+    if (parse_json_data(data3,"next_block_verifiers_public_address_list",data2) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+    } 
+
+    // parse the next_block_verifiers_public_address_list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(next_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      data2 = strstr(data2,"|") + 1;
+    }
+
+    memset(data2,0,strlen(data2));
+    if (parse_json_data(data3,"next_block_verifiers_IP_address_list",data2) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+    } 
+
+    // parse the next_block_verifiers_IP_address_list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      data2 = strstr(data2,"|") + 1;
+    }
+
+    color_print("The previous, current and next block verifiers have been synced from a network data node","green");
+  }
+  else
+  {
+    print_start_message("Loading the previous, current and next block verifiers from the database");
+
+    // initialize the database_multiple_documents_fields struct 
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      for (count2 = 0; count2 < 19; count2++)
+      {
+        database_multiple_documents_fields.item[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+        database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+        if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
+        {
+          color_print("Could not allocate the memory needed on the heap","red");
+          exit(0);
+        }
+      }       
+    } 
+    database_multiple_documents_fields.document_count = 0;
+    database_multiple_documents_fields.database_fields_count = 0;
+
+    // get the top 100 delegates by total votes
+    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,"delegates","",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_AMOUNT,1,"total_vote_count",0) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round\nFunction: sync_all_block_verifiers_list");
+    }
+
+    // copy the database_multiple_documents_fields to the next, current and previous block verifiers list
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      for (count2 = 0; count2 < 19; count2++)
+      {
+        if (memcmp(database_multiple_documents_fields.item[count][count2],"delegate_name",13) == 0)
+        {
+          memcpy(previous_block_verifiers_list.block_verifiers_name[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+          memcpy(current_block_verifiers_list.block_verifiers_name[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+          memcpy(next_block_verifiers_list.block_verifiers_name[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+        }
+        if (memcmp(database_multiple_documents_fields.item[count][count2],"public_address",14) == 0)
+        {
+          memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+          memcpy(current_block_verifiers_list.block_verifiers_public_address[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+          memcpy(next_block_verifiers_list.block_verifiers_public_address[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+        }
+        if (memcmp(database_multiple_documents_fields.item[count][count2],"IP_address",10) == 0)
+        {
+          memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+          memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+          memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],database_multiple_documents_fields.value[count][count2],strnlen(database_multiple_documents_fields.value[count][count2],BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1));
+        }
+      }
+    }
+
+    // reset the database_multiple_documents_fields
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      for (count2 = 0; count2 < 19; count2++)
+      {
+        pointer_reset(database_multiple_documents_fields.item[count][count2]);
+        pointer_reset(database_multiple_documents_fields.value[count][count2]);
+      }
+    }
+
+    color_print("The previous, current and next block verifiers have been loaded from the database","green");
+  }
+  
+  pointer_reset_all;
+  return;
+
+  #undef pointer_reset_all
+  #undef SYNC_ALL_BLOCK_VERIFIERS_LIST  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: sync_check_reserve_proofs_database
 Description: Checks if the block verifier needs to sync the reserve proofs database
 Return: 0 if an error has occured, 1 if successfull
