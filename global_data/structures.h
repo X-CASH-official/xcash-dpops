@@ -190,6 +190,12 @@ struct blockchain_data {
     char* transactions[MAXIMUM_TRANSACATIONS_PER_BLOCK]; // All of the transactions in the block.
 };
 
+struct error_message {
+    char* function[DATABASE_ARRAY_COUNT]; // The error function
+    char* data[DATABASE_ARRAY_COUNT]; // The error message
+    int total; // the amount of error messages
+};
+
 struct invalid_reserve_proofs {  
     char* block_verifier_public_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers public address that added the reserve proof
     char* public_address[BLOCK_VERIFIERS_AMOUNT]; // The public address that created the reserve proof

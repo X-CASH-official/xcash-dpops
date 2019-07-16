@@ -70,12 +70,41 @@ Description: Prints the start message of a section
 -----------------------------------------------------------------------------------------------------------
 */
 
+#define print_error_message() \
+printf("\n\n"); \
+color_print(TEST_OUTLINE,"red"); \
+printf("\033[1;31m%s: Error\033[0m\n",error_message.function[0]); \
+get_current_UTC_time; \
+printf("\033[1;31m%s\033[0m",asctime(current_UTC_date_and_time)); \
+color_print(TEST_OUTLINE,"red"); \
+printf("\033[1;31mFunction Calls:\033[0m\n"); \
+for (error_message_count = 0; error_message_count < error_message.total; error_message_count++) \
+{ \
+  printf("\033[1;31m#%d %s: %s\033[0m\n",error_message_count+1,error_message.function[error_message_count],error_message.data[error_message_count]); \
+} \
+for (error_message_count = 0; error_message_count < error_message.total; error_message_count++) \
+{ \
+  memset(error_message.function[error_message_count],0,strlen(error_message.function[error_message_count])); \
+  memset(error_message.data[error_message_count],0,strlen(error_message.data[error_message_count])); \
+} \
+error_message.total = 0;
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: print_start_message
+Parameters:
+  string - the message
+Description: Prints the start message of a section
+-----------------------------------------------------------------------------------------------------------
+*/
+
 #define print_start_message(string) \
 printf("\n"); \
 color_print(TEST_OUTLINE,"blue"); \
 printf("\033[1;34m%s\033[0m\n",string); \
-time(&current_date_and_time); \
-current_UTC_date_and_time = gmtime(&current_date_and_time); \
+get_current_UTC_time; \
 printf("\033[1;34m%s\033[0m",asctime(current_UTC_date_and_time)); \
 color_print(TEST_OUTLINE,"blue");
 

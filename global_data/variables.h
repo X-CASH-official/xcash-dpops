@@ -33,6 +33,7 @@ struct current_round_part_backup_node_data current_round_part_backup_node_data; 
 struct current_round_part_vote_data current_round_part_vote_data; // The vote data for the current part of the round
 struct VRF_data VRF_data; // The list of all of the VRF data to send to the block producer.
 struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
+struct error_message error_message; // holds all of the error messages and the functions for an error.
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 char* nodes_public_address_list_received_data; // The list of enabled nodes public address that have sent data, to prevent multiple votes (node1|node2|)
 char* server_message; // The message the server should run. It will ignore any other messages.
@@ -40,6 +41,7 @@ char* current_round_part; // The current round part (1-4)
 char* current_round_part_backup_node; // The current main node in the current round part (0-5)
 
 char* current_block_height; // The current block height
+int error_message_count; // The error message count
 int reserve_proofs_settings; // 1 if reserve proofs can be added to the database, 0 if not
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
 

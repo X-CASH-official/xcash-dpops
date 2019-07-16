@@ -328,14 +328,22 @@ int main(int parameters_count, char* parameters[])
     }
   }
 
-   // initialize the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
-   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-   {
-     invalid_reserve_proofs.block_verifier_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-     invalid_reserve_proofs.public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-     invalid_reserve_proofs.reserve_proof[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char)); 
-   }
-   invalid_reserve_proofs.count = 0;
+  // initialize the error_message struct
+  for (count = 0; count < DATABASE_ARRAY_COUNT; count++)
+  {
+    error_message.function[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    error_message.data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  }
+  error_message.total = 0;
+
+  // initialize the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    invalid_reserve_proofs.block_verifier_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.reserve_proof[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char)); 
+  }
+  invalid_reserve_proofs.count = 0;
 
   // initialize the database connection
   mongoc_init();
