@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <mongoc/mongoc.h>
+#include <bson/bson.h>
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
 #include "structures.h"
+#include "variables.h"
 
 #include "string_functions.h"
 
@@ -41,7 +44,10 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
   // check if the memory needed was allocated on the heap successfully
   if (str == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"parse_json_data",15);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -264,7 +270,10 @@ size_t string_count(const char* DATA, const char* STRING)
   // check if the memory needed was allocated on the heap successfully
   if (datacopy1 == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"string_count",12);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -314,7 +323,10 @@ int string_replace(char *data, const char* STR1, const char* STR2)
     // check if the memory needed was allocated on the heap successfully
     if (datacopy == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"string_replace",14);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     } 
 
@@ -402,7 +414,10 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"parse_reserve_bytes_data",15);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -453,7 +468,10 @@ int random_string(char *result, const size_t LENGTH)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"random_string",13);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
   

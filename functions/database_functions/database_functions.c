@@ -241,7 +241,10 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"insert_multiple_documents_into_collection_json",46);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -445,7 +448,10 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     {
       pointer_reset(settings);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -656,7 +662,10 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"read_document_all_fields_from_collection",40);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -767,7 +776,10 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"read_multiple_documents_all_fields_from_collection",50);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -885,7 +897,10 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   // check if the memory needed was allocated on the heap successfully
   if (data2 == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"update_document_from_collection",31);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -980,7 +995,10 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   // check if the memory needed was allocated on the heap successfully
   if (data2 == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"update_all_documents_from_collection",36);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -1453,7 +1471,10 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_database_data_hash",22);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -1465,7 +1486,10 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     // check if the memory needed was allocated on the heap successfully
     if (reserve_proofs_data_hash[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"get_database_data_hash",22);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -1478,7 +1502,10 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     // check if the memory needed was allocated on the heap successfully
     if (reserve_bytes_data_hash[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"get_database_data_hash",22);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -1751,7 +1778,10 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
     {
       pointer_reset(IP_address);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"update_delegates_online_status",30);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message; 
     exit(0);
   } 
 

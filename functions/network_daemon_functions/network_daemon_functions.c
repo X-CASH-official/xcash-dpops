@@ -60,7 +60,10 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
     {
       pointer_reset(data);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_block_template",18);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -113,7 +116,10 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   // check if the memory needed was allocated on the heap successfully
   if (message == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"submit_block_template",21);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -180,7 +186,10 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
     {
       pointer_reset(data);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_block_settings",18);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
   
@@ -258,7 +267,10 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
     {
       pointer_reset(data);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_block_reserve_byte_data_hash",32);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
   
@@ -334,7 +346,10 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
     {
       pointer_reset(data);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"verify_blockchain_network_transactions",38);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -408,7 +423,10 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_current_block_height",24);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -453,7 +471,10 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_previous_block_hash",23);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 

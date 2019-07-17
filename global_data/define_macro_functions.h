@@ -63,14 +63,12 @@ else \
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: print_start_message
-Parameters:
-  string - the message
-Description: Prints the start message of a section
+Name: print_error_message
+Description: Prints all of the functions and error messages
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define print_error_message() \
+#define print_error_message \
 printf("\n\n"); \
 color_print(TEST_OUTLINE,"red"); \
 printf("\033[1;31m%s: Error\033[0m\n",error_message.function[0]); \

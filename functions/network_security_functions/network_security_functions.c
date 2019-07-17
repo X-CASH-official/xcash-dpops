@@ -80,7 +80,10 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     {
       pointer_reset(string);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sign_data",9);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -272,7 +275,10 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     {
       pointer_reset(string);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"verify_data",11);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 

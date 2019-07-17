@@ -43,7 +43,10 @@ int get_public_address(const int MESSAGE_SETTINGS)
 
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_public_address",18);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -115,7 +118,10 @@ int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SE
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sign_network_block_string",25);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -185,7 +191,10 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"data_verify",11);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -251,7 +260,10 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
 
   if (data == NULL || data2 == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"check_reserve_proofs",20);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 

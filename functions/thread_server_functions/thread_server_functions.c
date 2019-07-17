@@ -43,12 +43,24 @@ void* current_block_height_timer_thread()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
+  if (data == NULL || data2 == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    memcpy(error_message.function[error_message.total],"current_block_height_timer_thread",33);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -70,7 +82,19 @@ void* current_block_height_timer_thread()
           memset(current_block_height,0,strlen(current_block_height));
           memcpy(current_block_height,data,strnlen(data,BUFFER_SIZE));
 
-          start_new_round();
+          memcpy(data2,"Network Block ",14);
+          memcpy(data2+14,data,strnlen(data,BUFFER_SIZE));
+
+          print_start_message(data2);
+
+          if (start_new_round() == 0)
+          {
+            print_error_message;
+          }
+          else
+          {
+            printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",data);
+          }          
           goto start;
         }
         sleep(1);
@@ -127,7 +151,10 @@ void* check_reserve_proofs_timer_thread()
     {
       pointer_reset(message);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -142,7 +169,10 @@ void* check_reserve_proofs_timer_thread()
 
     if (database_multiple_documents_fields.item[0][count] == NULL || database_multiple_documents_fields.value[0][count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   } 
@@ -182,7 +212,10 @@ void* check_reserve_proofs_timer_thread()
       memset(data,0,strlen(data));
       if (sign_data(message,0) == 0)
       { 
-        color_print("Could not sign_data. This means the reserve proofs database might be unsynced, and you might have to sync the database.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
+        memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
+        memcpy(error_message.data[error_message.total],"Could not sign_data. This means the reserve proofs database might be unsynced, and you might have to sync the database.",119);
+        error_message.total++;
+        print_error_message;
       }
 
       // send the message to all block verifiers
@@ -232,7 +265,9 @@ void* check_reserve_proofs_timer_thread()
         memset(data2,0,strlen(data2));
         if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifiers_score",data2,0) == 0)
         {
-          color_print("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync the database.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
+          memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
+          memcpy(error_message.data[error_message.total],"Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync the database.",135);
+          error_message.total++;
         }
         sscanf(data2, "%zu", &block_verifiers_score);
         block_verifiers_score++;
@@ -244,7 +279,10 @@ void* check_reserve_proofs_timer_thread()
 
         if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
         {
-          color_print("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync the database.\nFunction: check_reserve_proofs_timer_thread\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS","red");
+          memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
+          memcpy(error_message.data[error_message.total],"Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync the database.",135);
+          error_message.total++;
+          print_error_message;
         }
       }
       
@@ -345,20 +383,26 @@ void* check_delegates_online_status_timer_thread()
     {
       pointer_reset(data);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 150; count++)
   {
-    for (count2 = 0; count2 < 17; count2++)
+    for (count2 = 0; count2 < 19; count2++)
     {
       database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
       database_multiple_documents_fields.value[count][count2] = (char*)calloc(100,sizeof(char));
       if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
       {
-        color_print("Could not allocate the memory needed on the heap","red");
+        memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
         exit(0);
       }
     } 
@@ -376,11 +420,14 @@ void* check_delegates_online_status_timer_thread()
       // get the top 150 delegates by total votes
       if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,"delegates","",&database_multiple_documents_fields,1,150,1,"total_vote_count",0) == 0)
       {
-        color_print("Could not get the top 150 delegates to check their online status. This means the delegates database might be unsynced, and you might have to sync the database.\nFunction: check_delegates_online_status_timer_thread","red");
-      }
+        memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
+        memcpy(error_message.data[error_message.total],"Could not get the top 150 delegates to check their online status. This means the delegates database might be unsynced, and you might have to sync the database.",159);
+        error_message.total++;
+        print_error_message;
+      }     
 
       // check the online status of the top 150 delegates
-      for (count = 0; count < 150; count++)
+      for (count = 0; count < database_multiple_documents_fields.document_count; count++)
       {
          // create the message
          memset(message,0,strnlen(message,BUFFER_SIZE));
@@ -400,14 +447,17 @@ void* check_delegates_online_status_timer_thread()
          }   
          if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
          {
-           color_print("Could not update a delegates online online status. This means the delegates database might be unsynced, and you might have to sync the database.\nFunction: check_delegates_online_status_timer_thread","red");
+           memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
+           memcpy(error_message.data[error_message.total],"Could not update a delegates online online status. This means the delegates database might be unsynced, and you might have to sync the database.",144);
+           error_message.total++;
+           print_error_message;
          }     
        }
 
       // reset the database_multiple_documents_fields
       for (count = 0; count < 150; count++)
       {
-        for (count2 = 0; count2 < 17; count2++)
+        for (count2 = 0; count2 < 19; count2++)
         {
           memset(database_multiple_documents_fields.item[count][count2],0,strlen(database_multiple_documents_fields.item[count][count2]));
           memset(database_multiple_documents_fields.value[count][count2],0,strlen(database_multiple_documents_fields.value[count][count2]));

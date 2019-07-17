@@ -90,7 +90,10 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     {
       pointer_reset(message);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"send_http_request",17);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -148,7 +151,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   { 
     if (MESSAGE_SETTINGS == 1)
     {
-      color_print("Error creating socket for sending a post request","red");
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
+      error_message.total++;
     }
     pointer_reset_all;
     return 0;
@@ -162,7 +167,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      color_print("Error setting socket timeout for sending a post request","red"); 
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
+      error_message.total++;       
     }
     close(SOCKET);
     pointer_reset_all;
@@ -174,11 +181,13 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   if (HOST_NAME == NULL)
   {
     if (MESSAGE_SETTINGS == 1)
-    {
+    {       
       memset(str,0,strnlen(str,BUFFER_SIZE));
       memcpy(str,"Error invalid hostname of ",26);
       memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;  
     }
     close(SOCKET);
     pointer_reset_all;
@@ -221,7 +230,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
           memcpy(str+20,HOST,HOST_LENGTH);
           memcpy(str+20+HOST_LENGTH," on port ",9);
           memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-          color_print(str,"red"); 
+          memcpy(error_message.function[error_message.total],"send_http_request",17);
+          memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+          error_message.total++; 
         }
         close(SOCKET);
         pointer_reset_all;
@@ -241,7 +252,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;  
     }
     close(SOCKET);
     pointer_reset_all;
@@ -259,7 +272,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;  
     }
     close(SOCKET);
     pointer_reset_all;
@@ -290,7 +305,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+22,HOST,HOST_LENGTH);
       memcpy(str+22+HOST_LENGTH," on port ",9);
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;  
     }
     close(SOCKET);
     pointer_reset_all;
@@ -316,7 +333,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       { 
         memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a potential buffer overflow issue",46);
       }
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;  
     }
     close(SOCKET);
     pointer_reset_all;
@@ -333,7 +352,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+26,HOST,HOST_LENGTH);
       memcpy(str+26+HOST_LENGTH," on port ",9);
       memcpy(str+35+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;  
     }
     close(SOCKET);
     pointer_reset_all;
@@ -423,7 +444,10 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     {
       pointer_reset(message);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_block_template",18);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -439,7 +463,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     {
       memcpy(str,"Error creating socket for sending data to ",42);
       memcpy(str+42,HOST,HOST_LENGTH);
-      color_print(str,"red");
+      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++; 
     }
     pointer_reset_all;
     return 0;
@@ -455,7 +481,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     {
       memcpy(str,"Error setting socket timeout for sending data to ",49);
       memcpy(str+49,HOST,HOST_LENGTH);
-      color_print(str,"red");
+      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -470,7 +498,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     {
       memcpy(str,"Error invalid hostname of ",26);
       memcpy(str+26,HOST,HOST_LENGTH);
-      color_print(str,"red");
+      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -511,7 +541,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
           memcpy(str+20,HOST,HOST_LENGTH);
           memcpy(str+20+HOST_LENGTH," on port ",9);
           memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-          color_print(str,"red"); 
+          memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+          memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+          error_message.total++;
         }
         close(SOCKET);
         pointer_reset_all;
@@ -531,7 +563,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -549,7 +583,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++; 
     }
     close(SOCKET);
     pointer_reset_all;
@@ -581,7 +617,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+22,HOST,HOST_LENGTH);
       memcpy(str+22+HOST_LENGTH," on port ",9);
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -607,7 +645,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       {   
         memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a potential buffer overflow issue",46);
       }
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -683,7 +723,10 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
     {
       pointer_reset(message);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_block_template",18);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -699,7 +742,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
     {
       memcpy(str,"Error creating socket for sending data to ",42);
       memcpy(str+42,HOST,HOST_LENGTH);
-      color_print(str,"red");
+      memcpy(error_message.function[error_message.total],"send_data_socket",16);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -716,7 +761,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
     {
       memcpy(str,"Error setting socket timeout for sending data to ",49);
       memcpy(str+49,HOST,HOST_LENGTH);
-      color_print(str,"red");
+      memcpy(error_message.function[error_message.total],"send_data_socket",16);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -731,7 +778,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
     {
       memcpy(str,"Error invalid hostname of ",26);
       memcpy(str+26,HOST,HOST_LENGTH);
-      color_print(str,"red");
+      memcpy(error_message.function[error_message.total],"send_data_socket",16);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -772,7 +821,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
           memcpy(str+20,HOST,HOST_LENGTH);
           memcpy(str+20+HOST_LENGTH," on port ",9);
           memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-          color_print(str,"red"); 
+          memcpy(error_message.function[error_message.total],"send_data_socket",16);
+          memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+          error_message.total++;
         }
         close(SOCKET);
         pointer_reset_all;
@@ -792,7 +843,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_data_socket",16);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -810,7 +863,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_data_socket",16);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -842,7 +897,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
       memcpy(str+22,HOST,HOST_LENGTH);
       memcpy(str+22+HOST_LENGTH," on port ",9);
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      color_print(str,"red"); 
+      memcpy(error_message.function[error_message.total],"send_data_socket",16);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      error_message.total++;
     }
     close(SOCKET);
     pointer_reset_all;
@@ -921,7 +978,10 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_block_template",18);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -983,7 +1043,7 @@ Description: Sync the previous, current and next block verifiers from a network 
 -----------------------------------------------------------------------------------------------------------
 */
 
-void sync_all_block_verifiers_list()
+int sync_all_block_verifiers_list()
 {
   // Variables
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -1005,9 +1065,11 @@ void sync_all_block_verifiers_list()
   data3 = NULL;
   
   #define SYNC_ALL_BLOCK_VERIFIERS_LIST(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"sync_all_block_verifiers_list",29); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
-  return;
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (message == NULL || data2 == NULL || data3 == NULL)
@@ -1024,7 +1086,10 @@ void sync_all_block_verifiers_list()
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"get_block_template",18);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -1081,14 +1146,14 @@ void sync_all_block_verifiers_list()
 
     if (verify_data(data3,0,0,0) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not verify data\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not verify data");
     }
  
     // parse the message
     memset(data2,0,strlen(data2));
     if (parse_json_data(data3,"previous_block_verifiers_name_list",data2) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the previous_block_verifiers_name_list
@@ -1101,7 +1166,7 @@ void sync_all_block_verifiers_list()
     memset(data2,0,strlen(data2));
     if (parse_json_data(data3,"previous_block_verifiers_public_address_list",data2) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the previous_block_verifiers_public_address_list
@@ -1114,7 +1179,7 @@ void sync_all_block_verifiers_list()
     memset(data2,0,strlen(data2));
     if (parse_json_data(data3,"previous_block_verifiers_IP_address_list",data2) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the previous_block_verifiers_IP_address_list
@@ -1128,7 +1193,7 @@ void sync_all_block_verifiers_list()
     memset(data2,0,strlen(data2));
     if (parse_json_data(data3,"current_block_verifiers_name_list",data2) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the current_block_verifiers_name_list
@@ -1141,7 +1206,7 @@ void sync_all_block_verifiers_list()
     memset(data2,0,strlen(data2));
     if (parse_json_data(data3,"current_block_verifiers_public_address_list",data2) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the current_block_verifiers_public_address_list
@@ -1154,7 +1219,7 @@ void sync_all_block_verifiers_list()
     memset(data2,0,strlen(data2));
     if (parse_json_data(data3,"current_block_verifiers_IP_address_list",data2) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the current_block_verifiers_IP_address_list
@@ -1168,7 +1233,7 @@ void sync_all_block_verifiers_list()
     memset(data2,0,strlen(data2));
     if (parse_json_data(data3,"next_block_verifiers_name_list",data2) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the next_block_verifiers_name_list
@@ -1181,7 +1246,7 @@ void sync_all_block_verifiers_list()
     memset(data2,0,strlen(data2));
     if (parse_json_data(data3,"next_block_verifiers_public_address_list",data2) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the next_block_verifiers_public_address_list
@@ -1194,7 +1259,7 @@ void sync_all_block_verifiers_list()
     memset(data2,0,strlen(data2));
     if (parse_json_data(data3,"next_block_verifiers_IP_address_list",data2) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the next_block_verifiers_IP_address_list
@@ -1220,7 +1285,10 @@ void sync_all_block_verifiers_list()
 
         if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
         {
-          color_print("Could not allocate the memory needed on the heap","red");
+          memcpy(error_message.function[error_message.total],"get_block_template",18);
+          memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+          error_message.total++;
+          print_error_message;  
           exit(0);
         }
       }       
@@ -1231,7 +1299,7 @@ void sync_all_block_verifiers_list()
     // get the top 100 delegates by total votes
     if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,"delegates","",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_AMOUNT,1,"total_vote_count",0) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round\nFunction: sync_all_block_verifiers_list");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round");
     }
 
     // copy the database_multiple_documents_fields to the next, current and previous block verifiers list
@@ -1274,7 +1342,7 @@ void sync_all_block_verifiers_list()
   }
   
   pointer_reset_all;
-  return;
+  return 1;
 
   #undef pointer_reset_all
   #undef SYNC_ALL_BLOCK_VERIFIERS_LIST  
@@ -1313,7 +1381,9 @@ int sync_check_reserve_proofs_database()
   data3 = NULL;
   
   #define SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -1336,7 +1406,10 @@ int sync_check_reserve_proofs_database()
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -1387,14 +1460,14 @@ int sync_check_reserve_proofs_database()
 
   if (verify_data(data3,0,0,0) == 0)
   {
-    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not verify data\nFunction: sync_check_reserve_proofs_database");
+    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not verify data");
   }
 
   // parse the message
   memset(data2,0,strlen(data2));
   if (parse_json_data(data3,"block_verifiers_list",data2) == 0)
   {
-    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not parse the message\nFunction: sync_check_reserve_proofs_database");
+    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not parse the message");
   } 
 
   // parse the block verifiers IP addresses
@@ -1408,7 +1481,7 @@ int sync_check_reserve_proofs_database()
   memset(data,0,strlen(data));
   if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs",0) == 0)
   {
-    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database\nFunction: sync_check_reserve_proofs_database");
+    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
 
   // create the message
@@ -1419,7 +1492,7 @@ int sync_check_reserve_proofs_database()
   // sign_data
   if (sign_data(message,0) == 0)
   { 
-    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_reserve_proofs_database");
+    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
   }
 
   color_print("Sending all block verifiers a message to check if the reserve proof database is synced","green"); 
@@ -1454,7 +1527,9 @@ int sync_check_reserve_proofs_database()
     color_print("The reserve proof database is not synced","red");
     if (sync_reserve_proofs_database() == 0)
     {
-      color_print("Could not sync the reserve proof database","red");
+      memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34);
+      memcpy(error_message.data[error_message.total],"Could not sync the reserve proof database",41);
+      error_message.total++;
       pointer_reset_all;
       return 0;
     }
@@ -1529,7 +1604,10 @@ int sync_reserve_proofs_database()
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -1558,7 +1636,7 @@ int sync_reserve_proofs_database()
     sprintf(data2+strlen(data2),"%zu",count);
     if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
     {
-      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database\nFunction: sync_reserve_proofs_database",0);
+      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database",0);
     }
 
     // create the message
@@ -1572,7 +1650,7 @@ int sync_reserve_proofs_database()
     // sign_data
     if (sign_data(data2,0) == 0)
     { 
-      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data\nFunction: sync_reserve_proofs_database",0);
+      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data",0);
     }
      
     memset(data,0,strlen(data));
@@ -1612,7 +1690,7 @@ int sync_reserve_proofs_database()
       // sign_data
       if (sign_data(data2,0) == 0)
       { 
-        SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data\nFunction: sync_reserve_proofs_database",0);
+        SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data",0);
       }
      
       memset(data,0,strlen(data));
@@ -1684,7 +1762,9 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
   data3 = NULL;
   
   #define SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -1707,7 +1787,10 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -1750,14 +1833,14 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
 
   if (verify_data(data3,0,0,0) == 0)
   {
-    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not verify data\nFunction: sync_check_reserve_bytes_database");
+    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not verify data");
   }
 
   // parse the message
   memset(data2,0,strlen(data2));
   if (parse_json_data(data3,"block_verifiers_list",data2) == 0)
   {
-    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not parse the message\nFunction: sync_check_reserve_bytes_database");
+    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not parse the message");
   } 
 
   // parse the block verifiers IP addresses
@@ -1771,7 +1854,7 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
   memset(data,0,strlen(data));
   if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes",0) == 0)
   {
-    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: sync_check_reserve_bytes_database");
+    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // create the message
@@ -1782,7 +1865,7 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
   // sign_data
   if (sign_data(message,0) == 0)
   { 
-    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_reserve_bytes_database");
+    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
   }
 
   color_print("Sending all block verifiers a message to check if the reserve bytes database is synced","green"); 
@@ -1817,7 +1900,9 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
     color_print("The reserve bytes database is not synced","red");
     if (sync_reserve_bytes_database(BLOCK_HEIGHT) == 0)
     {
-      color_print("Could not sync the reserve bytes database","red");
+      memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33);
+      memcpy(error_message.data[error_message.total],"Could not sync the reserve bytes database",41);
+      error_message.total++;
       pointer_reset_all;
       return 0;
     }
@@ -1895,7 +1980,10 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -1928,7 +2016,7 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
     sprintf(data2+strlen(data2),"%zu",count);
     if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
     {
-      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: sync_reserve_bytes_database",0);
+      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database",0);
     }
 
     // create the message
@@ -1942,7 +2030,7 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
     // sign_data
     if (sign_data(data2,0) == 0)
     { 
-      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data\nFunction: sync_reserve_bytes_database",0);
+      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data",0);
     }
      
     memset(data,0,strlen(data));
@@ -1982,7 +2070,7 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
       // sign_data
       if (sign_data(data2,0) == 0)
       { 
-        SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data\nFunction: sync_reserve_bytes_database",0);
+        SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data",0);
       }
      
       memset(data,0,strlen(data));
@@ -2052,7 +2140,9 @@ int sync_check_delegates_database()
   data3 = NULL;
   
   #define SYNC_CHECK_DELEGATES_DATABASE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2075,7 +2165,10 @@ int sync_check_delegates_database()
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -2118,14 +2211,14 @@ int sync_check_delegates_database()
 
   if (verify_data(data3,0,0,0) == 0)
   {
-    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not verify data\nFunction: sync_check_delegates_database");
+    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not verify data");
   }
 
   // parse the message
   memset(data2,0,strlen(data2));
   if (parse_json_data(data3,"block_verifiers_list",data2) == 0)
   {
-    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not parse the message\nFunction: sync_check_delegates_database");
+    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not parse the message");
   } 
 
   // parse the block verifiers IP addresses
@@ -2139,7 +2232,7 @@ int sync_check_delegates_database()
   memset(data,0,strlen(data));
   if (get_database_data_hash(data,DATABASE_NAME,"delegates",0) == 0)
   {
-    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database\nFunction: sync_check_delegates_database");
+    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database");
   }
 
   // create the message
@@ -2150,7 +2243,7 @@ int sync_check_delegates_database()
   // sign_data
   if (sign_data(message,0) == 0)
   { 
-    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_delegates_database");
+    SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sign_data");
   }
 
   color_print("Sending all block verifiers a message to check if the delegates database is synced","green"); 
@@ -2185,7 +2278,9 @@ int sync_check_delegates_database()
     color_print("The delegates database is not synced","red");
     if (sync_delegates_database() == 0)
     {
-      color_print("Could not sync the delegates database","red");
+      memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
+      memcpy(error_message.data[error_message.total],"Could not sync the delegates database",37);
+      error_message.total++;
       pointer_reset_all;
       return 0;
     }
@@ -2252,7 +2347,10 @@ int sync_delegates_database()
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sync_delegates_database",23);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
   
@@ -2275,7 +2373,7 @@ int sync_delegates_database()
   // get the database data hash
   if (get_database_data_hash(data,DATABASE_NAME,"delegates",0) == 0)
   {
-    SYNC_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database\nFunction: sync_delegates_database",0);
+    SYNC_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database",0);
   }
 
   // create the message
@@ -2287,7 +2385,7 @@ int sync_delegates_database()
   // sign_data
   if (sign_data(data2,0) == 0)
   { 
-    SYNC_DELEGATES_DATABASE_ERROR("Could not sign_data\nFunction: sync_delegates_database",0);
+    SYNC_DELEGATES_DATABASE_ERROR("Could not sign_data",0);
   }
      
   memset(data,0,strlen(data));
@@ -2351,7 +2449,9 @@ int sync_check_statistics_database()
   data3 = NULL;
   
   #define SYNC_CHECK_STATISTICS_DATABASE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2374,7 +2474,10 @@ int sync_check_statistics_database()
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -2416,14 +2519,14 @@ int sync_check_statistics_database()
 
   if (verify_data(data3,0,0,0) == 0)
   {
-    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not verify data\nFunction: sync_check_statistics_database");
+    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not verify data");
   }
 
   // parse the message
   memset(data2,0,strlen(data2));
   if (parse_json_data(data3,"block_verifiers_list",data2) == 0)
   {
-    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not parse the message\nFunction: sync_check_statistics_database");
+    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not parse the message");
   } 
 
   // parse the block verifiers IP addresses
@@ -2437,7 +2540,7 @@ int sync_check_statistics_database()
   memset(data,0,strlen(data));
   if (get_database_data_hash(data,DATABASE_NAME,"statistics",0) == 0)
   {
-    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database\nFunction: sync_check_statistics_database");
+    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database");
   }
 
   // create the message
@@ -2448,7 +2551,7 @@ int sync_check_statistics_database()
   // sign_data
   if (sign_data(message,0) == 0)
   { 
-    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sign_data\nFunction: sync_check_statistics_database");
+    SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sign_data");
   }
 
   color_print("Sending all block verifiers a message to check if the statistics database is synced","green"); 
@@ -2483,7 +2586,9 @@ int sync_check_statistics_database()
     color_print("The statistics database is not synced","red");
     if (sync_statistics_database() == 0)
     {
-      color_print("Could not sync the statistics database","red");
+      memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
+      memcpy(error_message.data[error_message.total],"Could not sync the statistics database",38);
+      error_message.total++;
       pointer_reset_all;
       return 0;
     }
@@ -2550,7 +2655,10 @@ int sync_statistics_database()
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"sync_statistics_database",24);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
   
@@ -2573,7 +2681,7 @@ int sync_statistics_database()
   // get the database data hash
   if (get_database_data_hash(data,DATABASE_NAME,"statistics",0) == 0)
   {
-    SYNC_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database\nFunction: sync_statistics_database",0);
+    SYNC_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database",0);
   }
 
   // create the message
@@ -2585,7 +2693,7 @@ int sync_statistics_database()
   // sign_data
   if (sign_data(data2,0) == 0)
   { 
-    SYNC_STATISTICS_DATABASE_ERROR("Could not sign_data\nFunction: sync_statistics_database",0);
+    SYNC_STATISTICS_DATABASE_ERROR("Could not sign_data",0);
   }
      
   memset(data,0,strlen(data));
@@ -2630,7 +2738,11 @@ Return: 1 if the IP address is online, 0 if the IP address is offline
 
 int get_delegate_online_status(const char* HOST)
 {
+  // Constants
+  const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
+
   // Variables
+  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
@@ -2638,6 +2750,16 @@ int get_delegate_online_status(const char* HOST)
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
+
+  // check if the memory needed was allocated on the heap successfully
+  if (str == NULL)
+  {    
+    memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  } 
 
   /* Create the socket  
   AF_INET = IPV4 support
@@ -2647,6 +2769,12 @@ int get_delegate_online_status(const char* HOST)
   const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
   if (SOCKET == -1)
   { 
+    memcpy(str,"Error creating socket for sending data to ",42);
+    memcpy(str+42,HOST,HOST_LENGTH);
+    memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
+    memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    error_message.total++; 
+    pointer_reset(str);
     return 0;
   }
 
@@ -2655,6 +2783,12 @@ int get_delegate_online_status(const char* HOST)
   if (HOST_NAME == NULL)
   {
     close(SOCKET);
+    memcpy(str,"Error invalid hostname of ",26);
+    memcpy(str+26,HOST,HOST_LENGTH);
+    memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
+    memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    error_message.total++;
+    pointer_reset(str);
     return 0;
   }  
   

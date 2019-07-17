@@ -46,7 +46,7 @@ Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-void start_new_round()
+int start_new_round()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -55,14 +55,19 @@ void start_new_round()
 
   // define macros
   #define START_NEW_ROUND_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"start_new_round",15); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset(data); \
-  return;
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"start_new_round",15);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -74,12 +79,17 @@ void start_new_round()
 
   // update all of the databases 
   color_print("Updating the previous rounds data in the databases","green");
-  update_databases();
+  if (update_databases() == 0)
+  {    
+    START_NEW_ROUND_ERROR("Could not check if the databases are synced. This means that your database is out of sync, and you need to resync your databases");
+  }
 
   // check to make sure all of the databases are synced
   color_print("Checking if databases are synced","green");
-  check_if_databases_are_synced();  
-  START_NEW_ROUND_ERROR("Could not check if the databases are synced. This means that your database is out of sync, and you need to resync your databases\nFunction: start_new_round");
+  if (check_if_databases_are_synced() == 0)
+  {    
+    START_NEW_ROUND_ERROR("Could not check if the databases are synced. This means that your database is out of sync, and you need to resync your databases");
+  }  
   
   // reset the variables
   memset(current_round_part,0,strlen(current_round_part));
@@ -122,9 +132,8 @@ void start_new_round()
   sprintf(data,"%zu",count);
   settings = get_block_settings(data,0);
   if (settings == 0)
-  {
-    // an error has occured so wait until the next round
-    START_NEW_ROUND_ERROR("Could not get a previous blocks settings. Your block verifier will now sit out for the remainder of the round\nFunction: start_new_round");
+  {    
+    START_NEW_ROUND_ERROR("Could not get a previous blocks settings. Your block verifier will now sit out for the remainder of the round");
   }
   else if (settings == 1)
   {
@@ -133,29 +142,49 @@ void start_new_round()
 
     // set the main_network_data_node_create_block so the main network data node can create the block
     main_network_data_node_create_block = 1;
-    start_current_round_start_blocks(); 
-    start_part_4_of_round(1);   
+    if (start_current_round_start_blocks() == 0)
+    {      
+      START_NEW_ROUND_ERROR("start_current_round_start_blocks error");
+    } 
+    if (start_part_4_of_round(1) == 0)
+    {      
+      START_NEW_ROUND_ERROR("start_part_4_of_round error");
+    }  
   }
   else if (settings == 2)
   {
     // this is a X-CASH proof of stake block so this is not the start blocks of the network
     if (calculate_main_nodes_roles() == 0)
     {
+      print_error_message;
       // set the main_network_data_node_create_block so the main network data node can create the block
       main_network_data_node_create_block = 1;
-      start_current_round_start_blocks(); 
-      start_part_4_of_round(1);   
+      if (start_current_round_start_blocks() == 0)
+      {
+        START_NEW_ROUND_ERROR("start_current_round_start_blocks error");
+      } 
+      if (start_part_4_of_round(1) == 0)
+      {
+        START_NEW_ROUND_ERROR("start_part_4_of_round error");
+      }   
     }
     if (start_part_4_of_round(0) == 0)
     {
+      print_error_message;
       // set the main_network_data_node_create_block so the main network data node can create the block
       main_network_data_node_create_block = 1;
-      start_current_round_start_blocks(); 
-      start_part_4_of_round(1);   
+      if (start_current_round_start_blocks() == 0)
+      {
+        START_NEW_ROUND_ERROR("start_current_round_start_blocks error");
+      } 
+      if (start_part_4_of_round(1) == 0)
+      {
+        START_NEW_ROUND_ERROR("start_part_4_of_round error");
+      }   
     }
   }
   pointer_reset(data);
-  return;
+  return 1;
 
   #undef START_NEW_ROUND_ERROR
 }
@@ -170,7 +199,7 @@ Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-void start_current_round_start_blocks()
+int start_current_round_start_blocks()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -187,9 +216,11 @@ void start_current_round_start_blocks()
   data2 = NULL;
 
   #define START_CURRENT_ROUND_START_BLOCKS_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
-  return;
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -202,7 +233,10 @@ void start_current_round_start_blocks()
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -226,13 +260,13 @@ void start_current_round_start_blocks()
   // get a block template
   if (get_block_template(data,0) == 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not get a block template\nFunction: start_current_round_start_blocks");
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not get a block template");
   }
 
   // convert the network_block_string to blockchain_data
   if (network_block_string_to_blockchain_data((const char*)data,"0") == 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the network_block_string to blockchain_data\nFunction: start_current_round_start_blocks");
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the network_block_string to blockchain_data");
   }
 
   // change the nonce to the CONSENSUS_NODE_NETWORK_BLOCK_NONCE
@@ -243,25 +277,25 @@ void start_current_round_start_blocks()
   memset(vrf_secret_key,0,crypto_vrf_SECRETKEYBYTES);
   if (create_random_VRF_keys(VRF_data.vrf_public_key_round_part_4,vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_4) != 1)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_public_key_round_part_4 or vrf_secret_key_round_part_4\nFunction: start_current_round_start_blocks");
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_public_key_round_part_4 or vrf_secret_key_round_part_4");
   }
   if (get_previous_block_hash(data,0) == 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not get the previous block hash\nFunction: start_current_round_start_blocks");
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not get the previous block hash");
   }  
   memcpy(VRF_data.vrf_alpha_string_round_part_4,data,64);
   memcpy(VRF_data.vrf_alpha_string_round_part_4+64,"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",10000); 
   if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)vrf_secret_key,VRF_data.vrf_alpha_string_round_part_4,strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)) != 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_proof_round_part_4\nFunction: start_current_round_start_blocks");
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_proof_round_part_4");
   }
   if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4) != 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the beta_string_round_part_4\nFunction: start_current_round_start_blocks");
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the beta_string_round_part_4");
   }
   if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,VRF_data.vrf_alpha_string_round_part_4,crypto_vrf_PUBLICKEYBYTES) != 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the VRF data for round part 2\nFunction: start_current_round_start_blocks");
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the VRF data for round part 2");
   }
 
   // convert all of the VRF data to a string
@@ -319,7 +353,7 @@ void start_current_round_start_blocks()
   memset(data,0,strlen(data));
   if (blockchain_data_to_network_block_string(VRF_data.block_blob) == 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the blockchain_data to a network_block_string\nFunction: start_current_round_start_blocks");
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the blockchain_data to a network_block_string");
   }
 
     // create the message
@@ -330,7 +364,7 @@ void start_current_round_start_blocks()
     // sign_data
     if (sign_data(data,0) == 0)
     { 
-      START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign_data\nFunction: start_current_round_start_blocks");
+      START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign_data");
     }
 
     // set the next server message since the block verifiers will send the data to each other
@@ -346,7 +380,7 @@ void start_current_round_start_blocks()
     }
   
   pointer_reset(data);
-  return;
+  return 1;
 
   #undef pointer_reset_all
   #undef START_CURRENT_ROUND_START_BLOCKS_ERROR
@@ -384,7 +418,9 @@ int start_part_4_of_round(const int SETTINGS)
   data3 = NULL;
 
   #define START_PART_4_OF_ROUND_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"start_part_4_of_round",21); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -476,7 +512,10 @@ int start_part_4_of_round(const int SETTINGS)
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"start_part_4_of_round",21);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -488,7 +527,7 @@ int start_part_4_of_round(const int SETTINGS)
     // create a random VRF public key and secret key
     if (create_random_VRF_keys((unsigned char*)VRF_data.vrf_public_key_round_part_4,(unsigned char*)VRF_data.vrf_secret_key_round_part_4) != 1 || crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_4) != 1)
     {
-      START_PART_4_OF_ROUND_ERROR("Could not create the VRF secret key or VRF public key for the VRF data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nFunction: start_part_4_of_round");
+      START_PART_4_OF_ROUND_ERROR("Could not create the VRF secret key or VRF public key for the VRF data");
     }  
 
     // convert the VRF secret key to hexadecimal
@@ -515,7 +554,7 @@ int start_part_4_of_round(const int SETTINGS)
     memset(data,0,strlen(data));
     if (random_string(data,RANDOM_STRING_LENGTH) == 0)
     {
-      START_PART_4_OF_ROUND_ERROR("Could not create random data for the VRF data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nFunction: start_part_4_of_round");
+      START_PART_4_OF_ROUND_ERROR("Could not create random data for the VRF data");
     }
 
     // add the block verifiers signed data to the VRF data
@@ -533,7 +572,7 @@ int start_part_4_of_round(const int SETTINGS)
     // sign_data
     if (sign_data(data3,0) == 0)
     { 
-      START_PART_4_OF_ROUND_ERROR("Could not sign_data\nFunction: start_part_4_of_round");
+      START_PART_4_OF_ROUND_ERROR("Could not sign_data");
     }
 
     // set the server message
@@ -573,7 +612,7 @@ int start_part_4_of_round(const int SETTINGS)
     memset(data,0,strlen(data));
     if (get_previous_block_hash(data,0) == 0)
     {
-      START_PART_4_OF_ROUND_ERROR("Could not get the previous block hash\nFunction: start_part_4_of_round");
+      START_PART_4_OF_ROUND_ERROR("Could not get the previous block hash");
     }
 
     memcpy(VRF_data.vrf_alpha_string_data_round_part_4,data,64);
@@ -603,7 +642,7 @@ int start_part_4_of_round(const int SETTINGS)
     // sign_data
     if (sign_data(data3,0) == 0)
     { 
-      START_PART_4_OF_ROUND_ERROR("Could not sign_data\nFunction: start_part_4_of_round");
+      START_PART_4_OF_ROUND_ERROR("Could not sign_data");
     }
 
     // set the next server message since the block verifiers will send the data to each other
@@ -672,7 +711,7 @@ int start_part_4_of_round(const int SETTINGS)
     // sign_data
     if (sign_data(data3,0) == 0)
     { 
-      START_PART_4_OF_ROUND_ERROR("Could not sign_data\nFunction: start_part_4_of_round");
+      START_PART_4_OF_ROUND_ERROR("Could not sign_data");
     }
 
     // set the next server message since the block verifiers will send the data to each other
@@ -714,15 +753,15 @@ int start_part_4_of_round(const int SETTINGS)
 
     if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_round_part_4,strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)) != 0)
     {
-      START_PART_4_OF_ROUND_ERROR("Could not create the vrf proof\nFunction: start_part_4_of_round");
+      START_PART_4_OF_ROUND_ERROR("Could not create the vrf proof");
     }
     if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4) != 0)
     {
-      START_PART_4_OF_ROUND_ERROR("Could not create the vrf beta string\nFunction: start_part_4_of_round");
+      START_PART_4_OF_ROUND_ERROR("Could not create the vrf beta string");
     }
     if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,VRF_data.vrf_alpha_string_round_part_4,crypto_vrf_PUBLICKEYBYTES) != 0)
     {
-      START_PART_4_OF_ROUND_ERROR("Could not create the VRF data\nFunction: start_part_4_of_round");
+      START_PART_4_OF_ROUND_ERROR("Could not create the VRF data");
     }
 
     // convert the vrf proof and vrf beta string to a string
@@ -772,7 +811,7 @@ int start_part_4_of_round(const int SETTINGS)
     {
       if (get_block_template(VRF_data.block_blob,0) == 0)
       {
-        START_PART_4_OF_ROUND_ERROR("Could not get a block template\nFunction: start_part_4_of_round");
+        START_PART_4_OF_ROUND_ERROR("Could not get a block template");
       }  
   
       // create the message
@@ -783,7 +822,7 @@ int start_part_4_of_round(const int SETTINGS)
       // sign_data
       if (sign_data(data,0) == 0)
       { 
-        START_PART_4_OF_ROUND_ERROR("Could not sign_data\nFunction: start_part_4_of_round");
+        START_PART_4_OF_ROUND_ERROR("Could not sign_data");
       }    
 
       for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -819,7 +858,7 @@ int start_part_4_of_round(const int SETTINGS)
   // sign_data
   if (sign_data(data3,0) == 0)
   { 
-    START_PART_4_OF_ROUND_ERROR("Could not sign_data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nFunction: start_part_4_of_round");
+    START_PART_4_OF_ROUND_ERROR("Could not sign_data");
   }
 
   // send the message to all block verifiers
@@ -848,7 +887,7 @@ int start_part_4_of_round(const int SETTINGS)
   memset(data,0,strlen(data));
   if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
   {
-    START_PART_4_OF_ROUND_ERROR("Could not sign the network block string\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nFunction: start_part_4_of_round");
+    START_PART_4_OF_ROUND_ERROR("Could not sign the network block string");
   }
 
   // add the block verifiers signed data to the VRF data
@@ -869,7 +908,7 @@ int start_part_4_of_round(const int SETTINGS)
   // sign_data
   if (sign_data(data3,0) == 0)
   { 
-    START_PART_4_OF_ROUND_ERROR("Could not sign_data\nFunction: start_part_4_of_round");
+    START_PART_4_OF_ROUND_ERROR("Could not sign_data");
   }
 
   // set the server message
@@ -906,12 +945,15 @@ int start_part_4_of_round(const int SETTINGS)
   // at this point all block verifiers have signed the block and have all of the other block verifiers signed data
 
   // update the block verifiers list as this block will be added to the network
-  update_block_verifiers_list();
+  if (update_block_verifiers_list() == 0)
+  {
+    START_PART_4_OF_ROUND_ERROR("Could not sign_data");
+  }
 
   // convert the network_block_string to a blockchain_data
   if (network_block_string_to_blockchain_data(VRF_data.block_blob,"0") == 0)
   {
-    START_PART_4_OF_ROUND_ERROR("Could not sign_data\nFunction: start_part_4_of_round");
+    START_PART_4_OF_ROUND_ERROR("Could not sign_data");
   }
 
   // add all of the next_block_verifiers_list public addresses and block_blob_signature to the network block string
@@ -927,7 +969,7 @@ int start_part_4_of_round(const int SETTINGS)
   memset(data3,0,strlen(data3));
   if (blockchain_data_to_network_block_string(data3) == 0)
   {
-    START_PART_4_OF_ROUND_ERROR("Could not convert the blockchain_data to a network_block_string\nFunction: start_part_4_of_round");
+    START_PART_4_OF_ROUND_ERROR("Could not convert the blockchain_data to a network_block_string");
   }
 
   // copy the network block string with the current block verifiers signed data and the next block verifiers public addresses to the VRF_data
@@ -959,7 +1001,7 @@ int start_part_4_of_round(const int SETTINGS)
   // sign_data
   if (sign_data(data3,0) == 0)
   { 
-    START_PART_4_OF_ROUND_ERROR("Could not sign_data\nFunction: start_part_4_of_round");
+    START_PART_4_OF_ROUND_ERROR("Could not sign_data");
   }
 
   // send the message to all block verifiers
@@ -1061,7 +1103,7 @@ Description: Updates the block verifiers list struct
 -----------------------------------------------------------------------------------------------------------
 */
 
-void update_block_verifiers_list()
+int update_block_verifiers_list()
 {
   // Variables
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -1070,9 +1112,6 @@ void update_block_verifiers_list()
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define UPDATE_BLOCK_VERIFIERS_ERROR(settings) \
-  color_print(settings,"red"); 
-  return;
 
   // reset the previous_block_verifiers_list struct
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1125,7 +1164,10 @@ void update_block_verifiers_list()
 
     if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   } 
@@ -1135,7 +1177,10 @@ void update_block_verifiers_list()
   // get the top 100 delegates by total votes
   if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_AMOUNT,1,"total_vote_count",0) == 0)
   {
-    UPDATE_BLOCK_VERIFIERS_ERROR("Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round\nFunction: update_block_verifiers_list");
+    memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+    memcpy(error_message.data[error_message.total],"Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round",163);
+    error_message.total++;
+    return 0;
   }
 
   // copy the database_multiple_documents_fields to the next_block_verifiers_list
@@ -1166,12 +1211,10 @@ void update_block_verifiers_list()
       pointer_reset(database_multiple_documents_fields.item[count][count2]);
       pointer_reset(database_multiple_documents_fields.value[count][count2]);
     }
-  }
-  
-  return;
+  }  
+  return 1;
 
   #undef DATABASE_COLLECTION
-  #undef UPDATE_BLOCK_VERIFIERS_ERROR
 }
 
 
@@ -1183,7 +1226,7 @@ Description: Updates the databases
 -----------------------------------------------------------------------------------------------------------
 */
 
-void update_databases()
+int update_databases()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1193,6 +1236,13 @@ void update_databases()
   size_t count2;
 
   // define macros
+  #define UPDATE_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"update_databases",16); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -1212,7 +1262,10 @@ void update_databases()
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"update_databases",16);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -1235,16 +1288,25 @@ void update_databases()
   count2 = count / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME; 
   sprintf(data3+14,"%zu",count2);
 
-  insert_document_into_collection_json(DATABASE_NAME,data3,data2,0);
-  add_block_verifiers_round_statistics((const char*)data);
-  add_round_statistics();
+  if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+  {
+    UPDATE_DATABASE_ERROR("Could not add the new block to the database");
+  }
 
+  if (add_block_verifiers_round_statistics((const char*)data) == 0)
+  {
+    UPDATE_DATABASE_ERROR("Could not update the block verifiers round statistics");
+  }
 
+  if (add_round_statistics() == 0)
+  {
+    UPDATE_DATABASE_ERROR("Could not update the round statistics");
+  }
   
   // check if your reserve bytes database is synced
   if (sync_check_reserve_bytes_database((const char*)data) == 0)
   {
-    color_print("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.\nFunction: update_databases","red");
+    UPDATE_DATABASE_ERROR("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.");
   }
   // wait for the other block verifiers to sync the databse
   sleep(10);
@@ -1252,7 +1314,7 @@ void update_databases()
   // check if your delegates database is synced
   if (sync_check_delegates_database() == 0)
   {
-    color_print("Could not check if the delegates database is updated. This means you might need to sync the delegates database.\nFunction: update_databases","red");
+    UPDATE_DATABASE_ERROR("Could not check if the delegates database is updated. This means you might need to sync the delegates database.");
   }
   // wait for the other block verifiers to sync the databse
   sleep(10);
@@ -1260,13 +1322,13 @@ void update_databases()
   // check if your statistics database is synced
   if (sync_check_statistics_database() == 0)
   {
-    color_print("Could not check if the statistics database is updated. This means you might need to sync the statistics database.\nFunction: update_databases","red");
+    UPDATE_DATABASE_ERROR("Could not check if the statistics database is updated. This means you might need to sync the statistics database.");
   }
   // wait for the other block verifiers to sync the databse
   sleep(10);
 
   pointer_reset_all;  
-  return;
+  return 1;
 
   #undef pointer_reset_all
 }
@@ -1282,7 +1344,7 @@ Parameters:
 -----------------------------------------------------------------------------------------------------------
 */
 
-void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
+int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1303,9 +1365,11 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
   message = NULL;
   
   #define ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"add_block_verifiers_round_statistics",36); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
-  return;
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || message == NULL)
@@ -1322,7 +1386,10 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     {
       pointer_reset(message);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"add_block_verifiers_round_statistics",36);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -1338,7 +1405,7 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memset(data,0,strnlen(data,BUFFER_SIZE));
     if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data,0) == 0)
     {
-      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_total_rounds from the database\nFunction: add_block_verifiers_round_statistics");
+      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_total_rounds from the database");
     }
     count2 = strnlen(data,BUFFER_SIZE);
     sscanf(data, "%zu", &number);
@@ -1349,7 +1416,7 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memcpy(data+32+count2,"\"}",2);
     if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
     {
-      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_total_rounds in the database\nFunction: add_block_verifiers_round_statistics");
+      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_total_rounds in the database");
     }
 
     // add one to the block_verifier_online_total_rounds for every block verifier that is currently online
@@ -1358,7 +1425,7 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memset(data,0,strnlen(data,BUFFER_SIZE));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_online_total_rounds",data,0) == 0)
       {
-        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_online_total_rounds from the database\nFunction: add_block_verifiers_round_statistics");
+        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_online_total_rounds from the database");
       }
       count2 = strnlen(data,BUFFER_SIZE);
       sscanf(data, "%zu", &number);
@@ -1369,7 +1436,7 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memcpy(data+39+count2,"\"}",2);
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
       {
-        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database\nFunction: add_block_verifiers_round_statistics");
+        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
       }
     }
 
@@ -1379,7 +1446,7 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memset(data,0,strnlen(data,BUFFER_SIZE));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_total_rounds",data,0) == 0)
       {
-        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_total_rounds from the database\nFunction: add_block_verifiers_round_statistics");
+        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_total_rounds from the database");
       }
       count2 = strnlen(data,BUFFER_SIZE);
       sscanf(data, "%zu", &number);
@@ -1390,13 +1457,13 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memcpy(data+39+count2,"\"}",2);
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
       {
-        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_total_rounds in the database\nFunction: add_block_verifiers_round_statistics");
+        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_total_rounds in the database");
       }
 
       memset(data,0,strnlen(data,BUFFER_SIZE));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_block_heights",data,0) == 0)
       {
-        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database\nFunction: add_block_verifiers_round_statistics");
+        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database");
       }      
       memcpy(data,",",1);
       memcpy(data+1,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,BUFFER_SIZE));
@@ -1406,12 +1473,11 @@ void add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memcpy(data2+33+strnlen(data,BUFFER_SIZE),"\"}",2);
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,0) == 0)
       {
-        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database\nFunction: add_block_verifiers_round_statistics");
+        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
       }
     }
   }
-
-  return;
+  return 1;
 
   #undef DATABASE_COLLECTION
   #undef pointer_reset_all
@@ -1428,7 +1494,7 @@ Description: Adds the round statistics to the database after adding the block to
 -----------------------------------------------------------------------------------------------------------
 */
 
-void add_round_statistics()
+int add_round_statistics()
 {
   // Constants
   const bson_t* current_document;
@@ -1502,9 +1568,11 @@ void add_round_statistics()
   message6 = NULL;
 
   #define ADD_ROUND_STATISTICS_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"add_round_statistics",20); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset(data); \
-  return;
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || data3 == NULL || settings == NULL || delegates_name == NULL || block_verifier_total_rounds_delegates_name == NULL || best_block_verifier_online_percentage_delegate_name == NULL || most_block_producer_total_rounds_delegate_name == NULL || message1 == NULL || message2 == NULL || message3 == NULL || message4 == NULL || message5 == NULL || message6 == NULL)
@@ -1565,7 +1633,10 @@ void add_round_statistics()
     {
       pointer_reset(message6);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"add_round_statistics",20);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }  
   
@@ -1681,10 +1752,10 @@ void add_round_statistics()
   // update the database
   if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message6,0) == 0)
   {
-    ADD_ROUND_STATISTICS_ERROR("Could not update the round statistics in the database\nFunction: add_round_statistics");
+    ADD_ROUND_STATISTICS_ERROR("Could not update the round statistics in the database");
   }
 
-  return;
+  return 1;
 
   #undef DATABASE_COLLECTION
   #undef MESSAGE
@@ -1701,11 +1772,19 @@ Description: Checks if the databases are synced, and if not syncs the databases
 -----------------------------------------------------------------------------------------------------------
 */
 
-void check_if_databases_are_synced()
+int check_if_databases_are_synced()
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
+
+  // define macros
+  #define CHECK_IF_DATABASES_ARE_SYNCED_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"check_if_databases_are_synced",29); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset(data); \
+  return 0;
 
   print_start_message("Checking if databases are synced");
 
@@ -1717,15 +1796,15 @@ void check_if_databases_are_synced()
   // check if your rreserve proofs database is synced
   if (sync_check_reserve_proofs_database() == 0)
   {
-    color_print("Could not check if the reserve proofs database is updated. This means you might need to sync the reserve proofs database.\nFunction: check_if_databases_are_synced\n","red");
+    CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve proofs database is updated. This means you might need to sync the reserve proofs database.");
   }
   // wait for the other block verifiers to sync the databse
   sleep(10);
 
   // check if your reserve bytes database is synced
   if (sync_check_reserve_bytes_database((const char*)data) == 0)
-  {
-    color_print("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.\nFunction: check_if_databases_are_synced\n","red");
+  {    
+    CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.");
   }
   // wait for the other block verifiers to sync the databse
   sleep(10);
@@ -1733,7 +1812,7 @@ void check_if_databases_are_synced()
   // check if your delegates database is synced
   if (sync_check_delegates_database() == 0)
   {
-    color_print("Could not check if the delegates database is updated. This means you might need to sync the delegates database.\nFunction: check_if_databases_are_synced\n","red");
+    CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the delegates database is updated. This means you might need to sync the delegates database.");
   }
   // wait for the other block verifiers to sync the databse
   sleep(10);
@@ -1741,13 +1820,15 @@ void check_if_databases_are_synced()
   // check if your statistics database is synced
   if (sync_check_statistics_database() == 0)
   {
-    color_print("Could not check if the statistics database is updated. This means you might need to sync the statistics database.\nFunction: check_if_databases_are_synced\n","red");
+    CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the statistics database is updated. This means you might need to sync the statistics database.");
   }
   // wait for the other block verifiers to sync the databse
   sleep(10);
 
   pointer_reset(data);
-  return;
+  return 1;
+
+  #undef CHECK_IF_DATABASES_ARE_SYNCED_ERROR
 }
 
 
@@ -1776,6 +1857,13 @@ int calculate_main_nodes_roles()
   int settings = 1;
 
   // define macros
+  #define CALCULATE_MAIN_NODES_ROLES(settings) \
+  memcpy(error_message.function[error_message.total],"calculate_main_nodes_roles",26); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -1799,7 +1887,10 @@ int calculate_main_nodes_roles()
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"calculate_main_nodes_roles",26);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
   
@@ -1821,16 +1912,14 @@ int calculate_main_nodes_roles()
   memset(data2,0,strlen(data2));
   if (read_document_field_from_collection(DATABASE_NAME,data,data3,"reserve_bytes",data2,0) == 0)
   {
-    color_print("Could not get the previous blocks reserve bytes\nFunction: calculate_main_nodes_roles","red");
-    return 0;
+    CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
   }
 
   // get the vrf_beta_string_data_round_part_3
   memset(data3,0,strlen(data3));
   if (parse_reserve_bytes_data(data3,(const char*)data2,34,VRF_BETA_LENGTH) == 0)
   {
-    color_print("Could not get the previous blocks reserve bytes\nFunction: calculate_main_nodes_roles","red");
-    return 0;
+    CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
   }
 
   for (count = 0, count3 = 0, main_nodes_count = 0; count < VRF_BETA_LENGTH || main_nodes_count == 6; count += 2)
@@ -1904,9 +1993,9 @@ int calculate_main_nodes_roles()
       count3++;
       main_nodes_count++;
     }
-    if (((count + 2) == VRF_BETA_LENGTH) && (main_nodes_count != 24))
+    if (((count + 2) == VRF_BETA_LENGTH) && (main_nodes_count != 6))
     {
-      color_print("The main nodes calculation process has run out of bytes to read\nFunction: calculate_main_nodes_roles","red");
+      color_print("The main nodes calculation process has run out of bytes to read","red");
     }
   }
   return 1;
@@ -1968,14 +2057,19 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list",100); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset(data); \
   return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list",100);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -2039,13 +2133,13 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data\nFunction: server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list\nReceive Message: NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\nSend Message: NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list\nReceive Message: NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\nSend Message: NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2074,14 +2168,19 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",86); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset(data); \
   return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",86);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -2109,13 +2208,13 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data\nFunction: server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list\nReceive Message: NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\nSend Message: NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list\nReceive Message: NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\nSend Message: NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2152,7 +2251,9 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2167,14 +2268,17 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // get the database data hash for the reserve bytes database
   if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update\nReceive Message: NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\nSend Message: BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // create the message
@@ -2185,13 +2289,13 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update\nReceive Message: NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\nSend Message: BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node\nFunction: server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update\nReceive Message: NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\nSend Message: BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node");
   }
 
   pointer_reset_all;
@@ -2229,7 +2333,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update",107); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2244,27 +2350,30 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update",107);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"data_hash",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
   }
 
   // get the database data hash for the reserve proofs database
   memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,"reserve_proofs",0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
 
   // create the message
@@ -2282,13 +2391,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2324,7 +2433,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update",103); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2339,34 +2450,37 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update",103);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"file",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
 
   // get the database data hash for the reserve proofs database
   memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
 
   // parse the message
   memset(data,0,strlen(data));
   if (parse_json_data(MESSAGE,"data_hash",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
 
   // create the message
@@ -2384,13 +2498,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2426,7 +2540,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update",106); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2441,27 +2557,30 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update",106);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"file",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
   }
 
   // get the database data for the reserve proofs database
   memset(data2,0,strlen(data2));
   if (get_database_data(data2,DATABASE_NAME,data,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
 
   // create the message
@@ -2472,13 +2591,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2514,7 +2633,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update",106); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2529,27 +2650,30 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update",106);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"data_hash",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
   }
 
   // get the database data hash for the reserve bytes database
   memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,"reserve_bytes",0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // create the message
@@ -2567,13 +2691,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2609,7 +2733,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update",102); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2624,34 +2750,37 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update",102);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"file",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
 
   // get the database data hash for the reserve bytes database
   memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // parse the message
   memset(data,0,strlen(data));
   if (parse_json_data(MESSAGE,"data_hash",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
 
   // create the message
@@ -2669,13 +2798,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2711,7 +2840,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update",105); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2726,27 +2857,30 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update",105);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"file",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
   }
 
   // get the database data for the reserve bytes database
   memset(data2,0,strlen(data2));
   if (get_database_data(data2,DATABASE_NAME,data,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // create the message
@@ -2758,13 +2892,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2800,7 +2934,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update",98); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2815,34 +2951,37 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update",105);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"file",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
 
   // get the database data hash for the reserve bytes database
   memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // parse the message
   memset(data,0,strlen(data));
   if (parse_json_data(MESSAGE,"data_hash",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
 
   // create the message
@@ -2860,13 +2999,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2903,7 +3042,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update",101); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -2918,21 +3059,24 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update",101);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
 
   // get the database data for the reserve bytes database
   memset(data2,0,strlen(data2));
   if (get_database_data(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // create the message
@@ -2943,13 +3087,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -2986,7 +3130,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update",99); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -3001,34 +3147,37 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update",99);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"file",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
 
   // get the database data hash for the reserve bytes database
   memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // parse the message
   memset(data,0,strlen(data));
   if (parse_json_data(MESSAGE,"data_hash",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
 
   // create the message
@@ -3046,13 +3195,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -3089,7 +3238,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",102); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -3104,21 +3255,24 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",102);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
 
   // get the database data for the reserve bytes database
   memset(data2,0,strlen(data2));
   if (get_database_data(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // create the message
@@ -3129,13 +3283,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update\nSend Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
   return 1;
@@ -3186,7 +3340,9 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   data3 = NULL; \
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_add_reserve_proof",68); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -3217,7 +3373,10 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_add_reserve_proof",68);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -3225,14 +3384,14 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
     send_data(CLIENT_SOCKET,"Could not verify the message",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not verify the message\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"delegates_public_address",delegates_public_address) == 0 || parse_json_data(MESSAGE,"public_address",public_address) == 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof) == 0)
   {
     send_data(CLIENT_SOCKET,"Could not parse the message",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not parse the message\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not parse the message");
   }
 
   // create the message
@@ -3254,7 +3413,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     if (count_documents_in_collection(DATABASE_NAME,data2,data,0) != 0)
     {
       send_data(CLIENT_SOCKET,"The reserve proof is already in the database",1);
-      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database");
     }
     // check if another proof from the public address is already in the database
     if (count_documents_in_collection(DATABASE_NAME,data2,data3,0) != 0)
@@ -3268,7 +3427,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   if (check_reserve_proofs(data2,public_address,reserve_proof,0) == 0)
   {
     send_data(CLIENT_SOCKET,"The reserve proof is invalid",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is invalid\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is invalid");
   }  
 
   // remove any reserve proofs that were created by the public address
@@ -3284,7 +3443,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
         if (delete_document_from_collection(DATABASE_NAME,data2,data3,0) == 0)
         {
           send_data(CLIENT_SOCKET,"The previous reserve proof could not be cancelled for this public address. Please wait a few minutes and try again.",1);
-          SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The previous reserve proof could not be cancelled for this public address\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+          SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The previous reserve proof could not be cancelled for this public address");
         }
       }
     }
@@ -3322,13 +3481,13 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
         else
         {
           send_data(CLIENT_SOCKET,"The vote could not be added to the database",1);
-          SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+          SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
         }
       }
       else
       {
         send_data(CLIENT_SOCKET,"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",1);
-        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds\nFunction: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof\nReceived Message: NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF");
+        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds");
       }      
     }
   }
@@ -3385,7 +3544,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   data3 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs",84); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -3416,20 +3577,23 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
     {
       pointer_reset(data3);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs",84);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not verify the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"public_address",block_verifiers_public_address) == 0 || parse_json_data(MESSAGE,"public_address_that_created_the_reserve_proof",data) == 0 || parse_json_data(MESSAGE,"reserve_proof",data2) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not parse the message\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not parse the message");
   }
 
   // loop through all of the reserve proofs and only check reserve proofs that are not already in the invalid reserve proofs struct
@@ -3511,7 +3675,9 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   delegates_IP_address = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_register_delegates",70); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -3534,20 +3700,23 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     {
       pointer_reset(delegates_IP_address);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_register_delegates",70);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_register_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"delegate_name",delegate_name) == 0 || parse_json_data(MESSAGE,"public_address",delegate_public_address) == 0 || parse_json_data(MESSAGE,"delegates_IP_address",delegates_IP_address) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_register_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not parse the message");
   }
 
   // create the message
@@ -3559,7 +3728,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) != 0)
   {
     send_data(CLIENT_SOCKET,"false",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate is already registered\nFunction: server_receive_data_socket_nodes_to_block_verifiers_register_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate is already registered");
   }
 
   // create the message
@@ -3576,7 +3745,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0) == 0)
   {
     send_data(CLIENT_SOCKET,"false",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database\nFunction: server_receive_data_socket_nodes_to_block_verifiers_register_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database");
   }
 
   send_data(CLIENT_SOCKET,"true",1);
@@ -3615,7 +3784,9 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   delegate_public_address = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_remove_delegates",68); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -3630,20 +3801,23 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
     {
       pointer_reset(delegate_public_address);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_remove_delegates",68);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_remove_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"public_address",delegate_public_address) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_remove_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not parse the message");
   }
 
   // create the message
@@ -3655,14 +3829,14 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) <= 0)
   {
     send_data(CLIENT_SOCKET,"false",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate is already removed\nFunction: server_receive_data_socket_nodes_to_block_verifiers_remove_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate is already removed");
   }
 
   // remove the delegate from the database
   if (delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) == 0)
   {
     send_data(CLIENT_SOCKET,"false",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate could not be removed from the database\nFunction: server_receive_data_socket_nodes_to_block_verifiers_remove_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate could not be removed from the database");
   }
 
   send_data(CLIENT_SOCKET,"true",1);
@@ -3710,7 +3884,9 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   value = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_update_delegates",68); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -3737,27 +3913,30 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
     {
       pointer_reset(value);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_update_delegates",68);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the message
   if (verify_data(MESSAGE,0,0,0) == 0)
   {   
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not verify the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_update_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not verify the message");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"public_address",delegate_public_address) == 0 || parse_json_data(MESSAGE,"item",item) == 0 || parse_json_data(MESSAGE,"value",value) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not parse the message\nFunction: server_receive_data_socket_nodes_to_block_verifiers_update_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not parse the message");
   }
 
   // error check
   if (memcmp(item,"IP_address",10) != 0 && memcmp(item,"about",5) != 0 && memcmp(item,"website",7) != 0 && memcmp(item,"team",4) != 0 && memcmp(item,"pool_mode",9) != 0 && memcmp(item,"fee_structure",13) != 0 && memcmp(item,"server_settings",15) != 0)
   {
     send_data(CLIENT_SOCKET,"false",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update\nFunction: server_receive_data_socket_nodes_to_block_verifiers_update_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update");
   }
 
   // create the message
@@ -3775,7 +3954,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,data2,0) == 0)
   {
     send_data(CLIENT_SOCKET,"false",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database\nFunction: server_receive_data_socket_nodes_to_block_verifiers_update_delegates\nReceived Message: NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database");
   }
 
   send_data(CLIENT_SOCKET,"true",1);
@@ -3827,7 +4006,10 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
     {
       pointer_reset(message);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4",59);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -3843,7 +4025,9 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   message = NULL;  
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4",59); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -3852,13 +4036,13 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // verify the data
   if (verify_data(MESSAGE,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"block_blob",data) == 0 || parse_json_data(MESSAGE,"public_address",data2) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data");
   }
 
   // check if the public_address is the correct main node
@@ -3878,12 +4062,12 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
     memset(data2,0,strlen(data2));
     if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,0) == 0)
     {
-      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not get the previous blocks reserve bytes\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not get the previous blocks reserve bytes");
     }
     // verify the block
     if (network_block_string_to_blockchain_data(data,"0") == 0 || verify_network_block_data(1,1,1,"0",data2) == 0)
     {
-      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid\nFunction: server_receive_data_socket_main_node_to_node_message_part_4\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
     }
     memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
 
@@ -3947,7 +4131,10 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     {
       pointer_reset(message);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4_create_new_block",76);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -3963,7 +4150,9 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
   message = NULL;  
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4_create_new_block",76); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -3972,13 +4161,13 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
   // verify the data
   if (verify_data(MESSAGE,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not verify data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4_create_new_block\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not verify data");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"block_blob",data) == 0 || parse_json_data(MESSAGE,"public_address",data2) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not parse the data\nFunction: server_receive_data_socket_main_node_to_node_message_part_4_create_new_block\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not parse the data");
   }
 
   // check if the public_address is the correct main node
@@ -3998,12 +4187,12 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     memset(data2,0,strlen(data2));
     if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,0) == 0)
     {
-      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not get the previous blocks reserve bytes\nFunction: server_receive_data_socket_main_node_to_node_message_part_4_create_new_block\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
     }
     // verify the block
     if (network_block_string_to_blockchain_data(data,"0") == 0 || verify_network_block_data(1,1,1,"0",data2) == 0)
     {
-      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid\nFunction: server_receive_data_socket_main_node_to_node_message_part_4_create_new_block\nReceived Message: MAIN_NODES_TO_NODES_PART_4_OF_ROUND");
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
     }
     memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
 
@@ -4056,7 +4245,10 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_node",39);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -4068,20 +4260,22 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_node",39); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
   // verify the data
   if (verify_data(MESSAGE,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not verify data\nFunction: server_receive_data_socket_node_to_node\nReceived Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not verify data");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"vote_settings",data) == 0 || parse_json_data(MESSAGE,"vote_data",data2) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not parse the data\nFunction: server_receive_data_socket_node_to_node\nReceived Message: NODES_TO_NODES_VOTE_RESULTS");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not parse the data");
   }
 
   // process the vote data
@@ -4137,7 +4331,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   data = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data",70); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
@@ -4160,20 +4356,23 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
     {
       pointer_reset(data);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data",70);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
   // verify the data
   if (verify_data(MESSAGE,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not verify data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not verify data");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"public_address",public_address) == 0 || parse_json_data(MESSAGE,"vrf_secret_key",vrf_secret_key_data) == 0 || parse_json_data(MESSAGE,"vrf_public_key",vrf_public_key_data) == 0 || parse_json_data(MESSAGE,"random_data",data) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not parse the data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not parse the data");
   }
 
   // convert the VRF secret key string to a VRF secret key
@@ -4242,7 +4441,10 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
     {
       pointer_reset(data2);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",82);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -4254,20 +4456,22 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR(settings) \
-  color_print(settings,"red"); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",82); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
   pointer_reset_all; \
   return 0;
 
   // verify the data
   if (verify_data(MESSAGE,0,1,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not verify data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not verify data");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"block_blob_signature",data) == 0 || parse_json_data(MESSAGE,"public_address",data2) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not parse the data\nFunction: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature\nReceived Message: BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not parse the data");
   }
 
   // process the vote data
@@ -4353,7 +4557,10 @@ int create_server(const int MESSAGE_SETTINGS)
   // check if the memory needed was allocated on the heap successfully
   if (string == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"create_server",13);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
     
@@ -4366,7 +4573,9 @@ int create_server(const int MESSAGE_SETTINGS)
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      color_print("Error creating socket","red");
+      memcpy(error_message.function[error_message.total],"create_server",13);
+      memcpy(error_message.data[error_message.total],"Error creating socket",21);
+      error_message.total++;
     }    
     pointer_reset_all;
     return 0;
@@ -4381,12 +4590,14 @@ int create_server(const int MESSAGE_SETTINGS)
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      color_print("Error setting socket options","red"); 
+      memcpy(error_message.function[error_message.total],"create_server",13);
+      memcpy(error_message.data[error_message.total],"Error setting socket options",28);
+      error_message.total++;
     }
     SERVER_ERROR(0);
   } 
   if (MESSAGE_SETTINGS == 1)
-  {
+  {   
     color_print("Socket created","green");
   }
  
@@ -4411,7 +4622,9 @@ int create_server(const int MESSAGE_SETTINGS)
      memset(string,0,strnlen(string,BUFFER_SIZE));
      memcpy(string,"Error connecting to port ",25);
      memcpy(string+25,buffer2,strnlen(buffer2,BUFFER_SIZE));
-     color_print(string,"red"); 
+     memcpy(error_message.function[error_message.total],"create_server",13);
+     memcpy(error_message.data[error_message.total],string,strlen(string));
+     error_message.total++;
    }
    SERVER_ERROR(0);
   } 
@@ -4430,7 +4643,9 @@ int create_server(const int MESSAGE_SETTINGS)
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      color_print("Error creating the server","red"); 
+      memcpy(error_message.function[error_message.total],"create_server",13);
+      memcpy(error_message.data[error_message.total],"Error creating the server",28);
+      error_message.total++;
     }
     SERVER_ERROR(0);
   }

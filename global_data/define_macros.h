@@ -62,6 +62,6 @@ Using define statements instead of constants for increased efficiency
 // Test
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"
 #define INVALID_PARAMETERS_ERROR_MESSAGE \
-"Parameters\n" \
+"\n\nParameters\n" \
 "--test - Run the test to make sure the program is compatible with your system\n"
 #endif

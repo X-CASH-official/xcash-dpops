@@ -47,7 +47,7 @@ int main(int parameters_count, char* parameters[])
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup();
 
-  // iniltize the global variables
+  // initialize the global variables
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   block_verifiers_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char)); 
   nodes_public_address_list_received_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -91,7 +91,10 @@ int main(int parameters_count, char* parameters[])
     {
       pointer_reset(current_block_height);
     }
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   } 
 
@@ -105,7 +108,10 @@ int main(int parameters_count, char* parameters[])
     // check if the memory needed was allocated on the heap successfully
     if (previous_block_verifiers_list.block_verifiers_name[count] == NULL || previous_block_verifiers_list.block_verifiers_public_address[count] == NULL || previous_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -120,7 +126,10 @@ int main(int parameters_count, char* parameters[])
     // check if the memory needed was allocated on the heap successfully
     if (current_block_verifiers_list.block_verifiers_name[count] == NULL || current_block_verifiers_list.block_verifiers_public_address[count] == NULL || current_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -135,7 +144,10 @@ int main(int parameters_count, char* parameters[])
     // check if the memory needed was allocated on the heap successfully
     if (next_block_verifiers_list.block_verifiers_name[count] == NULL || next_block_verifiers_list.block_verifiers_public_address[count] == NULL || next_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -149,7 +161,10 @@ int main(int parameters_count, char* parameters[])
     // check if the memory needed was allocated on the heap successfully
     if (next_block_verifiers_list.block_verifiers_name[count] == NULL || next_block_verifiers_list.block_verifiers_public_address[count] == NULL || next_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -179,7 +194,10 @@ int main(int parameters_count, char* parameters[])
     // check if the memory needed was allocated on the heap successfully
     if (network_data_nodes_list.network_data_nodes_public_address[count] == NULL || network_data_nodes_list.network_data_nodes_IP_address[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -195,7 +213,10 @@ int main(int parameters_count, char* parameters[])
 
   if (current_round_part_backup_node_data.current_round_part_4_backup_node == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -206,7 +227,10 @@ int main(int parameters_count, char* parameters[])
 
   if (current_round_part_vote_data.current_vote_results == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -225,7 +249,10 @@ int main(int parameters_count, char* parameters[])
   // check if the memory needed was allocated on the heap successfully
   if (VRF_data.vrf_public_key_data_round_part_4 == NULL || VRF_data.vrf_public_key_round_part_4 == NULL || VRF_data.vrf_alpha_string_data_round_part_4 == NULL || VRF_data.vrf_alpha_string_round_part_4 == NULL || VRF_data.vrf_proof_data_round_part_4 == NULL || VRF_data.vrf_proof_round_part_4 == NULL || VRF_data.vrf_beta_string_data_round_part_4 == NULL || VRF_data.vrf_beta_string_round_part_4 == NULL || VRF_data.block_blob == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
 
@@ -241,7 +268,10 @@ int main(int parameters_count, char* parameters[])
     // check if the memory needed was allocated on the heap successfully
     if (VRF_data.block_blob_signature[count] == NULL || VRF_data.block_verifiers_random_data[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -291,7 +321,10 @@ int main(int parameters_count, char* parameters[])
   // check if the memory needed was allocated on the heap successfully
   if (blockchain_data.network_version_data == NULL || blockchain_data.timestamp_data == NULL || blockchain_data.previous_block_hash_data == NULL || blockchain_data.nonce_data == NULL || blockchain_data.block_reward_transaction_version_data == NULL || blockchain_data.unlock_block_data == NULL || blockchain_data.block_reward_input_data == NULL || blockchain_data.vin_type_data == NULL || blockchain_data.block_height_data == NULL || blockchain_data.block_reward_output_data == NULL || blockchain_data.block_reward_data == NULL || blockchain_data.stealth_address_output_tag_data == NULL || blockchain_data.stealth_address_output_data == NULL || blockchain_data.extra_bytes_size_data == NULL || blockchain_data.transaction_public_key_tag_data == NULL || blockchain_data.transaction_public_key_data == NULL || blockchain_data.extra_nonce_tag_data == NULL || blockchain_data.reserve_bytes_size_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4 == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data == NULL || blockchain_data.blockchain_reserve_bytes.previous_block_hash_data == NULL)
   {
-    color_print("Could not allocate the memory needed on the heap","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
     exit(0);
   }
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -310,7 +343,10 @@ int main(int parameters_count, char* parameters[])
     // check if the memory needed was allocated on the heap successfully
     if (blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -323,7 +359,10 @@ int main(int parameters_count, char* parameters[])
     // check if the memory needed was allocated on the heap successfully
     if (blockchain_data.transactions[count] == NULL)
     {
-      color_print("Could not allocate the memory needed on the heap","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
       exit(0);
     }
   }
@@ -351,7 +390,10 @@ int main(int parameters_count, char* parameters[])
   // create a connection to the database
   if (create_database_connection() == 0)
   {
-    color_print("Could not create a connection for the database\n","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not create a connection for the database",48);
+    error_message.total++;
+    print_error_message; 
     mongoc_cleanup();
     exit(0);
   }
@@ -362,7 +404,10 @@ int main(int parameters_count, char* parameters[])
   uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error);
   if (!uri_thread_pool)
   {
-    color_print("Could not create a pool of connections for the database\n","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not create a pool of connections for the database",55);
+    error_message.total++;
+    print_error_message;
     mongoc_client_destroy(database_client);
     mongoc_cleanup();
     exit(0);
@@ -370,7 +415,10 @@ int main(int parameters_count, char* parameters[])
   database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool);
   if (!database_client_thread_pool)
   {
-    color_print("Could not create a thread pool for the database\n","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not create a thread pool for the database",47);
+    error_message.total++;
+    print_error_message; 
     mongoc_client_destroy(database_client);
     mongoc_uri_destroy(uri_thread_pool);
     mongoc_cleanup();
@@ -399,7 +447,12 @@ int main(int parameters_count, char* parameters[])
   }
   else
   {
-    color_print("Could not get the wallets public address\n","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not get the wallets public address",40);
+    error_message.total++;
+    print_error_message; 
+    database_reset;
+    pointer_reset(data);
     exit(0);
   }
   
@@ -412,7 +465,10 @@ int main(int parameters_count, char* parameters[])
     }
     else
     {
-      color_print("Invalid parameters\n","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Invalid parameters",18);
+      error_message.total++;
+      print_error_message; 
       printf(INVALID_PARAMETERS_ERROR_MESSAGE);
     }  
     database_reset;
@@ -429,9 +485,13 @@ int main(int parameters_count, char* parameters[])
   memcpy(data+117,"\"}",2);
   if (read_document_field_from_collection(DATABASE_NAME,"delegates",data,"IP_address",block_verifiers_IP_address,0) == 0)
   {
-    color_print("Could not get the block verifiers IP address","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not get the block verifiers IP address",44);
+    error_message.total++;
+    print_error_message; 
     database_reset;
     pointer_reset(data);
+    exit(0);
   }
 
   // check if the block verifier has any of the databases
@@ -439,7 +499,16 @@ int main(int parameters_count, char* parameters[])
   {
     // check if all of the databases are synced
     color_print("\nCould not find your IP address in the database. This is because your database is out of sync, or you have not registered as a delegate.\nIf this process loops a few times, then make sure you have registered by visting the delegates website.","red");
-    check_if_databases_are_synced();
+    if (check_if_databases_are_synced() == 0)
+    {
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not check if the databases are synced",43);
+      error_message.total++;
+      print_error_message; 
+      database_reset;
+      pointer_reset(data);
+      exit(0);
+    }
     goto start;
   }
 
@@ -454,13 +523,29 @@ int main(int parameters_count, char* parameters[])
   }
 
   // sync the previous, current and next block verifiers list
-  sync_all_block_verifiers_list();
+  if (sync_all_block_verifiers_list() == 0)
+  {
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
+    error_message.total++;
+    print_error_message; 
+    database_reset;
+    pointer_reset(data);
+    exit(0);
+  }
 
   print_start_message("Starting all of the threads");
 
   // start the block height timer thread
   if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
+    error_message.total++;
+    print_error_message; 
+    database_reset;
+    pointer_reset(data);
+    exit(0);
     color_print("Could not start the current_block_height_timer_thread","red");
     database_reset;
     pointer_reset(data);
@@ -468,22 +553,33 @@ int main(int parameters_count, char* parameters[])
   
   color_print("Started the current block height timer thread","green");
 
-  // start the check_reserve_proofs_timer_thread
-  if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
+  // start the block height timer thread
+  if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
-    color_print("Could not start the check_reserve_proofs_timer_thread","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
+    error_message.total++;
+    print_error_message; 
     database_reset;
     pointer_reset(data);
-  } 
-
-  color_print("Started the reserve proofs timer thread","green");
+    exit(0);
+    color_print("Could not start the current_block_height_timer_thread","red");
+    database_reset;
+    pointer_reset(data);
+  }
+  
+  color_print("Started the current block height timer thread","green");
 
   // start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
-    color_print("Could not start the check_delegates_online_status_timer_thread","red");
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not start the check_delegates_online_status_timer_thread",62);
+    error_message.total++;
+    print_error_message; 
     database_reset;
     pointer_reset(data);
+    exit(0);
   }
 
   color_print("Started the check delegates online status timer thread","green");
@@ -493,8 +589,12 @@ int main(int parameters_count, char* parameters[])
   {
     if (create_server(1) == 0)
     {
-      color_print("Could not start the server","red");
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not start the server",26);
+      error_message.total++;
+      print_error_message; 
       database_reset;
+      pointer_reset(data);
       exit(0);
     }
   } 
