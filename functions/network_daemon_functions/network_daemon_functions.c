@@ -43,6 +43,13 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define GET_BLOCK_TEMPLATE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"get_block_template",18); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
   #define pointer_reset_all \
   free(message); \
   message = NULL; \
@@ -74,19 +81,18 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block template",HTTP_SETTINGS) <= 0)
   {  
-    pointer_reset_all;
-    return 0;
+    GET_BLOCK_TEMPLATE_ERROR("Could not create the block template");
   }
   
   if (parse_json_data(data,"blocktemplate_blob",result) == 0)
   {
-    pointer_reset_all;
-    return 0;
+    GET_BLOCK_TEMPLATE_ERROR("Could not create the block template");
   }
   
   pointer_reset_all; 
   return 1;
   
+  #undef GET_BLOCK_TEMPLATE_ERROR
   #undef pointer_reset_all
 }
 
@@ -113,6 +119,14 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   // Variables
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  // define macros
+  #define SUBMIT_BLOCK_TEMPLATE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"submit_block_template",21); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset(message); \
+  return 0;
+
   // check if the memory needed was allocated on the heap successfully
   if (message == NULL)
   {
@@ -131,18 +145,18 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"submit block template",HTTP_SETTINGS) <= 0)
   {  
-    pointer_reset(message);
-    return 0;
+    SUBMIT_BLOCK_TEMPLATE_ERROR("Could not submit the block template");
   }
   
   if (strstr(data,"error") != NULL)
   {
-    pointer_reset(message);
-    return 0;
+    SUBMIT_BLOCK_TEMPLATE_ERROR("Could not submit the block template");
   }
   
   pointer_reset(message); 
   return 1;
+
+  #undef SUBMIT_BLOCK_TEMPLATE_ERROR
 }
 
 
@@ -169,6 +183,13 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define GET_BLOCK_SETTINGS_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"get_block_settings",18); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
   #define pointer_reset_all \
   free(message); \
   message = NULL; \
@@ -200,15 +221,13 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block settings",HTTP_SETTINGS) <= 0)
   {  
-    pointer_reset_all;
-    return 0;
+    GET_BLOCK_SETTINGS_ERROR("Could not get the block settings");
   }
   memset(message,0,strlen(message));
   
   if (parse_json_data(data,"blob",message) == 0)
   {
-    pointer_reset_all;
-    return 0;
+    GET_BLOCK_SETTINGS_ERROR("Could not get the block settings");
   }
 
   if (strstr(data,BLOCKCHAIN_RESERVED_BYTES_START) != NULL)
@@ -222,6 +241,7 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
     return 1; 
   }  
   
+  #undef GET_BLOCK_SETTINGS_ERROR
   #undef pointer_reset_all
 }
 
@@ -230,7 +250,7 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: get_block_reserve_byte_data_hash
-Description: Gets the previous blocks reserve byte data hash
+Description: Gets the blocks reserve byte data hash
 Parameters:
   reserve_byte_data_hash - The reserve byte data hash
   BLOCK_HEIGHT - The block height
@@ -250,6 +270,13 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"get_block_reserve_byte_data_hash",32); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
   #define pointer_reset_all \
   free(message); \
   message = NULL; \
@@ -281,15 +308,13 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block settings",HTTP_SETTINGS) <= 0)
   {  
-    pointer_reset_all;
-    return 0;
+    GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR("Could not get the blocks reserve bytes data hash");
   }
   memset(message,0,strlen(message));
   
   if (parse_json_data(data,"blob",message) == 0)
   {
-    pointer_reset_all;
-    return 0;
+    GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR("Could not get the blocks reserve bytes data hash");
   }
 
   memset(reserve_byte_data_hash,0,strlen(reserve_byte_data_hash));
@@ -298,6 +323,7 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   pointer_reset_all;
   return 1;
 
+  #undef GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR
   #undef pointer_reset_all
 }
 
@@ -329,6 +355,13 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
   size_t counter = 0;
 
   // define macros
+  #define VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"verify_blockchain_network_transactions",32); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
   #define pointer_reset_all \
   free(message); \
   message = NULL; \
@@ -369,8 +402,7 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
 
   if (send_http_request(data,"127.0.0.1","/get_transactions",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"",MESSAGE_SETTINGS) <= 0)
   {  
-    pointer_reset_all;   
-    return 0;
+    VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR("Could not verify the blockchain network transactions");
   }
 
   // verify the blockchain_network_transactions
@@ -379,22 +411,21 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
   {
     if (strstr(data,"missed_tx") != NULL)
     {
-      pointer_reset_all;   
-      return 0;
+      VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR("Could not verify the blockchain network transactions");
     }
   }
   else
   {
     if (strstr(data,"missed_tx") != NULL || strstr(data,"\"in_pool\": false") != NULL)
     {
-      pointer_reset_all;   
-      return 0;
+      VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR("Could not verify the blockchain network transactions");
     }
   }
     
   pointer_reset_all; 
   return 1;
-  
+
+  #undef VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR  
   #undef pointer_reset_all
 }
 
@@ -420,6 +451,14 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  // define macros
+  #define GET_CURRENT_BLOCK_HEIGHT_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"get_current_block_height",24); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset(data); \
+  return 0;
+
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
@@ -432,18 +471,18 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get current block height",MESSAGE_SETTINGS) <= 0)
   {  
-    pointer_reset(data);   
-    return 0;
+    GET_CURRENT_BLOCK_HEIGHT_ERROR("Could not get the current block height");
   }
   
   if (parse_json_data(data,"count",result) == 0)
   {
-    pointer_reset(data); 
-    return 0;
+    GET_CURRENT_BLOCK_HEIGHT_ERROR("Could not get the current block height");
   }
     
   pointer_reset(data); 
   return 1;
+
+  #undef GET_CURRENT_BLOCK_HEIGHT_ERROR
 }
 
 
@@ -468,6 +507,14 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
+  // define macros
+  #define GET_PREVIOUS_BLOCK_HASH_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"get_previous_block_hash",23); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset(data); \
+  return 0;
+
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
@@ -480,16 +527,16 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_last_block_header\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get previous block hash",MESSAGE_SETTINGS) <= 0)
   {  
-    pointer_reset(data);   
-    return 0;
+    GET_PREVIOUS_BLOCK_HASH_ERROR("Could not get the previous block hash");
   }
   
   if (parse_json_data(data,"hash",result) == 0)
   {
-    pointer_reset(data); 
-    return 0;
+    GET_PREVIOUS_BLOCK_HASH_ERROR("Could not get the previous block hash");
   }
       
   pointer_reset(data); 
   return 1;
+
+  #undef GET_PREVIOUS_BLOCK_HASH_ERROR
 }

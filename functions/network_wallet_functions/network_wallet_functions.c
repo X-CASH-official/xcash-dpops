@@ -40,6 +40,12 @@ int get_public_address(const int MESSAGE_SETTINGS)
 
   // define macros
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
+  #define GET_PUBLIC_ADDRESS_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"get_public_address",18); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset(data); \
+  return 0;
 
   if (data == NULL)
   {
@@ -53,27 +59,25 @@ int get_public_address(const int MESSAGE_SETTINGS)
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",MESSAGE_SETTINGS) <= 0)
   {  
-    pointer_reset(data);   
-    return 0;
+    GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
   
   if (parse_json_data(data,"address",xcash_wallet_public_address) == 0)
   {
-    pointer_reset(data); 
-    return 0;
+    GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
   
   // check if the returned data is valid
   if (strnlen(xcash_wallet_public_address,BUFFER_SIZE) != XCASH_WALLET_LENGTH && strncmp(xcash_wallet_public_address,XCASH_WALLET_PREFIX,3) != 0)
   {
-     pointer_reset(data); 
-     return 0;
+     GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
   
   pointer_reset(data); 
   return 1;
 
   #undef GET_PUBLIC_ADDRESS_DATA
+  #undef GET_PUBLIC_ADDRESS_ERROR
 }
 
 
@@ -101,6 +105,13 @@ int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SE
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define SIGN_NETWORK_BLOCK_STRING_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sign_network_block_string",25); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
   #define pointer_reset_all \
   free(data2); \
   data2 = NULL; \
@@ -132,19 +143,18 @@ int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SE
 
   if (send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data2,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
   {  
-    pointer_reset_all;
-    return 0;
+    SIGN_NETWORK_BLOCK_STRING_ERROR("Could not sign the network block string");
   } 
 
   if (parse_json_data(data3,"signature",data) == 0)
   {
-    pointer_reset_all;
-    return 0;
+    SIGN_NETWORK_BLOCK_STRING_ERROR("Could not sign the network block string");
   }
 
   pointer_reset_all;
   return 1;
   
+  #undef SIGN_NETWORK_BLOCK_STRING_ERROR
   #undef pointer_reset_all
 }
 
@@ -175,6 +185,13 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define DATA_VERIFY_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"data_verify",11); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -209,19 +226,18 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data2,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",MESSAGE_SETTINGS) <= 0)
   {  
-    pointer_reset_all;
-    return 0;
+    DATA_VERIFY_ERROR("Could not verify the data");
   }
   
   if (strstr(data,"\"good\": true") == NULL)
   {
-    pointer_reset_all;
-    return 0;
+    DATA_VERIFY_ERROR("Could not verify the data");
   }
   
   pointer_reset_all;
   return 1;
 
+  #undef DATA_VERIFY_ERROR
   #undef pointer_reset_all
 }
 
@@ -252,6 +268,13 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define CHECK_RESEVE_PROOFS_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"check_reserve_proofs",25); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -276,24 +299,24 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
 
   if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"check reserve proof",HTTP_SETTINGS) <= 0)
   {  
-    pointer_reset_all;   
-    return 0;
+    CHECK_RESEVE_PROOFS_ERROR("Could not verify the reserve proof");
   }
 
   // check if the reserve proof is valid
   if (strstr(data2,"\"good\": true") == NULL || strstr(data2,"\"spent\": 0") == NULL)
   {  
-    pointer_reset_all;   
-    return 0;
+    CHECK_RESEVE_PROOFS_ERROR("Could not verify the reserve proof");
   }
 
   // parse the message
   if (parse_json_data(data2,"total",result) == 0)
   {
-    pointer_reset_all;   
-    return 0;
+    CHECK_RESEVE_PROOFS_ERROR("Could not verify the reserve proof");
   }
   
   pointer_reset_all;
   return 1;
+
+  #undef CHECK_RESEVE_PROOFS_ERROR
+  #undef pointer_reset_all
 }
