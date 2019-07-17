@@ -80,7 +80,7 @@ for (error_message_count = 0; error_message_count < error_message.total; error_m
 { \
   printf("\033[1;31m#%d %s: %s\033[0m\n",error_message_count+1,error_message.function[error_message_count],error_message.data[error_message_count]); \
 } \
-for (error_message_count = 0; error_message_count < error_message.total; error_message_count++) \
+for (error_message_count = 0; error_message_count < DATABASE_ARRAY_COUNT; error_message_count++) \
 { \
   memset(error_message.function[error_message_count],0,strlen(error_message.function[error_message_count])); \
   memset(error_message.data[error_message_count],0,strlen(error_message.data[error_message_count])); \

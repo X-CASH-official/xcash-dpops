@@ -269,7 +269,7 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
 
   // define macros
   #define CHECK_RESEVE_PROOFS_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"check_reserve_proofs",25); \
+  memcpy(error_message.function[error_message.total],"check_reserve_proofs",20); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
   pointer_reset_all; \

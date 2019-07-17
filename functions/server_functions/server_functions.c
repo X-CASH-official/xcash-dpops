@@ -4549,7 +4549,10 @@ int create_server(const int MESSAGE_SETTINGS)
     _exit(0); \
   }  
 
-  print_start_message("Creating the server");
+  if (MESSAGE_SETTINGS == 1)
+  {
+    print_start_message("Creating the server");
+  }
 
   // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
   signal(SIGCHLD, SIG_IGN);  
@@ -4722,21 +4725,24 @@ int create_server(const int MESSAGE_SETTINGS)
            }
            // close the forked process, since the client had an error sending data     
            SERVER_ERROR(1);
-         }    
+         }  
 
-         // get the current time
-         get_current_UTC_time;
+         if (MESSAGE_SETTINGS == 1)
+         { 
+           // get the current time
+           get_current_UTC_time;
 
-         memset(string,0,strlen(string));
-         memcpy(string,"Received ",9);
-         memcpy(string+9,&buffer[25],strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25);
-         memcpy(string+strlen(string)," from ",6);
-         memcpy(string+strlen(string),client_address,CLIENT_ADDRESS_LENGTH);
-         memcpy(string+strlen(string)," on port ",9);
-         memcpy(string+strlen(string),buffer2,BUFFER2_LENGTH);
-         memcpy(string+strlen(string),"\n",1);
-         memcpy(string+strlen(string),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
-         color_print(string,"green");
+           memset(string,0,strlen(string));
+           memcpy(string,"Received ",9);
+           memcpy(string+9,&buffer[25],strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25);
+           memcpy(string+strlen(string)," from ",6);
+           memcpy(string+strlen(string),client_address,CLIENT_ADDRESS_LENGTH);
+           memcpy(string+strlen(string)," on port ",9);
+           memcpy(string+strlen(string),buffer2,BUFFER2_LENGTH);
+           memcpy(string+strlen(string),"\n",1);
+           memcpy(string+strlen(string),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
+           color_print(string,"green");
+         }
 
          // check if a certain type of message has been received 
          if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
