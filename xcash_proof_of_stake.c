@@ -34,6 +34,7 @@ int main(int parameters_count, char* parameters[])
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   size_t count = 0;
+  size_t count2 = 0;
 
   // threads
   pthread_t thread_id_1;
@@ -207,6 +208,9 @@ int main(int parameters_count, char* parameters[])
   memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],NETWORK_DATA_NODE_1_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_1_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
   memcpy(network_data_nodes_list.network_data_nodes_public_address[1],NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
   memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],NETWORK_DATA_NODE_2_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_2_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+
+  // set the network_data_node_settings
+  network_data_node_settings = 0;
 
   // initialize the round_part_backup_node_data struct
   current_round_part_backup_node_data.current_round_part_4_backup_node = (char*)calloc(2,sizeof(char));
@@ -499,6 +503,18 @@ int main(int parameters_count, char* parameters[])
   {
     // check if all of the databases are synced
     color_print("\nCould not find your IP address in the database. This is because your database is out of sync, or you have not registered as a delegate.\nIf this process loops a few times, then make sure you have registered by visting the delegates website.","red");
+    
+    // sync the databases and then recheck if the block verifier is a network data node
+    if (sync_all_block_verifiers_list() == 0)
+    {
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
+      error_message.total++;
+      print_error_message; 
+      database_reset;
+      pointer_reset(data);
+      exit(0);
+    }
     if (check_if_databases_are_synced() == 0)
     {
       memcpy(error_message.function[error_message.total],"main",4);
@@ -513,7 +529,6 @@ int main(int parameters_count, char* parameters[])
   }
 
   // check if the block verifier is a network data node
-  network_data_node_settings = 0;
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
     if (strncmp(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
@@ -522,16 +537,68 @@ int main(int parameters_count, char* parameters[])
     }
   }
 
-  // sync the previous, current and next block verifiers list
-  if (sync_all_block_verifiers_list() == 0)
+  // check if all of the network data nodes are offline
+  if (network_data_node_settings == 1)
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
-    error_message.total++;
-    print_error_message; 
-    database_reset;
-    pointer_reset(data);
-    exit(0);
+    for (count = 0, count2 = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      if (get_delegate_online_status(network_data_nodes_list.network_data_nodes_IP_address[count]) == 0)
+      {
+        count2++;
+      }
+    }
+    if (count2 != NETWORK_DATA_NODES_AMOUNT)
+    {
+      // sync the previous, current and next block verifiers list
+      if (sync_all_block_verifiers_list() == 0)
+      {
+        memcpy(error_message.function[error_message.total],"main",4);
+        memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
+        error_message.total++;
+        print_error_message; 
+        database_reset;
+        pointer_reset(data);
+        exit(0);
+      }
+
+      // check if all of the databases are synced
+      if (check_if_databases_are_synced() == 0)
+      {
+        memcpy(error_message.function[error_message.total],"main",4);
+        memcpy(error_message.data[error_message.total],"Could not check if the databases are synced",43);
+        error_message.total++;
+        print_error_message; 
+        database_reset;
+        pointer_reset(data);
+        exit(0);
+      }
+    }
+  }
+  else
+  {
+    // sync the previous, current and next block verifiers list
+    if (sync_all_block_verifiers_list() == 0)
+    {
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
+      error_message.total++;
+      print_error_message; 
+      database_reset;
+      pointer_reset(data);
+      exit(0);
+    }
+
+    // check if all of the databases are synced
+    if (check_if_databases_are_synced() == 0)
+    {
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not check if the databases are synced",43);
+      error_message.total++;
+      print_error_message; 
+      database_reset;
+      pointer_reset(data);
+      exit(0);
+    }
   }
 
   print_start_message("Starting all of the threads");
@@ -553,22 +620,19 @@ int main(int parameters_count, char* parameters[])
   
   color_print("Started the current block height timer thread","green");
 
-  // start the block height timer thread
-  if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
+  // start the check_delegates_online_status_timer_thread
+  if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
     memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
+    memcpy(error_message.data[error_message.total],"Could not start the check_delegates_online_status_timer_thread",62);
     error_message.total++;
     print_error_message; 
     database_reset;
     pointer_reset(data);
     exit(0);
-    color_print("Could not start the current_block_height_timer_thread","red");
-    database_reset;
-    pointer_reset(data);
   }
-  
-  color_print("Started the current block height timer thread","green");
+
+  color_print("Started the check delegates online status timer thread","green");
 
   // start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)

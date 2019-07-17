@@ -1793,7 +1793,7 @@ int check_if_databases_are_synced()
   count--;
   sprintf(data,"%zu",count);
 
-  // check if your rreserve proofs database is synced
+  // check if your reserve proofs database is synced
   if (sync_check_reserve_proofs_database() == 0)
   {
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve proofs database is updated. This means you might need to sync the reserve proofs database.");

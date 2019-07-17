@@ -320,9 +320,6 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     memset(data,0,strnlen(data,BUFFER_SIZE));
   }
 
-
-
-
   // verify if the previous block hash is correct
   if (get_previous_block_hash(previous_block_hash,0) == 0)
   {

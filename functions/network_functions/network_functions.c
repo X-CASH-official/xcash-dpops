@@ -1144,8 +1144,6 @@ int sync_all_block_verifiers_list()
       goto start;
     }
 
-    color_print(data3,"yellow");
-
     if (verify_data(data3,0,0,0) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not verify data");
