@@ -2019,7 +2019,7 @@ Return: 0 if an error has occured, 1 if successfull
 int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // verify the message
-  if (verify_data(MESSAGE,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1) == 0)
   {   
     return 0;
   }
@@ -2186,24 +2186,18 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
 
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"",129);
-  count = 129;
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+count,current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH);
-    count += XCASH_WALLET_LENGTH;
-    memcpy(data+count,"|",1);
-    count += 1;
+    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH);
+    memcpy(data+strlen(data),"|",1);
   }
-  memcpy(data+count,"\",\r\n \"block_verifiers_IP_address_list\": \"",41);
-  count += 41;
+  memcpy(data+strlen(data),"\",\r\n \"block_verifiers_IP_address_list\": \"",41);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+count,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
-    count += strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE);
-    memcpy(data+count,"|",1);
-    count += 1;
+    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),"|",1);
   }
-  memcpy(data+count,"\",\r\n}",5);
+  memcpy(data+strlen(data),"\",\r\n}",5);
   
   // sign_data
   if (sign_data(data,0) == 0)
@@ -2358,7 +2352,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not verify the message");
   }
@@ -2458,7 +2452,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
@@ -2565,7 +2559,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
@@ -2658,7 +2652,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not verify the message");
   }
@@ -2758,7 +2752,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
@@ -2865,7 +2859,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
@@ -2959,7 +2953,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
@@ -3067,7 +3061,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
@@ -3155,7 +3149,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
@@ -3263,7 +3257,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
@@ -3381,7 +3375,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     send_data(CLIENT_SOCKET,"Could not verify the message",1);
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not verify the message");
@@ -3585,7 +3579,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not verify the message");
   }
@@ -3708,7 +3702,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not verify the message");
   }
@@ -3809,7 +3803,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not verify the message");
   }
@@ -3921,7 +3915,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not verify the message");
   }
@@ -4034,7 +4028,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
   // verify the data
-  if (verify_data(MESSAGE,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data");
   }
@@ -4159,7 +4153,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
   // verify the data
-  if (verify_data(MESSAGE,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not verify data");
   }
@@ -4267,7 +4261,7 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   return 0;
 
   // verify the data
-  if (verify_data(MESSAGE,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not verify data");
   }
@@ -4364,7 +4358,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   }
 
   // verify the data
-  if (verify_data(MESSAGE,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not verify data");
   }
@@ -4463,7 +4457,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   return 0;
 
   // verify the data
-  if (verify_data(MESSAGE,0,1,1) == 0)
+  if (verify_data(MESSAGE,0,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not verify data");
   }

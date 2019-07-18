@@ -26,7 +26,7 @@ char* block_verifiers_IP_address; // The block verifiers IP address
 struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round
 struct next_block_verifiers_list next_block_verifiers_list; // The list of block verifiers name, public address and IP address for the next round
-struct synced_block_verifiers_IP_addresses synced_block_verifiers_IP_addresses; // The list of block verifiers for syncing the databases
+struct synced_block_verifiers synced_block_verifiers; // The list of block verifiers for syncing the databases
 struct main_nodes_list main_nodes_list; // The list of main nodes public address and IP address
 struct network_data_nodes_list network_data_nodes_list; // The network data nodes
 struct current_round_part_backup_node_data current_round_part_backup_node_data; // The current_round_part_backup_node for each round part

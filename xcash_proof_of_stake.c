@@ -153,14 +153,15 @@ int main(int parameters_count, char* parameters[])
     }
   }
 
-  // initialize the synced_block_verifiers_IP_addresses struct 
+  // initialize the synced_block_verifiers struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    synced_block_verifiers_IP_addresses.IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-    synced_block_verifiers_IP_addresses.vote_settings[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    synced_block_verifiers.synced_block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    synced_block_verifiers.synced_block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
+    synced_block_verifiers.vote_settings[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
     // check if the memory needed was allocated on the heap successfully
-    if (next_block_verifiers_list.block_verifiers_name[count] == NULL || next_block_verifiers_list.block_verifiers_public_address[count] == NULL || next_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
+    if (synced_block_verifiers.synced_block_verifiers_public_address[count] == NULL || synced_block_verifiers.synced_block_verifiers_IP_address[count] == NULL || synced_block_verifiers.vote_settings[count] == NULL)
     {
       memcpy(error_message.function[error_message.total],"main",4);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
@@ -169,8 +170,8 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
   }
-  synced_block_verifiers_IP_addresses.vote_settings_true = 0;
-  synced_block_verifiers_IP_addresses.vote_settings_false = 0;
+  synced_block_verifiers.vote_settings_true = 0;
+  synced_block_verifiers.vote_settings_false = 0;
 
   // initialize the main_nodes_list struct 
   main_nodes_list.block_producer_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -547,20 +548,19 @@ int main(int parameters_count, char* parameters[])
         count2++;
       }
     }
+    // sync the previous, current and next block verifiers list
+    if (sync_all_block_verifiers_list() == 0)
+    {
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
+      error_message.total++;
+      print_error_message; 
+      database_reset;
+      pointer_reset(data);
+      exit(0);
+    }
     if (count2 != NETWORK_DATA_NODES_AMOUNT)
     {
-      // sync the previous, current and next block verifiers list
-      if (sync_all_block_verifiers_list() == 0)
-      {
-        memcpy(error_message.function[error_message.total],"main",4);
-        memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
-        error_message.total++;
-        print_error_message; 
-        database_reset;
-        pointer_reset(data);
-        exit(0);
-      }
-
       // check if all of the databases are synced
       if (check_if_databases_are_synced() == 0)
       {
@@ -619,20 +619,6 @@ int main(int parameters_count, char* parameters[])
   }
   
   color_print("Started the current block height timer thread","green");
-
-  // start the check_delegates_online_status_timer_thread
-  if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
-  {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not start the check_delegates_online_status_timer_thread",62);
-    error_message.total++;
-    print_error_message; 
-    database_reset;
-    pointer_reset(data);
-    exit(0);
-  }
-
-  color_print("Started the check delegates online status timer thread","green");
 
   // start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)

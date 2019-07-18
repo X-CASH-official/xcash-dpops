@@ -184,13 +184,12 @@ Description: Verifies signed data, for receiving data securely
 Parameters:
   message - The signed data
   HTTP_SETTINGS - The http settings
-  VERIFY_CURRENT_ROUND_PART_SETTINGS - 1 to verify the current_round_part, otherwise 0
   VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS - 1 to verify the current_round_part_backup_node, otherwise 0
 Return: 0 if the signed data is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS)
+int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
@@ -302,10 +301,29 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   {
     VERIFY_DATA_ERROR("Invalid MAIN_NODES_TO_NODES_PART_4_OF_ROUND message");
   }
-    
-  if (strncmp(message_settings,"NODE_TO_CONSENSUS_NODE_SEND_CURRENT_CONSENSUS_NODE_IP_ADDRESS",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_CONSENSUS_NODE_SEND_UPDATED_NODE_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_CONSENSUS_NODE_MAIN_NODE_SOCKET_TIMEOUT_ROUND_CHANGE",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_CONSENSUS_NODE_VOTE_RESULTS",BUFFER_SIZE) == 0)
+  else if (strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0)
   {
-    // check if the public address is in the block_verifiers_list struct
+    // check if the public address is in the synced_block_verifiers struct
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (memcmp(public_address,synced_block_verifiers.synced_block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+      {
+        settings = 1;
+      }
+    }
+    if (settings == 0)
+    {
+      VERIFY_DATA_ERROR("Invalid message");
+    }
+    memset(data,0,strnlen(data,BUFFER_SIZE));
+  }  
+  else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0)
+  {
+    memset(data,0,strnlen(data,BUFFER_SIZE));
+  } 
+  else
+  {
+    // check if the public address is in the current_block_verifiers_list struct
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (memcmp(public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
@@ -320,7 +338,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     memset(data,0,strnlen(data,BUFFER_SIZE));
   }
 
-  // verify if the previous block hash is correct
+  /*// verify if the previous block hash is correct
   if (get_previous_block_hash(previous_block_hash,0) == 0)
   {
     VERIFY_DATA_ERROR("Could not get the previous block hash");
@@ -328,16 +346,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   if (strncmp(previous_block_hash,message_previous_block_hash,BUFFER_SIZE) != 0)
   {
     VERIFY_DATA_ERROR("Invalid previous block hash");
-  }
-
-  // verify if the current_round_part is correct
-  if (VERIFY_CURRENT_ROUND_PART_SETTINGS == 1)
-  {
-    if (strncmp(current_round_part,message_current_round_part,BUFFER_SIZE) != 0)
-    {
-      VERIFY_DATA_ERROR("Invalid current_round_part");
-    }
-  }
+  }*/
 
   // verify if the current_round_part_backup_node
   if (VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS == 1)

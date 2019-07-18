@@ -1570,7 +1570,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
         bson_free(message);
       }
       // get the data hash of the collection
-      crypto_hash_sha512((unsigned char*)reserve_proofs_data_hash[count],(const unsigned char*)data,strnlen(data,52428800));
+      crypto_hash_sha512((unsigned char*)reserve_proofs_data_hash[count-1],(const unsigned char*)data,strnlen(data,52428800));
     }
 
     // get the data hash of the all of the reserve proofs data hash

@@ -265,7 +265,7 @@ void general_network_test()
   // verify the message
   if (settings == 1)
   {
-    if (verify_data(string,0,1,1) == 0)
+    if (verify_data(string,0,1) == 0)
     {   
       color_print("FAILED! Test for creating the server","red");
       color_print("FAILED! Test for sending and receving data using sockets","red");
@@ -352,7 +352,7 @@ void network_security_test()
   }
   
   // test the verify_data functions
-  if (verify_data(result_test,0,1,1) == 1)
+  if (verify_data(result_test,0,1) == 1)
   {   
     color_print("PASSED! Test for verify data to receive data securely","green");
     count_test++;

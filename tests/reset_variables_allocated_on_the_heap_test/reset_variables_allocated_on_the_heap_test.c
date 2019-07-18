@@ -2536,7 +2536,7 @@ int reset_variables_allocated_on_the_heap_test()
       memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
       memcpy(data_test,"{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}",60);
       sign_data(data_test,0);
-      verify_data((const char*)data_test,0,1,1);
+      verify_data((const char*)data_test,0,1);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -2608,7 +2608,7 @@ int reset_variables_allocated_on_the_heap_test()
       memcpy(data_test,"{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}",60);
       sign_data(data_test,0);
       send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,(const char*)data_test,TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0);
-      verify_data((const char*)result_test,0,1,1);
+      verify_data((const char*)result_test,0,1);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    

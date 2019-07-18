@@ -30,8 +30,9 @@ struct next_block_verifiers_list {
     char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers IP address
 };
 
-struct synced_block_verifiers_IP_addresses {
-    char* IP_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers IP address
+struct synced_block_verifiers {
+    char* synced_block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers public address
+    char* synced_block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers IP address
     char* vote_settings[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers vote
     int vote_settings_true; // The amount of block verifiers that voted true
     int vote_settings_false; // The amount of block verifiers that voted false
