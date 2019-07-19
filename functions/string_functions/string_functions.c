@@ -92,13 +92,16 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
     // copy the field's data
     memcpy(result,&str1[start],LENGTH);
  
-    // remove all the formating from the result
-    string_replace(result, "\"", "");
-    string_replace(result, ",", "");
-    string_replace(result, "[", "");
-    string_replace(result, "]", "");
-    string_replace(result, "{", "");
-    string_replace(result, "}", "");
+    // remove all the formating from the result, if it is not a database document
+    if (strstr(result,"username") == NULL && strstr(result,"total_vote_count") == NULL && strstr(result,"public_address_created_reserve_proof") == NULL && strstr(result,"reserve_bytes_data_hash") == NULL)
+    {
+      string_replace(result, "\"", "");
+      string_replace(result, ",", "");
+      string_replace(result, "[", "");
+      string_replace(result, "]", "");
+      string_replace(result, "{", "");
+      string_replace(result, "}", "");
+    }
   }
 
   pointer_reset(str);  
