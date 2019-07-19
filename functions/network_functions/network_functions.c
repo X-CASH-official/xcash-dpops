@@ -1148,8 +1148,6 @@ int sync_all_block_verifiers_list()
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not verify data");
     }
-
-    color_print(data3,"yellow");
  
     // parse the message
     memset(data2,0,strlen(data2));
@@ -1465,8 +1463,6 @@ int sync_check_reserve_proofs_database()
     SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not verify data");
   }
 
-  color_print(data3,"yellow");
-
   // parse the message
   memset(data2,0,strlen(data2));
   if (parse_json_data(data3,"block_verifiers_public_address_list",data2) == 0)
@@ -1513,7 +1509,7 @@ int sync_check_reserve_proofs_database()
     SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
   }
 
-  color_print("Sending all block verifiers a message to check if the reserve proof database is synced","green"); 
+  printf("Sending all block verifiers a message to check if the reserve proof database is synced\n"); 
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -1634,7 +1630,7 @@ int sync_reserve_proofs_database()
     start:
 
     // select a random block verifier from the majority vote settings to sync the database from
-    count = (int)(rand() % 99);
+    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
     if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       goto start;
@@ -1812,6 +1808,8 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
     exit(0);
   }
 
+   print_start_message("Checking if the reserve bytes database is synced");
+
   // reset the block_verifiers_IP_addresses 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -1832,11 +1830,17 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
   {
     count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
   } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+  
+  // get the current time
+  time(&current_date_and_time);
+  current_UTC_date_and_time = gmtime(&current_date_and_time);
+
   memset(data3,0,strlen(data3));
   memcpy(data3,"Connecting to network data node ",32);
   memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST \n",74);
-  printf("%s",data3);
+  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
+  memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
+  printf("%s\n",data3);
   memset(data3,0,strlen(data3));
 
   if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
@@ -1900,14 +1904,13 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
     SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
   }
 
-  color_print("Sending all block verifiers a message to check if the reserve bytes database is synced","green"); 
+  printf("Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(data,0,strlen(data));
     memset(data3,0,strlen(data3));
-    send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0);
-    if (verify_data(data,0,0) == 0)
+    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
       memcpy(synced_block_verifiers.vote_settings[count],"true",4);
       synced_block_verifiers.vote_settings_true++;
@@ -2028,7 +2031,7 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
     start:
 
     // select a random block verifier from the majority vote settings to sync the database from
-    count = (int)(rand() % 99);
+    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
     if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       goto start;
@@ -2204,6 +2207,8 @@ int sync_check_delegates_database()
     exit(0);
   }
 
+   print_start_message("Checking if the delegates database is synced");
+
   // reset the block_verifiers_IP_addresses 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -2224,11 +2229,17 @@ int sync_check_delegates_database()
   {
     count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
   } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+  
+  // get the current time
+  time(&current_date_and_time);
+  current_UTC_date_and_time = gmtime(&current_date_and_time);
+
   memset(data3,0,strlen(data3));
   memcpy(data3,"Connecting to network data node ",32);
   memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST \n",74);
-  printf("%s",data3);
+  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
+  memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
+  printf("%s\n",data3);
   memset(data3,0,strlen(data3));
 
   if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
@@ -2292,17 +2303,16 @@ int sync_check_delegates_database()
     SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sign_data");
   }
 
-  color_print("Sending all block verifiers a message to check if the delegates database is synced","green"); 
+  printf("Sending all block verifiers a message to check if the delegates database is synced\n"); 
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(data,0,strlen(data));
     memset(data3,0,strlen(data3));
-    send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0);
-    if (verify_data(data,0,0) == 0)
+    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"true",4);
-      synced_block_verifiers.vote_settings_true++;
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+      synced_block_verifiers.vote_settings_connection_timeout++;
     }
     else
     {
@@ -2319,7 +2329,7 @@ int sync_check_delegates_database()
     }   
   }
 
-  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
+  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     color_print("The delegates database is not synced","red");
     if (sync_delegates_database() == 0)
@@ -2403,7 +2413,7 @@ int sync_delegates_database()
   start:
 
   // select a random block verifier from the majority vote settings to sync the database from
-  count = (int)(rand() % 99);
+  count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
   if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
   {
     goto start;
@@ -2546,11 +2556,17 @@ int sync_check_statistics_database()
   {
     count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
   } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+  
+  // get the current time
+  time(&current_date_and_time);
+  current_UTC_date_and_time = gmtime(&current_date_and_time);
+
   memset(data3,0,strlen(data3));
   memcpy(data3,"Connecting to network data node ",32);
   memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST \n",74);
-  printf("%s",data3);
+  memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
+  memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
+  printf("%s\n",data3);
   memset(data3,0,strlen(data3));
 
   if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
@@ -2614,14 +2630,13 @@ int sync_check_statistics_database()
     SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sign_data");
   }
 
-  color_print("Sending all block verifiers a message to check if the statistics database is synced","green"); 
+  printf("Sending all block verifiers a message to check if the statistics database is synced\n"); 
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(data,0,strlen(data));
     memset(data3,0,strlen(data3));
-    send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0);
-    if (verify_data(data,0,0) == 0)
+    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
       memcpy(synced_block_verifiers.vote_settings[count],"true",4);
       synced_block_verifiers.vote_settings_true++;
@@ -2725,7 +2740,7 @@ int sync_statistics_database()
   start:
 
   // select a random block verifier from the majority vote settings to sync the database from
-  count = (int)(rand() % 99);
+  count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
   if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
   {
     goto start;
