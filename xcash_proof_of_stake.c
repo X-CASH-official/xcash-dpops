@@ -633,6 +633,20 @@ int main(int parameters_count, char* parameters[])
   }
 
   color_print("Started the check delegates online status timer thread","green");
+
+  // start the check_delegates_online_status_timer_thread
+  if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
+  {
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not start the check_delegates_online_status_timer_thread",62);
+    error_message.total++;
+    print_error_message; 
+    database_reset;
+    pointer_reset(data);
+    exit(0);
+  }
+
+  color_print("Started the check delegates online status timer thread","green");
  
   // start the server
   for (;;)

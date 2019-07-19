@@ -1996,6 +1996,56 @@ int calculate_main_nodes_roles()
     if (((count + 2) == VRF_BETA_LENGTH) && (main_nodes_count != 6))
     {
       color_print("The main nodes calculation process has run out of bytes to read","red");
+
+      // select a random network data node
+      if (strncmp(main_nodes_list.block_producer_public_address,"",1) == 0)
+      {
+        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+        memset(main_nodes_list.block_producer_public_address,0,strnlen(main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH));
+        memset(main_nodes_list.block_producer_IP_address,0,strnlen(main_nodes_list.block_producer_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memcpy(main_nodes_list.block_producer_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE));
+      } 
+      if (strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,"",1) == 0)
+      {
+        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+        memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_1_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE));
+      } 
+      if (strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,"",1) == 0)
+      {
+        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+        memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_2_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE));
+      } 
+      if (strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,"",1) == 0)
+      {
+        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+        memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_3_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE));
+      } 
+      if (strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,"",1) == 0)
+      {
+        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+        memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_4_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE));
+      }   
+      if (strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,"",1) == 0)
+      {
+        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+        memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,strnlen(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_5_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],XCASH_WALLET_LENGTH));
+        memcpy(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE));
+      } 
     }
   }
   return 1;
