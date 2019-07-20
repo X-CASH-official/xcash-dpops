@@ -2929,8 +2929,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   // create the message
   memset(data,0,strlen(data));
-  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"",139);
-  memcpy(data+139,data2,strnlen(data2,52428800));
+  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"",137);
+  memcpy(data+137,data2,strnlen(data2,52428800));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
@@ -3322,8 +3322,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
 
   // create the message
   memset(data,0,strlen(data));
-  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"statistics_database\": \"",139);
-  memcpy(data+139,data2,strnlen(data2,52428800));
+  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"statistics_database\": \"",131);
+  memcpy(data+131,data2,strnlen(data2,52428800));
+  memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
   if (sign_data(data,0) == 0)

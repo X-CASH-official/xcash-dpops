@@ -13,6 +13,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
 int send_data(const int SOCKET, char* data, const int APPEND_STRING_SETTINGS);
 int receive_data(const int SOCKET, char *message, const char* STRING, const int RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS, const int RECEIVE_DATA_SOCKET_TIMEOUT);
 int sync_all_block_verifiers_list();
+int get_synced_block_verifiers();
 int sync_check_reserve_proofs_database();
 int sync_reserve_proofs_database();
 int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT);
