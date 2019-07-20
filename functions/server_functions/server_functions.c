@@ -3125,8 +3125,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   // create the message
   memset(data,0,strlen(data));
-  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"delegates_database\": \"",139);
-  memcpy(data+139,data2,strnlen(data2,52428800));
+  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"delegates_database\": \"",129);
+  memcpy(data+129,data2,strnlen(data2,52428800));
+  memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
   if (sign_data(data,0) == 0)

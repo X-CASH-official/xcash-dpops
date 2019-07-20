@@ -102,6 +102,14 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
       string_replace(result, "{", "");
       string_replace(result, "}", "");
     }
+    else
+    {
+      string_replace(result, "{ \"$numberInt\" : \"", "");
+      string_replace(result, "{ \"$numberDouble\" : \"", "");
+      string_replace(result, "{ \"$numberLong\" : \"", "");
+      string_replace(result, ".0\" }", "");
+      string_replace(result,"\"{\"","{\"");
+    }
   }
 
   pointer_reset(str);  

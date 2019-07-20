@@ -269,7 +269,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   memcpy(data2,DATA,strnlen(DATA,BUFFER_SIZE));
 
   // count how many documents are in the data
-  count = string_count(DATA,"},") + 1;
+  count = string_count(DATA,"},{") + 1;
 
   for (count2 = 0; count2 < count; count2++)
   {
@@ -277,8 +277,8 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     if ((count2+1) != count)
     {
       memset(data3,0,strlen(data3));
-      memcpy(data3,data2,strnlen(strstr(data2,"},"),BUFFER_SIZE)-2);
-      data2 = strstr(data2,"},") + 2;     
+      memcpy(data3,data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"},{"),BUFFER_SIZE)+1);
+      data2 = strstr(data2,"},{") + 2;     
     }
     else
     {
@@ -703,6 +703,8 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     bson_free(message);
 
     string_replace(data,"{ \"$numberInt\" : ","");
+    string_replace(data,"{ \"$$numberDouble\" : ","");
+    string_replace(data,"{ \"$$numberLong\" : ","");
     string_replace(data," }, ",", ");
 
     count = 1;
@@ -827,6 +829,8 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
       if ((strncmp(DATA,"",BUFFER_SIZE) == 0) || (strncmp(DATA,"",BUFFER_SIZE) != 0 && strstr(data,DATA) != NULL))
       {
         string_replace(data,"{ \"$numberInt\" : ","");
+        string_replace(data,"{ \"$$numberDouble\" : ","");
+        string_replace(data,"{ \"$$numberLong\" : ","");
         string_replace(data," }, ",", ");
 
         // parse the json data        

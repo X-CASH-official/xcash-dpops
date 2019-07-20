@@ -444,6 +444,7 @@ void* check_delegates_online_status_timer_thread()
          {
            memset(data,0,strnlen(data,BUFFER_SIZE));
            memcpy(data,"{\"online_status\":\"false\"}",25);
+           print_error_message;
          }   
          if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
          {

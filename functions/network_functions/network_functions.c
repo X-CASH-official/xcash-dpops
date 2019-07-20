@@ -1598,7 +1598,7 @@ int sync_reserve_proofs_database()
     memset(data,0,strlen(data)); \
     memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",36); \
+    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
     goto start; \
   }  
@@ -1995,7 +1995,7 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
     memset(data,0,strlen(data)); \
     memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",36); \
+    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
     goto start; \
   }  
@@ -2367,6 +2367,8 @@ int sync_delegates_database()
   char* data = (char*)calloc(10485760,sizeof(char));  // 10 MB
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
+  size_t count2;
+  int settings;
 
   // define macros
   #define pointer_reset_all \
@@ -2387,7 +2389,7 @@ int sync_delegates_database()
     memset(data,0,strlen(data)); \
     memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",36); \
+    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
     goto start; \
   }  
@@ -2412,11 +2414,31 @@ int sync_delegates_database()
   
   start:
 
-  // select a random block verifier from the majority vote settings to sync the database from
-  count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
-  if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+  /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
+     if their was a lot of connection_timeouts, to where a majority vote could not be calculated, then select a random network data node instead
+  */
+  if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    goto start;
+    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
+    if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+    {
+      goto start;
+    }
+  }
+  else
+  {
+    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
+    for (count2 = 0, settings = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
+    {
+      if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count2],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+      {
+        settings = 1;
+      }
+    }
+    if (settings != 1)    
+    {
+      goto start;
+    }
   }
 
   memset(data,0,strlen(data));
@@ -2462,8 +2484,16 @@ int sync_delegates_database()
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
   }
 
+  // delete the collection from the database
+  if (delete_collection_from_database(DATABASE_NAME,"delegates",0) == 0)
+  {
+    SYNC_DELEGATES_DATABASE_ERROR("Could not update the delegates database",0);
+  }
+
   // add the data to the database
-  insert_multiple_documents_into_collection_json(DATABASE_NAME,"delegates",data2,0);
+  memset(data,0,strlen(data));
+  memcpy(data,data2,strlen(data2)-2);
+  insert_multiple_documents_into_collection_json(DATABASE_NAME,"delegates",data,0);
 
   pointer_reset_all;
   return 1;
@@ -2714,7 +2744,7 @@ int sync_statistics_database()
     memset(data,0,strlen(data)); \
     memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",36); \
+    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
     goto start; \
   }  
