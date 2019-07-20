@@ -7,11 +7,14 @@ Using define statements instead of constants for increased efficiency
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
-#define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
+// Blockchain
 #define XCASH_WALLET_PREFIX "XCA" // The prefix of a XCA address
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a xcash_proof_of_stake_signature for the signed data
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a xcash_proof_of_stake_signature for the signed data
+
+// Network
+#define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
+#define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
 #define MAXIMUM_CONNECTIONS 100 // The maximum connections a node can have at one time
 #define SOCKET_CONNECTION_TIMEOUT_SETTINGS 1000 // The time in milliseconds, to wait before a connection is cancelled
 #define SOCKET_DATA_TIMEOUT_SETTINGS 1 // The time in between read calls where there is no data
