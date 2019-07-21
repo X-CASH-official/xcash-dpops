@@ -1598,7 +1598,13 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   else if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
   { 
     sscanf(current_block_height,"%zu", &count3);
-    counter = count3 / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
+    if (count3 < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    {
+      pointer_reset_all;
+      database_reset_all;
+      return 0;
+    }
+    counter = ((count3 - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     for (count = 1; count <= counter; count++)
     {
       memset(data2,0,strlen(data2));

@@ -1682,7 +1682,7 @@ int sync_reserve_proofs_database()
     exit(0);
   }
 
-  for (count2 = 1; count2 <= 3; count2++)
+  for (count2 = 1; count2 <= TOTAL_RESERVE_PROOFS_DATABASES; count2++)
   {
     start:
 
@@ -1947,7 +1947,7 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
     }   
   }
 
-  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
+  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     color_print("The reserve bytes database is not synced","red");
     if (sync_reserve_bytes_database(BLOCK_HEIGHT) == 0)
@@ -2045,9 +2045,13 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
 
   // get the current reserve bytes database
   sscanf(BLOCK_HEIGHT,"%zu", &number);
-  number = (XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT - number) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
+  if (number < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  {
+    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the current block height",0);
+  }
+  number = ((number - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
 
-  for (count2 = 0; count2 <= number; count2++)
+  for (count2 = 1; count2 <= number; count2++)
   {
     start:
 
@@ -2170,7 +2174,7 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
       // add the data to the database
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);
-      sprintf(data2+15,"%zu",count2);
+      sprintf(data2+14,"%zu",count2);
 
       // delete the collection from the database
       delete_collection_from_database(DATABASE_NAME,data2,0);

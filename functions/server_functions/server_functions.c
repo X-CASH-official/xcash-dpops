@@ -1271,6 +1271,10 @@ int update_databases()
 
   // get the previous block height
   sscanf(current_block_height, "%zu", &count);
+  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  {
+    UPDATE_DATABASE_ERROR("Could not get the current block height");
+  }
   count--;
   sprintf(data,"%zu",count);
 
@@ -1285,7 +1289,7 @@ int update_databases()
   memcpy(data2+strlen(data2),"\"}",2);
 
   memcpy(data3,"reserve_bytes_",14);
-  count2 = count / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME; 
+  count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   sprintf(data3+14,"%zu",count2);
 
   if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
@@ -1895,11 +1899,15 @@ int calculate_main_nodes_roles()
   }
   
   sscanf(current_block_height,"%zu", &count);
+  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  {
+    UPDATE_DATABASE_ERROR("Could not get the current block height");
+  }
   count--;
   sprintf(data2,"%zu",count);
 
   // calculate the database to get the reserve byte data
-  count2 = count / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
+  count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memcpy(data,"reserve_bytes_",14);
   sprintf(data,"%d",count2);
 
@@ -4107,9 +4115,13 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   {    
     // get the previous network block string
     sscanf(current_block_height,"%zu", &count);
+    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    {
+      UPDATE_DATABASE_ERROR("Could not get the current block height");
+    }
     count--;
     sprintf(data3,"%zu",count);
-    count2 = count / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
+    count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(message,"{\"block_height\":\"",17);
     memcpy(message+17,data3,strnlen(data3,BUFFER_SIZE));
     memcpy(message+strlen(message),"\"}",2);
@@ -4232,9 +4244,13 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
   {    
     // get the previous network block string
     sscanf(current_block_height,"%zu", &count);
+    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    {
+      UPDATE_DATABASE_ERROR("Could not get the current block height");
+    }
     count--;
     sprintf(data3,"%zu",count);
-    count2 = count / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
+    count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(message,"{\"block_height\":\"",17);
     memcpy(message+17,data3,strnlen(data3,BUFFER_SIZE));
     memcpy(message+strlen(message),"\"}",2);
