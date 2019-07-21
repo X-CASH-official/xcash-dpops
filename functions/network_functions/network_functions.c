@@ -1571,9 +1571,8 @@ int sync_check_reserve_proofs_database()
     memset(data2,0,strlen(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
-      // vote that the database is synced since it could not connect to the block verifier or the block verifier was invalid
-      memcpy(synced_block_verifiers.vote_settings[count],"true",4);
-      synced_block_verifiers.vote_settings_true++;
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+      synced_block_verifiers.vote_settings_connection_timeout++;
     }
     else
     {
@@ -1590,7 +1589,7 @@ int sync_check_reserve_proofs_database()
     }   
   }
 
-  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
+  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     color_print("The reserve proof database is not synced","red");
     if (sync_reserve_proofs_database() == 0)
@@ -1683,7 +1682,7 @@ int sync_reserve_proofs_database()
     exit(0);
   }
 
-  for (count2 = 1; count2 <= 50; count2++)
+  for (count2 = 1; count2 <= 3; count2++)
   {
     start:
 
@@ -1718,14 +1717,14 @@ int sync_reserve_proofs_database()
     memcpy(data,"Connecting to block verifier ",29);
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
     memcpy(data+strlen(data)," to sync reserve_proofs_",24);
-    sprintf(data2+strlen(data),"%zu",count);
-    color_print(data,"green");
+    sprintf(data+strlen(data),"%zu",count2);
+    printf("%s\n",data);
 
     // get the database data hash
     memset(data,0,strlen(data));
-    memset(data2+strlen(data2),0,strlen(data2));
+    memset(data2,0,strlen(data2));
     memcpy(data2+strlen(data2),"reserve_proofs_",15);
-    sprintf(data2+strlen(data2),"%zu",count);
+    sprintf(data2+strlen(data2),"%zu",count2);
     if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
     {
       SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database",0);
@@ -1733,8 +1732,8 @@ int sync_reserve_proofs_database()
 
     // create the message
     memset(data2,0,strlen(data2));
-    memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"file\": \"",115);
-    sprintf(data2+115,"%zu",count2);
+    memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"file\": \"reserve_proofs_",130);
+    sprintf(data2+130,"%zu",count2);
     memcpy(data2+strlen(data2),"\",\r\n \"data_hash\": \"",19);
     memcpy(data2+strlen(data2),data,DATA_HASH_LENGTH);
     memcpy(data2+strlen(data2),"\",\r\n}",5);
@@ -1768,15 +1767,15 @@ int sync_reserve_proofs_database()
       // sync the database
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
-      sprintf(data+strlen(data),"%zu",count);
+      sprintf(data+strlen(data),"%zu",count2);
       memcpy(data+strlen(data)," is not synced, downloading it from ",36);
       memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],36);
       color_print(data,"red");
 
       // create the message
       memset(data2,0,strlen(data2));
-      memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"",118);
-      sprintf(data2+118,"%zu",count);
+      memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_proofs_",133);
+      sprintf(data2+133,"%zu",count2);
       memcpy(data2+strlen(data2),"\",\r\n}",5);
 
       // sign_data
@@ -1806,7 +1805,7 @@ int sync_reserve_proofs_database()
       // add the data to the database
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);
-      sprintf(data2+15,"%zu",count);
+      sprintf(data2+15,"%zu",count2);
 
       // delete the collection from the database
       delete_collection_from_database(DATABASE_NAME,data2,0);
@@ -1815,6 +1814,20 @@ int sync_reserve_proofs_database()
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2); 
       insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,0);
+
+      memset(data,0,strlen(data));
+      memcpy(data,"reserve_proofs_",15);
+      sprintf(data+strlen(data),"%zu",count2);
+      memcpy(data+strlen(data)," has been synced successfully\n",31);
+      color_print(data,"green");
+    }
+    else
+    {
+      memset(data,0,strlen(data));
+      memcpy(data,"reserve_proofs_",15);
+      sprintf(data+strlen(data),"%zu",count2);
+      memcpy(data+strlen(data)," is already synced\n",19);
+      color_print(data,"green");
     }
   }
 
@@ -1916,8 +1929,8 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
     memset(data2,0,strlen(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"true",4);
-      synced_block_verifiers.vote_settings_true++;
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+      synced_block_verifiers.vote_settings_connection_timeout++;
     }
     else
     {
@@ -2069,14 +2082,14 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
     memcpy(data,"Connecting to block verifier ",29);
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
     memcpy(data+strlen(data)," to sync reserve_bytes_",23);
-    sprintf(data2+strlen(data),"%zu",count);
+    sprintf(data+strlen(data),"%zu",count2);
     color_print(data,"green");
 
     // get the database data hash
     memset(data,0,strlen(data));
-    memset(data2+strlen(data2),0,strlen(data2));
+    memset(data2,0,strlen(data2));
     memcpy(data2+strlen(data2),"reserve_bytes_",14);
-    sprintf(data2+strlen(data2),"%zu",count);
+    sprintf(data2+strlen(data2),"%zu",count2);
     if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
     {
       SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database",0);
@@ -2084,8 +2097,8 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
 
     // create the message
     memset(data2,0,strlen(data2));
-    memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"file\": \"",114);
-    sprintf(data2+114,"%zu",count2);
+    memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"file\": \"reserve_bytes_",128);
+    sprintf(data2+128,"%zu",count2);
     memcpy(data2+strlen(data2),"\",\r\n \"data_hash\": \"",19);
     memcpy(data2+strlen(data2),data,DATA_HASH_LENGTH);
     memcpy(data2+strlen(data2),"\",\r\n}",5);
@@ -2119,15 +2132,15 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
       // sync the database
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
-      sprintf(data+strlen(data),"%zu",count);
+      sprintf(data+strlen(data),"%zu",count2);
       memcpy(data+strlen(data)," is not synced, downloading it from ",36);
       memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],36);
       color_print(data,"red");
 
       // create the message
       memset(data2,0,strlen(data2));
-      memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"",117);
-      sprintf(data2+117,"%zu",count);
+      memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_bytes_",131);
+      sprintf(data2+131,"%zu",count2);
       memcpy(data2+strlen(data2),"\",\r\n}",5);
 
       // sign_data
@@ -2157,7 +2170,7 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
       // add the data to the database
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);
-      sprintf(data2+15,"%zu",count);
+      sprintf(data2+15,"%zu",count2);
 
       // delete the collection from the database
       delete_collection_from_database(DATABASE_NAME,data2,0);
@@ -2166,6 +2179,20 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
       insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,0);
+
+      memset(data,0,strlen(data));
+      memcpy(data,"reserve_bytes_",14);
+      sprintf(data+strlen(data),"%zu",count2);
+      memcpy(data+strlen(data)," has been synced successfully\n",31);
+      color_print(data,"green");
+    }
+    else
+    {
+      memset(data,0,strlen(data));
+      memcpy(data,"reserve_bytes_",14);
+      sprintf(data+strlen(data),"%zu",count2);
+      memcpy(data+strlen(data)," is already synced\n",19);
+      color_print(data,"green");
     }
   }
 
@@ -2544,8 +2571,8 @@ int sync_check_statistics_database()
     memset(data2,0,strlen(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"true",4);
-      synced_block_verifiers.vote_settings_true++;
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+      synced_block_verifiers.vote_settings_connection_timeout++;
     }
     else
     {

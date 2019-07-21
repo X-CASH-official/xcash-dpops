@@ -2470,6 +2470,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\", \r\n}"
+  #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\", \r\n}"
+  
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -2528,15 +2531,15 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // create the message
-  if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
+  if (strncmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\"}",146);
+    memcpy(data,DATABASE_MESSAGE_SYNCED_TRUE,strnlen(DATABASE_MESSAGE_SYNCED_TRUE,BUFFER_SIZE));
   }
   else
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\"}",147);
+    memcpy(data,DATABASE_MESSAGE_SYNCED_FALSE,strnlen(DATABASE_MESSAGE_SYNCED_FALSE,BUFFER_SIZE));
   }
   
   // sign_data
@@ -2554,6 +2557,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   return 1;
 
   #undef pointer_reset_all
+  #undef DATABASE_MESSAGE_SYNCED_TRUE
+  #undef DATABASE_MESSAGE_SYNCED_FALSE
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR
 }
 
@@ -2631,6 +2636,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"",139);
   memcpy(data+139,data2,strnlen(data2,52428800));
+  memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
   if (sign_data(data,0) == 0)
@@ -2770,6 +2776,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\", \r\n}"
+  #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\", \r\n}"
+  
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -2831,12 +2840,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\"}",146);
+    memcpy(data,DATABASE_MESSAGE_SYNCED_TRUE,strnlen(DATABASE_MESSAGE_SYNCED_TRUE,BUFFER_SIZE));
   }
   else
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\"}",147);
+    memcpy(data,DATABASE_MESSAGE_SYNCED_FALSE,strnlen(DATABASE_MESSAGE_SYNCED_FALSE,BUFFER_SIZE));
   }
   
   // sign_data
@@ -2853,6 +2862,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   return 1;
 
+  #undef DATABASE_MESSAGE_SYNCED_TRUE
+  #undef DATABASE_MESSAGE_SYNCED_FALSE
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR
 }
@@ -3449,7 +3460,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(data3+41,reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
   memcpy(data3+strlen(data3),"\"}",2);
 
-  for (count = 1; count <= 50; count++)
+  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
@@ -3479,7 +3490,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   // remove any reserve proofs that were created by the public address
   if (settings == 1)
   {
-    for (count = 1; count <= 50; count++)
+    for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);
@@ -3509,7 +3520,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(data+strlen(data),"\"}",2);
 
   // add the reserve proof to the database
-  for (count = 1; count <= 50; count++)
+  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);

@@ -1446,7 +1446,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   data = NULL; \
   free(data2); \
   data2 = NULL; \
-  for (count = 0; count < 50; count++) \
+  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++) \
   { \
     pointer_reset(reserve_proofs_data_hash[count]); \
   } \
@@ -1538,7 +1538,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   // reserve proofs all
   if (strncmp(COLLECTION,"reserve_proofs",BUFFER_SIZE) == 0)
   {      
-    for (count = 1; count <= 50; count++)
+    for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
@@ -1581,7 +1581,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     memset(data,0,strnlen(data,52428800));
     count2 = 0;
 
-    for (count = 0; count < 50; count++)
+    for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memcpy(data+count2,reserve_proofs_data_hash[count],DATA_HASH_LENGTH);
       count2 += DATA_HASH_LENGTH;

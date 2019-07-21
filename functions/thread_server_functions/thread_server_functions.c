@@ -234,7 +234,7 @@ void* check_reserve_proofs_timer_thread()
       reserve_proofs_settings = 0;
 
       // at this point the block verifier will have added all other reserve proofs to the invalid_reserve_proofs struct, so now we need to delete all of the reserve proofs in the collections
-      for (count = 1; count <= 50; count++)
+      for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
       {
         memset(data,0,strlen(data));
         memcpy(data,"reserve_proofs_",15);
