@@ -216,6 +216,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
   pointer_reset_all; \
+  print_error_message; \
   return 0;
 
   #define pointer_reset_all \
@@ -317,7 +318,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     }
     memset(data,0,strnlen(data,BUFFER_SIZE));
   }  
-  else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0)
+  else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
   {
     memset(data,0,strnlen(data,BUFFER_SIZE));
   } 
@@ -338,7 +339,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     memset(data,0,strnlen(data,BUFFER_SIZE));
   }
 
-  /*// verify if the previous block hash is correct
+  // verify if the previous block hash is correct
   if (get_previous_block_hash(previous_block_hash,0) == 0)
   {
     VERIFY_DATA_ERROR("Could not get the previous block hash");
@@ -346,7 +347,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   if (strncmp(previous_block_hash,message_previous_block_hash,BUFFER_SIZE) != 0)
   {
     VERIFY_DATA_ERROR("Invalid previous block hash");
-  }*/
+  }
 
   // verify if the current_round_part_backup_node
   if (VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS == 1)
