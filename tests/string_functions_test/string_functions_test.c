@@ -37,7 +37,7 @@ int string_functions_test()
   #define VERIFY_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"good\": VERIFY_RPC_CALL_TEST_DATA\r\n  }\r\n}"
   #define GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"blockhashing_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"blocktemplate_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"difficulty\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"expected_reward\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"height\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"prev_hash\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"reserved_offset\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"status\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"untrusted\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\r\n  }\r\n}"
  
- 
+  // Block verifiers verification process messages
  
 /* 
   The purpose of this message is for the block producer to send the created block for the part of the round to the nodes, so they can verify the block.
@@ -143,45 +143,6 @@ int string_functions_test()
 
 
 /*
-  The purpose of this message is for a node to send all block verifiers its delegate data to register
-
-  message_settings - The type of the message
-  delegate_name - The delegate name
-  delegates_IP_address - The delegates IP address
-  public_address - The public address of the node that is sending the data.
-  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
-  */
-  #define NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"delegate_name\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"delegates_IP_address\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n}"
-
-
-
-
-/*
-  The purpose of this message is for a node to send all block verifiers the message to remove a delegate
-
-  message_settings - The type of the message
-  public_address - The public address of the node that is sending the data.
-  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
-  */
-  #define NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegate_name\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegate_public_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegates_IP_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n}"
-
-
-
-
-/*
-  The purpose of this message is for a node to send all block verifiers a message to update the delegates information
-
-  message_settings - The type of the message
-  item - The field name to update (about, website, team, pool_mode, fee_structure, server_settings)
-  value - The field names value
-  public_address - The public address of the node that is sending the data.
-  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
-  */
-  #define NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"item\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"value\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n}"
-
-
-
- /*
   The purpose of this message is for the block verifiers to send the block verifiers the invalid reserve proofs they have found
  
   message_settings - The type of the message
@@ -256,6 +217,60 @@ int string_functions_test()
   #define NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST "{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_IP_address_list\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"public_address\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"previous_block_hash\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"current_round_part\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"current_round_part_backup_node\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"data\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"xcash_proof_of_stake_signature\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}"
   
  
+
+  // Delegates commands
+
+/*
+  The purpose of this message is for a node to send all block verifiers its delegate data to register
+
+  message_settings - The type of the message
+  delegate_name - The delegate name
+  delegates_IP_address - The delegates IP address
+  public_address - The public address of the node that is sending the data.
+  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"delegate_name\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"delegates_IP_address\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\",\r\n}"
+
+
+
+/*
+  The purpose of this message is for a node to send all block verifiers the message to remove a delegate
+
+  message_settings - The type of the message
+  public_address - The public address of the node that is sending the data.
+  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegate_name\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegate_public_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"delegates_IP_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\",\r\n}"
+
+
+
+/*
+  The purpose of this message is for a node to send all block verifiers a message to update the delegates information
+
+  message_settings - The type of the message
+  item - The field name to update (about, website, team, pool_mode, fee_structure, server_settings)
+  value - The field names value
+  public_address - The public address of the node that is sending the data.
+  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE "{\r\n \"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"item\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"value\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"public_address\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n \"xcash_proof_of_stake_signature\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\",\r\n}"
+
+
+
+/*
+  The purpose of this message is for a node to send a reserve proof to the block verifiers to add to the reserve proofs database
+ 
+  message_settings - The type of the message
+  delegates_public_address - The delegates public address
+  reserve_proof - The reserve proof
+  public_address - The public address of the node that is sending the data.
+  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF "{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"delegates_public_address\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"reserve_proof\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"public_address\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"xcash_proof_of_stake_signature\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n}"
+
+
+
+  // Blockchain syncing process 
  
 /*
   The purpose of this message is for a node to retrieve the reserve bytes for a given block
@@ -278,19 +293,6 @@ int string_functions_test()
   */
   #define BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES\",\r\n \"reserve_bytes\": \"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES\",\r\n \"public_address\": \"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES\",\r\n \"data\": \"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES\",\r\n \"xcash_proof_of_stake_signature\": \"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES\",\r\n}"
  
- 
- 
-/*
-  The purpose of this message is for a node to send a reserve proof to the block verifiers to add to the reserve proofs database
- 
-  message_settings - The type of the message
-  delegates_public_address - The delegates public address
-  reserve_proof - The reserve proof
-  public_address - The public address of the node that is sending the data.
-  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
-  */
-  #define NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF "{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"delegates_public_address\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"reserve_proof\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"public_address\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n \"xcash_proof_of_stake_signature\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\",\r\n}"
-
 
 
 /*
@@ -317,6 +319,8 @@ int string_functions_test()
   #define BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"data_hash\": \"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"public_address\": \"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"previous_block_hash\": \"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"current_round_part\": \"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"current_round_part_backup_node\": \"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"data\": \"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"xcash_proof_of_stake_signature\": \"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n}"
 
 
+
+  // Database syncing process
  
 /*
   The purpose of this message is for a block verifiers to check if they are synced up to the reserve bytes decentralized database

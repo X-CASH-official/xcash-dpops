@@ -215,7 +215,6 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memcpy(error_message.function[error_message.total],"verify_data",11); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
   print_error_message; \
   return 0;
 
