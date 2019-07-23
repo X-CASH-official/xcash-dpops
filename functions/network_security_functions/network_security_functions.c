@@ -338,7 +338,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     memset(data,0,strnlen(data,BUFFER_SIZE));
   }
 
-  // verify if the previous block hash is correct
+  /*// verify if the previous block hash is correct
   if (get_previous_block_hash(previous_block_hash,0) == 0)
   {
     VERIFY_DATA_ERROR("Could not get the previous block hash");
@@ -346,7 +346,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   if (strncmp(previous_block_hash,message_previous_block_hash,BUFFER_SIZE) != 0)
   {
     VERIFY_DATA_ERROR("Invalid previous block hash");
-  }
+  }*/
 
   // verify if the current_round_part_backup_node
   if (VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS == 1)

@@ -287,7 +287,7 @@ void* check_reserve_proofs_timer_thread()
       }
       
       // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
-      for (count = 0; count < 100; count++)
+      for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
       {
         memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
         memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));
@@ -308,7 +308,7 @@ void* check_reserve_proofs_timer_thread()
     // select a random reserve proofs collection
     memset(data,0,strlen(data));
     memcpy(data,"reserve_proofs_",15);
-    sprintf(data+15,"%d",((rand() % (50 - 1 + 1)) + 1)); 
+    sprintf(data+15,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
 
     // select a random document in the collection
     count = ((rand() % (count_all_documents_in_collection(DATABASE_NAME,data,0) - 1 + 1)) + 1);
