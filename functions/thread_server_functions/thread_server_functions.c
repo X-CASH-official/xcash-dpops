@@ -311,7 +311,15 @@ void* check_reserve_proofs_timer_thread()
     sprintf(data+15,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
 
     // select a random document in the collection
-    count = ((rand() % (count_all_documents_in_collection(DATABASE_NAME,data,0) - 1 + 1)) + 1);
+    count = count_all_documents_in_collection(DATABASE_NAME,data,0);
+    if (count > 0)
+    {
+      count = ((rand() % (count_all_documents_in_collection(DATABASE_NAME,data,0) - 1 + 1)) + 1);
+    }
+    else
+    {
+      continue;
+    }   
 
     // get a random document from the collection
     if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,"",&database_multiple_documents_fields,count,1,0,"",0) == 1)
@@ -467,7 +475,7 @@ void* check_delegates_online_status_timer_thread()
       database_multiple_documents_fields.document_count = 0;
       database_multiple_documents_fields.database_fields_count = 0;
     }
-    sleep(1);
+    sleep(60);
   }
   pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);
