@@ -230,7 +230,7 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
     GET_BLOCK_SETTINGS_ERROR("Could not get the block settings");
   }
 
-  if (strstr(data,BLOCKCHAIN_RESERVED_BYTES_START) != NULL)
+  if (strstr(message,BLOCKCHAIN_RESERVED_BYTES_START) != NULL)
   {
     pointer_reset_all; 
     return 2; 
@@ -240,6 +240,7 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
     pointer_reset_all; 
     return 1; 
   }  
+  return 0;
   
   #undef GET_BLOCK_SETTINGS_ERROR
   #undef pointer_reset_all

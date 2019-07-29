@@ -460,14 +460,16 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
     number += 60;
   }  
 
-  if (number > 2097091)
+  blockchain_data.unlock_block_data_length = 2;
+  /*if (number > 2097091)
   {
     blockchain_data.unlock_block_data_length = 8;
   }
   else
   {
     blockchain_data.unlock_block_data_length = 6;
-  }
+  }*/
+
   count+= blockchain_data.unlock_block_data_length;
   if (count > DATA_LENGTH)
   {
@@ -498,14 +500,15 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   sscanf(current_block_height, "%zu", &number);
   number += 1;
 
-  if (number > 2097151)
+  blockchain_data.block_height_data_length = 2;
+  /*if (number > 2097151)
   {
     blockchain_data.block_height_data_length = 8;
   }
   else
   {
     blockchain_data.block_height_data_length = 6;
-  }
+  }*/
   count+= blockchain_data.block_height_data_length;
   if (count > DATA_LENGTH)
   {
@@ -528,9 +531,14 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   data3 = strstr(DATA,BLOCKCHAIN_RESERVED_BYTES_START);
   if (data3 == NULL)
   {
-    NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR("Invalid network_block_string, Invalid block_reward");
+    data3 = strstr(DATA,BLOCKCHAIN_RESERVED_BYTES_DATA_HASH);
+    if (data3 == NULL)
+    {
+      NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR("Invalid network_block_string, Invalid block_reward");
+    }
   }
-  blockchain_data.block_reward_data_length = strnlen(DATA,BUFFER_SIZE) - strnlen(data3,BUFFER_SIZE) - count - 138;
+  blockchain_data.block_reward_data_length = 12;
+  //blockchain_data.block_reward_data_length = strnlen(DATA,BUFFER_SIZE) - strnlen(data3,BUFFER_SIZE) - count - 136;
   count+= blockchain_data.block_reward_data_length;
   if (count > DATA_LENGTH)
   {
@@ -577,7 +585,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   memcpy(blockchain_data.transaction_public_key_tag_data,&DATA[count-blockchain_data.transaction_public_key_tag_data_length],blockchain_data.transaction_public_key_tag_data_length);
 
   // transaction_public_key
-  blockchain_data.transaction_public_key_data_length = 64;
+  blockchain_data.transaction_public_key_data_length = 66;
   count+= blockchain_data.transaction_public_key_data_length;
   if (count > DATA_LENGTH)
   {
@@ -604,6 +612,8 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   memcpy(blockchain_data.reserve_bytes_size_data,&DATA[count-blockchain_data.reserve_bytes_size_data_length],blockchain_data.reserve_bytes_size_data_length);
   blockchain_data.reserve_bytes_size = varint_decode((size_t)strtol(blockchain_data.reserve_bytes_size_data, NULL, 16));
 
+  if (strstr(DATA,BLOCKCHAIN_RESERVED_BYTES_DATA_HASH) == NULL)
+  {
 
   // blockchain_reserve_bytes
   // skip the BLOCKCHAIN_RESERVED_BYTES_START
@@ -828,6 +838,13 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   // set the count to the end of the reserve bytes
   message_copy1 = strstr(DATA,BLOCKCHAIN_RESERVED_BYTES_END);
   count = strnlen(DATA,BUFFER_SIZE) - strnlen(message_copy1,BUFFER_SIZE) + 62;
+  }
+  else
+  {
+    message_copy1 = strstr(DATA,BLOCKCHAIN_RESERVED_BYTES_DATA_HASH);
+    count = strnlen(DATA,BUFFER_SIZE) - strnlen(message_copy1,BUFFER_SIZE) + 260;
+  }
+  
 
   // ringct_version
   blockchain_data.ringct_version_data_length = 2;
@@ -930,7 +947,7 @@ int blockchain_data_to_network_block_string(char* result)
   // unlock_block
   if (varint_encode((long long int)blockchain_data.unlock_block,blockchain_data.unlock_block_data) == 0)
   {
-    BLOCKCHAIN_DATA_TO_NETWORK_BLOCK_ERROR("Could not create the varint for the timestamp");
+    BLOCKCHAIN_DATA_TO_NETWORK_BLOCK_ERROR("Could not create the varint for the unlcok block");
   }
   blockchain_data.unlock_block_data_length = strnlen(blockchain_data.unlock_block_data,BUFFER_SIZE_NETWORK_BLOCK_DATA);
   memcpy(result+count,blockchain_data.unlock_block_data,blockchain_data.unlock_block_data_length);  
@@ -1453,7 +1470,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_reward_transaction_version");
   }
 
-  // unlock_block
+  /*// unlock_block
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
     if (get_current_block_height(current_block_height,0) == 0)
@@ -1473,12 +1490,13 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid unlock_block");
     }
-  }  
+  }*/  
 
   // block_reward_input
   if (blockchain_data.block_reward_input_data_length != 2 || memcmp(blockchain_data.block_reward_input_data,BLOCK_REWARD_INPUT,2) != 0)
   {
-    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_reward_input");
+    color_print(blockchain_data.block_reward_input_data,"yellow");
+    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_reward_input");    
   }
 
   // vin_type
@@ -1487,7 +1505,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid vin_type");
   }
 
-  // block_height
+  /*// block_height
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
     if ((blockchain_data.block_height <= 2097151 && blockchain_data.block_height_data_length != 6) || (blockchain_data.block_height > 2097151 && blockchain_data.block_height_data_length != 8) || blockchain_data.block_height != number+1)
@@ -1501,7 +1519,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_height");
     }
-  }
+  }*/
   
 
   // block_reward_output
@@ -1529,7 +1547,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // extra_bytes_size
-  if (blockchain_data.extra_bytes_size_data_length != 2 || blockchain_data.extra_bytes_size != 163 || (((blockchain_data.transaction_public_key_tag_data_length + blockchain_data.transaction_public_key_data_length + blockchain_data.extra_nonce_tag_data_length + blockchain_data.reserve_bytes_size_data_length) / 2) + blockchain_data.reserve_bytes_size) != blockchain_data.extra_bytes_size)
+  if (blockchain_data.extra_bytes_size_data_length != 2 || blockchain_data.extra_bytes_size != 163 || (((blockchain_data.transaction_public_key_tag_data_length + blockchain_data.transaction_public_key_data_length - 2 + blockchain_data.extra_nonce_tag_data_length + blockchain_data.reserve_bytes_size_data_length) / 2) + blockchain_data.reserve_bytes_size) != blockchain_data.extra_bytes_size)
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid extra_bytes_size");
   }
@@ -1541,7 +1559,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // transaction_public_key
-  if (blockchain_data.transaction_public_key_data_length != 64)
+  if (blockchain_data.transaction_public_key_data_length != 66)
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transaction_public_key");
   }
@@ -1618,9 +1636,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid vrf_beta_string_round_part_4");
   }
-
+  
   // vrf_data_round_part_4
-  if (crypto_vrf_verify((unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_4,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_4,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4)) != 0)
+  if (crypto_vrf_verify(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_4,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_4,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4,(unsigned long long)strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4)) != 0)
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid vrf_data_round_part_4");
   }
@@ -1659,20 +1677,27 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
   
   // check what block verifiers vrf secret key and vrf public key to use
-  for (count = 0; count < DATA_HASH_LENGTH; count += 2)
+  if (memcmp(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",200) != 0)
   {
-    memset(data,0,strlen(data));
-    memcpy(data,&data2[count],2);
-    counter = (int)strtol(data, NULL, 16);  
-   
-    // if it is not in the range of 01 - C8 then skip the byte
-    if (counter != 0 && counter <= 200)
+    for (count = 0; count < DATA_HASH_LENGTH; count += 2)
     {
-      counter = counter % 100;
-      break;
+      memset(data,0,strlen(data));
+      memcpy(data,&data2[count],2);
+      counter = (int)strtol(data, NULL, 16);  
+   
+      // if it is not in the range of 01 - C8 then skip the byte
+      if (counter != 0 && counter <= 200)
+      {
+        counter = counter % 100;
+        break;
+      }
     }
   }
-
+  else
+  {
+    counter = 0;
+  }
+  
   // check if the selected vrf secret key and vrf public key are the same as the vrf_secret_key_round_part_4 and vrf_public_key_round_part_4
   if (memcmp(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_round_part_4,blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[counter],crypto_vrf_SECRETKEYBYTES) != 0 || memcmp(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[counter],crypto_vrf_PUBLICKEYBYTES) != 0)
   {

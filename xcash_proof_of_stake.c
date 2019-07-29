@@ -240,6 +240,8 @@ int main(int parameters_count, char* parameters[])
   }
 
   // initialize the VRF_data struct 
+  VRF_data.vrf_secret_key_data_round_part_4 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  VRF_data.vrf_secret_key_round_part_4 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   VRF_data.vrf_public_key_data_round_part_4 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   VRF_data.vrf_public_key_round_part_4 = (unsigned char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
   VRF_data.vrf_alpha_string_data_round_part_4 = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -460,7 +462,7 @@ int main(int parameters_count, char* parameters[])
     pointer_reset(data);
     exit(0);
   }
-  
+
   // check if the program needs to run the test
   if (parameters_count == 2)
   {
@@ -516,7 +518,7 @@ int main(int parameters_count, char* parameters[])
       pointer_reset(data);
       exit(0);
     }
-    if (check_if_databases_are_synced() == 0)
+    /*if (check_if_databases_are_synced() == 0)
     {
       memcpy(error_message.function[error_message.total],"main",4);
       memcpy(error_message.data[error_message.total],"Could not check if the databases are synced",43);
@@ -525,7 +527,7 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       pointer_reset(data);
       exit(0);
-    }
+    }*/
     goto start;
   }
 
@@ -535,6 +537,21 @@ int main(int parameters_count, char* parameters[])
     if (strncmp(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       network_data_node_settings = 1;
+    }
+  }
+
+  // check if all of the network data nodes are offline
+  if (network_data_node_settings == 1)
+  {
+    for (count = 0, count2 = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BUFFER_SIZE) != 0)
+      {
+        if (get_delegate_online_status(network_data_nodes_list.network_data_nodes_IP_address[count]) == 0)
+        {
+          count2++;
+        }
+      }      
     }
   }
 
@@ -562,7 +579,7 @@ int main(int parameters_count, char* parameters[])
     if (count2 != NETWORK_DATA_NODES_AMOUNT)
     {
       // check if all of the databases are synced
-      if (check_if_databases_are_synced() == 0)
+      /*if (check_if_databases_are_synced() == 0)
       {
         memcpy(error_message.function[error_message.total],"main",4);
         memcpy(error_message.data[error_message.total],"Could not check if the databases are synced",43);
@@ -571,7 +588,7 @@ int main(int parameters_count, char* parameters[])
         database_reset;
         pointer_reset(data);
         exit(0);
-      }
+      }*/
     }
   }
   else
@@ -634,7 +651,7 @@ int main(int parameters_count, char* parameters[])
 
   color_print("Started the check reserve proofs timer thread","green");
 
-  // start the check_delegates_online_status_timer_thread
+ /* // start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
     memcpy(error_message.function[error_message.total],"main",4);
@@ -646,7 +663,7 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
-  color_print("Started the check delegates online status timer thread","green");
+  color_print("Started the check delegates online status timer thread","green");*/
  
   // start the server
   for (;;)
@@ -665,7 +682,7 @@ int main(int parameters_count, char* parameters[])
 
   database_reset;
   pointer_reset(data);
-  return 0; 
+  return 0;  
 
   #undef database_reset
 }

@@ -64,7 +64,16 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  for (;;)
+  get_current_block_height(data,0);
+  if (start_new_round() == 0)
+  {
+    print_error_message;
+  }
+  else
+  {
+    printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",data);
+  } 
+  /*for (;;)
   {
     start:
     // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
@@ -100,7 +109,7 @@ void* current_block_height_timer_thread()
         sleep(1);
       }
     }
-  }
+  }*/
   pointer_reset(data);
   pthread_exit((void *)(intptr_t)1);
 }
