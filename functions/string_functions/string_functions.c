@@ -409,12 +409,11 @@ Parameters:
   result - The result
   RESERVE_BYTES - The reserve bytes
   ITEM - The item to get the reserve bytes data for
-  LENGTH - The legnth of the item
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM, const size_t LENGTH)
+int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM)
 {  
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -445,12 +444,11 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
     data = strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING) + strlen(BLOCKCHAIN_DATA_SEGMENT_STRING);
   }  
   memset(result,0,strlen(result));
-  memcpy(result,data,LENGTH);
+  memcpy(result,data,strnlen(data,BUFFER_SIZE) - strnlen(strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING),BUFFER_SIZE));
 
   pointer_reset(datacopy);
   return 1;
 }
-
 
 
 
