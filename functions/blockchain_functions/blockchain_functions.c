@@ -1242,6 +1242,85 @@ int blockchain_data_to_network_block_string(char* result)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: add_data_hash_to_network_block_string
+Description: Adds the data hash to the network block string
+Parameters:
+network_block_string - The network_block_string
+network_block_string_data_hash - The network block string with the data hash
+Return: 0 if an error has occured or it is not verified, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int add_data_hash_to_network_block_string(char* network_block_string, char* network_block_string_data_hash)
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  size_t count2;
+  size_t counter;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    memcpy(error_message.function[error_message.total],"insert_data_hash_into_network_block_string",42);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  } 
+
+  // get the data hash of the network block string
+  crypto_hash_sha512((unsigned char*)data,(const unsigned char*)network_block_string,(unsigned long long)strnlen(network_block_string,BUFFER_SIZE));
+
+  // convert the SHA512 data hash to a string
+  for (counter = 0, count = 0; counter < 64; counter++, count += 2)
+  {
+    sprintf(data2+count,"%02x",data[counter] & 0xFF);
+  }
+
+  memset(network_block_string_data_hash,0,strnlen(network_block_string_data_hash,BUFFER_SIZE));
+  memcpy(network_block_string_data_hash,network_block_string,BUFFER_SIZE);
+
+  // get the reserve bytes of the network block string
+  memset(data,0,strnlen(data,BUFFER_SIZE));
+  memcpy(data,&network_block_string_data_hash[(strnlen(network_block_string_data_hash,BUFFER_SIZE)) - (strnlen(strstr(network_block_string_data_hash,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE)-66)],((strnlen(network_block_string_data_hash,BUFFER_SIZE)) - (strnlen(strstr(network_block_string_data_hash,BLOCKCHAIN_RESERVED_BYTES_END),BUFFER_SIZE)-62)) - ((strnlen(network_block_string_data_hash,BUFFER_SIZE)) - (strnlen(strstr(network_block_string_data_hash,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE)-66)) - 62);
+
+  // replace the reserve bytes with the network block string data hash
+  if (string_replace(network_block_string_data_hash,data,data2) == 0)
+  {
+    memcpy(error_message.function[error_message.total],"add_data_hash_to_network_block_string",37); \
+    memcpy(error_message.data[error_message.total],"Could not add the data hash to the network block string",55); \
+    error_message.total++; \
+    pointer_reset_all; \
+    return 0; 
+  }
+
+  pointer_reset_all;
+  return 1; 
+
+  #undef pointer_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: verify_network_block_data
 Description: Verifies a blockchain_data struct
 Parameters:
