@@ -215,9 +215,9 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
   }
   
   // create the message
-  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",68);
-  memcpy(message+68,block_height,strnlen(block_height,BUFFER_SIZE));
-  memcpy(message+68+strnlen(block_height,BUFFER_SIZE),"\"}}",3);
+  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",67);
+  memcpy(message+67,block_height,strnlen(block_height,BUFFER_SIZE));
+  memcpy(message+strlen(message),"\"}}",3);
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block settings",HTTP_SETTINGS) <= 0)
   {  
