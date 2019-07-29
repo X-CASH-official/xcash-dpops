@@ -1909,12 +1909,12 @@ int calculate_main_nodes_roles()
   // calculate the database to get the reserve byte data
   count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memcpy(data,"reserve_bytes_",14);
-  sprintf(data,"%d",count2);
+  sprintf(data+14,"%d",count2);
 
   // create the message
   memcpy(data3,"{\"block_height\":\"",17);
-  memcpy(data3,data2,strnlen(data2,BUFFER_SIZE));
-  memcpy(data3,"\"}",2);
+  memcpy(data3+17,data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(data3+strlen(data3),"\"}",2);
 
   // get the reserve byte data
   memset(data2,0,strlen(data2));
@@ -1925,7 +1925,7 @@ int calculate_main_nodes_roles()
 
   // get the vrf_beta_string_data_round_part_3
   memset(data3,0,strlen(data3));
-  if (parse_reserve_bytes_data(data3,(const char*)data2,34,VRF_BETA_LENGTH) == 0)
+  if (parse_reserve_bytes_data(data3,(const char*)data2,8) == 0)
   {
     CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
   }
@@ -1948,11 +1948,12 @@ int calculate_main_nodes_roles()
     if (count2 != 0 && count2 <= 200 && settings == 0)
     {
       count2 = count2 % 100;
+      printf("%d\n",count2);
       if (main_nodes_count == 0)
       {
         // calculate the block_producer
-        memset(main_nodes_list.block_producer_public_address,0,strnlen(main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_IP_address,0,strnlen(main_nodes_list.block_producer_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_public_address,0,strlen(main_nodes_list.block_producer_public_address));
+        memset(main_nodes_list.block_producer_IP_address,0,strlen(main_nodes_list.block_producer_IP_address));
         memcpy(main_nodes_list.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH));
         memcpy(main_nodes_list.block_producer_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
       }
@@ -2000,10 +2001,14 @@ int calculate_main_nodes_roles()
       number[count3] = count2;
       count3++;
       main_nodes_count++;
+      if (main_nodes_count == 6)
+      {
+        break;
+      }
     }
     if (((count + 2) == VRF_BETA_LENGTH) && (main_nodes_count != 6))
     {
-      color_print("The main nodes calculation process has run out of bytes to read","red");
+      color_print("The main nodes calculation process has run out of bytes to read.\nA random network data node will be the block producer","red");
 
       // select a random network data node
       if (strncmp(main_nodes_list.block_producer_public_address,"",1) == 0)
@@ -2057,10 +2062,10 @@ int calculate_main_nodes_roles()
     }
   }
   return 1;
-
+  
+  #undef CALCULATE_MAIN_NODES_ROLES
   #undef pointer_reset_all
 }
-
 
 
 /*
