@@ -2058,7 +2058,6 @@ int calculate_main_nodes_roles()
     if (count2 != 0 && count2 <= 200 && settings == 0)
     {
       count2 = count2 % 100;
-      printf("%d\n",count2);
       if (main_nodes_count == 0)
       {
         // calculate the block_producer
