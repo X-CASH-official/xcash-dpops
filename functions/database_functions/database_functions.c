@@ -1294,7 +1294,7 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
-      return 0;
+      return -1;
     }
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);

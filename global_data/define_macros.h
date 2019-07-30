@@ -27,8 +27,8 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_TRANSACATIONS_PER_BLOCK 1000000 // The maximum amount of transaction per block
 
 // proof of stake
-#define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid.
-#define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid.
+#define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
 
 // Network
 #define SEND_DATA_PORT 8000 // The port that is used by all nodes to send and receive data

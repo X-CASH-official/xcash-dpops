@@ -1916,7 +1916,7 @@ int check_if_databases_are_synced()
   sleep(10);
 
   // check if your reserve bytes database is synced
-  if (sync_check_reserve_bytes_database((const char*)data) == 0)
+  if (sync_check_reserve_bytes_database() == 0)
   {    
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.");
   }
@@ -2057,7 +2057,7 @@ int calculate_main_nodes_roles()
     // if it is not in the range of 01 - C8 or it has already been calculated then skip the byte
     if (count2 != 0 && count2 <= 200 && settings == 0)
     {
-      count2 = count2 % 100;
+      count2 = count2 % BLOCK_VERIFIERS_AMOUNT;
       if (main_nodes_count == 0)
       {
         // calculate the block_producer

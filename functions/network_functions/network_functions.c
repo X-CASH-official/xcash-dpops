@@ -1844,13 +1844,11 @@ int sync_reserve_proofs_database()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_reserve_bytes_database
 Description: Checks if the block verifier needs to sync the reserve bytes database
-Parameters:
-  BLOCK_HEIGHT - The block height
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
+int sync_check_reserve_bytes_database()
 {
   // Variables
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1950,7 +1948,7 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
   if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     color_print("The reserve bytes database is not synced","red");
-    if (sync_reserve_bytes_database(BLOCK_HEIGHT) == 0)
+    if (sync_reserve_bytes_database() == 0)
     {
       memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33);
       memcpy(error_message.data[error_message.total],"Could not sync the reserve bytes database",41);
@@ -1975,13 +1973,11 @@ int sync_check_reserve_bytes_database(const char* BLOCK_HEIGHT)
 -----------------------------------------------------------------------------------------------------------
 Name: sync_reserve_bytes_database
 Description: Syncs the reserve bytes database
-Parameters:
-  BLOCK_HEIGHT - The block height
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
+int sync_reserve_bytes_database()
 {
   // Variables
   char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
@@ -2044,14 +2040,28 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
   }
 
   // get the current reserve bytes database
-  sscanf(BLOCK_HEIGHT,"%zu", &number);
+  sscanf(current_block_height,"%zu", &number);
+  number--;
   if (number < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the current block height",0);
   }
   number = ((number - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
 
+  // get what reserve bytes database count it has and start at that count to sync
   for (count2 = 1; count2 <= number; count2++)
+  {
+    memset(data2,0,strlen(data2));
+    memcpy(data2+strlen(data2),"reserve_bytes_",14);
+    sprintf(data2+strlen(data2),"%zu",count2);
+    counter = count_all_documents_in_collection(DATABASE_NAME,data2,0);
+    if (counter < 1)
+    {
+      break;
+    }
+  }
+
+  for (count2 = counter; count2 <= number; count2++)
   {
     start:
 
@@ -2198,6 +2208,13 @@ int sync_reserve_bytes_database(const char* BLOCK_HEIGHT)
       memcpy(data+strlen(data)," is already synced\n",19);
       color_print(data,"green");
     }
+  }
+
+  // check that the reserve bytes database is synced and if not sync all of the reserve bytes databases
+  if (sync_check_reserve_bytes_database() == 0)
+  {    
+    counter = 1;
+    goto start;
   }
 
   pointer_reset_all;
