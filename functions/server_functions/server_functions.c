@@ -504,9 +504,16 @@ int start_part_4_of_round()
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  struct send_data_socket_thread_parameters send_data_socket_thread_parameters;
   int count = 0;
   int count2;
   int counter;
+
+  // threads
+  pthread_t thread_id_1;
+  pthread_t thread_id_2;
+  pthread_t thread_id_3;
+  pthread_t thread_id_4;
 
   // define macros
   #define pointer_reset_all \
@@ -523,6 +530,17 @@ int start_part_4_of_round()
   error_message.total++; \
   pointer_reset_all; \
   return 0;
+
+  #define SEND_DATA_SOCKET_THREAD(message) \
+  memcpy(send_data_socket_thread_parameters.DATA,data,strnlen(message,BUFFER_SIZE)); \
+  pthread_create(&thread_id_1, NULL, &send_data_socket_thread_1,(void *)&send_data_socket_thread_parameters); \
+  pthread_detach(thread_id_1); \
+  pthread_create(&thread_id_2, NULL, &send_data_socket_thread_2,(void *)&send_data_socket_thread_parameters); \
+  pthread_detach(thread_id_2); \
+  pthread_create(&thread_id_3, NULL, &send_data_socket_thread_3,(void *)&send_data_socket_thread_parameters); \
+  pthread_detach(thread_id_3); \
+  pthread_create(&thread_id_4, NULL, &send_data_socket_thread_4,(void *)&send_data_socket_thread_parameters); \
+  pthread_detach(thread_id_4);
 
   #define RESTART_ROUND \
   memset(data,0,strlen(data)); \
@@ -576,24 +594,7 @@ int start_part_4_of_round()
   } \
   else if (memcmp(current_round_part_backup_node,"5",1) == 0) \
   { \
-    if (memcmp(current_round_part,"4",1) != 0) \
-    { \
-      color_print("Waiting until 4 minutes and 40 seconds of the round to synchronize all block verifiers","green"); \
-      for (;;) \
-      { \
-        usleep(200000); \
-        get_current_UTC_time; \
-        if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec == 40) \
-        { \
-          break; \
-        } \
-      } \
-    } \
-    main_network_data_node_create_block = 1; \
-    memset(current_round_part,0,strlen(current_round_part)); \
-    memcpy(current_round_part,"4",1); \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"0",1); \
+    data_network_node_create_block(); \
   } \
   goto start;  
 
@@ -618,6 +619,10 @@ int start_part_4_of_round()
     print_error_message;  
     exit(0);
   }
+
+  // initialize the send_data_socket_thread_parameters struct
+  send_data_socket_thread_parameters.socket_connection_timeout_settings = SOCKET_CONNECTION_TIMEOUT_SETTINGS;
+  send_data_socket_thread_parameters.socket_data_timeout_settings = SOCKET_DATA_TIMEOUT_SETTINGS;
 
   start:
 
@@ -678,13 +683,7 @@ int start_part_4_of_round()
     memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43); 
 
     // send the message to all block verifiers
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-      {
-        send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
-      }
-    }
+    SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
     sleep(10);
@@ -748,13 +747,7 @@ int start_part_4_of_round()
     memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
 
     // send the message to all block verifiers
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-      {
-        send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
-      }
-    }
+    SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
     sleep(10);
@@ -817,13 +810,7 @@ int start_part_4_of_round()
     memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
 
     // send the message to all block verifiers
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-      {
-        send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
-      }
-    }
+    SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
     sleep(10);
@@ -923,13 +910,8 @@ int start_part_4_of_round()
         START_PART_4_OF_ROUND_ERROR("Could not sign_data");
       }    
 
-      for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-      {
-        if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-        {
-          send_data_socket(current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,data3,"",0);
-        }
-      }
+      // send the message to all block verifiers
+      SEND_DATA_SOCKET_THREAD(data3);
     }
   
 
@@ -960,13 +942,7 @@ int start_part_4_of_round()
   }
 
   // send the message to all block verifiers
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
-    }
-  }
+  SEND_DATA_SOCKET_THREAD(data3);
 
   // wait for the block verifiers to process the votes
   sleep(10);
@@ -1015,13 +991,7 @@ int start_part_4_of_round()
   memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",27); 
 
   // send the message to all block verifiers
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
-    }
-  }
+  SEND_DATA_SOCKET_THREAD(data3);
 
   // wait for the block verifiers to process the votes
   sleep(10);
@@ -1104,13 +1074,7 @@ int start_part_4_of_round()
   }
 
   // send the message to all block verifiers
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      send_data_socket((const char*)current_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,(const char*)data3,"",0);
-    }
-  }
+  SEND_DATA_SOCKET_THREAD(data3);
 
   // wait for the block verifiers to process the votes
   sleep(10);

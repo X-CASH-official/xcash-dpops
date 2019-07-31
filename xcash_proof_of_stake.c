@@ -666,11 +666,26 @@ int main(int parameters_count, char* parameters[])
  
  current_round_part_vote_data.vote_results_valid = 0;
    
-  for (int count5 = 0; count5 < 5; count5++)
+  /*for (int count5 = 0; count5 < 5; count5++)
   {
     send_data_socket("10.10.10.1",SEND_DATA_PORT,data,"",0);
     sleep(1);
-  }
+  }*/
+
+  pthread_t thread_id_5;
+  pthread_t thread_id_6;
+  pthread_t thread_id_7;
+  pthread_t thread_id_8;
+  struct send_data_socket_thread_parameters send_data_socket_thread_parameters = {data,SOCKET_CONNECTION_TIMEOUT_SETTINGS,SOCKET_DATA_TIMEOUT_SETTINGS};
+  pthread_create(&thread_id_5, NULL, &send_data_socket_thread_1,(void *)&send_data_socket_thread_parameters);
+  pthread_detach(thread_id_5);
+  pthread_create(&thread_id_6, NULL, &send_data_socket_thread_2,(void *)&send_data_socket_thread_parameters);
+  pthread_detach(thread_id_6);
+  pthread_create(&thread_id_7, NULL, &send_data_socket_thread_3,(void *)&send_data_socket_thread_parameters);
+  pthread_detach(thread_id_7);
+  pthread_create(&thread_id_8, NULL, &send_data_socket_thread_4,(void *)&send_data_socket_thread_parameters);
+  pthread_detach(thread_id_8);
+  sleep(2);
 
   color_print("done","yellow");
 

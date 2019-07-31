@@ -723,7 +723,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const c
     {
       pointer_reset(message);
     }
-    memcpy(error_message.function[error_message.total],"get_block_template",18);
+    memcpy(error_message.function[error_message.total],"send_data_socket",16);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message;  
@@ -1159,7 +1159,7 @@ int sync_all_block_verifiers_list()
     // parse the previous_block_verifiers_name_list
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(previous_block_verifiers_list.block_verifiers_name[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      memcpy(previous_block_verifiers_list.block_verifiers_name[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
       data2 = strstr(data2,"|") + 1;
     }
 
@@ -1172,7 +1172,7 @@ int sync_all_block_verifiers_list()
     // parse the previous_block_verifiers_public_address_list
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
       data2 = strstr(data2,"|") + 1;
     }
 
@@ -1185,7 +1185,7 @@ int sync_all_block_verifiers_list()
     // parse the previous_block_verifiers_IP_address_list
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
       data2 = strstr(data2,"|") + 1;
     }
 
@@ -1199,7 +1199,7 @@ int sync_all_block_verifiers_list()
     // parse the current_block_verifiers_name_list
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(current_block_verifiers_list.block_verifiers_name[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      memcpy(current_block_verifiers_list.block_verifiers_name[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
       data2 = strstr(data2,"|") + 1;
     }
 
@@ -1212,7 +1212,7 @@ int sync_all_block_verifiers_list()
     // parse the current_block_verifiers_public_address_list
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(current_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      memcpy(current_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
       data2 = strstr(data2,"|") + 1;
     }
 
@@ -1225,7 +1225,7 @@ int sync_all_block_verifiers_list()
     // parse the current_block_verifiers_IP_address_list
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
       data2 = strstr(data2,"|") + 1;
     }
 
@@ -1239,7 +1239,7 @@ int sync_all_block_verifiers_list()
     // parse the next_block_verifiers_name_list
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(next_block_verifiers_list.block_verifiers_name[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      memcpy(next_block_verifiers_list.block_verifiers_name[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
       data2 = strstr(data2,"|") + 1;
     }
 
@@ -1252,7 +1252,7 @@ int sync_all_block_verifiers_list()
     // parse the next_block_verifiers_public_address_list
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(next_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      memcpy(next_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
       data2 = strstr(data2,"|") + 1;
     }
 
@@ -1265,7 +1265,7 @@ int sync_all_block_verifiers_list()
     // parse the next_block_verifiers_IP_address_list
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(strstr(data2,"|"),BUFFER_SIZE));
+      memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
       data2 = strstr(data2,"|") + 1;
     }
 

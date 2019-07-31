@@ -15,6 +15,7 @@
 #include "variables.h"
 
 #include "database_functions.h"
+#include "define_macro_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
@@ -490,4 +491,675 @@ void* check_delegates_online_status_timer_thread()
   pthread_exit((void *)(intptr_t)1);
 
   #undef pointer_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: send_data_socket_thread_1
+Description: Sends data to the current_block_verifiers_list
+Parameters:
+  parameters - A pointer to the write_file_thread_parameters struct
+  struct write_file_thread_parameters
+    DATA - The data to write to the file
+    FILE_NAME - The file name
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* send_data_socket_thread_1(void* parameters)
+{  
+  // Variables 
+  struct send_data_socket_thread_parameters* data = parameters;
+  struct timeval SOCKET_TIMEOUT = {data->socket_data_timeout_settings, 0}; 
+  char buffer2[BUFFER_SIZE];
+  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  socklen_t socket_option_settings = sizeof(socket_settings);
+  int client_socket;
+  int count;
+
+  // define macros
+  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
+
+  #define pointer_reset_all \
+  free(str); \
+  str = NULL; \
+  free(message); \
+  message = NULL;
+
+  #define SEND_DATA_SOCKET_THREAD_1_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"send_data_socket_thread_1",25); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  error_message.total++; \
+  close(client_socket); \
+  print_error_message; \
+  continue;   
+
+  // check if the memory needed was allocated on the heap successfully
+  if (str == NULL || message == NULL)
+  {
+    if (str != NULL)
+    {
+      pointer_reset(str);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    memcpy(error_message.function[error_message.total],"send_data_socket_thread_1",25);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  } 
+
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT / 4; count++)
+  {
+    // check to see if the block verifier is going to send a message to itself
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      continue;
+    }
+    const size_t HOST_LENGTH = strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE);
+    memset(message,0,strlen(message));
+    memset(str,0,strlen(str));
+
+    /* Create the socket  
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
+    */
+    client_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    if (client_socket == -1)
+    {     
+      SEND_DATA_SOCKET_THREAD_1_ERROR("Could not create the socket");
+    }
+
+    /* Set the socket options for sending and receiving data
+    SOL_SOCKET = socket level
+    SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
+    */
+    if (setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+    {    
+      SEND_DATA_SOCKET_THREAD_1_ERROR("Could not create the socket settings");
+    } 
+  
+    // convert the hostname if used, to an IP address
+    const struct hostent* HOST_NAME = gethostbyname(current_block_verifiers_list.block_verifiers_IP_address[count]); 
+    if (HOST_NAME == NULL)
+    {    
+      SEND_DATA_SOCKET_THREAD_1_ERROR("Could not convert the hostname to an IP address");
+    }
+    
+    // convert the port to a string  
+    sprintf(buffer2,"%d",SEND_DATA_PORT); 
+   
+    const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+  
+    /* setup the connection
+    AF_INET = IPV4
+    use htons to convert the port from host byte order to network byte order short
+    */
+    memset(&serv_addr,0,sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+    serv_addr.sin_port = htons(SEND_DATA_PORT);
+
+    /* set the first poll structure to our socket
+    POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+    */
+    socket_file_descriptors.fd = client_socket;
+    socket_file_descriptors.events = POLLOUT;
+
+    // connect to the socket
+    if (connect(client_socket,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+    {    
+      if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,data->socket_connection_timeout_settings) == 1 && getsockopt(client_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+      {   
+        if (socket_settings != 0)
+        { 
+          SEND_DATA_SOCKET_THREAD_1_ERROR("Could not connect to the socket");
+        } 
+      }
+    }
+
+    // get the current socket settings
+    socket_settings = fcntl(client_socket, F_GETFL, NULL);
+    if (socket_settings == -1)
+    {    
+      SEND_DATA_SOCKET_THREAD_1_ERROR("Could not get the socket settings");
+    }
+
+    // set the socket to blocking mode
+    socket_settings &= (~O_NONBLOCK);
+    if (fcntl(client_socket, F_SETFL, socket_settings) == -1)
+    {
+      SEND_DATA_SOCKET_THREAD_1_ERROR("Could not set the socket settings");
+    }
+
+    // send the message 
+    memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
+    if (send_data(client_socket,message,1) == 0)
+    {   
+      SEND_DATA_SOCKET_THREAD_1_ERROR("Could not send the data");
+    }
+    
+    close(client_socket);
+  }
+
+  pointer_reset_all;
+  pthread_exit((void *)(intptr_t)1);
+
+  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
+  #undef pointer_reset_all
+  #undef SEND_DATA_SOCKET_THREAD_1_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: send_data_socket_thread_2
+Description: Sends data to the current_block_verifiers_list
+Parameters:
+  parameters - A pointer to the write_file_thread_parameters struct
+  struct write_file_thread_parameters
+    DATA - The data to write to the file
+    FILE_NAME - The file name
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* send_data_socket_thread_2(void* parameters)
+{  
+  // Variables 
+  struct send_data_socket_thread_parameters* data = parameters;
+  struct timeval SOCKET_TIMEOUT = {data->socket_data_timeout_settings, 0}; 
+  char buffer2[BUFFER_SIZE];
+  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  socklen_t socket_option_settings = sizeof(socket_settings);
+  int client_socket;
+  int count;
+
+  // define macros
+  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
+
+  #define pointer_reset_all \
+  free(str); \
+  str = NULL; \
+  free(message); \
+  message = NULL;
+
+  #define SEND_DATA_SOCKET_THREAD_2_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"send_data_socket_thread_2",25); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  error_message.total++; \
+  close(client_socket); \
+  print_error_message; \
+  continue;  
+
+  // check if the memory needed was allocated on the heap successfully
+  if (str == NULL || message == NULL)
+  {
+    if (str != NULL)
+    {
+      pointer_reset(str);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    memcpy(error_message.function[error_message.total],"send_data_socket_thread_2",25);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  } 
+
+  for (count = BLOCK_VERIFIERS_AMOUNT / 4; count < (BLOCK_VERIFIERS_AMOUNT / 4) * 2; count++)
+  {
+    // check to see if the block verifier is going to send a message to itself
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      continue;
+    }
+
+    const size_t HOST_LENGTH = strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE);
+    memset(message,0,strlen(message));
+    memset(str,0,strlen(str));
+
+    /* Create the socket  
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
+    */
+    client_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    if (client_socket == -1)
+    {     
+      SEND_DATA_SOCKET_THREAD_2_ERROR("Could not create the socket");
+    }
+
+    /* Set the socket options for sending and receiving data
+    SOL_SOCKET = socket level
+    SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
+    */
+    if (setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+    {    
+      SEND_DATA_SOCKET_THREAD_2_ERROR("Could not create the socket settings");
+    } 
+  
+    // convert the hostname if used, to an IP address
+    const struct hostent* HOST_NAME = gethostbyname(current_block_verifiers_list.block_verifiers_IP_address[count]); 
+    if (HOST_NAME == NULL)
+    {    
+      SEND_DATA_SOCKET_THREAD_2_ERROR("Could not convert the hostname to an IP address");
+    }
+    
+    // convert the port to a string  
+    sprintf(buffer2,"%d",SEND_DATA_PORT); 
+   
+    const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+  
+    /* setup the connection
+    AF_INET = IPV4
+    use htons to convert the port from host byte order to network byte order short
+    */
+    memset(&serv_addr,0,sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+    serv_addr.sin_port = htons(SEND_DATA_PORT);
+
+    /* set the first poll structure to our socket
+    POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+    */
+    socket_file_descriptors.fd = client_socket;
+    socket_file_descriptors.events = POLLOUT;
+
+    // connect to the socket
+    if (connect(client_socket,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+    {    
+      if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,data->socket_connection_timeout_settings) == 1 && getsockopt(client_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+      {   
+        if (socket_settings != 0)
+        { 
+          SEND_DATA_SOCKET_THREAD_2_ERROR("Could not connect to the socket");
+        } 
+      }
+    }
+
+    // get the current socket settings
+    socket_settings = fcntl(client_socket, F_GETFL, NULL);
+    if (socket_settings == -1)
+    {    
+      SEND_DATA_SOCKET_THREAD_2_ERROR("Could not get the socket settings");
+    }
+
+    // set the socket to blocking mode
+    socket_settings &= (~O_NONBLOCK);
+    if (fcntl(client_socket, F_SETFL, socket_settings) == -1)
+    {
+      SEND_DATA_SOCKET_THREAD_2_ERROR("Could not set the socket settings");
+    }
+
+    // send the message 
+    memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
+    if (send_data(client_socket,message,1) == 0)
+    {   
+      SEND_DATA_SOCKET_THREAD_2_ERROR("Could not send the data");
+    }
+    
+    close(client_socket);
+  }
+
+  pointer_reset_all;
+  pthread_exit((void *)(intptr_t)1);
+
+  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
+  #undef pointer_reset_all
+  #undef SEND_DATA_SOCKET_THREAD_2_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: send_data_socket_thread_3
+Description: Sends data to the current_block_verifiers_list
+Parameters:
+  parameters - A pointer to the write_file_thread_parameters struct
+  struct write_file_thread_parameters
+    DATA - The data to write to the file
+    FILE_NAME - The file name
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* send_data_socket_thread_3(void* parameters)
+{  
+  // Variables 
+  struct send_data_socket_thread_parameters* data = parameters;
+  struct timeval SOCKET_TIMEOUT = {data->socket_data_timeout_settings, 0}; 
+  char buffer2[BUFFER_SIZE];
+  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  socklen_t socket_option_settings = sizeof(socket_settings);
+  int client_socket;
+  int count;
+
+  // define macros
+  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
+
+  #define pointer_reset_all \
+  free(str); \
+  str = NULL; \
+  free(message); \
+  message = NULL;
+
+  #define SEND_DATA_SOCKET_THREAD_3_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"send_data_socket_thread_3",25); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  error_message.total++; \
+  close(client_socket); \
+  print_error_message; \
+  continue;  
+
+  // check if the memory needed was allocated on the heap successfully
+  if (str == NULL || message == NULL)
+  {
+    if (str != NULL)
+    {
+      pointer_reset(str);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    memcpy(error_message.function[error_message.total],"send_data_socket_thread_3",25);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  } 
+
+  for (count = (BLOCK_VERIFIERS_AMOUNT / 4) * 2; count < (BLOCK_VERIFIERS_AMOUNT / 4) * 3; count++)
+  {
+    // check to see if the block verifier is going to send a message to itself
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      continue;
+    }
+
+    const size_t HOST_LENGTH = strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE);
+    memset(message,0,strlen(message));
+    memset(str,0,strlen(str));
+
+    /* Create the socket  
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
+    */
+    client_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    if (client_socket == -1)
+    {     
+      SEND_DATA_SOCKET_THREAD_3_ERROR("Could not create the socket");
+    }
+
+    /* Set the socket options for sending and receiving data
+    SOL_SOCKET = socket level
+    SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
+    */
+    if (setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+    {    
+      SEND_DATA_SOCKET_THREAD_3_ERROR("Could not create the socket settings");
+    } 
+  
+    // convert the hostname if used, to an IP address
+    const struct hostent* HOST_NAME = gethostbyname(current_block_verifiers_list.block_verifiers_IP_address[count]); 
+    if (HOST_NAME == NULL)
+    {    
+      SEND_DATA_SOCKET_THREAD_3_ERROR("Could not convert the hostname to an IP address");
+    }
+    
+    // convert the port to a string  
+    sprintf(buffer2,"%d",SEND_DATA_PORT); 
+   
+    const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+  
+    /* setup the connection
+    AF_INET = IPV4
+    use htons to convert the port from host byte order to network byte order short
+    */
+    memset(&serv_addr,0,sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+    serv_addr.sin_port = htons(SEND_DATA_PORT);
+
+    /* set the first poll structure to our socket
+    POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+    */
+    socket_file_descriptors.fd = client_socket;
+    socket_file_descriptors.events = POLLOUT;
+
+    // connect to the socket
+    if (connect(client_socket,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+    {    
+      if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,data->socket_connection_timeout_settings) == 1 && getsockopt(client_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+      {   
+        if (socket_settings != 0)
+        { 
+          SEND_DATA_SOCKET_THREAD_3_ERROR("Could not connect to the socket");
+        } 
+      }
+    }
+
+    // get the current socket settings
+    socket_settings = fcntl(client_socket, F_GETFL, NULL);
+    if (socket_settings == -1)
+    {    
+      SEND_DATA_SOCKET_THREAD_3_ERROR("Could not get the socket settings");
+    }
+
+    // set the socket to blocking mode
+    socket_settings &= (~O_NONBLOCK);
+    if (fcntl(client_socket, F_SETFL, socket_settings) == -1)
+    {
+      SEND_DATA_SOCKET_THREAD_3_ERROR("Could not set the socket settings");
+    }
+
+    // send the message 
+    memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
+    if (send_data(client_socket,message,1) == 0)
+    {   
+      SEND_DATA_SOCKET_THREAD_3_ERROR("Could not send the data");
+    }
+    
+    close(client_socket);
+  }
+
+  pointer_reset_all;
+  pthread_exit((void *)(intptr_t)1);
+
+  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
+  #undef pointer_reset_all
+  #undef SEND_DATA_SOCKET_THREAD_3_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: send_data_socket_thread_4
+Description: Sends data to the current_block_verifiers_list
+Parameters:
+  parameters - A pointer to the write_file_thread_parameters struct
+  struct write_file_thread_parameters
+    DATA - The data to write to the file
+    FILE_NAME - The file name
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* send_data_socket_thread_4(void* parameters)
+{  
+  // Variables
+  struct send_data_socket_thread_parameters* data = parameters;
+  struct timeval SOCKET_TIMEOUT = {data->socket_data_timeout_settings, 0}; 
+  char buffer2[BUFFER_SIZE];
+  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  socklen_t socket_option_settings = sizeof(socket_settings);
+  int client_socket;
+  int count;
+
+  // define macros
+  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
+
+  #define pointer_reset_all \
+  free(str); \
+  str = NULL; \
+  free(message); \
+  message = NULL;
+
+  #define SEND_DATA_SOCKET_THREAD_4_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"send_data_socket_thread_4",25); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  error_message.total++; \
+  close(client_socket); \
+  print_error_message; \
+  continue; 
+
+  // check if the memory needed was allocated on the heap successfully
+  if (str == NULL || message == NULL)
+  {
+    if (str != NULL)
+    {
+      pointer_reset(str);
+    }
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    memcpy(error_message.function[error_message.total],"send_data_socket_thread_4",25);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  } 
+
+  for (count = (BLOCK_VERIFIERS_AMOUNT / 4) * 3; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    // check to see if the block verifier is going to send a message to itself
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
+      continue;
+    }
+    
+    const size_t HOST_LENGTH = strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE);
+    memset(message,0,strlen(message));
+    memset(str,0,strlen(str));
+
+    /* Create the socket  
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
+    */
+    client_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    if (client_socket == -1)
+    {     
+      SEND_DATA_SOCKET_THREAD_4_ERROR("Could not create the socket");
+    }
+
+    /* Set the socket options for sending and receiving data
+    SOL_SOCKET = socket level
+    SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
+    */
+    if (setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+    {    
+      SEND_DATA_SOCKET_THREAD_4_ERROR("Could not create the socket settings");
+    } 
+  
+    // convert the hostname if used, to an IP address
+    const struct hostent* HOST_NAME = gethostbyname(current_block_verifiers_list.block_verifiers_IP_address[count]); 
+    if (HOST_NAME == NULL)
+    {    
+      SEND_DATA_SOCKET_THREAD_4_ERROR("Could not convert the hostname to an IP address");
+    }
+    
+    // convert the port to a string  
+    sprintf(buffer2,"%d",SEND_DATA_PORT); 
+   
+    const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+  
+    /* setup the connection
+    AF_INET = IPV4
+    use htons to convert the port from host byte order to network byte order short
+    */
+    memset(&serv_addr,0,sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+    serv_addr.sin_port = htons(SEND_DATA_PORT);
+
+    /* set the first poll structure to our socket
+    POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+    */
+    socket_file_descriptors.fd = client_socket;
+    socket_file_descriptors.events = POLLOUT;
+
+    // connect to the socket
+    if (connect(client_socket,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+    {    
+      if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,data->socket_connection_timeout_settings) == 1 && getsockopt(client_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+      {   
+        if (socket_settings != 0)
+        { 
+          SEND_DATA_SOCKET_THREAD_4_ERROR("Could not connect to the socket");
+        } 
+      }
+    }
+
+    // get the current socket settings
+    socket_settings = fcntl(client_socket, F_GETFL, NULL);
+    if (socket_settings == -1)
+    {    
+      SEND_DATA_SOCKET_THREAD_4_ERROR("Could not get the socket settings");
+    }
+
+    // set the socket to blocking mode
+    socket_settings &= (~O_NONBLOCK);
+    if (fcntl(client_socket, F_SETFL, socket_settings) == -1)
+    {
+      SEND_DATA_SOCKET_THREAD_4_ERROR("Could not set the socket settings");
+    }
+
+    // send the message 
+    memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
+    if (send_data(client_socket,message,1) == 0)
+    {   
+      SEND_DATA_SOCKET_THREAD_4_ERROR("Could not send the data");
+    }
+    
+    close(client_socket);
+  }
+
+  pointer_reset_all;
+  pthread_exit((void *)(intptr_t)1);
+
+  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
+  #undef pointer_reset_all
+  #undef SEND_DATA_SOCKET_THREAD_4_ERROR
 }

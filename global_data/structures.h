@@ -222,6 +222,12 @@ struct database_multiple_documents_fields {
 
 
  // Thread functions
+ struct send_data_socket_thread_parameters {
+    char* DATA; // The message
+    int socket_connection_timeout_settings; // The time in milliseconds, to wait before a connection is cancelled
+    int socket_data_timeout_settings; // The time in between read calls where there is no data
+};
+
  struct read_file_thread_parameters {
     char* result; // The data read from the file
     const char* FILE_NAME; // The file name
