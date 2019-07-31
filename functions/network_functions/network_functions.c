@@ -1496,14 +1496,18 @@ int sync_check_reserve_proofs_database()
 {
   // Variables
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* reserve_proofs_database = (char*)calloc(BUFFER_SIZE,sizeof(char));  
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));  
   size_t count;
+  size_t counter;
 
   // define macros
   #define pointer_reset_all \
   free(message); \
   message = NULL; \
+  free(reserve_proofs_database); \
+  reserve_proofs_database = NULL; \
   free(data); \
   data = NULL; \
   free(data2); \
@@ -1517,11 +1521,15 @@ int sync_check_reserve_proofs_database()
   return 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL || data2 == NULL)
+  if (message == NULL || reserve_proofs_database == NULL || data == NULL || data2 == NULL)
   {
     if (message != NULL)
     {
       pointer_reset(message);
+    }
+    if (reserve_proofs_database != NULL)
+    {
+      pointer_reset(reserve_proofs_database);
     }
     if (data != NULL)
     {
@@ -1553,9 +1561,28 @@ int sync_check_reserve_proofs_database()
   }
 
   // create the message
-  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"data_hash\": \"",124);
-  memcpy(message+124,data,DATA_HASH_LENGTH);
-  memcpy(message+252,"\"}",2);
+  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_proofs_data_hash\": \"",139);
+  memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+  memcpy(message+strlen(message),"\",\r\n ",5);
+
+  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  {
+    memcpy(message+strlen(message),"\"reserve_proofs_data_hash_",26);
+    sprintf(message+strlen(message),"%zu",count);
+    memcpy(message+strlen(message),"\": \"",4);
+    // get the database data hash for the reserve proofs database
+    memset(data,0,strlen(data));
+    memset(data2,0,strlen(data2));  
+    memcpy(data2,"reserve_proofs_",15);  
+    sprintf(data2+15,"%zu",count);
+    if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
+    {
+      SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
+    }
+    memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n ",5);
+  }
+  memcpy(message+strlen(message),"}",1);
 
   // sign_data
   if (sign_data(message,0) == 0)
@@ -1563,7 +1590,10 @@ int sync_check_reserve_proofs_database()
     SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
   }
 
-  printf("Sending all block verifiers a message to check if the reserve proof database is synced\n"); 
+  // select a random network data node to copy the reserve proofs database hashes from
+  counter = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+
+  printf("Sending all block verifiers a message to check if the reserve proofs database is synced\n"); 
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -1576,6 +1606,10 @@ int sync_check_reserve_proofs_database()
     }
     else
     {
+      if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE) == 0)
+      {
+        memcpy(reserve_proofs_database,data,strnlen(data,BUFFER_SIZE));
+      } 
       parse_json_data(data,"reserve_proofs_database",data2);
       memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       if (memcmp(data2,"true",4) == 0)
@@ -1591,18 +1625,18 @@ int sync_check_reserve_proofs_database()
 
   if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    color_print("The reserve proof database is not synced","red");
-    if (sync_reserve_proofs_database() == 0)
+    color_print("The reserve proofs database is not synced","red");
+    if (sync_reserve_proofs_database(reserve_proofs_database) == 0)
     {
       memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34);
-      memcpy(error_message.data[error_message.total],"Could not sync the reserve proof database",41);
+      memcpy(error_message.data[error_message.total],"Could not sync the reserve proofs database",41);
       error_message.total++;
       pointer_reset_all;
       return 0;
     }
   }
 
-  color_print("The reserve proof database is synced","green");
+  color_print("The reserve proofs database is synced","green");
 
   pointer_reset_all;
   return 1;
@@ -1617,11 +1651,13 @@ int sync_check_reserve_proofs_database()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_reserve_proofs_database
 Description: Syncs the reserve proofs database
+Paramters:
+  RESERVE_PROOFS_DATABASE - The RESERVE_PROOFS_DATABASE data from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_proofs_database()
+int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
 {
   // Variables
   char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
@@ -1682,9 +1718,7 @@ int sync_reserve_proofs_database()
     exit(0);
   }
 
-  for (count2 = 1; count2 <= TOTAL_RESERVE_PROOFS_DATABASES; count2++)
-  {
-    start:
+  start:
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        if their was a lot of connection_timeouts, to where a majority vote could not be calculated, then select a random network data node instead
@@ -1713,6 +1747,8 @@ int sync_reserve_proofs_database()
       }
     }
 
+  for (count2 = 1; count2 <= TOTAL_RESERVE_PROOFS_DATABASES; count2++)
+  {
     memset(data,0,strlen(data));
     memcpy(data,"Connecting to block verifier ",29);
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
@@ -1720,49 +1756,18 @@ int sync_reserve_proofs_database()
     sprintf(data+strlen(data),"%zu",count2);
     printf("%s\n",data);
 
-    // get the database data hash
+    // parse the RESERVE_PROOFS_DATABASE
     memset(data,0,strlen(data));
     memset(data2,0,strlen(data2));
-    memcpy(data2+strlen(data2),"reserve_proofs_",15);
-    sprintf(data2+strlen(data2),"%zu",count2);
-    if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
-    {
-      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database",0);
-    }
+    memcpy(data2,"reserve_proofs_database_",24);
+    sprintf(data2+24,"%zu",count2);
 
-    // create the message
-    memset(data2,0,strlen(data2));
-    memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"file\": \"reserve_proofs_",130);
-    sprintf(data2+130,"%zu",count2);
-    memcpy(data2+strlen(data2),"\",\r\n \"data_hash\": \"",19);
-    memcpy(data2+strlen(data2),data,DATA_HASH_LENGTH);
-    memcpy(data2+strlen(data2),"\",\r\n}",5);
-
-    // sign_data
-    if (sign_data(data2,0) == 0)
-    { 
-      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data",0);
-    }
-     
-    memset(data,0,strlen(data));
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,data2,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+    if (parse_json_data(RESERVE_PROOFS_DATABASE,data2,data) == 0)
     {
       SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
     }
-
-    if (verify_data(data,0,0) == 0)
-    {
-      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not verify data from ",1);
-    }
-
-    // parse the message
-    memset(data3,0,strlen(data3));
-    if (parse_json_data(data,"reserve_proofs_database",data3) == 0)
-    {
-      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
-    }
-
-    if (memcmp(data3,"false",5) == 0)
+   
+    if (memcmp(data,"false",5) == 0)
     {
       // sync the database
       memset(data,0,strlen(data));

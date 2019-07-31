@@ -15,7 +15,7 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
 int sync_all_block_verifiers_list();
 int get_synced_block_verifiers();
 int sync_check_reserve_proofs_database();
-int sync_reserve_proofs_database();
+int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE);
 int sync_check_reserve_bytes_database();
 int sync_reserve_bytes_database();
 int sync_check_delegates_database();

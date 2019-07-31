@@ -779,7 +779,7 @@ int start_part_4_of_round()
       // if it is not in the range of 01 - C8 then skip the byte
       if (counter != 0 && counter <= 200)
       {
-        counter = counter % 100;
+        counter = counter % BLOCK_VERIFIERS_AMOUNT;
         break;
       }
     }
@@ -2489,11 +2489,18 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* reserve_proofs_database = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
 
   // define macros
   #define pointer_reset_all \
+  free(message); \
+  message = NULL; \
+  free(reserve_proofs_database); \
+  reserve_proofs_database = NULL; \
   free(data); \
   data = NULL; \
   free(data2); \
@@ -2507,8 +2514,16 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   return 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
+  if (message == NULL || reserve_proofs_database == NULL || data == NULL || data2 == NULL)
   {
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
+    if (reserve_proofs_database != NULL)
+    {
+      pointer_reset(reserve_proofs_database);
+    }
     if (data != NULL)
     {
       pointer_reset(data);
@@ -2531,7 +2546,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"data_hash",data) == 0)
+  if (parse_json_data(MESSAGE,"reserve_proofs_data_hash",data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
   }
@@ -2546,23 +2561,55 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   // create the message
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
-    memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\"}",146);
+    memset(message,0,strlen(message));
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\",\r\n \"reserve_proofs_database_1\": \"true\",\r\n \"reserve_proofs_database_2\": \"true\",\r\n \"reserve_proofs_database_3\": \"true\",\r\n \"reserve_proofs_database_4\": \"true\",\r\n \"reserve_proofs_database_5\": \"true\",\r\n \"reserve_proofs_database_6\": \"true\",\r\n \"reserve_proofs_database_7\": \"true\",\r\n \"reserve_proofs_database_8\": \"true\",\r\n \"reserve_proofs_database_9\": \"true\",\r\n \"reserve_proofs_database_10\": \"true\",\r\n \"reserve_proofs_database_11\": \"true\",\r\n \"reserve_proofs_database_12\": \"true\",\r\n \"reserve_proofs_database_13\": \"true\",\r\n \"reserve_proofs_database_14\": \"true\",\r\n \"reserve_proofs_database_15\": \"true\",\r\n \"reserve_proofs_database_16\": \"true\",\r\n \"reserve_proofs_database_17\": \"true\",\r\n \"reserve_proofs_database_18\": \"true\",\r\n \"reserve_proofs_database_19\": \"true\",\r\n \"reserve_proofs_database_20\": \"true\",\r\n \"reserve_proofs_database_21\": \"true\",\r\n \"reserve_proofs_database_22\": \"true\",\r\n \"reserve_proofs_database_23\": \"true\",\r\n \"reserve_proofs_database_24\": \"true\",\r\n \"reserve_proofs_database_25\": \"true\",\r\n \"reserve_proofs_database_26\": \"true\",\r\n \"reserve_proofs_database_27\": \"true\",\r\n \"reserve_proofs_database_28\": \"true\",\r\n \"reserve_proofs_database_29\": \"true\",\r\n \"reserve_proofs_database_30\": \"true\",\r\n \"reserve_proofs_database_31\": \"true\",\r\n \"reserve_proofs_database_32\": \"true\",\r\n \"reserve_proofs_database_33\": \"true\",\r\n \"reserve_proofs_database_34\": \"true\",\r\n \"reserve_proofs_database_35\": \"true\",\r\n \"reserve_proofs_database_36\": \"true\",\r\n \"reserve_proofs_database_37\": \"true\",\r\n \"reserve_proofs_database_38\": \"true\",\r\n \"reserve_proofs_database_39\": \"true\",\r\n \"reserve_proofs_database_40\": \"true\",\r\n \"reserve_proofs_database_41\": \"true\",\r\n \"reserve_proofs_database_42\": \"true\",\r\n \"reserve_proofs_database_43\": \"true\",\r\n \"reserve_proofs_database_44\": \"true\",\r\n \"reserve_proofs_database_45\": \"true\",\r\n \"reserve_proofs_database_46\": \"true\",\r\n \"reserve_proofs_database_47\": \"true\",\r\n \"reserve_proofs_database_48\": \"true\",\r\n \"reserve_proofs_database_49\": \"true\",\r\n \"reserve_proofs_database_50\": \"true\",\r\n}",strnlen("{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\",\r\n \"reserve_proofs_database_1\": \"true\",\r\n \"reserve_proofs_database_2\": \"true\",\r\n \"reserve_proofs_database_3\": \"true\",\r\n \"reserve_proofs_database_4\": \"true\",\r\n \"reserve_proofs_database_5\": \"true\",\r\n \"reserve_proofs_database_6\": \"true\",\r\n \"reserve_proofs_database_7\": \"true\",\r\n \"reserve_proofs_database_8\": \"true\",\r\n \"reserve_proofs_database_9\": \"true\",\r\n \"reserve_proofs_database_10\": \"true\",\r\n \"reserve_proofs_database_11\": \"true\",\r\n \"reserve_proofs_database_12\": \"true\",\r\n \"reserve_proofs_database_13\": \"true\",\r\n \"reserve_proofs_database_14\": \"true\",\r\n \"reserve_proofs_database_15\": \"true\",\r\n \"reserve_proofs_database_16\": \"true\",\r\n \"reserve_proofs_database_17\": \"true\",\r\n \"reserve_proofs_database_18\": \"true\",\r\n \"reserve_proofs_database_19\": \"true\",\r\n \"reserve_proofs_database_20\": \"true\",\r\n \"reserve_proofs_database_21\": \"true\",\r\n \"reserve_proofs_database_22\": \"true\",\r\n \"reserve_proofs_database_23\": \"true\",\r\n \"reserve_proofs_database_24\": \"true\",\r\n \"reserve_proofs_database_25\": \"true\",\r\n \"reserve_proofs_database_26\": \"true\",\r\n \"reserve_proofs_database_27\": \"true\",\r\n \"reserve_proofs_database_28\": \"true\",\r\n \"reserve_proofs_database_29\": \"true\",\r\n \"reserve_proofs_database_30\": \"true\",\r\n \"reserve_proofs_database_31\": \"true\",\r\n \"reserve_proofs_database_32\": \"true\",\r\n \"reserve_proofs_database_33\": \"true\",\r\n \"reserve_proofs_database_34\": \"true\",\r\n \"reserve_proofs_database_35\": \"true\",\r\n \"reserve_proofs_database_36\": \"true\",\r\n \"reserve_proofs_database_37\": \"true\",\r\n \"reserve_proofs_database_38\": \"true\",\r\n \"reserve_proofs_database_39\": \"true\",\r\n \"reserve_proofs_database_40\": \"true\",\r\n \"reserve_proofs_database_41\": \"true\",\r\n \"reserve_proofs_database_42\": \"true\",\r\n \"reserve_proofs_database_43\": \"true\",\r\n \"reserve_proofs_database_44\": \"true\",\r\n \"reserve_proofs_database_45\": \"true\",\r\n \"reserve_proofs_database_46\": \"true\",\r\n \"reserve_proofs_database_47\": \"true\",\r\n \"reserve_proofs_database_48\": \"true\",\r\n \"reserve_proofs_database_49\": \"true\",\r\n \"reserve_proofs_database_50\": \"true\",\r\n}",BUFFER_SIZE));
   }
   else
   {
-    memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\"}",147);
+    memset(message,0,strlen(message));
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\",\r\n ",150);
+    for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+    {
+      memcpy(message+strlen(message),"\"reserve_proofs_database_",24);
+      sprintf(message+strlen(message),"%zu",count);
+      memcpy(message+strlen(message),"\": \"",4);      
+      memset(data2,0,strlen(data2));  
+      memcpy(data2,"reserve_proofs_data_hash_",25);  
+      sprintf(data2+25,"%zu",count); 
+      // parse the message
+      if (parse_json_data(MESSAGE,data2,data) == 0)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
+      }
+      // get the database data hash for the reserve proofs database
+      memset(data2,0,strlen(data2));  
+      memcpy(data2,"reserve_proofs_",15);  
+      sprintf(data2+15,"%zu",count);
+      if (get_database_data_hash(reserve_proofs_database,DATABASE_NAME,data2,0) == 0)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
+      }
+      if (memcmp(reserve_proofs_database,data,DATA_HASH_LENGTH) == 0)
+      {
+        memcpy(message+strlen(message),"true",4);
+      }
+      else
+      {
+        memcpy(message+strlen(message),"false",5);
+      }
+      memcpy(message+strlen(message),"\",\r\n ",5);
+    }
+    memcpy(message+strlen(message),"}",1);
   }
   
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(message,0) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data");
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,data,1) == 0)
+  if (send_data(CLIENT_SOCKET,message,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
@@ -4937,6 +4984,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all;
            _exit(0);
          }
@@ -4945,6 +4993,7 @@ int create_server(const int MESSAGE_SETTINGS)
            printf("Received NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(CLIENT_SOCKET);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          } 
@@ -4953,6 +5002,7 @@ int create_server(const int MESSAGE_SETTINGS)
            printf("Received NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          } 
@@ -4960,6 +5010,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }
@@ -4967,6 +5018,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          } 
@@ -4974,6 +5026,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }  
@@ -4981,6 +5034,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }  
@@ -4988,6 +5042,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }
@@ -4995,6 +5050,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }
@@ -5002,6 +5058,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }
@@ -5009,6 +5066,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }
@@ -5016,6 +5074,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }
@@ -5023,6 +5082,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }
@@ -5030,6 +5090,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }
@@ -5037,6 +5098,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          } 
@@ -5044,6 +5106,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }  
@@ -5051,6 +5114,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_nodes_to_block_verifiers_register_delegates(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }            
@@ -5058,6 +5122,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          } 
@@ -5065,6 +5130,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          } 
@@ -5072,6 +5138,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          } 
@@ -5079,6 +5146,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          } 
@@ -5086,6 +5154,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }  
@@ -5093,6 +5162,7 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }  
@@ -5100,12 +5170,15 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            server_receive_data_socket_node_to_node((const char*)buffer);
            close(SOCKET);
+           close(CLIENT_SOCKET);
            pointer_reset_all; 
            _exit(0);
          }
          else
          {
-           printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
+            current_round_part_vote_data.vote_results_valid++;
+           printf("Received %d from %s on port %s\r\n",current_round_part_vote_data.vote_results_valid,client_address,buffer2);
+
            // send the message 
            if (send_data(CLIENT_SOCKET,buffer,1) == 1)
            {

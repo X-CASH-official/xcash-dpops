@@ -1433,7 +1433,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   char* message;
   char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* reserve_proofs_data_hash[50];
+  char* reserve_proofs_data_hash[TOTAL_RESERVE_PROOFS_DATABASES];
   char* reserve_bytes_data_hash[10000];
   size_t count;
   size_t count2;
@@ -1483,7 +1483,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   } 
 
   // initialize the reserve_proofs_data_hash
-  for (count = 0; count < 50; count++)
+  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     reserve_proofs_data_hash[count] = (char*)calloc(DATA_HASH_LENGTH+1,sizeof(char));
 

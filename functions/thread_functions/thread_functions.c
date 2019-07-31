@@ -11,6 +11,7 @@
 
 #include "database_functions.h"
 #include "file_functions.h"
+#include "network_functions.h"
 #include "thread_functions.h"
 
 /*
