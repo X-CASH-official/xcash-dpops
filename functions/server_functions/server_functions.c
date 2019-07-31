@@ -218,7 +218,7 @@ int start_new_round()
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: start_current_round_start_blocks
-Description: Runs the round where the network data node will create the block since its the first three X-CASH proof of stake blocks on the network
+Description: Runs the round where the network data node will create the first block of the X-CASH proof of stake block on the network
 Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
@@ -479,11 +479,439 @@ int start_current_round_start_blocks()
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the block to the network");
   }*/
 
-  pointer_reset(data);
+  pointer_reset_all;
   return 1;
 
   #undef pointer_reset_all
   #undef START_CURRENT_ROUND_START_BLOCKS_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: data_network_node_create_block
+Description: Runs the round where the main network data node will create the block and have the block verifiers sign the block. This only runs if the block producer and the 5 backup block producers cant create the block
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int data_network_node_create_block()
+{
+  // Variables
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  struct send_data_socket_thread_parameters send_data_socket_thread_parameters;
+  size_t count; 
+  size_t counter;
+  size_t count2; 
+  int settings = 0;
+
+  // threads
+  pthread_t thread_id_1;
+  pthread_t thread_id_2;
+  pthread_t thread_id_3;
+  pthread_t thread_id_4;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL; \
+  free(data3); \
+  data3 = NULL;
+
+  #define DATA_NETWORK_NODE_CREATE_BLOCK_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
+  #define SEND_DATA_SOCKET_THREAD(message) \
+  memcpy(send_data_socket_thread_parameters.DATA,data,strnlen(message,BUFFER_SIZE)); \
+  pthread_create(&thread_id_1, NULL, &send_data_socket_thread_1,(void *)&send_data_socket_thread_parameters); \
+  pthread_detach(thread_id_1); \
+  pthread_create(&thread_id_2, NULL, &send_data_socket_thread_2,(void *)&send_data_socket_thread_parameters); \
+  pthread_detach(thread_id_2); \
+  pthread_create(&thread_id_3, NULL, &send_data_socket_thread_3,(void *)&send_data_socket_thread_parameters); \
+  pthread_detach(thread_id_3); \
+  pthread_create(&thread_id_4, NULL, &send_data_socket_thread_4,(void *)&send_data_socket_thread_parameters); \
+  pthread_detach(thread_id_4);
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL || data3 == NULL)
+  {
+    if (data == NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 == NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (data3 == NULL)
+    {
+      pointer_reset(data3);
+    }
+    memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  }
+
+  // initialize the send_data_socket_thread_parameters struct
+  send_data_socket_thread_parameters.socket_connection_timeout_settings = SOCKET_CONNECTION_TIMEOUT_SETTINGS;
+  send_data_socket_thread_parameters.socket_data_timeout_settings = SOCKET_DATA_TIMEOUT_SETTINGS;
+
+  // check if the block verifier is the main network data node
+  if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
+  {
+    color_print("Your block verifier is the main data network node so your block verifier will create the block\nWaiting until 4 minutes and 40 seconds of the round","green");
+
+    // get a block template
+    if (get_block_template(data,0) == 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get a block template");
+    }
+
+    // convert the network_block_string to blockchain_data
+    if (network_block_string_to_blockchain_data((const char*)data,"0") == 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not convert the network_block_string to blockchain_data");
+    }
+
+    // change the nonce to the CONSENSUS_NODE_NETWORK_BLOCK_NONCE
+    memcpy(blockchain_data.nonce_data,CONSENSUS_NODE_NETWORK_BLOCK_NONCE,8);
+
+    // add the delegates data to the network_block_string
+    memset(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,BUFFER_SIZE));
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,"network_data_node_1",19);
+    memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+    memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"0",1);
+    memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,BUFFER_SIZE));
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1",99);
+
+    // create the VRF data
+    if (create_random_VRF_keys(VRF_data.vrf_public_key_round_part_4,VRF_data.vrf_secret_key_round_part_4) == 1 && crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_4) != 1)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the vrf_public_key_round_part_4 or vrf_secret_key_round_part_4");
+    }
+    if (get_previous_block_hash(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0) == 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous block hash");
+    }  
+    memcpy(VRF_data.vrf_alpha_string_round_part_4,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,64);
+    memcpy(VRF_data.vrf_alpha_string_round_part_4+64,"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",10000); 
+    if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)) != 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the vrf_proof_round_part_4");
+    }
+    if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4) != 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the beta_string_round_part_4");
+    }
+    if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)) != 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the VRF data for round part 4");
+    }
+
+    // convert all of the VRF data to a string
+    for (count2 = 0, count = 0; count2 < crypto_vrf_SECRETKEYBYTES; count2++, count += 2)
+    {
+      sprintf(VRF_data.vrf_secret_key_data_round_part_4+count,"%02x",VRF_data.vrf_secret_key_round_part_4[count2] & 0xFF);
+    }
+    for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
+    {
+      sprintf(VRF_data.vrf_public_key_data_round_part_4+count,"%02x",VRF_data.vrf_public_key_round_part_4[count2] & 0xFF);
+    }
+    for (count2 = 0, count = 0; count2 < strlen((const char*)VRF_data.vrf_alpha_string_round_part_4); count2++, count += 2)
+    {
+      sprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
+    }
+    for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+    {
+      sprintf(VRF_data.vrf_proof_data_round_part_4+count,"%02x",VRF_data.vrf_proof_round_part_4[count2] & 0xFF);
+    }
+    for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
+    {
+      sprintf(VRF_data.vrf_beta_string_data_round_part_4+count,"%02x",VRF_data.vrf_beta_string_round_part_4[count2] & 0xFF);
+    }  
+
+    // add all of the VRF data to the blockchain_data struct
+    memcpy(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4,VRF_data.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,VRF_data.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,strnlen(VRF_data.vrf_alpha_string_data_round_part_4,BUFFER_SIZE));
+    memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_4,VRF_data.vrf_proof_data_round_part_4,VRF_PROOF_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_4,VRF_data.vrf_beta_string_data_round_part_4,VRF_BETA_LENGTH);
+
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[0],blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[0],blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",200);
+    for (count = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",VRF_SECRET_KEY_LENGTH);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],"0000000000000000000000000000000000000000000000000000000000000000",VRF_PUBLIC_KEY_LENGTH);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",200);
+    }
+
+    // add the next block verifiers
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    { 
+      memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+    }
+
+    // convert the blockchain_data to a network_block_string
+    memset(data,0,strlen(data));
+    if (blockchain_data_to_network_block_string(VRF_data.block_blob) == 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not convert the blockchain_data to a network_block_string");
+    }
+
+    // create the message
+    memcpy(data,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"",97);
+    memcpy(data+97,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
+    memcpy(data+strlen(data),"\"}",2);
+
+    // sign_data
+    if (sign_data(data,0) == 0)
+    { 
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
+    }    
+
+    // send the message to all block verifiers
+    SEND_DATA_SOCKET_THREAD(data3);
+
+    sleep(10);
+    settings = 1;
+  }
+  else
+  {
+    printf("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block");
+    while (settings != 1)
+    {
+      sleep(1);
+    }
+  }
+
+
+
+
+  // at this point all block verifiers and the main node should have the same main node data
+
+  // check if the main node data is valid
+  if (memcmp(VRF_data.block_blob,"",1) == 0)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The block is invalid");
+  }
+
+  // check if all of the block verifiers have the same main node data
+
+  // create the message
+  memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
+  memcpy(data3+strnlen(data3,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(data3+strnlen(data3,BUFFER_SIZE),"\",\r\n}",5); 
+
+  // sign_data
+  if (sign_data(data3,0) == 0)
+  { 
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
+  }
+
+  // send the message to all block verifiers
+  SEND_DATA_SOCKET_THREAD(data3);
+
+  // wait for the block verifiers to process the votes
+  sleep(10);
+
+  // process the vote results
+  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The block is invalid");
+  }
+  
+
+
+
+  // at this point is has been voted on that all block verifiers have the same main node data and the data is valid
+
+  // sign the network block string
+  memset(data,0,strlen(data));
+  if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign the network block string");
+  }
+
+  // add the block verifiers signed data to the VRF data
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
+    }
+  } 
+
+  // create the message
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
+  memcpy(data3+110,data,XCASH_SIGN_DATA_LENGTH);
+  memcpy(data3+203,"\",\r\n }",8);
+
+  // sign_data
+  if (sign_data(data3,0) == 0)
+  { 
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
+  }
+
+  // set the server message
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",27); 
+
+  // send the message to all block verifiers
+  SEND_DATA_SOCKET_THREAD(data3);
+
+  // wait for the block verifiers to process the votes
+  sleep(10);
+
+  // check if at least 67 of the block verifiers signed the data
+  for (count = 0, counter = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(VRF_data.block_blob_signature[count],"SigV1",5) == 0)
+    {
+      counter++;
+    }
+  }
+  if (counter < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The block was not signed by at least 67 of the block verifiers");
+  }
+
+
+
+  // at this point all block verifiers have signed the block and have all of the other block verifiers signed data
+
+  // update the block verifiers list as this block will be added to the network
+  if (update_block_verifiers_list() == 0)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
+  }
+
+  // convert the network_block_string to a blockchain_data
+  if (network_block_string_to_blockchain_data(VRF_data.block_blob,"0") == 0)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
+  }
+
+  // add all of the next_block_verifiers_list public addresses and block_blob_signature to the network block string
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],0,strlen(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[0]));
+    memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],strnlen(next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH+1));
+    memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[0]));
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],strnlen(VRF_data.block_blob_signature[count],BUFFER_SIZE));
+  }
+
+  // convert the blockchain_data to a network_block_string
+  memset(data3,0,strlen(data3));
+  if (blockchain_data_to_network_block_string(data3) == 0)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not convert the blockchain_data to a network_block_string");
+  }
+
+  // copy the network block string with the current block verifiers signed data and the next block verifiers public addresses to the VRF_data
+  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+  memcpy(VRF_data.block_blob,data3,strnlen(data3,BUFFER_SIZE));
+
+  // reset the current_round_part_vote_data.vote_results_valid struct
+  memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
+  current_round_part_vote_data.vote_results_valid = 0;
+  current_round_part_vote_data.vote_results_invalid = 0;
+
+  // get the data hash of the network block string
+  memset(data,0,strlen(data));
+  crypto_hash_sha512((unsigned char*)data,(const unsigned char*)data3,(unsigned long long)strnlen(data3,BUFFER_SIZE));
+
+  // convert the SHA512 data hash to a string
+  memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
+  for (counter = 0, count = 0; counter < 64; counter++, count += 2)
+  {
+    sprintf(current_round_part_vote_data.current_vote_results+count,"%02x",data[counter] & 0xFF);
+  }
+
+  // create the message
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
+  memcpy(data3+99,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(data3+227,"\",\r\n}",5);
+
+  // sign_data
+  if (sign_data(data3,0) == 0)
+  { 
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
+  }
+
+  // send the message to all block verifiers
+  SEND_DATA_SOCKET_THREAD(data3);
+
+  // wait for the block verifiers to process the votes
+  sleep(10);
+
+  // process the vote results
+  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The block is invalid");
+  } 
+
+
+
+  // at this point the all block verifiers have voted on the block with the current block verifiers signed data and the next block verifiers public addresses to the VRF_data
+
+  // add the data hash to the network block string
+  memset(data,0,strnlen(data,BUFFER_SIZE));
+  if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the data hash to the network block string");
+  }
+
+  // save the current_round_part_backup_node
+  memcpy(current_round_part_backup_node_data.current_round_part_4_backup_node,current_round_part_backup_node,1);
+
+  // copy the network block string
+  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+  memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
+
+  // copy the reserve bytes data hash
+  memcpy(VRF_data.reserve_bytes_data_hash,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+
+  // copy the current block height to calculate when the block has been submitted to the network
+  memset(data3,0,strlen(data3));
+  memcpy(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+
+  // Loop through each network data node until it is submitted to the network
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    if (network_data_node_settings == 1 && memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      submit_block_template(VRF_data.block_blob,0);
+      if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) != 0)
+      {
+        break;
+      }
+    }
+    sleep(2);
+  }   
+
+  pointer_reset_all;
+  return 1;
+
+  #undef pointer_reset_all
+  #undef DATA_NETWORK_NODE_CREATE_BLOCK_ERROR
+  #undef SEND_DATA_SOCKET_THREAD
 }
 
 

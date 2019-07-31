@@ -9,6 +9,7 @@ Function prototypes
 
 int start_new_round();
 int start_current_round_start_blocks();
+int data_network_node_create_block();
 int start_part_4_of_round();
 int update_block_verifiers_list();
 int update_databases();
