@@ -64,7 +64,7 @@ struct current_round_part_backup_node_data {
 };
 
 struct current_round_part_vote_data {
-    char* current_vote_results; // The SHA2-512 hash of the vote results that the block verifier calculated
+    char current_vote_results[DATA_HASH_LENGTH]; // The SHA2-512 hash of the vote results that the block verifier calculated
     int vote_results_valid; // The current part of the round vote count for a valid vote.
     int vote_results_invalid; // The current part of the round vote count for a invalid vote.
 };
@@ -88,6 +88,27 @@ struct VRF_data {
     char* block_blob_signature[BLOCK_VERIFIERS_AMOUNT]; // The signed block data text
     char* block_blob; // The block_blob that the block producer creates to send to the consensus node
     char* reserve_bytes_data_hash; // The reserve bytes data hash
+};
+
+struct VRF_data_copy { 
+    char vrf_secret_key_data_round_part_4[VRF_SECRET_KEY_LENGTH]; // The VRF secret key text for round part 4
+    unsigned char vrf_secret_key_round_part_4[crypto_vrf_SECRETKEYBYTES]; // The VRF secret key for round part 4
+    char vrf_public_key_data_round_part_4[VRF_PUBLIC_KEY_LENGTH]; // The VRF public key text for round part 4
+    unsigned char vrf_public_key_round_part_4[crypto_vrf_PUBLICKEYBYTES]; // The VRF public key for round part 4
+    char vrf_alpha_string_data_round_part_4[25000]; // The VRF alpha string (input string) text for round part 4
+    unsigned char vrf_alpha_string_round_part_4[25000]; // The VRF alpha string (input string) for round part 4
+    char vrf_proof_data_round_part_4[VRF_PROOF_LENGTH]; // The VRF proof text for round part 4
+    unsigned char vrf_proof_round_part_4[crypto_vrf_PROOFBYTES]; // The VRF proof for round part 4
+    char vrf_beta_string_data_round_part_4[VRF_BETA_LENGTH]; // The VRF beta string (output string) text for round part 4
+    unsigned char vrf_beta_string_round_part_4[crypto_vrf_OUTPUTBYTES]; // The VRF beta string (output string) for round part 4
+    char block_verifiers_vrf_secret_key_data[BLOCK_VERIFIERS_AMOUNT][VRF_SECRET_KEY_LENGTH]; // The VRF secret key text that all of the block verifiers create
+    unsigned char block_verifiers_vrf_secret_key[BLOCK_VERIFIERS_AMOUNT][crypto_vrf_SECRETKEYBYTES]; // The VRF secret key that all of the block verifiers create
+    char block_verifiers_vrf_public_key_data[BLOCK_VERIFIERS_AMOUNT][VRF_PUBLIC_KEY_LENGTH]; // The VRF public key text that all of the block verifiers create
+    unsigned char block_verifiers_vrf_public_key[BLOCK_VERIFIERS_AMOUNT][crypto_vrf_PUBLICKEYBYTES]; // The VRF public key that all of the block verifiers create
+    char block_verifiers_random_data[BLOCK_VERIFIERS_AMOUNT][200]; // The random data that all of the block verifiers create
+    char block_blob_signature[BLOCK_VERIFIERS_AMOUNT][93]; // The signed block data text
+    char block_blob[200000]; // The block_blob that the block producer creates to send to the consensus node
+    char reserve_bytes_data_hash[DATA_HASH_LENGTH]; // The reserve bytes data hash
 };
 
 struct blockchain_reserve_bytes {

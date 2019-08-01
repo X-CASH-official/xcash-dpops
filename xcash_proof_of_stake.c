@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h> 
 #include <pthread.h>
+#include <sys/mman.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -226,19 +227,8 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
-  // initialize the current_round_part_vote_data struct
-  current_round_part_vote_data.current_vote_results = (char*)calloc(DATA_HASH_LENGTH+1,sizeof(char));
-  current_round_part_vote_data.vote_results_valid = 0;
-  current_round_part_vote_data.vote_results_invalid = 0;
-
-  if (current_round_part_vote_data.current_vote_results == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  // initialize the current_round_part_vote_data* struct
+  current_round_part_vote_data = mmap(NULL, sizeof(struct current_round_part_vote_data), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0);   
 
   // initialize the VRF_data struct 
   VRF_data.vrf_secret_key_data_round_part_4 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
@@ -283,7 +273,9 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
   }
-  
+
+  // initialize the VRF_data_copy* struct 
+  VRF_data_copy = mmap(NULL, sizeof(struct VRF_data_copy), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0);   
 
   // initialize the blockchain_data struct 
   blockchain_data.network_version_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
@@ -664,7 +656,7 @@ int main(int parameters_count, char* parameters[])
 
     memcpy(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",30);
  
- current_round_part_vote_data.vote_results_valid = 0;
+ current_round_part_vote_data->vote_results_valid = 0;
    
   /*for (int count5 = 0; count5 < 5; count5++)
   {

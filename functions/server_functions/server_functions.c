@@ -431,11 +431,6 @@ int start_current_round_start_blocks()
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the blockchain_data to a network_block_string");
   }
 
-  // reset the current_round_part_vote_data.vote_results_valid struct
-  memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
-  current_round_part_vote_data.vote_results_valid = 0;
-  current_round_part_vote_data.vote_results_invalid = 0;
-
   // get the data hash of the network block string
   memset(data2,0,strlen(data2));
   crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,(unsigned long long)strnlen(data,BUFFER_SIZE));
@@ -704,6 +699,10 @@ int data_network_node_create_block()
 
   // at this point all block verifiers and the main node should have the same main node data
 
+  // process the votes
+  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+  memcpy(VRF_data.block_blob,VRF_data_copy->block_blob,strnlen(VRF_data_copy->block_blob,BUFFER_SIZE));
+
   // check if the main node data is valid
   if (memcmp(VRF_data.block_blob,"",1) == 0)
   {
@@ -714,7 +713,7 @@ int data_network_node_create_block()
 
   // create the message
   memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
-  memcpy(data3+strnlen(data3,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(data3+strnlen(data3,BUFFER_SIZE),current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
   memcpy(data3+strnlen(data3,BUFFER_SIZE),"\",\r\n}",5); 
 
   // sign_data
@@ -723,6 +722,10 @@ int data_network_node_create_block()
     DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
   }
 
+  // reset the current_round_part_vote_data->vote_results_valid struct
+  current_round_part_vote_data->vote_results_valid = 0;
+  current_round_part_vote_data->vote_results_invalid = 0;
+
   // send the message to all block verifiers
   SEND_DATA_SOCKET_THREAD(data3);
 
@@ -730,7 +733,7 @@ int data_network_node_create_block()
   sleep(10);
 
   // process the vote results
-  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  if (current_round_part_vote_data->vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The block is invalid");
   }
@@ -777,6 +780,13 @@ int data_network_node_create_block()
 
   // wait for the block verifiers to process the votes
   sleep(10);
+
+  // process the votes
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));
+    memcpy(VRF_data.block_blob_signature[count],VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+  }
 
   // check if at least 67 of the block verifiers signed the data
   for (count = 0, counter = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -827,26 +837,26 @@ int data_network_node_create_block()
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
   memcpy(VRF_data.block_blob,data3,strnlen(data3,BUFFER_SIZE));
 
-  // reset the current_round_part_vote_data.vote_results_valid struct
-  memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
-  current_round_part_vote_data.vote_results_valid = 0;
-  current_round_part_vote_data.vote_results_invalid = 0;
+  // reset the current_round_part_vote_data->vote_results_valid struct
+  memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
+  current_round_part_vote_data->vote_results_valid = 0;
+  current_round_part_vote_data->vote_results_invalid = 0;
 
   // get the data hash of the network block string
   memset(data,0,strlen(data));
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)data3,(unsigned long long)strnlen(data3,BUFFER_SIZE));
 
   // convert the SHA512 data hash to a string
-  memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
+  memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
   for (counter = 0, count = 0; counter < 64; counter++, count += 2)
   {
-    sprintf(current_round_part_vote_data.current_vote_results+count,"%02x",data[counter] & 0xFF);
+    sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
   }
 
   // create the message
   memset(data3,0,strlen(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
-  memcpy(data3+99,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(data3+99,current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
   memcpy(data3+227,"\",\r\n}",5);
 
   // sign_data
@@ -862,7 +872,7 @@ int data_network_node_create_block()
   sleep(10);
 
   // process the vote results
-  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  if (current_round_part_vote_data->vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The block is invalid");
   } 
@@ -886,7 +896,7 @@ int data_network_node_create_block()
   memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
 
   // copy the reserve bytes data hash
-  memcpy(VRF_data.reserve_bytes_data_hash,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(VRF_data.reserve_bytes_data_hash,current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
 
   // copy the current block height to calculate when the block has been submitted to the network
   memset(data3,0,strlen(data3));
@@ -1132,6 +1142,21 @@ int start_part_4_of_round()
   
 
     // at this point all block verifiers should have the all of the other block verifiers secret key, public key and random data
+
+    // process the data
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]));
+      memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key[count]));
+      memset(VRF_data.block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[count]));
+      memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen(VRF_data.block_verifiers_vrf_public_key[count]));
+      memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count]));
+      memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_data_copy->block_verifiers_vrf_secret_key_data[count],VRF_SECRET_KEY_LENGTH);
+      memcpy(VRF_data.block_verifiers_vrf_secret_key[count],VRF_data_copy->block_verifiers_vrf_secret_key[count],crypto_vrf_SECRETKEYBYTES);
+      memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],VRF_data_copy->block_verifiers_vrf_public_key_data[count],VRF_PUBLIC_KEY_LENGTH);
+      memcpy(VRF_data.block_verifiers_vrf_public_key[count],VRF_data_copy->block_verifiers_vrf_public_key[count],crypto_vrf_PUBLICKEYBYTES);
+      memcpy(VRF_data.block_verifiers_random_data[count],VRF_data_copy->block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
+    }
   
     // create the VRF alpha string using all of the random data from the block verifiers
     memset(data,0,strlen(data));
@@ -1148,20 +1173,24 @@ int start_part_4_of_round()
       {
         memcpy(VRF_data.vrf_alpha_string_data_round_part_4+strlen(VRF_data.vrf_alpha_string_data_round_part_4),VRF_data.block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
       }
-    }  
+    }
+
+    // reset the current_round_part_vote_data->vote_results_valid struct
+    memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
+    current_round_part_vote_data->vote_results_valid = 0;
+    current_round_part_vote_data->vote_results_invalid = 0;  
 
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,strlen(VRF_data.vrf_alpha_string_data_round_part_4));
     // convert the SHA512 data hash to a string
-    memset(data2,0,strlen(data2));
     for (counter = 0, count = 0; counter < 64; counter++, count += 2)
     {
-      sprintf(data2+count,"%02x",data[counter] & 0xFF);
+      sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
     }
 
     // create the message
     memset(data3,0,strlen(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
-    memcpy(data3+99,data2,DATA_HASH_LENGTH);
+    memcpy(data3+99,current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
     memcpy(data3+227,"\",\r\n}",5);
 
     // sign_data
@@ -1181,7 +1210,7 @@ int start_part_4_of_round()
     sleep(10);
 
     // process the vote results
-    if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+    if (current_round_part_vote_data->vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
       RESTART_ROUND;
     } 
@@ -1214,17 +1243,21 @@ int start_part_4_of_round()
     memset(data,0,strlen(data));
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)VRF_data.block_verifiers_vrf_public_key[counter],crypto_vrf_PUBLICKEYBYTES);
 
+    // reset the current_round_part_vote_data->vote_results_valid struct
+    memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
+    current_round_part_vote_data->vote_results_valid = 0;
+    current_round_part_vote_data->vote_results_invalid = 0;  
+
     // convert the SHA512 data hash to a string
-    memset(data2,0,strlen(data2));
     for (counter = 0, count = 0; counter < 64; counter++, count += 2)
     {
-      sprintf(data2+count,"%02x",data[counter] & 0xFF);
+      sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
     }
 
     // create the message
     memset(data3,0,strlen(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
-    memcpy(data3+99,data2,DATA_HASH_LENGTH);
+    memcpy(data3+99,current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
     memcpy(data3+227,"\",\r\n}",5);
 
     // sign_data
@@ -1244,7 +1277,7 @@ int start_part_4_of_round()
     sleep(10);
 
     // process the vote results
-    if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+    if (current_round_part_vote_data->vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
       RESTART_ROUND;
     } 
@@ -1350,6 +1383,10 @@ int start_part_4_of_round()
 
   // at this point all block verifiers and the main node should have the same main node data
 
+  // process the votes
+  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+  memcpy(VRF_data.block_blob,VRF_data_copy->block_blob,strnlen(VRF_data_copy->block_blob,BUFFER_SIZE));
+
   // check if the main node data is valid
   if (memcmp(VRF_data.block_blob,"",1) == 0)
   {
@@ -1360,7 +1397,7 @@ int start_part_4_of_round()
 
   // create the message
   memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
-  memcpy(data3+strnlen(data3,BUFFER_SIZE),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(data3+strnlen(data3,BUFFER_SIZE),current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
   memcpy(data3+strnlen(data3,BUFFER_SIZE),"\",\r\n}",5); 
 
   // sign_data
@@ -1369,6 +1406,10 @@ int start_part_4_of_round()
     START_PART_4_OF_ROUND_ERROR("Could not sign_data");
   }
 
+  // reset the current_round_part_vote_data->vote_results_valid struct
+  current_round_part_vote_data->vote_results_valid = 0;
+  current_round_part_vote_data->vote_results_invalid = 0;  
+
   // send the message to all block verifiers
   SEND_DATA_SOCKET_THREAD(data3);
 
@@ -1376,7 +1417,7 @@ int start_part_4_of_round()
   sleep(10);
 
   // process the vote results
-  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  if (current_round_part_vote_data->vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     RESTART_ROUND;
   }
@@ -1423,6 +1464,13 @@ int start_part_4_of_round()
 
   // wait for the block verifiers to process the votes
   sleep(10);
+
+  // process the votes
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));
+    memcpy(VRF_data.block_blob_signature[count],VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+  }
 
   // check if at least 67 of the block verifiers signed the data
   for (count = 0, counter = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1473,26 +1521,25 @@ int start_part_4_of_round()
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
   memcpy(VRF_data.block_blob,data3,strnlen(data3,BUFFER_SIZE));
 
-  // reset the current_round_part_vote_data.vote_results_valid struct
-  memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
-  current_round_part_vote_data.vote_results_valid = 0;
-  current_round_part_vote_data.vote_results_invalid = 0;
+  // reset the current_round_part_vote_data->vote_results_valid struct
+  memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
+  current_round_part_vote_data->vote_results_valid = 0;
+  current_round_part_vote_data->vote_results_invalid = 0;
 
   // get the data hash of the network block string
   memset(data,0,strlen(data));
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)data3,(unsigned long long)strnlen(data3,BUFFER_SIZE));
 
   // convert the SHA512 data hash to a string
-  memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
   for (counter = 0, count = 0; counter < 64; counter++, count += 2)
   {
-    sprintf(current_round_part_vote_data.current_vote_results+count,"%02x",data[counter] & 0xFF);
+    sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
   }
 
   // create the message
   memset(data3,0,strlen(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
-  memcpy(data3+99,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(data3+99,current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
   memcpy(data3+227,"\",\r\n}",5);
 
   // sign_data
@@ -1508,7 +1555,7 @@ int start_part_4_of_round()
   sleep(10);
 
   // process the vote results
-  if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+  if (current_round_part_vote_data->vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     RESTART_ROUND;
   } 
@@ -1532,7 +1579,7 @@ int start_part_4_of_round()
   memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
 
   // copy the reserve bytes data hash
-  memcpy(VRF_data.reserve_bytes_data_hash,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(VRF_data.reserve_bytes_data_hash,current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
 
   // copy the current block height to calculate when the block has been submitted to the network
   memset(data3,0,strlen(data3));
@@ -1738,13 +1785,6 @@ int update_databases()
   size_t count2;
 
   // define macros
-  #define UPDATE_DATABASE_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"update_databases",16); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
-  error_message.total++; \
-  pointer_reset_all; \
-  return 0;
-
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -1752,6 +1792,13 @@ int update_databases()
   data2 = NULL; \
   free(data3); \
   data3 = NULL;
+
+  #define UPDATE_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"update_databases",16); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -1837,6 +1884,7 @@ int update_databases()
   return 1;
 
   #undef pointer_reset_all
+  #undef UPDATE_DATABASE_ERROR
 }
 
 
@@ -2403,7 +2451,7 @@ int calculate_main_nodes_roles()
   sscanf(current_block_height,"%zu", &count);
   if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
-    UPDATE_DATABASE_ERROR("Could not get the current block height");
+    CALCULATE_MAIN_NODES_ROLES("Could not get the current block height");
   }
   count--;
   sprintf(data2,"%zu",count);
@@ -4671,7 +4719,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
     sscanf(current_block_height,"%zu", &count);
     if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {
-      UPDATE_DATABASE_ERROR("Could not get the current block height");
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not get the current block height");
     }
     count--;
     sprintf(data3,"%zu",count);
@@ -4692,17 +4740,17 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
     {
       SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
     }
-    memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
+    memcpy(VRF_data_copy->block_blob,data,strnlen(data,BUFFER_SIZE));
 
     // SHA2-512 hash the received message
-    memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
+    memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
     memset(data,0,strlen(data));
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
 
     // convert the SHA512 data hash to a string
     for (count2 = 0, count = 0; count2 < 64; count2++, count += 2)
     {
-      sprintf(current_round_part_vote_data.current_vote_results+count,"%02x",data[count2] & 0xFF);
+      sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[count2] & 0xFF);
     }
   }
 
@@ -4800,7 +4848,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     sscanf(current_block_height,"%zu", &count);
     if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {
-      UPDATE_DATABASE_ERROR("Could not get the current block height");
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not get the current block height");
     }
     count--;
     sprintf(data3,"%zu",count);
@@ -4824,14 +4872,14 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
 
     // SHA2-512 hash the received message
-    memset(current_round_part_vote_data.current_vote_results,0,strlen(current_round_part_vote_data.current_vote_results));
+    memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
     memset(data,0,strlen(data));
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
 
     // convert the SHA512 data hash to a string
     for (count2 = 0, count = 0; count2 < 64; count2++, count += 2)
     {
-      sprintf(current_round_part_vote_data.current_vote_results+count,"%02x",data[count2] & 0xFF);
+      sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[count2] & 0xFF);
     }
   }
 
@@ -4906,13 +4954,13 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   }
 
   // process the vote data
-  if (memcmp(data,"valid",5) == 0 && memcmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0)
+  if (memcmp(data,"valid",5) == 0 && memcmp(data2,current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH) == 0)
   {
-    current_round_part_vote_data.vote_results_valid++;
+    current_round_part_vote_data->vote_results_valid++;
   }
   else
   {
-    current_round_part_vote_data.vote_results_invalid++;
+    current_round_part_vote_data->vote_results_invalid++;
   }
 
   pointer_reset_all;
@@ -5023,11 +5071,11 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0)
     {
-      memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],vrf_secret_key_data,VRF_SECRET_KEY_LENGTH);
-      memcpy(VRF_data.block_verifiers_vrf_secret_key[count],vrf_secret_key,crypto_vrf_SECRETKEYBYTES);
-      memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],vrf_public_key_data,VRF_PUBLIC_KEY_LENGTH);
-      memcpy(VRF_data.block_verifiers_vrf_public_key[count],vrf_public_key,crypto_vrf_PUBLICKEYBYTES);
-      memcpy(VRF_data.block_verifiers_random_data[count],data,RANDOM_STRING_LENGTH);
+      memcpy(VRF_data_copy->block_verifiers_vrf_secret_key_data[count],vrf_secret_key_data,VRF_SECRET_KEY_LENGTH);
+      memcpy(VRF_data_copy->block_verifiers_vrf_secret_key[count],vrf_secret_key,crypto_vrf_SECRETKEYBYTES);
+      memcpy(VRF_data_copy->block_verifiers_vrf_public_key_data[count],vrf_public_key_data,VRF_PUBLIC_KEY_LENGTH);
+      memcpy(VRF_data_copy->block_verifiers_vrf_public_key[count],vrf_public_key,crypto_vrf_PUBLICKEYBYTES);
+      memcpy(VRF_data_copy->block_verifiers_random_data[count],data,RANDOM_STRING_LENGTH);
     }
   }  
 
@@ -5106,7 +5154,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
     {
-      memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
+      memset(VRF_data_copy->block_blob_signature[count],0,strlen(VRF_data_copy->block_blob_signature[count]));
+      memcpy(VRF_data_copy->block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
     }
   }  
 
@@ -5568,8 +5617,8 @@ int create_server(const int MESSAGE_SETTINGS)
          }
          else
          {
-            current_round_part_vote_data.vote_results_valid++;
-           printf("Received %d from %s on port %s\r\n",current_round_part_vote_data.vote_results_valid,client_address,buffer2);
+            current_round_part_vote_data->vote_results_valid++;
+           printf("Received %d from %s on port %s\r\n",current_round_part_vote_data->vote_results_valid,client_address,buffer2);
 
            // send the message 
            if (send_data(CLIENT_SOCKET,buffer,1) == 1)
