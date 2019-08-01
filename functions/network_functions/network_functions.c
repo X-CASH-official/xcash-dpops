@@ -1985,17 +1985,21 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_reserve_bytes_database()
 {
   // Variables
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
-  size_t counter;
+  int counter;
   size_t number;
   int settings;
+  int settings2 = 0;
 
   // define macros
   #define pointer_reset_all \
+  free(message); \
+  message = NULL; \
   free(data); \
   data = NULL; \
   free(data2); \
@@ -2023,8 +2027,12 @@ int sync_reserve_bytes_database()
   }  
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
+  if (message == NULL || data == NULL || data2 == NULL || data3 == NULL)
   {
+    if (message != NULL)
+    {
+      pointer_reset(message);
+    }
     if (data != NULL)
     {
       pointer_reset(data);
@@ -2058,15 +2066,14 @@ int sync_reserve_bytes_database()
   {
     memset(data2,0,strlen(data2));
     memcpy(data2+strlen(data2),"reserve_bytes_",14);
-    sprintf(data2+strlen(data2),"%zu",count2);
-    counter = count_all_documents_in_collection(DATABASE_NAME,data2,0);
-    if (counter < 1)
+    sprintf(data2+strlen(data2),"%zu",count2);    
+    if (count_all_documents_in_collection(DATABASE_NAME,data2,0) <= 0)
     {
       break;
     }
   }
 
-  for (count2 = counter; count2 <= number; count2++)
+  for (; count2 <= number; count2++)
   {
     start:
 
@@ -2215,11 +2222,67 @@ int sync_reserve_bytes_database()
     }
   }
 
+
+
   // check that the reserve bytes database is synced and if not sync all of the reserve bytes databases
-  if (sync_check_reserve_bytes_database() == 0)
-  {    
-    counter = 1;
-    goto start;
+  if (settings2 == 0)
+  {
+    if (get_synced_block_verifiers() == 0)
+    {
+      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the synced block verifiers",0);
+    }
+
+    // get the database data hash for the reserve bytes database
+    memset(data,0,strlen(data));
+    if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes",0) == 0)
+    {
+      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database",0);
+    }
+
+    // create the message
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"data_hash\": \"",123);
+    memcpy(message+123,data,DATA_HASH_LENGTH);
+    memcpy(message+251,"\"}",2);
+
+    // sign_data
+    if (sign_data(message,0) == 0)
+    { 
+      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data",0);
+    }
+
+    printf("Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
+ 
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memset(data,0,strlen(data));
+      memset(data2,0,strlen(data2));
+      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+      {
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
+      }
+      else
+      {
+        parse_json_data(data,"reserve_bytes_database",data2);
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      }   
+    }
+
+    if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      color_print("The reserve bytes database is not synced\nSyncing all of the reserve bytes databases","red");
+      count2 = 1;
+      settings2 = 1;
+      goto start;
+    }
   }
 
   pointer_reset_all;
