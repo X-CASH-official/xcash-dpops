@@ -5423,202 +5423,127 @@ int create_server(const int MESSAGE_SETTINGS)
          // check if a certain type of message has been received 
          if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
          {
+           printf("Received XCASH_PROOF_OF_STAKE_TEST_DATA from %s on %s",client_address, buffer2);
            server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all;
-           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
          {
            printf("Received NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(CLIENT_SOCKET);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          } 
          else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
          {
            printf("Received NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          } 
          else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
          {
+           printf("Received NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          } 
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }  
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }  
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }
          else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\"") != NULL)
          {
+           printf("Received NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          } 
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }  
          else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\"") != NULL)
          {
+           printf("Received NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_register_delegates(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }            
          else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\"") != NULL)
          {
+           printf("Received NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          } 
          else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\"") != NULL)
          {
+           printf("Received NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          } 
          else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35) == 0)
          {
+           printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          } 
          else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52) == 0)
          {
+           printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          } 
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",46) == 0)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }  
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",55) == 0)
          {
+           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }  
-         if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && strstr(server_message,"NODES_TO_NODES_VOTE_RESULTS") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && strstr(server_message,"NODES_TO_NODES_VOTE_RESULTS") != NULL)
          {
+           printf("Received NODES_TO_NODES_VOTE_RESULTS from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_node((const char*)buffer);
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset_all; 
-           _exit(0);
          }
          else
          {
-            current_round_part_vote_data->vote_results_valid++;
-           printf("Received %d from %s on port %s\r\n",current_round_part_vote_data->vote_results_valid,client_address,buffer2);
+           printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
 
            // send the message 
            if (send_data(CLIENT_SOCKET,buffer,1) == 1)
@@ -5633,12 +5558,13 @@ int create_server(const int MESSAGE_SETTINGS)
              memcpy(string+22+CLIENT_ADDRESS_LENGTH," on port ",9);
              memcpy(string+31+CLIENT_ADDRESS_LENGTH,buffer2,BUFFER2_LENGTH);
              color_print(string,"red"); 
-             continue;
            } 
          }
 
-         
-       
+         close(SOCKET);
+         close(CLIENT_SOCKET);
+         pointer_reset_all; 
+         _exit(0);
        }
      }   
      else

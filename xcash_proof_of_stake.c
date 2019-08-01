@@ -611,7 +611,7 @@ int main(int parameters_count, char* parameters[])
     }*/
   }
 
-  /*print_start_message("Starting all of the threads");
+  print_start_message("Starting all of the threads");
 
   // start the block height timer thread
   if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
@@ -642,46 +642,9 @@ int main(int parameters_count, char* parameters[])
     exit(0);  
   }
 
-  color_print("Started the check reserve proofs timer thread","green");*/
+  color_print("Started the check reserve proofs timer thread","green");
 
-  memset(data,0,strnlen(data,BUFFER_SIZE));
-  memcpy(data,"{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}",strnlen("{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}",BUFFER_SIZE));
-
-  // sign_data
-    if (sign_data(data,0) == 0)
-    { 
-      color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
-    }
-
-    memcpy(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",30);
- 
- current_round_part_vote_data->vote_results_valid = 0;
-   
-  /*for (int count5 = 0; count5 < 5; count5++)
-  {
-    send_data_socket("10.10.10.1",SEND_DATA_PORT,data,"",0);
-    sleep(1);
-  }*/
-
-  pthread_t thread_id_5;
-  pthread_t thread_id_6;
-  pthread_t thread_id_7;
-  pthread_t thread_id_8;
-  struct send_data_socket_thread_parameters send_data_socket_thread_parameters = {data,SOCKET_CONNECTION_TIMEOUT_SETTINGS,SOCKET_DATA_TIMEOUT_SETTINGS};
-  pthread_create(&thread_id_5, NULL, &send_data_socket_thread_1,(void *)&send_data_socket_thread_parameters);
-  pthread_detach(thread_id_5);
-  pthread_create(&thread_id_6, NULL, &send_data_socket_thread_2,(void *)&send_data_socket_thread_parameters);
-  pthread_detach(thread_id_6);
-  pthread_create(&thread_id_7, NULL, &send_data_socket_thread_3,(void *)&send_data_socket_thread_parameters);
-  pthread_detach(thread_id_7);
-  pthread_create(&thread_id_8, NULL, &send_data_socket_thread_4,(void *)&send_data_socket_thread_parameters);
-  pthread_detach(thread_id_8);
-  sleep(2);
-
-  color_print("done","yellow");
-
- /* // start the check_delegates_online_status_timer_thread
+ /*// start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
     memcpy(error_message.function[error_message.total],"main",4);
