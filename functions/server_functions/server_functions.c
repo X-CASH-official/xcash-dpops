@@ -131,7 +131,7 @@ int start_new_round()
   {    
     usleep(200000); 
     get_current_UTC_time; 
-  } while (current_UTC_date_and_time->tm_min != 1 && current_UTC_date_and_time->tm_min != 0)
+  } while (current_UTC_date_and_time->tm_min != 1 && current_UTC_date_and_time->tm_min != 30)
   */
 
   // check if the current block height - 1 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
@@ -513,7 +513,8 @@ int data_network_node_create_block()
   return 0;
 
   #define SEND_DATA_SOCKET_THREAD(message) \
-  memcpy(send_data_socket_thread_parameters.DATA,data,strnlen(message,BUFFER_SIZE)); \
+  memset(send_data_socket_thread_parameters.DATA,0,strnlen(send_data_socket_thread_parameters.DATA,BUFFER_SIZE)); \
+  memcpy(send_data_socket_thread_parameters.DATA,message,strnlen(message,BUFFER_SIZE)); \
   pthread_create(&thread_id_1, NULL, &send_data_socket_thread_1,(void *)&send_data_socket_thread_parameters); \
   pthread_detach(thread_id_1); \
   pthread_create(&thread_id_2, NULL, &send_data_socket_thread_2,(void *)&send_data_socket_thread_parameters); \
@@ -957,7 +958,8 @@ int start_part_4_of_round()
   return 0;
 
   #define SEND_DATA_SOCKET_THREAD(message) \
-  memcpy(send_data_socket_thread_parameters.DATA,data,strnlen(message,BUFFER_SIZE)); \
+  memset(send_data_socket_thread_parameters.DATA,0,strnlen(send_data_socket_thread_parameters.DATA,BUFFER_SIZE)); \
+  memcpy(send_data_socket_thread_parameters.DATA,message,strnlen(message,BUFFER_SIZE)); \
   pthread_create(&thread_id_1, NULL, &send_data_socket_thread_1,(void *)&send_data_socket_thread_parameters); \
   pthread_detach(thread_id_1); \
   pthread_create(&thread_id_2, NULL, &send_data_socket_thread_2,(void *)&send_data_socket_thread_parameters); \
@@ -1397,6 +1399,10 @@ int start_part_4_of_round()
   current_round_part_vote_data->vote_results_valid = 0;
   current_round_part_vote_data->vote_results_invalid = 0;  
 
+  // set the next server message since the block verifiers will send the data to each other
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
+
   // send the message to all block verifiers
   SEND_DATA_SOCKET_THREAD(data3);
 
@@ -1518,7 +1524,7 @@ int start_part_4_of_round()
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)data3,(unsigned long long)strnlen(data3,BUFFER_SIZE));
 
   // convert the SHA512 data hash to a string
-  for (counter = 0, count = 0; counter < 64; counter++, count += 2)
+  for (counter = 0, count = 0; counter < DATA_HASH_LENGTH / 2; counter++, count += 2)
   {
     sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
   }
@@ -1534,6 +1540,10 @@ int start_part_4_of_round()
   { 
     START_PART_4_OF_ROUND_ERROR("Could not sign_data");
   }
+
+  // set the next server message since the block verifiers will send the data to each other
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27);
 
   // send the message to all block verifiers
   SEND_DATA_SOCKET_THREAD(data3);
@@ -1627,6 +1637,7 @@ int start_part_4_of_round()
 
   #undef pointer_reset_all
   #undef START_PART_4_OF_ROUND_ERROR
+  #undef SEND_DATA_SOCKET_THREAD
   #undef RESTART_ROUND
 }
 
@@ -5154,47 +5165,25 @@ int create_server(const int MESSAGE_SETTINGS)
   int len;
   int receive_data_result; 
   struct sockaddr_in addr, cl_addr; 
+  int process_id;
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
 
-  #define pointer_reset_all \
-  free(string); \
-  string = NULL;
+  #define SERVER_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"create_server",13); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  error_message.total++; \
+  pointer_reset(string); \
+  return 0;  
 
-  /* Reset the node so it is ready for the next round.
-  close the client socket
-  reset the variables for the forked process
-  reset the current_round_part to 1 and current_round_part_backup_node to 0
-  reset the server_message to CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND|CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS
-  exit the forked process
-  this way the node will sit out the current round, and start the next round.
-  */
-  #define SERVER_ERROR(settings) \
-  close(SOCKET); \
-  pointer_reset_all; \
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE)); \
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE)); \
-  memcpy(current_round_part,"1",1); \
-  memcpy(current_round_part_backup_node,"0",1); \
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE)); \
-  memcpy(server_message,"CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND|CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS",96); \
-  if (settings == 0) \
-  { \
-    return 0; \
-  } \
-  else \
-  { \
-    _exit(0); \
-  }  
+  // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
+  signal(SIGCHLD, SIG_IGN);
 
   if (MESSAGE_SETTINGS == 1)
   {
     print_start_message("Creating the server");
   }
-
-  // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
-  signal(SIGCHLD, SIG_IGN);  
 
   // check if the memory needed was allocated on the heap successfully
   if (string == NULL)
@@ -5213,14 +5202,7 @@ int create_server(const int MESSAGE_SETTINGS)
   const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
   if (SOCKET == -1)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(error_message.function[error_message.total],"create_server",13);
-      memcpy(error_message.data[error_message.total],"Error creating socket",21);
-      error_message.total++;
-    }    
-    pointer_reset_all;
-    return 0;
+    SERVER_ERROR("Error creating socket");
   }
 
   /* Set the socket options
@@ -5230,14 +5212,9 @@ int create_server(const int MESSAGE_SETTINGS)
   */
   if (setsockopt(SOCKET, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &SOCKET_OPTION,sizeof(int)) != 0)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(error_message.function[error_message.total],"create_server",13);
-      memcpy(error_message.data[error_message.total],"Error setting socket options",28);
-      error_message.total++;
-    }
-    SERVER_ERROR(0);
+    SERVER_ERROR("Error setting socket options");
   } 
+
   if (MESSAGE_SETTINGS == 1)
   {   
     color_print("Socket created","green");
@@ -5259,17 +5236,12 @@ int create_server(const int MESSAGE_SETTINGS)
   // connect to 0.0.0.0
   if (bind(SOCKET, (struct sockaddr *) &addr, sizeof(addr)) != 0)
   {
-   if (MESSAGE_SETTINGS == 1)
-   {
-     memset(string,0,strnlen(string,BUFFER_SIZE));
-     memcpy(string,"Error connecting to port ",25);
-     memcpy(string+25,buffer2,strnlen(buffer2,BUFFER_SIZE));
-     memcpy(error_message.function[error_message.total],"create_server",13);
-     memcpy(error_message.data[error_message.total],string,strlen(string));
-     error_message.total++;
-   }
-   SERVER_ERROR(0);
+    memset(string,0,strnlen(string,BUFFER_SIZE));
+    memcpy(string,"Error connecting to port ",25);
+    memcpy(string+25,buffer2,strnlen(buffer2,BUFFER_SIZE));
+    SERVER_ERROR(string);
   } 
+
   if (MESSAGE_SETTINGS == 1)
   {
     memset(string,0,strnlen(string,BUFFER_SIZE));
@@ -5283,13 +5255,7 @@ int create_server(const int MESSAGE_SETTINGS)
   // set the maximum simultaneous connections
   if (listen(SOCKET, MAXIMUM_CONNECTIONS) != 0)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(error_message.function[error_message.total],"create_server",13);
-      memcpy(error_message.data[error_message.total],"Error creating the server",28);
-      error_message.total++;
-    }
-    SERVER_ERROR(0);
+    SERVER_ERROR("Error creating the server");
   }
 
   for (;;)
@@ -5329,20 +5295,19 @@ int create_server(const int MESSAGE_SETTINGS)
       memcpy(string+25+CLIENT_ADDRESS_LENGTH," on ",4);
       memcpy(string+29+CLIENT_ADDRESS_LENGTH,buffer2,strnlen(buffer2,BUFFER_SIZE));
       color_print(string,"green"); 
-    }
+    } 
 
-   
-
+    // create a new process for each server connection
     if (fork() == 0)
     { 
        // close the main socket, since the socket is now copied to the forked process
-       close(SOCKET); 
+       close(SOCKET);
 
        for (;;)
        {         
          // receive the data
          memset(buffer, 0, BUFFER_SIZE); 
-         receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,0,TOTAL_CONNECTION_TIME_SETTINGS);
+         receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,1,TOTAL_CONNECTION_TIME_SETTINGS);
          if (receive_data_result < 2)
          {
            if (MESSAGE_SETTINGS == 1)
@@ -5362,8 +5327,11 @@ int create_server(const int MESSAGE_SETTINGS)
              }
              color_print(string,"red"); 
            }
-           // close the forked process, since the client had an error sending data     
-           SERVER_ERROR(1);
+           // close the forked process, since the client had an error sending data  
+           close(SOCKET);
+           close(CLIENT_SOCKET);
+           pointer_reset(string);
+           _exit(0);
          }  
 
          if (MESSAGE_SETTINGS == 1)
@@ -5479,27 +5447,27 @@ int create_server(const int MESSAGE_SETTINGS)
            printf("Received NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35) == 0)
          {
            printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52) == 0)
          {
            printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
          } 
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",46) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43) == 0)
          {
            printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
          }  
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && memcmp(current_round_part,"4",1) == 0 && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",55) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",55) == 0)
          {
            printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
          }  
-         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && strstr(server_message,"NODES_TO_NODES_VOTE_RESULTS") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && memcmp(server_message,"NODES_TO_NODES_VOTE_RESULTS",27) == 0)
          {
            printf("Received NODES_TO_NODES_VOTE_RESULTS from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_node((const char*)buffer);
@@ -5523,22 +5491,17 @@ int create_server(const int MESSAGE_SETTINGS)
              color_print(string,"red"); 
            } 
          }
-
          close(SOCKET);
          close(CLIENT_SOCKET);
-         pointer_reset_all; 
+         pointer_reset(string); 
          _exit(0);
        }
-     }   
-     else
-     {
-       // if the process did not fork, close the client socket
-       close(CLIENT_SOCKET);
-     } 
+     }  
+     // close the client socket
+     close(CLIENT_SOCKET);
    }
    return 1;
 
-   #undef pointer_reset_all
    #undef SERVER_ERROR
 }
 

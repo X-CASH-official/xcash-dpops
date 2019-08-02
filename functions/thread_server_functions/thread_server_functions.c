@@ -66,7 +66,7 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  while (current_UTC_date_and_time->tm_min != 2 && current_UTC_date_and_time->tm_min != 0)
+  while (current_UTC_date_and_time->tm_min != 40 && current_UTC_date_and_time->tm_min != 0)
   {    
     usleep(200000); 
     get_current_UTC_time; 
@@ -97,12 +97,6 @@ void* current_block_height_timer_thread()
           // replace the current_block_height variable
           memset(current_block_height,0,strlen(current_block_height));
           memcpy(current_block_height,data,strnlen(data,BUFFER_SIZE));
-
-          // close any connections
-          memset(data2,0,strnlen(data2,BUFFER_SIZE));
-          memcpy(data2,"pkill -TERM -P ",15);
-          sprintf(data2+15,"%d",getpid());
-          system(data2);
 
           memcpy(data2,"Network Block ",14);
           memcpy(data2+14,data,strnlen(data,BUFFER_SIZE));

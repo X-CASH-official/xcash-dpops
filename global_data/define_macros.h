@@ -54,7 +54,7 @@ Using define statements instead of constants for increased efficiency
 
 // Database
 #define DATABASE_CONNECTION "mongodb://localhost:27017" // the database connection string
-#define DATABASE_NAME "XCASH_PROOF_OF_STAKE_COPY" // The name of the database
+#define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
 #define DATABASE_ARRAY_COUNT 150 // The maximum amount of parsed item and value from the database
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
 

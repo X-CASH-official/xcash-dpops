@@ -1129,7 +1129,7 @@ int sync_all_block_verifiers_list()
     memset(data3,0,strlen(data3));
     memcpy(data3,"Connecting to network data node ",32);
     memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-    memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",73);
+    memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
     memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
     printf("%s\n",data3);
     memset(data3,0,strlen(data3));
