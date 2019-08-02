@@ -1306,7 +1306,7 @@ int add_data_hash_to_network_block_string(char* network_block_string, char* netw
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)network_block_string,(unsigned long long)strnlen(network_block_string,BUFFER_SIZE));
 
   // convert the SHA512 data hash to a string
-  for (counter = 0, count = 0; counter < 64; counter++, count += 2)
+  for (counter = 0, count = 0; counter < DATA_HASH_LENGTH / 2; counter++, count += 2)
   {
     sprintf(data2+count,"%02x",data[counter] & 0xFF);
   }
@@ -1671,7 +1671,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)data2,strlen(data2));
   memset(data2,0,strlen(data2));
   // convert the SHA512 data hash to a string
-  for (count2 = 0, count = 0; count2 < 64; count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
   {
     sprintf(data2+count,"%02x",data[count2] & 0xFF);
   }

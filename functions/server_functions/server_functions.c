@@ -83,14 +83,7 @@ int start_new_round()
   memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
   print_start_message(data);
   
-  // reset the variables
-  memset(current_round_part,0,strlen(current_round_part));
-  memcpy(current_round_part,"1",1);
-  memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
-  memcpy(current_round_part_backup_node,"0",1);
-
-  memset(current_round_part_backup_node_data.current_round_part_4_backup_node,0,strlen(current_round_part_backup_node_data.current_round_part_4_backup_node));
-  
+  // reset the variables 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count])); 
@@ -173,6 +166,12 @@ int start_new_round()
         START_NEW_ROUND_ERROR("Could not check if the databases are synced. This means that your database is out of sync, and you need to resync your databases");
       }
     }
+
+    // reset the current_round_part and current_round_part_backup_node
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"1",1);
+    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
+    memcpy(current_round_part_backup_node,"0",1);
 
     if (calculate_main_nodes_roles() == 0)
     {
@@ -417,7 +416,7 @@ int start_current_round_start_blocks()
   crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,(unsigned long long)strnlen(data,BUFFER_SIZE));
 
   // convert the SHA512 data hash to a string
-  for (count2 = 0, count = 0; count2 < 64; count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
   {
     sprintf(data3+count,"%02x",data2[count2] & 0xFF);
   }
@@ -699,6 +698,10 @@ int data_network_node_create_block()
 
   // check if all of the block verifiers have the same main node data
 
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"1",1);
+
   // create the message
   memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
   memcpy(data3+strnlen(data3,BUFFER_SIZE),current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
@@ -746,6 +749,10 @@ int data_network_node_create_block()
       memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
     }
   } 
+
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"2",1);
 
   // create the message
   memset(data3,0,strlen(data3));
@@ -836,10 +843,14 @@ int data_network_node_create_block()
 
   // convert the SHA512 data hash to a string
   memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
-  for (counter = 0, count = 0; counter < 64; counter++, count += 2)
+  for (counter = 0, count = 0; counter < DATA_HASH_LENGTH / 2; counter++, count += 2)
   {
     sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
   }
+
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"3",1);
 
   // create the message
   memset(data3,0,strlen(data3));
@@ -875,9 +886,6 @@ int data_network_node_create_block()
   {
     DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the data hash to the network block string");
   }
-
-  // save the current_round_part_backup_node
-  memcpy(current_round_part_backup_node_data.current_round_part_4_backup_node,current_round_part_backup_node,1);
 
   // copy the network block string
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
@@ -996,26 +1004,36 @@ int start_part_4_of_round()
   } \
   if (memcmp(current_round_part_backup_node,"0",1) == 0) \
   { \
+    memset(current_round_part,0,strlen(current_round_part)); \
+    memcpy(current_round_part,"1",1); \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"1",1); \
   } \
   else if (memcmp(current_round_part_backup_node,"1",1) == 0) \
   { \
+    memset(current_round_part,0,strlen(current_round_part)); \
+    memcpy(current_round_part,"1",1); \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"2",1); \
   } \
   else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
   { \
+    memset(current_round_part,0,strlen(current_round_part)); \
+    memcpy(current_round_part,"1",1); \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"3",1); \
   } \
   else if (memcmp(current_round_part_backup_node,"3",1) == 0) \
   { \
+    memset(current_round_part,0,strlen(current_round_part)); \
+    memcpy(current_round_part,"1",1); \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"4",1); \
   } \
   else if (memcmp(current_round_part_backup_node,"4",1) == 0) \
   { \
+    memset(current_round_part,0,strlen(current_round_part)); \
+    memcpy(current_round_part,"1",1); \
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"5",1); \
   } \
@@ -1052,7 +1070,6 @@ int start_part_4_of_round()
   send_data_socket_thread_parameters.socket_data_timeout_settings = SOCKET_DATA_TIMEOUT_SETTINGS;
 
   start:
-
   
     // create a random VRF public key and secret key
     if (create_random_VRF_keys((unsigned char*)VRF_data.vrf_public_key_round_part_4,(unsigned char*)VRF_data.vrf_secret_key_round_part_4) != 1 || crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_4) != 1)
@@ -1071,6 +1088,10 @@ int start_part_4_of_round()
     {
       sprintf(VRF_data.vrf_public_key_data_round_part_4+counter,"%02x",VRF_data.vrf_public_key_round_part_4[count] & 0xFF);
     }  
+
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"1",1);
 
     // create the message
     memset(data3,0,strlen(data3));
@@ -1171,10 +1192,14 @@ int start_part_4_of_round()
 
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,strlen(VRF_data.vrf_alpha_string_data_round_part_4));
     // convert the SHA512 data hash to a string
-    for (counter = 0, count = 0; counter < 64; counter++, count += 2)
+    for (counter = 0, count = 0; counter < DATA_HASH_LENGTH / 2; counter++, count += 2)
     {
       sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
     }
+
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"2",1);
 
     // create the message
     memset(data3,0,strlen(data3));
@@ -1238,10 +1263,14 @@ int start_part_4_of_round()
     current_round_part_vote_data->vote_results_invalid = 0;  
 
     // convert the SHA512 data hash to a string
-    for (counter = 0, count = 0; counter < 64; counter++, count += 2)
+    for (counter = 0, count = 0; counter < DATA_HASH_LENGTH / 2; counter++, count += 2)
     {
       sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
     }
+
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"3",1);
 
     // create the message
     memset(data3,0,strlen(data3));
@@ -1337,6 +1366,10 @@ int start_part_4_of_round()
       }
     }
 
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"4",1);
+
     // set the next server message since the block verifiers will send the data to each other
     memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
     memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52); 
@@ -1383,6 +1416,10 @@ int start_part_4_of_round()
   }
 
   // check if all of the block verifiers have the same main node data
+
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"5",1);
 
   // create the message
   memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
@@ -1435,6 +1472,10 @@ int start_part_4_of_round()
       memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
     }
   } 
+
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"6",1);
 
   // create the message
   memset(data3,0,strlen(data3));
@@ -1529,6 +1570,10 @@ int start_part_4_of_round()
     sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
   }
 
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"7",1);
+
   // create the message
   memset(data3,0,strlen(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
@@ -1567,9 +1612,6 @@ int start_part_4_of_round()
   {
     START_PART_4_OF_ROUND_ERROR("Could not add the data hash to the network block string");
   }
-
-  // save the current_round_part_backup_node
-  memcpy(current_round_part_backup_node_data.current_round_part_4_backup_node,current_round_part_backup_node,1);
 
   // copy the network block string
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
@@ -1969,7 +2011,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     }
 
     // add one to the block_producer_total_rounds and the current block height to the block_producer_block_heights if the public address is the block producer
-    if ((memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node_data.current_round_part_4_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))
+    if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_total_rounds",data,0) == 0)
@@ -4722,7 +4764,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
 
     // convert the SHA512 data hash to a string
-    for (count2 = 0, count = 0; count2 < 64; count2++, count += 2)
+    for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
     {
       sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[count2] & 0xFF);
     }
@@ -4851,7 +4893,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
 
     // convert the SHA512 data hash to a string
-    for (count2 = 0, count = 0; count2 < 64; count2++, count += 2)
+    for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
     {
       sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[count2] & 0xFF);
     }
@@ -5502,6 +5544,7 @@ int create_server(const int MESSAGE_SETTINGS)
    }
    return 1;
 
+   #undef SOCKET_FILE_DESCRIPTORS_LENGTH
    #undef SERVER_ERROR
 }
 

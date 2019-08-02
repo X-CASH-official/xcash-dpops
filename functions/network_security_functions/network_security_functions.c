@@ -184,12 +184,12 @@ Description: Verifies signed data, for receiving data securely
 Parameters:
   message - The signed data
   HTTP_SETTINGS - The http settings
-  VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS - 1 to verify the current_round_part_backup_node, otherwise 0
+  VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS - 1 to verify the current_round_part and the current_round_part_backup_node, otherwise 0
 Return: 0 if the signed data is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS)
+int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
@@ -349,11 +349,11 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   }
 
   // verify if the current_round_part_backup_node
-  if (VERIFY_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS == 1)
+  if (VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS == 1)
   {
-    if (strncmp(current_round_part_backup_node,message_current_round_part_backup_node,BUFFER_SIZE) != 0)
+    if (memcmp(current_round_part,message_current_round_part,1) != 0 || memcmp(current_round_part_backup_node,message_current_round_part_backup_node,1) != 0)
     {
-      VERIFY_DATA_ERROR("Invalid current_round_part_backup_node");
+      VERIFY_DATA_ERROR("Invalid current_round_part or current_round_part_backup_node");
     }
   }
   

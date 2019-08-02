@@ -216,18 +216,6 @@ int main(int parameters_count, char* parameters[])
   // set the network_data_node_settings
   network_data_node_settings = 0;
 
-  // initialize the round_part_backup_node_data struct
-  current_round_part_backup_node_data.current_round_part_4_backup_node = (char*)calloc(2,sizeof(char));
-
-  if (current_round_part_backup_node_data.current_round_part_4_backup_node == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
-
   // initialize the current_round_part_vote_data* struct
   current_round_part_vote_data = mmap(NULL, sizeof(struct current_round_part_vote_data), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0);   
 

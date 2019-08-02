@@ -59,10 +59,6 @@ struct network_data_nodes_list {
     char* network_data_nodes_IP_address[NETWORK_DATA_NODES_AMOUNT]; // The block verifiers IP address
 };
 
-struct current_round_part_backup_node_data {
-    char* current_round_part_4_backup_node;
-};
-
 struct current_round_part_vote_data {
     char current_vote_results[DATA_HASH_LENGTH]; // The SHA2-512 hash of the vote results that the block verifier calculated
     int vote_results_valid; // The current part of the round vote count for a valid vote.
