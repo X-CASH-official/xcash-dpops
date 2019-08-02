@@ -45,6 +45,10 @@ int read_file(char *result, const char* FILE_NAME)
     }
     fclose(file);
   }
+  else
+  {
+    return 0;
+  }  
   return 1;
 }
 

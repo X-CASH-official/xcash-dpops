@@ -16,6 +16,7 @@
 
 #include "database_functions.h"
 #include "define_macro_functions.h"
+#include "file_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
@@ -65,14 +66,19 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  get_current_block_height(data,0);
+  while (current_UTC_date_and_time->tm_min != 2 && current_UTC_date_and_time->tm_min != 0)
+  {    
+    usleep(200000); 
+    get_current_UTC_time; 
+  }
+  get_current_block_height(current_block_height,0);
   if (start_new_round() == 0)
   {
     print_error_message;
   }
   else
   {
-    printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",data);
+    printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
   } 
   /*for (;;)
   {
@@ -92,9 +98,14 @@ void* current_block_height_timer_thread()
           memset(current_block_height,0,strlen(current_block_height));
           memcpy(current_block_height,data,strnlen(data,BUFFER_SIZE));
 
+          // close any connections
+          memset(data2,0,strnlen(data2,BUFFER_SIZE));
+          memcpy(data2,"pkill -TERM -P ",15);
+          sprintf(data2+15,"%d",getpid());
+          system(data2);
+
           memcpy(data2,"Network Block ",14);
           memcpy(data2+14,data,strnlen(data,BUFFER_SIZE));
-
           print_start_message(data2);
 
           if (start_new_round() == 0)

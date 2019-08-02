@@ -306,7 +306,6 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     // check if the public address is in the synced_block_verifiers struct
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      color_print(synced_block_verifiers.synced_block_verifiers_public_address[count],"yellow");
       if (memcmp(public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0 || memcmp(public_address,synced_block_verifiers.synced_block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
       {
         settings = 1;

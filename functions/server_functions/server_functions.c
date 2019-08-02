@@ -82,31 +82,6 @@ int start_new_round()
   memcpy(data,"A new round is starting for block ",34);
   memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
   print_start_message(data);
-
-  // check if all of the network data nodes are offline
-  if (network_data_node_settings == 1)
-  {
-    for (count = 0, count2 = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-    {
-      if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BUFFER_SIZE) != 0)
-      {
-        if (get_delegate_online_status(network_data_nodes_list.network_data_nodes_IP_address[count]) == 0)
-        {
-          count2++;
-        }
-      }      
-    }
-  }
-  
-  if ((network_data_node_settings == 1 && count2 != NETWORK_DATA_NODES_AMOUNT-1) || (network_data_node_settings == 0))
-  {
-    // check to make sure all of the databases are synced
-    color_print("Checking if databases are synced","green");
-    if (check_if_databases_are_synced() == 0)
-    {    
-      START_NEW_ROUND_ERROR("Could not check if the databases are synced. This means that your database is out of sync, and you need to resync your databases");
-    }  
-  }
   
   // reset the variables
   memset(current_round_part,0,strlen(current_round_part));
@@ -143,6 +118,21 @@ int start_new_round()
   memset(VRF_data.vrf_beta_string_round_part_4,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_4));
   memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash));
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+
+  /*// check if all of the databases are synced
+  if (check_if_databases_are_synced() == 0)
+  {
+    START_NEW_ROUND_ERROR("Could not check if the database is synced. Your block verifier will now sit out for the remainder of the round");
+  }
+
+  // wait for all block verifiers to sync the database
+  
+  do
+  {    
+    usleep(200000); 
+    get_current_UTC_time; 
+  } while (current_UTC_date_and_time->tm_min != 1 && current_UTC_date_and_time->tm_min != 0)
+  */
 
   // check if the current block height - 1 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
   sscanf(current_block_height,"%zu", &count);
@@ -190,7 +180,7 @@ int start_new_round()
       
       // set the main_network_data_node_create_block so the main network data node can create the block
       main_network_data_node_create_block = 1;
-      if (start_current_round_start_blocks() == 0)
+      if (data_network_node_create_block() == 0)
       {      
         START_NEW_ROUND_ERROR("start_current_round_start_blocks error");
       } 
@@ -201,7 +191,7 @@ int start_new_round()
       
       // set the main_network_data_node_create_block so the main network data node can create the block
       main_network_data_node_create_block = 1;
-      if (start_current_round_start_blocks() == 0)
+      if (data_network_node_create_block() == 0)
       {      
         START_NEW_ROUND_ERROR("start_current_round_start_blocks error");
       }  
@@ -269,15 +259,6 @@ int start_current_round_start_blocks()
     print_error_message;  
     exit(0);
   }
-
-  /*for (;;)
-  {
-    usleep(200000);    
-    if (current_UTC_date_and_time->tm_min == 4 && current_UTC_date_and_time->tm_sec == 40)
-    {
-      break;
-    }
-  }*/
 
   // check if the block verifier is the main network data node
   if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
@@ -466,6 +447,12 @@ int start_current_round_start_blocks()
   if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the data hash to the network block string");
+  }
+
+  while (current_UTC_date_and_time->tm_min == 4 && current_UTC_date_and_time->tm_sec == 58)
+  {    
+    usleep(200000); 
+    get_current_UTC_time; 
   }
 
   // have the main network data node submit the block to the network
@@ -671,7 +658,7 @@ int data_network_node_create_block()
     // create the message
     memcpy(data,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"",97);
     memcpy(data+97,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
-    memcpy(data+strlen(data),"\"}",2);
+    memcpy(data+strlen(data),"\",\r\n}",5);
 
     // sign_data
     if (sign_data(data,0) == 0)
@@ -690,7 +677,7 @@ int data_network_node_create_block()
     printf("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block");
     while (settings != 1)
     {
-      sleep(1);
+      usleep(200000);
     }
   }
 
@@ -763,7 +750,7 @@ int data_network_node_create_block()
   memset(data3,0,strlen(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
   memcpy(data3+110,data,XCASH_SIGN_DATA_LENGTH);
-  memcpy(data3+203,"\",\r\n }",8);
+  memcpy(data3+203,"\",\r\n}",5);
 
   // sign_data
   if (sign_data(data3,0) == 0)
@@ -1363,7 +1350,7 @@ int start_part_4_of_round()
       // create the message
       memcpy(data,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"",97);
       memcpy(data+97,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
-      memcpy(data+strlen(data),"\"}",2);
+      memcpy(data+strlen(data),"\",\r\n}",5);
 
       // sign_data
       if (sign_data(data,0) == 0)
@@ -1447,7 +1434,7 @@ int start_part_4_of_round()
   memset(data3,0,strlen(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
   memcpy(data3+110,data,XCASH_SIGN_DATA_LENGTH);
-  memcpy(data3+203,"\",\r\n }",8);
+  memcpy(data3+203,"\",\r\n}",5);
 
   // sign_data
   if (sign_data(data3,0) == 0)
@@ -1855,30 +1842,6 @@ int update_databases()
   {
     UPDATE_DATABASE_ERROR("Could not update the round statistics");
   }
-  
-  // check if your reserve bytes database is synced
-  if (sync_check_reserve_bytes_database((const char*)data) == 0)
-  {
-    UPDATE_DATABASE_ERROR("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.");
-  }
-  // wait for the other block verifiers to sync the databse
-  sleep(10);
-
-  // check if your delegates database is synced
-  if (sync_check_delegates_database() == 0)
-  {
-    UPDATE_DATABASE_ERROR("Could not check if the delegates database is updated. This means you might need to sync the delegates database.");
-  }
-  // wait for the other block verifiers to sync the databse
-  sleep(10);
-
-  // check if your statistics database is synced
-  if (sync_check_statistics_database() == 0)
-  {
-    UPDATE_DATABASE_ERROR("Could not check if the statistics database is updated. This means you might need to sync the statistics database.");
-  }
-  // wait for the other block verifiers to sync the databse
-  sleep(10);
 
   pointer_reset_all;  
   return 1;
@@ -3010,7 +2973,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
     memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\",\r\n ",150);
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
-      memcpy(message+strlen(message),"\"reserve_proofs_database_",24);
+      memcpy(message+strlen(message),"\"reserve_proofs_database_",25);
       sprintf(message+strlen(message),"%zu",count);
       memcpy(message+strlen(message),"\": \"",4);      
       memset(data2,0,strlen(data2));  
@@ -3037,7 +3000,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
       {
         memcpy(message+strlen(message),"false",5);
       }
-      memcpy(message+strlen(message),"\",\r\n ",5);
+      memcpy(message+strlen(message),"\",\r\n",4);
     }
     memcpy(message+strlen(message),"}",1);
   }
@@ -3080,8 +3043,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
-  #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\", \r\n}"
-  #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\", \r\n}"
+  #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\",\r\n}"
+  #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\",\r\n}"
   
   #define pointer_reset_all \
   free(data); \
@@ -3340,12 +3303,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\"}",146);
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n}",149);
   }
   else
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\"}",147);
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n}",150);
   }
   
   // sign_data
@@ -3386,8 +3349,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
-  #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\", \r\n}"
-  #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\", \r\n}"
+  #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n}"
+  #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n}"
   
   #define pointer_reset_all \
   free(data); \
@@ -3653,12 +3616,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"true\"}",146);
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"true\",\r\n}",149);
   }
   else
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"false\"}",147);
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"false\",\r\n}",150);
   }
   
   // sign_data
@@ -3850,12 +3813,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"true\"}",146);
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"true\",\r\n}",149);
   }
   else
   {
     memset(data,0,strlen(data));
-    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"false\"}",147);
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"false\",\r\n}",150);
   }
   
   // sign_data

@@ -9,7 +9,7 @@ Using define statements instead of constants for increased efficiency
 
 // Blockchain
 #define XCASH_WALLET_LENGTH 98 // The length of a XCA address
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 0 // the start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 36 // the start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // the block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define NETWORK_VERSION "0d0d" // the network version

@@ -1802,7 +1802,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
 
       // parse the message
       memset(data3,0,strlen(data3));
-      if (parse_json_data(data,"reserve_proofs_database",data3) == 0)
+      if (parse_json_data(data,"reserve_proofs_database",data3) == 0 || memcmp(data3,"",1) == 0)
       {
         SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
       }
@@ -1817,7 +1817,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
 
       // add the data to the database
       memset(data,0,strlen(data));
-      memcpy(data,data3,strlen(data3)-2); 
+      memcpy(data,data3,strlen(data3)-2);
       insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,0);
 
       memset(data,0,strlen(data));
@@ -1916,7 +1916,7 @@ int sync_check_reserve_bytes_database()
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"data_hash\": \"",123);
   memcpy(message+123,data,DATA_HASH_LENGTH);
-  memcpy(message+251,"\"}",2);
+  memcpy(message+251,"\",\r\n}",5);
 
   // sign_data
   if (sign_data(message,0) == 0)
@@ -2174,7 +2174,7 @@ int sync_reserve_bytes_database()
       { 
         SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data",0);
       }
-     
+
       memset(data,0,strlen(data));
       if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,data2,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
       {
@@ -2188,7 +2188,7 @@ int sync_reserve_bytes_database()
 
       // parse the message
       memset(data3,0,strlen(data3));
-      if (parse_json_data(data,"reserve_bytes_database",data3) == 0)
+      if (parse_json_data(data,"reserve_bytes_database",data3) == 0 || memcmp(data3,"",1) == 0)
       {
         SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
       }
@@ -2240,9 +2240,10 @@ int sync_reserve_bytes_database()
     }
 
     // create the message
+    memset(message,0,strlen(message));
     memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"data_hash\": \"",123);
     memcpy(message+123,data,DATA_HASH_LENGTH);
-    memcpy(message+251,"\"}",2);
+    memcpy(message+strlen(message),"\",\r\n}",5);
 
     // sign_data
     if (sign_data(message,0) == 0)
@@ -2365,7 +2366,7 @@ int sync_check_delegates_database()
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",115);
   memcpy(message+115,data,DATA_HASH_LENGTH);
-  memcpy(message+243,"\"}",2);
+  memcpy(message+243,"\",\r\n}",5);
 
   // sign_data
   if (sign_data(message,0) == 0)
@@ -2551,7 +2552,7 @@ int sync_delegates_database()
 
   // parse the message
   memset(data2,0,strlen(data2));
-  if (parse_json_data(data,"delegates_database",data2) == 0)
+  if (parse_json_data(data,"delegates_database",data2) == 0 || memcmp(data2,"",1) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
   }
@@ -2644,7 +2645,7 @@ int sync_check_statistics_database()
   // create the message
   memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",116);
   memcpy(message+116,data,DATA_HASH_LENGTH);
-  memcpy(message+244,"\"}",2);
+  memcpy(message+244,"\",\r\n}",5);
 
   // sign_data
   if (sign_data(message,0) == 0)
@@ -2795,7 +2796,7 @@ int sync_statistics_database()
   memset(data,0,strlen(data));
   memcpy(data,"Connecting to block verifier ",29);
   memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
-  memcpy(data+strlen(data)," to sync the statistics database",31);
+  memcpy(data+strlen(data)," to sync the statistics database",32);
   sprintf(data2+strlen(data),"%zu",count);
   color_print(data,"green");
 
@@ -2830,7 +2831,7 @@ int sync_statistics_database()
 
   // parse the message
   memset(data2,0,strlen(data2));
-  if (parse_json_data(data,"statistics_database",data2) == 0)
+  if (parse_json_data(data,"statistics_database",data2) == 0 || memcmp(data2,"",1) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
   }

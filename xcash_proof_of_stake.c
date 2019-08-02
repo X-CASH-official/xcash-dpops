@@ -14,6 +14,7 @@
 
 #include "define_macros_functions.h"
 #include "database_functions.h"
+#include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
@@ -476,6 +477,18 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
+  // get the current block height
+  if (get_current_block_height(current_block_height,0) == 0)
+  {
+    memcpy(error_message.function[error_message.total],"main",4);
+    memcpy(error_message.data[error_message.total],"Could not get the current block height",38);
+    error_message.total++;
+    print_error_message; 
+    database_reset;
+    pointer_reset(data);
+    exit(0);
+  }
+
   start:
 
   // get the block verifiers IP address
@@ -598,8 +611,8 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
 
-    /*// check if all of the databases are synced
-    if (check_if_databases_are_synced() == 0)
+    // check if all of the databases are synced
+    /*if (check_if_databases_are_synced() == 0)
     {
       memcpy(error_message.function[error_message.total],"main",4);
       memcpy(error_message.data[error_message.total],"Could not check if the databases are synced",43);
@@ -611,6 +624,7 @@ int main(int parameters_count, char* parameters[])
     }*/
   }
 
+ 
   print_start_message("Starting all of the threads");
 
   // start the block height timer thread
@@ -630,7 +644,7 @@ int main(int parameters_count, char* parameters[])
   
   color_print("Started the current block height timer thread","green");
 
-  // start the check_reserve_proofs_timer_thread
+  /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
   {
     memcpy(error_message.function[error_message.total],"main",4);
@@ -644,7 +658,7 @@ int main(int parameters_count, char* parameters[])
 
   color_print("Started the check reserve proofs timer thread","green");
 
- /*// start the check_delegates_online_status_timer_thread
+  // start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
     memcpy(error_message.function[error_message.total],"main",4);

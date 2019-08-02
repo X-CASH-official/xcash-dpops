@@ -1435,6 +1435,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* reserve_proofs_data_hash[TOTAL_RESERVE_PROOFS_DATABASES];
   char* reserve_bytes_data_hash[10000];
+  unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
   size_t count3;
@@ -1573,23 +1574,26 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
         memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
         bson_free(message);
       }
-      // get the data hash of the collection
-      crypto_hash_sha512((unsigned char*)reserve_proofs_data_hash[count-1],(const unsigned char*)data,strnlen(data,52428800));
+      // get the data hash of the collection  
+      memset(string,0,strnlen(string,BUFFER_SIZE));    
+      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
+      memset(reserve_proofs_data_hash[count-1],0,strlen(reserve_proofs_data_hash[count-1]));
+      for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
+      {
+        sprintf(reserve_proofs_data_hash[count-1]+count2,"%02x",string[count3] & 0xFF);
+      }
     }
 
     // get the data hash of the all of the reserve proofs data hash
     memset(data,0,strnlen(data,52428800));
-    count2 = 0;
-
     for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
-      memcpy(data+count2,reserve_proofs_data_hash[count],DATA_HASH_LENGTH);
-      count2 += DATA_HASH_LENGTH;
+      memcpy(data+strlen(data),reserve_proofs_data_hash[count],DATA_HASH_LENGTH);
     }
 
     // get the data hash of the collection
-    memset(data2,0,strlen(data2));
-    crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,strnlen(data,52428800));
+    memset(string,0,strlen(string));
+    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
   }
 
 
@@ -1599,7 +1603,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   { 
     sscanf(current_block_height,"%zu", &count3);
     if (count3 < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
-    {
+    {      
       pointer_reset_all;
       database_reset_all;
       return 0;
@@ -1640,23 +1644,26 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
         memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
         bson_free(message);
       }
-      // get the data hash of the collection
-      crypto_hash_sha512((unsigned char*)reserve_bytes_data_hash[count],(const unsigned char*)data,strnlen(data,52428800));
+      // get the data hash of the collection  
+      memset(string,0,strnlen(string,BUFFER_SIZE)); 
+      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
+      memset(reserve_bytes_data_hash[count-1],0,strlen(reserve_bytes_data_hash[count-1]));
+      for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
+      {
+        sprintf(reserve_bytes_data_hash[count-1]+count2,"%02x",string[count3] & 0xFF);
+      }
     }
 
-    // get the data hash of the all of the reserve bytes data hash
+    // get the data hash of the all of the reserve proofs data hash
     memset(data,0,strnlen(data,52428800));
-    count2 = 0;
-
     for (count = 0; count < counter; count++)
     {
-      memcpy(data+count2,reserve_bytes_data_hash[count],DATA_HASH_LENGTH);
-      count2 += DATA_HASH_LENGTH;
+      memcpy(data+strlen(data),reserve_bytes_data_hash[count],DATA_HASH_LENGTH);
     }
 
     // get the data hash of the collection
-    memset(data2,0,strlen(data2));
-    crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,strnlen(data,52428800));
+    memset(string,0,strlen(string));
+    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
   }
 
 
@@ -1693,15 +1700,15 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       bson_free(message);
     }
     // get the data hash of the collection
-    memset(data2,0,strlen(data2));
-    crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,strnlen(data,52428800));
+    memset(string,0,strlen(string));
+    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
   }
 
   // convert the data hash to a string
   memset(data_hash,0,strlen(data_hash));
   for (count = 0, count2 = 0; count < DATA_HASH_LENGTH / 2; count++, count2 += 2)
   {
-    sprintf(data_hash+count2,"%02x",data2[count] & 0xFF);
+    sprintf(data_hash+count2,"%02x",string[count] & 0xFF);
   }
 
   pointer_reset_all;
