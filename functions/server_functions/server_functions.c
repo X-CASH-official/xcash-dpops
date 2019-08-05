@@ -941,7 +941,7 @@ int start_part_4_of_round()
   int counter;
 
   // threads
-  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
+  pthread_t thread_id;
 
   // define macros
   #define pointer_reset_all \
@@ -973,8 +973,8 @@ int start_part_4_of_round()
     memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
     { \
-      pthread_create(&thread_id[count], NULL, &send_data_socket_thread,(void *)&send_data_socket_thread_parameters[count]); \
-      pthread_detach(thread_id[count]); \
+      pthread_create(&thread_id, NULL, &send_data_socket_thread,(void *)&send_data_socket_thread_parameters[count]); \
+      pthread_detach(thread_id); \
     } \
   }
 
@@ -1074,6 +1074,14 @@ int start_part_4_of_round()
   }  
 
   start:
+
+    // set the server message
+    memset(server_message,0,strlen(server_message));
+    memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43); 
+
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"1",1);
   
     // create a random VRF public key and secret key
     if (create_random_VRF_keys((unsigned char*)VRF_data.vrf_public_key_round_part_4,(unsigned char*)VRF_data.vrf_secret_key_round_part_4) != 1 || crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_4) != 1)
@@ -1124,21 +1132,11 @@ int start_part_4_of_round()
       }
     } 
 
-    // set the server message
-    memset(server_message,0,strlen(server_message));
-    memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43); 
-
-    // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"1",1);
-
     // sign_data
     if (sign_data(data3,0) == 0)
     { 
       START_PART_4_OF_ROUND_ERROR("Could not sign_data");
     }
-
-    color_print(data3,"yellow");
 
     // send the message to all block verifiers
     SEND_DATA_SOCKET_THREAD(data3);
@@ -5491,7 +5489,7 @@ int create_server(const int MESSAGE_SETTINGS)
            printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
          }         
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL) //&& memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43) == 0)
          {
            printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
