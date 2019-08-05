@@ -5488,7 +5488,7 @@ int create_server(const int MESSAGE_SETTINGS)
            printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
          }         
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL)
          {
            printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);

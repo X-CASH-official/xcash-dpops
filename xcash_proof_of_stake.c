@@ -416,6 +416,14 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
+  // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
+  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
+  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
+  memcpy(current_round_part,"1",1);
+  memcpy(current_round_part_backup_node,"0",1);
+  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
+  memcpy(server_message,"CONSENSUS_NODE_TO_NODES_MAIN_NODE_PUBLIC_ADDRESS|CONSENSUS_NODE_TO_MAIN_NODE_START_PART_OF_ROUND",96);
+
   // write the message
   color_print("X-CASH Proof Of Stake, Version 1.0.0\n","green");
 

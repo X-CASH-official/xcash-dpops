@@ -145,7 +145,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   }
 
   // check if the returned data is valid
-  if (strnlen(result,BUFFER_SIZE) != XCASH_SIGN_DATA_LENGTH && strncmp(result,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)) != 0)
+  if (strnlen(result,BUFFER_SIZE) != XCASH_SIGN_DATA_LENGTH && strncmp(result,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
   {
     SIGN_DATA_ERROR("Could not create the message");
   }
