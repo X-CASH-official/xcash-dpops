@@ -9,7 +9,6 @@
 #include "variables.h"
 #include "structures.h"
 
-#include "define_macros_functions.h"
 #include "string_functions.h"
 #include "network_daemon_functions.h"
 #include "network_wallet_functions.h"

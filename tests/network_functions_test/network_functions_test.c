@@ -11,7 +11,6 @@
 #include "structures.h"
 #include "variables.h"
 
-#include "define_macros_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"

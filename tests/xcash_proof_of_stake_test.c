@@ -5,8 +5,6 @@
 #include "define_macro_functions.h"
 #include "define_macros.h"
 
-#include "define_macros_functions.h"
-
 #include "variables_test.h"
 #include "analysing_code_test.h"
 #include "database_functions_test.h"

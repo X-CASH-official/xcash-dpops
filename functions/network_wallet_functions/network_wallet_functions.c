@@ -8,7 +8,6 @@
 #include "define_macros.h"
 #include "variables.h"
 
-#include "define_macros_functions.h"
 #include "network_functions.h"
 #include "network_wallet_functions.h"
 #include "string_functions.h"
