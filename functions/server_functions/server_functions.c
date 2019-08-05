@@ -25,6 +25,7 @@
 #include "network_wallet_functions.h"
 #include "server_functions.h"
 #include "string_functions.h"
+#include "thread_functions.h"
 #include "thread_server_functions.h"
 #include "convert.h"
 #include "vrf.h"
@@ -511,7 +512,7 @@ int data_network_node_create_block()
   pointer_reset_all; \
   return 0;
 
-  #define SEND_DATA_SOCKET_THREAD(message) \
+  /*#define SEND_DATA_SOCKET_THREAD(message) \
   memset(send_data_socket_thread_parameters.DATA,0,strnlen(send_data_socket_thread_parameters.DATA,BUFFER_SIZE)); \
   memcpy(send_data_socket_thread_parameters.DATA,message,strnlen(message,BUFFER_SIZE)); \
   pthread_create(&thread_id_1, NULL, &send_data_socket_thread_1,(void *)&send_data_socket_thread_parameters); \
@@ -521,7 +522,7 @@ int data_network_node_create_block()
   pthread_create(&thread_id_3, NULL, &send_data_socket_thread_3,(void *)&send_data_socket_thread_parameters); \
   pthread_detach(thread_id_3); \
   pthread_create(&thread_id_4, NULL, &send_data_socket_thread_4,(void *)&send_data_socket_thread_parameters); \
-  pthread_detach(thread_id_4);
+  pthread_detach(thread_id_4);*/
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || data3 == NULL)
@@ -544,10 +545,6 @@ int data_network_node_create_block()
     print_error_message;  
     exit(0);
   }
-
-  // initialize the send_data_socket_thread_parameters struct
-  send_data_socket_thread_parameters.socket_connection_timeout_settings = SOCKET_CONNECTION_TIMEOUT_SETTINGS;
-  send_data_socket_thread_parameters.socket_data_timeout_settings = SOCKET_DATA_TIMEOUT_SETTINGS;
 
   // check if the block verifier is the main network data node
   if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
@@ -667,7 +664,7 @@ int data_network_node_create_block()
     }    
 
     // send the message to all block verifiers
-    SEND_DATA_SOCKET_THREAD(data3);
+    //SEND_DATA_SOCKET_THREAD(data3);
 
     sleep(10);
     settings = 1;
@@ -718,7 +715,7 @@ int data_network_node_create_block()
   current_round_part_vote_data->vote_results_invalid = 0;
 
   // send the message to all block verifiers
-  SEND_DATA_SOCKET_THREAD(data3);
+  //SEND_DATA_SOCKET_THREAD(data3);
 
   // wait for the block verifiers to process the votes
   sleep(10);
@@ -771,7 +768,7 @@ int data_network_node_create_block()
   memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",27); 
 
   // send the message to all block verifiers
-  SEND_DATA_SOCKET_THREAD(data3);
+  //SEND_DATA_SOCKET_THREAD(data3);
 
   // wait for the block verifiers to process the votes
   sleep(10);
@@ -865,7 +862,7 @@ int data_network_node_create_block()
   }
 
   // send the message to all block verifiers
-  SEND_DATA_SOCKET_THREAD(data3);
+  //SEND_DATA_SOCKET_THREAD(data3);
 
   // wait for the block verifiers to process the votes
   sleep(10);
@@ -938,16 +935,13 @@ int start_part_4_of_round()
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  struct send_data_socket_thread_parameters send_data_socket_thread_parameters;
+  struct send_data_socket_thread_parameters send_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   int count = 0;
   int count2;
   int counter;
 
   // threads
-  pthread_t thread_id_1;
-  pthread_t thread_id_2;
-  pthread_t thread_id_3;
-  pthread_t thread_id_4;
+  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
 
   // define macros
   #define pointer_reset_all \
@@ -962,20 +956,27 @@ int start_part_4_of_round()
   memcpy(error_message.function[error_message.total],"start_part_4_of_round",21); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    pointer_reset(send_data_socket_thread_parameters[count].HOST); \
+    pointer_reset(send_data_socket_thread_parameters[count].DATA); \
+  } \
   pointer_reset_all; \
   return 0;
 
   #define SEND_DATA_SOCKET_THREAD(message) \
-  memset(send_data_socket_thread_parameters.DATA,0,strnlen(send_data_socket_thread_parameters.DATA,BUFFER_SIZE)); \
-  memcpy(send_data_socket_thread_parameters.DATA,message,strnlen(message,BUFFER_SIZE)); \
-  pthread_create(&thread_id_1, NULL, &send_data_socket_thread_1,(void *)&send_data_socket_thread_parameters); \
-  pthread_detach(thread_id_1); \
-  pthread_create(&thread_id_2, NULL, &send_data_socket_thread_2,(void *)&send_data_socket_thread_parameters); \
-  pthread_detach(thread_id_2); \
-  pthread_create(&thread_id_3, NULL, &send_data_socket_thread_3,(void *)&send_data_socket_thread_parameters); \
-  pthread_detach(thread_id_3); \
-  pthread_create(&thread_id_4, NULL, &send_data_socket_thread_4,(void *)&send_data_socket_thread_parameters); \
-  pthread_detach(thread_id_4);
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    memset(send_data_socket_thread_parameters[count].HOST,0,strlen(send_data_socket_thread_parameters[count].HOST)); \
+    memset(send_data_socket_thread_parameters[count].DATA,0,strlen(send_data_socket_thread_parameters[count].DATA)); \
+    memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE)); \
+    memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
+    { \
+      pthread_create(&thread_id[count], NULL, &send_data_socket_thread,(void *)&send_data_socket_thread_parameters[count]); \
+      pthread_detach(thread_id[count]); \
+    } \
+  }
 
   #define RESTART_ROUND \
   memset(data,0,strlen(data)); \
@@ -1065,9 +1066,12 @@ int start_part_4_of_round()
     exit(0);
   }
 
-  // initialize the send_data_socket_thread_parameters struct
-  send_data_socket_thread_parameters.socket_connection_timeout_settings = SOCKET_CONNECTION_TIMEOUT_SETTINGS;
-  send_data_socket_thread_parameters.socket_data_timeout_settings = SOCKET_DATA_TIMEOUT_SETTINGS;
+  // initialize the send_data_socket_thread_parameters struct 
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    send_data_socket_thread_parameters[count].HOST = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
+    send_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  }  
 
   start:
   
@@ -1087,11 +1091,7 @@ int start_part_4_of_round()
     for (count = 0, counter = 0; count < crypto_vrf_PUBLICKEYBYTES; count++, counter += 2)
     {
       sprintf(VRF_data.vrf_public_key_data_round_part_4+counter,"%02x",VRF_data.vrf_public_key_round_part_4[count] & 0xFF);
-    }  
-
-    // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"1",1);
+    } 
 
     // create the message
     memset(data3,0,strlen(data3));
@@ -1108,17 +1108,29 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not create random data for the VRF data");
     }
 
-    // add the block verifiers signed data to the VRF data
+    memcpy(data3+329,data,RANDOM_STRING_LENGTH);
+    memcpy(data3+429,"\",\r\n}",5);
+
+    // add the VRF data to the block verifiers VRF data copy
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(VRF_data.block_verifiers_random_data[count],data,RANDOM_STRING_LENGTH);
+      {        
+        memcpy(VRF_data_copy->block_verifiers_vrf_secret_key[count],VRF_data.vrf_secret_key_round_part_4,crypto_vrf_SECRETKEYBYTES);
+        memcpy(VRF_data_copy->block_verifiers_vrf_secret_key_data[count],VRF_data.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
+        memcpy(VRF_data_copy->block_verifiers_vrf_public_key[count],VRF_data.vrf_public_key_round_part_4,crypto_vrf_PUBLICKEYBYTES);
+        memcpy(VRF_data_copy->block_verifiers_vrf_public_key_data[count],VRF_data.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
+        memcpy(VRF_data_copy->block_verifiers_random_data[count],data,RANDOM_STRING_LENGTH);
       }
     } 
 
-    memcpy(data3+329,data,RANDOM_STRING_LENGTH);
-    memcpy(data3+429,"\",\r\n}",5);
+    // set the server message
+    memset(server_message,0,strlen(server_message));
+    memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43); 
+
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"1",1);
 
     // sign_data
     if (sign_data(data3,0) == 0)
@@ -1126,15 +1138,28 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not sign_data");
     }
 
-    // set the server message
-    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43); 
+    color_print(data3,"yellow");
 
     // send the message to all block verifiers
     SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
     sleep(10);
+
+    // process the data
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]));
+      memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key[count]));
+      memset(VRF_data.block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[count]));
+      memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen(VRF_data.block_verifiers_vrf_public_key[count]));
+      memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count]));
+      memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_data_copy->block_verifiers_vrf_secret_key_data[count],VRF_SECRET_KEY_LENGTH);
+      memcpy(VRF_data.block_verifiers_vrf_secret_key[count],VRF_data_copy->block_verifiers_vrf_secret_key[count],crypto_vrf_SECRETKEYBYTES);
+      memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],VRF_data_copy->block_verifiers_vrf_public_key_data[count],VRF_PUBLIC_KEY_LENGTH);
+      memcpy(VRF_data.block_verifiers_vrf_public_key[count],VRF_data_copy->block_verifiers_vrf_public_key[count],crypto_vrf_PUBLICKEYBYTES);
+      memcpy(VRF_data.block_verifiers_random_data[count],VRF_data_copy->block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
+    }
 
     // check if at least 67 of the block verifiers created the data
     for (count = 0, counter = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1153,21 +1178,14 @@ int start_part_4_of_round()
 
     // at this point all block verifiers should have the all of the other block verifiers secret key, public key and random data
 
-    // process the data
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]));
-      memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key[count]));
-      memset(VRF_data.block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[count]));
-      memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen(VRF_data.block_verifiers_vrf_public_key[count]));
-      memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count]));
-      memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_data_copy->block_verifiers_vrf_secret_key_data[count],VRF_SECRET_KEY_LENGTH);
-      memcpy(VRF_data.block_verifiers_vrf_secret_key[count],VRF_data_copy->block_verifiers_vrf_secret_key[count],crypto_vrf_SECRETKEYBYTES);
-      memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],VRF_data_copy->block_verifiers_vrf_public_key_data[count],VRF_PUBLIC_KEY_LENGTH);
-      memcpy(VRF_data.block_verifiers_vrf_public_key[count],VRF_data_copy->block_verifiers_vrf_public_key[count],crypto_vrf_PUBLICKEYBYTES);
-      memcpy(VRF_data.block_verifiers_random_data[count],VRF_data_copy->block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
-    }
+    // set the server message
+    memset(server_message,0,strlen(server_message));
+    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
   
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"2",1);
+
     // create the VRF alpha string using all of the random data from the block verifiers
     memset(data,0,strlen(data));
     if (get_previous_block_hash(data,0) == 0)
@@ -1197,10 +1215,6 @@ int start_part_4_of_round()
       sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
     }
 
-    // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"2",1);
-
     // create the message
     memset(data3,0,strlen(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
@@ -1213,12 +1227,11 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not sign_data");
     }
 
-    // set the next server message since the block verifiers will send the data to each other
-    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
+    color_print(current_round_part_vote_data->current_vote_results,"yellow");
+    color_print(VRF_data.vrf_alpha_string_data_round_part_4,"yellow");
 
     // send the message to all block verifiers
-    SEND_DATA_SOCKET_THREAD(data3);
+    //SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
     sleep(10);
@@ -1232,6 +1245,14 @@ int start_part_4_of_round()
 
 
     // at this point all block verifiers have the same vrf alpha string
+
+    // set the server message
+    memset(server_message,0,strlen(server_message));
+    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27);
+
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"3",1);
 
     // check what block verifiers vrf secret key and vrf public key to use
     for (count = 0; count < DATA_HASH_LENGTH; count += 2)
@@ -1268,10 +1289,6 @@ int start_part_4_of_round()
       sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
     }
 
-    // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"3",1);
-
     // create the message
     memset(data3,0,strlen(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
@@ -1284,12 +1301,10 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not sign_data");
     }
 
-    // set the next server message since the block verifiers will send the data to each other
-    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
+    color_print(data3,"yellow");
 
     // send the message to all block verifiers
-    SEND_DATA_SOCKET_THREAD(data3);
+    //SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
     sleep(10);
@@ -1303,6 +1318,14 @@ int start_part_4_of_round()
 
 
     // at this point all block verifiers have the same VRF data
+
+    // set the server message
+    memset(server_message,0,strlen(server_message));
+    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52); 
+
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"4",1);
 
     // create all of the VRF data
     memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4));
@@ -1366,14 +1389,6 @@ int start_part_4_of_round()
       }
     }
 
-    // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"4",1);
-
-    // set the next server message since the block verifiers will send the data to each other
-    memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52); 
-
     // create the block template and send it to all block verifiers if the block verifier is the block producer
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
@@ -1391,10 +1406,12 @@ int start_part_4_of_round()
       if (sign_data(data,0) == 0)
       { 
         START_PART_4_OF_ROUND_ERROR("Could not sign_data");
-      }    
+      }   
+
+      color_print(data,"yellow"); 
 
       // send the message to all block verifiers
-      SEND_DATA_SOCKET_THREAD(data3);
+     //SEND_DATA_SOCKET_THREAD(data3);
     }
   
 
@@ -1404,6 +1421,14 @@ int start_part_4_of_round()
 
 
   // at this point all block verifiers and the main node should have the same main node data
+
+  // set the server message
+  memset(server_message,0,strlen(server_message));
+  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
+
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"5",1);
 
   // process the votes
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
@@ -1417,10 +1442,6 @@ int start_part_4_of_round()
 
   // check if all of the block verifiers have the same main node data
 
-  // set the current_round_part
-  memset(current_round_part,0,strlen(current_round_part));
-  memcpy(current_round_part,"5",1);
-
   // create the message
   memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
   memcpy(data3+strnlen(data3,BUFFER_SIZE),current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
@@ -1432,16 +1453,14 @@ int start_part_4_of_round()
     START_PART_4_OF_ROUND_ERROR("Could not sign_data");
   }
 
+  color_print(data3,"yellow");
+
   // reset the current_round_part_vote_data->vote_results_valid struct
   current_round_part_vote_data->vote_results_valid = 0;
   current_round_part_vote_data->vote_results_invalid = 0;  
 
-  // set the next server message since the block verifiers will send the data to each other
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
-
   // send the message to all block verifiers
-  SEND_DATA_SOCKET_THREAD(data3);
+  //SEND_DATA_SOCKET_THREAD(data3);
 
   // wait for the block verifiers to process the votes
   sleep(10);
@@ -1456,6 +1475,14 @@ int start_part_4_of_round()
 
 
   // at this point is has been voted on that all block verifiers have the same main node data and the data is valid
+
+  // set the server message
+  memset(server_message,0,strlen(server_message));
+  memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",55);
+
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"6",1);
 
   // sign the network block string
   memset(data,0,strlen(data));
@@ -1473,10 +1500,6 @@ int start_part_4_of_round()
     }
   } 
 
-  // set the current_round_part
-  memset(current_round_part,0,strlen(current_round_part));
-  memcpy(current_round_part,"6",1);
-
   // create the message
   memset(data3,0,strlen(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
@@ -1489,12 +1512,10 @@ int start_part_4_of_round()
     START_PART_4_OF_ROUND_ERROR("Could not sign_data");
   }
 
-  // set the server message
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",27); 
+  color_print(data3,"yellow");
 
   // send the message to all block verifiers
-  SEND_DATA_SOCKET_THREAD(data3);
+  //SEND_DATA_SOCKET_THREAD(data3);
 
   // wait for the block verifiers to process the votes
   sleep(10);
@@ -1522,6 +1543,14 @@ int start_part_4_of_round()
 
 
   // at this point all block verifiers have signed the block and have all of the other block verifiers signed data
+
+  // set the server message
+  memset(server_message,0,strlen(server_message));
+  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
+
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"7",1);
 
   // update the block verifiers list as this block will be added to the network
   if (update_block_verifiers_list() == 0)
@@ -1570,10 +1599,6 @@ int start_part_4_of_round()
     sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
   }
 
-  // set the current_round_part
-  memset(current_round_part,0,strlen(current_round_part));
-  memcpy(current_round_part,"7",1);
-
   // create the message
   memset(data3,0,strlen(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
@@ -1586,12 +1611,10 @@ int start_part_4_of_round()
     START_PART_4_OF_ROUND_ERROR("Could not sign_data");
   }
 
-  // set the next server message since the block verifiers will send the data to each other
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27);
+  color_print(data3,"yellow");
 
   // send the message to all block verifiers
-  SEND_DATA_SOCKET_THREAD(data3);
+  //SEND_DATA_SOCKET_THREAD(data3);
 
   // wait for the block verifiers to process the votes
   sleep(10);
@@ -1605,6 +1628,14 @@ int start_part_4_of_round()
 
 
   // at this point the all block verifiers have voted on the block with the current block verifiers signed data and the next block verifiers public addresses to the VRF_data
+
+  // set the server message
+  memset(server_message,0,strlen(server_message));
+  memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43); 
+
+  // set the current_round_part
+  memset(current_round_part,0,strlen(current_round_part));
+  memcpy(current_round_part,"1",1);
 
   // add the data hash to the network block string
   memset(data,0,strnlen(data,BUFFER_SIZE));
@@ -1623,6 +1654,8 @@ int start_part_4_of_round()
   // copy the current block height to calculate when the block has been submitted to the network
   memset(data3,0,strlen(data3));
   memcpy(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+
+  color_print(VRF_data.block_blob,"yellow");
 
   // have the block producer submit the block to the network
   if (main_network_data_node_create_block == 1)
@@ -1672,6 +1705,12 @@ int start_part_4_of_round()
       }
       sleep(2);
     }    
+  }
+
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    pointer_reset(send_data_socket_thread_parameters[count].HOST);
+    pointer_reset(send_data_socket_thread_parameters[count].DATA);
   }  
 
   pointer_reset_all;
@@ -1990,7 +2029,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     }
 
     // add one to the block_verifier_online_total_rounds for every block verifier that is currently online
-    if (send_data_socket((const char*)previous_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,"","checking if the block verifier is online",0) == 1)
+    if (send_data_socket((const char*)previous_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,"") == 1)
     {
       memset(data,0,strnlen(data,BUFFER_SIZE));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_online_total_rounds",data,0) == 0)
@@ -5004,6 +5043,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   char* public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* vrf_secret_key_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* vrf_public_key_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* random_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
@@ -5018,6 +5058,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   vrf_secret_key_data = NULL; \
   free(vrf_public_key_data); \
   vrf_public_key_data = NULL; \
+  free(random_data); \
+  random_data = NULL; \
   free(data); \
   data = NULL;
 
@@ -5029,7 +5071,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   return 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (public_address == NULL || vrf_secret_key_data == NULL || vrf_public_key_data == NULL || data == NULL)
+  if (public_address == NULL || vrf_secret_key_data == NULL || vrf_public_key_data == NULL || random_data == NULL || data == NULL)
   {
     if (public_address != NULL)
     {
@@ -5042,6 +5084,10 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
     if (vrf_public_key_data != NULL)
     {
       pointer_reset(vrf_public_key_data);
+    }
+    if (random_data != NULL)
+    {
+      pointer_reset(random_data);
     }
     if (data != NULL)
     {
@@ -5061,7 +5107,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",public_address) == 0 || parse_json_data(MESSAGE,"vrf_secret_key",vrf_secret_key_data) == 0 || parse_json_data(MESSAGE,"vrf_public_key",vrf_public_key_data) == 0 || parse_json_data(MESSAGE,"random_data",data) == 0)
+  if (parse_json_data(MESSAGE,"public_address",public_address) == 0 || parse_json_data(MESSAGE,"vrf_secret_key",vrf_secret_key_data) == 0 || parse_json_data(MESSAGE,"vrf_public_key",vrf_public_key_data) == 0 || parse_json_data(MESSAGE,"random_data",random_data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not parse the data");
   }
@@ -5091,7 +5137,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
       memcpy(VRF_data_copy->block_verifiers_vrf_secret_key[count],vrf_secret_key,crypto_vrf_SECRETKEYBYTES);
       memcpy(VRF_data_copy->block_verifiers_vrf_public_key_data[count],vrf_public_key_data,VRF_PUBLIC_KEY_LENGTH);
       memcpy(VRF_data_copy->block_verifiers_vrf_public_key[count],vrf_public_key,crypto_vrf_PUBLICKEYBYTES);
-      memcpy(VRF_data_copy->block_verifiers_random_data[count],data,RANDOM_STRING_LENGTH);
+      memcpy(VRF_data_copy->block_verifiers_random_data[count],random_data,RANDOM_STRING_LENGTH);
     }
   }  
 
@@ -5202,12 +5248,10 @@ int create_server(const int MESSAGE_SETTINGS)
   // Variables
   char buffer[BUFFER_SIZE];
   char buffer2[BUFFER_SIZE];
-  char client_address[BUFFER_SIZE];  
-  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char client_address[BUFFER_SIZE]; 
   int len;
   int receive_data_result; 
   struct sockaddr_in addr, cl_addr; 
-  int process_id;
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
@@ -5216,7 +5260,6 @@ int create_server(const int MESSAGE_SETTINGS)
   memcpy(error_message.function[error_message.total],"create_server",13); \
   memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
   error_message.total++; \
-  pointer_reset(string); \
   return 0;  
 
   // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
@@ -5226,17 +5269,7 @@ int create_server(const int MESSAGE_SETTINGS)
   {
     print_start_message("Creating the server");
   }
-
-  // check if the memory needed was allocated on the heap successfully
-  if (string == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"create_server",13);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
-    
+  
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
@@ -5277,27 +5310,23 @@ int create_server(const int MESSAGE_SETTINGS)
  
   // connect to 0.0.0.0
   if (bind(SOCKET, (struct sockaddr *) &addr, sizeof(addr)) != 0)
-  {
-    memset(string,0,strnlen(string,BUFFER_SIZE));
-    memcpy(string,"Error connecting to port ",25);
-    memcpy(string+25,buffer2,strnlen(buffer2,BUFFER_SIZE));
-    SERVER_ERROR(string);
+  {    
+    memcpy(error_message.function[error_message.total],"create_server",13);
+    memcpy(error_message.data[error_message.total],"Error connecting to port ",25);
+    memcpy(error_message.data[error_message.total]+25,buffer2,strnlen(buffer2,BUFFER_SIZE));
+    error_message.total++;
   } 
-
-  if (MESSAGE_SETTINGS == 1)
-  {
-    memset(string,0,strnlen(string,BUFFER_SIZE));
-    memcpy(string,"Connected to port ",18);
-    memcpy(string+18,buffer2,strnlen(buffer2,BUFFER_SIZE));
-    color_print(string,"green");
-
-    printf("Waiting for a connection...\n\n");
-  }
 
   // set the maximum simultaneous connections
   if (listen(SOCKET, MAXIMUM_CONNECTIONS) != 0)
   {
     SERVER_ERROR("Error creating the server");
+  }
+
+  if (MESSAGE_SETTINGS == 1)
+  {
+    printf("\033[1;32mConnected to port %s\033[0m\n",buffer2);
+    printf("Waiting for a connection...\n\n");
   }
 
   for (;;)
@@ -5306,42 +5335,23 @@ int create_server(const int MESSAGE_SETTINGS)
     const int CLIENT_SOCKET = accept(SOCKET, (struct sockaddr *) &cl_addr, (socklen_t*)&len);
     inet_ntop(AF_INET, &(cl_addr.sin_addr), client_address, BUFFER_SIZE);
     if (client_address == NULL)
-    {
-      if (MESSAGE_SETTINGS == 1)
-      {
-        color_print("Error accepting connection","red"); 
-      }
+    {      
       continue;
     }
     const size_t CLIENT_ADDRESS_LENGTH = strnlen(client_address,BUFFER_SIZE);
     const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
     if (CLIENT_SOCKET == -1)
-    {
-      if (MESSAGE_SETTINGS == 1)
-      {
-        memset(string,0,strnlen(string,BUFFER_SIZE));
-        memcpy(string,"Error accepting connection from ",32);
-        memcpy(string+32,inet_ntoa(cl_addr.sin_addr),CLIENT_ADDRESS_LENGTH);
-        memcpy(string+32+CLIENT_ADDRESS_LENGTH," on ",4);
-        memcpy(string+36+CLIENT_ADDRESS_LENGTH,buffer2,strnlen(buffer2,BUFFER_SIZE));
-        color_print(string,"red"); 
-      }
+    {      
       continue;
     }
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memset(string,0,strnlen(string,BUFFER_SIZE));
-      memcpy(string,"Connection accepted from ",25);
-      memcpy(string+25,inet_ntoa(cl_addr.sin_addr),CLIENT_ADDRESS_LENGTH);
-      memcpy(string+25+CLIENT_ADDRESS_LENGTH," on ",4);
-      memcpy(string+29+CLIENT_ADDRESS_LENGTH,buffer2,strnlen(buffer2,BUFFER_SIZE));
-      color_print(string,"green"); 
-    } 
-
+    
     // create a new process for each server connection
     if (fork() == 0)
     { 
+       // Variables
+       char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
        // close the main socket, since the socket is now copied to the forked process
        close(SOCKET);
 
@@ -5352,27 +5362,10 @@ int create_server(const int MESSAGE_SETTINGS)
          receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,1,TOTAL_CONNECTION_TIME_SETTINGS);
          if (receive_data_result < 2)
          {
-           if (MESSAGE_SETTINGS == 1)
-           {
-             memset(string,0,strnlen(string,BUFFER_SIZE));
-             memcpy(string,"Error receiving data from ",26);
-             memcpy(string+26,client_address,CLIENT_ADDRESS_LENGTH);
-             memcpy(string+26+CLIENT_ADDRESS_LENGTH," on port ",9);
-             memcpy(string+35+CLIENT_ADDRESS_LENGTH,buffer2,BUFFER2_LENGTH);
-             if (receive_data_result == 1)
-             {
-               memcpy(string+35+CLIENT_ADDRESS_LENGTH+BUFFER2_LENGTH,", because of a timeout issue",28);
-             }
-             else if (receive_data_result == 0)
-             {
-               memcpy(string+35+CLIENT_ADDRESS_LENGTH+BUFFER2_LENGTH,", because of a potential buffer overflow issue",46);
-             }
-             color_print(string,"red"); 
-           }
            // close the forked process, since the client had an error sending data  
            close(SOCKET);
            close(CLIENT_SOCKET);
-           pointer_reset(string);
+           pointer_reset(data);
            _exit(0);
          }  
 
@@ -5381,16 +5374,15 @@ int create_server(const int MESSAGE_SETTINGS)
            // get the current time
            get_current_UTC_time;
 
-           memset(string,0,strlen(string));
-           memcpy(string,"Received ",9);
-           memcpy(string+9,&buffer[25],strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25);
-           memcpy(string+strlen(string)," from ",6);
-           memcpy(string+strlen(string),client_address,CLIENT_ADDRESS_LENGTH);
-           memcpy(string+strlen(string)," on port ",9);
-           memcpy(string+strlen(string),buffer2,BUFFER2_LENGTH);
-           memcpy(string+strlen(string),"\n",1);
-           memcpy(string+strlen(string),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
-           color_print(string,"green");
+           memcpy(data,"Received ",9);
+           memcpy(data+9,&buffer[25],strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25);
+           memcpy(data+strlen(data)," from ",6);
+           memcpy(data+strlen(data),client_address,CLIENT_ADDRESS_LENGTH);
+           memcpy(data+strlen(data)," on port ",9);
+           memcpy(data+strlen(data),buffer2,BUFFER2_LENGTH);
+           memcpy(data+strlen(data),"\n",1);
+           memcpy(data+strlen(data),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
+           color_print(data,"green");
          }
 
          // check if a certain type of message has been received 
@@ -5498,8 +5490,8 @@ int create_server(const int MESSAGE_SETTINGS)
          {
            printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43) == 0)
+         }         
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL) //&& memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43) == 0)
          {
            printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
@@ -5516,6 +5508,7 @@ int create_server(const int MESSAGE_SETTINGS)
          }
          else
          {
+           color_print(server_message,"yellow");
            printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
 
            // send the message 
@@ -5525,17 +5518,12 @@ int create_server(const int MESSAGE_SETTINGS)
            } 
            else
            {
-             memset(string,0,strnlen(string,BUFFER_SIZE));
-             memcpy(string,"Error sending data to ",22);
-             memcpy(string+22,client_address,CLIENT_ADDRESS_LENGTH);
-             memcpy(string+22+CLIENT_ADDRESS_LENGTH," on port ",9);
-             memcpy(string+31+CLIENT_ADDRESS_LENGTH,buffer2,BUFFER2_LENGTH);
-             color_print(string,"red"); 
+             printf("\033[1;31mError sending data to %s on port %s\033[0m\n",client_address,buffer2); 
            } 
          }
          close(SOCKET);
          close(CLIENT_SOCKET);
-         pointer_reset(string); 
+         pointer_reset(data); 
          _exit(0);
        }
      }  
