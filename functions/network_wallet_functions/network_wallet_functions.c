@@ -54,8 +54,7 @@ int get_public_address(const int MESSAGE_SETTINGS)
     print_error_message;  
     exit(0);
   }
-
-
+  
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",MESSAGE_SETTINGS) <= 0)
   {  
     GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
@@ -67,7 +66,7 @@ int get_public_address(const int MESSAGE_SETTINGS)
   }
   
   // check if the returned data is valid
-  if (strnlen(xcash_wallet_public_address,BUFFER_SIZE) != XCASH_WALLET_LENGTH && strncmp(xcash_wallet_public_address,XCASH_WALLET_PREFIX,3) != 0)
+  if (strnlen(xcash_wallet_public_address,BUFFER_SIZE) != XCASH_WALLET_LENGTH && strncmp(xcash_wallet_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
      GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
