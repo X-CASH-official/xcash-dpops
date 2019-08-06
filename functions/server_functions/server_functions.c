@@ -964,6 +964,7 @@ int start_part_4_of_round()
   return 0;
 
   #define SEND_DATA_SOCKET_THREAD(message) \
+  sleep(10);\
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(send_data_socket_thread_parameters[count].HOST,0,strlen(send_data_socket_thread_parameters[count].HOST)); \
@@ -972,7 +973,6 @@ int start_part_4_of_round()
     memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
     { \
-      fprintf(stderr,"sending to %s",send_data_socket_thread_parameters[count].HOST); \
       pthread_create(&thread_id, NULL, &send_data_socket_thread,(void *)&send_data_socket_thread_parameters[count]); \
       pthread_detach(thread_id); \
     } \
@@ -1172,17 +1172,11 @@ int start_part_4_of_round()
       RESTART_ROUND;
     }
 
+    printf("COUNTER=%d\n",counter);
+
   
 
     // at this point all block verifiers should have the all of the other block verifiers secret key, public key and random data
-
-    // set the server message
-    memset(server_message,0,strlen(server_message));
-    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
-  
-    // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"2",1);
 
     // create the VRF alpha string using all of the random data from the block verifiers
     memset(data,0,strlen(data));
@@ -1201,56 +1195,11 @@ int start_part_4_of_round()
       }
     }
 
-    // reset the current_round_part_vote_data->vote_results_valid struct
-    memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
-    current_round_part_vote_data->vote_results_valid = 1;
-    current_round_part_vote_data->vote_results_invalid = 0;  
-
-    crypto_hash_sha512((unsigned char*)data,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,strlen(VRF_data.vrf_alpha_string_data_round_part_4));
-    // convert the SHA512 data hash to a string
-    for (counter = 0, count = 0; counter < DATA_HASH_LENGTH / 2; counter++, count += 2)
+    // convert the vrf alpha string to a string
+    for (count2 = 0, count = 0; count2 < 10064; count2++, count += 2)
     {
-      sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
+      sprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
     }
-
-    // create the message
-    memset(data3,0,strlen(data3));
-    memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);
-    memcpy(data3+99,current_round_part_vote_data->current_vote_results,DATA_HASH_LENGTH);
-    memcpy(data3+227,"\",\r\n}",5);
-
-    // sign_data
-    if (sign_data(data3,0) == 0)
-    { 
-      START_PART_4_OF_ROUND_ERROR("Could not sign_data");
-    }
-
-    color_print(current_round_part_vote_data->current_vote_results,"yellow");
-    color_print(VRF_data.vrf_alpha_string_data_round_part_4,"yellow");
-
-    // send the message to all block verifiers
-    SEND_DATA_SOCKET_THREAD(data3);
-
-    // wait for the block verifiers to process the votes
-    sleep(10);
-
-    // process the vote results
-    if (current_round_part_vote_data->vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
-    {
-      RESTART_ROUND;
-    } 
-
-
-
-    // at this point all block verifiers have the same vrf alpha string and all of the VRF secret keys, public keys and  alpha string from all other block verifiers
-
-    // set the server message
-    memset(server_message,0,strlen(server_message));
-    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27);
-
-    // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"3",1);
 
     // check what block verifiers vrf secret key and vrf public key to use
     for (count = 0; count < DATA_HASH_LENGTH; count += 2)
@@ -1267,25 +1216,60 @@ int start_part_4_of_round()
       }
     }
 
-    // convert the vrf alpha string to a string
-    for (counter = 0, count = 0; counter < 10064; counter++, count += 2)
+    // create all of the VRF data
+    memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4));
+    memset(VRF_data.vrf_secret_key_round_part_4,0,strlen(VRF_data.vrf_secret_key_round_part_4));
+    memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4));
+    memset(VRF_data.vrf_public_key_round_part_4,0,strlen(VRF_data.vrf_public_key_round_part_4));
+    memcpy(VRF_data.vrf_secret_key_data_round_part_4,VRF_data.block_verifiers_vrf_secret_key_data[counter],VRF_SECRET_KEY_LENGTH);
+    memcpy(VRF_data.vrf_secret_key_round_part_4,VRF_data.block_verifiers_vrf_secret_key[counter],crypto_vrf_SECRETKEYBYTES);
+    memcpy(VRF_data.vrf_public_key_data_round_part_4,VRF_data.block_verifiers_vrf_public_key_data[counter],VRF_PUBLIC_KEY_LENGTH);
+    memcpy(VRF_data.vrf_public_key_round_part_4,VRF_data.block_verifiers_vrf_public_key[counter],crypto_vrf_PUBLICKEYBYTES);
+
+    if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)) != 0)
     {
-      sprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,"%02x",VRF_data.vrf_alpha_string_round_part_4[counter] & 0xFF);
+      START_PART_4_OF_ROUND_ERROR("Could not create the vrf proof");
     }
-  
+    if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4) != 0)
+    {
+      START_PART_4_OF_ROUND_ERROR("Could not create the vrf beta string");
+    }
+    if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,VRF_data.vrf_alpha_string_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)) != 0)
+    {
+      START_PART_4_OF_ROUND_ERROR("Could not create the VRF data");
+    }
+
+    // convert the vrf proof and vrf beta string to a string
+    for (counter = 0, count = 0; counter < crypto_vrf_PROOFBYTES; counter++, count += 2)
+    {
+      sprintf(VRF_data.vrf_proof_data_round_part_4+count,"%02x",VRF_data.vrf_proof_round_part_4[counter] & 0xFF);
+    }
+    for (counter = 0, count = 0; counter < crypto_vrf_OUTPUTBYTES; counter++, count += 2)
+    {
+      sprintf(VRF_data.vrf_beta_string_data_round_part_4+count,"%02x",VRF_data.vrf_beta_string_round_part_4[counter] & 0xFF);
+    }
+
+    // combine all of the VRF data to check if it has the same data
+    memset(data2,0,strlen(data2));   
     memset(data,0,strlen(data));
-    crypto_hash_sha512((unsigned char*)data,(const unsigned char*)VRF_data.block_verifiers_vrf_public_key[counter],crypto_vrf_PUBLICKEYBYTES);
+    memcpy(data,VRF_data.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
+    memcpy(data+strlen(data),VRF_data.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
+    memcpy(data+strlen(data),VRF_data.vrf_alpha_string_data_round_part_4,strnlen(VRF_data.vrf_alpha_string_data_round_part_4,BUFFER_SIZE));
+    memcpy(data+strlen(data),VRF_data.vrf_proof_data_round_part_4,VRF_PROOF_LENGTH);
+    memcpy(data+strlen(data),VRF_data.vrf_beta_string_data_round_part_4,VRF_BETA_LENGTH);
 
     // reset the current_round_part_vote_data->vote_results_valid struct
     memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
-    current_round_part_vote_data->vote_results_valid = 0;
+    current_round_part_vote_data->vote_results_valid = 1;
     current_round_part_vote_data->vote_results_invalid = 0;  
 
+    crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,strlen(data));
     // convert the SHA512 data hash to a string
     for (counter = 0, count = 0; counter < DATA_HASH_LENGTH / 2; counter++, count += 2)
     {
-      sprintf(current_round_part_vote_data->current_vote_results+count,"%02x",data[counter] & 0xFF);
+      sprintf(data2+count,"%02x",data2[counter] & 0xFF);
     }
+    memcpy(current_round_part_vote_data->current_vote_results,data2,DATA_HASH_LENGTH);
 
     // create the message
     memset(data3,0,strlen(data3));
@@ -1302,7 +1286,7 @@ int start_part_4_of_round()
     color_print(data3,"yellow");
 
     // send the message to all block verifiers
-    //SEND_DATA_SOCKET_THREAD(data3);
+    SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
     sleep(10);
@@ -1315,49 +1299,7 @@ int start_part_4_of_round()
 
 
 
-    // at this point all block verifiers have the same VRF data
-
-    // set the server message
-    memset(server_message,0,strlen(server_message));
-    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52); 
-
-    // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"4",1);
-
-    // create all of the VRF data
-    memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4));
-    memset(VRF_data.vrf_secret_key_round_part_4,0,strlen(VRF_data.vrf_secret_key_round_part_4));
-    memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4));
-    memset(VRF_data.vrf_public_key_round_part_4,0,strlen(VRF_data.vrf_public_key_round_part_4));
-
-    memcpy(VRF_data.vrf_secret_key_data_round_part_4,VRF_data.block_verifiers_vrf_secret_key_data[counter],VRF_SECRET_KEY_LENGTH);
-    memcpy(VRF_data.vrf_secret_key_round_part_4,VRF_data.block_verifiers_vrf_secret_key[counter],crypto_vrf_SECRETKEYBYTES);
-    memcpy(VRF_data.vrf_public_key_data_round_part_4,VRF_data.block_verifiers_vrf_public_key_data[counter],VRF_PUBLIC_KEY_LENGTH);
-    memcpy(VRF_data.vrf_public_key_round_part_4,VRF_data.block_verifiers_vrf_public_key[counter],crypto_vrf_PUBLICKEYBYTES);
-
-    if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)) != 0)
-    {
-      START_PART_4_OF_ROUND_ERROR("Could not create the vrf proof");
-    }
-    if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4) != 0)
-    {
-      START_PART_4_OF_ROUND_ERROR("Could not create the vrf beta string");
-    }
-    if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,VRF_data.vrf_alpha_string_round_part_4,crypto_vrf_PUBLICKEYBYTES) != 0)
-    {
-      START_PART_4_OF_ROUND_ERROR("Could not create the VRF data");
-    }
-
-    // convert the vrf proof and vrf beta string to a string
-    for (counter = 0, count = 0; counter < crypto_vrf_PROOFBYTES; counter++, count += 2)
-    {
-      sprintf(VRF_data.vrf_proof_data_round_part_4+count,"%02x",VRF_data.vrf_proof_round_part_4[counter] & 0xFF);
-    }
-    for (counter = 0, count = 0; counter < crypto_vrf_OUTPUTBYTES; counter++, count += 2)
-    {
-      sprintf(VRF_data.vrf_beta_string_data_round_part_4+count,"%02x",VRF_data.vrf_beta_string_round_part_4[counter] & 0xFF);
-    }
+    // at this point all block verifiers should have the same VRF data
 
     // add all of the VRF data to the blockchain_data struct
     blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_4 = VRF_PUBLIC_KEY_LENGTH;
