@@ -972,6 +972,7 @@ int start_part_4_of_round()
     memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
     { \
+      fprintf(stderr,"sending to %s",send_data_socket_thread_parameters[count].HOST); \
       pthread_create(&thread_id, NULL, &send_data_socket_thread,(void *)&send_data_socket_thread_parameters[count]); \
       pthread_detach(thread_id); \
     } \
@@ -1202,7 +1203,7 @@ int start_part_4_of_round()
 
     // reset the current_round_part_vote_data->vote_results_valid struct
     memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
-    current_round_part_vote_data->vote_results_valid = 0;
+    current_round_part_vote_data->vote_results_valid = 1;
     current_round_part_vote_data->vote_results_invalid = 0;  
 
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,strlen(VRF_data.vrf_alpha_string_data_round_part_4));
@@ -1228,7 +1229,7 @@ int start_part_4_of_round()
     color_print(VRF_data.vrf_alpha_string_data_round_part_4,"yellow");
 
     // send the message to all block verifiers
-    //SEND_DATA_SOCKET_THREAD(data3);
+    SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
     sleep(10);
@@ -1241,7 +1242,7 @@ int start_part_4_of_round()
 
 
 
-    // at this point all block verifiers have the same vrf alpha string
+    // at this point all block verifiers have the same vrf alpha string and all of the VRF secret keys, public keys and  alpha string from all other block verifiers
 
     // set the server message
     memset(server_message,0,strlen(server_message));
@@ -5478,12 +5479,12 @@ int create_server(const int MESSAGE_SETTINGS)
            printf("Received NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",35) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL)
          {
            printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL)
          {
            printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
@@ -5493,12 +5494,12 @@ int create_server(const int MESSAGE_SETTINGS)
            printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
          }  
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",55) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL)
          {
            printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
          }  
-         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && memcmp(server_message,"NODES_TO_NODES_VOTE_RESULTS",27) == 0)
+         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL)
          {
            printf("Received NODES_TO_NODES_VOTE_RESULTS from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_node((const char*)buffer);
