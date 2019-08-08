@@ -1418,6 +1418,14 @@ int start_part_4_of_round()
       }
     }
 
+    // convert the blockchain_data to a network_block_string
+    memset(data,0,strlen(data));
+    if (blockchain_data_to_network_block_string(data) == 0)
+    {
+      START_PART_4_OF_ROUND_ERROR("Could not convert the blockchain_data to a network_block_string");
+    }
+    color_print(data,"yellow");
+
     // get the previous network block string
     memset(data,0,strlen(data));
     memset(data2,0,strlen(data2));
@@ -1440,6 +1448,7 @@ int start_part_4_of_round()
     {
       START_PART_4_OF_ROUND_ERROR("Could not get the previous blocks reserve bytes");
     }
+    color_print(data2,"yellow");
 
     // verify the block
     memset(data3,0,strlen(data3));
