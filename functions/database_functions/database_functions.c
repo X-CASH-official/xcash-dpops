@@ -1431,11 +1431,11 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   mongoc_cursor_t* document_settings = NULL;
   bson_t* document = NULL;  
   char* message;
+  unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* reserve_proofs_data_hash[TOTAL_RESERVE_PROOFS_DATABASES];
   char* reserve_bytes_data_hash[10000];
-  unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
   size_t count3;
@@ -1443,6 +1443,8 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
   // define macros
   #define pointer_reset_all \
+  free(string); \
+  string = NULL; \
   free(data); \
   data = NULL; \
   free(data2); \
@@ -1466,8 +1468,12 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   }
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
+  if (string == NULL || data == NULL || data2 == NULL)
   {
+     if (string != NULL)
+    {
+      pointer_reset(string);
+    }
     if (data != NULL)
     {
       pointer_reset(data);

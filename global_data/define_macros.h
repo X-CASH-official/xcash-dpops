@@ -38,17 +38,17 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_TRANSACATIONS_PER_BLOCK 1000000 // The maximum amount of transaction per block
 
 // proof of stake
-#define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid.
-#define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid.
+#define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
 
 // Network
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
 #define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
 #define SEND_DATA_PORT 8000 // The port that is used by all nodes to send and receive data
 #define MAXIMUM_CONNECTIONS 100 // The maximum connections a node can have at one time
-#define TOTAL_CONNECTION_TIME_SETTINGS 1 // The total time a client is given to connect to the server and send data
-#define SOCKET_CONNECTION_TIMEOUT_SETTINGS 1000 // The time in milliseconds, to wait before a connection is cancelled
-#define SOCKET_DATA_TIMEOUT_SETTINGS 1 // The time in between read calls where there is no data
+#define TOTAL_CONNECTION_TIME_SETTINGS 10 // The total time a client is given to connect to the server and send data
+#define SOCKET_CONNECTION_TIMEOUT_SETTINGS 10000 // The time in milliseconds, to wait before a connection is cancelled
+#define SOCKET_DATA_TIMEOUT_SETTINGS 10 // The time in between read calls where there is no data
 #define RECEIVE_DATA_TIMEOUT_SETTINGS 5 // The maximum amount of time to wait for the total data, once data has been read
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 

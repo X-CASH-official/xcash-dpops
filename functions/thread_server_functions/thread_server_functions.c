@@ -66,7 +66,7 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  while (current_UTC_date_and_time->tm_min != 17 && current_UTC_date_and_time->tm_min != 0)
+  while (current_UTC_date_and_time->tm_min != 23 && current_UTC_date_and_time->tm_min != 0)
   {    
     usleep(200000); 
     get_current_UTC_time; 
