@@ -518,7 +518,7 @@ void* send_data_socket_thread(void* parameters)
   // Variables  
   struct send_data_socket_thread_parameters* data = parameters;
   size_t HOST_LENGTH = strnlen(data->HOST,BUFFER_SIZE);
-  struct timeval SOCKET_TIMEOUT = {1000, 0};   
+  struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -602,7 +602,7 @@ void* send_data_socket_thread(void* parameters)
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
   {    
-    if (poll(&socket_file_descriptors,1,1) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+    if (poll(&socket_file_descriptors,1,TOTAL_CONNECTION_TIME_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   
       if (socket_settings != 0)
       {       
@@ -669,6 +669,3 @@ void* send_data_socket_thread(void* parameters)
   pointer_reset(message);
   pthread_exit((void *)(intptr_t)1);
 }
-
-
-
