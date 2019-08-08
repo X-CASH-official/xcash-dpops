@@ -1314,9 +1314,11 @@ int start_part_4_of_round()
       // wait for the block verifiers to process main node data
       sleep(10);
     }
-
-    // wait for the block verifiers to process main node data
-    sleep(20);
+    else
+    {
+      // wait for the block verifiers to process main node data
+      sleep(20);
+    }
 
 
 
@@ -1374,6 +1376,16 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not sign the network block string");
     }
 
+    // add the block verifier signature to the VRF data and the blockchain_data struct
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+      {
+        memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],data,XCASH_SIGN_DATA_LENGTH);
+      }
+    }
+
     // create the message
     memset(data3,0,strlen(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
@@ -1399,8 +1411,11 @@ int start_part_4_of_round()
     // process the data and add the block verifiers signatures to the block
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(VRF_data.block_blob_signature[count],VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+      {
+        memcpy(VRF_data.block_blob_signature[count],VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+      }
     }
 
     // get the previous network block string

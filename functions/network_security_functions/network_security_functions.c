@@ -347,14 +347,14 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     VERIFY_DATA_ERROR("Invalid previous block hash");
   }
 
-  // verify if the current_round_part_backup_node
+  /*// verify if the current_round_part_backup_node
   if (VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS == 1)
   {
     if (memcmp(current_round_part,message_current_round_part,1) != 0 || memcmp(current_round_part_backup_node,message_current_round_part_backup_node,1) != 0)
     {
       VERIFY_DATA_ERROR("Invalid current_round_part or current_round_part_backup_node");
     }
-  }
+  }*/
   
   // create the message
   memcpy(result,MESSAGE,message_length);
