@@ -96,6 +96,10 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   } 
 
+  pthread_rwlock_init(&rwlock,NULL);
+
+  pthread_rwlock_wrlock(&rwlock);
+
   // initialize the server_message
   server_message = mmap(NULL, sizeof(char), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
 
@@ -104,6 +108,8 @@ int main(int parameters_count, char* parameters[])
 
   // initialize the current_round_part_backup_node
   current_round_part_backup_node = mmap(NULL, sizeof(char), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
+
+  pthread_rwlock_unlock(&rwlock);
 
   // initialize the previous block_verifiers_list struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)

@@ -39,6 +39,7 @@ char* nodes_public_address_list_received_data; // The list of enabled nodes publ
 char* server_message; // The message the server should run. It will ignore any other messages.
 char* current_round_part; // The current round part (1-4)
 char* current_round_part_backup_node; // The current main node in the current round part (0-5)
+pthread_rwlock_t rwlock;
 
 char* current_block_height; // The current block height
 int error_message_count; // The error message count

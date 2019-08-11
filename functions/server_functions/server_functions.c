@@ -1039,6 +1039,7 @@ int start_part_4_of_round()
     memset(VRF_data_copy->block_verifiers_random_data[count],0,strlen(VRF_data_copy->block_verifiers_random_data[count])); \
     memset(VRF_data_copy->block_blob_signature[count],0,strlen(VRF_data_copy->block_blob_signature[count])); \
   } \
+  pthread_rwlock_wrlock(&rwlock); \
   if (memcmp(current_round_part_backup_node,"0",1) == 0) \
   { \
     memset(current_round_part,0,strlen(current_round_part)); \
@@ -1078,6 +1079,7 @@ int start_part_4_of_round()
   { \
     data_network_node_create_block(); \
   } \
+  pthread_rwlock_unlock(&rwlock); \
   goto start;  
 
   // check if the memory needed was allocated on the heap successfully
@@ -1102,15 +1104,9 @@ int start_part_4_of_round()
     exit(0);
   }
 
-  /*// initialize the send_data_socket_thread_parameters struct 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    send_data_socket_thread_parameters[count].HOST = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-    send_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  }*/ 
-
   start:
 
+    pthread_rwlock_wrlock(&rwlock);
     // set the server message
     memset(server_message,0,strlen(server_message));
     memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43); 
@@ -1118,6 +1114,7 @@ int start_part_4_of_round()
     // set the current_round_part
     memset(current_round_part,0,strlen(current_round_part));
     memcpy(current_round_part,"1",1);
+    pthread_rwlock_unlock(&rwlock);
   
     // create a random VRF public key and secret key
     if (create_random_VRF_keys((unsigned char*)VRF_data.vrf_public_key_round_part_4,(unsigned char*)VRF_data.vrf_secret_key_round_part_4) != 1 || crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_4) != 1)
@@ -1207,13 +1204,15 @@ int start_part_4_of_round()
 
     // at this point all block verifiers should have the all of the other block verifiers secret key, public key and random data
 
-    /*// set the server message
+    pthread_rwlock_wrlock(&rwlock);
+    // set the server message
     memset(server_message,0,strlen(server_message));
     memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52); 
 
     // set the current_round_part
     memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"2",1);*/
+    memcpy(current_round_part,"2",1);
+    pthread_rwlock_unlock(&rwlock);
 
     // create the VRF alpha string using all of the random data from the block verifiers
     memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen(VRF_data.vrf_alpha_string_round_part_4));
@@ -1333,6 +1332,16 @@ int start_part_4_of_round()
 
 
     // at this point all block verifiers should have the same VRF data and the network block
+
+    pthread_rwlock_wrlock(&rwlock);
+    // set the server message
+    memset(server_message,0,strlen(server_message));
+    memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",55); 
+
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"3",1);
+    pthread_rwlock_unlock(&rwlock);
 
     memcpy(VRF_data.block_blob,VRF_data_copy->block_blob,strnlen(VRF_data_copy->block_blob,BUFFER_SIZE));
 
@@ -1469,6 +1478,16 @@ int start_part_4_of_round()
 
     // at this point all block verifiers should have the same VRF data, network block string and all block verifiers signed data
 
+    pthread_rwlock_wrlock(&rwlock);
+    // set the server message
+    memset(server_message,0,strlen(server_message));
+    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
+
+    // set the current_round_part
+    memset(current_round_part,0,strlen(current_round_part));
+    memcpy(current_round_part,"4",1);
+    pthread_rwlock_unlock(&rwlock);
+
     // process the data and add the block verifiers signatures to the block
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -1563,6 +1582,12 @@ int start_part_4_of_round()
     // reset the current_round_part_vote_data->vote_results_valid struct
     current_round_part_vote_data->vote_results_valid = 1;
     current_round_part_vote_data->vote_results_invalid = 0;
+
+    while (current_UTC_date_and_time->tm_min != 35 && current_UTC_date_and_time->tm_min != 0)
+    {    
+      usleep(200000); 
+      get_current_UTC_time; 
+    }
 
     // send the message to all block verifiers
     SEND_DATA_SOCKET_THREAD(data3);
@@ -5267,130 +5292,107 @@ int create_server(const int MESSAGE_SETTINGS)
            color_print(data,"green");
          }
 
+         pthread_rwlock_rdlock(&rwlock);
+
          // check if a certain type of message has been received 
          if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
          {
-           printf("Received XCASH_PROOF_OF_STAKE_TEST_DATA from %s on %s",client_address, buffer2);
            server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,(const char*)buffer);
          }
          else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
          {
-           printf("Received NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(CLIENT_SOCKET);
          } 
          else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
          {
-           printf("Received NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET);
          } 
          else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
          {
-           printf("Received NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
          } 
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
          }  
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
          }  
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
          }
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
          }
          else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\"") != NULL)
          {
-           printf("Received NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(CLIENT_SOCKET,(const char*)buffer);
          } 
          else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
          }  
          else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\"") != NULL)
          {
-           printf("Received NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_register_delegates(CLIENT_SOCKET,(const char*)buffer);
          }            
          else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\"") != NULL)
          {
-           printf("Received NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(CLIENT_SOCKET,(const char*)buffer);
          } 
          else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\"") != NULL)
          {
-           printf("Received NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE from %s on %s",client_address, buffer2);
            server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
          } 
          else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND\"") != NULL)
          {
-           printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
          } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && memcmp(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52) == 0)
          {
-           printf("Received MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK from %s on %s",client_address, buffer2);
            server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
          }         
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43) == 0)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
          }  
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && memcmp(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",55) == 0)
          {
-           printf("Received BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE from %s on %s",client_address, buffer2);
            server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
          }  
-         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL)
+         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && memcmp(server_message,"NODES_TO_NODES_VOTE_RESULTS",27) == 0)
          {
-           printf("Received NODES_TO_NODES_VOTE_RESULTS from %s on %s",client_address, buffer2);
            server_receive_data_socket_node_to_node((const char*)buffer);
          }
          else
          {
-           color_print(server_message,"yellow");
            printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
 
            // send the message 
@@ -5403,6 +5405,9 @@ int create_server(const int MESSAGE_SETTINGS)
              printf("\033[1;31mError sending data to %s on port %s\033[0m\n",client_address,buffer2); 
            } 
          }
+
+         pthread_rwlock_unlock(&rwlock);
+         
          close(SOCKET);
          close(CLIENT_SOCKET);
          pointer_reset(data); 
