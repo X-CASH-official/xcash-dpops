@@ -459,15 +459,15 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
     number += 60;
   }  
 
-  /////blockchain_data.unlock_block_data_length = 2;
-  if (number > 2097091)
+  blockchain_data.unlock_block_data_length = 2;
+  /*if (number > 2097091)
   {
     blockchain_data.unlock_block_data_length = 8;
   }
   else
   {
     blockchain_data.unlock_block_data_length = 6;
-  }
+  }*/
   count+= blockchain_data.unlock_block_data_length;
   if (count > DATA_LENGTH)
   {
@@ -498,15 +498,15 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   sscanf(current_block_height, "%zu", &number);
   number += 1;
 
-  /////blockchain_data.block_height_data_length = 2;
-  if (number > 2097151)
+  blockchain_data.block_height_data_length = 2;
+  /*if (number > 2097151)
   {
     blockchain_data.block_height_data_length = 8;
   }
   else
   {
     blockchain_data.block_height_data_length = 6;
-  }
+  }*/
   count+= blockchain_data.block_height_data_length;
   if (count > DATA_LENGTH)
   {
@@ -535,8 +535,8 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
       NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR("Invalid network_block_string, Invalid block_reward");
     }
   }
-  /////blockchain_data.block_reward_data_length = 12;
-  blockchain_data.block_reward_data_length = strnlen(DATA,BUFFER_SIZE) - strnlen(data3,BUFFER_SIZE) - count - 140;
+  blockchain_data.block_reward_data_length = 12;
+  //blockchain_data.block_reward_data_length = strnlen(DATA,BUFFER_SIZE) - strnlen(data3,BUFFER_SIZE) - count - 140;
   count+= blockchain_data.block_reward_data_length;
   if (count > DATA_LENGTH)
   {
@@ -1378,7 +1378,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   free(network_block_string); \
   network_block_string = NULL; \
   free(previous_network_block_reserve_bytes_block_verifiers_public_addresses_data); \
-  previous_network_block_reserve_bytes_block_verifiers_public_addresses_data = NULL;
+  previous_network_block_reserve_bytes_block_verifiers_public_addresses_data = NULL; \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    pointer_reset(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count]); \
+  }
 
   #define VERIFY_NETWORK_BLOCK_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"verify_network_block_data",25); \
@@ -1421,6 +1425,22 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     exit(0);
   }   
 
+  // initialize the previous_network_block_reserve_bytes_block_verifiers_public_addresses
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    previous_network_block_reserve_bytes_block_verifiers_public_addresses[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (previous_network_block_reserve_bytes_block_verifiers_public_addresses[count] == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"verify_network_block_data",25);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
+      exit(0);
+    }
+  }
+
   // network_version
   if (blockchain_data.network_version_data_length != sizeof(NETWORK_VERSION)-1 || memcmp(blockchain_data.network_version_data,NETWORK_VERSION,sizeof(NETWORK_VERSION)-1) != 0)
   {
@@ -1458,7 +1478,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_reward_transaction_version");
   }
 
-  // unlock_block
+  /*// unlock_block
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
     if (get_current_block_height(current_block_height,0) == 0)
@@ -1478,7 +1498,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid unlock_block");
     }
-  }  
+  }*/  
 
   // block_reward_input
   if (blockchain_data.block_reward_input_data_length != sizeof(BLOCK_REWARD_INPUT)-1 || memcmp(blockchain_data.block_reward_input_data,BLOCK_REWARD_INPUT,sizeof(BLOCK_REWARD_INPUT)-1) != 0)
@@ -1492,7 +1512,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid vin_type");
   }
 
-  // block_height
+  /*// block_height
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
     if ((blockchain_data.block_height <= 2097151 && blockchain_data.block_height_data_length != 6) || (blockchain_data.block_height > 2097151 && blockchain_data.block_height_data_length != 8) || blockchain_data.block_height != number+1)
@@ -1506,7 +1526,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_height");
     }
-  }
+  }*/
   
 
   // block_reward_output
@@ -1608,7 +1628,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {
     sprintf(data2+number,"%02x",blockchain_data.previous_block_hash_data[count] & 0xFF);
   }
-  if (blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_4 != 20128 || memcmp(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4,data2,64) != 0)
+  if (blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_4 != ((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_AMOUNT) + 128 || memcmp(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4,data2,128) != 0)
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid vrf_alpha_string_round_part_4");
   }
@@ -1639,12 +1659,16 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
 
   // verify that all of the data to create the VRF data is correct
   memset(data,0,strlen(data));
-  memcpy(data,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length);
+  memcpy(data,blockchain_data.previous_block_hash_data,blockchain_data.previous_block_hash_data_length);
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     if (strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count]) == crypto_vrf_SECRETKEYBYTES && strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count]) == crypto_vrf_PUBLICKEYBYTES && strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count]) == RANDOM_STRING_LENGTH)
     {
       memcpy(data+strlen(data),blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count],RANDOM_STRING_LENGTH);
+    }
+    else
+    {
+      memcpy(data+strlen(data),"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
     }
   } 
 
@@ -1703,30 +1727,14 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
 
   // block_validation_node_signature
   if (BLOCK_VALIDATION_SIGNATURES_SETTINGS == 1)
-  {    
-    // initialize the previous_network_block_reserve_bytes_block_verifiers_public_addresses
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      previous_network_block_reserve_bytes_block_verifiers_public_addresses[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-
-      // check if the memory needed was allocated on the heap successfully
-      if (previous_network_block_reserve_bytes_block_verifiers_public_addresses[count] == NULL)
-      {
-        memcpy(error_message.function[error_message.total],"verify_network_block_data",25);
-        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-        error_message.total++;
-        print_error_message;  
-        exit(0);
-      }
-    }
-
+  {  
     // get the next block verifiers public addresses from the previous network blocks reserve bytes
     message_copy1 = strstr(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES,BLOCK_VALIDATION_NODE_SIGNATURE_DATA);
     count2 = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + 64);
-    count = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + 64 + 26000);
+    count = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + 64 + (((XCASH_WALLET_LENGTH*2)+sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1)*BLOCK_VERIFIERS_AMOUNT));
     memcpy(previous_network_block_reserve_bytes_block_verifiers_public_addresses_data,&PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES[count],count2 - count);
     
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++, count2 += 260)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++, count2 += ((XCASH_WALLET_LENGTH*2)+sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1))
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,&previous_network_block_reserve_bytes_block_verifiers_public_addresses_data[count2],XCASH_WALLET_LENGTH*2);
@@ -1756,14 +1764,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     {       
       if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],"5369675631",10) == 0)
       {
-        // check the signed data
-        for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-        {       
-          if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count2],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],network_block_string) == 1)
-          {
-            number++;
-            break;
-          }
+        // check the signed data               
+        if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],network_block_string) == 1)
+        {
+          number++;
+          break;
         }
       }
     }
@@ -1786,7 +1791,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // transactions
-  if (TRANSACTIONS_SETTINGS == 1)
+  if (TRANSACTIONS_SETTINGS == 1 && blockchain_data.transaction_amount != 0)
   {
     if (verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,1,0) == 0)
     {

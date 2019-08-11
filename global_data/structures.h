@@ -240,8 +240,8 @@ struct database_multiple_documents_fields {
 
  // Thread functions
  struct send_data_socket_thread_parameters {
-    char* HOST; // The IP address to send the message to
-    char* DATA; // The message
+    char HOST[BUFFER_SIZE]; // The IP address to send the message to
+    char DATA[BUFFER_SIZE]; // The message
 };
 
  struct read_file_thread_parameters {

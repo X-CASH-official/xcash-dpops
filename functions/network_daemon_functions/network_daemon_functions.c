@@ -356,7 +356,7 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
 
   // define macros
   #define VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"verify_blockchain_network_transactions",32); \
+  memcpy(error_message.function[error_message.total],"verify_blockchain_network_transactions",38); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
   pointer_reset_all; \
