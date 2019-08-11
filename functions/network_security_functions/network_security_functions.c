@@ -105,6 +105,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     SIGN_DATA_ERROR("Could not get the previous block hash");
   }
 
+  pthread_rwlock_rdlock(&rwlock);
   // create the message
   size_t message_length = strnlen(message,BUFFER_SIZE)-1;
   const size_t previous_block_hash_LENGTH = strnlen(previous_block_hash,BUFFER_SIZE);
@@ -120,6 +121,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   memcpy(result+message_length+119+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,"\",\r\n \"data\": \"",14);
   memcpy(result+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,random_data,RANDOM_STRING_LENGTH);
   memcpy(result+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH,"\",\r\n}",5);
+  pthread_rwlock_unlock(&rwlock);
 
   // format the message
   if (string_replace(result,"\"","\\\"") == 0)
@@ -150,6 +152,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     SIGN_DATA_ERROR("Could not create the message");
   }
   
+  pthread_rwlock_rdlock(&rwlock);
   // create the message
   message_length = strnlen(message,BUFFER_SIZE) - 1;
   const size_t XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH = strnlen(result,BUFFER_SIZE);
@@ -167,6 +170,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   memcpy(message+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH,"\",\r\n \"xcash_proof_of_stake_signature\": \"",40);
   memcpy(message+message_length+173+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH,result,XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH);
   memcpy(message+message_length+173+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH+XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH,"\",\r\n}",5);
+  pthread_rwlock_unlock(&rwlock);
 
   pointer_reset_all;
   return 1;
@@ -347,6 +351,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     VERIFY_DATA_ERROR("Invalid previous block hash");
   }
 
+  pthread_rwlock_rdlock(&rwlock);
   /*// verify if the current_round_part_backup_node
   if (VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS == 1)
   {
@@ -355,6 +360,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       VERIFY_DATA_ERROR("Invalid current_round_part or current_round_part_backup_node");
     }
   }*/
+  pthread_rwlock_unlock(&rwlock);
   
   // create the message
   memcpy(result,MESSAGE,message_length);

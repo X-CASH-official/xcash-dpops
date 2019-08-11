@@ -54,12 +54,10 @@ int main(int parameters_count, char* parameters[])
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   block_verifiers_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char)); 
   nodes_public_address_list_received_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || nodes_public_address_list_received_data == NULL || current_round_part == NULL || current_round_part_backup_node == NULL || current_block_height == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || nodes_public_address_list_received_data == NULL || current_block_height == NULL)
   {
     if (data != NULL)
     {
@@ -76,14 +74,6 @@ int main(int parameters_count, char* parameters[])
     if (nodes_public_address_list_received_data != NULL)
     {
       pointer_reset(nodes_public_address_list_received_data);
-    }
-    if (current_round_part != NULL)
-    {
-      pointer_reset(current_round_part);
-    }
-    if (current_round_part_backup_node != NULL)
-    {
-      pointer_reset(current_round_part_backup_node);
     }
     if (current_block_height != NULL)
     {

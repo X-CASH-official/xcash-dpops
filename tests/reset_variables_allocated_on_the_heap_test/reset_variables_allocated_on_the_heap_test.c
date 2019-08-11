@@ -2141,7 +2141,7 @@ int reset_variables_allocated_on_the_heap_test()
   insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_DATA,0);
   
 
-  /*// get_block_template 
+  // get_block_template 
   // read the current system memory usage
   if (settings2 == 1)
   {
@@ -2449,10 +2449,12 @@ int reset_variables_allocated_on_the_heap_test()
 
 
   // set the current_round_part and current_round_part_backup_node
+  pthread_rwlock_wrlock(&rwlock);
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
   memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
   memcpy(current_round_part,"1",1);
   memcpy(current_round_part_backup_node,"0",1); 
+  pthread_rwlock_unlock(&rwlock);
 
   // sign_data 
   // read the current system memory usage
@@ -2573,13 +2575,15 @@ int reset_variables_allocated_on_the_heap_test()
   else
   {
     color_print("All other test will not be run","red");
-  }*/
+  }
 
 
-
+  pthread_rwlock_wrlock(&rwlock);
   // set the server_message
   memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
   memcpy(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",30);
+  pthread_rwlock_unlock(&rwlock);
+
   // create the server
   pthread_create(&thread_id, NULL, &create_server_on_separate_thread,NULL);
   pthread_detach(thread_id);

@@ -185,11 +185,13 @@ int start_new_round()
       }
     }
 
+    pthread_rwlock_wrlock(&rwlock);
     // reset the current_round_part and current_round_part_backup_node
     memset(current_round_part,0,strlen(current_round_part));
     memcpy(current_round_part,"1",1);
     memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
     memcpy(current_round_part_backup_node,"0",1);
+    pthread_rwlock_unlock(&rwlock);
 
     if (calculate_main_nodes_roles() == 0)
     {
@@ -1496,7 +1498,7 @@ int start_part_4_of_round()
     current_round_part_vote_data->vote_results_valid = 1;
     current_round_part_vote_data->vote_results_invalid = 0;
 
-    while (current_UTC_date_and_time->tm_min != 32 && current_UTC_date_and_time->tm_min != 0)
+    while (current_UTC_date_and_time->tm_min != 8 && current_UTC_date_and_time->tm_min != 0)
     {    
       usleep(200000); 
       get_current_UTC_time; 
@@ -1529,7 +1531,7 @@ int start_part_4_of_round()
     if (string_replace(VRF_data.block_blob,data,VRF_data.reserve_bytes_data_hash) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not add the network block string data hash");
-    }color_print(VRF_data.block_blob,"yellow");
+    }
 
     // have the block producer submit the block to the network
     if (main_network_data_node_create_block == 1)
