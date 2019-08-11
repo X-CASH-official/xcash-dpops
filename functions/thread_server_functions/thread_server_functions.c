@@ -516,7 +516,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* send_data_socket_thread(void* parameters)
 {   
   // Variables  
-  struct send_data_socket_thread_parameters* data = parameters;
+  struct send_data_socket_thread_parameters* data = (struct send_data_socket_thread_parameters*)parameters;
   size_t HOST_LENGTH = strnlen(data->HOST,BUFFER_SIZE);
   struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
   char buffer2[BUFFER_SIZE];
@@ -534,6 +534,7 @@ void* send_data_socket_thread(void* parameters)
   error_message.total++; \
   close(SOCKET); \
   pointer_reset(message); \
+  pointer_reset(data); \
   pthread_exit((void *)(intptr_t)0); 
 
   // check if the memory needed was allocated on the heap successfully
@@ -667,5 +668,6 @@ void* send_data_socket_thread(void* parameters)
     close(SOCKET);
   
   pointer_reset(message);
+  pointer_reset(data);
   pthread_exit((void *)(intptr_t)1);
 }

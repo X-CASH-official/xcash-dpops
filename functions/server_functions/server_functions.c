@@ -529,17 +529,21 @@ int data_network_node_create_block()
   pointer_reset_all; \
   return 0;
 
-  /*#define SEND_DATA_SOCKET_THREAD(message) \
-  memset(send_data_socket_thread_parameters.DATA,0,strnlen(send_data_socket_thread_parameters.DATA,BUFFER_SIZE)); \
-  memcpy(send_data_socket_thread_parameters.DATA,message,strnlen(message,BUFFER_SIZE)); \
-  pthread_create(&thread_id_1, NULL, &send_data_socket_thread_1,(void *)&send_data_socket_thread_parameters); \
-  pthread_detach(thread_id_1); \
-  pthread_create(&thread_id_2, NULL, &send_data_socket_thread_2,(void *)&send_data_socket_thread_parameters); \
-  pthread_detach(thread_id_2); \
-  pthread_create(&thread_id_3, NULL, &send_data_socket_thread_3,(void *)&send_data_socket_thread_parameters); \
-  pthread_detach(thread_id_3); \
-  pthread_create(&thread_id_4, NULL, &send_data_socket_thread_4,(void *)&send_data_socket_thread_parameters); \
-  pthread_detach(thread_id_4);*/
+  #define SEND_DATA_SOCKET_THREAD(message) \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    struct send_data_socket_thread_parameters* send_data_socket_thread_parameters = malloc(sizeof(struct send_data_socket_thread_parameters)); \
+    memset(send_data_socket_thread_parameters->HOST,0,strlen(send_data_socket_thread_parameters->HOST)); \
+    memset(send_data_socket_thread_parameters->DATA,0,strlen(send_data_socket_thread_parameters->DATA)); \
+    memcpy(send_data_socket_thread_parameters->HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE)); \
+    memcpy(send_data_socket_thread_parameters->DATA,message,strnlen(message,BUFFER_SIZE)); \
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
+    { \
+      pthread_create(&thread_id, NULL, &send_data_socket_thread,(void *)send_data_socket_thread_parameters); \
+      pthread_detach(thread_id); \
+    } \
+    usleep(10000000 / BLOCK_VERIFIERS_AMOUNT); \
+  }
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL || data3 == NULL)
@@ -982,18 +986,19 @@ int start_part_4_of_round()
   return 0;
 
   #define SEND_DATA_SOCKET_THREAD(message) \
-  sleep(10);\
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
-    memset(send_data_socket_thread_parameters[count].HOST,0,strlen(send_data_socket_thread_parameters[count].HOST)); \
-    memset(send_data_socket_thread_parameters[count].DATA,0,strlen(send_data_socket_thread_parameters[count].DATA)); \
-    memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE)); \
-    memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
+    struct send_data_socket_thread_parameters* send_data_socket_thread_parameters = malloc(sizeof(struct send_data_socket_thread_parameters)); \
+    memset(send_data_socket_thread_parameters->HOST,0,strlen(send_data_socket_thread_parameters->HOST)); \
+    memset(send_data_socket_thread_parameters->DATA,0,strlen(send_data_socket_thread_parameters->DATA)); \
+    memcpy(send_data_socket_thread_parameters->HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE)); \
+    memcpy(send_data_socket_thread_parameters->DATA,message,strnlen(message,BUFFER_SIZE)); \
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
     { \
-      pthread_create(&thread_id, NULL, &send_data_socket_thread,(void *)&send_data_socket_thread_parameters[count]); \
+      pthread_create(&thread_id, NULL, &send_data_socket_thread,(void *)send_data_socket_thread_parameters); \
       pthread_detach(thread_id); \
     } \
+    usleep(10000000 / BLOCK_VERIFIERS_AMOUNT); \
   }
 
   #define RESTART_ROUND \
