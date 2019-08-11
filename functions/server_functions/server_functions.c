@@ -207,13 +207,6 @@ int start_new_round()
     if (start_part_4_of_round() == 0)
     {
       print_error_message;
-      
-      // set the main_network_data_node_create_block so the main network data node can create the block
-      main_network_data_node_create_block = 1;
-      if (data_network_node_create_block() == 0)
-      {      
-        START_NEW_ROUND_ERROR("start_current_round_start_blocks error");
-      }  
     }
   }
   pointer_reset(data);
@@ -721,7 +714,7 @@ int data_network_node_create_block()
     }
 
     // send the network block string to all block verifiers and add the block verifier signature to the blockchain data struct
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
       {    
@@ -732,19 +725,21 @@ int data_network_node_create_block()
           // verify the data
           if (verify_data(data,0,1) == 0)
           {
-            DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not verify data");
+            continue;
           }
 
           // parse the message
           if (parse_json_data(data,"block_blob_signature",data2) == 0 || strlen(data2) != XCASH_SIGN_DATA_LENGTH || memcmp(data2,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
           {
-            DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not parse the data");
+            memcpy(VRF_data.block_blob_signature[count],data2,XCASH_SIGN_DATA_LENGTH);
+            memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data2,XCASH_SIGN_DATA_LENGTH);
+            count2++;
           }
-
-          // add the block verifiers network block signature to the blockchain data struct
-          memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data2,XCASH_SIGN_DATA_LENGTH);
-          
-          count2++;
+          else
+          {
+            memcpy(VRF_data.block_blob_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
+            memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
+          }
         }
       }
     }
@@ -992,6 +987,7 @@ int start_part_4_of_round()
   } \
   else if (memcmp(current_round_part_backup_node,"5",1) == 0) \
   { \
+    main_network_data_node_create_block = 1; \
     data_network_node_create_block(); \
   } \
   pthread_rwlock_unlock(&rwlock); \
@@ -1272,7 +1268,7 @@ int start_part_4_of_round()
     // check if the network block string was created from the correct block verifier
     if (memcmp(VRF_data.block_blob,"",1) == 0)
     {
-      START_PART_4_OF_ROUND_ERROR("Could not receive the network block string from the block producer");
+      RESTART_ROUND("Could not receive the network block string from the block producer");
     }
 
     // convert the network block string to a blockchain data
@@ -1518,7 +1514,7 @@ int start_part_4_of_round()
     current_round_part_vote_data->vote_results_valid = 1;
     current_round_part_vote_data->vote_results_invalid = 0;
 
-    while (current_UTC_date_and_time->tm_min != 59 && current_UTC_date_and_time->tm_min != 0)
+    while (current_UTC_date_and_time->tm_min != 52 && current_UTC_date_and_time->tm_min != 0)
     {    
       usleep(200000); 
       get_current_UTC_time; 
@@ -1554,37 +1550,10 @@ int start_part_4_of_round()
     }
 
     // have the block producer submit the block to the network
-    if (main_network_data_node_create_block == 1)
+    if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       submit_block_template(VRF_data.block_blob,0);
     }
-    else
-    {
-      if (memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-      {
-        submit_block_template(VRF_data.block_blob,0);
-      }
-      else if (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-      {
-        submit_block_template(VRF_data.block_blob,0);
-      }
-      else if (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-      {
-        submit_block_template(VRF_data.block_blob,0);
-      }
-      else if (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-      {
-        submit_block_template(VRF_data.block_blob,0);
-      }
-      else if (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-      {
-        submit_block_template(VRF_data.block_blob,0);
-      }
-      else if (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-      {
-        submit_block_template(VRF_data.block_blob,0);
-      }
-    }    
     sleep(2);
     if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) == 0)
     {
@@ -1722,7 +1691,7 @@ int update_block_verifiers_list()
   }
 
   // reset the database_multiple_documents_fields
-  for (count = 0; count < 150; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     for (count2 = 0; count2 < 17; count2++)
     {

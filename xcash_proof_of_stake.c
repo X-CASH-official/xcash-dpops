@@ -53,11 +53,10 @@ int main(int parameters_count, char* parameters[])
   // initialize the global variables
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   block_verifiers_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char)); 
-  nodes_public_address_list_received_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || nodes_public_address_list_received_data == NULL || current_block_height == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || current_block_height == NULL)
   {
     if (data != NULL)
     {
@@ -71,10 +70,6 @@ int main(int parameters_count, char* parameters[])
     {
       pointer_reset(block_verifiers_IP_address);
     }
-    if (nodes_public_address_list_received_data != NULL)
-    {
-      pointer_reset(nodes_public_address_list_received_data);
-    }
     if (current_block_height != NULL)
     {
       pointer_reset(current_block_height);
@@ -86,7 +81,10 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   } 
 
-  pthread_rwlock_init(&rwlock,NULL);
+  pthread_rwlockattr_t attr;
+  pthread_rwlockattr_init(&attr);
+  pthread_rwlockattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
+  pthread_rwlock_init(&rwlock,&attr);
 
   pthread_rwlock_wrlock(&rwlock);
 
@@ -98,6 +96,9 @@ int main(int parameters_count, char* parameters[])
 
   // initialize the current_round_part_backup_node
   current_round_part_backup_node = mmap(NULL, sizeof(char), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
+
+  // initialize the error_message_count
+  //error_message_count = mmap(NULL, sizeof(int), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
 
   pthread_rwlock_unlock(&rwlock);
 

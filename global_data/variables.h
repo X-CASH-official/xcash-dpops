@@ -35,7 +35,6 @@ struct VRF_data_copy* VRF_data_copy; // A copy of the VRF_data struct to save da
 struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
 struct error_message error_message; // holds all of the error messages and the functions for an error.
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
-char* nodes_public_address_list_received_data; // The list of enabled nodes public address that have sent data, to prevent multiple votes (node1|node2|)
 char* server_message; // The message the server should run. It will ignore any other messages.
 char* current_round_part; // The current round part (1-4)
 char* current_round_part_backup_node; // The current main node in the current round part (0-5)
