@@ -1264,7 +1264,7 @@ int start_part_4_of_round()
     memcpy(VRF_data.vrf_public_key_data_round_part_4,VRF_data.block_verifiers_vrf_public_key_data[counter],VRF_PUBLIC_KEY_LENGTH);
     memcpy(VRF_data.vrf_public_key_round_part_4,VRF_data.block_verifiers_vrf_public_key[counter],crypto_vrf_PUBLICKEYBYTES);
 
-    if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)) != 0)
+    if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not create the vrf proof");
     }
@@ -1272,7 +1272,7 @@ int start_part_4_of_round()
     {
       START_PART_4_OF_ROUND_ERROR("Could not create the vrf beta string");
     }
-    if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,VRF_data.vrf_alpha_string_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)) != 0)
+    if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not create the VRF data");
     }
