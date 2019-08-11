@@ -98,7 +98,7 @@ int main(int parameters_count, char* parameters[])
   current_round_part_backup_node = mmap(NULL, sizeof(char), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
 
   // initialize the error_message_count
-  //error_message_count = mmap(NULL, sizeof(int), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
+  error_message_count = mmap(NULL, sizeof(int), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
 
   pthread_rwlock_unlock(&rwlock);
 

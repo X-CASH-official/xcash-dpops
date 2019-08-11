@@ -41,7 +41,7 @@ char* current_round_part_backup_node; // The current main node in the current ro
 pthread_rwlock_t rwlock;
 
 char* current_block_height; // The current block height
-int error_message_count; // The error message count
+int* error_message_count; // The error message count
 int reserve_proofs_settings; // 1 if reserve proofs can be added to the database, 0 if not
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
 

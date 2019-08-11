@@ -66,7 +66,7 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  while (current_UTC_date_and_time->tm_min != 50 && current_UTC_date_and_time->tm_min != 0)
+  while (current_UTC_date_and_time->tm_min != 8 && current_UTC_date_and_time->tm_min != 0)
   {    
     usleep(200000); 
     get_current_UTC_time; 
@@ -173,8 +173,10 @@ void* check_reserve_proofs_timer_thread()
     exit(0);
   }
 
+  pthread_rwlock_wrlock(&rwlock);
   reserve_proofs_settings = 1;
   main_network_data_node_create_block = 0;
+  pthread_rwlock_unlock(&rwlock);
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 4; count++)
@@ -245,6 +247,7 @@ void* check_reserve_proofs_timer_thread()
       // wait for all of the other block verifiers to send you their invalid_reserve_proofs
       sleep(10);
 
+      pthread_rwlock_wrlock(&rwlock);
       // set the reserve_proofs_settings so their are no reserve proofs added to the database
       reserve_proofs_settings = 0;
 
@@ -266,6 +269,7 @@ void* check_reserve_proofs_timer_thread()
 
       // set the reserve_proofs_settings so reserve proofs can be added to the database
       reserve_proofs_settings = 1;
+      pthread_rwlock_unlock(&rwlock);
 
       // update all of the block verifiers score
       for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
