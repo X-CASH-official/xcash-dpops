@@ -1093,24 +1093,29 @@ int start_part_4_of_round()
     sleep(10);
 
     // process the data
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_data_copy->block_verifiers_vrf_secret_key_data[count],VRF_SECRET_KEY_LENGTH);
-      memcpy(VRF_data.block_verifiers_vrf_secret_key[count],VRF_data_copy->block_verifiers_vrf_secret_key[count],crypto_vrf_SECRETKEYBYTES);
-      memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],VRF_data_copy->block_verifiers_vrf_public_key_data[count],VRF_PUBLIC_KEY_LENGTH);
-      memcpy(VRF_data.block_verifiers_vrf_public_key[count],VRF_data_copy->block_verifiers_vrf_public_key[count],crypto_vrf_PUBLICKEYBYTES);
-      memcpy(VRF_data.block_verifiers_random_data[count],VRF_data_copy->block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
-    }
-
-    // check if at least 67 of the block verifiers created the data
-    for (count = 0, counter = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (strlen(VRF_data.block_verifiers_vrf_secret_key[count]) == crypto_vrf_SECRETKEYBYTES && strlen(VRF_data.block_verifiers_vrf_public_key[count]) == crypto_vrf_PUBLICKEYBYTES && strlen(VRF_data.block_verifiers_random_data[count]) == RANDOM_STRING_LENGTH)
       {
-        counter++;
+        memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_data_copy->block_verifiers_vrf_secret_key_data[count],VRF_SECRET_KEY_LENGTH);
+        memcpy(VRF_data.block_verifiers_vrf_secret_key[count],VRF_data_copy->block_verifiers_vrf_secret_key[count],crypto_vrf_SECRETKEYBYTES);
+        memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],VRF_data_copy->block_verifiers_vrf_public_key_data[count],VRF_PUBLIC_KEY_LENGTH);
+        memcpy(VRF_data.block_verifiers_vrf_public_key[count],VRF_data_copy->block_verifiers_vrf_public_key[count],crypto_vrf_PUBLICKEYBYTES);
+        memcpy(VRF_data.block_verifiers_random_data[count],VRF_data_copy->block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
+        count2++;
+      }
+      else
+      {
+        memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",VRF_SECRET_KEY_LENGTH);
+        memcpy(VRF_data.block_verifiers_vrf_secret_key[count],"0000000000000000000000000000000000000000000000000000000000000000",crypto_vrf_SECRETKEYBYTES);
+        memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],"0000000000000000000000000000000000000000000000000000000000000000",VRF_PUBLIC_KEY_LENGTH);
+        memcpy(VRF_data.block_verifiers_vrf_public_key[count],"00000000000000000000000000000000",crypto_vrf_PUBLICKEYBYTES);
+        memcpy(VRF_data.block_verifiers_random_data[count],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
       }
     }
-    if (counter < BLOCK_VERIFIERS_VALID_AMOUNT)
+
+    // check if at least 67 of the block verifiers created the data
+    if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
       RESTART_ROUND;
     }
@@ -1175,7 +1180,11 @@ int start_part_4_of_round()
       if (counter != 0 && counter <= 200)
       {
         counter = counter % BLOCK_VERIFIERS_AMOUNT;
-        break;
+        // check if the block verifier created the data
+        if (memcmp(VRF_data.block_verifiers_vrf_secret_key_data[counter],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",VRF_SECRET_KEY_LENGTH) != 0 && memcmp(VRF_data.block_verifiers_vrf_public_key_data[counter],"0000000000000000000000000000000000000000000000000000000000000000",VRF_PUBLIC_KEY_LENGTH) != 0 && memcmp(VRF_data.block_verifiers_random_data[counter],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH) != 0)
+        {
+          break;
+        }
       }
     }
 
@@ -1404,13 +1413,28 @@ int start_part_4_of_round()
     pthread_rwlock_unlock(&rwlock);
 
     // process the data and add the block verifiers signatures to the block
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
       {
-        memcpy(VRF_data.block_blob_signature[count],VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+        if (strlen(VRF_data_copy->block_blob_signature[count]) == XCASH_SIGN_DATA_LENGTH && memcmp(VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
+        {
+          memcpy(VRF_data.block_blob_signature[count],VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+          memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+          count2++;
+        }
+        else
+        {
+          memcpy(VRF_data.block_blob_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
+          memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+        }        
       }
+    }
+
+    // check if the network block string has at least 67 of the block verifiers network block signature
+    if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      RESTART_ROUND
     }
 
     // convert the blockchain_data to a network_block_string
