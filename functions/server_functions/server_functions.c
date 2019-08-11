@@ -1095,7 +1095,7 @@ int start_part_4_of_round()
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strlen(VRF_data.block_verifiers_vrf_secret_key[count]) == crypto_vrf_SECRETKEYBYTES && strlen(VRF_data.block_verifiers_vrf_public_key[count]) == crypto_vrf_PUBLICKEYBYTES && strlen(VRF_data.block_verifiers_random_data[count]) == RANDOM_STRING_LENGTH)
+      if (strlen(VRF_data_copy->block_verifiers_vrf_secret_key_data[count]) == VRF_SECRET_KEY_LENGTH && strlen(VRF_data_copy->block_verifiers_vrf_public_key_data[count]) == VRF_PUBLIC_KEY_LENGTH && strlen(VRF_data_copy->block_verifiers_random_data[count]) == RANDOM_STRING_LENGTH)
       {
         memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_data_copy->block_verifiers_vrf_secret_key_data[count],VRF_SECRET_KEY_LENGTH);
         memcpy(VRF_data.block_verifiers_vrf_secret_key[count],VRF_data_copy->block_verifiers_vrf_secret_key[count],crypto_vrf_SECRETKEYBYTES);
@@ -1375,8 +1375,7 @@ int start_part_4_of_round()
     {
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
       {
-        memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data,XCASH_SIGN_DATA_LENGTH);
+        memcpy(VRF_data_copy->block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
       }
     }
 
@@ -1415,19 +1414,16 @@ int start_part_4_of_round()
     // process the data and add the block verifiers signatures to the block
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+      if (strlen(VRF_data_copy->block_blob_signature[count]) == XCASH_SIGN_DATA_LENGTH && memcmp(VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
       {
-        if (strlen(VRF_data_copy->block_blob_signature[count]) == XCASH_SIGN_DATA_LENGTH && memcmp(VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
-        {
-          memcpy(VRF_data.block_blob_signature[count],VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
-          memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
-          count2++;
-        }
-        else
-        {
-          memcpy(VRF_data.block_blob_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
-          memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
-        }        
+        memcpy(VRF_data.block_blob_signature[count],VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data_copy->block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+        count2++;
+      }
+      else
+      {
+        memcpy(VRF_data.block_blob_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
       }
     }
 
@@ -1522,7 +1518,7 @@ int start_part_4_of_round()
     current_round_part_vote_data->vote_results_valid = 1;
     current_round_part_vote_data->vote_results_invalid = 0;
 
-    while (current_UTC_date_and_time->tm_min != 8 && current_UTC_date_and_time->tm_min != 0)
+    while (current_UTC_date_and_time->tm_min != 59 && current_UTC_date_and_time->tm_min != 0)
     {    
       usleep(200000); 
       get_current_UTC_time; 
