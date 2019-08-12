@@ -39,7 +39,7 @@ Using define statements instead of constants for increased efficiency
 
 // proof of stake
 #define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid.
+#define BLOCK_VERIFIERS_VALID_AMOUNT 3 // The amount of block verifiers that need to vote true for the part of the round to be valid.
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 
 // Network

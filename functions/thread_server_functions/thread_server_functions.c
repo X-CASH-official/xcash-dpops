@@ -66,7 +66,7 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  while (current_UTC_date_and_time->tm_min != 8 && current_UTC_date_and_time->tm_min != 0)
+  while (current_UTC_date_and_time->tm_min != 45 && current_UTC_date_and_time->tm_min != 0)
   {    
     usleep(200000); 
     get_current_UTC_time; 
@@ -532,13 +532,15 @@ void* send_data_socket_thread(void* parameters)
   socklen_t socket_option_settings = sizeof(socket_settings);
 
   // define macros
-  #define SEND_DATA_SOCKET_ERROR(data2) \
-  memcpy(error_message.function[error_message.total],"send_data_socket",16); \
-  memcpy(error_message.data[error_message.total],data2,strnlen(data2,BUFFER_SIZE)); \
-  error_message.total++; \
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(message); \
+  message = NULL;
+
+  #define SEND_DATA_SOCKET_ERROR \
   close(SOCKET); \
-  pointer_reset(message); \
-  pointer_reset(data); \
+  pointer_reset_all; \
   pthread_exit((void *)(intptr_t)0); 
 
   // check if the memory needed was allocated on the heap successfully
@@ -559,9 +561,7 @@ void* send_data_socket_thread(void* parameters)
   const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
   if (SOCKET == -1)
   { 
-    memcpy(str,"Error creating socket for sending data to ",42);
-    memcpy(str+42,data->HOST,HOST_LENGTH);
-    SEND_DATA_SOCKET_ERROR(str);
+    SEND_DATA_SOCKET_ERROR;
   }
 
   /* Set the socket options for sending and receiving data
@@ -569,19 +569,15 @@ void* send_data_socket_thread(void* parameters)
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
   if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
-  {   
-    memcpy(str,"Error setting socket timeout for sending data to ",49);
-    memcpy(str+49,data->HOST,HOST_LENGTH);
-    SEND_DATA_SOCKET_ERROR(str);
+  { 
+    SEND_DATA_SOCKET_ERROR;
   } 
 
   // convert the hostname if used, to an IP address
   const struct hostent* HOST_NAME = gethostbyname(data->HOST); 
   if (HOST_NAME == NULL)
-  {    
-    memcpy(str,"Error invalid hostname of ",26);
-    memcpy(str+26,data->HOST,HOST_LENGTH);
-    SEND_DATA_SOCKET_ERROR(str);
+  {
+    SEND_DATA_SOCKET_ERROR;
   }
     
   // convert the port to a string  
@@ -610,13 +606,8 @@ void* send_data_socket_thread(void* parameters)
     if (poll(&socket_file_descriptors,1,TOTAL_CONNECTION_TIME_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   
       if (socket_settings != 0)
-      {       
-        memset(str,0,strnlen(str,BUFFER_SIZE));
-        memcpy(str,"Error connecting to ",20);
-        memcpy(str+20,data->HOST,HOST_LENGTH);
-        memcpy(str+20+HOST_LENGTH," on port ",9);
-        memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-        SEND_DATA_SOCKET_ERROR(str);
+      {  
+        SEND_DATA_SOCKET_ERROR;
       } 
     }
   }
@@ -625,24 +616,14 @@ void* send_data_socket_thread(void* parameters)
   socket_settings = fcntl(SOCKET, F_GETFL, NULL);
   if (socket_settings == -1)
   {
-    memset(str,0,strnlen(str,BUFFER_SIZE));
-    memcpy(str,"Error connecting to ",20);
-    memcpy(str+20,data->HOST,HOST_LENGTH);
-    memcpy(str+20+HOST_LENGTH," on port ",9);
-    memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-    SEND_DATA_SOCKET_ERROR(str);
+    SEND_DATA_SOCKET_ERROR;
   }
 
   // set the socket to blocking mode
   socket_settings &= (~O_NONBLOCK);
   if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
   {
-    memset(str,0,strnlen(str,BUFFER_SIZE));
-    memcpy(str,"Error connecting to ",20);
-    memcpy(str+20,data->HOST,HOST_LENGTH);
-    memcpy(str+20+HOST_LENGTH," on port ",9);
-    memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-    SEND_DATA_SOCKET_ERROR(str);
+    SEND_DATA_SOCKET_ERROR;
   }
 
   // send the message 
@@ -655,13 +636,8 @@ void* send_data_socket_thread(void* parameters)
   do {
     bytes = write(SOCKET,message+sent,TOTAL-sent);
     if (bytes < 0)
-    {             
-      memset(str,0,strnlen(str,BUFFER_SIZE));
-      memcpy(str,"Error sending data to ",20);
-      memcpy(str+20,data->HOST,HOST_LENGTH);
-      memcpy(str+20+HOST_LENGTH," on port ",9);
-      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      SEND_DATA_SOCKET_ERROR(str);
+    { 
+      SEND_DATA_SOCKET_ERROR;
     }
     else if (bytes == 0)  
     {
@@ -671,7 +647,6 @@ void* send_data_socket_thread(void* parameters)
     } while (sent < TOTAL);
     close(SOCKET);
   
-  pointer_reset(message);
-  pointer_reset(data);
+  pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);
 }

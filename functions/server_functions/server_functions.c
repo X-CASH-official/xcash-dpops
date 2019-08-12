@@ -910,7 +910,14 @@ int start_part_4_of_round()
     usleep(10000000 / BLOCK_VERIFIERS_AMOUNT); \
   }
 
-  #define RESTART_ROUND \
+  #define RESTART_ROUND(message) \
+  printf("\n"); \
+  color_print(message,"red"); \
+  memset(data,0,strlen(data)); \
+  memcpy(data,"Restarting the round for block ",31); \
+  memcpy(data+31,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
+  print_start_message(data); \
+  printf("\n"); \
   memset(data,0,strlen(data)); \
   memset(data2,0,strlen(data2)); \
   memset(data3,0,strlen(data3)); \
@@ -1019,6 +1026,15 @@ int start_part_4_of_round()
     exit(0);
   }
 
+  // update the previous, current and next block verifiers
+  if (update_block_verifiers_list() == 0)
+  {
+    START_PART_4_OF_ROUND_ERROR("Cloud not update the previous, current and next block verifiers list");
+  }
+
+  color_print(next_block_verifiers_list.block_verifiers_IP_address[2],"red");
+  color_print(current_block_verifiers_list.block_verifiers_IP_address[2],"red");
+
   start:
 
     pthread_rwlock_wrlock(&rwlock);
@@ -1117,7 +1133,7 @@ int start_part_4_of_round()
     // check if at least 67 of the block verifiers created the data
     if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      RESTART_ROUND;
+      RESTART_ROUND("Less than the required amount of block verifiers created the data");
     }
 
   
@@ -1345,7 +1361,7 @@ int start_part_4_of_round()
       memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],VRF_data.block_verifiers_vrf_public_key_data[count],VRF_PUBLIC_KEY_LENGTH);
       memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count],VRF_data.block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
 
-      memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+      memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
       memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_RESERVED_BYTES,sizeof(GET_BLOCK_TEMPLATE_RESERVED_BYTES)-1);
 
       for (counter = 0, count2 = 0; counter < RANDOM_STRING_LENGTH; counter++, count2 += 2)
@@ -1430,7 +1446,7 @@ int start_part_4_of_round()
     // check if the network block string has at least 67 of the block verifiers network block signature
     if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      RESTART_ROUND
+      RESTART_ROUND("The network block string has less than the required amount of block verifiers network block signature");
     }
 
     // convert the blockchain_data to a network_block_string
@@ -1518,7 +1534,7 @@ int start_part_4_of_round()
     current_round_part_vote_data->vote_results_valid = 1;
     current_round_part_vote_data->vote_results_invalid = 0;
 
-    while (current_UTC_date_and_time->tm_min != 10 && current_UTC_date_and_time->tm_min != 0)
+    while (current_UTC_date_and_time->tm_min != 58 && current_UTC_date_and_time->tm_min != 0)
     {    
       usleep(200000); 
       get_current_UTC_time; 
@@ -1533,7 +1549,7 @@ int start_part_4_of_round()
     // process the vote results
     if (current_round_part_vote_data->vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      RESTART_ROUND;
+      RESTART_ROUND("Invalid network block string data hash");
     }
 
 
@@ -1647,20 +1663,20 @@ int update_block_verifiers_list()
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    for (count2 = 0; count2 < 17; count2++)
+    for (count2 = 0; count2 < 18; count2++)
     {
       database_multiple_documents_fields.item[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
       database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-    }    
 
-    if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message;  
-      exit(0);
-    }
+      if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
+      {
+        memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
+      }
+    }     
   } 
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
@@ -1677,7 +1693,7 @@ int update_block_verifiers_list()
   // copy the database_multiple_documents_fields to the next_block_verifiers_list
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    for (count2 = 0; count2 < 17; count2++)
+    for (count2 = 0; count2 < 18; count2++)
     {
       if (memcmp(database_multiple_documents_fields.item[count][count2],"delegate_name",13) == 0)
       {
@@ -1697,7 +1713,7 @@ int update_block_verifiers_list()
   // reset the database_multiple_documents_fields
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    for (count2 = 0; count2 < 17; count2++)
+    for (count2 = 0; count2 < 18; count2++)
     {
       pointer_reset(database_multiple_documents_fields.item[count][count2]);
       pointer_reset(database_multiple_documents_fields.value[count][count2]);
@@ -4605,7 +4621,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   return 0;
 
   // verify the data
-  if (verify_data(MESSAGE,0,1) == 0)
+  if (verify_data(MESSAGE,0,1) == 0 || memcmp(current_round_part_backup_node,"5",1) != 0 || main_network_data_node_create_block != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data");
   }

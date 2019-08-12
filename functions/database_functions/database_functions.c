@@ -703,8 +703,8 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     bson_free(message);
 
     string_replace(data,"{ \"$numberInt\" : ","");
-    string_replace(data,"{ \"$$numberDouble\" : ","");
-    string_replace(data,"{ \"$$numberLong\" : ","");
+    string_replace(data,"{ \"$numberDouble\" : ","");
+    string_replace(data,"{ \"$numberLong\" : ","");
     string_replace(data," }, ",", ");
 
     count = 1;
@@ -829,11 +829,11 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
       if ((strncmp(DATA,"",BUFFER_SIZE) == 0) || (strncmp(DATA,"",BUFFER_SIZE) != 0 && strstr(data,DATA) != NULL))
       {
         string_replace(data,"{ \"$numberInt\" : ","");
-        string_replace(data,"{ \"$$numberDouble\" : ","");
-        string_replace(data,"{ \"$$numberLong\" : ","");
+        string_replace(data,"{ \"$numberDouble\" : ","");
+        string_replace(data,"{ \"$numberLong\" : ","");
         string_replace(data," }, ",", ");
 
-        // parse the json data        
+        // parse the json data      
         database_multiple_documents_parse_json_data(data,result,counter);
         counter++;
         result->document_count++;
