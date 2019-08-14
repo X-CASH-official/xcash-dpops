@@ -650,3 +650,217 @@ void* send_data_socket_thread(void* parameters)
   pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: send_and_receive_data_socket_thread
+Description: Send a message through a socket and receives the message on a separate thread
+Parameters:
+  parameters - A pointer to the send_and_receive_data_socket_thread_parameters struct
+  struct send_and_receive_data_socket_thread_parameters
+    HOST - The host to send the message to  
+    DATA - The message
+    COUNT - The block verifier that received the message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* send_and_receive_data_socket_thread(void* parameters)
+{   
+  // Variables  
+  struct send_and_receive_data_socket_thread_parameters* data = (struct send_and_receive_data_socket_thread_parameters*)parameters;
+  size_t HOST_LENGTH = strnlen(data->HOST,BUFFER_SIZE);
+  struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};  
+  char buffer[BUFFER_SIZE]; 
+  char buffer2[BUFFER_SIZE];
+  char str[BUFFER_SIZE];
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  int count;
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  socklen_t socket_option_settings = sizeof(socket_settings);
+
+  // define macros
+  #define pointer_reset_all \
+  free(data2); \
+  data2 = NULL; \
+  free(message); \
+  message = NULL;
+
+  #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR \
+  close(SOCKET); \
+  pointer_reset_all; \
+  pthread_exit((void *)(intptr_t)0); 
+
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL)
+  {   
+    memcpy(error_message.function[error_message.total],"send_data_socket",16);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  } 
+
+  /* Create the socket  
+  AF_INET = IPV4 support
+  SOCK_STREAM = TCP protocol
+  SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
+  */
+  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+  if (SOCKET == -1)
+  { 
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+  }
+
+  /* Set the socket options for sending and receiving data
+  SOL_SOCKET = socket level
+  SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
+  */
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  { 
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+  } 
+
+  // convert the hostname if used, to an IP address
+  const struct hostent* HOST_NAME = gethostbyname(data->HOST); 
+  if (HOST_NAME == NULL)
+  {
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+  }
+    
+  // convert the port to a string  
+  sprintf(buffer2,"%d",SEND_DATA_PORT); 
+   
+  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+  
+  /* setup the connection
+  AF_INET = IPV4
+  use htons to convert the port from host byte order to network byte order short
+  */
+  memset(&serv_addr,0,sizeof(serv_addr));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+  serv_addr.sin_port = htons(SEND_DATA_PORT);
+
+  /* set the first poll structure to our socket
+  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+  */
+  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.events = POLLOUT;
+
+  // connect to the socket
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  {    
+    if (poll(&socket_file_descriptors,1,TOTAL_CONNECTION_TIME_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+    {   
+      if (socket_settings != 0)
+      {  
+        SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+      } 
+    }
+  }
+
+  // get the current socket settings
+  socket_settings = fcntl(SOCKET, F_GETFL, NULL);
+  if (socket_settings == -1)
+  {
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+  }
+
+  // set the socket to blocking mode
+  socket_settings &= (~O_NONBLOCK);
+  if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
+  {
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+  }
+
+  // send the message 
+  memset(message,0,strlen(message));
+  memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
+  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
+  const int TOTAL = strnlen(message,BUFFER_SIZE);
+  int sent = 0;
+  int bytes = 0;
+  do {
+    bytes = write(SOCKET,message+sent,TOTAL-sent);
+    if (bytes < 0)
+    { 
+      SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+    }
+    else if (bytes == 0)  
+    {
+      break;
+    }
+    sent+=bytes;
+    } while (sent < TOTAL);
+
+  // receive the data
+  memset(message,0,strlen(message));
+  for (;;)
+  { 
+    memset(&buffer, 0, sizeof(buffer));
+    // check the size of the data that were about to receive. If it is over BUFFER_SIZE then dont accept it, since it will cause a buffer overflow
+    if (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= BUFFER_SIZE)
+    {
+      SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+    }    
+    // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
+    recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
+    if (buffer[0] != '\0' && strstr(buffer,SOCKET_END_STRING) == NULL)
+    {
+      // there is data, but this is not the final data
+      memcpy(message,buffer,strnlen(buffer,BUFFER_SIZE));
+    }
+    if (buffer[0] != '\0' && strstr(buffer,SOCKET_END_STRING) != NULL)
+    {
+      // there is data, and this is the final data
+      memcpy(message,buffer,strnlen(buffer,BUFFER_SIZE));
+      // if the final message has the SOCKET_END_STRING in the message, remove it
+      if (strstr(message,SOCKET_END_STRING) != NULL)
+      {
+        // remove SOCKET_END_STRING from the message
+        memset(data2,0,strlen(data2));
+        memcpy(data2,message,strnlen(message,BUFFER_SIZE) - sizeof(SOCKET_END_STRING)-1);
+      }
+      break;
+    }
+
+    // check for a timeout in receiving data
+    count++;
+    if (count > (RECEIVE_DATA_TIMEOUT_SETTINGS * 5))
+    {
+      SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+    }
+    usleep(200000);   
+  }
+
+  // verify the data
+  if (verify_data(data2,0,1) == 0)
+  {
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+  }
+
+  // parse the message
+  memset(message,0,strlen(message));
+  if (parse_json_data(data2,"block_blob_signature",message) == 0 || strlen(message) != XCASH_SIGN_DATA_LENGTH || memcmp(message,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
+  {
+    memcpy(VRF_data.block_blob_signature[data->COUNT],message,XCASH_SIGN_DATA_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],message,XCASH_SIGN_DATA_LENGTH);
+  }
+  else
+  {
+    memcpy(VRF_data.block_blob_signature[data->COUNT],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
+  }
+  
+  pointer_reset_all;
+  pthread_exit((void *)(intptr_t)1);
+
+  #undef pointer_reset_all
+  #undef SEND_AND_RECEIVE_DATA_SOCKET_ERROR
+}
