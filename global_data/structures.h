@@ -244,6 +244,12 @@ struct database_multiple_documents_fields {
     char DATA[BUFFER_SIZE]; // The message
 };
 
+ struct send_and_receive_data_socket_thread_parameters {
+    char HOST[BUFFER_SIZE]; // The IP address to send the message to
+    char DATA[BUFFER_SIZE]; // The message
+    int COUNT; // The block verifier that received the message
+};
+
  struct read_file_thread_parameters {
     char* result; // The data read from the file
     const char* FILE_NAME; // The file name

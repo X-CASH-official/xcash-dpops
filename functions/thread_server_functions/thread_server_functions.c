@@ -22,6 +22,7 @@
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
 #include "server_functions.h"
+#include "string_functions.h"
 #include "thread_server_functions.h"
 #include "vrf.h"
 #include "crypto_vrf.h"
@@ -66,11 +67,7 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  while (current_UTC_date_and_time->tm_min != 45 && current_UTC_date_and_time->tm_min != 0)
-  {    
-    usleep(200000); 
-    get_current_UTC_time; 
-  }
+  sync_block_verifiers_minutes(0);
   get_current_block_height(current_block_height,0);
   if (start_new_round() == 0)
   {
@@ -533,14 +530,12 @@ void* send_data_socket_thread(void* parameters)
 
   // define macros
   #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
   free(message); \
   message = NULL;
 
   #define SEND_DATA_SOCKET_ERROR \
   close(SOCKET); \
-  pointer_reset_all; \
+  pointer_reset(message); \
   pthread_exit((void *)(intptr_t)0); 
 
   // check if the memory needed was allocated on the heap successfully
@@ -629,7 +624,7 @@ void* send_data_socket_thread(void* parameters)
   // send the message 
   memset(message,0,strlen(message));
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
-  memcpy(message+strlen(message),"|END|",5);
+  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
   const int TOTAL = strnlen(message,BUFFER_SIZE);
   int sent = 0;
   int bytes = 0;
@@ -649,6 +644,9 @@ void* send_data_socket_thread(void* parameters)
   
   pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);
+
+  #undef pointer_reset_all
+  #undef SEND_DATA_SOCKET_ERROR
 }
 
 

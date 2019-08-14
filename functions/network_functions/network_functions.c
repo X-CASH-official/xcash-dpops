@@ -839,7 +839,7 @@ int send_data(const int SOCKET, char* data, const int APPEND_STRING_SETTINGS)
 {
   if (APPEND_STRING_SETTINGS == 1)
   {
-    memcpy(data+strnlen(data,BUFFER_SIZE),SOCKET_END_STRING,5);
+    memcpy(data+strnlen(data,BUFFER_SIZE),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
   }    
   const int TOTAL = strnlen(data,BUFFER_SIZE);
   int sent = 0;
@@ -917,7 +917,7 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
       if (strstr(message,SOCKET_END_STRING) != NULL)
       {
         // remove SOCKET_END_STRING from the message
-        memcpy(data,message,strnlen(message,BUFFER_SIZE) - 5);
+        memcpy(data,message,strnlen(message,BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1));
         memset(message, 0, strnlen(message,BUFFER_SIZE));
         memcpy(message,data,strnlen(data,BUFFER_SIZE));
       }
