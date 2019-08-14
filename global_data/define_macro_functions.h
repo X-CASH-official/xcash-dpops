@@ -123,6 +123,38 @@ current_UTC_date_and_time = gmtime(&current_date_and_time);
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sync_block_verifiers_minutes
+Description: Syncs the block verifiers to a specific minute
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define sync_block_verifiers_minutes(minutes) \
+do \
+{ \
+  usleep(200000); \
+  get_current_UTC_time; \
+} while (current_UTC_date_and_time->tm_min % 5 != minutes); 
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_block_verifiers_seconds
+Description: Syncs the block verifiers to a specific second
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define sync_block_verifiers_seconds(seconds) \
+do \
+{ \
+  usleep(200000); \
+  get_current_UTC_time; \
+} while (current_UTC_date_and_time->tm_sec % 30 != seconds);
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: pointer_reset
 Description: Reset the memory used by the pointer, and sets the pointer to NULL to avoid a dangling pointer
 Parameters:
