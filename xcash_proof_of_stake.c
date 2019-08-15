@@ -53,12 +53,11 @@ int main(int parameters_count, char* parameters[])
   // initialize the global variables
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   block_verifiers_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char)); 
-  current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || current_block_height == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
   {
     if (data != NULL)
     {
@@ -71,10 +70,6 @@ int main(int parameters_count, char* parameters[])
     if (block_verifiers_IP_address != NULL)
     {
       pointer_reset(block_verifiers_IP_address);
-    }
-    if (current_block_height != NULL)
-    {
-      pointer_reset(current_block_height);
     }
     if (current_round_part != NULL)
     {
@@ -90,6 +85,8 @@ int main(int parameters_count, char* parameters[])
     print_error_message;  
     exit(0);
   } 
+
+  memset(current_block_height,0,sizeof(current_block_height));
 
   pthread_rwlock_init(&rwlock,NULL);
 
