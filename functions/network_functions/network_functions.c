@@ -2219,6 +2219,7 @@ int sync_check_delegates_database()
   size_t count;
 
   // define macros
+  #define DATABASE_COLLECTION "delegates"
   #define pointer_reset_all \
   free(message); \
   message = NULL; \
@@ -2265,7 +2266,7 @@ int sync_check_delegates_database()
 
   // get the database data hash for the reserve proofs database
   memset(data,0,strlen(data));
-  if (get_database_data_hash(data,DATABASE_NAME,"delegates",0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database");
   }
@@ -2325,6 +2326,7 @@ int sync_check_delegates_database()
   pointer_reset_all;
   return 1;
 
+  #undef DATABASE_COLLECTION
   #undef pointer_reset_all
   #undef SYNC_CHECK_DELEGATES_DATABASE_ERROR  
 }
@@ -2349,6 +2351,7 @@ int sync_delegates_database()
   int settings;
 
   // define macros
+  #define DATABASE_COLLECTION "delegates"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -2429,7 +2432,7 @@ int sync_delegates_database()
   color_print(data,"green");
 
   // get the database data hash
-  if (get_database_data_hash(data,DATABASE_NAME,"delegates",0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database",0);
   }
@@ -2465,16 +2468,17 @@ int sync_delegates_database()
   }
 
   // delete the collection from the database
-  delete_collection_from_database(DATABASE_NAME,"delegates",0);
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
 
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(DATABASE_NAME,"delegates",data,0);
+  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0);
 
   pointer_reset_all;
   return 1;
 
+  #undef DATABASE_COLLECTION
   #undef pointer_reset_all
   #undef SYNC_DELEGATES_DATABASE_ERROR   
 }
@@ -2498,6 +2502,7 @@ int sync_check_statistics_database()
   size_t count;
 
   // define macros
+  #define DATABASE_COLLECTION "statistics"
   #define pointer_reset_all \
   free(message); \
   message = NULL; \
@@ -2544,7 +2549,7 @@ int sync_check_statistics_database()
 
   // get the database data hash for the reserve proofs database
   memset(data,0,strlen(data));
-  if (get_database_data_hash(data,DATABASE_NAME,"delegates",0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the delegates database");
   }
@@ -2604,6 +2609,7 @@ int sync_check_statistics_database()
   pointer_reset_all;
   return 1;
 
+  #undef DATABASE_COLLECTION
   #undef pointer_reset_all
   #undef SYNC_CHECK_STATISTICS_DATABASE_ERROR  
 }
@@ -2628,6 +2634,7 @@ int sync_statistics_database()
   int settings;
 
   // define macros
+  #define DATABASE_COLLECTION "statistics"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -2708,7 +2715,7 @@ int sync_statistics_database()
   color_print(data,"green");
 
   // get the database data hash
-  if (get_database_data_hash(data,DATABASE_NAME,"statistics",0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database",0);
   }
@@ -2744,16 +2751,17 @@ int sync_statistics_database()
   }
 
   // delete the collection from the database
-  delete_collection_from_database(DATABASE_NAME,"statistics",0);
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
 
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(DATABASE_NAME,"statistics",data,0);
+  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0);
 
   pointer_reset_all;
   return 1;
 
+  #undef DATABASE_COLLECTION
   #undef pointer_reset_all
   #undef SYNC_STATISTICS_DATABASE_ERROR   
 }
