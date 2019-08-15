@@ -250,6 +250,11 @@ struct database_multiple_documents_fields {
     int COUNT; // The block verifier that received the message
 };
 
+ struct socket_thread_parameters {
+    int client_socket;  // The client socket
+    char client_address[BUFFER_SIZE];  // The client address
+};
+
  struct read_file_thread_parameters {
     char* result; // The data read from the file
     const char* FILE_NAME; // The file name

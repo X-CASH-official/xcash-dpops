@@ -896,6 +896,7 @@ int start_part_4_of_round()
   return 0;  
 
   #define SEND_DATA_SOCKET_THREAD(message) \
+  sleep(2); \
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
@@ -907,7 +908,6 @@ int start_part_4_of_round()
       pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
       pthread_detach(thread_id[count]); \
     } \
-    usleep(100000); \
   }
 
   #define RESTART_ROUND(message) \
@@ -3522,6 +3522,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define DATABASE_COLLECTION "delegates"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -3559,15 +3560,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
 
-  // parse the message
-  if (parse_json_data(MESSAGE,"file",data) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
-  }
-
-  // get the database data hash for the reserve bytes database
+  // get the database data hash for the delegates database
   memset(data2,0,strlen(data2));
-  if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
+  if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -3605,6 +3600,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   return 1;
 
+  #undef DATABASE_COLLECTION
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR
 }
@@ -3719,6 +3715,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // define macros
+  #define DATABASE_COLLECTION "statistics"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -3756,15 +3753,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
   }
 
-  // parse the message
-  if (parse_json_data(MESSAGE,"file",data) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
-  }
-
-  // get the database data hash for the reserve bytes database
+  // get the database data hash for the statistics database
   memset(data2,0,strlen(data2));
-  if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
+  if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -5180,11 +5171,13 @@ int create_server(const int MESSAGE_SETTINGS)
 
   // Variables
   char buffer[BUFFER_SIZE];
-  char buffer2[BUFFER_SIZE];
-  char client_address[BUFFER_SIZE]; 
   int len;
   int receive_data_result; 
   struct sockaddr_in addr, cl_addr; 
+  struct socket_thread_parameters* socket_thread_parameters;
+
+  // threads
+  pthread_t thread_id;
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
@@ -5197,6 +5190,8 @@ int create_server(const int MESSAGE_SETTINGS)
 
   // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
   signal(SIGCHLD, SIG_IGN);
+  
+  memset(buffer,0,sizeof(buffer));
 
   if (MESSAGE_SETTINGS == 1)
   {
@@ -5229,7 +5224,7 @@ int create_server(const int MESSAGE_SETTINGS)
   }
  
   // convert the port to a string
-  sprintf(buffer2,"%d",SEND_DATA_PORT);  
+  sprintf(buffer,"%d",SEND_DATA_PORT);  
  
   memset(&addr, 0, sizeof(addr));
   /* setup the connection
@@ -5237,6 +5232,120 @@ int create_server(const int MESSAGE_SETTINGS)
   INADDR_ANY = connect to 0.0.0.0
   use htons to convert the port from host byte order to network byte order short
   */
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = INADDR_ANY;
+  addr.sin_port = htons(SEND_DATA_PORT);
+ 
+  // connect to 0.0.0.0
+  if (bind(SOCKET, (struct sockaddr *) &addr, sizeof(addr)) != 0)
+  {    
+    memcpy(error_message.function[error_message.total],"create_server",13);
+    memcpy(error_message.data[error_message.total],"Error connecting to port ",25);
+    memcpy(error_message.data[error_message.total]+25,buffer,strnlen(buffer,BUFFER_SIZE));
+    error_message.total++;
+  } 
+
+  // set the maximum simultaneous connections
+  if (listen(SOCKET, MAXIMUM_CONNECTIONS) != 0)
+  {
+    SERVER_ERROR("Error creating the server");
+  }
+
+  if (MESSAGE_SETTINGS == 1)
+  {
+    printf("\033[1;32mConnected to port %s\033[0m\n",buffer);
+    printf("Waiting for a connection...\n\n");
+  }
+
+  for (;;)
+  {
+    socket_thread_parameters = malloc(sizeof(struct socket_thread_parameters));
+    memset(socket_thread_parameters->client_address,0,sizeof(socket_thread_parameters->client_address));
+    len = sizeof(cl_addr);
+    socket_thread_parameters->client_socket = accept(SOCKET, (struct sockaddr *) &cl_addr, (socklen_t*)&len);
+    inet_ntop(AF_INET, &(cl_addr.sin_addr), socket_thread_parameters->client_address, BUFFER_SIZE);
+
+    if (socket_thread_parameters->client_socket == -1 || socket_thread_parameters->client_address == NULL)
+    {      
+      continue;
+    }
+
+    // create a new process for each server connection
+    pthread_create(&thread_id, NULL, &socket_thread,(void *)socket_thread_parameters);
+    pthread_detach(thread_id); 
+  }
+   return 1;
+
+   #undef SOCKET_FILE_DESCRIPTORS_LENGTH
+   #undef SERVER_ERROR
+}
+
+
+
+/*int create_server(const int MESSAGE_SETTINGS)
+{
+  // Constants
+  const int SOCKET_OPTION = 1; 
+
+  // Variables
+  char buffer[BUFFER_SIZE];
+  char buffer2[BUFFER_SIZE];
+  char client_address[BUFFER_SIZE]; 
+  int len;
+  int receive_data_result; 
+  struct sockaddr_in addr, cl_addr; 
+
+  // define macros
+  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
+
+  #define SERVER_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"create_server",13); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  error_message.total++; \
+  return 0;  
+
+  // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
+  signal(SIGCHLD, SIG_IGN);
+
+  if (MESSAGE_SETTINGS == 1)
+  {
+    print_start_message("Creating the server");
+  }
+  
+   Create the socket  
+  AF_INET = IPV4 support
+  SOCK_STREAM = TCP protocol
+  
+  const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
+  if (SOCKET == -1)
+  {
+    SERVER_ERROR("Error creating socket");
+  }
+
+   Set the socket options
+  SOL_SOCKET = socket level
+  SO_REUSEADDR = allows for reuse of the same address, so one can shutdown and restart the program without errros
+  SO_REUSEPORT = allows for reuse of the same port, so one can shutdown and restart the program without errros
+  
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &SOCKET_OPTION,sizeof(int)) != 0)
+  {
+    SERVER_ERROR("Error setting socket options");
+  } 
+
+  if (MESSAGE_SETTINGS == 1)
+  {   
+    color_print("Socket created","green");
+  }
+ 
+  // convert the port to a string
+  sprintf(buffer2,"%d",SEND_DATA_PORT);  
+ 
+  memset(&addr, 0, sizeof(addr));
+   setup the connection
+  AF_INET = IPV4
+  INADDR_ANY = connect to 0.0.0.0
+  use htons to convert the port from host byte order to network byte order short
+  
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = INADDR_ANY;
   addr.sin_port = htons(SEND_DATA_PORT);
@@ -5443,5 +5552,5 @@ int create_server(const int MESSAGE_SETTINGS)
 
    #undef SOCKET_FILE_DESCRIPTORS_LENGTH
    #undef SERVER_ERROR
-}
+}*/
 
