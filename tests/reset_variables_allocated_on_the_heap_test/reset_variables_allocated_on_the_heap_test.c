@@ -2577,13 +2577,6 @@ int reset_variables_allocated_on_the_heap_test()
     color_print("All other test will not be run","red");
   }
 
-
-  pthread_rwlock_wrlock(&rwlock);
-  // set the server_message
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",30);
-  pthread_rwlock_unlock(&rwlock);
-
   // create the server
   pthread_create(&thread_id, NULL, &create_server_on_separate_thread,NULL);
   pthread_detach(thread_id);

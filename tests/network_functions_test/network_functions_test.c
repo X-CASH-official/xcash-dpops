@@ -202,10 +202,6 @@ void general_network_test()
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
 
   pthread_rwlock_wrlock(&rwlock);
-  // set the server_message
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",30);
-
   // run the test
 
   // set the current_round_part and current_round_part_backup_node
@@ -328,10 +324,6 @@ void network_security_test()
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
 
   pthread_rwlock_wrlock(&rwlock);
-  // set the server_message
-  memset(server_message,0,strnlen(server_message,BUFFER_SIZE));
-  memcpy(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",30);
-
   // set the current_round_part and current_round_part_backup_node
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
   memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));

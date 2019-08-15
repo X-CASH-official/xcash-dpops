@@ -75,6 +75,10 @@ int VRF_functions_test()
     exit(0);
   }
 
+  memset(vrf_public_key,0,sizeof(vrf_public_key));
+  memset(vrf_secret_key,0,sizeof(vrf_secret_key));
+  memset(vrf_proof,0,sizeof(vrf_proof));
+
   // reset the variables
   memset(&string1_test,0,sizeof(string1_test)); 
   memset(string2_test,0,strnlen(string2_test,BUFFER_SIZE)); 

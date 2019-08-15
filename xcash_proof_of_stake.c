@@ -54,9 +54,11 @@ int main(int parameters_count, char* parameters[])
   xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   block_verifiers_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char)); 
   current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || current_block_height == NULL)
+  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || current_block_height == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
   {
     if (data != NULL)
     {
@@ -74,6 +76,14 @@ int main(int parameters_count, char* parameters[])
     {
       pointer_reset(current_block_height);
     }
+    if (current_round_part != NULL)
+    {
+      pointer_reset(current_round_part);
+    }
+    if (current_round_part_backup_node != NULL)
+    {
+      pointer_reset(current_round_part_backup_node);
+    }
     memcpy(error_message.function[error_message.total],"main",4);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -81,26 +91,7 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   } 
 
-  pthread_rwlockattr_t attr;
-  pthread_rwlockattr_init(&attr);
-  pthread_rwlockattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
-  pthread_rwlock_init(&rwlock,&attr);
-
-  pthread_rwlock_wrlock(&rwlock);
-
-  // initialize the server_message
-  server_message = mmap(NULL, sizeof(char), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
-
-  // initialize the current_round_part
-  current_round_part = mmap(NULL, sizeof(char), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
-
-  // initialize the current_round_part_backup_node
-  current_round_part_backup_node = mmap(NULL, sizeof(char), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
-
-  // initialize the error_message_count
-  error_message_count = mmap(NULL, sizeof(int), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0); 
-
-  pthread_rwlock_unlock(&rwlock);
+  pthread_rwlock_init(&rwlock,NULL);
 
   // initialize the previous block_verifiers_list struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)

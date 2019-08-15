@@ -548,6 +548,9 @@ void* send_data_socket_thread(void* parameters)
     exit(0);
   } 
 
+  memset(buffer2,0,sizeof(buffer2));
+  memset(str,0,sizeof(str));
+
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
@@ -703,6 +706,10 @@ void* send_and_receive_data_socket_thread(void* parameters)
     print_error_message;  
     exit(0);
   } 
+
+  memset(buffer,0,sizeof(buffer));
+  memset(buffer2,0,sizeof(buffer2));
+  memset(str,0,sizeof(str));
 
   /* Create the socket  
   AF_INET = IPV4 support
@@ -907,6 +914,7 @@ void* socket_thread(void* parameters)
   if (receive_data_result < 2)
   {
     close(CLIENT_SOCKET);
+    pointer_reset(data);
     pthread_exit((void *)(intptr_t)0);
   }  
 
@@ -925,7 +933,7 @@ void* socket_thread(void* parameters)
                  
 
  // check if a certain type of message has been received 
- if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
+ if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)
  {
    server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,(const char*)buffer);
  }
@@ -1036,5 +1044,6 @@ void* socket_thread(void* parameters)
    } 
  }
 close(CLIENT_SOCKET);
+pointer_reset(data);
 pthread_exit((void *)(intptr_t)1);
 }

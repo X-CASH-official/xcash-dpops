@@ -92,12 +92,12 @@ int start_new_round()
     memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen(VRF_data.block_verifiers_vrf_public_key[count])); 
     memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count])); 
     memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); 
-    memset(VRF_data_copy->block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data_copy->block_verifiers_vrf_secret_key_data[count])); 
-    memset(VRF_data_copy->block_verifiers_vrf_secret_key[count],0,strlen(VRF_data_copy->block_verifiers_vrf_secret_key[count])); 
-    memset(VRF_data_copy->block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data_copy->block_verifiers_vrf_public_key_data[count])); 
-    memset(VRF_data_copy->block_verifiers_vrf_public_key[count],0,strlen(VRF_data_copy->block_verifiers_vrf_public_key[count])); 
-    memset(VRF_data_copy->block_verifiers_random_data[count],0,strlen(VRF_data_copy->block_verifiers_random_data[count])); 
-    memset(VRF_data_copy->block_blob_signature[count],0,strlen(VRF_data_copy->block_blob_signature[count])); 
+    memset(VRF_data_copy->block_verifiers_vrf_secret_key_data[count],0,sizeof(VRF_data_copy->block_verifiers_vrf_secret_key_data[count])); 
+    memset(VRF_data_copy->block_verifiers_vrf_secret_key[count],0,sizeof(VRF_data_copy->block_verifiers_vrf_secret_key[count])); 
+    memset(VRF_data_copy->block_verifiers_vrf_public_key_data[count],0,sizeof(VRF_data_copy->block_verifiers_vrf_public_key_data[count])); 
+    memset(VRF_data_copy->block_verifiers_vrf_public_key[count],0,sizeof(VRF_data_copy->block_verifiers_vrf_public_key[count])); 
+    memset(VRF_data_copy->block_verifiers_random_data[count],0,sizeof(VRF_data_copy->block_verifiers_random_data[count])); 
+    memset(VRF_data_copy->block_blob_signature[count],0,sizeof(VRF_data_copy->block_blob_signature[count])); 
     
     memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
     memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));
@@ -560,10 +560,6 @@ int data_network_node_create_block()
   sync_block_verifiers_minutes(4);
 
   pthread_rwlock_wrlock(&rwlock);
-  // set the server message
-  memset(server_message,0,strlen(server_message));
-  memcpy(server_message,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK",58); 
-
   // set the current_round_part
   memset(current_round_part,0,strlen(current_round_part));
   memcpy(current_round_part,"1",1);
@@ -933,19 +929,19 @@ int start_part_4_of_round()
   memset(VRF_data.vrf_beta_string_round_part_4,0,strlen(VRF_data.vrf_beta_string_round_part_4)); \
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob)); \
   memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash)); \
-  memset(VRF_data_copy->vrf_secret_key_data_round_part_4,0,strlen(VRF_data_copy->vrf_secret_key_data_round_part_4)); \
-  memset(VRF_data_copy->vrf_secret_key_round_part_4,0,strlen(VRF_data_copy->vrf_secret_key_round_part_4)); \
-  memset(VRF_data_copy->vrf_public_key_data_round_part_4,0,strlen(VRF_data_copy->vrf_public_key_data_round_part_4)); \
-  memset(VRF_data_copy->vrf_public_key_round_part_4,0,strlen(VRF_data_copy->vrf_public_key_round_part_4)); \
-  memset(VRF_data_copy->vrf_alpha_string_data_round_part_4,0,strlen(VRF_data_copy->vrf_alpha_string_data_round_part_4)); \
-  memset(VRF_data_copy->vrf_alpha_string_round_part_4,0,strlen(VRF_data_copy->vrf_alpha_string_round_part_4)); \
-  memset(VRF_data_copy->vrf_proof_data_round_part_4,0,strlen(VRF_data_copy->vrf_proof_data_round_part_4)); \
-  memset(VRF_data_copy->vrf_proof_round_part_4,0,strlen(VRF_data_copy->vrf_proof_round_part_4)); \
-  memset(VRF_data_copy->vrf_beta_string_data_round_part_4,0,strlen(VRF_data_copy->vrf_beta_string_data_round_part_4)); \
-  memset(VRF_data_copy->vrf_beta_string_round_part_4,0,strlen(VRF_data_copy->vrf_beta_string_round_part_4)); \
-  memset(VRF_data_copy->block_blob,0,strlen(VRF_data_copy->block_blob)); \
-  memset(VRF_data_copy->reserve_bytes_data_hash,0,strlen(VRF_data_copy->reserve_bytes_data_hash)); \
-  memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results)); \
+  memset(VRF_data_copy->vrf_secret_key_data_round_part_4,0,sizeof(VRF_data_copy->vrf_secret_key_data_round_part_4)); \
+  memset(VRF_data_copy->vrf_secret_key_round_part_4,0,sizeof(VRF_data_copy->vrf_secret_key_round_part_4)); \
+  memset(VRF_data_copy->vrf_public_key_data_round_part_4,0,sizeof(VRF_data_copy->vrf_public_key_data_round_part_4)); \
+  memset(VRF_data_copy->vrf_public_key_round_part_4,0,sizeof(VRF_data_copy->vrf_public_key_round_part_4)); \
+  memset(VRF_data_copy->vrf_alpha_string_data_round_part_4,0,sizeof(VRF_data_copy->vrf_alpha_string_data_round_part_4)); \
+  memset(VRF_data_copy->vrf_alpha_string_round_part_4,0,sizeof(VRF_data_copy->vrf_alpha_string_round_part_4)); \
+  memset(VRF_data_copy->vrf_proof_data_round_part_4,0,sizeof(VRF_data_copy->vrf_proof_data_round_part_4)); \
+  memset(VRF_data_copy->vrf_proof_round_part_4,0,sizeof(VRF_data_copy->vrf_proof_round_part_4)); \
+  memset(VRF_data_copy->vrf_beta_string_data_round_part_4,0,sizeof(VRF_data_copy->vrf_beta_string_data_round_part_4)); \
+  memset(VRF_data_copy->vrf_beta_string_round_part_4,0,sizeof(VRF_data_copy->vrf_beta_string_round_part_4)); \
+  memset(VRF_data_copy->block_blob,0,sizeof(VRF_data_copy->block_blob)); \
+  memset(VRF_data_copy->reserve_bytes_data_hash,0,sizeof(VRF_data_copy->reserve_bytes_data_hash)); \
+  memset(current_round_part_vote_data->current_vote_results,0,sizeof(current_round_part_vote_data->current_vote_results)); \
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count])); \
@@ -954,12 +950,12 @@ int start_part_4_of_round()
     memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen(VRF_data.block_verifiers_vrf_public_key[count])); \
     memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count])); \
     memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); \
-    memset(VRF_data_copy->block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data_copy->block_verifiers_vrf_secret_key_data[count])); \
-    memset(VRF_data_copy->block_verifiers_vrf_secret_key[count],0,strlen(VRF_data_copy->block_verifiers_vrf_secret_key[count])); \
-    memset(VRF_data_copy->block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data_copy->block_verifiers_vrf_public_key_data[count])); \
-    memset(VRF_data_copy->block_verifiers_vrf_public_key[count],0,strlen(VRF_data_copy->block_verifiers_vrf_public_key[count])); \
-    memset(VRF_data_copy->block_verifiers_random_data[count],0,strlen(VRF_data_copy->block_verifiers_random_data[count])); \
-    memset(VRF_data_copy->block_blob_signature[count],0,strlen(VRF_data_copy->block_blob_signature[count])); \
+    memset(VRF_data_copy->block_verifiers_vrf_secret_key_data[count],0,sizeof(VRF_data_copy->block_verifiers_vrf_secret_key_data[count])); \
+    memset(VRF_data_copy->block_verifiers_vrf_secret_key[count],0,sizeof(VRF_data_copy->block_verifiers_vrf_secret_key[count])); \
+    memset(VRF_data_copy->block_verifiers_vrf_public_key_data[count],0,sizeof(VRF_data_copy->block_verifiers_vrf_public_key_data[count])); \
+    memset(VRF_data_copy->block_verifiers_vrf_public_key[count],0,sizeof(VRF_data_copy->block_verifiers_vrf_public_key[count])); \
+    memset(VRF_data_copy->block_verifiers_random_data[count],0,sizeof(VRF_data_copy->block_verifiers_random_data[count])); \
+    memset(VRF_data_copy->block_blob_signature[count],0,sizeof(VRF_data_copy->block_blob_signature[count])); \
   } \
   pthread_rwlock_wrlock(&rwlock); \
   if (memcmp(current_round_part_backup_node,"0",1) == 0) \
@@ -1039,10 +1035,6 @@ int start_part_4_of_round()
     }
 
     pthread_rwlock_wrlock(&rwlock);
-    // set the server message
-    memset(server_message,0,strlen(server_message));
-    memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",43); 
-
     // set the current_round_part
     memset(current_round_part,0,strlen(current_round_part));
     memcpy(current_round_part,"1",1);
@@ -1142,10 +1134,6 @@ int start_part_4_of_round()
     // at this point all block verifiers should have the all of the other block verifiers secret key, public key and random data
 
     pthread_rwlock_wrlock(&rwlock);
-    // set the server message
-    memset(server_message,0,strlen(server_message));
-    memcpy(server_message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",52); 
-
     // set the current_round_part
     memset(current_round_part,0,strlen(current_round_part));
     memcpy(current_round_part,"2",1);
@@ -1235,12 +1223,12 @@ int start_part_4_of_round()
     }
 
     memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
-    memset(VRF_data_copy->block_blob,0,strlen(VRF_data_copy->block_blob));
+    memset(VRF_data_copy->block_blob,0,sizeof(VRF_data_copy->block_blob));
 
     // create the block template and send it to all block verifiers if the block verifier is the block producer
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
-      memset(VRF_data_copy->block_blob,0,strlen(VRF_data_copy->block_blob));
+      memset(VRF_data_copy->block_blob,0,sizeof(VRF_data_copy->block_blob));
       if (get_block_template(VRF_data_copy->block_blob,0) == 0)
       {
         START_PART_4_OF_ROUND_ERROR("Could not get a block template");
@@ -1270,10 +1258,6 @@ int start_part_4_of_round()
     // at this point all block verifiers should have the same VRF data and the network block
 
     pthread_rwlock_wrlock(&rwlock);
-    // set the server message
-    memset(server_message,0,strlen(server_message));
-    memcpy(server_message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",55); 
-
     // set the current_round_part
     memset(current_round_part,0,strlen(current_round_part));
     memcpy(current_round_part,"3",1);
@@ -1414,10 +1398,6 @@ int start_part_4_of_round()
     // at this point all block verifiers should have the same VRF data, network block string and all block verifiers signed data
 
     pthread_rwlock_wrlock(&rwlock);
-    // set the server message
-    memset(server_message,0,strlen(server_message));
-    memcpy(server_message,"NODES_TO_NODES_VOTE_RESULTS",27); 
-
     // set the current_round_part
     memset(current_round_part,0,strlen(current_round_part));
     memcpy(current_round_part,"4",1);
@@ -1511,7 +1491,7 @@ int start_part_4_of_round()
       sprintf(data3+count,"%02x",data2[count2] & 0xFF);
     }
 
-    memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
+    memset(current_round_part_vote_data->current_vote_results,0,sizeof(current_round_part_vote_data->current_vote_results));
     memcpy(current_round_part_vote_data->current_vote_results,data3,DATA_HASH_LENGTH);
 
     // create the message
@@ -4701,7 +4681,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   pointer_reset_all; \
   return 0;
 
-  memset(VRF_data_copy->block_blob,0,strlen(VRF_data_copy->block_blob));
+  memset(VRF_data_copy->block_blob,0,sizeof(VRF_data_copy->block_blob));
 
   // verify the data
   if (verify_data(MESSAGE,0,1) == 0)
@@ -4851,7 +4831,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
 
     // SHA2-512 hash the received message
-    memset(current_round_part_vote_data->current_vote_results,0,strlen(current_round_part_vote_data->current_vote_results));
+    memset(current_round_part_vote_data->current_vote_results,0,sizeof(current_round_part_vote_data->current_vote_results));
     memset(data,0,strlen(data));
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
 
@@ -5024,6 +5004,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
     exit(0);
   }
 
+  memset(vrf_public_key,0,sizeof(vrf_public_key));
+  memset(vrf_secret_key,0,sizeof(vrf_secret_key));
+
   // verify the data
   if (verify_data(MESSAGE,0,1) == 0)
   {
@@ -5140,7 +5123,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
     {
-      memset(VRF_data_copy->block_blob_signature[count],0,strlen(VRF_data_copy->block_blob_signature[count]));
+      memset(VRF_data_copy->block_blob_signature[count],0,sizeof(VRF_data_copy->block_blob_signature[count]));
       memcpy(VRF_data_copy->block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
     }
   }  
