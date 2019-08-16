@@ -1013,19 +1013,19 @@ void* socket_thread(void* parameters)
  {  
    server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(CLIENT_SOCKET,(const char*)buffer);
  } 
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec >= 5 && current_UTC_date_and_time->tm_sec < 10)
+ else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec % 30 >= 5 && current_UTC_date_and_time->tm_sec % 30 < 10)
  {
    server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
  }         
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec < 5)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec % 30 < 5)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec >= 10 && current_UTC_date_and_time->tm_sec < 15)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec % 30 >= 10 && current_UTC_date_and_time->tm_sec % 30 < 15)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && current_UTC_date_and_time->tm_sec >= 20 && current_UTC_date_and_time->tm_sec < 25)
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && current_UTC_date_and_time->tm_sec % 30 >= 20 && current_UTC_date_and_time->tm_sec % 30 < 25)
  {
    server_receive_data_socket_node_to_node((const char*)buffer);
  }

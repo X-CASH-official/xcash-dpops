@@ -204,8 +204,8 @@ int main(int parameters_count, char* parameters[])
   // set the network_data_node_settings
   network_data_node_settings = 0;
 
-  // initialize the current_round_part_vote_data* struct
-  current_round_part_vote_data = mmap(NULL, sizeof(struct current_round_part_vote_data), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0);   
+  // initialize the current_round_part_vote_data struct
+  memset(current_round_part_vote_data.current_vote_results,0,sizeof(current_round_part_vote_data.current_vote_results));
 
   // initialize the VRF_data struct 
   VRF_data.vrf_secret_key_data_round_part_4 = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
@@ -250,9 +250,6 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
   }
-
-  // initialize the VRF_data_copy* struct 
-  VRF_data_copy = mmap(NULL, sizeof(struct VRF_data_copy), PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_SHARED, -1, 0);   
 
   // initialize the blockchain_data struct 
   blockchain_data.network_version_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));

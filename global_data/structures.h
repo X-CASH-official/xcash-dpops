@@ -86,27 +86,6 @@ struct VRF_data {
     char* reserve_bytes_data_hash; // The reserve bytes data hash
 };
 
-struct VRF_data_copy { 
-    char vrf_secret_key_data_round_part_4[VRF_SECRET_KEY_LENGTH+1]; // The VRF secret key text for round part 4
-    unsigned char vrf_secret_key_round_part_4[crypto_vrf_SECRETKEYBYTES+1]; // The VRF secret key for round part 4
-    char vrf_public_key_data_round_part_4[VRF_PUBLIC_KEY_LENGTH+1]; // The VRF public key text for round part 4
-    unsigned char vrf_public_key_round_part_4[crypto_vrf_PUBLICKEYBYTES+1]; // The VRF public key for round part 4
-    char vrf_alpha_string_data_round_part_4[25000]; // The VRF alpha string (input string) text for round part 4
-    unsigned char vrf_alpha_string_round_part_4[25000]; // The VRF alpha string (input string) for round part 4
-    char vrf_proof_data_round_part_4[VRF_PROOF_LENGTH+1]; // The VRF proof text for round part 4
-    unsigned char vrf_proof_round_part_4[crypto_vrf_PROOFBYTES+1]; // The VRF proof for round part 4
-    char vrf_beta_string_data_round_part_4[VRF_BETA_LENGTH+1]; // The VRF beta string (output string) text for round part 4
-    unsigned char vrf_beta_string_round_part_4[crypto_vrf_OUTPUTBYTES+1]; // The VRF beta string (output string) for round part 4
-    char block_verifiers_vrf_secret_key_data[BLOCK_VERIFIERS_AMOUNT][VRF_SECRET_KEY_LENGTH+1]; // The VRF secret key text that all of the block verifiers create
-    unsigned char block_verifiers_vrf_secret_key[BLOCK_VERIFIERS_AMOUNT][crypto_vrf_SECRETKEYBYTES+1]; // The VRF secret key that all of the block verifiers create
-    char block_verifiers_vrf_public_key_data[BLOCK_VERIFIERS_AMOUNT][VRF_PUBLIC_KEY_LENGTH+1]; // The VRF public key text that all of the block verifiers create
-    unsigned char block_verifiers_vrf_public_key[BLOCK_VERIFIERS_AMOUNT][crypto_vrf_PUBLICKEYBYTES+1]; // The VRF public key that all of the block verifiers create
-    char block_verifiers_random_data[BLOCK_VERIFIERS_AMOUNT][(RANDOM_STRING_LENGTH*2)+1]; // The random data that all of the block verifiers create
-    char block_blob_signature[BLOCK_VERIFIERS_AMOUNT][XCASH_SIGN_DATA_LENGTH+1]; // The signed block data text
-    char block_blob[200000]; // The block_blob that the block producer creates to send to the consensus node
-    char reserve_bytes_data_hash[DATA_HASH_LENGTH+1]; // The reserve bytes data hash
-};
-
 struct blockchain_reserve_bytes {
     char* block_producer_delegates_name_data; // The block_producer_delegates_name
     char* block_producer_delegates_name; // The block_producer_delegates_name_data text
