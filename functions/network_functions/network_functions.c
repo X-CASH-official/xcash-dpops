@@ -193,6 +193,18 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     return 0;
   }
 
+  // get a random IP address to connect to from the host if they have multiple IP addresses
+  count = 0;
+  while(HOST_NAME->h_addr_list[count] != NULL)
+  {  
+    count++;
+  }
+
+  if (count > 0)
+  {
+    count = rand() % count;
+  }
+
   // convert the port to a string  
   sprintf(buffer2,"%d",PORT);  
 
@@ -206,7 +218,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   use htons to convert the port from host byte order to network byte order short
   */
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
   serv_addr.sin_port = htons(PORT);
 
   /* set the first poll structure to our socket
@@ -418,6 +430,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   char buffer2[BUFFER_SIZE];
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
   int receive_data_result;
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
@@ -505,6 +518,18 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     pointer_reset_all;
     return 0;
   }
+
+  // get a random IP address to connect to from the host if they have multiple IP addresses
+  count = 0;
+  while(HOST_NAME->h_addr_list[count] != NULL)
+  {  
+    count++;
+  }
+
+  if (count > 0)
+  {
+    count = rand() % count;
+  }
     
   // convert the port to a string  
   sprintf(buffer2,"%d",PORT); 
@@ -517,7 +542,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   */
   memset(&serv_addr,0,sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
   serv_addr.sin_port = htons(PORT);
 
   /* set the first poll structure to our socket
@@ -690,6 +715,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
 { 
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
+  size_t count;
   const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   
   // Variables  
@@ -742,6 +768,18 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memcpy(str+26,HOST,HOST_LENGTH);
     SEND_DATA_SOCKET_ERROR(str);
   }
+
+  // get a random IP address to connect to from the host if they have multiple IP addresses
+  count = 0;
+  while(HOST_NAME->h_addr_list[count] != NULL)
+  {  
+    count++;
+  }
+
+  if (count > 0)
+  {
+    count = rand() % count;
+  }
     
   // convert the port to a string  
   sprintf(buffer2,"%d",PORT); 
@@ -754,7 +792,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   */
   memset(&serv_addr,0,sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
   serv_addr.sin_port = htons(PORT);
 
   /* set the first poll structure to our socket
@@ -2782,6 +2820,7 @@ int get_delegate_online_status(const char* HOST)
 {
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
+  size_t count;
 
   // Variables
   char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
@@ -2832,7 +2871,19 @@ int get_delegate_online_status(const char* HOST)
     error_message.total++;
     pointer_reset(str);
     return 0;
-  }  
+  } 
+
+  // get a random IP address to connect to from the host if they have multiple IP addresses
+  count = 0;
+  while(HOST_NAME->h_addr_list[count] != NULL)
+  {  
+    count++;
+  }
+
+  if (count > 0)
+  {
+    count = rand() % count;
+  } 
   
   /* setup the connection
   AF_INET = IPV4
@@ -2840,7 +2891,7 @@ int get_delegate_online_status(const char* HOST)
   */
   memset(&serv_addr,0,sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
   serv_addr.sin_port = htons(SEND_DATA_PORT);
 
   /* set the first poll structure to our socket
