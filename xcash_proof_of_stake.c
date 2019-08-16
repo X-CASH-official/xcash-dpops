@@ -642,7 +642,7 @@ int main(int parameters_count, char* parameters[])
   }
 
   color_print("Started the check delegates online status timer thread","green");*/
- 
+  
   // start the server
   for (;;)
   {

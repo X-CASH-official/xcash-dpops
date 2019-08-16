@@ -67,9 +67,9 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  sync_block_verifiers_minutes(0);
+  sync_block_verifiers_minutes(3);
   get_current_block_height(current_block_height,0);
-  if (start_new_round() == 0)
+  if (data_network_node_create_block() == 0)
   {
     print_error_message;
   }
@@ -930,7 +930,6 @@ void* socket_thread(void* parameters)
   memcpy(message+strlen(message),"\n",1);
   memcpy(message+strlen(message),asctime(current_UTC_date_and_time),strnlen(asctime(current_UTC_date_and_time),BUFFER_SIZE));
   color_print(message,"green");
-                 
 
  // check if a certain type of message has been received 
  if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)

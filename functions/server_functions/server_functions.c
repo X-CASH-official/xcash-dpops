@@ -192,6 +192,7 @@ int start_new_round()
     {
       print_error_message;
       color_print("Your block verifier will wait until the next round","red");
+      printf("\n");
     }
   }
   pointer_reset(data);
@@ -498,7 +499,7 @@ int data_network_node_create_block()
   size_t count2; 
 
   // threads
-  pthread_t thread_id;
+  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
 
   // define macros
   #define pointer_reset_all \
@@ -538,15 +539,18 @@ int data_network_node_create_block()
     exit(0);
   }
 
+  memcpy(data,"The block producer and all backup block producers have not been able to create the network block\nThe main network data node will now create the network block",157);
+  print_start_message(data);
+
   // wait for the block verifiers to process the votes
-  sync_block_verifiers_minutes(4);
+  //sync_block_verifiers_minutes(4);
 
   pthread_rwlock_wrlock(&rwlock);
   // set the current_round_part
   memset(current_round_part,0,strlen(current_round_part));
   memcpy(current_round_part,"1",1);
 
-  // set the current_round_part
+  // set the current_round_part_backup_node
   memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
   memcpy(current_round_part_backup_node,"5",1);
   pthread_rwlock_unlock(&rwlock);
@@ -708,12 +712,12 @@ int data_network_node_create_block()
         memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE));
         memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,BUFFER_SIZE));
         send_and_receive_data_socket_thread_parameters[count].COUNT = count;
-        pthread_create(&thread_id, NULL, &send_and_receive_data_socket_thread,(void *)&send_and_receive_data_socket_thread_parameters[count]);
-        pthread_detach(thread_id);
+        pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,(void *)&send_and_receive_data_socket_thread_parameters[count]);
+        pthread_detach(thread_id[count]);
       }
     }
 
-    sleep(10);
+    sleep(TOTAL_CONNECTION_TIME_SETTINGS);
 
     for (count = 0, count2 = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -819,7 +823,7 @@ int data_network_node_create_block()
   }
   else
   {
-    printf("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block");
+    printf("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block\n\n");
   }
    
   pointer_reset_all;
@@ -996,6 +1000,7 @@ int start_part_4_of_round()
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       color_print("Your block verifier is the block producer","green");
+      printf("\n");
     }
 
     pthread_rwlock_wrlock(&rwlock);
