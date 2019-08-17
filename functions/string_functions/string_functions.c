@@ -31,36 +31,23 @@ Return: 0 if an error has occured, 1 if successfull
 
 int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
 {
-  // Constants
-  const size_t STRING_LENGTH = strnlen(FIELD_NAME,BUFFER_SIZE);  
- 
   // Variables
-  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char str[BUFFER_SIZE];
   char* str1;
   char* str2;
-  int settings = 1;
   size_t start; 
 
-  // check if the memory needed was allocated on the heap successfully
-  if (str == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"parse_json_data",15);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
-
-  // reset the variable
+  // reset the variables
   memset(result,0,strlen(result));
+  memset(str,0,sizeof(str));
 
   // check if the field is in the data
   if (strstr(DATA,FIELD_NAME) != NULL)
   { 
     // modify the field to add the field syntax
     memcpy(str,"\"",1);
-    memcpy(str+1,FIELD_NAME,STRING_LENGTH);
-    memcpy(str+1+STRING_LENGTH,"\": ",3);
+    memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,BUFFER_SIZE));
+    memcpy(str+strlen(str),"\": ",3);
     // get the start of the field's data
     start = strnlen(str,BUFFER_SIZE);
     // get the pointers location to the start of the field
@@ -68,15 +55,14 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
     if (str1 == NULL)
     {
        // an error has occured, get the error message
-       settings = 0;
        str1 = strstr(DATA,"\"message\": ");
        start = 11;
        if (str1 == NULL)
        {
-         // their is no error message
-         memcpy(result,"An error has occured",20);
-         pointer_reset(str);
-         return settings;
+         memcpy(error_message.function[error_message.total],"parse_json_data",15);
+         memcpy(error_message.data[error_message.total],"Could not parse the message",27);
+         error_message.total++;
+         return 0;
        }
     }
     // get the end location of the data
@@ -85,9 +71,10 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
     const int LENGTH = str2 - str1 - start;
     if (LENGTH <= 0)
     {
-      memcpy(result,"An error has occured",20);
-      pointer_reset(str);
-      return settings;
+      memcpy(error_message.function[error_message.total],"parse_json_data",15);
+      memcpy(error_message.data[error_message.total],"Could not parse the message",27);
+      error_message.total++;
+      return 0;
     }
     // copy the field's data
     memcpy(result,&str1[start],LENGTH);
@@ -111,9 +98,15 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
       string_replace(result,"\"{\"","{\"");
     }
   }
+  else
+  {
+    memcpy(error_message.function[error_message.total],"parse_json_data",15);
+    memcpy(error_message.data[error_message.total],"Could not parse the message",27);
+    error_message.total++;
+    return 0;
+  }  
 
-  pointer_reset(str);  
-  return settings;
+  return 1;
 }
 
 
