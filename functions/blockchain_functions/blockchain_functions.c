@@ -37,7 +37,7 @@ Return: 1 if successfull, otherwise 0
 int varint_encode(long long int number, char* result)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
   size_t length;
   size_t count = 0;
   size_t count2 = 0;
@@ -45,24 +45,13 @@ int varint_encode(long long int number, char* result)
   int binary_number_copy;
   long long int number_copy = (long long int)number;  
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {  
-    memcpy(error_message.function[error_message.total],"varint_encode",13);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    pointer_reset(data); 
-    exit(0);
-  } 
-
+  memset(data,0,sizeof(data));
   memset(result,0,strlen(result));  
 
   // check if it should not be encoded
   if (number <= 0xFF)
   {
     sprintf(result,"%02llx",number);
-    pointer_reset(data);
     return 1;
   }
 
@@ -81,26 +70,26 @@ int varint_encode(long long int number, char* result)
   }
 
   // pad the string to a mulitple of 7 bits  
-  for (count = strnlen(data,BUFFER_SIZE); count % 7 != 0; count++)
+  for (count = strnlen(data,sizeof(data)); count % 7 != 0; count++)
   {
     memcpy(result+strnlen(result,BUFFER_SIZE),"0",1);
   }
 
   // reverse the string
-  length = strnlen(data,BUFFER_SIZE);
+  length = strnlen(data,sizeof(data));
   for (count = 0; count <= length; count++)
   {
     memcpy(result+strnlen(result,BUFFER_SIZE),&data[length - count],1);
   }
-  memset(data,0,strnlen(data,BUFFER_SIZE));
-  memcpy(data,result,strnlen(result,BUFFER_SIZE));
-  memset(result,0,strnlen(result,BUFFER_SIZE));
+  memset(data,0,sizeof(data));
+  memcpy(data,result,strnlen(result,sizeof(data)));
+  memset(result,0,strnlen(result,sizeof(data)));
 
   /*
   convert each 7 bits to one byte
   set the first bit to 1 for all groups of 7 except for the first group of 7
   */
-  length = strnlen(data,BUFFER_SIZE) + (strnlen(data,BUFFER_SIZE) / 7);
+  length = strnlen(data,sizeof(data)) + (strnlen(data,sizeof(data)) / 7);
   count = 0;
   count2 = 0;
 
@@ -150,7 +139,7 @@ int varint_encode(long long int number, char* result)
  }
 
   // reverse the last binary_number
-  length = strnlen(data,BUFFER_SIZE) / 8;
+  length = strnlen(data,sizeof(data)) / 8;
   binary_number_copy = 0;
   if (((binary_numbers[length] >> 7) & 1U) == 1) {binary_number_copy |= 1UL << 0;} else {binary_number_copy &= ~(1UL << 0);}
   if (((binary_numbers[length] >> 6) & 1U) == 1) {binary_number_copy |= 1UL << 1;} else {binary_number_copy &= ~(1UL << 1);}
@@ -167,8 +156,7 @@ int varint_encode(long long int number, char* result)
   {
     sprintf(result+count2,"%02x",binary_numbers[length-count] & 0xFF);
   }
-
-  pointer_reset(data);
+  
   return 1;    
 }
 

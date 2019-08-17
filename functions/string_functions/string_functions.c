@@ -46,10 +46,10 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
   { 
     // modify the field to add the field syntax
     memcpy(str,"\"",1);
-    memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,BUFFER_SIZE));
+    memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
     memcpy(str+strlen(str),"\": ",3);
     // get the start of the field's data
-    start = strnlen(str,BUFFER_SIZE);
+    start = strnlen(str,sizeof(str));
     // get the pointers location to the start of the field
     str1 = strstr(DATA,str);
     if (str1 == NULL)
@@ -146,13 +146,13 @@ int create_json_data_from_database_document_array(struct database_document_field
   for (count = 0; count < database_data->count; count++)
   {
     memset(data,0,sizeof(data));
-    memcpy(data,database_data->item[count],strnlen(database_data->item[count],BUFFER_SIZE));
+    memcpy(data,database_data->item[count],strnlen(database_data->item[count],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
     if (strstr(DOCUMENT_FIELDS,data) == NULL)
     {
       // get the length of the item and the value
-      item_length = strnlen(database_data->item[count],BUFFER_SIZE);
-      value_length = strnlen(database_data->value[count],BUFFER_SIZE);
+      item_length = strnlen(database_data->item[count],sizeof(data));
+      value_length = strnlen(database_data->value[count],sizeof(data));
       // copy the item and the value to the json string
       memcpy(result+counter,"\"",1);
       counter++;
@@ -216,13 +216,13 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
     for (counter = 0; counter < database_data->database_fields_count; counter++)
     {
       memset(data,0,sizeof(data));
-      memcpy(data,database_data->item[count][counter],strnlen(database_data->item[count][counter],BUFFER_SIZE));
+      memcpy(data,database_data->item[count][counter],strnlen(database_data->item[count][counter],sizeof(data)));
       memcpy(data+strlen(data),"|",1);
       if (strstr(DOCUMENT_FIELDS,data) == NULL)
       {
         // get the length of the item and the value
-        item_length = strnlen(database_data->item[count][counter],BUFFER_SIZE);
-        value_length = strnlen(database_data->value[count][counter],BUFFER_SIZE);
+        item_length = strnlen(database_data->item[count][counter],sizeof(data));
+        value_length = strnlen(database_data->value[count][counter],sizeof(data));
         // copy the item and the value to the json string
         memcpy(result+data_count,"\"",1);
         data_count++;
@@ -338,7 +338,6 @@ int string_replace(char *data, const char* STR1, const char* STR2)
       // reset the variables
       memset(datacopy,0,strnlen(datacopy,BUFFER_SIZE));
       data_length = strnlen(data,BUFFER_SIZE);
-      str2_length = strnlen(REPLACE_STRING,BUFFER_SIZE);
       start = data_length - strnlen(strstr(data,STR1),BUFFER_SIZE);
    
       // get a pointer to where the rest of the data string should be copied to
@@ -347,9 +346,9 @@ int string_replace(char *data, const char* STR1, const char* STR2)
       // copy the bytes before STR1 to the new string
       memcpy(datacopy,data,start);
       // copy STR2 to the new string
-      memcpy(datacopy+start,REPLACE_STRING,str2_length);
+      memcpy(datacopy+strlen(datacopy),REPLACE_STRING,sizeof(REPLACE_STRING)-1);
       // copy the bytes after STR1 to the new string
-      memcpy(datacopy+start+str2_length,string,strnlen(string,BUFFER_SIZE));
+      memcpy(datacopy+strlen(datacopy),string,strnlen(string,BUFFER_SIZE));
       // copy the new string to the string pointer
       memset(data,0,data_length);
       memcpy(data,datacopy,strnlen(datacopy,BUFFER_SIZE));
@@ -364,7 +363,7 @@ int string_replace(char *data, const char* STR1, const char* STR2)
       start = data_length - strnlen(strstr(data,REPLACE_STRING),BUFFER_SIZE);
    
       // get a pointer to where the rest of the data string should be copied to
-      string = strstr(data,REPLACE_STRING)+strnlen(REPLACE_STRING,BUFFER_SIZE);
+      string = strstr(data,REPLACE_STRING)+(sizeof(REPLACE_STRING)-1);
            
       // copy the bytes before REPLACE_STRING to the new string
       memcpy(datacopy,data,start);
