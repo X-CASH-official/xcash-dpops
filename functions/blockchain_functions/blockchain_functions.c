@@ -1264,14 +1264,13 @@ Return: 0 if an error has occured or it is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int add_data_hash_to_network_block_string(char* network_block_string, char* network_block_string_data_hash)
+int add_data_hash_to_network_block_string(char* network_block_string, char *network_block_string_data_hash)
 {
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
-  size_t counter;
 
   // define macros
   #define pointer_reset_all \
@@ -1302,25 +1301,28 @@ int add_data_hash_to_network_block_string(char* network_block_string, char* netw
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)network_block_string,(unsigned long long)strnlen(network_block_string,BUFFER_SIZE));
 
   // convert the SHA512 data hash to a string
-  for (counter = 0, count = 0; counter < DATA_HASH_LENGTH / 2; counter++, count += 2)
+  for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
   {
-    sprintf(data2+count,"%02x",data[counter] & 0xFF);
+    sprintf(data2+count,"%02x",data[count2] & 0xFF);
   }
 
-  memset(network_block_string_data_hash,0,strnlen(network_block_string_data_hash,BUFFER_SIZE));
-  memcpy(network_block_string_data_hash,network_block_string,BUFFER_SIZE);
+  // copy the reserve bytes data hash
+  memcpy(VRF_data.reserve_bytes_data_hash,data2,DATA_HASH_LENGTH);
 
-  // get the reserve bytes of the network block string
+  // add the data hash to the network block string
   memset(data,0,strnlen(data,BUFFER_SIZE));
-  memcpy(data,&network_block_string_data_hash[(strnlen(network_block_string_data_hash,BUFFER_SIZE)) - (strnlen(strstr(network_block_string_data_hash,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE)-66)],((strnlen(network_block_string_data_hash,BUFFER_SIZE)) - (strnlen(strstr(network_block_string_data_hash,BLOCKCHAIN_RESERVED_BYTES_END),BUFFER_SIZE)-62)) - ((strnlen(network_block_string_data_hash,BUFFER_SIZE)) - (strnlen(strstr(network_block_string_data_hash,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE)-66)) - 62);
+  memcpy(data,&network_block_string[(strnlen(network_block_string,BUFFER_SIZE)) - (strnlen(strstr(network_block_string,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_START)-1))],((strnlen(network_block_string,BUFFER_SIZE)) - (strnlen(strstr(network_block_string,BLOCKCHAIN_RESERVED_BYTES_END),BUFFER_SIZE) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_END)-1))) - ((strnlen(network_block_string,BUFFER_SIZE)) - (strnlen(strstr(network_block_string,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_START)-1))) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_END)-1));
 
+  memset(network_block_string_data_hash,0,strnlen(network_block_string_data_hash,BUFFER_SIZE));
+  memcpy(network_block_string_data_hash,network_block_string,strnlen(network_block_string,BUFFER_SIZE));
+  
   // replace the reserve bytes with the network block string data hash
   if (string_replace(network_block_string_data_hash,data,data2) == 0)
   {
-    memcpy(error_message.function[error_message.total],"add_data_hash_to_network_block_string",37); \
-    memcpy(error_message.data[error_message.total],"Could not add the data hash to the network block string",55); \
-    error_message.total++; \
-    pointer_reset_all; \
+    memcpy(error_message.function[error_message.total],"add_data_hash_to_network_block_string",37);
+    memcpy(error_message.data[error_message.total],"Could not add the data hash to the network block string",55);
+    error_message.total++;
+    pointer_reset_all;
     return 0; 
   }
 

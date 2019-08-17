@@ -67,9 +67,9 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  sync_block_verifiers_minutes(1);
+  sync_block_verifiers_minutes(0);
   get_current_block_height(current_block_height,0);
-  if (data_network_node_create_block() == 0)
+  if (start_new_round() == 0)
   {
     print_error_message;
   }
