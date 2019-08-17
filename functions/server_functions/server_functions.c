@@ -542,6 +542,9 @@ int data_network_node_create_block()
   memcpy(data,"The block producer and all backup block producers have not been able to create the network block\nThe main network data node will now create the network block",157);
   print_start_message(data);
 
+  // set the main_network_data_node_create_block so the main network data node can create the block
+  main_network_data_node_create_block = 1;
+
   // wait for the block verifiers to process the votes
   //sync_block_verifiers_minutes(4);
 
@@ -556,9 +559,9 @@ int data_network_node_create_block()
   pthread_rwlock_unlock(&rwlock);
 
   // check if the block verifier is the main network data node
-  if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
+  if (memcmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
   {    
-    color_print("Your block verifier is the main data network node so your block verifier will create the block\nWaiting until 4 minutes and 40 seconds of the round","green");
+    color_print("Your block verifier is the main data network node so your block verifier will create the block","green");
 
     // get a block template
     if (get_block_template(data,0) == 0)
@@ -581,7 +584,7 @@ int data_network_node_create_block()
     memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
     memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
     memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
-    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"0",1);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"5",1);
     memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,BUFFER_SIZE));
     memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1",99);
 
@@ -601,7 +604,14 @@ int data_network_node_create_block()
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
-    }    
+    }   
+
+    // convert the vrf alpha string to a string
+    for (count2 = 0, count = 0; count2 < (((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_AMOUNT) + 128) / 2; count2++, count += 2)
+    {
+      sprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
+    }
+
     if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the vrf proof");
@@ -623,10 +633,6 @@ int data_network_node_create_block()
     for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
     {
       sprintf(VRF_data.vrf_public_key_data_round_part_4+count,"%02x",VRF_data.vrf_public_key_round_part_4[count2] & 0xFF);
-    }
-    for (count2 = 0, count = 0; count2 < strlen((const char*)VRF_data.vrf_alpha_string_round_part_4); count2++, count += 2)
-    {
-      sprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
     }
     for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
     {
@@ -653,12 +659,12 @@ int data_network_node_create_block()
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[0],blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[0],blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,crypto_vrf_PUBLICKEYBYTES);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[0],blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
     for (count = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",VRF_SECRET_KEY_LENGTH);
       memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],"0000000000000000000000000000000000000000000000000000000000000000",VRF_PUBLIC_KEY_LENGTH);
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH*2);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
     }
 
     // add the next block verifiers
@@ -712,14 +718,14 @@ int data_network_node_create_block()
         memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE));
         memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,BUFFER_SIZE));
         send_and_receive_data_socket_thread_parameters[count].COUNT = count;
-        pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,(void *)&send_and_receive_data_socket_thread_parameters[count]);
+        pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
         pthread_detach(thread_id[count]);
       }
     }
 
     sleep(TOTAL_CONNECTION_TIME_SETTINGS);
 
-    for (count = 0, count2 = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (memcmp(VRF_data.block_blob_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH) != 0)
       {
@@ -824,6 +830,9 @@ int data_network_node_create_block()
   else
   {
     printf("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block\n\n");
+
+    // wait for the block verifiers to process the votes
+    sync_block_verifiers_minutes(0);
   }
    
   pointer_reset_all;
@@ -963,7 +972,6 @@ int start_part_4_of_round()
   } \
   else if (memcmp(current_round_part_backup_node,"5",1) == 0) \
   { \
-    main_network_data_node_create_block = 1; \
     data_network_node_create_block(); \
   } \
   pthread_rwlock_unlock(&rwlock); \
@@ -991,6 +999,9 @@ int start_part_4_of_round()
     print_error_message;  
     exit(0);
   }
+
+  // set the main_network_data_node_create_block so the main network data node can create the block
+  main_network_data_node_create_block = 0;
 
   // wait for all block verifiers to sync the database
   sync_block_verifiers_minutes(1);
@@ -1377,7 +1388,6 @@ int start_part_4_of_round()
     {
       if (strlen(VRF_data.block_blob_signature[count]) == XCASH_SIGN_DATA_LENGTH && memcmp(VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
       {
-        memcpy(VRF_data.block_blob_signature[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
         memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
         count2++;
       }
@@ -1392,13 +1402,6 @@ int start_part_4_of_round()
     if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
       RESTART_ROUND("The network block string has less than the required amount of block verifiers network block signature");
-    }
-
-    // convert the blockchain_data to a network_block_string
-    memset(data,0,strlen(data));
-    if (blockchain_data_to_network_block_string(data) == 0)
-    {
-      START_PART_4_OF_ROUND_ERROR("Could not convert the blockchain_data to a network_block_string");
     }
 
     // get the previous network block string
@@ -1443,11 +1446,11 @@ int start_part_4_of_round()
     }
 
     // convert the blockchain_data to a network_block_string
-    memset(data,0,strlen(data));
-    if (blockchain_data_to_network_block_string(data) == 0)
-    {
-      START_PART_4_OF_ROUND_ERROR("Could not convert the blockchain_data to a network_block_string");
-    }
+	  memset(data,0,strlen(data));	
+	  if (blockchain_data_to_network_block_string(data) == 0)	
+	  {		 
+	    START_PART_4_OF_ROUND_ERROR("Could not convert the blockchain_data to a network_block_string");	
+	  }
 
     // get the data hash of the network block string
     memset(data2,0,strlen(data2));
@@ -4585,7 +4588,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   { 
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data");
   }
-
+  
   // send the network block signature to the main network data node
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {

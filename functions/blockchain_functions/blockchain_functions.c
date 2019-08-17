@@ -1213,10 +1213,10 @@ int blockchain_data_to_network_block_string(char* result)
     {
       sprintf(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count]+counter,"%02x",blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count][count2] & 0xFF);
     }
-    memcpy(result+strnlen(result,BUFFER_SIZE),blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length);  
+    memcpy(result+strlen(result),blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length);  
     if (count+1 != BLOCK_VERIFIERS_AMOUNT)
     {
-      memcpy(result+strnlen(result,BUFFER_SIZE),BLOCKCHAIN_DATA_SEGMENT_STRING,64);
+      memcpy(result+strlen(result),BLOCKCHAIN_DATA_SEGMENT_STRING,64);
     }
   }  
   count = strnlen(result,BUFFER_SIZE);
@@ -1689,31 +1689,34 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
   
   // check what block verifiers vrf secret key and vrf public key to use
-  if (memcmp(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH*2) != 0)
+  if (main_network_data_node_create_block == 0)
   {
-    for (count = 0; count < DATA_HASH_LENGTH; count += 2)
+    if (memcmp(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH*2) != 0)
     {
-      memset(data,0,strlen(data));
-      memcpy(data,&data2[count],2);
-      counter = (int)strtol(data, NULL, 16);  
-   
-      // if it is not in the range of 01 - C8 then skip the byte
-      if (counter != 0 && counter <= 200)
+      for (count = 0; count < DATA_HASH_LENGTH; count += 2)
       {
-        counter = counter % BLOCK_VERIFIERS_AMOUNT;
-        break;
+        memset(data,0,strlen(data));
+        memcpy(data,&data2[count],2);
+        counter = (int)strtol(data, NULL, 16);  
+   
+        // if it is not in the range of 01 - C8 then skip the byte
+        if (counter != 0 && counter <= 200)
+        {
+          counter = counter % BLOCK_VERIFIERS_AMOUNT;
+          break;
+        }
       }
     }
-  }
-  else
-  {
-    counter = 0;
-  }
+    else
+    {
+      counter = 0;
+    }
 
-  // check if the selected vrf secret key and vrf public key are the same as the vrf_secret_key_round_part_4 and vrf_public_key_round_part_4
-  if (memcmp(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_round_part_4,blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[counter],crypto_vrf_SECRETKEYBYTES) != 0 || memcmp(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[counter],crypto_vrf_PUBLICKEYBYTES) != 0)
-  {
-    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid VRF data");
+    // check if the selected vrf secret key and vrf public key are the same as the vrf_secret_key_round_part_4 and vrf_public_key_round_part_4
+    if (memcmp(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_round_part_4,blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[counter],crypto_vrf_SECRETKEYBYTES) != 0 || memcmp(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[counter],crypto_vrf_PUBLICKEYBYTES) != 0)
+    {
+      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid VRF data");
+    }
   }
 
   // previous_block_hash

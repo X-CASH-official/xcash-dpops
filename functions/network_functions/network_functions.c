@@ -877,7 +877,7 @@ int send_data(const int SOCKET, char* data, const int APPEND_STRING_SETTINGS)
 {
   if (APPEND_STRING_SETTINGS == 1)
   {
-    memcpy(data+strnlen(data,BUFFER_SIZE),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
+    memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
   }    
   const int TOTAL = strnlen(data,BUFFER_SIZE);
   int sent = 0;

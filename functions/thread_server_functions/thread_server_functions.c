@@ -67,7 +67,7 @@ void* current_block_height_timer_thread()
     exit(0);
   }
 
-  sync_block_verifiers_minutes(3);
+  sync_block_verifiers_minutes(1);
   get_current_block_height(current_block_height,0);
   if (data_network_node_create_block() == 0)
   {
@@ -698,7 +698,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   pthread_exit((void *)(intptr_t)0); 
 
   // check if the memory needed was allocated on the heap successfully
-  if (message == NULL)
+  if (data2 == NULL || message == NULL)
   {   
     memcpy(error_message.function[error_message.total],"send_data_socket",16);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
@@ -787,7 +787,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   // send the message 
   memset(message,0,strlen(message));
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
-  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
+  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING));
   const int TOTAL = strnlen(message,BUFFER_SIZE);
   int sent = 0;
   int bytes = 0;
@@ -830,7 +830,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
       {
         // remove SOCKET_END_STRING from the message
         memset(data2,0,strlen(data2));
-        memcpy(data2,message,strnlen(message,BUFFER_SIZE) - sizeof(SOCKET_END_STRING)-1);
+        memcpy(data2,message,strnlen(message,BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1));
       }
       break;
     }
@@ -852,13 +852,15 @@ void* send_and_receive_data_socket_thread(void* parameters)
 
   // parse the message
   memset(message,0,strlen(message));
-  if (parse_json_data(data2,"block_blob_signature",message) == 0 || strlen(message) != XCASH_SIGN_DATA_LENGTH || memcmp(message,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
+  memset(VRF_data.block_blob_signature[data->COUNT],0,strnlen(VRF_data.block_blob_signature[data->COUNT],BUFFER_SIZE));
+  memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],BUFFER_SIZE));
+  if (parse_json_data(data2,"block_blob_signature",message) == 1 && strlen(message) == XCASH_SIGN_DATA_LENGTH && memcmp(message,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
   {
     memcpy(VRF_data.block_blob_signature[data->COUNT],message,XCASH_SIGN_DATA_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],message,XCASH_SIGN_DATA_LENGTH);
   }
   else
-  {
+  {  
     memcpy(VRF_data.block_blob_signature[data->COUNT],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
   }
