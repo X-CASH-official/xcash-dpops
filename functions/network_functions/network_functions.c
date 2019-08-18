@@ -904,51 +904,22 @@ int sync_all_block_verifiers_list()
 {
   // Variables
   struct database_multiple_documents_fields database_multiple_documents_fields;
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
-  char* datacopy = data2; 
+  char message[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count;
   size_t count2;
 
   // define macros
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(datacopy); \
-  datacopy = NULL; \
-  free(data3); \
-  data3 = NULL;
-  
   #define SYNC_ALL_BLOCK_VERIFIERS_LIST(settings) \
   memcpy(error_message.function[error_message.total],"sync_all_block_verifiers_list",29); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data2 == NULL || data3 == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    memcpy(error_message.function[error_message.total],"get_block_template",18);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(message,0,sizeof(message));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // reset the previous current and next block verifiers list
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -982,21 +953,20 @@ int sync_all_block_verifiers_list()
   
     // get the current time
     get_current_UTC_time;
-
-    memset(data3,0,strlen(data3));
+    
     memcpy(data3,"Connecting to network data node ",32);
-    memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data3)));
     memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
     memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
     printf("%s\n",data3);
-    memset(data3,0,strlen(data3));
+    memset(data3,0,sizeof(data3));
 
     if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
     {
       memcpy(data2,"Could not receive data from network data node ",46);
-      memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+      memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
       color_print(data2,"red");
-      memset(data2,0,strlen(data2));
+      memset(data2,0,sizeof(data2));
       printf("Connecting to a different network data node\n\n");
       goto start;
     }
@@ -1007,123 +977,123 @@ int sync_all_block_verifiers_list()
     }
  
     // parse the message
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"previous_block_verifiers_name_list",data2) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the previous_block_verifiers_name_list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(previous_block_verifiers_list.block_verifiers_name[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
-      data2 = strstr(data2,"|") + 1;
+      memcpy(previous_block_verifiers_list.block_verifiers_name[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
+      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
     }
 
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"previous_block_verifiers_public_address_list",data2) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the previous_block_verifiers_public_address_list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
-      data2 = strstr(data2,"|") + 1;
+      memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
+      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
     }
 
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"previous_block_verifiers_IP_address_list",data2) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the previous_block_verifiers_IP_address_list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
-      data2 = strstr(data2,"|") + 1;
+      memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
+      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
     }
 
     // parse the message
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"current_block_verifiers_name_list",data2) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the current_block_verifiers_name_list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(current_block_verifiers_list.block_verifiers_name[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
-      data2 = strstr(data2,"|") + 1;
+      memcpy(current_block_verifiers_list.block_verifiers_name[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
+      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
     }
 
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"current_block_verifiers_public_address_list",data2) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the current_block_verifiers_public_address_list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(current_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
-      data2 = strstr(data2,"|") + 1;
+      memcpy(current_block_verifiers_list.block_verifiers_public_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
+      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
     }
 
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"current_block_verifiers_IP_address_list",data2) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the current_block_verifiers_IP_address_list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
-      data2 = strstr(data2,"|") + 1;
+      memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
+      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
     }
 
     // parse the message
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"next_block_verifiers_name_list",data2) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the next_block_verifiers_name_list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(next_block_verifiers_list.block_verifiers_name[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
-      data2 = strstr(data2,"|") + 1;
+      memcpy(next_block_verifiers_list.block_verifiers_name[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
+      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
     }
 
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"next_block_verifiers_public_address_list",data2) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the next_block_verifiers_public_address_list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(next_block_verifiers_list.block_verifiers_public_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
-      data2 = strstr(data2,"|") + 1;
+      memcpy(next_block_verifiers_list.block_verifiers_public_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
+      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
     }
 
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"next_block_verifiers_IP_address_list",data2) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
 
     // parse the next_block_verifiers_IP_address_list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"|"),BUFFER_SIZE));
-      data2 = strstr(data2,"|") + 1;
+      memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
+      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
     }
 
     color_print("The previous, current and next block verifiers have been synced from a network data node","green");
@@ -1194,14 +1164,10 @@ int sync_all_block_verifiers_list()
         pointer_reset(database_multiple_documents_fields.value[count][count2]);
       }
     }
-
     color_print("The previous, current and next block verifiers have been loaded from the database","green");
   }
-  
-  pointer_reset_all;
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SYNC_ALL_BLOCK_VERIFIERS_LIST  
 }
 
