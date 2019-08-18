@@ -147,19 +147,9 @@ int main(int parameters_count, char* parameters[])
   // initialize the synced_block_verifiers struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    synced_block_verifiers.synced_block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    synced_block_verifiers.synced_block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-    synced_block_verifiers.vote_settings[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (synced_block_verifiers.synced_block_verifiers_public_address[count] == NULL || synced_block_verifiers.synced_block_verifiers_IP_address[count] == NULL || synced_block_verifiers.vote_settings[count] == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message;  
-      exit(0);
-    }
+    memset(synced_block_verifiers.synced_block_verifiers_public_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_public_address[count]));
+    memset(synced_block_verifiers.synced_block_verifiers_IP_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_IP_address[count]));
+    memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count]));
   }
   synced_block_verifiers.vote_settings_true = 0;
   synced_block_verifiers.vote_settings_false = 0;

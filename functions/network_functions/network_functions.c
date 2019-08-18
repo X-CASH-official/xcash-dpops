@@ -1190,57 +1190,34 @@ Return: 0 if an error has occured, 1 if successfull
 int get_synced_block_verifiers()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  // since were going to be changing where data is referencing, we need to create a copy to pointer_reset
-  char* datacopy = data; 
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   size_t count;
+  size_t count2;
 
   // define macros
   #define GET_SYNCED_BLOCK_VERIFIERS_DATA "{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}"
   
   #define GET_SYNCED_BLOCK_VERIFIERS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_synced_block_verifiers",26); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
-
-  #define pointer_reset_all \
-  free(datacopy); \
-  datacopy = NULL; \
-  free(data2); \
-  data2 = NULL;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {    
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"get_synced_block_verifiers",26);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
 
   // reset the block_verifiers_IP_addresses 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(synced_block_verifiers.synced_block_verifiers_IP_address[count],0,strlen(synced_block_verifiers.synced_block_verifiers_IP_address[count]));
-    memset(synced_block_verifiers.vote_settings[count],0,strlen(synced_block_verifiers.vote_settings[count]));
+    memset(synced_block_verifiers.synced_block_verifiers_IP_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_IP_address[count]));
+    memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count]));
   }
   synced_block_verifiers.vote_settings_true = 0;
   synced_block_verifiers.vote_settings_false = 0;
 
   start:
   printf("Connecting to a random network data node to get a list of current block verifiers\n");
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // send the message to a random network data node
   do
@@ -1249,23 +1226,22 @@ int get_synced_block_verifiers()
   } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
   
   // get the current time
-  time(&current_date_and_time);
-  current_UTC_date_and_time = gmtime(&current_date_and_time);
+  get_current_UTC_time;
 
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   memcpy(data,"Connecting to network data node ",32);
   memcpy(data+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
   memcpy(data+strlen(data)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
   memcpy(data+strlen(data),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
   printf("%s\n",data);
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
 
   if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,GET_SYNCED_BLOCK_VERIFIERS_DATA,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
     memcpy(data,"Could not receive data from network data node ",46);
     memcpy(data+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     color_print(data,"red");
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     printf("Connecting to a different network data node\n\n");
     goto start;
   }
@@ -1276,39 +1252,36 @@ int get_synced_block_verifiers()
   }
 
   // parse the message
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   if (parse_json_data(data2,"block_verifiers_public_address_list",data) == 0)
   {
     GET_SYNCED_BLOCK_VERIFIERS_ERROR("Could not parse the message");
   } 
 
   // parse the block verifiers public addresses
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memcpy(synced_block_verifiers.synced_block_verifiers_public_address[count],data,strnlen(data,BUFFER_SIZE) - strnlen(strstr(data,"|"),BUFFER_SIZE));
-    data = strstr(data,"|") + 1;
+    memcpy(synced_block_verifiers.synced_block_verifiers_public_address[count],&data[count2],strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) - count2);
+    count2 = strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) + 1;
   }
 
   // parse the message
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   if (parse_json_data(data2,"block_verifiers_IP_address_list",data) == 0)
   {
     GET_SYNCED_BLOCK_VERIFIERS_ERROR("Could not parse the message");
   } 
 
   // parse the block verifiers IP addresses
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memcpy(synced_block_verifiers.synced_block_verifiers_IP_address[count],data,strnlen(data,BUFFER_SIZE) - strnlen(strstr(data,"|"),BUFFER_SIZE));
-    data = strstr(data,"|") + 1;
+    memcpy(synced_block_verifiers.synced_block_verifiers_IP_address[count],&data[count2],strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) - count2);
+    count2 = strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) + 1;
   }
-
-  pointer_reset_all;
   return 1;
 
   #undef GET_SYNCED_BLOCK_VERIFIERS_DATA
   #undef GET_SYNCED_BLOCK_VERIFIERS_ERROR
-  #undef pointer_reset_all
 }
 
 
