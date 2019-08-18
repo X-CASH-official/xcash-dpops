@@ -841,26 +841,16 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
   // Variables
   int count = 0;
   char buffer [BUFFER_SIZE];
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"get_block_template",18);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  } 
-
-  memset(message, 0, strnlen(message,BUFFER_SIZE));  
+  memset(message, 0, strnlen(message,BUFFER_SIZE)); 
+  memset(data,0,sizeof(data)); 
   for (;;)
   { 
     memset(&buffer, 0, sizeof(buffer));
     // check the size of the data that were about to receive. If it is over BUFFER_SIZE then dont accept it, since it will cause a buffer overflow
     if (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= BUFFER_SIZE)
     {
-      pointer_reset(data);
       return 0;
     }    
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
@@ -868,20 +858,22 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
     if (buffer[0] != '\0' && strstr(buffer,STRING) == NULL)
     {
       // there is data, but this is not the final data
-      memcpy(message,buffer,strnlen(buffer,BUFFER_SIZE));
+      memcpy(data+strlen(data),buffer,strnlen(buffer,BUFFER_SIZE));
     }
     if (buffer[0] != '\0' && strstr(buffer,STRING) != NULL)
     {
       // there is data, and this is the final data
-      memcpy(message,buffer,strnlen(buffer,BUFFER_SIZE));
+      memcpy(data+strlen(data),buffer,strnlen(buffer,BUFFER_SIZE));
       // if the final message has the SOCKET_END_STRING in the message, remove it
-      if (strstr(message,SOCKET_END_STRING) != NULL)
+      if (strstr(data,SOCKET_END_STRING) != NULL)
       {
         // remove SOCKET_END_STRING from the message
-        memcpy(data,message,strnlen(message,BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1));
-        memset(message, 0, strnlen(message,BUFFER_SIZE));
-        memcpy(message,data,strnlen(data,BUFFER_SIZE));
+        memcpy(message,data,strnlen(data,BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1));
       }
+      else
+      {
+        memcpy(message,data,strnlen(data,BUFFER_SIZE));
+      }      
       break;
     }
 
@@ -891,14 +883,11 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
       count++;
       if (count > (RECEIVE_DATA_SOCKET_TIMEOUT * 5))
       {
-        pointer_reset(data);
         return 1;
       }
-    } 
-
+    }
     usleep(200000);   
   }
-  pointer_reset(data);
   return 2;
 }
 
