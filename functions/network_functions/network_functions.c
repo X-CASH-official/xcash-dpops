@@ -564,7 +564,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   }
 
   // send the message 
-  //memcpy(message,DATA,strnlen(DATA,BUFFER_SIZE));
   if (MESSAGE_SETTINGS == 1)
   {
     printf("Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
@@ -612,7 +611,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     return 0;
   }
      
-  //memcpy(result,message,strnlen(message,BUFFER_SIZE));
   if (MESSAGE_SETTINGS == 1)
   {
     memcpy(str,"Received data from ",19);
@@ -652,7 +650,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   // Variables  
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
@@ -665,8 +662,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   error_message.total++; \
   close(SOCKET); \
   return 0;
-  
 
+  memset(str,0,sizeof(str));
+  
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
@@ -738,8 +736,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     if (poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   
       if (socket_settings != 0)
-      {       
-        memset(str,0,strnlen(str,BUFFER_SIZE));
+      {  
         memcpy(str,"Error connecting to ",20);
         memcpy(str+20,HOST,HOST_LENGTH);
         memcpy(str+20+HOST_LENGTH," on port ",9);
@@ -753,7 +750,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   socket_settings = fcntl(SOCKET, F_GETFL, NULL);
   if (socket_settings == -1)
   {
-    memset(str,0,strnlen(str,BUFFER_SIZE));
     memcpy(str,"Error connecting to ",20);
     memcpy(str+20,HOST,HOST_LENGTH);
     memcpy(str+20+HOST_LENGTH," on port ",9);
@@ -765,7 +761,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   socket_settings &= (~O_NONBLOCK);
   if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
   {
-    memset(str,0,strnlen(str,BUFFER_SIZE));
     memcpy(str,"Error connecting to ",20);
     memcpy(str+20,HOST,HOST_LENGTH);
     memcpy(str+20+HOST_LENGTH," on port ",9);
@@ -774,10 +769,8 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   }
 
   // send the message 
-  memcpy(message,DATA,strnlen(DATA,BUFFER_SIZE));
-  if (send_data(SOCKET,message,1) == 0)
-  {    
-    memset(str,0,strnlen(str,BUFFER_SIZE));
+  if (send_data(SOCKET,(char*)DATA,1) == 0)
+  {  
     memcpy(str,"Error sending data to ",22);
     memcpy(str+22,HOST,HOST_LENGTH);
     memcpy(str+22+HOST_LENGTH," on port ",9);
@@ -786,7 +779,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   }
     
   close(SOCKET);
-  pointer_reset(message);
   return 1;
 }
 
