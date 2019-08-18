@@ -415,19 +415,13 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   bson_error_t error;
   bson_t* document = NULL; 
   char* message;
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  char* settings = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
+  char settings[BUFFER_SIZE];
   char* message_copy1;
   char* message_copy2;
   int count = 0;
 
   // define macros
-  #define pointer_reset_all \
-  free(data2); \
-  data2 = NULL; \
-  free(settings); \
-  settings = NULL; 
-
   #define database_reset_all \
   bson_destroy(document); \
   mongoc_cursor_destroy(document_settings); \
@@ -436,24 +430,6 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data2 == NULL || settings == NULL)
-  {
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (settings != NULL)
-    {
-      pointer_reset(settings);
-    }
-    memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  } 
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -466,7 +442,6 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
-      pointer_reset_all;
       return 0;
     }
     // set the collection
@@ -475,8 +450,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
-  {    
-    pointer_reset_all;
+  {   
     database_reset_all;
     return 0;
   }
@@ -484,32 +458,27 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
   while (mongoc_cursor_next(document_settings, &current_document))
   {
+    memset(data2,0,sizeof(data2));
+    memset(settings,0,sizeof(settings));
     message = bson_as_canonical_extended_json(current_document, NULL);
     memcpy(data2,message,strnlen(message,BUFFER_SIZE));
     bson_free(message);
-    count = 1;
-  }
 
-  if (count == 1)
-  {
     // parse the json data
-    const size_t FIELD_NAME_LENGTH = strnlen(FIELD_NAME,BUFFER_SIZE);
     memcpy(settings,", \"",3);
-    memcpy(settings+3,FIELD_NAME,FIELD_NAME_LENGTH);
-    memcpy(settings+3+FIELD_NAME_LENGTH,"\" : \"",5);
+    memcpy(settings+3,FIELD_NAME,strnlen(FIELD_NAME,sizeof(settings)));
+    memcpy(settings+strlen(settings),"\" : \"",5);
 
-    message_copy1 = strstr(data2,settings) + strnlen(settings,BUFFER_SIZE);
+    message_copy1 = strstr(data2,settings) + strlen(settings);
     message_copy2 = strstr(message_copy1,"\"");
     memset(result,0,strlen(result));
     memcpy(result,message_copy1,message_copy2 - message_copy1);
+    break;
   }
   
-
-  pointer_reset_all; 
   database_reset_all; 
   return 1;
 
-  #undef pointer_reset_all
   #undef database_reset_all
 }
 
