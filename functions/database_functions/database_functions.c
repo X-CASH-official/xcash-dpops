@@ -1402,7 +1402,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   char* message;
   unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
   char* reserve_proofs_data_hash[TOTAL_RESERVE_PROOFS_DATABASES];
   char* reserve_bytes_data_hash[10000];
   size_t count;
@@ -1416,8 +1416,6 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   string = NULL; \
   free(data); \
   data = NULL; \
-  free(data2); \
-  data2 = NULL; \
   for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++) \
   { \
     pointer_reset(reserve_proofs_data_hash[count]); \
@@ -1437,7 +1435,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   }
 
   // check if the memory needed was allocated on the heap successfully
-  if (string == NULL || data == NULL || data2 == NULL)
+  if (string == NULL || data == NULL)
   {
      if (string != NULL)
     {
@@ -1446,10 +1444,6 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     if (data != NULL)
     {
       pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
     }
     memcpy(error_message.function[error_message.total],"get_database_data_hash",22);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
@@ -1516,7 +1510,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   {      
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
-      memset(data2,0,strlen(data2));
+      memset(data2,0,sizeof(data2));
       memcpy(data2,"reserve_proofs_",15);  
       sprintf(data2+15,"%zu",count);
 
@@ -1586,7 +1580,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     counter = ((count3 - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     for (count = 1; count <= counter; count++)
     {
-      memset(data2,0,strlen(data2));
+      memset(data2,0,sizeof(data2));
       memcpy(data2,"reserve_bytes_",14);  
       sprintf(data2+14,"%zu",count);
 
