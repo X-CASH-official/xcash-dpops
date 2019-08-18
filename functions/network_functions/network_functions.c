@@ -163,7 +163,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str,"Error invalid hostname of ",26);
       memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
     close(SOCKET);
@@ -219,7 +219,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
           memcpy(str+20+HOST_LENGTH," on port ",9);
           memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
           memcpy(error_message.function[error_message.total],"send_http_request",17);
-          memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+          memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
           error_message.total++; 
         }
         close(SOCKET);
@@ -240,7 +240,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
     close(SOCKET);
@@ -259,7 +259,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
     close(SOCKET);
@@ -291,7 +291,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+22+HOST_LENGTH," on port ",9);
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
     close(SOCKET);
@@ -318,7 +318,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
         memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a potential buffer overflow issue",46);
       }
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
     close(SOCKET);
@@ -336,7 +336,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+26+HOST_LENGTH," on port ",9);
       memcpy(str+35+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
     close(SOCKET);

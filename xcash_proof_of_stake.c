@@ -344,8 +344,8 @@ int main(int parameters_count, char* parameters[])
   // initialize the error_message struct
   for (count = 0; count < DATABASE_ARRAY_COUNT; count++)
   {
-    error_message.function[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-    error_message.data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    memset(error_message.function[count],0,sizeof(error_message.function[count]));
+    memset(error_message.data[count],0,sizeof(error_message.data[count]));
   }
   error_message.total = 0;
 

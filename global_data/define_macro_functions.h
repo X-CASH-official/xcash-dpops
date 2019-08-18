@@ -82,8 +82,8 @@ for (error_message_count = 0; error_message_count < error_message.total; error_m
 } \
 for (error_message_count = 0; error_message_count < DATABASE_ARRAY_COUNT; error_message_count++) \
 { \
-  memset(error_message.function[error_message_count],0,strlen(error_message.function[error_message_count])); \
-  memset(error_message.data[error_message_count],0,strlen(error_message.data[error_message_count])); \
+  memset(error_message.function[error_message_count],0,sizeof(error_message.function[error_message_count])); \
+  memset(error_message.data[error_message_count],0,sizeof(error_message.data[error_message_count])); \
 } \
 error_message.total = 0;
 
