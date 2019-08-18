@@ -60,8 +60,8 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   char response[BUFFER_SIZE];
   char buffer2[BUFFER_SIZE];
   char* post_request_data;
-  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char str[BUFFER_SIZE]; 
+  char message[BUFFER_SIZE];
   size_t count; 
   size_t counter = 0; 
   size_t receive_data_result; 
@@ -72,29 +72,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
-  #define pointer_reset_all \
-  free(str); \
-  str = NULL; \
-  free(message); \
-  message = NULL; 
 
-  // check if the memory needed was allocated on the heap successfully
-  if (str == NULL || message == NULL)
-  {
-    if (str != NULL)
-    {
-      pointer_reset(str);
-    }
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    memcpy(error_message.function[error_message.total],"send_http_request",17);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  } 
+  memset(message,0,sizeof(message));
+  memset(str,0,sizeof(str));
 
   // create the HTTP request
   memcpy(message,HTTP_SETTINGS,HTTP_SETTINGS_LENGTH);
@@ -103,7 +83,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   counter++;
   memcpy(message+counter,URL,URL_LENGTH);
   counter += URL_LENGTH;
-  if (strncmp(HTTP_SETTINGS,"GET",BUFFER_SIZE) == 0)
+  if (strncmp(HTTP_SETTINGS,"GET",sizeof(message)) == 0)
   {
     memcpy(message+counter,"?",1);
     counter++;
@@ -118,18 +98,18 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   counter += 2;
   for (count = 0; count < HTTP_HEADERS_LENGTH; count++)
   {
-    memcpy(message+counter,HTTP_HEADERS[count],strnlen(HTTP_HEADERS[count],BUFFER_SIZE));
-    counter += strnlen(HTTP_HEADERS[count],BUFFER_SIZE);
+    memcpy(message+counter,HTTP_HEADERS[count],strnlen(HTTP_HEADERS[count],sizeof(message)));
+    counter += strnlen(HTTP_HEADERS[count],sizeof(message));
     memcpy(message+counter,"\r\n",2);
     counter += 2;
   }
-  if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
+  if (strncmp(HTTP_SETTINGS,"POST",sizeof(message)) == 0)
   {
     memcpy(message+counter,"Content-Length: ",16);
     counter += 16;
-    sprintf(str, "%d", (int)strnlen(DATA,BUFFER_SIZE));
-    memcpy(message+counter,str,strnlen(str,BUFFER_SIZE));
-    counter += strnlen(str,BUFFER_SIZE);
+    sprintf(str, "%d", (int)strnlen(DATA,sizeof(message)));
+    memcpy(message+counter,str,strnlen(str,sizeof(message)));
+    counter += strnlen(str,sizeof(message));
   } 
   memcpy(message+counter,"\r\n\r\n",4);   
   counter += 4; 
@@ -154,7 +134,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
       error_message.total++;
     }
-    pointer_reset_all;
     return 0;
   }
 
@@ -171,7 +150,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       error_message.total++;       
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }  
 
@@ -181,7 +159,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     if (MESSAGE_SETTINGS == 1)
     {       
-      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memset(str,0,sizeof(str));
       memcpy(str,"Error invalid hostname of ",26);
       memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
       memcpy(error_message.function[error_message.total],"send_http_request",17);
@@ -189,7 +167,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       error_message.total++;  
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
 
@@ -236,7 +213,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       {        
         if (MESSAGE_SETTINGS == 1)
         {
-          memset(str,0,strnlen(str,BUFFER_SIZE));
+          memset(str,0,sizeof(str));
           memcpy(str,"Error connecting to ",20);
           memcpy(str+20,HOST,HOST_LENGTH);
           memcpy(str+20+HOST_LENGTH," on port ",9);
@@ -246,7 +223,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
           error_message.total++; 
         }
         close(SOCKET);
-        pointer_reset_all;
         return 0;
       } 
     }
@@ -258,7 +234,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memset(str,0,sizeof(str));
       memcpy(str,"Error connecting to ",20);
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
@@ -268,7 +244,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       error_message.total++;  
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
 
@@ -278,7 +253,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memset(str,0,sizeof(str));
       memcpy(str,"Error connecting to ",20);
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
@@ -288,13 +263,12 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       error_message.total++;  
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
 
   if (MESSAGE_SETTINGS == 1)
   {
-    memset(str,0,strnlen(str,BUFFER_SIZE));
+    memset(str,0,sizeof(str));
     memcpy(str,"Connected to ",13);
     memcpy(str+13,HOST,HOST_LENGTH);
     memcpy(str+13+HOST_LENGTH," on port ",9);
@@ -311,7 +285,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memset(str,0,sizeof(str));
       memcpy(str,"Error sending data to ",22);
       memcpy(str+22,HOST,HOST_LENGTH);
       memcpy(str+22+HOST_LENGTH," on port ",9);
@@ -321,7 +295,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       error_message.total++;  
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
    
@@ -331,7 +304,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memset(str,0,sizeof(str));
       memcpy(str,"Error receiving data from ",26);
       memcpy(str+26,HOST,HOST_LENGTH);
       memcpy(str+26+HOST_LENGTH," on port ",9);
@@ -349,7 +322,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       error_message.total++;  
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
 
@@ -358,7 +330,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memset(str,0,strnlen(str,BUFFER_SIZE));
+      memset(str,0,sizeof(str));
       memcpy(str,"Error receiving data from ",26);
       memcpy(str+26,HOST,HOST_LENGTH);
       memcpy(str+26+HOST_LENGTH," on port ",9);
@@ -368,12 +340,11 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       error_message.total++;  
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
   if (MESSAGE_SETTINGS == 1)
   {
-    memset(str,0,strnlen(str,BUFFER_SIZE));
+    memset(str,0,sizeof(str));
     memcpy(str,"Received data from ",19);
     memcpy(str+19,HOST,HOST_LENGTH);
     memcpy(str+19+HOST_LENGTH," on port ",9);
@@ -387,20 +358,18 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     // the HTTP result does contain a header
     post_request_data = strstr(message,"{");
-    memcpy(result+strnlen(result,BUFFER_SIZE),post_request_data,strnlen(post_request_data,BUFFER_SIZE));
+    memcpy(result+strlen(result),post_request_data,strnlen(post_request_data,BUFFER_SIZE));
   }
   else
   {
     // the HTTP result does not contain a header
-    memcpy(result+strnlen(result,BUFFER_SIZE),message,strnlen(message,BUFFER_SIZE));
+    memcpy(result+strlen(result),message,strnlen(message,BUFFER_SIZE));
   }
     
   close(SOCKET);
-  pointer_reset_all;
   return 1;
 
   #undef SOCKET_FILE_DESCRIPTORS_LENGTH
-  #undef pointer_reset_all
 }
 
 
