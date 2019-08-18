@@ -415,13 +415,19 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   bson_error_t error;
   bson_t* document = NULL; 
   char* message;
-  char data2[BUFFER_SIZE];
-  char settings[BUFFER_SIZE];
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* settings = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message_copy1;
   char* message_copy2;
   int count = 0;
 
   // define macros
+  #define pointer_reset_all \
+  free(data2); \
+  data2 = NULL; \
+  free(settings); \
+  settings = NULL; 
+
   #define database_reset_all \
   bson_destroy(document); \
   mongoc_cursor_destroy(document_settings); \
@@ -430,6 +436,24 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data2 == NULL || settings == NULL)
+  {
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    if (settings != NULL)
+    {
+      pointer_reset(settings);
+    }
+    memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  } 
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -442,6 +466,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
+      pointer_reset_all;
       return 0;
     }
     // set the collection
@@ -450,7 +475,8 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
-  {   
+  {    
+    pointer_reset_all;
     database_reset_all;
     return 0;
   }
@@ -458,27 +484,32 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
   while (mongoc_cursor_next(document_settings, &current_document))
   {
-    memset(data2,0,sizeof(data2));
-    memset(settings,0,sizeof(settings));
     message = bson_as_canonical_extended_json(current_document, NULL);
     memcpy(data2,message,strnlen(message,BUFFER_SIZE));
     bson_free(message);
+    count = 1;
+  }
 
+  if (count == 1)
+  {
     // parse the json data
+    const size_t FIELD_NAME_LENGTH = strnlen(FIELD_NAME,BUFFER_SIZE);
     memcpy(settings,", \"",3);
-    memcpy(settings+3,FIELD_NAME,strnlen(FIELD_NAME,sizeof(settings)));
-    memcpy(settings+strlen(settings),"\" : \"",5);
+    memcpy(settings+3,FIELD_NAME,FIELD_NAME_LENGTH);
+    memcpy(settings+3+FIELD_NAME_LENGTH,"\" : \"",5);
 
-    message_copy1 = strstr(data2,settings) + strlen(settings);
+    message_copy1 = strstr(data2,settings) + strnlen(settings,BUFFER_SIZE);
     message_copy2 = strstr(message_copy1,"\"");
     memset(result,0,strlen(result));
     memcpy(result,message_copy1,message_copy2 - message_copy1);
-    break;
   }
   
+
+  pointer_reset_all; 
   database_reset_all; 
   return 1;
 
+  #undef pointer_reset_all
   #undef database_reset_all
 }
 
@@ -1402,7 +1433,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   char* message;
   unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  char data2[BUFFER_SIZE];
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* reserve_proofs_data_hash[TOTAL_RESERVE_PROOFS_DATABASES];
   char* reserve_bytes_data_hash[10000];
   size_t count;
@@ -1416,6 +1447,8 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   string = NULL; \
   free(data); \
   data = NULL; \
+  free(data2); \
+  data2 = NULL; \
   for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++) \
   { \
     pointer_reset(reserve_proofs_data_hash[count]); \
@@ -1435,7 +1468,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   }
 
   // check if the memory needed was allocated on the heap successfully
-  if (string == NULL || data == NULL)
+  if (string == NULL || data == NULL || data2 == NULL)
   {
      if (string != NULL)
     {
@@ -1444,6 +1477,10 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     if (data != NULL)
     {
       pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
     }
     memcpy(error_message.function[error_message.total],"get_database_data_hash",22);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
@@ -1510,7 +1547,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   {      
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
-      memset(data2,0,sizeof(data2));
+      memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
       sprintf(data2+15,"%zu",count);
 
@@ -1580,7 +1617,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     counter = ((count3 - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     for (count = 1; count <= counter; count++)
     {
-      memset(data2,0,sizeof(data2));
+      memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);  
       sprintf(data2+14,"%zu",count);
 
@@ -1718,8 +1755,8 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
   char* message;
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char public_address[XCASH_WALLET_LENGTH+1];
-  char IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
+  char* public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message_copy1;
   char* message_copy2;
 
@@ -1728,7 +1765,11 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
   free(data); \
   data = NULL; \
   free(data2); \
-  data2 = NULL;
+  data2 = NULL; \
+  free(public_address); \
+  public_address = NULL; \
+  free(IP_address); \
+  IP_address = NULL; 
 
   #define database_reset_all \
   bson_destroy(document); \
@@ -1742,7 +1783,7 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
   }
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
+  if (data == NULL || data2 == NULL || public_address == NULL || IP_address == NULL)
   {
     if (data != NULL)
     {
@@ -1751,6 +1792,14 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
     if (data2 != NULL)
     {
       pointer_reset(data2);
+    }
+    if (public_address != NULL)
+    {
+      pointer_reset(public_address);
+    }
+    if (IP_address != NULL)
+    {
+      pointer_reset(IP_address);
     }
     memcpy(error_message.function[error_message.total],"update_delegates_online_status",30);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
@@ -1791,8 +1840,6 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
     // get the current document
     memset(data,0,strnlen(data,BUFFER_SIZE));
     memset(data2,0,strnlen(data2,BUFFER_SIZE));
-    memset(public_address,0,sizeof(public_address));
-    memset(IP_address,0,sizeof(IP_address));
     message = bson_as_canonical_extended_json(current_document, NULL);
     memcpy(data,message,strnlen(message,BUFFER_SIZE));
     bson_free(message);

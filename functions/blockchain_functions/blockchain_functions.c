@@ -892,7 +892,7 @@ int blockchain_data_to_network_block_string(char* result)
   #define BLOCKCHAIN_EXTRA_BYTES_LENGTH_TEXT "7c424c4f434b434841494e5f45585452415f42595445535f4c454e4754487c"
   #define BLOCKCHAIN_DATA_TO_NETWORK_BLOCK_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"blockchain_data_to_network_block_string",39); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0; 
 
@@ -1376,7 +1376,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
 
   #define VERIFY_NETWORK_BLOCK_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"verify_network_block_data",25); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0; 

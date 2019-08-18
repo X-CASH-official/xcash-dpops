@@ -397,8 +397,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
 
   // Variables 
   char buffer2[BUFFER_SIZE];
-  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char str[BUFFER_SIZE]; 
   size_t count;
   int receive_data_result;
   struct sockaddr_in serv_addr;
@@ -408,29 +407,8 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
-  #define pointer_reset_all \
-  free(str); \
-  str = NULL; \
-  free(message); \
-  message = NULL;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (str == NULL || message == NULL)
-  {
-    if (str != NULL)
-    {
-      pointer_reset(str);
-    }
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    memcpy(error_message.function[error_message.total],"get_block_template",18);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  } 
+  memset(str,0,sizeof(str));
 
   /* Create the socket  
   AF_INET = IPV4 support
@@ -445,10 +423,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str,"Error creating socket for sending data to ",42);
       memcpy(str+42,HOST,HOST_LENGTH);
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++; 
     }
-    pointer_reset_all;
     return 0;
   }
 
@@ -463,11 +440,10 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str,"Error setting socket timeout for sending data to ",49);
       memcpy(str+49,HOST,HOST_LENGTH);
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   } 
 
@@ -480,11 +456,10 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str,"Error invalid hostname of ",26);
       memcpy(str+26,HOST,HOST_LENGTH);
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
 
@@ -529,17 +504,15 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       {        
         if (MESSAGE_SETTINGS == 1)
         {
-          memset(str,0,strnlen(str,BUFFER_SIZE));
           memcpy(str,"Error connecting to ",20);
           memcpy(str+20,HOST,HOST_LENGTH);
           memcpy(str+20+HOST_LENGTH," on port ",9);
           memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
           memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-          memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+          memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
           error_message.total++;
         }
         close(SOCKET);
-        pointer_reset_all;
         return 0;
       } 
     }
@@ -551,17 +524,15 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memset(str,0,strnlen(str,BUFFER_SIZE));
       memcpy(str,"Error connecting to ",20);
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
 
@@ -571,23 +542,20 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memset(str,0,strnlen(str,BUFFER_SIZE));
       memcpy(str,"Error connecting to ",20);
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++; 
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
 
   if (MESSAGE_SETTINGS == 1)
   {
-    memset(str,0,strnlen(str,BUFFER_SIZE));
     memcpy(str,"Connected to ",13);
     memcpy(str+13,HOST,HOST_LENGTH);
     memcpy(str+13+HOST_LENGTH," on port ",9);
@@ -596,36 +564,34 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   }
 
   // send the message 
-  memcpy(message,DATA,strnlen(DATA,BUFFER_SIZE));
+  //memcpy(message,DATA,strnlen(DATA,BUFFER_SIZE));
   if (MESSAGE_SETTINGS == 1)
   {
     printf("Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
   }
-  if (send_data(SOCKET,message,1) == 0)
+  if (send_data(SOCKET,(char*)DATA,1) == 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memset(str,0,strnlen(str,BUFFER_SIZE));
       memcpy(str,"Error sending data to ",22);
       memcpy(str+22,HOST,HOST_LENGTH);
       memcpy(str+22+HOST_LENGTH," on port ",9);
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
     
   // get the result
-  receive_data_result = receive_data(SOCKET,message,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS);
+  memset(result,0,strnlen(result,BUFFER_SIZE));
+  receive_data_result = receive_data(SOCKET,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS);
   if (receive_data_result < 2)
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memset(str,0,strnlen(str,BUFFER_SIZE));
       memcpy(str,"Error receiving data from ",26);
       memcpy(str+26,HOST,HOST_LENGTH);
       memcpy(str+26+HOST_LENGTH," on port ",9);
@@ -639,18 +605,16 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
         memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a potential buffer overflow issue",46);
       }
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
     close(SOCKET);
-    pointer_reset_all;
     return 0;
   }
      
-  memcpy(result,message,strnlen(message,BUFFER_SIZE));
+  //memcpy(result,message,strnlen(message,BUFFER_SIZE));
   if (MESSAGE_SETTINGS == 1)
   {
-    memset(str,0,strnlen(str,BUFFER_SIZE));
     memcpy(str,"Received data from ",19);
     memcpy(str+19,HOST,HOST_LENGTH);
     memcpy(str+19+HOST_LENGTH," on port ",9);
@@ -659,11 +623,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   }
   
   close(SOCKET);
-  pointer_reset_all;
   return 1;
 
   #undef SOCKET_FILE_DESCRIPTORS_LENGTH
-  #undef pointer_reset_all
 }
 
 
@@ -699,7 +661,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   // define macros
   #define SEND_DATA_SOCKET_ERROR(message) \
   memcpy(error_message.function[error_message.total],"send_data_socket",16); \
-  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   close(SOCKET); \
   return 0;
@@ -980,7 +942,7 @@ int sync_all_block_verifiers_list()
   
   #define SYNC_ALL_BLOCK_VERIFIERS_LIST(settings) \
   memcpy(error_message.function[error_message.total],"sync_all_block_verifiers_list",29); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -1286,7 +1248,7 @@ int get_synced_block_verifiers()
   
   #define GET_SYNCED_BLOCK_VERIFIERS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_synced_block_verifiers",26); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -1595,7 +1557,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
   if (settings == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28); \
-    memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+    memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
     error_message.total++; \
     pointer_reset_all; \
     return 0; \
@@ -1786,7 +1748,7 @@ int sync_check_reserve_bytes_database()
   
   #define SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -1925,7 +1887,7 @@ int sync_reserve_bytes_database()
   if (settings == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27); \
-    memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+    memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
     error_message.total++; \
     pointer_reset_all; \
     return 0; \
@@ -2237,7 +2199,7 @@ int sync_check_delegates_database()
   
   #define SYNC_CHECK_DELEGATES_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -2369,7 +2331,7 @@ int sync_delegates_database()
   if (settings == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_delegates_database",23); \
-    memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+    memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
     error_message.total++; \
     pointer_reset_all; \
     return 0; \
@@ -2520,7 +2482,7 @@ int sync_check_statistics_database()
   
   #define SYNC_CHECK_STATISTICS_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -2652,7 +2614,7 @@ int sync_statistics_database()
   if (settings == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_statistics_database",24); \
-    memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+    memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
     error_message.total++; \
     pointer_reset_all; \
     return 0; \
@@ -2822,7 +2784,7 @@ int get_delegate_online_status(const char* HOST)
     memcpy(str,"Error creating socket for sending data to ",42);
     memcpy(str+42,HOST,HOST_LENGTH);
     memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
-    memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
     error_message.total++; 
     pointer_reset(str);
     return 0;
@@ -2836,7 +2798,7 @@ int get_delegate_online_status(const char* HOST)
     memcpy(str,"Error invalid hostname of ",26);
     memcpy(str+26,HOST,HOST_LENGTH);
     memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
-    memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
     error_message.total++;
     pointer_reset(str);
     return 0;
