@@ -397,7 +397,8 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
 
   // Variables 
   char buffer2[BUFFER_SIZE];
-  char str[BUFFER_SIZE]; 
+  char str[BUFFER_SIZE];
+  char message[BUFFER_SIZE]; 
   size_t count;
   int receive_data_result;
   struct sockaddr_in serv_addr;
@@ -568,7 +569,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   {
     printf("Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
   }
-  if (send_data(SOCKET,(char*)DATA,1) == 0)
+  memset(message,0,sizeof(message));
+  memcpy(message,DATA,strnlen(DATA,sizeof(message)));
+  if (send_data(SOCKET,message,1) == 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -650,6 +653,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   // Variables  
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
@@ -769,7 +773,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   }
 
   // send the message 
-  if (send_data(SOCKET,(char*)DATA,1) == 0)
+  memset(message,0,sizeof(message));
+  memcpy(message,DATA,strnlen(DATA,sizeof(message)));
+  if (send_data(SOCKET,message,1) == 0)
   {  
     memcpy(str,"Error sending data to ",22);
     memcpy(str+22,HOST,HOST_LENGTH);
@@ -1195,7 +1201,7 @@ int get_synced_block_verifiers()
   
   #define GET_SYNCED_BLOCK_VERIFIERS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_synced_block_verifiers",26); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
