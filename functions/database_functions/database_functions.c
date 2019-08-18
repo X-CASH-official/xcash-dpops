@@ -1718,8 +1718,8 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
   char* message;
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char public_address[XCASH_WALLET_LENGTH+1];
+  char IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
   char* message_copy1;
   char* message_copy2;
 
@@ -1728,11 +1728,7 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
   free(data); \
   data = NULL; \
   free(data2); \
-  data2 = NULL; \
-  free(public_address); \
-  public_address = NULL; \
-  free(IP_address); \
-  IP_address = NULL; 
+  data2 = NULL;
 
   #define database_reset_all \
   bson_destroy(document); \
@@ -1746,7 +1742,7 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
   }
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || public_address == NULL || IP_address == NULL)
+  if (data == NULL || data2 == NULL)
   {
     if (data != NULL)
     {
@@ -1755,14 +1751,6 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
     if (data2 != NULL)
     {
       pointer_reset(data2);
-    }
-    if (public_address != NULL)
-    {
-      pointer_reset(public_address);
-    }
-    if (IP_address != NULL)
-    {
-      pointer_reset(IP_address);
     }
     memcpy(error_message.function[error_message.total],"update_delegates_online_status",30);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
@@ -1803,6 +1791,8 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
     // get the current document
     memset(data,0,strnlen(data,BUFFER_SIZE));
     memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memset(public_address,0,sizeof(public_address));
+    memset(IP_address,0,sizeof(IP_address));
     message = bson_as_canonical_extended_json(current_document, NULL);
     memcpy(data,message,strnlen(message,BUFFER_SIZE));
     bson_free(message);
