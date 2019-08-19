@@ -90,40 +90,18 @@ int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SE
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
 
   // define macros
   #define SIGN_NETWORK_BLOCK_STRING_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sign_network_block_string",25); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  #define pointer_reset_all \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data2 == NULL || data3 == NULL)
-  {
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    memcpy(error_message.function[error_message.total],"sign_network_block_string",25);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  } 
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // sign_data
   memcpy(data2,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
@@ -139,12 +117,9 @@ int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SE
   {
     SIGN_NETWORK_BLOCK_STRING_ERROR("Could not sign the network block string");
   }
-
-  pointer_reset_all;
   return 1;
   
   #undef SIGN_NETWORK_BLOCK_STRING_ERROR
-  #undef pointer_reset_all
 }
 
 
@@ -170,39 +145,18 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
 
   // define macros
   #define DATA_VERIFY_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"data_verify",11); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
-
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"data_verify",11);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // create the message
   memcpy(data2,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"verify\",\"params\":{\"data\":\"",62);
@@ -222,8 +176,6 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
   {
     DATA_VERIFY_ERROR("Could not verify the data");
   }
-  
-  pointer_reset_all;
   return 1;
 
   #undef DATA_VERIFY_ERROR
@@ -253,31 +205,18 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   const size_t RESERVE_PROOF_LENGTH = strnlen(RESERVE_PROOF,BUFFER_SIZE);
 
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
 
   // define macros
   #define CHECK_RESEVE_PROOFS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"check_reserve_proofs",20); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
-
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
-  if (data == NULL || data2 == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"check_reserve_proofs",20);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // create the message
   memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"check_reserve_proof\",\"params\":{\"address\":\"",78);
@@ -302,8 +241,6 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   {
     CHECK_RESEVE_PROOFS_ERROR("Could not verify the reserve proof");
   }
-  
-  pointer_reset_all;
   return 1;
 
   #undef CHECK_RESEVE_PROOFS_ERROR
