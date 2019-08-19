@@ -45,27 +45,12 @@ Return: NULL
 void* current_block_height_timer_thread()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   size_t count;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"current_block_height_timer_thread",33);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   sync_block_verifiers_minutes(0);
   get_current_block_height(current_block_height,0);
@@ -113,7 +98,6 @@ void* current_block_height_timer_thread()
       }
     }
   }*/
-  pointer_reset(data);
   pthread_exit((void *)(intptr_t)1);
 }
 
@@ -130,8 +114,8 @@ Return: NULL
 void* check_reserve_proofs_timer_thread()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   char* message = (char*)calloc(15728640,sizeof(char)); // 15 MB
   int count;
   int count2;
@@ -139,30 +123,10 @@ void* check_reserve_proofs_timer_thread()
   int settings;
   struct database_multiple_documents_fields database_multiple_documents_fields;
 
-  // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(message); \
-  message = NULL;
-
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || message == NULL)
+  if (message == NULL)
   {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-     if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
+    pointer_reset(message);
     memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -223,7 +187,7 @@ void* check_reserve_proofs_timer_thread()
       memcpy(message+count-1,"\",\r\n}",5);
 
       // sign_data
-      memset(data,0,strlen(data));
+      memset(data,0,sizeof(data));
       if (sign_data(message,0) == 0)
       { 
         memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
@@ -251,7 +215,7 @@ void* check_reserve_proofs_timer_thread()
       // at this point the block verifier will have added all other reserve proofs to the invalid_reserve_proofs struct, so now we need to delete all of the reserve proofs in the collections
       for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
       {
-        memset(data,0,strlen(data));
+        memset(data,0,sizeof(data));
         memcpy(data,"reserve_proofs_",15);
         sprintf(data+15,"%d",count);
         for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
@@ -278,7 +242,7 @@ void* check_reserve_proofs_timer_thread()
         memcpy(message+18+strnlen(invalid_reserve_proofs.block_verifier_public_address[count2],XCASH_WALLET_LENGTH),"\"}",2);
 
         // get the block verifiers score
-        memset(data2,0,strlen(data2));
+        memset(data2,0,sizeof(data2));
         if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifiers_score",data2,0) == 0)
         {
           memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
@@ -288,7 +252,7 @@ void* check_reserve_proofs_timer_thread()
         sscanf(data2, "%zu", &block_verifiers_score);
         block_verifiers_score++;
 
-        memset(data,0,strlen(data));
+        memset(data,0,sizeof(data));
         memcpy(data,"{\"block_verifiers_score\":\"",26);
         sprintf(data2+26,"%zu",block_verifiers_score);
         memcpy(data+strlen(data),"\"}",2);
@@ -322,7 +286,7 @@ void* check_reserve_proofs_timer_thread()
     }
 
     // select a random reserve proofs collection
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
     sprintf(data+15,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
 
@@ -341,7 +305,7 @@ void* check_reserve_proofs_timer_thread()
     if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,"",&database_multiple_documents_fields,count,1,0,"",0) == 1)
     {
       // check if the reserve proof is valid
-      memset(data,0,strlen(data));
+      memset(data,0,sizeof(data));
       if (check_reserve_proofs(data,database_multiple_documents_fields.value[0][0],database_multiple_documents_fields.value[0][3],0) == 0)
       {
         // the proof is invalid, check if it is a unique reserve proof
@@ -364,10 +328,8 @@ void* check_reserve_proofs_timer_thread()
       }
     }      
   }
-  pointer_reset_all;
+  pointer_reset(message);
   pthread_exit((void *)(intptr_t)1);
-
-  #undef pointer_reset_all
 }
 
 
@@ -383,36 +345,14 @@ Return: NULL
 void* check_delegates_online_status_timer_thread()
 {
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
   size_t count;
   size_t count2;
   struct database_multiple_documents_fields database_multiple_documents_fields;
-
-  // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(message); \
-  message = NULL;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 150; count++)
@@ -454,19 +394,19 @@ void* check_delegates_online_status_timer_thread()
       for (count = 0; count < database_multiple_documents_fields.document_count; count++)
       {
          // create the message
-         memset(message,0,strnlen(message,BUFFER_SIZE));
+         memset(message,0,sizeof(message));
          memcpy(message,"{\"public_address\":\"",19);
          memcpy(message+19,database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);
          memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
 
          if (get_delegate_online_status(database_multiple_documents_fields.value[count][2]) == 1)
          {
-           memset(data,0,strnlen(data,BUFFER_SIZE));
+           memset(data,0,sizeof(data));
            memcpy(data,"{\"online_status\":\"true\"}",24);
          }
          else
          {
-           memset(data,0,strnlen(data,BUFFER_SIZE));
+           memset(data,0,sizeof(data));
            memcpy(data,"{\"online_status\":\"false\"}",25);
            print_error_message;
          }   
@@ -493,10 +433,7 @@ void* check_delegates_online_status_timer_thread()
     }
     sleep(60);
   }
-  pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);
-
-  #undef pointer_reset_all
 }
 
 
@@ -522,34 +459,20 @@ void* send_data_socket_thread(void* parameters)
   struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
   socklen_t socket_option_settings = sizeof(socket_settings);
 
   // define macros
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL;
-
   #define SEND_DATA_SOCKET_ERROR \
   close(SOCKET); \
-  pointer_reset(message); \
   pthread_exit((void *)(intptr_t)0); 
-
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL)
-  {   
-    memcpy(error_message.function[error_message.total],"send_data_socket",16);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  } 
 
   memset(buffer2,0,sizeof(buffer2));
   memset(str,0,sizeof(str));
+  memset(message,0,sizeof(message));
 
   /* Create the socket  
   AF_INET = IPV4 support
@@ -625,7 +548,6 @@ void* send_data_socket_thread(void* parameters)
   }
 
   // send the message 
-  memset(message,0,strlen(message));
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
   memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
   const int TOTAL = strnlen(message,BUFFER_SIZE);
@@ -644,11 +566,9 @@ void* send_data_socket_thread(void* parameters)
     sent+=bytes;
     } while (sent < TOTAL);
     close(SOCKET);
-  
-  pointer_reset_all;
+    
   pthread_exit((void *)(intptr_t)1);
 
-  #undef pointer_reset_all
   #undef SEND_DATA_SOCKET_ERROR
 }
 
@@ -677,8 +597,8 @@ void* send_and_receive_data_socket_thread(void* parameters)
   char buffer[BUFFER_SIZE]; 
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
   int count;
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
@@ -686,30 +606,15 @@ void* send_and_receive_data_socket_thread(void* parameters)
   socklen_t socket_option_settings = sizeof(socket_settings);
 
   // define macros
-  #define pointer_reset_all \
-  free(data2); \
-  data2 = NULL; \
-  free(message); \
-  message = NULL;
-
   #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR \
   close(SOCKET); \
-  pointer_reset_all; \
   pthread_exit((void *)(intptr_t)0); 
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data2 == NULL || message == NULL)
-  {   
-    memcpy(error_message.function[error_message.total],"send_data_socket",16);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  } 
 
   memset(buffer,0,sizeof(buffer));
   memset(buffer2,0,sizeof(buffer2));
   memset(str,0,sizeof(str));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
 
   /* Create the socket  
   AF_INET = IPV4 support
@@ -785,7 +690,6 @@ void* send_and_receive_data_socket_thread(void* parameters)
   }
 
   // send the message 
-  memset(message,0,strlen(message));
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
   memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING));
   const int TOTAL = strnlen(message,BUFFER_SIZE);
@@ -805,7 +709,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
     } while (sent < TOTAL);
 
   // receive the data
-  memset(message,0,strlen(message));
+  memset(message,0,sizeof(message));
   for (;;)
   { 
     memset(&buffer, 0, sizeof(buffer));
@@ -829,7 +733,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
       if (strstr(message,SOCKET_END_STRING) != NULL)
       {
         // remove SOCKET_END_STRING from the message
-        memset(data2,0,strlen(data2));
+        memset(data2,0,sizeof(data2));
         memcpy(data2,message,strnlen(message,BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1));
       }
       break;
@@ -851,7 +755,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   }
 
   // parse the message
-  memset(message,0,strlen(message));
+  memset(message,0,sizeof(message));
   memset(VRF_data.block_blob_signature[data->COUNT],0,strnlen(VRF_data.block_blob_signature[data->COUNT],BUFFER_SIZE));
   memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],BUFFER_SIZE));
   if (parse_json_data(data2,"block_blob_signature",message) == 1 && strlen(message) == XCASH_SIGN_DATA_LENGTH && memcmp(message,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
@@ -864,11 +768,8 @@ void* send_and_receive_data_socket_thread(void* parameters)
     memcpy(VRF_data.block_blob_signature[data->COUNT],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
   }
-  
-  pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);
-
-  #undef pointer_reset_all
+  
   #undef SEND_AND_RECEIVE_DATA_SOCKET_ERROR
 }
 
