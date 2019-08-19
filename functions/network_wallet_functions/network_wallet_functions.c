@@ -179,7 +179,6 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
   return 1;
 
   #undef DATA_VERIFY_ERROR
-  #undef pointer_reset_all
 }
 
 
@@ -244,5 +243,4 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   return 1;
 
   #undef CHECK_RESEVE_PROOFS_ERROR
-  #undef pointer_reset_all
 }

@@ -38,40 +38,18 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
 
   // define macros
   #define GET_BLOCK_TEMPLATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_block_template",18); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
-
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(data); \
-  data = NULL; \
-
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    memcpy(error_message.function[error_message.total],"get_block_template",18);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));
 
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_template\",\"params\":{\"wallet_address\":\"",84);
@@ -87,12 +65,9 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
   {
     GET_BLOCK_TEMPLATE_ERROR("Could not create the block template");
   }
-  
-  pointer_reset_all; 
   return 1;
   
   #undef GET_BLOCK_TEMPLATE_ERROR
-  #undef pointer_reset_all
 }
 
 
@@ -116,31 +91,22 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   const size_t DATA_LENGTH = strnlen(data,BUFFER_SIZE);
 
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
 
   // define macros
   #define SUBMIT_BLOCK_TEMPLATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"submit_block_template",21); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset(message); \
   return 0;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"submit_block_template",21);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  
+  memset(message,0,sizeof(message));
 
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"submit_block\",\"params\":[\"",61);
   memcpy(message+61,data,DATA_LENGTH);
   memcpy(message+61+DATA_LENGTH,"\"]}",3);
-  memset(data,0,strnlen(data,BUFFER_SIZE));
+  memset(data,0,sizeof(data));
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"submit block template",HTTP_SETTINGS) <= 0)
   {  
@@ -151,8 +117,6 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   {
     SUBMIT_BLOCK_TEMPLATE_ERROR("Could not submit the block template");
   }
-  
-  pointer_reset(message); 
   return 1;
 
   #undef SUBMIT_BLOCK_TEMPLATE_ERROR
@@ -178,40 +142,18 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
 
   // define macros
   #define GET_BLOCK_SETTINGS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_block_settings",18); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(data); \
-  data = NULL; \
-
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    memcpy(error_message.function[error_message.total],"get_block_settings",18);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));
   
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",67);
@@ -222,7 +164,7 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
   {  
     GET_BLOCK_SETTINGS_ERROR("Could not get the block settings");
   }
-  memset(message,0,strlen(message));
+  memset(message,0,sizeof(message));
   
   if (parse_json_data(data,"blob",message) == 0)
   {
@@ -231,18 +173,15 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
 
   if (strstr(message,BLOCKCHAIN_RESERVED_BYTES_START) != NULL)
   {
-    pointer_reset_all; 
     return 2; 
   }
   else
   {
-    pointer_reset_all; 
     return 1; 
   }  
   return 0;
   
   #undef GET_BLOCK_SETTINGS_ERROR
-  #undef pointer_reset_all
 }
 
 
@@ -266,40 +205,18 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
 
   // define macros
   #define GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_block_reserve_byte_data_hash",32); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
-
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(data); \
-  data = NULL; \
-
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    memcpy(error_message.function[error_message.total],"get_block_reserve_byte_data_hash",32);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));
   
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",68);
@@ -310,7 +227,7 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   {  
     GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR("Could not get the blocks reserve bytes data hash");
   }
-  memset(message,0,strlen(message));
+  memset(message,0,sizeof(message));
   
   if (parse_json_data(data,"blob",message) == 0)
   {
@@ -320,11 +237,9 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   memset(reserve_byte_data_hash,0,strlen(reserve_byte_data_hash));
   memcpy(reserve_byte_data_hash,&data[strlen(data) - (strlen(strstr(data,BLOCKCHAIN_RESERVED_BYTES_START_DATA)) - 62)],128);
   
-  pointer_reset_all;
   return 1;
 
   #undef GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR
-  #undef pointer_reset_all
 }
 
 
@@ -349,8 +264,8 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
   size_t count;
   size_t counter = 0;
 
@@ -359,32 +274,10 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
   memcpy(error_message.function[error_message.total],"verify_blockchain_network_transactions",38); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(data); \
-  data = NULL; \
-
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    memcpy(error_message.function[error_message.total],"verify_blockchain_network_transactions",38);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));  
 
   // create the message
   memcpy(message,"{\"txs_hashes\":[",15);
@@ -421,12 +314,9 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
       VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR("Could not verify the blockchain network transactions");
     }
   }
-    
-  pointer_reset_all; 
   return 1;
 
   #undef VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR  
-  #undef pointer_reset_all
 }
 
 
@@ -449,25 +339,16 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
 
   // define macros
   #define GET_CURRENT_BLOCK_HEIGHT_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_current_block_height",24); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"get_current_block_height",24);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get current block height",MESSAGE_SETTINGS) <= 0)
   {  
@@ -478,8 +359,6 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
   {
     GET_CURRENT_BLOCK_HEIGHT_ERROR("Could not get the current block height");
   }
-    
-  pointer_reset(data); 
   return 1;
 
   #undef GET_CURRENT_BLOCK_HEIGHT_ERROR
@@ -505,25 +384,16 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
 
   // define macros
   #define GET_PREVIOUS_BLOCK_HASH_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_previous_block_hash",23); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"get_previous_block_hash",23);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_last_block_header\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get previous block hash",MESSAGE_SETTINGS) <= 0)
   {  
@@ -534,8 +404,6 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
   {
     GET_PREVIOUS_BLOCK_HASH_ERROR("Could not get the previous block hash");
   }
-      
-  pointer_reset(data); 
   return 1;
 
   #undef GET_PREVIOUS_BLOCK_HASH_ERROR
