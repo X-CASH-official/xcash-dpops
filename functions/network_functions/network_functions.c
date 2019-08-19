@@ -1424,8 +1424,8 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
 {
   // Variables
   char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count;
   size_t count2;
   size_t counter;
@@ -1434,11 +1434,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
   // define macros
   #define pointer_reset_all \
   free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL;
+  data = NULL;
   
   #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message,settings) \
   if (settings == 0) \
@@ -1459,21 +1455,14 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
     goto start; \
   } 
 
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
+  if (data == NULL)
   {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
+    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -1521,7 +1510,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
 
     // parse the RESERVE_PROOFS_DATABASE
     memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_database_",24);
     sprintf(data2+24,"%zu",count2);
 
@@ -1541,7 +1530,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
       color_print(data,"red");
 
       // create the message
-      memset(data2,0,strlen(data2));
+      memset(data2,0,sizeof(data2));
       memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_proofs_",133);
       sprintf(data2+133,"%zu",count2);
       memcpy(data2+strlen(data2),"\",\r\n}",5);
@@ -1564,14 +1553,14 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
       }
 
       // parse the message
-      memset(data3,0,strlen(data3));
+      memset(data3,0,sizeof(data3));
       if (parse_json_data(data,"reserve_proofs_database",data3) == 0 || memcmp(data3,"",1) == 0)
       {
         SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
       }
 
       // add the data to the database
-      memset(data2,0,strlen(data2));
+      memset(data2,0,sizeof(data2));
       memcpy(data2,"reserve_proofs_",15);
       sprintf(data2+15,"%zu",count2);
 
@@ -1714,10 +1703,10 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_reserve_bytes_database()
 {
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
   char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count;
   size_t count2;
   int counter;
@@ -1727,14 +1716,8 @@ int sync_reserve_bytes_database()
 
   // define macros
   #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
   free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL;
+  data = NULL;
   
   #define SYNC_RESERVE_BYTES_DATABASE_ERROR(message,settings) \
   if (settings == 0) \
@@ -1756,30 +1739,20 @@ int sync_reserve_bytes_database()
   }  
 
   // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL || data2 == NULL || data3 == NULL)
+  if (data == NULL)
   {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
+    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message;  
     exit(0);
   }
+  
+  memset(message,0,sizeof(message));
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // get the current reserve bytes database
   sscanf(current_block_height,"%zu", &number);
@@ -1793,7 +1766,7 @@ int sync_reserve_bytes_database()
   // get what reserve bytes database count it has and start at that count to sync
   for (count2 = 1; count2 <= number; count2++)
   {
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     memcpy(data2+strlen(data2),"reserve_bytes_",14);
     sprintf(data2+strlen(data2),"%zu",count2);    
     if (count_all_documents_in_collection(DATABASE_NAME,data2,0) <= 0)
@@ -1842,7 +1815,7 @@ int sync_reserve_bytes_database()
 
     // get the database data hash
     memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     memcpy(data2+strlen(data2),"reserve_bytes_",14);
     sprintf(data2+strlen(data2),"%zu",count2);
     if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
@@ -1851,7 +1824,7 @@ int sync_reserve_bytes_database()
     }
 
     // create the message
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"file\": \"reserve_bytes_",128);
     sprintf(data2+128,"%zu",count2);
     memcpy(data2+strlen(data2),"\",\r\n \"data_hash\": \"",19);
@@ -1876,7 +1849,7 @@ int sync_reserve_bytes_database()
     }
 
     // parse the message
-    memset(data3,0,strlen(data3));
+    memset(data3,0,sizeof(data3));
     if (parse_json_data(data,"reserve_bytes_database",data3) == 0)
     {
       SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
@@ -1893,7 +1866,7 @@ int sync_reserve_bytes_database()
       color_print(data,"red");
 
       // create the message
-      memset(data2,0,strlen(data2));
+      memset(data2,0,sizeof(data2));
       memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_bytes_",131);
       sprintf(data2+131,"%zu",count2);
       memcpy(data2+strlen(data2),"\",\r\n}",5);
@@ -1916,14 +1889,14 @@ int sync_reserve_bytes_database()
       }
 
       // parse the message
-      memset(data3,0,strlen(data3));
+      memset(data3,0,sizeof(data3));
       if (parse_json_data(data,"reserve_bytes_database",data3) == 0 || memcmp(data3,"",1) == 0)
       {
         SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
       }
 
       // add the data to the database
-      memset(data2,0,strlen(data2));
+      memset(data2,0,sizeof(data2));
       memcpy(data2,"reserve_bytes_",14);
       sprintf(data2+14,"%zu",count2);
 
@@ -1969,7 +1942,7 @@ int sync_reserve_bytes_database()
     }
 
     // create the message
-    memset(message,0,strlen(message));
+    memset(message,0,sizeof(message));
     memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"data_hash\": \"",123);
     memcpy(message+123,data,DATA_HASH_LENGTH);
     memcpy(message+strlen(message),"\",\r\n}",5);
@@ -1985,7 +1958,7 @@ int sync_reserve_bytes_database()
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       memset(data,0,strlen(data));
-      memset(data2,0,strlen(data2));
+      memset(data2,0,sizeof(data2));
       if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
       {
         memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
@@ -1994,7 +1967,7 @@ int sync_reserve_bytes_database()
       else
       {
         parse_json_data(data,"reserve_bytes_database",data2);
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,sizeof(synced_block_verifiers.vote_settings[count])));
         if (memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
@@ -2112,12 +2085,10 @@ int sync_check_delegates_database()
   }
 
   color_print("The delegates database is synced","green");
-
-  pointer_reset_all;
+  
   return 1;
 
   #undef DATABASE_COLLECTION
-  #undef pointer_reset_all
   #undef SYNC_CHECK_DELEGATES_DATABASE_ERROR  
 }
 
@@ -2135,7 +2106,7 @@ int sync_delegates_database()
 {
   // Variables
   char* data = (char*)calloc(10485760,sizeof(char));  // 10 MB
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
   size_t count;
   size_t count2;
   int settings;
@@ -2144,9 +2115,7 @@ int sync_delegates_database()
   #define DATABASE_COLLECTION "delegates"
   #define pointer_reset_all \
   free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
+  data = NULL;
 
   #define SYNC_DELEGATES_DATABASE_ERROR(message,settings) \
   if (settings == 0) \
@@ -2168,22 +2137,18 @@ int sync_delegates_database()
   }  
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
+  if (data == NULL)
   {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
+    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_delegates_database",23);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message;  
     exit(0);
   }
+
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
   
   start:
 
@@ -2228,7 +2193,7 @@ int sync_delegates_database()
   }
 
   // create the message
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"",118);
   sprintf(data2+118,"%zu",count);
   memcpy(data2+strlen(data2),"\",\r\n}",5);
@@ -2251,7 +2216,7 @@ int sync_delegates_database()
   }
 
   // parse the message
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   if (parse_json_data(data,"delegates_database",data2) == 0 || memcmp(data2,"",1) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
@@ -2384,7 +2349,7 @@ int sync_statistics_database()
 {
   // Variables
   char* data = (char*)calloc(10485760,sizeof(char));  // 10 MB
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
   size_t count;
   size_t count2;
   int settings;
@@ -2393,9 +2358,7 @@ int sync_statistics_database()
   #define DATABASE_COLLECTION "statistics"
   #define pointer_reset_all \
   free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
+  data = NULL;
 
   #define SYNC_STATISTICS_DATABASE_ERROR(message,settings) \
   if (settings == 0) \
@@ -2417,22 +2380,18 @@ int sync_statistics_database()
   }  
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
+  if (data == NULL)
   {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
+    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_statistics_database",24);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message;  
     exit(0);
   }
+
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
   
   start:
 
@@ -2477,7 +2436,7 @@ int sync_statistics_database()
   }
 
   // create the message
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"",118);
   sprintf(data2+118,"%zu",count);
   memcpy(data2+strlen(data2),"\",\r\n}",5);
@@ -2500,7 +2459,7 @@ int sync_statistics_database()
   }
 
   // parse the message
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   if (parse_json_data(data,"statistics_database",data2) == 0 || memcmp(data2,"",1) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
