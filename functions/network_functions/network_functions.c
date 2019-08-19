@@ -53,7 +53,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0}; 
   const size_t HTTP_SETTINGS_LENGTH = strnlen(HTTP_SETTINGS,BUFFER_SIZE);
   const size_t URL_LENGTH = strnlen(URL,BUFFER_SIZE);
-  const size_t DATA_LENGTH = strnlen(DATA,BUFFER_SIZE);
+  const size_t DATA_LENGTH = strlen(DATA);
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE); 
 
   // Variables
@@ -61,7 +61,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   char buffer2[BUFFER_SIZE];
   char* post_request_data;
   char str[BUFFER_SIZE]; 
-  char message[BUFFER_SIZE];
+  char* message = (char*)calloc(52428800,sizeof(char)); // 50 MB
   size_t count; 
   size_t counter = 0; 
   size_t receive_data_result; 
@@ -73,7 +73,16 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
 
-  memset(message,0,sizeof(message));
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL)
+  {
+    memcpy(error_message.function[error_message.total],"send_http_request",17);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  }
+
   memset(str,0,sizeof(str));
 
   // create the HTTP request
@@ -83,7 +92,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   counter++;
   memcpy(message+counter,URL,URL_LENGTH);
   counter += URL_LENGTH;
-  if (strncmp(HTTP_SETTINGS,"GET",sizeof(message)) == 0)
+  if (strncmp(HTTP_SETTINGS,"GET",BUFFER_SIZE) == 0)
   {
     memcpy(message+counter,"?",1);
     counter++;
@@ -98,18 +107,18 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   counter += 2;
   for (count = 0; count < HTTP_HEADERS_LENGTH; count++)
   {
-    memcpy(message+counter,HTTP_HEADERS[count],strnlen(HTTP_HEADERS[count],sizeof(message)));
-    counter += strnlen(HTTP_HEADERS[count],sizeof(message));
+    memcpy(message+counter,HTTP_HEADERS[count],strnlen(HTTP_HEADERS[count],BUFFER_SIZE));
+    counter += strnlen(HTTP_HEADERS[count],BUFFER_SIZE);
     memcpy(message+counter,"\r\n",2);
     counter += 2;
   }
-  if (strncmp(HTTP_SETTINGS,"POST",sizeof(message)) == 0)
+  if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
   {
     memcpy(message+counter,"Content-Length: ",16);
     counter += 16;
-    sprintf(str, "%d", (int)strnlen(DATA,sizeof(message)));
-    memcpy(message+counter,str,strnlen(str,sizeof(message)));
-    counter += strnlen(str,sizeof(message));
+    sprintf(str, "%zu", strlen(DATA));
+    memcpy(message+counter,str,strnlen(str,BUFFER_SIZE));
+    counter += strnlen(str,BUFFER_SIZE);
   } 
   memcpy(message+counter,"\r\n\r\n",4);   
   counter += 4; 

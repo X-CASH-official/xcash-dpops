@@ -308,7 +308,7 @@ int string_replace(char *data, const char* STR1, const char* STR2)
   if (strstr(data,STR1) != NULL)
   { 
     // Variables
-    char* datacopy = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    char* datacopy = (char*)calloc(52428800,sizeof(char)); // 50 MB
     char* string;
     size_t data_length;
     size_t str2_length;
@@ -336,7 +336,7 @@ int string_replace(char *data, const char* STR1, const char* STR2)
     for (count = 0; count < total; count++)
     {
       // reset the variables
-      memset(datacopy,0,strnlen(datacopy,BUFFER_SIZE));
+      memset(datacopy,0,strlen(datacopy));
       data_length = strnlen(data,BUFFER_SIZE);
       start = data_length - strnlen(strstr(data,STR1),BUFFER_SIZE);
    
@@ -351,13 +351,13 @@ int string_replace(char *data, const char* STR1, const char* STR2)
       memcpy(datacopy+strlen(datacopy),string,strnlen(string,BUFFER_SIZE));
       // copy the new string to the string pointer
       memset(data,0,data_length);
-      memcpy(data,datacopy,strnlen(datacopy,BUFFER_SIZE));
+      memcpy(data,datacopy,strlen(datacopy));
     }
     // replace the REPLACE_STRING with STR2
     for (count = 0; count < total; count++)
     {
       // reset the variables
-      memset(datacopy,0,strnlen(datacopy,BUFFER_SIZE));
+      memset(datacopy,0,strlen(datacopy));
       data_length = strnlen(data,BUFFER_SIZE);
       str2_length = strnlen(STR2,BUFFER_SIZE);
       start = data_length - strnlen(strstr(data,REPLACE_STRING),BUFFER_SIZE);
@@ -373,7 +373,7 @@ int string_replace(char *data, const char* STR1, const char* STR2)
       memcpy(datacopy+start+str2_length,string,strnlen(string,BUFFER_SIZE));
       // copy the new string to the string pointer
       memset(data,0,data_length);
-      memcpy(data,datacopy,strnlen(datacopy,BUFFER_SIZE));
+      memcpy(data,datacopy,strlen(datacopy));
     }
     pointer_reset(datacopy);
     return 1;

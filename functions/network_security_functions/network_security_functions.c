@@ -39,7 +39,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   // Variables
   char* previous_block_hash = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* random_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* result = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* result = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
@@ -107,7 +107,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
 
   pthread_rwlock_rdlock(&rwlock);
   // create the message
-  size_t message_length = strnlen(message,BUFFER_SIZE)-1;
+  size_t message_length = strlen(message)-1;
   const size_t previous_block_hash_LENGTH = strnlen(previous_block_hash,BUFFER_SIZE);
   memcpy(result,message,message_length);
   memcpy(result+message_length," \"public_address\": \"",20);
@@ -130,7 +130,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   }
 
   // sign_data
-  const size_t RESULT_LENGTH = strnlen(result,BUFFER_SIZE);
+  const size_t RESULT_LENGTH = strlen(result);
   memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(string+60,result,RESULT_LENGTH);
   memcpy(string+60+RESULT_LENGTH,"\"}}",3);
@@ -154,7 +154,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   
   pthread_rwlock_rdlock(&rwlock);
   // create the message
-  message_length = strnlen(message,BUFFER_SIZE) - 1;
+  message_length = strlen(message) - 1;
   const size_t XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH = strnlen(result,BUFFER_SIZE);
   
   memcpy(message+message_length," \"public_address\": \"",20);
@@ -206,10 +206,10 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   char* message_current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message_current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* xcash_proof_of_stake_signature = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* result = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* result = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  size_t message_length = strnlen(MESSAGE,BUFFER_SIZE) - 134;
+  char* string = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  size_t message_length = strlen(MESSAGE) - 134;
   size_t count;
   int settings = 0;
 
@@ -371,7 +371,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   } 
     
   // create the message
-  message_length = strnlen(result,BUFFER_SIZE);
+  message_length = strlen(result);
   memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"verify\",\"params\":{\"data\":\"",62);
   memcpy(string+62,result,message_length);
   memcpy(string+62+message_length,"\",\"address\":\"",13);

@@ -2192,32 +2192,24 @@ int check_if_databases_are_synced()
   {
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve proofs database is updated. This means you might need to sync the reserve proofs database.");
   }
-  // wait for the other block verifiers to sync the databse
-  sleep(10);
 
   // check if your reserve bytes database is synced
   if (sync_check_reserve_bytes_database() == 0)
   {    
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.");
   }
-  // wait for the other block verifiers to sync the databse
-  sleep(10);
 
   // check if your delegates database is synced
   if (sync_check_delegates_database() == 0)
   {
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the delegates database is updated. This means you might need to sync the delegates database.");
   }
-  // wait for the other block verifiers to sync the databse
-  sleep(10);
 
   // check if your statistics database is synced
   if (sync_check_statistics_database() == 0)
   {
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the statistics database is updated. This means you might need to sync the statistics database.");
   }
-  // wait for the other block verifiers to sync the databse
-  sleep(10);
 
   pointer_reset(data);
   return 1;

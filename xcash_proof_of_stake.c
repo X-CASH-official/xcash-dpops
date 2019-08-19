@@ -572,7 +572,7 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
 
-    // check if all of the databases are synced
+    /*// check if all of the databases are synced
     if (check_if_databases_are_synced() == 0)
     {
       memcpy(error_message.function[error_message.total],"main",4);
@@ -582,7 +582,7 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       pointer_reset(data);
       exit(0);
-    }
+    }*/
   }
 
  
