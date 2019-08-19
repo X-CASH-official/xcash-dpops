@@ -21,7 +21,7 @@ int network_data_node_settings; // 1 if a network data node, 0 if not a network 
 time_t current_date_and_time;
 struct tm* current_UTC_date_and_time; 
 
-char* xcash_wallet_public_address; // Holds your wallets public address
+char xcash_wallet_public_address[XCASH_WALLET_LENGTH+1]; // Holds your wallets public address
 char* block_verifiers_IP_address; // The block verifiers IP address
 struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round

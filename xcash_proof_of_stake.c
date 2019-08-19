@@ -51,21 +51,16 @@ int main(int parameters_count, char* parameters[])
   mongoc_cleanup();
 
   // initialize the global variables
-  xcash_wallet_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   block_verifiers_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char)); 
   current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char));
   current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || xcash_wallet_public_address == NULL || block_verifiers_IP_address == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
+  if (data == NULL || block_verifiers_IP_address == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
   {
     if (data != NULL)
     {
       pointer_reset(data);
-    }
-    if (xcash_wallet_public_address != NULL)
-    {
-      pointer_reset(xcash_wallet_public_address);
     }
     if (block_verifiers_IP_address != NULL)
     {

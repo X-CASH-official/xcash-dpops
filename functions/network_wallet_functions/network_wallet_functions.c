@@ -35,7 +35,7 @@ int get_public_address(const int MESSAGE_SETTINGS)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
 
   // define macros
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
@@ -43,22 +43,15 @@ int get_public_address(const int MESSAGE_SETTINGS)
   memcpy(error_message.function[error_message.total],"get_public_address",18); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
 
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"get_public_address",18);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
   
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",MESSAGE_SETTINGS) <= 0)
   {  
     GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
+  memset(xcash_wallet_public_address,0,sizeof(xcash_wallet_public_address));
   
   if (parse_json_data(data,"address",xcash_wallet_public_address) == 0)
   {
@@ -70,8 +63,6 @@ int get_public_address(const int MESSAGE_SETTINGS)
   {
      GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
-  
-  pointer_reset(data); 
   return 1;
 
   #undef GET_PUBLIC_ADDRESS_DATA
