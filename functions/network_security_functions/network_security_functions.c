@@ -37,61 +37,34 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* previous_block_hash = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* random_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char previous_block_hash[BUFFER_SIZE];
+  char random_data[RANDOM_STRING_LENGTH+1];
   char* result = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char string[BUFFER_SIZE];
 
   // define macros
   #define SIGN_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sign_data",9); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
+  pointer_reset(result); \
   return 0;
 
-  #define pointer_reset_all \
-  free(previous_block_hash); \
-  previous_block_hash = NULL; \
-  free(random_data); \
-  random_data = NULL; \
-  free(result); \
-  result = NULL; \
-  free(data); \
-  data = NULL; \
-  free(string); \
-  string = NULL;
-
   // check if the memory needed was allocated on the heap successfully
-  if (previous_block_hash == NULL || random_data == NULL || result == NULL || data == NULL || string == NULL)
-  {
-    if (previous_block_hash != NULL)
-    {
-      pointer_reset(previous_block_hash);
-    }
-    if (random_data != NULL)
-    {
-      pointer_reset(random_data);
-    }
-    if (result != NULL)
-    {
-      pointer_reset(result);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (string != NULL)
-    {
-      pointer_reset(string);
-    }
+  if (result == NULL)
+  {    
     memcpy(error_message.function[error_message.total],"sign_data",9);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message;  
     exit(0);
   } 
+
+  memset(previous_block_hash,0,sizeof(previous_block_hash));
+  memset(random_data,0,sizeof(random_data));
+  memset(data,0,sizeof(data));
+  memset(string,0,sizeof(string));
 
   // create the random data
   if (random_string(random_data,RANDOM_STRING_LENGTH) == 0)
@@ -172,7 +145,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   memcpy(message+message_length+173+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH+XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH,"\",\r\n}",5);
   pthread_rwlock_unlock(&rwlock);
 
-  pointer_reset_all;
+  pointer_reset(result);
   return 1;
   
   #undef SIGN_DATA_ERROR
@@ -199,15 +172,15 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
   
   // Variables
-  char* message_settings = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* previous_block_hash = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message_previous_block_hash = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message_current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message_current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* xcash_proof_of_stake_signature = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message_settings[BUFFER_SIZE];
+  char public_address[BUFFER_SIZE];
+  char previous_block_hash[BUFFER_SIZE];
+  char message_previous_block_hash[BUFFER_SIZE];
+  char message_current_round_part[BUFFER_SIZE];
+  char message_current_round_part_backup_node[BUFFER_SIZE];
+  char xcash_proof_of_stake_signature[BUFFER_SIZE];
   char* result = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
   char* string = (char*)calloc(52428800,sizeof(char)); // 50 MB
   size_t message_length = strlen(MESSAGE) - 134;
   size_t count;
@@ -222,65 +195,17 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   return 0;
 
   #define pointer_reset_all \
-  free(message_settings); \
-  message_settings = NULL; \
-  free(public_address); \
-  public_address = NULL; \
-  free(previous_block_hash); \
-  previous_block_hash = NULL; \
-  free(message_previous_block_hash); \
-  message_previous_block_hash = NULL; \
-  free(message_current_round_part); \
-  message_current_round_part = NULL; \
-  free(message_current_round_part_backup_node); \
-  message_current_round_part_backup_node = NULL; \
-  free(xcash_proof_of_stake_signature); \
-  xcash_proof_of_stake_signature = NULL; \
   free(result); \
   result = NULL; \
-  free(data); \
-  data = NULL; \
   free(string); \
   string = NULL;
 
   // check if the memory needed was allocated on the heap successfully
-  if (message_settings == NULL || public_address == NULL || previous_block_hash == NULL || message_previous_block_hash == NULL || message_current_round_part == NULL || message_current_round_part_backup_node == NULL || xcash_proof_of_stake_signature == NULL || result == NULL || data == NULL || string == NULL)
-  {
-    if (message_settings != NULL)
-    {
-      pointer_reset(message_settings);
-    }
-    if (public_address != NULL)
-    {
-      pointer_reset(public_address);
-    }
-    if (previous_block_hash != NULL)
-    {
-      pointer_reset(previous_block_hash);
-    }
-    if (message_previous_block_hash != NULL)
-    {
-      pointer_reset(message_previous_block_hash);
-    }
-    if (message_current_round_part != NULL)
-    {
-      pointer_reset(message_current_round_part);
-    }
-    if (message_current_round_part_backup_node != NULL)
-    {
-      pointer_reset(message_current_round_part_backup_node);
-    }
-    if (xcash_proof_of_stake_signature != NULL)
-    {
-      pointer_reset(xcash_proof_of_stake_signature);
-    }
+  if (result == NULL || string == NULL)
+  {    
     if (result != NULL)
     {
       pointer_reset(result);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
     }
     if (string != NULL)
     {
@@ -293,6 +218,15 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     exit(0);
   } 
 
+  memset(message_settings,0,sizeof(message_settings));
+  memset(public_address,0,sizeof(public_address));
+  memset(previous_block_hash,0,sizeof(previous_block_hash));
+  memset(message_previous_block_hash,0,sizeof(message_previous_block_hash));
+  memset(message_current_round_part,0,sizeof(message_current_round_part));
+  memset(message_current_round_part_backup_node,0,sizeof(message_current_round_part_backup_node));
+  memset(xcash_proof_of_stake_signature,0,sizeof(xcash_proof_of_stake_signature));
+  memset(data,0,sizeof(data));
+
   // parse the message
   if (parse_json_data(MESSAGE,"message_settings",message_settings) == 0 || parse_json_data(MESSAGE,"public_address",public_address) == 0 || parse_json_data(MESSAGE,"previous_block_hash",message_previous_block_hash) == 0 || parse_json_data(MESSAGE,"current_round_part",message_current_round_part) == 0 || parse_json_data(MESSAGE,"current_round_part_backup_node",message_current_round_part_backup_node) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature) == 0)
   {
@@ -300,11 +234,11 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   }
 
   // check that the block verifier that sent the data is the correct main node
-  if (strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",BUFFER_SIZE) == 0 && strncmp(public_address,main_nodes_list.block_producer_public_address,BUFFER_SIZE) != 0)
+  if (strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",sizeof(message_settings)) == 0 && strncmp(public_address,main_nodes_list.block_producer_public_address,BUFFER_SIZE) != 0)
   {
     VERIFY_DATA_ERROR("Invalid MAIN_NODES_TO_NODES_PART_4_OF_ROUND message");
   }
-  else if (strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0)
+  else if (strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE",sizeof(message_settings)) == 0)
   {
     // check if the public address is in the synced_block_verifiers struct
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -320,9 +254,9 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     }
     memset(data,0,strnlen(data,BUFFER_SIZE));
   }  
-  else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",BUFFER_SIZE) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
+  else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(message_settings)) == 0)
   {
-    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memset(data,0,sizeof(data));
   } 
   else
   {
@@ -338,7 +272,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     {
       VERIFY_DATA_ERROR("Invalid message");
     }
-    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memset(data,0,sizeof(data));
   }
 
   // verify if the previous block hash is correct
