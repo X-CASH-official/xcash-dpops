@@ -2541,7 +2541,7 @@ int get_delegate_online_status(const char* HOST)
   size_t count;
 
   // Variables
-  char* str = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char str[BUFFER_SIZE];
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
@@ -2550,15 +2550,7 @@ int get_delegate_online_status(const char* HOST)
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
 
-  // check if the memory needed was allocated on the heap successfully
-  if (str == NULL)
-  {    
-    memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  } 
+  memset(str,0,sizeof(str));
 
   /* Create the socket  
   AF_INET = IPV4 support
@@ -2573,7 +2565,6 @@ int get_delegate_online_status(const char* HOST)
     memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
     memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
     error_message.total++; 
-    pointer_reset(str);
     return 0;
   }
 
@@ -2587,7 +2578,6 @@ int get_delegate_online_status(const char* HOST)
     memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
     memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
     error_message.total++;
-    pointer_reset(str);
     return 0;
   } 
 
