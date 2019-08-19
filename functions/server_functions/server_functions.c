@@ -4177,6 +4177,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   delegates_IP_address = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR(settings) \
+  send_data(CLIENT_SOCKET,"false",1); \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_register_delegates",70); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
@@ -4221,16 +4222,32 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not parse the message");
   }
 
+  // check if the data is valid
+  if (strlen(delegate_name) > 30 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || strstr(delegates_IP_address,".") == NULL)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid data");
+  }
+
   // create the message
   memcpy(data,"{\"public_address\":\"",19);
   memcpy(data+19,delegate_public_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\"}",2);
 
-  // check if the delegate is already registered
+  // check if the public address is already registered
   if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) != 0)
   {
-    send_data(CLIENT_SOCKET,"false",1);
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate is already registered");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public address is already registered");
+  }
+
+  // create the message
+  memcpy(data,"{\"IP_address\":\"",15);
+  memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,BUFFER_SIZE));
+  memcpy(data+strlen(data),"\"}",2);  
+
+  // check if the IP address is already registered
+  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) != 0)
+  {    
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates IP address is already registered");
   }
 
   // create the message
@@ -4246,7 +4263,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   // add the delegate to the database
   if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0) == 0)
   {
-    send_data(CLIENT_SOCKET,"false",1);
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database");
   }
 

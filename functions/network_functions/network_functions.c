@@ -1297,56 +1297,24 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_reserve_proofs_database()
 {
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* reserve_proofs_database = (char*)calloc(BUFFER_SIZE,sizeof(char));  
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));  
+  char message[BUFFER_SIZE];
+  char reserve_proofs_database[BUFFER_SIZE]; 
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE]; 
   size_t count;
   size_t counter;
 
-  // define macros
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(reserve_proofs_database); \
-  reserve_proofs_database = NULL; \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-  
+  // define macros  
   #define SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || reserve_proofs_database == NULL || data == NULL || data2 == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (reserve_proofs_database != NULL)
-    {
-      pointer_reset(reserve_proofs_database);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(message,0,sizeof(message));
+  memset(reserve_proofs_database,0,sizeof(reserve_proofs_database));
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   print_start_message("Checking if the reserve proofs database is synced");
 
@@ -1356,7 +1324,6 @@ int sync_check_reserve_proofs_database()
   }
 
   // get the database data hash for the reserve proofs database
-  memset(data,0,strlen(data));
   if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs",0) == 0)
   {
     SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -1399,8 +1366,8 @@ int sync_check_reserve_proofs_database()
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
       memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
@@ -1430,20 +1397,14 @@ int sync_check_reserve_proofs_database()
     color_print("The reserve proofs database is not synced","red");
     if (sync_reserve_proofs_database(reserve_proofs_database) == 0)
     {
-      memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34);
-      memcpy(error_message.data[error_message.total],"Could not sync the reserve proofs database",41);
-      error_message.total++;
-      pointer_reset_all;
-      return 0;
+      SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
   }
 
   color_print("The reserve proofs database is synced","green");
-
-  pointer_reset_all;
+  
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR  
 }
 
@@ -1658,48 +1619,21 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_reserve_bytes_database()
 {
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   size_t count;
 
   // define macros
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-  
   #define SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL || data2 == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   print_start_message("Checking if the reserve bytes database is synced");
 
@@ -1709,7 +1643,6 @@ int sync_check_reserve_bytes_database()
   }
 
   // get the database data hash for the reserve bytes database
-  memset(data,0,strlen(data));
   if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes",0) == 0)
   {
     SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
@@ -1757,20 +1690,14 @@ int sync_check_reserve_bytes_database()
     color_print("The reserve bytes database is not synced","red");
     if (sync_reserve_bytes_database() == 0)
     {
-      memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33);
-      memcpy(error_message.data[error_message.total],"Could not sync the reserve bytes database",41);
-      error_message.total++;
-      pointer_reset_all;
-      return 0;
+      SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
     }
   }
 
   color_print("The reserve bytes database is synced","green");
-
-  pointer_reset_all;
+  
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR  
 }
 
@@ -2108,49 +2035,22 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_delegates_database()
 {
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   size_t count;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-  
   #define SYNC_CHECK_DELEGATES_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL || data2 == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   print_start_message("Checking if the delegates database is synced");
 
@@ -2160,7 +2060,6 @@ int sync_check_delegates_database()
   }
 
   // get the database data hash for the reserve proofs database
-  memset(data,0,strlen(data));
   if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database");
@@ -2181,8 +2080,8 @@ int sync_check_delegates_database()
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
       memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
@@ -2208,11 +2107,7 @@ int sync_check_delegates_database()
     color_print("The delegates database is not synced","red");
     if (sync_delegates_database() == 0)
     {
-      memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
-      memcpy(error_message.data[error_message.total],"Could not sync the delegates database",37);
-      error_message.total++;
-      pointer_reset_all;
-      return 0;
+      SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database");
     }
   }
 
@@ -2391,49 +2286,22 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_statistics_database()
 {
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   size_t count;
 
   // define macros
   #define DATABASE_COLLECTION "statistics"
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-  
   #define SYNC_CHECK_STATISTICS_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || data == NULL || data2 == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   print_start_message("Checking if the statistics database is synced");
 
@@ -2443,7 +2311,6 @@ int sync_check_statistics_database()
   }
 
   // get the database data hash for the reserve proofs database
-  memset(data,0,strlen(data));
   if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the delegates database");
@@ -2464,8 +2331,8 @@ int sync_check_statistics_database()
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
       memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
@@ -2491,21 +2358,15 @@ int sync_check_statistics_database()
     color_print("The statistics database is not synced","red");
     if (sync_statistics_database() == 0)
     {
-      memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
-      memcpy(error_message.data[error_message.total],"Could not sync the statistics database",38);
-      error_message.total++;
-      pointer_reset_all;
-      return 0;
+      SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database");
     }
   }
 
   color_print("The statistics database is synced","green");
-
-  pointer_reset_all;
+  
   return 1;
 
   #undef DATABASE_COLLECTION
-  #undef pointer_reset_all
   #undef SYNC_CHECK_STATISTICS_DATABASE_ERROR  
 }
 
