@@ -150,18 +150,18 @@ int main(int parameters_count, char* parameters[])
   synced_block_verifiers.vote_settings_false = 0;
 
   // initialize the main_nodes_list struct 
-  main_nodes_list.block_producer_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_IP_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_1_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_1_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_2_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_2_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_3_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_3_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_4_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_4_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_5_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  main_nodes_list.block_producer_backup_block_verifier_5_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
+  memset(main_nodes_list.block_producer_public_address,0,sizeof(main_nodes_list.block_producer_public_address));
+  memset(main_nodes_list.block_producer_IP_address,0,sizeof(main_nodes_list.block_producer_IP_address));
+  memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address));
+  memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address));
+  memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address));
+  memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address));
+  memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address));
+  memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address));
+  memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address));
+  memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address));
+  memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_addres));
+  memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address));
 
   // initialize the network_data_nodes_list struct
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
