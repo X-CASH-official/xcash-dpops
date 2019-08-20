@@ -787,6 +787,25 @@ int start_part_4_of_round()
     } \
   }
 
+  #define SEND_DATA_SOCKET_BLOCK_PRODUCER_THREAD(message) \
+  sleep(2); \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
+    { \
+      memset(send_data_socket_thread_parameters[count].HOST,0,sizeof(send_data_socket_thread_parameters[count].HOST)); \
+      memset(send_data_socket_thread_parameters[count].DATA,0,sizeof(send_data_socket_thread_parameters[count].DATA)); \
+      memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE)); \
+      memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
+      pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
+      pthread_detach(thread_id[count]); \
+    } \
+    if (count % 25 == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT) \
+    { \
+       usleep(500000); \
+    } \
+  }
+
   #define RESTART_ROUND(message) \
   printf("\n"); \
   color_print(message,"red"); \
@@ -1095,7 +1114,7 @@ int start_part_4_of_round()
       }
 
       // send the message to all block verifiers
-      SEND_DATA_SOCKET_THREAD(data);
+      SEND_DATA_SOCKET_BLOCK_PRODUCER_THREAD(data);
     }
     
     // wait for the block verifiers to process the votes
@@ -1405,6 +1424,7 @@ int start_part_4_of_round()
 
     #undef START_PART_4_OF_ROUND_ERROR
     #undef SEND_DATA_SOCKET_THREAD
+    #undef SEND_DATA_SOCKET_BLOCK_PRODUCER_THREAD
     #undef RESTART_ROUND
 }
 
