@@ -13,21 +13,21 @@ Global Structures
 */
 
 struct previous_block_verifiers_list {
-    char* block_verifiers_name[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers name
-    char* block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers public address
-    char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers IP address
+    char block_verifiers_name[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_NAME_TOTAL_LENGTH]; // The block verifiers name
+    char block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
+    char block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
 };
 
 struct current_block_verifiers_list {
-    char* block_verifiers_name[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers name
-    char* block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers public address
-    char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers IP address
+    char block_verifiers_name[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_NAME_TOTAL_LENGTH]; // The block verifiers name
+    char block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
+    char block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
 };
 
 struct next_block_verifiers_list {
-    char* block_verifiers_name[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers name
-    char* block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers public address
-    char* block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers IP address
+    char block_verifiers_name[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_NAME_TOTAL_LENGTH]; // The block verifiers name
+    char block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
+    char block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
 };
 
 struct synced_block_verifiers {

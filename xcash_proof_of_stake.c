@@ -85,58 +85,20 @@ int main(int parameters_count, char* parameters[])
 
   pthread_rwlock_init(&rwlock,NULL);
 
-  // initialize the previous block_verifiers_list struct 
+  // initialize the previous, current and next block_verifiers_list struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    previous_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
-    previous_block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    previous_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
+    memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
+    memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
 
-    // check if the memory needed was allocated on the heap successfully
-    if (previous_block_verifiers_list.block_verifiers_name[count] == NULL || previous_block_verifiers_list.block_verifiers_public_address[count] == NULL || previous_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message;  
-      exit(0);
-    }
-  }
+    memset(current_block_verifiers_list.block_verifiers_name[count],0,sizeof(current_block_verifiers_list.block_verifiers_name[count]));
+    memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count]));
 
-  // initialize the current block_verifiers_list struct 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    current_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
-    current_block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    current_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (current_block_verifiers_list.block_verifiers_name[count] == NULL || current_block_verifiers_list.block_verifiers_public_address[count] == NULL || current_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message;  
-      exit(0);
-    }
-  }
-
-  // initialize the next_block_verifiers_list struct 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    next_block_verifiers_list.block_verifiers_name[count] = (char*)calloc(BLOCK_VERIFIERS_NAME_TOTAL_LENGTH+1,sizeof(char));
-    next_block_verifiers_list.block_verifiers_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    next_block_verifiers_list.block_verifiers_IP_address[count] = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (next_block_verifiers_list.block_verifiers_name[count] == NULL || next_block_verifiers_list.block_verifiers_public_address[count] == NULL || next_block_verifiers_list.block_verifiers_IP_address[count] == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message;  
-      exit(0);
-    }
+    memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
+    memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
   }
 
   // initialize the synced_block_verifiers struct 
