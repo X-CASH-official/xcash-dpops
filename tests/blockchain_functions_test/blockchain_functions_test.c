@@ -123,22 +123,22 @@ int blockchain_functions_test()
   }
 
   // run the varint_encode test
-  if ((varint_encode(VARINT_DECODED_VALUE_1,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_1,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_2,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_2,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_3,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_3,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_4,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_4,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_5,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_5,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_6,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_6,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_7,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_7,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_8,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_8,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_9,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_9,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_10,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_10,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_11,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_11,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_12,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_12,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_13,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_13,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_14,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_14,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_15,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_15,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_16,data_test) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_16,BUFFER_SIZE) == 0))
+  if ((varint_encode(VARINT_DECODED_VALUE_1,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_1,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_2,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_2,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_3,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_3,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_4,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_4,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_5,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_5,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_6,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_6,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_7,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_7,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_8,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_8,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_9,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_9,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_10,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_10,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_11,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_11,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_12,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_12,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_13,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_13,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_14,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_14,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_15,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_15,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_16,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_16,BUFFER_SIZE) == 0))
   {
     color_print("PASSED! Test for varint encode","green");
     count_test++;

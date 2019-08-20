@@ -34,7 +34,7 @@ Return: 1 if successfull, otherwise 0
 -----------------------------------------------------------------------------------------------------------
 */
 
-int varint_encode(long long int number, char *result)
+int varint_encode(long long int number, char *result, const size_t RESULT_TOTAL_LENGTH)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -46,7 +46,7 @@ int varint_encode(long long int number, char *result)
   long long int number_copy = (long long int)number;  
 
   memset(data,0,sizeof(data));
-  memset(result,0,strlen(result));  
+  memset(result,0,RESULT_TOTAL_LENGTH);  
 
   // check if it should not be encoded
   if (number <= 0xFF)
@@ -60,11 +60,11 @@ int varint_encode(long long int number, char *result)
   {
     if (number_copy % 2 == 1)
     {
-      memcpy(data+count,"1",1);
+      append_string(data,"1",sizeof(data));
     }
     else
     {
-      memcpy(data+count,"0",1);
+      append_string(data,"0",sizeof(data));
     }
     number_copy /= 2; 
   }
@@ -72,7 +72,7 @@ int varint_encode(long long int number, char *result)
   // pad the string to a mulitple of 7 bits  
   for (count = strnlen(data,sizeof(data)); count % 7 != 0; count++)
   {
-    memcpy(result+strlen(result),"0",1);
+    append_string(result,"0",RESULT_TOTAL_LENGTH);
   }
 
   // reverse the string
@@ -82,8 +82,8 @@ int varint_encode(long long int number, char *result)
     memcpy(result+strlen(result),&data[length - count],1);
   }
   memset(data,0,sizeof(data));
-  memcpy(data,result,strnlen(result,sizeof(data)));
-  memset(result,0,strnlen(result,sizeof(data)));
+  append_string(data,result,sizeof(data));
+  memset(result,0,RESULT_TOTAL_LENGTH);
 
   /*
   convert each 7 bits to one byte
@@ -905,7 +905,7 @@ int blockchain_data_to_network_block_string(char *result)
   count += blockchain_data.network_version_data_length;
   
   // timestamp
-  if (varint_encode((long long int)blockchain_data.timestamp,blockchain_data.timestamp_data) == 0)
+  if (varint_encode((long long int)blockchain_data.timestamp,blockchain_data.timestamp_data,BUFFER_SIZE_NETWORK_BLOCK_DATA) == 0)
   {
     BLOCKCHAIN_DATA_TO_NETWORK_BLOCK_ERROR("Could not create the varint for the timestamp");
   }
@@ -929,7 +929,7 @@ int blockchain_data_to_network_block_string(char *result)
   count += blockchain_data.block_reward_transaction_version_data_length;
 
   // unlock_block
-  if (varint_encode((long long int)blockchain_data.unlock_block,blockchain_data.unlock_block_data) == 0)
+  if (varint_encode((long long int)blockchain_data.unlock_block,blockchain_data.unlock_block_data,BUFFER_SIZE_NETWORK_BLOCK_DATA) == 0)
   {
     BLOCKCHAIN_DATA_TO_NETWORK_BLOCK_ERROR("Could not create the varint for the unlock block");
   }
@@ -948,7 +948,7 @@ int blockchain_data_to_network_block_string(char *result)
   count += blockchain_data.vin_type_data_length;
 
   // block_height
-  if (varint_encode((long long int)blockchain_data.block_height,blockchain_data.block_height_data) == 0)
+  if (varint_encode((long long int)blockchain_data.block_height,blockchain_data.block_height_data,BUFFER_SIZE_NETWORK_BLOCK_DATA) == 0)
   {
     BLOCKCHAIN_DATA_TO_NETWORK_BLOCK_ERROR("Could not create the varint for the block height");
   }
@@ -962,7 +962,7 @@ int blockchain_data_to_network_block_string(char *result)
   count += blockchain_data.block_reward_output_data_length;
 
   // block_reward
-  if (varint_encode((long long int)blockchain_data.block_reward,blockchain_data.block_reward_data) == 0)
+  if (varint_encode((long long int)blockchain_data.block_reward,blockchain_data.block_reward_data,BUFFER_SIZE_NETWORK_BLOCK_DATA) == 0)
   {
     BLOCKCHAIN_DATA_TO_NETWORK_BLOCK_ERROR("Could not create the varint for the block reward");
   }
@@ -1217,7 +1217,7 @@ int blockchain_data_to_network_block_string(char *result)
   count += blockchain_data.ringct_version_data_length;
 
   // transaction_amount
-  if (varint_encode((long long int)blockchain_data.transaction_amount,blockchain_data.transaction_amount_data) == 0)
+  if (varint_encode((long long int)blockchain_data.transaction_amount,blockchain_data.transaction_amount_data,BUFFER_SIZE_NETWORK_BLOCK_DATA) == 0)
   {
     BLOCKCHAIN_DATA_TO_NETWORK_BLOCK_ERROR("Could not create the varint for the transaction amount");
   }

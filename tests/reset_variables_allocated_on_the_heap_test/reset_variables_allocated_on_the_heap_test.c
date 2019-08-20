@@ -338,7 +338,7 @@ int reset_variables_allocated_on_the_heap_test()
       fprintf(stderr,"Current progress for varint_encode: %zu / 1000",count);
       fprintf(stderr,"\r");
       memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-      varint_encode(VARINT_DECODED_VALUE_1,result_test);
+      varint_encode(VARINT_DECODED_VALUE_1,result_test,BUFFER_SIZE);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
