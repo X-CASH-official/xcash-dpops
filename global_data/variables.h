@@ -22,7 +22,7 @@ time_t current_date_and_time;
 struct tm* current_UTC_date_and_time; 
 
 char xcash_wallet_public_address[XCASH_WALLET_LENGTH+1]; // Holds your wallets public address
-char* block_verifiers_IP_address; // The block verifiers IP address
+char block_verifiers_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
 struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round
 struct next_block_verifiers_list next_block_verifiers_list; // The list of block verifiers name, public address and IP address for the next round
@@ -34,8 +34,8 @@ struct VRF_data VRF_data; // The list of all of the VRF data to send to the bloc
 struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
 struct error_message error_message; // holds all of the error messages and the functions for an error.
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
-char* current_round_part; // The current round part (1-4)
-char* current_round_part_backup_node; // The current main node in the current round part (0-5)
+char current_round_part[2]; // The current round part (1-4)
+char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 pthread_rwlock_t rwlock;
 
 char current_block_height[BUFFER_SIZE]; // The current block height

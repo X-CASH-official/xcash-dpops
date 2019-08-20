@@ -50,38 +50,22 @@ int main(int parameters_count, char* parameters[])
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup();
 
-  // initialize the global variables
-  block_verifiers_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char)); 
-  current_round_part = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  current_round_part_backup_node = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
   // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || block_verifiers_IP_address == NULL || current_round_part == NULL || current_round_part_backup_node == NULL)
+  if (data == NULL)
   {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (block_verifiers_IP_address != NULL)
-    {
-      pointer_reset(block_verifiers_IP_address);
-    }
-    if (current_round_part != NULL)
-    {
-      pointer_reset(current_round_part);
-    }
-    if (current_round_part_backup_node != NULL)
-    {
-      pointer_reset(current_round_part_backup_node);
-    }
+    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"main",4);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message;  
     exit(0);
-  } 
+  }
 
+  // initialize the global variables
+  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
   memset(current_block_height,0,sizeof(current_block_height));
+  memset(current_round_part,0,sizeof(current_round_part));
+  memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
 
   pthread_rwlock_init(&rwlock,NULL);
 
@@ -337,8 +321,8 @@ int main(int parameters_count, char* parameters[])
   }
 
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
-  memset(current_round_part,0,strlen(current_round_part));
-  memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
+  memset(current_round_part,0,sizeof(current_round_part));
+  memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
   memcpy(current_round_part,"1",1);
   memcpy(current_round_part_backup_node,"0",1);
 

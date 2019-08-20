@@ -159,9 +159,9 @@ int start_new_round()
 
     pthread_rwlock_wrlock(&rwlock);
     // reset the current_round_part and current_round_part_backup_node
-    memset(current_round_part,0,strlen(current_round_part));
+    memset(current_round_part,0,sizeof(current_round_part));
     memcpy(current_round_part,"1",1);
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
+    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
     memcpy(current_round_part_backup_node,"0",1);
     pthread_rwlock_unlock(&rwlock);
 
@@ -464,11 +464,11 @@ int data_network_node_create_block()
 
   pthread_rwlock_wrlock(&rwlock);
   // set the current_round_part
-  memset(current_round_part,0,strlen(current_round_part));
+  memset(current_round_part,0,sizeof(current_round_part));
   memcpy(current_round_part,"1",1);
 
   // set the current_round_part_backup_node
-  memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node));
+  memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
   memcpy(current_round_part_backup_node,"5",1);
   pthread_rwlock_unlock(&rwlock);
 
@@ -842,37 +842,37 @@ int start_part_4_of_round()
   pthread_rwlock_wrlock(&rwlock); \
   if (memcmp(current_round_part_backup_node,"0",1) == 0) \
   { \
-    memset(current_round_part,0,strlen(current_round_part)); \
+    memset(current_round_part,0,sizeof(current_round_part)); \
     memcpy(current_round_part,"1",1); \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"1",1); \
   } \
   else if (memcmp(current_round_part_backup_node,"1",1) == 0) \
   { \
-    memset(current_round_part,0,strlen(current_round_part)); \
+    memset(current_round_part,0,sizeof(current_round_part)); \
     memcpy(current_round_part,"1",1); \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"2",1); \
   } \
   else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
   { \
-    memset(current_round_part,0,strlen(current_round_part)); \
+    memset(current_round_part,0,sizeof(current_round_part)); \
     memcpy(current_round_part,"1",1); \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"3",1); \
   } \
   else if (memcmp(current_round_part_backup_node,"3",1) == 0) \
   { \
-    memset(current_round_part,0,strlen(current_round_part)); \
+    memset(current_round_part,0,sizeof(current_round_part)); \
     memcpy(current_round_part,"1",1); \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"4",1); \
   } \
   else if (memcmp(current_round_part_backup_node,"4",1) == 0) \
   { \
-    memset(current_round_part,0,strlen(current_round_part)); \
+    memset(current_round_part,0,sizeof(current_round_part)); \
     memcpy(current_round_part,"1",1); \
-    memset(current_round_part_backup_node,0,strlen(current_round_part_backup_node)); \
+    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"5",1); \
   } \
   else if (memcmp(current_round_part_backup_node,"5",1) == 0) \
@@ -903,7 +903,7 @@ int start_part_4_of_round()
 
     pthread_rwlock_wrlock(&rwlock);
     // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
+    memset(current_round_part,0,sizeof(current_round_part));
     memcpy(current_round_part,"1",1);
     pthread_rwlock_unlock(&rwlock);
   
@@ -1002,7 +1002,7 @@ int start_part_4_of_round()
 
     pthread_rwlock_wrlock(&rwlock);
     // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
+    memset(current_round_part,0,sizeof(current_round_part));
     memcpy(current_round_part,"2",1);
     pthread_rwlock_unlock(&rwlock);
 
@@ -1126,7 +1126,7 @@ int start_part_4_of_round()
 
     pthread_rwlock_wrlock(&rwlock);
     // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
+    memset(current_round_part,0,sizeof(current_round_part));
     memcpy(current_round_part,"3",1);
     pthread_rwlock_unlock(&rwlock);
 
