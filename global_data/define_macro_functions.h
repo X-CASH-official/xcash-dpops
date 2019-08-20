@@ -63,6 +63,22 @@ else \
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: append_string
+Description: append string
+Parameters:
+  data1 - data1
+  data2 - data2
+Return: Writes the correct code
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define append_string(data1,data2,data1_length) \
+memcpy(data1+strlen(data1),data2,strnlen(data2,data1_length - strlen(data1) - 1));
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: print_error_message
 Description: Prints all of the functions and error messages
 -----------------------------------------------------------------------------------------------------------
