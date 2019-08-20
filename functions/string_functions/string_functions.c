@@ -127,7 +127,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int create_json_data_from_database_document_array(struct database_document_fields* database_data, char* result, const char* DOCUMENT_FIELDS)
+int create_json_data_from_database_document_array(struct database_document_fields* database_data, char *result, const char* DOCUMENT_FIELDS)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -191,7 +191,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int create_json_data_from_database_multiple_documents_array(struct database_multiple_documents_fields* database_data, char* result, const char* DOCUMENT_FIELDS)
+int create_json_data_from_database_multiple_documents_array(struct database_multiple_documents_fields* database_data, char *result, const char* DOCUMENT_FIELDS)
 {
   // Variables
   char data[BUFFER_SIZE];

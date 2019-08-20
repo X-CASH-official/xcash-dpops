@@ -34,7 +34,7 @@ Return: 1 if successfull, otherwise 0
 -----------------------------------------------------------------------------------------------------------
 */
 
-int varint_encode(long long int number, char* result)
+int varint_encode(long long int number, char *result)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -72,14 +72,14 @@ int varint_encode(long long int number, char* result)
   // pad the string to a mulitple of 7 bits  
   for (count = strnlen(data,sizeof(data)); count % 7 != 0; count++)
   {
-    memcpy(result+strnlen(result,BUFFER_SIZE),"0",1);
+    memcpy(result+strlen(result),"0",1);
   }
 
   // reverse the string
   length = strnlen(data,sizeof(data));
   for (count = 0; count <= length; count++)
   {
-    memcpy(result+strnlen(result,BUFFER_SIZE),&data[length - count],1);
+    memcpy(result+strlen(result),&data[length - count],1);
   }
   memset(data,0,sizeof(data));
   memcpy(data,result,strnlen(result,sizeof(data)));
@@ -880,7 +880,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int blockchain_data_to_network_block_string(char* result)
+int blockchain_data_to_network_block_string(char *result)
 {
   // Variables
   size_t count = 0;

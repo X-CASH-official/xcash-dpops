@@ -531,7 +531,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int database_document_parse_json_data(const char* DATA, struct database_document_fields* result)
+int database_document_parse_json_data(const char* DATA, struct database_document_fields *result)
 {
   // Variables
   char* data2;
@@ -582,7 +582,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int database_multiple_documents_parse_json_data(const char* DATA, struct database_multiple_documents_fields* result, const int document_count)
+int database_multiple_documents_parse_json_data(const char* DATA, struct database_multiple_documents_fields *result, const int document_count)
 {
   // Variables
   char* data2;
@@ -634,7 +634,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int read_document_all_fields_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, struct database_document_fields* result, const int THREAD_SETTINGS)
+int read_document_all_fields_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, struct database_document_fields *result, const int THREAD_SETTINGS)
 {
   // Constants
   const bson_t* current_document;
@@ -748,7 +748,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int read_multiple_documents_all_fields_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, struct database_multiple_documents_fields* result, const size_t DOCUMENT_COUNT_START, const size_t DOCUMENT_COUNT_TOTAL, const int DOCUMENT_OPTIONS, const char* DOCUMENT_OPTIONS_DATA, const int THREAD_SETTINGS)
+int read_multiple_documents_all_fields_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, struct database_multiple_documents_fields *result, const size_t DOCUMENT_COUNT_START, const size_t DOCUMENT_COUNT_TOTAL, const int DOCUMENT_OPTIONS, const char* DOCUMENT_OPTIONS_DATA, const int THREAD_SETTINGS)
 {
   // Constants
   const bson_t* current_document;

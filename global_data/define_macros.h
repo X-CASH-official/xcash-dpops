@@ -59,6 +59,7 @@ Using define statements instead of constants for increased efficiency
 #define BUFFER_SIZE_NETWORK_BLOCK_DATA 500
 #define BUFFER_SIZE_NETWORK_BLOCK_TRANSACTIONS_DATA 100
 
+
 #define RANDOM_STRING_LENGTH 100 // The length of the random string
 #define DATA_HASH_LENGTH 128 // The length of the SHA2-512 hash
 #define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address

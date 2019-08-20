@@ -34,7 +34,7 @@ int main(int parameters_count, char* parameters[])
   srand(time(0));
 
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char data[BUFFER_SIZE];
   size_t count = 0;
   size_t count2 = 0;
 
@@ -50,16 +50,7 @@ int main(int parameters_count, char* parameters[])
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup();
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    pointer_reset(data);
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
 
   // initialize the global variables
   memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
@@ -345,7 +336,6 @@ int main(int parameters_count, char* parameters[])
     error_message.total++;
     print_error_message; 
     database_reset;
-    pointer_reset(data);
     exit(0);
   }
 
@@ -365,7 +355,6 @@ int main(int parameters_count, char* parameters[])
       printf(INVALID_PARAMETERS_ERROR_MESSAGE);
     }  
     database_reset;
-    pointer_reset(data);
     exit(0);
   }
 
@@ -377,14 +366,13 @@ int main(int parameters_count, char* parameters[])
     error_message.total++;
     print_error_message; 
     database_reset;
-    pointer_reset(data);
     exit(0);
   }
 
   start:
 
   // get the block verifiers IP address
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   memcpy(data,"{\"public_address\":\"",19);
   memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(data+117,"\"}",2);
@@ -395,7 +383,6 @@ int main(int parameters_count, char* parameters[])
     error_message.total++;
     print_error_message; 
     database_reset;
-    pointer_reset(data);
     exit(0);
   }
 
@@ -413,7 +400,6 @@ int main(int parameters_count, char* parameters[])
       error_message.total++;
       print_error_message; 
       database_reset;
-      pointer_reset(data);
       exit(0);
     }
     /*if (check_if_databases_are_synced() == 0)
@@ -423,7 +409,6 @@ int main(int parameters_count, char* parameters[])
       error_message.total++;
       print_error_message; 
       database_reset;
-      pointer_reset(data);
       exit(0);
     }*/
     goto start;
@@ -471,7 +456,6 @@ int main(int parameters_count, char* parameters[])
       error_message.total++;
       print_error_message; 
       database_reset;
-      pointer_reset(data);
       exit(0);
     }
     if (count2 != NETWORK_DATA_NODES_AMOUNT)
@@ -484,7 +468,6 @@ int main(int parameters_count, char* parameters[])
         error_message.total++;
         print_error_message; 
         database_reset;
-        pointer_reset(data);
         exit(0);
       }*/
     }
@@ -499,7 +482,6 @@ int main(int parameters_count, char* parameters[])
       error_message.total++;
       print_error_message; 
       database_reset;
-      pointer_reset(data);
       exit(0);
     }
 
@@ -511,7 +493,6 @@ int main(int parameters_count, char* parameters[])
       error_message.total++;
       print_error_message; 
       database_reset;
-      pointer_reset(data);
       exit(0);
     }*/
   }
@@ -527,11 +508,7 @@ int main(int parameters_count, char* parameters[])
     error_message.total++;
     print_error_message; 
     database_reset;
-    pointer_reset(data);
     exit(0);
-    color_print("Could not start the current_block_height_timer_thread","red");
-    database_reset;
-    pointer_reset(data);
   }
   
   color_print("Started the current block height timer thread","green");
@@ -544,7 +521,6 @@ int main(int parameters_count, char* parameters[])
     error_message.total++;
     print_error_message; 
     database_reset;
-    pointer_reset(data);
     exit(0);  
   }
 
@@ -558,7 +534,6 @@ int main(int parameters_count, char* parameters[])
     error_message.total++;
     print_error_message; 
     database_reset;
-    pointer_reset(data);
     exit(0);
   }
 
@@ -574,13 +549,11 @@ int main(int parameters_count, char* parameters[])
       error_message.total++;
       print_error_message; 
       database_reset;
-      pointer_reset(data);
       exit(0);
     }
   } 
 
   database_reset;
-  pointer_reset(data);
   return 0;  
 
   #undef database_reset

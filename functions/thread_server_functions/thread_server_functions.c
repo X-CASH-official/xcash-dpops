@@ -547,9 +547,20 @@ void* send_data_socket_thread(void* parameters)
     SEND_DATA_SOCKET_ERROR;
   }
 
-  // send the message 
+  // send the message   
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
-  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
+  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING));
+  memcpy(str,"Sending ",8);
+  memcpy(str+8,&message[25],strlen(message) - strlen(strstr(message,"\",\r\n")) - 25);
+  memcpy(str+strlen(str)," to ",4);
+  memcpy(str+strlen(str),data->HOST,HOST_LENGTH);
+  memcpy(str+strlen(str)," on port ",9);
+  memcpy(str+strlen(str),buffer2,strnlen(buffer2,BUFFER_SIZE));
+  memcpy(str+strlen(str),"\n",1);
+  memcpy(str+strlen(str),asctime(current_UTC_date_and_time),strnlen(asctime(current_UTC_date_and_time),BUFFER_SIZE));
+  color_print(str,"green");
+  memset(str,0,sizeof(str));
+
   const int TOTAL = strnlen(message,BUFFER_SIZE);
   int sent = 0;
   int bytes = 0;
@@ -689,9 +700,20 @@ void* send_and_receive_data_socket_thread(void* parameters)
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
   }
 
-  // send the message 
+  // send the message   
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
   memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING));
+  memcpy(str,"Sending ",8);
+  memcpy(str+8,&message[25],strlen(message) - strlen(strstr(message,"\",\r\n")) - 25);
+  memcpy(str+strlen(str)," to ",4);
+  memcpy(str+strlen(str),data->HOST,HOST_LENGTH);
+  memcpy(str+strlen(str)," on port ",9);
+  memcpy(str+strlen(str),buffer2,strnlen(buffer2,BUFFER_SIZE));
+  memcpy(str+strlen(str),"\n",1);
+  memcpy(str+strlen(str),asctime(current_UTC_date_and_time),strnlen(asctime(current_UTC_date_and_time),BUFFER_SIZE));
+  color_print(str,"green");
+  memset(str,0,sizeof(str));
+ 
   const int TOTAL = strnlen(message,BUFFER_SIZE);
   int sent = 0;
   int bytes = 0;
