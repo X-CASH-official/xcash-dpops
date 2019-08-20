@@ -49,7 +49,7 @@ Return: NULL
 int start_new_round()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
   size_t count;
   size_t count2;
   int settings;
@@ -58,27 +58,17 @@ int start_new_round()
   // define macros
   #define START_NEW_ROUND_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_new_round",15); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"start_new_round",15);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
 
   // start a new round
   if (get_current_block_height(current_block_height,0) == 0)
   {
     START_NEW_ROUND_ERROR("Could not get the current block height");
   }
-  memset(data,0,strlen(data));
   memcpy(data,"A new round is starting for block ",34);
   memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
   print_start_message(data);
@@ -128,12 +118,12 @@ int start_new_round()
   // check if the current block height - 1 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
   sscanf(current_block_height,"%zu", &count);
   count = count - 1;
-  memset(data,0,strnlen(data,BUFFER_SIZE));
+  memset(data,0,sizeof(data,BUFFER_SIZE));
   sprintf(data,"%zu",count);
   settings = get_block_settings(data,0);
   sscanf(current_block_height,"%zu", &count);
   count = count - 2;
-  memset(data,0,strnlen(data,BUFFER_SIZE));
+  memset(data,0,sizeof(data,BUFFER_SIZE));
   sprintf(data,"%zu",count);
   settings2 = get_block_settings(data,0);
   if (settings == 0)
@@ -195,7 +185,6 @@ int start_new_round()
       printf("\n");
     }
   }
-  pointer_reset(data);
   return 1;
 
   #undef START_NEW_ROUND_ERROR
@@ -214,49 +203,22 @@ Return: NULL
 int start_current_round_start_blocks()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count; 
   size_t count2; 
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL;
-
   #define START_CURRENT_ROUND_START_BLOCKS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
-  {
-    if (data == NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 == NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 == NULL)
-    {
-      pointer_reset(data3);
-    }
-    memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // set the main_network_data_node_create_block so the main network data node can create the block
   main_network_data_node_create_block = 1;
@@ -386,14 +348,14 @@ int start_current_round_start_blocks()
   }
   
   // convert the blockchain_data to a network_block_string
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   if (blockchain_data_to_network_block_string(VRF_data.block_blob) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the blockchain_data to a network_block_string");
   }
 
   // sign the network block string
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign the network block string");
@@ -416,14 +378,14 @@ int start_current_round_start_blocks()
   }
 
   // add the data hash to the network block string
-  memset(data,0,strnlen(data,BUFFER_SIZE));
+  memset(data,0,sizeof(data,BUFFER_SIZE));
   if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the network block string data hash");
   }
 
   // update the reserve bytes database
-  memset(data2,0,strnlen(data2,BUFFER_SIZE));
+  memset(data2,0,sizeof(data2,BUFFER_SIZE));
   memcpy(data2,"{\"block_height\":\"",17);
   memcpy(data2+17,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
   memcpy(data2+strlen(data2),"\",\"reserve_bytes_data_hash\":\"",29);
@@ -432,7 +394,7 @@ int start_current_round_start_blocks()
   memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
   memcpy(data2+strlen(data2),"\"}",2);
 
-  memset(data3,0,strnlen(data3,BUFFER_SIZE));
+  memset(data3,0,sizeof(data3,BUFFER_SIZE));
   memcpy(data3,"reserve_bytes_",14);
   count2 = ((blockchain_data.block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   sprintf(data3+14,"%zu",count2);
@@ -450,11 +412,9 @@ int start_current_round_start_blocks()
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the block to the network");
   }*/
-
-  pointer_reset_all;
+  
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef START_CURRENT_ROUND_START_BLOCKS_ERROR
 }
 
@@ -471,9 +431,9 @@ Return: NULL
 int data_network_node_create_block()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   size_t count; 
   size_t counter;
@@ -483,42 +443,15 @@ int data_network_node_create_block()
   pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL;
-
   #define DATA_NETWORK_NODE_CREATE_BLOCK_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
-  {
-    if (data == NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 == NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 == NULL)
-    {
-      pointer_reset(data3);
-    }
-    memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   memcpy(data,"The block producer and all backup block producers have not been able to create the network block\nThe main network data node will now create the network block",157);
   print_start_message(data);
@@ -661,7 +594,7 @@ int data_network_node_create_block()
     }
 
     // sign the network block string
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign the network block string");
@@ -678,10 +611,10 @@ int data_network_node_create_block()
     }
 
     // create the message
-    memset(data3,0,strlen(data3));
+    memset(data3,0,sizeof(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"",103);
     memcpy(data3+103,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
-    memcpy(data3+strlen(data3),"\",\r\n}",5);
+    memcpy(data3+sizeof(data3),"\",\r\n}",5);
   
     // sign_data
     if (sign_data(data3,0) == 0)
@@ -721,16 +654,16 @@ int data_network_node_create_block()
     }
 
     // convert the blockchain_data to a network_block_string
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     if (blockchain_data_to_network_block_string(data) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not convert the blockchain_data to a network_block_string");
     }
 
     // get the previous network block string
-    memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));
-    memset(data3,0,strlen(data3));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
     sscanf(current_block_height,"%zu", &count);
     if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {
@@ -741,8 +674,8 @@ int data_network_node_create_block()
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(data,"{\"block_height\":\"",17);
     memcpy(data+17,data3,strnlen(data3,BUFFER_SIZE));
-    memcpy(data+strlen(data),"\"}",2);
-    memset(data3,0,strlen(data3));
+    memcpy(data+sizeof(data),"\"}",2);
+    memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
     sprintf(data3+14,"%zu",count2);
     if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,0) == 0)
@@ -751,7 +684,7 @@ int data_network_node_create_block()
     }
 
     // verify the block
-    memset(data3,0,strlen(data3));
+    memset(data3,0,sizeof(data3));
     sprintf(data3,"%zu",count);
     if (count != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {    
@@ -769,14 +702,14 @@ int data_network_node_create_block()
     }
 
     // convert the blockchain_data to a network_block_string
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     if (blockchain_data_to_network_block_string(data) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not convert the blockchain_data to a network_block_string");
     }
 
     // add the data hash to the network block string
-    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memset(data,0,sizeof(data,BUFFER_SIZE));
     if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the network block string data hash");
@@ -798,11 +731,9 @@ int data_network_node_create_block()
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes(0);
   }
-   
-  pointer_reset_all;
+  
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef DATA_NETWORK_NODE_CREATE_BLOCK_ERROR
   #undef SEND_DATA_SOCKET_THREAD
 }
@@ -822,9 +753,9 @@ Return: 0 if an error has occured, 1 if successfull
 int start_part_4_of_round()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));  
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count = 0;
   size_t count2;
   size_t counter;
@@ -835,19 +766,10 @@ int start_part_4_of_round()
   pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL;
-
   #define START_PART_4_OF_ROUND_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_part_4_of_round",21); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;  
 
   #define SEND_DATA_SOCKET_THREAD(message) \
@@ -868,14 +790,14 @@ int start_part_4_of_round()
   #define RESTART_ROUND(message) \
   printf("\n"); \
   color_print(message,"red"); \
-  memset(data,0,strlen(data)); \
+  memset(data,0,sizeof(data)); \
   memcpy(data,"Restarting the round for block ",31); \
   memcpy(data+31,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
   print_start_message(data); \
   printf("\n"); \
-  memset(data,0,strlen(data)); \
-  memset(data2,0,strlen(data2)); \
-  memset(data3,0,strlen(data3)); \
+  memset(data,0,sizeof(data)); \
+  memset(data2,0,sizeof(data2)); \
+  memset(data3,0,sizeof(data3)); \
   memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4)); \
   memset(VRF_data.vrf_secret_key_round_part_4,0,strlen(VRF_data.vrf_secret_key_round_part_4)); \
   memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4)); \
@@ -942,27 +864,9 @@ int start_part_4_of_round()
   sync_block_verifiers_seconds(0); \
   goto start;  
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    memcpy(error_message.function[error_message.total],"start_part_4_of_round",21);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // set the main_network_data_node_create_block so the main network data node can create the block
   main_network_data_node_create_block = 0;
@@ -1003,7 +907,7 @@ int start_part_4_of_round()
     } 
 
     // create the message
-    memset(data3,0,strlen(data3));
+    memset(data3,0,sizeof(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\",\r\n \"vrf_secret_key\": \"",92);
     memcpy(data3+92,VRF_data.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
     memcpy(data3+220,"\",\r\n \"vrf_public_key\": \"",24);
@@ -1011,7 +915,7 @@ int start_part_4_of_round()
     memcpy(data3+308,"\",\r\n \"random_data\": \"",21);
   
     // create random data to use in the alpha string of the VRF data
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     if (random_string(data,RANDOM_STRING_LENGTH) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not create random data for the VRF data");
@@ -1108,8 +1012,8 @@ int start_part_4_of_round()
       sprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
     }
 
-    memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,strlen(VRF_data.vrf_alpha_string_data_round_part_4));
 
     // convert the SHA512 data hash to a string
@@ -1121,7 +1025,7 @@ int start_part_4_of_round()
     // check what block verifiers vrf secret key and vrf public key to use
     for (count = 0; count < DATA_HASH_LENGTH; count += 2)
     {
-      memset(data,0,strlen(data));
+      memset(data,0,sizeof(data));
       memcpy(data,&data2[count],2);
       counter = (int)strtol(data, NULL, 16);  
    
@@ -1167,7 +1071,7 @@ int start_part_4_of_round()
     }
 
     memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
-    memset(VRF_data.block_blob,0,sizeof(VRF_data.block_blob));
+    memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
     // create the block template and send it to all block verifiers if the block verifier is the block producer
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
@@ -1179,10 +1083,10 @@ int start_part_4_of_round()
       }  
 
       // create the message
-      memset(data,0,strlen(data));
+      memset(data,0,sizeof(data));
       memcpy(data,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"",97);
       memcpy(data+97,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
-      memcpy(data+strlen(data),"\",\r\n}",5);
+      memcpy(data+sizeof(data),"\",\r\n}",5);
 
       // sign_data
       if (sign_data(data,0) == 0)
@@ -1297,14 +1201,14 @@ int start_part_4_of_round()
     memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,64);
 
     // convert the blockchain_data to a network_block_string
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     if (blockchain_data_to_network_block_string(VRF_data.block_blob) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not convert the blockchain_data to a network_block_string");
     }
 
     // sign the network block string
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not sign the network block string");
@@ -1320,7 +1224,7 @@ int start_part_4_of_round()
     }
 
     // create the message
-    memset(data3,0,strlen(data3));
+    memset(data3,0,sizeof(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
     memcpy(data3+110,data,XCASH_SIGN_DATA_LENGTH);
     memcpy(data3+203,"\",\r\n}",5);
@@ -1369,9 +1273,9 @@ int start_part_4_of_round()
     }
 
     // get the previous network block string
-    memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));
-    memset(data3,0,strlen(data3));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
     sscanf(current_block_height,"%zu", &count);
     if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {
@@ -1381,7 +1285,7 @@ int start_part_4_of_round()
     sprintf(data3,"%zu",count);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(data,"{\"block_height\":\"",17);
-    memcpy(data+17,data3,strnlen(data3,BUFFER_SIZE));
+    memcpy(data+17,data3,strnlen(data3,sizeof(data)));
     memcpy(data+strlen(data),"\"}",2);
     memset(data3,0,strlen(data3));
     memcpy(data3,"reserve_bytes_",14);
@@ -1392,7 +1296,7 @@ int start_part_4_of_round()
     }
 
     // verify the block
-    memset(data3,0,strlen(data3));
+    memset(data3,0,sizeof(data3));
     sprintf(data3,"%zu",count);
     if (count != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {    
@@ -1410,15 +1314,15 @@ int start_part_4_of_round()
     }
 
     // convert the blockchain_data to a network_block_string
-	  memset(data,0,strlen(data));	
+	  memset(data,0,sizeof(data));	
 	  if (blockchain_data_to_network_block_string(data) == 0)	
 	  {		 
 	    START_PART_4_OF_ROUND_ERROR("Could not convert the blockchain_data to a network_block_string");	
 	  }
 
     // get the data hash of the network block string
-    memset(data2,0,strlen(data2));
-    memset(data3,0,strlen(data3));
+    memset(data2,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
     crypto_hash_sha512((unsigned char*)data2,(const unsigned char*)data,(unsigned long long)strnlen(data,BUFFER_SIZE));
 
     // convert the SHA512 data hash to a string
@@ -1431,7 +1335,7 @@ int start_part_4_of_round()
     memcpy(current_round_part_vote_data.current_vote_results,data3,DATA_HASH_LENGTH);
 
     // create the message
-    memset(data3,0,strlen(data3));
+    memset(data3,0,sizeof(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
     memcpy(data3+strlen(data3),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
     memcpy(data3+strlen(data3),"\",\r\n}",5); 
@@ -1466,7 +1370,7 @@ int start_part_4_of_round()
     // at this point all block verifiers have the same network block string with all of the VRF data
 
     // add the data hash to the network block string
-    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memset(data,0,sizeof(data));
     if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not add the network block string data hash");
@@ -1497,11 +1401,8 @@ int start_part_4_of_round()
         sleep(2);
       }    
     }*/
-
-    pointer_reset_all;
     return 1;
 
-    #undef pointer_reset_all
     #undef START_PART_4_OF_ROUND_ERROR
     #undef SEND_DATA_SOCKET_THREAD
     #undef RESTART_ROUND
@@ -1642,46 +1543,23 @@ Description: Updates the databases
 int update_databases()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count;
   size_t count2;
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL;
-
   #define UPDATE_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"update_databases",16); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data == NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 == NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"update_databases",16);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
-
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  
   // get the previous block height
   sscanf(current_block_height, "%zu", &count);
   if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
@@ -1719,11 +1597,8 @@ int update_databases()
   {
     UPDATE_DATABASE_ERROR("Could not update the round statistics");
   }
-
-  pointer_reset_all;  
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef UPDATE_DATABASE_ERROR
 }
 
@@ -1741,62 +1616,36 @@ Parameters:
 int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
   size_t count;
   size_t count2;
   size_t number;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(message); \
-  message = NULL;
   
   #define ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"add_block_verifiers_round_statistics",36); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || message == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    memcpy(error_message.function[error_message.total],"add_block_verifiers_round_statistics",36);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     // create the message
-    memset(message,0,strnlen(message,BUFFER_SIZE));
+    memset(message,0,sizeof(message));
     memcpy(message,"{\"public_address\":\"",19);
     memcpy(message+19,previous_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
     memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
 
     // add one to the block_verifier_total_rounds for every block verifier
-    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memset(data,0,sizeof(data));
     if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data,0) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_total_rounds from the database");
@@ -1804,7 +1653,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     count2 = strnlen(data,BUFFER_SIZE);
     sscanf(data, "%zu", &number);
     number++;
-    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memset(data,0,sizeof(data));
     memcpy(data,"{\"block_verifier_total_rounds\":\"",32);
     sprintf(data+32,"%zu",number); 
     memcpy(data+32+count2,"\"}",2);
@@ -1816,7 +1665,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     // add one to the block_verifier_online_total_rounds for every block verifier that is currently online
     if (send_data_socket((const char*)previous_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,"") == 1)
     {
-      memset(data,0,strnlen(data,BUFFER_SIZE));
+      memset(data,0,sizeof(data));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_online_total_rounds",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_online_total_rounds from the database");
@@ -1824,7 +1673,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       count2 = strnlen(data,BUFFER_SIZE);
       sscanf(data, "%zu", &number);
       number++;
-      memset(data,0,strnlen(data,BUFFER_SIZE));
+      memset(data,0,sizeof(data));
       memcpy(data,"{\"block_verifier_online_total_rounds\":\"",39);
       sprintf(data+39,"%zu",number); 
       memcpy(data+39+count2,"\"}",2);
@@ -1837,7 +1686,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     // add one to the block_producer_total_rounds and the current block height to the block_producer_block_heights if the public address is the block producer
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))
     {
-      memset(data,0,strnlen(data,BUFFER_SIZE));
+      memset(data,0,sizeof(data));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_total_rounds",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_total_rounds from the database");
@@ -1845,7 +1694,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       count2 = strnlen(data,BUFFER_SIZE);
       sscanf(data, "%zu", &number);
       number++;
-      memset(data,0,strnlen(data,BUFFER_SIZE));
+      memset(data,0,sizeof(data));
       memcpy(data,"{\"block_producer_total_rounds\":\"",39);
       sprintf(data+39,"%zu",number); 
       memcpy(data+39+count2,"\"}",2);
@@ -1854,17 +1703,17 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_total_rounds in the database");
       }
 
-      memset(data,0,strnlen(data,BUFFER_SIZE));
+      memset(data,0,sizeof(data));
       if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_block_heights",data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database");
       }      
       memcpy(data,",",1);
-      memcpy(data+1,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,BUFFER_SIZE));
-      memset(data2,0,strnlen(data2,BUFFER_SIZE));
+      memcpy(data+1,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,sizeof(data)));
+      memset(data2,0,strnlen(data2,sizeof(data2)));
       memcpy(data2,"{\"block_producer_block_heights\":\"",33);
-      memcpy(data2+33,data,strnlen(data,BUFFER_SIZE));
-      memcpy(data2+33+strnlen(data,BUFFER_SIZE),"\"}",2);
+      memcpy(data2+33,data,strnlen(data,sizeof(data2)));
+      memcpy(data2+33+strnlen(data,sizeof(data2)),"\"}",2);
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
@@ -1874,7 +1723,6 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
   return 1;
 
   #undef DATABASE_COLLECTION
-  #undef pointer_reset_all
   #undef ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR
 }
 
@@ -1894,26 +1742,26 @@ int add_round_statistics()
   const bson_t* current_document;
 
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* settings = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* delegates_name = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* block_verifier_total_rounds_delegates_name = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* best_block_verifier_online_percentage_delegate_name = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* most_block_producer_total_rounds_delegate_name = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message1 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message4 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message5 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message6 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message7 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message8 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message9 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message10 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message11 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message12 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  char settings[BUFFER_SIZE];
+  char delegates_name[BUFFER_SIZE];
+  char block_verifier_total_rounds_delegates_name[BUFFER_SIZE];
+  char best_block_verifier_online_percentage_delegate_name[BUFFER_SIZE];
+  char most_block_producer_total_rounds_delegate_name[BUFFER_SIZE];
+  char message1[BUFFER_SIZE];
+  char message2[BUFFER_SIZE];
+  char message3[BUFFER_SIZE];
+  char message4[BUFFER_SIZE];
+  char message5[BUFFER_SIZE];
+  char message6[BUFFER_SIZE];
+  char message7[BUFFER_SIZE];
+  char message8[BUFFER_SIZE];
+  char message9[BUFFER_SIZE];
+  char message10[BUFFER_SIZE];
+  char message11[BUFFER_SIZE];
+  char message12[BUFFER_SIZE];
   size_t block_verifier_total_rounds_count = 0;
   size_t block_verifier_total_rounds_count2 = 0;
   size_t most_block_producer_total_rounds_count = 0;
@@ -1931,108 +1779,12 @@ int add_round_statistics()
   // define macros
   #define MESSAGE "{\"username\":\"xcash\"}"
   #define DATABASE_COLLECTION "statistics"
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL; \
-  free(settings); \
-  settings = NULL; \
-  free(delegates_name); \
-  delegates_name = NULL; \
-  free(block_verifier_total_rounds_delegates_name); \
-  block_verifier_total_rounds_delegates_name = NULL; \
-  free(best_block_verifier_online_percentage_delegate_name); \
-  best_block_verifier_online_percentage_delegate_name = NULL; \
-  free(most_block_producer_total_rounds_delegate_name); \
-  most_block_producer_total_rounds_delegate_name = NULL; \
-  free(message1); \
-  message1 = NULL; \
-  free(message2); \
-  message2 = NULL; \
-  free(message3); \
-  message3 = NULL; \
-  free(message4); \
-  message4 = NULL; \
-  free(message5); \
-  message5 = NULL; \
-  free(message6); \
-  message6 = NULL;
 
   #define ADD_ROUND_STATISTICS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"add_round_statistics",20); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL || settings == NULL || delegates_name == NULL || block_verifier_total_rounds_delegates_name == NULL || best_block_verifier_online_percentage_delegate_name == NULL || most_block_producer_total_rounds_delegate_name == NULL || message1 == NULL || message2 == NULL || message3 == NULL || message4 == NULL || message5 == NULL || message6 == NULL)
-  {   
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    if (settings != NULL)
-    {
-      pointer_reset(settings);
-    }
-    if (delegates_name != NULL)
-    {
-      pointer_reset(delegates_name);
-    }
-    if (block_verifier_total_rounds_delegates_name != NULL)
-    {
-      pointer_reset(block_verifier_total_rounds_delegates_name);
-    }
-    if (best_block_verifier_online_percentage_delegate_name != NULL)
-    {
-      pointer_reset(best_block_verifier_online_percentage_delegate_name);
-    }
-    if (most_block_producer_total_rounds_delegate_name != NULL)
-    {
-      pointer_reset(most_block_producer_total_rounds_delegate_name);
-    }
-    if (message1 != NULL)
-    {
-      pointer_reset(message1);
-    }
-    if (message2 != NULL)
-    {
-      pointer_reset(message2);
-    }
-    if (message3 != NULL)
-    {
-      pointer_reset(message3);
-    }
-    if (message4 != NULL)
-    {
-      pointer_reset(message4);
-    }
-    if (message5 != NULL)
-    {
-      pointer_reset(message5);
-    }
-    if (message6 != NULL)
-    {
-      pointer_reset(message6);
-    }
-    memcpy(error_message.function[error_message.total],"add_round_statistics",20);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }  
   
   // set the collection
   collection = mongoc_client_get_collection(database_client, DATABASE_NAME,"delegates");
@@ -2041,13 +1793,29 @@ int add_round_statistics()
   while (mongoc_cursor_next(document_settings, &current_document))
   {
     // reset the variables
-    memset(data,0,strnlen(data,10485760));
-    memset(data2,0,strnlen(data2,BUFFER_SIZE));
-    memset(data3,0,strnlen(data3,BUFFER_SIZE));
-    memset(settings,0,strnlen(settings,BUFFER_SIZE));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
+    memset(settings,0,sizeof(settings));
+    memset(delegates_name,0,sizeof(delegates_name));
+    memset(block_verifier_total_rounds_delegates_name,0,sizeof(block_verifier_total_rounds_delegates_name));
+    memset(best_block_verifier_online_percentage_delegate_name,0,sizeof(best_block_verifier_online_percentage_delegate_name));
+    memset(most_block_producer_total_rounds_delegate_name,0,sizeof(most_block_producer_total_rounds_delegate_name));
+    memset(message1,0,sizeof(message1));
+    memset(message2,0,sizeof(message2));
+    memset(message3,0,sizeof(message3));
+    memset(message4,0,sizeof(message4));
+    memset(message5,0,sizeof(message5));
+    memset(message6,0,sizeof(message6));
+    memset(message7,0,sizeof(message7));
+    memset(message8,0,sizeof(message8));
+    memset(message9,0,sizeof(message9));
+    memset(message10,0,sizeof(message10));
+    memset(message11,0,sizeof(message11));
+    memset(message12,0,sizeof(message12)); 
 
     message = bson_as_canonical_extended_json(current_document, NULL);
-    memcpy(data,message,strnlen(message,BUFFER_SIZE));
+    memcpy(data,message,strnlen(message,sizeof(data)));
     bson_free(message);
 
     // get the delegate_name
@@ -2058,7 +1826,7 @@ int add_round_statistics()
     message_copy1 = strstr(data,data2) + strnlen(data2,BUFFER_SIZE);
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(delegates_name,message_copy1,message_copy2 - message_copy1);
-    memset(data2,0,strnlen(data2,BUFFER_SIZE));
+    memset(data2,0,sizeof(data2));
 
     // get the block_verifier_total_rounds
     memcpy(data2,", \"",3);
@@ -2070,8 +1838,8 @@ int add_round_statistics()
     memcpy(data3,message_copy1,message_copy2 - message_copy1);
     sscanf(data3, "%zu", &block_verifier_total_rounds_count2);
     sscanf(data3, "%lf", &total2);
-    memset(data2,0,strnlen(data2,BUFFER_SIZE));
-    memset(data3,0,strnlen(data3,BUFFER_SIZE));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
 
     if (block_verifier_total_rounds_count2 > block_verifier_total_rounds_count)
     {
@@ -2089,8 +1857,8 @@ int add_round_statistics()
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(data3,message_copy1,message_copy2 - message_copy1);
     sscanf(data3, "%lf", &total3);
-    memset(data2,0,strnlen(data2,BUFFER_SIZE));
-    memset(data3,0,strnlen(data3,BUFFER_SIZE));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
 
     if (total3 / total2 > total)
     {
@@ -2107,8 +1875,8 @@ int add_round_statistics()
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(data3,message_copy1,message_copy2 - message_copy1);
     sscanf(data3, "%zu", &most_block_producer_total_rounds_count2);
-    memset(data2,0,strnlen(data2,BUFFER_SIZE));
-    memset(data3,0,strnlen(data3,BUFFER_SIZE));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
 
     if (most_block_producer_total_rounds_count2 > most_block_producer_total_rounds_count)
     {
@@ -2120,40 +1888,38 @@ int add_round_statistics()
 
   // create the message
   memcpy(message1,"{\"most_total_rounds_delegate_name\":\"",36);
-  memcpy(message1+36,block_verifier_total_rounds_delegates_name,strnlen(block_verifier_total_rounds_delegates_name,BUFFER_SIZE));
-  memcpy(message1+36+strnlen(block_verifier_total_rounds_delegates_name,BUFFER_SIZE),"\"}",2);
+  memcpy(message1+36,block_verifier_total_rounds_delegates_name,strnlen(block_verifier_total_rounds_delegates_name,sizeof(message1)));
+  memcpy(message1+36+strnlen(block_verifier_total_rounds_delegates_name,sizeof(message1)),"\"}",2);
 
   memcpy(message2,"{\"most_total_rounds\":\"",25);
   sprintf(message2+25,"%zu",block_verifier_total_rounds_count);
-  memcpy(message2+strnlen(message2,BUFFER_SIZE),"\"}",2);
+  memcpy(message2+strnlen(message2,sizeof(message2)),"\"}",2);
 
   memcpy(message3,"{\"best_block_verifier_online_percentage_delegate_name\":\"",56);
-  memcpy(message3+56,best_block_verifier_online_percentage_delegate_name,strnlen(settings,BUFFER_SIZE));
-  memcpy(message3+56+strnlen(best_block_verifier_online_percentage_delegate_name,BUFFER_SIZE),"\"}",2);
+  memcpy(message3+56,best_block_verifier_online_percentage_delegate_name,strnlen(settings,sizeof(message3)));
+  memcpy(message3+56+strnlen(best_block_verifier_online_percentage_delegate_name,sizeof(message3)),"\"}",2);
 
   memcpy(message4,"{\"best_block_verifier_online_percentage\":\"",45);
   sprintf(message4+45,"%lf",total);
-  memcpy(message4+strnlen(message4,BUFFER_SIZE),"\"}",2);
+  memcpy(message4+strnlen(message4,sizeof(message4)),"\"}",2);
 
   memcpy(message5,"{\"most_block_producer_total_rounds_delegate_name\":\"",51);
-  memcpy(message5+51,most_block_producer_total_rounds_delegate_name,strnlen(most_block_producer_total_rounds_delegate_name,BUFFER_SIZE));
-  memcpy(message5+51+strnlen(most_block_producer_total_rounds_delegate_name,BUFFER_SIZE),"\"}",2);
+  memcpy(message5+51,most_block_producer_total_rounds_delegate_name,strnlen(most_block_producer_total_rounds_delegate_name,sizeof(message5)));
+  memcpy(message5+51+strnlen(most_block_producer_total_rounds_delegate_name,sizeof(message5)),"\"}",2);
 
   memcpy(message6,"{\"most_block_producer_total_rounds\":\"",40);
   sprintf(message6+40,"%zu",most_block_producer_total_rounds_count);
-  memcpy(message6+strnlen(message6,BUFFER_SIZE),"\"}",2);
+  memcpy(message6+strnlen(message6,sizeof(message6)),"\"}",2);
 
   // update the database
   if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message6,0) == 0)
   {
     ADD_ROUND_STATISTICS_ERROR("Could not update the round statistics in the database");
   }
-
   return 1;
 
   #undef DATABASE_COLLECTION
   #undef MESSAGE
-  #undef pointer_reset_all
   #undef ADD_ROUND_STATISTICS_ERROR
 }
 
@@ -2169,16 +1935,17 @@ Description: Checks if the databases are synced, and if not syncs the databases
 int check_if_databases_are_synced()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
   size_t count;
 
   // define macros
   #define CHECK_IF_DATABASES_ARE_SYNCED_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"check_if_databases_are_synced",29); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
+
+  memset(data,0,sizeof(data));
 
   print_start_message("Checking if databases are synced");
 
@@ -2210,8 +1977,6 @@ int check_if_databases_are_synced()
   {
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the statistics database is updated. This means you might need to sync the statistics database.");
   }
-
-  pointer_reset(data);
   return 1;
 
   #undef CHECK_IF_DATABASES_ARE_SYNCED_ERROR
@@ -2231,9 +1996,9 @@ Return: 0 if an error has occured, 1 if successfull
 int calculate_main_nodes_roles()
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count;
   int count2;
   int count3;
@@ -2245,40 +2010,13 @@ int calculate_main_nodes_roles()
   // define macros
   #define CALCULATE_MAIN_NODES_ROLES(settings) \
   memcpy(error_message.function[error_message.total],"calculate_main_nodes_roles",26); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    memcpy(error_message.function[error_message.total],"calculate_main_nodes_roles",26);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
   
   sscanf(current_block_height,"%zu", &count);
   if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
@@ -2295,18 +2033,18 @@ int calculate_main_nodes_roles()
 
   // create the message
   memcpy(data3,"{\"block_height\":\"",17);
-  memcpy(data3+17,data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(data3+17,data2,strnlen(data2,sizeof(data3)));
   memcpy(data3+strlen(data3),"\"}",2);
 
   // get the reserve byte data
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   if (read_document_field_from_collection(DATABASE_NAME,data,data3,"reserve_bytes",data2,0) == 0)
   {
     CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
   }
 
   // get the vrf_beta_string_data_round_part_3
-  memset(data3,0,strlen(data3));
+  memset(data3,0,sizeof(data3));
   if (parse_reserve_bytes_data(data3,(const char*)data2,8) == 0)
   {
     CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
@@ -2314,7 +2052,7 @@ int calculate_main_nodes_roles()
 
   for (count = 0, count3 = 0, main_nodes_count = 0; count < VRF_BETA_LENGTH || main_nodes_count == 6; count += 2)
   {
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,&data3[count],2);
     count2 = (int)strtol(data, NULL, 16);  
    
@@ -2445,7 +2183,6 @@ int calculate_main_nodes_roles()
   return 1;
 
   #undef CALCULATE_MAIN_NODES_ROLES
-  #undef pointer_reset_all
 }
 
 
@@ -2496,81 +2233,72 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(const int CLIENT_SOCKET)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
   size_t count;
   size_t count2;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list",100); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list",100);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
 
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\",\r\n \"previous_block_verifiers_name_list\": \"",142);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),previous_block_verifiers_list.block_verifiers_name[count2],strnlen(previous_block_verifiers_list.block_verifiers_name[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),previous_block_verifiers_list.block_verifiers_name[count2],strnlen(previous_block_verifiers_list.block_verifiers_name[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"previous_block_verifiers_public_address_list\": \"",54);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),previous_block_verifiers_list.block_verifiers_public_address[count2],strnlen(previous_block_verifiers_list.block_verifiers_public_address[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),previous_block_verifiers_list.block_verifiers_public_address[count2],strnlen(previous_block_verifiers_list.block_verifiers_public_address[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"previous_block_verifiers_IP_address_list\": \"",50);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),previous_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(previous_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),previous_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(previous_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"current_block_verifiers_name_list\": \"",43);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_name[count2],strnlen(current_block_verifiers_list.block_verifiers_name[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_name[count2],strnlen(current_block_verifiers_list.block_verifiers_name[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"current_block_verifiers_public_address_list\": \"",54);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"current_block_verifiers_IP_address_list\": \"",50);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"next_block_verifiers_name_list\": \"",43);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),next_block_verifiers_list.block_verifiers_name[count2],strnlen(next_block_verifiers_list.block_verifiers_name[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),next_block_verifiers_list.block_verifiers_name[count2],strnlen(next_block_verifiers_list.block_verifiers_name[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"next_block_verifiers_public_address_list\": \"",54);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),next_block_verifiers_list.block_verifiers_public_address[count2],strnlen(next_block_verifiers_list.block_verifiers_public_address[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),next_block_verifiers_list.block_verifiers_public_address[count2],strnlen(next_block_verifiers_list.block_verifiers_public_address[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"next_block_verifiers_IP_address_list\": \"",50);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),next_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(next_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),next_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(next_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n}",5);
@@ -2586,7 +2314,6 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
-
   return 1;
 
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR
@@ -2607,27 +2334,18 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(const int CLIENT_SOCKET)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
   size_t count;
   size_t count2;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",86); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",86);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  
+  memset(data,0,sizeof(data));
 
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"",129);
@@ -2639,7 +2357,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_IP_address_list\": \"",41);
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],BUFFER_SIZE));
+    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n}",5);
@@ -2655,7 +2373,6 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
-
   return 1;
 
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR
@@ -2676,43 +2393,20 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   size_t count;
   size_t count2;
 
   // define macros
   #define DATABASE_COLLECTION "reserve_bytes"
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
 
   // get the database data hash for the reserve bytes database
   if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
@@ -2736,11 +2430,8 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node");
   }
-
-  pointer_reset_all;
   return 1;
 
-  #undef pointer_reset_all
   #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
 }
@@ -2761,55 +2452,23 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* reserve_proofs_database = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char reserve_proofs_database[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   size_t count;
 
   // define macros
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(reserve_proofs_database); \
-  reserve_proofs_database = NULL; \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update",107); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || reserve_proofs_database == NULL || data == NULL || data2 == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (reserve_proofs_database != NULL)
-    {
-      pointer_reset(reserve_proofs_database);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update",107);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(message,0,sizeof(message));
+  memset(reserve_proofs_database,0,sizeof(reserve_proofs_database));
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -2838,7 +2497,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
   else
   {
-    memset(message,0,strlen(message));
+    memset(message,0,sizeof(message));
     memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\",\r\n ",150);
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
@@ -2854,7 +2513,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
         SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
       }
       // get the database data hash for the reserve proofs database
-      memset(data2,0,strlen(data2));  
+      memset(data2,0,sizeof(data2));  
       memcpy(data2,"reserve_proofs_",15);  
       sprintf(data2+15,"%zu",count);
       if (get_database_data_hash(reserve_proofs_database,DATABASE_NAME,data2,0) == 0)
@@ -2885,10 +2544,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
-
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
 }
 
@@ -2908,43 +2565,21 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
 
   // define macros
   #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\",\r\n}"
   #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\",\r\n}"
   
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update",103); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update",103);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -2959,14 +2594,14 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // get the database data hash for the reserve proofs database
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
 
   // parse the message
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   if (parse_json_data(MESSAGE,"data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
@@ -2998,7 +2633,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
 
   return 1;
 
-  #undef pointer_reset_all
   #undef DATABASE_MESSAGE_SYNCED_TRUE
   #undef DATABASE_MESSAGE_SYNCED_FALSE
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR
@@ -3032,7 +2666,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update",106); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -3114,40 +2748,18 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update",106); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update",106);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -3162,7 +2774,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // get the database data hash for the reserve bytes database
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,"reserve_bytes",0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
@@ -3171,12 +2783,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // create the message
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n}",149);
   }
   else
   {
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n}",150);
   }
   
@@ -3193,8 +2805,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
 }
 
@@ -3214,43 +2825,22 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
 
   // define macros
   #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n}"
   #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n}"
   
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
+  // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update",102); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update",102);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -3265,14 +2855,14 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // get the database data hash for the reserve bytes database
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // parse the message
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   if (parse_json_data(MESSAGE,"data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
@@ -3281,12 +2871,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // create the message
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,DATABASE_MESSAGE_SYNCED_TRUE,strnlen(DATABASE_MESSAGE_SYNCED_TRUE,BUFFER_SIZE));
   }
   else
   {
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,DATABASE_MESSAGE_SYNCED_FALSE,strnlen(DATABASE_MESSAGE_SYNCED_FALSE,BUFFER_SIZE));
   }
   
@@ -3306,7 +2896,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   #undef DATABASE_MESSAGE_SYNCED_TRUE
   #undef DATABASE_MESSAGE_SYNCED_FALSE
-  #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR
 }
 
@@ -3338,7 +2927,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update",105); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -3420,41 +3009,19 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update",98); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update",105);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -3470,7 +3037,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   }
 
   // parse the message
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   if (parse_json_data(MESSAGE,"data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
@@ -3479,12 +3046,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   // create the message
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"true\",\r\n}",149);
   }
   else
   {
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"false\",\r\n}",150);
   }
   
@@ -3503,7 +3070,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   return 1;
 
   #undef DATABASE_COLLECTION
-  #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR
 }
 
@@ -3536,7 +3102,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update",101); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -3613,41 +3179,19 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
 
   // define macros
   #define DATABASE_COLLECTION "statistics"
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update",99); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update",99);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -3656,14 +3200,14 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   }
 
   // get the database data hash for the statistics database
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // parse the message
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   if (parse_json_data(MESSAGE,"data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
@@ -3672,12 +3216,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   // create the message
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"true\",\r\n}",149);
   }
   else
   {
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"false\",\r\n}",150);
   }
   
@@ -3694,8 +3238,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   }
 
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR
 }
 
@@ -3728,7 +3271,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",102); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -3805,71 +3348,29 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* delegates_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  char* public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  char* reserve_proof = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char delegates_public_address[BUFFER_SIZE];
+  char public_address[BUFFER_SIZE];
+  char reserve_proof[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count;
   int  count2;
   int settings = 0;
 
   // define macros
-  #define pointer_reset_all \
-  free(delegates_public_address); \
-  delegates_public_address = NULL; \
-  free(public_address); \
-  public_address = NULL; \
-  free(reserve_proof); \
-  reserve_proof = NULL; \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL; \
-
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_add_reserve_proof",68); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (delegates_public_address == NULL || public_address == NULL || reserve_proof == NULL || data == NULL || data2 == NULL)
-  {
-    if (delegates_public_address != NULL)
-    {
-      pointer_reset(delegates_public_address);
-    }
-    if (public_address != NULL)
-    {
-      pointer_reset(public_address);
-    }
-    if (reserve_proof != NULL)
-    {
-      pointer_reset(reserve_proof);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_add_reserve_proof",68);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(delegates_public_address,0,sizeof(delegates_public_address));
+  memset(public_address,0,sizeof(public_address));
+  memset(reserve_proof,0,sizeof(reserve_proof));
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -3896,7 +3397,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
 
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
     sprintf(data2+15,"%zu",count);
 
@@ -3914,7 +3415,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
 
   // check if the reserve proof is valid and the spent amount is 0
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
   if (check_reserve_proofs(data2,public_address,reserve_proof,0) == 0)
   {
     send_data(CLIENT_SOCKET,"The reserve proof is invalid",1);
@@ -3926,7 +3427,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   {
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
-      memset(data2,0,strlen(data2));
+      memset(data2,0,sizeof(data2));
       memcpy(data2,"reserve_proofs_",15);
       sprintf(data2+15,"%zu",count);
       if (count_documents_in_collection(DATABASE_NAME,data2,data3,0) > 0)
@@ -3942,21 +3443,21 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   
 
   // create the message
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   memcpy(data,"{\"public_address_created_reserve_proof\":\"",41);
   memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\",\"public_address_voted_for\":\"",30);
   memcpy(data+strlen(data),delegates_public_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\",\"total\":\"",11);
-  memcpy(data+strlen(data),data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
   memcpy(data+strlen(data),"\",\"reserve_proof\":\"",19);
-  memcpy(data+strlen(data),data2,strnlen(data2,BUFFER_SIZE_RESERVE_PROOF));
+  memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
 
   // add the reserve proof to the database
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
     sprintf(data+15,"%zu",count);
     if (count_documents_in_collection(DATABASE_NAME,data2,data,0) < 1000)
@@ -3985,10 +3486,8 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
       }      
     }
   }
-
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR
 }
 
@@ -4008,12 +3507,12 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs(const char* MESSAGE)
 {
   // Variables
-  char* block_verifiers_public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  char* public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  char* reserve_proof = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  char block_verifiers_public_address[BUFFER_SIZE];
+  char public_address[BUFFER_SIZE];
+  char reserve_proof[BUFFER_SIZE];
   char* data = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   char* data2 = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  char* data3 = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  char data3[BUFFER_SIZE];
   // since were going to be changing where data and data2 are referencing, we need to create a copy to pointer_reset
   char* datacopy = data; 
   char* datacopy2 = data2; 
@@ -4024,41 +3523,21 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
 
   // define macros
   #define pointer_reset_all \
-  free(block_verifiers_public_address); \
-  block_verifiers_public_address = NULL; \
-  free(public_address); \
-  public_address = NULL; \
-  free(reserve_proof); \
-  reserve_proof = NULL; \
   free(datacopy); \
   datacopy = NULL; \
   free(datacopy2); \
-  datacopy2 = NULL; \
-  free(data3); \
-  data3 = NULL;
+  datacopy2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs",84); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (block_verifiers_public_address == NULL || public_address == NULL || reserve_proof == NULL || data == NULL || data2 == NULL || data3 == NULL)
+  if (data == NULL || data2 == NULL)
   {
-    if (block_verifiers_public_address != NULL)
-    {
-      pointer_reset(block_verifiers_public_address);
-    }
-    if (public_address != NULL)
-    {
-      pointer_reset(public_address);
-    }
-    if (reserve_proof != NULL)
-    {
-      pointer_reset(reserve_proof);
-    }
     if (data != NULL)
     {
       pointer_reset(data);
@@ -4067,16 +3546,17 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
     {
       pointer_reset(data2);
     }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
     memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs",84);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message;  
     exit(0);
   }
+
+  memset(block_verifiers_public_address,0,sizeof(block_verifiers_public_address));
+  memset(public_address,0,sizeof(public_address));
+  memset(reserve_proof,0,sizeof(reserve_proof));
+  memset(data3,0,sizeof(data3));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -4094,12 +3574,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   for (count = 0; count < count2; count++)
   {
     // get the public address
-    memset(public_address,0,strlen(public_address));
+    memset(public_address,0,sizeof(public_address));
     memcpy(public_address,data,strnlen(strstr(data,"|"),XCASH_WALLET_LENGTH));
     data = strstr(data,"|") + 1;
 
     // get the reserve proof
-    memset(reserve_proof,0,strlen(reserve_proof));
+    memset(reserve_proof,0,sizeof(reserve_proof));
     memcpy(reserve_proof,data2,strnlen(strstr(data2,"|"),BUFFER_SIZE_RESERVE_PROOF));
     data2 = strstr(data2,"|") + 1;
 
@@ -4116,7 +3596,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
       if (settings == 1)
       {
         // check if the reserve proof is valid
-        memset(data3,0,strlen(data3));
+        memset(data3,0,sizeof(data3));
         if (check_reserve_proofs(data3,public_address,reserve_proof,0) == 0)
         {
           // add the reserve proof to the invalid_reserve_proofs struct
@@ -4128,7 +3608,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
       }
     } 
   }
-
   return 1;
 
   #undef pointer_reset_all
@@ -4151,56 +3630,25 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* delegate_name = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* delegate_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* delegates_IP_address = (char*)calloc(BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,sizeof(char));
+  char data[BUFFER_SIZE];
+  char delegate_name[BUFFER_SIZE];
+  char delegate_public_address[XCASH_WALLET_LENGTH+1];
+  char delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(delegate_name); \
-  delegate_name = NULL; \
-  free(delegate_public_address); \
-  delegate_public_address = NULL; \
-  free(delegates_IP_address); \
-  delegates_IP_address = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR(settings) \
   send_data(CLIENT_SOCKET,"false",1); \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_register_delegates",70); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || delegate_name == NULL || delegate_public_address == NULL || delegates_IP_address == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (delegate_name != NULL)
-    {
-      pointer_reset(delegate_name);
-    }
-    if (delegate_public_address != NULL)
-    {
-      pointer_reset(delegate_public_address);
-    }
-    if (delegates_IP_address != NULL)
-    {
-      pointer_reset(delegates_IP_address);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_register_delegates",70);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(delegate_name,0,sizeof(delegate_name));
+  memset(delegate_public_address,0,sizeof(delegate_public_address));
+  memset(delegates_IP_address,0,sizeof(delegates_IP_address));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -4243,13 +3691,13 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
 
   // create the message
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   memcpy(data,"{\"public_address\":\"",19);
   memcpy(data+strlen(data),delegate_public_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\",\"delegate_name\":\"",30);
-  memcpy(data+strlen(data),delegate_name,strnlen(delegate_name,BUFFER_SIZE));
+  memcpy(data+strlen(data),delegate_name,strnlen(delegate_name,sizeof(data)));
   memcpy(data+strlen(data),"\",\"IP_address\":\"",11);
-  memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
 
   // add the delegate to the database
@@ -4262,7 +3710,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   return 1;
 
   #undef DATABASE_COLLECTION
-  #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR
 }
 
@@ -4282,41 +3729,19 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* delegate_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char delegate_public_address[XCASH_WALLET_LENGTH+1];
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(delegate_public_address); \
-  delegate_public_address = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_remove_delegates",68); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || delegate_public_address == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (delegate_public_address != NULL)
-    {
-      pointer_reset(delegate_public_address);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_remove_delegates",68);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(delegate_public_address,0,sizeof(delegate_public_address));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -4353,7 +3778,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   return 1;
 
   #undef DATABASE_COLLECTION
-  #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR
 }
 
@@ -4373,62 +3797,25 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* delegate_public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* item = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* value = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char delegate_public_address[XCASH_WALLET_LENGTH+1];
+  char item[BUFFER_SIZE];
+  char value[BUFFER_SIZE];
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(delegate_public_address); \
-  delegate_public_address = NULL; \
-  free(item); \
-  item = NULL; \
-  free(value); \
-  value = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_update_delegates",68); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || delegate_public_address == NULL || item == NULL || value == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (delegate_public_address != NULL)
-    {
-      pointer_reset(delegate_public_address);
-    }
-    if (item != NULL)
-    {
-      pointer_reset(item);
-    }
-    if (value != NULL)
-    {
-      pointer_reset(value);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_update_delegates",68);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(delegate_public_address,0,sizeof(delegate_public_address));
+  memset(item,0,sizeof(item));
+  memset(value,0,sizeof(value));
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
@@ -4490,40 +3877,18 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; 
-
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // verify the data
   if (verify_data(MESSAGE,0,1) == 0 || memcmp(current_round_part_backup_node,"5",1) != 0 || main_network_data_node_create_block != 1)
@@ -4560,11 +3925,8 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not send the data to the main network data node");
   }
-
-  pointer_reset_all;
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR
 }
 
@@ -4583,41 +3945,19 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   int count;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4",59);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
-
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; 
-
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4",59); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   memset(VRF_data.block_blob,0,sizeof(VRF_data.block_blob));
 
@@ -4646,11 +3986,8 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Invalid main node");
   }
-
-  pointer_reset_all;
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR
 }
 
@@ -4669,56 +4006,24 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block(const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE]; 
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE]; 
   size_t count;
-  size_t count2;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL || data3 == NULL || message == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-     if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
-     if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4_create_new_block",76);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  size_t count2;  
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(data3); \
-  data3 = NULL; \
-  free(message); \
-  message = NULL;  
-
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4_create_new_block",76); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
+
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
@@ -4751,12 +4056,12 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     sprintf(data3,"%zu",count);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(message,"{\"block_height\":\"",17);
-    memcpy(message+17,data3,strnlen(data3,BUFFER_SIZE));
+    memcpy(message+17,data3,strnlen(data3,sizeof(message)));
     memcpy(message+strlen(message),"\"}",2);
-    memset(data3,0,strlen(data3));
+    memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
     sprintf(data3+14,"%zu",count2);
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,0) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
@@ -4770,7 +4075,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
 
     // SHA2-512 hash the received message
     memset(current_round_part_vote_data.current_vote_results,0,sizeof(current_round_part_vote_data.current_vote_results));
-    memset(data,0,strlen(data));
+    memset(data,0,sizeof(data));
     crypto_hash_sha512((unsigned char*)data,(const unsigned char*)MESSAGE,(unsigned long long)strnlen(MESSAGE,BUFFER_SIZE));
 
     // convert the SHA512 data hash to a string
@@ -4779,11 +4084,8 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
       sprintf(current_round_part_vote_data.current_vote_results+count,"%02x",data[count2] & 0xFF);
     }
   }
-
-  pointer_reset_all;
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR
 }
 
@@ -4803,40 +4105,18 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_node_to_node(const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_node",39);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  char data[BUFFER_SIZE]; 
+  char data2[BUFFER_SIZE];
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_node",39); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // verify the data
   if (verify_data(MESSAGE,0,1) == 0)
@@ -4859,11 +4139,8 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   {
     current_round_part_vote_data.vote_results_invalid++;
   }
-
-  pointer_reset_all;
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR
 }
 
@@ -4882,66 +4159,28 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const char* MESSAGE)
 {
   // Variables  
-  char* public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* vrf_secret_key_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* vrf_public_key_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* random_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char public_address[BUFFER_SIZE];
+  char vrf_secret_key_data[BUFFER_SIZE];
+  char vrf_public_key_data[BUFFER_SIZE];
+  char random_data[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
   size_t count;
   size_t counter;
 
   // define macros
-  #define pointer_reset_all \
-  free(public_address); \
-  public_address = NULL; \
-  free(vrf_secret_key_data); \
-  vrf_secret_key_data = NULL; \
-  free(vrf_public_key_data); \
-  vrf_public_key_data = NULL; \
-  free(random_data); \
-  random_data = NULL; \
-  free(data); \
-  data = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data",70); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (public_address == NULL || vrf_secret_key_data == NULL || vrf_public_key_data == NULL || random_data == NULL || data == NULL)
-  {
-    if (public_address != NULL)
-    {
-      pointer_reset(public_address);
-    }
-    if (vrf_secret_key_data != NULL)
-    {
-      pointer_reset(vrf_secret_key_data);
-    }
-    if (vrf_public_key_data != NULL)
-    {
-      pointer_reset(vrf_public_key_data);
-    }
-    if (random_data != NULL)
-    {
-      pointer_reset(random_data);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data",70);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
-
+  memset(public_address,0,sizeof(public_address));
+  memset(vrf_secret_key_data,0,sizeof(vrf_secret_key_data));
+  memset(vrf_public_key_data,0,sizeof(vrf_public_key_data));
+  memset(random_data,0,sizeof(random_data));
+  memset(data,0,sizeof(data));  
   memset(vrf_public_key,0,sizeof(vrf_public_key));
   memset(vrf_secret_key,0,sizeof(vrf_secret_key));
 
@@ -4985,11 +4224,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
       memcpy(VRF_data.block_verifiers_random_data[count],random_data,RANDOM_STRING_LENGTH);
     }
   }  
-
-  pointer_reset_all;
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR
 }
 
@@ -5008,41 +4244,19 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature(const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE]; 
+  char data2[BUFFER_SIZE];
   size_t count;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",82);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
-
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",82); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // verify the data
   if (verify_data(MESSAGE,0,1) == 0)
@@ -5064,12 +4278,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
       memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));
       memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
     }
-  }  
-
-  pointer_reset_all;
+  } 
   return 1;
 
-  #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR
 }
 
@@ -5200,278 +4411,3 @@ int create_server(const int MESSAGE_SETTINGS)
    #undef SOCKET_FILE_DESCRIPTORS_LENGTH
    #undef SERVER_ERROR
 }
-
-
-
-/*int create_server(const int MESSAGE_SETTINGS)
-{
-  // Constants
-  const int SOCKET_OPTION = 1; 
-
-  // Variables
-  char buffer[BUFFER_SIZE];
-  char buffer2[BUFFER_SIZE];
-  char client_address[BUFFER_SIZE]; 
-  int len;
-  int receive_data_result; 
-  struct sockaddr_in addr, cl_addr; 
-
-  // define macros
-  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
-
-  #define SERVER_ERROR(message) \
-  memcpy(error_message.function[error_message.total],"create_server",13); \
-  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
-  error_message.total++; \
-  return 0;  
-
-  // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
-  signal(SIGCHLD, SIG_IGN);
-
-  if (MESSAGE_SETTINGS == 1)
-  {
-    print_start_message("Creating the server");
-  }
-  
-   Create the socket  
-  AF_INET = IPV4 support
-  SOCK_STREAM = TCP protocol
-  
-  const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
-  if (SOCKET == -1)
-  {
-    SERVER_ERROR("Error creating socket");
-  }
-
-   Set the socket options
-  SOL_SOCKET = socket level
-  SO_REUSEADDR = allows for reuse of the same address, so one can shutdown and restart the program without errros
-  SO_REUSEPORT = allows for reuse of the same port, so one can shutdown and restart the program without errros
-  
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &SOCKET_OPTION,sizeof(int)) != 0)
-  {
-    SERVER_ERROR("Error setting socket options");
-  } 
-
-  if (MESSAGE_SETTINGS == 1)
-  {   
-    color_print("Socket created","green");
-  }
- 
-  // convert the port to a string
-  sprintf(buffer2,"%d",SEND_DATA_PORT);  
- 
-  memset(&addr, 0, sizeof(addr));
-   setup the connection
-  AF_INET = IPV4
-  INADDR_ANY = connect to 0.0.0.0
-  use htons to convert the port from host byte order to network byte order short
-  
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = INADDR_ANY;
-  addr.sin_port = htons(SEND_DATA_PORT);
- 
-  // connect to 0.0.0.0
-  if (bind(SOCKET, (struct sockaddr *) &addr, sizeof(addr)) != 0)
-  {    
-    memcpy(error_message.function[error_message.total],"create_server",13);
-    memcpy(error_message.data[error_message.total],"Error connecting to port ",25);
-    memcpy(error_message.data[error_message.total]+25,buffer2,strnlen(buffer2,BUFFER_SIZE));
-    error_message.total++;
-  } 
-
-  // set the maximum simultaneous connections
-  if (listen(SOCKET, MAXIMUM_CONNECTIONS) != 0)
-  {
-    SERVER_ERROR("Error creating the server");
-  }
-
-  if (MESSAGE_SETTINGS == 1)
-  {
-    printf("\033[1;32mConnected to port %s\033[0m\n",buffer2);
-    printf("Waiting for a connection...\n\n");
-  }
-
-  for (;;)
-  {
-    len = sizeof(cl_addr);
-    const int CLIENT_SOCKET = accept(SOCKET, (struct sockaddr *) &cl_addr, (socklen_t*)&len);
-    inet_ntop(AF_INET, &(cl_addr.sin_addr), client_address, BUFFER_SIZE);
-    if (client_address == NULL)
-    {      
-      continue;
-    }
-    const size_t CLIENT_ADDRESS_LENGTH = strnlen(client_address,BUFFER_SIZE);
-    const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
-  
-    if (CLIENT_SOCKET == -1)
-    {      
-      continue;
-    }
-    
-    // create a new process for each server connection
-    if (fork() == 0)
-    { 
-       // Variables
-       char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-       // close the main socket, since the socket is now copied to the forked process
-       close(SOCKET);
-
-       for (;;)
-       {         
-         // receive the data
-         memset(buffer, 0, BUFFER_SIZE); 
-         receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,1,TOTAL_CONNECTION_TIME_SETTINGS);
-         if (receive_data_result < 2)
-         {
-           // close the forked process, since the client had an error sending data  
-           close(SOCKET);
-           close(CLIENT_SOCKET);
-           pointer_reset(data);
-           _exit(0);
-         }  
-
-         // get the current time
-         get_current_UTC_time;
-
-         if (MESSAGE_SETTINGS == 1)
-         { 
-           memcpy(data,"Received ",9);
-           memcpy(data+9,&buffer[25],strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25);
-           memcpy(data+strlen(data)," from ",6);
-           memcpy(data+strlen(data),client_address,CLIENT_ADDRESS_LENGTH);
-           memcpy(data+strlen(data)," on port ",9);
-           memcpy(data+strlen(data),buffer2,BUFFER2_LENGTH);
-           memcpy(data+strlen(data),"\n",1);
-           memcpy(data+strlen(data),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
-           color_print(data,"green");
-         }         
-
-         // check if a certain type of message has been received 
-         if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL && strncmp(server_message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
-         {
-           server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,(const char*)buffer);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
-         {
-           server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(CLIENT_SOCKET);
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
-         {
-           server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET);
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
-         }  
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
-         }  
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
-         }
-         else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF\"") != NULL)
-         {
-           server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(CLIENT_SOCKET,(const char*)buffer);
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL && current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec < 5)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
-         }  
-         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE\"") != NULL)
-         {
-           server_receive_data_socket_nodes_to_block_verifiers_register_delegates(CLIENT_SOCKET,(const char*)buffer);
-         }            
-         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE\"") != NULL)
-         {
-           server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(CLIENT_SOCKET,(const char*)buffer);
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE\"") != NULL)
-         {
-           server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\"") != NULL)
-         {
-           server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(CLIENT_SOCKET,(const char*)buffer);
-         } 
-         else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec >= 5 && current_UTC_date_and_time->tm_sec < 10)
-         {
-           server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
-         }         
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec < 5)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
-         }  
-         else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec >= 10 && current_UTC_date_and_time->tm_sec < 15)
-         {
-           server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
-         }  
-         else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && current_UTC_date_and_time->tm_sec >= 20 && current_UTC_date_and_time->tm_sec < 25)
-         {
-           server_receive_data_socket_node_to_node((const char*)buffer);
-         }
-         else
-         {
-           printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
-
-           // send the message 
-           if (send_data(CLIENT_SOCKET,buffer,1) == 1)
-           {
-             printf("Sent %s to %s on port %s\r\n",buffer,client_address,buffer2);
-           } 
-           else
-           {
-             printf("\033[1;31mError sending data to %s on port %s\033[0m\n",client_address,buffer2); 
-           } 
-         }
-         
-         close(SOCKET);
-         close(CLIENT_SOCKET);
-         pointer_reset(data); 
-         _exit(0);
-       }
-     }  
-     // close the client socket
-     close(CLIENT_SOCKET);
-   }
-   return 1;
-
-   #undef SOCKET_FILE_DESCRIPTORS_LENGTH
-   #undef SERVER_ERROR
-}*/
-

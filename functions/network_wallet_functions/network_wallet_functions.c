@@ -41,7 +41,7 @@ int get_public_address(const int MESSAGE_SETTINGS)
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
   #define GET_PUBLIC_ADDRESS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_public_address",18); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
 
@@ -96,7 +96,7 @@ int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SE
   // define macros
   #define SIGN_NETWORK_BLOCK_STRING_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sign_network_block_string",25); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
 
@@ -105,7 +105,7 @@ int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SE
 
   // sign_data
   memcpy(data2,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
-  memcpy(data2+60,MESSAGE,strnlen(MESSAGE,BUFFER_SIZE));
+  memcpy(data2+60,MESSAGE,strnlen(MESSAGE,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}}",3);
 
   if (send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data2,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
@@ -151,7 +151,7 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
   // define macros
   #define DATA_VERIFY_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"data_verify",11); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
   
@@ -210,7 +210,7 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   // define macros
   #define CHECK_RESEVE_PROOFS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"check_reserve_proofs",20); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
   

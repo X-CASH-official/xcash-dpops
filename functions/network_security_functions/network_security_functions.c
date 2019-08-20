@@ -46,7 +46,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   // define macros
   #define SIGN_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sign_data",9); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset(result); \
   return 0;
@@ -189,7 +189,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   // define macros
   #define VERIFY_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"verify_data",11); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   print_error_message; \
   return 0;

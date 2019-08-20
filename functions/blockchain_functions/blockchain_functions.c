@@ -300,7 +300,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
 
   #define NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"network_block_string_to_blockchain_data",39); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   pointer_reset_all; \
   return 0; 

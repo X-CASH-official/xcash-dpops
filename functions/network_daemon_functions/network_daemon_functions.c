@@ -44,7 +44,7 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
   // define macros
   #define GET_BLOCK_TEMPLATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_block_template",18); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
   
@@ -96,7 +96,7 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   // define macros
   #define SUBMIT_BLOCK_TEMPLATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"submit_block_template",21); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
   
@@ -148,7 +148,7 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
   // define macros
   #define GET_BLOCK_SETTINGS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_block_settings",18); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
 
@@ -157,7 +157,7 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
   
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",67);
-  memcpy(message+67,block_height,strnlen(block_height,BUFFER_SIZE));
+  memcpy(message+67,block_height,strnlen(block_height,sizeof(message)));
   memcpy(message+strlen(message),"\"}}",3);
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block settings",HTTP_SETTINGS) <= 0)
@@ -211,7 +211,7 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   // define macros
   #define GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_block_reserve_byte_data_hash",32); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
   
@@ -220,8 +220,8 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",68);
-  memcpy(message+68,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,BUFFER_SIZE));
-  memcpy(message+68+strnlen(BLOCK_HEIGHT,BUFFER_SIZE),"\"}}",3);
+  memcpy(message+68,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,sizeof(message)));
+  memcpy(message+68+strnlen(BLOCK_HEIGHT,sizeof(message)),"\"}}",3);
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block settings",HTTP_SETTINGS) <= 0)
   {  
@@ -272,7 +272,7 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
   // define macros
   #define VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"verify_blockchain_network_transactions",38); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
 
@@ -286,8 +286,8 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
   {
     memcpy(message+counter,"\"",1);
     counter++;
-    memcpy(message+counter,transactions[count],strnlen(transactions[count],BUFFER_SIZE));
-    counter += strnlen(transactions[count],BUFFER_SIZE);
+    memcpy(message+counter,transactions[count],strnlen(transactions[count],sizeof(message)));
+    counter += strnlen(transactions[count],sizeof(message));
     memcpy(message+counter,"\",",2);
     counter += 2;
   }
@@ -344,7 +344,7 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
   // define macros
   #define GET_CURRENT_BLOCK_HEIGHT_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_current_block_height",24); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
 
@@ -389,7 +389,7 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
   // define macros
   #define GET_PREVIOUS_BLOCK_HASH_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_previous_block_hash",23); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
 

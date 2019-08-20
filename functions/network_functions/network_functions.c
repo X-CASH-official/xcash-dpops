@@ -1316,7 +1316,7 @@ int sync_check_reserve_proofs_database()
   // define macros  
   #define SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,BUFFER_SIZE_NETWORK_BLOCK_DATA)); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
 
