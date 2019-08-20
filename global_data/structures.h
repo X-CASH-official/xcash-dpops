@@ -55,8 +55,8 @@ struct main_nodes_list {
 };
 
 struct network_data_nodes_list {
-    char* network_data_nodes_public_address[NETWORK_DATA_NODES_AMOUNT]; // The block verifiers public address
-    char* network_data_nodes_IP_address[NETWORK_DATA_NODES_AMOUNT]; // The block verifiers IP address
+    char network_data_nodes_public_address[NETWORK_DATA_NODES_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
+    char network_data_nodes_IP_address[NETWORK_DATA_NODES_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
 };
 
 struct current_round_part_vote_data {
