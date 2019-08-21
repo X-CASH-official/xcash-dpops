@@ -254,6 +254,7 @@ struct insert_multiple_documents_into_collection_json_thread_parameters {
     const char* DATABASE; // The database name
     const char* COLLECTION; // The collection name
     const char* DATA; // The json data to insert into the collection
+    const size_t DATA_TOTAL_LENGTH; // The total length of the data
 };
 
 struct read_document_from_collection_thread_parameters {

@@ -46,18 +46,21 @@ int get_public_address(const int MESSAGE_SETTINGS)
   return 0;
 
   memset(data,0,sizeof(data));
+
+  color_print(network_data_nodes_list.network_data_nodes_public_address[0],"red");
   
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",MESSAGE_SETTINGS) <= 0)
   {  
     GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
+  color_print(network_data_nodes_list.network_data_nodes_public_address[0],"red");
   memset(xcash_wallet_public_address,0,sizeof(xcash_wallet_public_address));
-  
+  color_print(network_data_nodes_list.network_data_nodes_public_address[0],"red");
   if (parse_json_data(data,"address",xcash_wallet_public_address) == 0)
   {
     GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
-  
+  color_print(network_data_nodes_list.network_data_nodes_public_address[0],"red");
   // check if the returned data is valid
   if (strnlen(xcash_wallet_public_address,BUFFER_SIZE) != XCASH_WALLET_LENGTH && strncmp(xcash_wallet_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {

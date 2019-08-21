@@ -52,9 +52,11 @@ void* current_block_height_timer_thread()
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  sync_block_verifiers_minutes(0);
+  color_print(network_data_nodes_list.network_data_nodes_public_address[0],"yellow");
+
+  sync_block_verifiers_minutes(1);
   get_current_block_height(current_block_height,0);
-  if (start_new_round() == 0)
+  if (data_network_node_create_block() == 0)
   {
     print_error_message;
   }
@@ -736,7 +738,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   { 
     memset(&buffer, 0, sizeof(buffer));
     // check the size of the data that were about to receive. If it is over BUFFER_SIZE then dont accept it, since it will cause a buffer overflow
-    if (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= BUFFER_SIZE)
+    if ((recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= sizeof(buffer) - strnlen(message,sizeof(buffer)) && strnlen(message,sizeof(buffer)) > 0) || (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= sizeof(buffer) && strnlen(message,sizeof(buffer)) == 0))
     {
       SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
     }    
@@ -815,7 +817,7 @@ void* socket_thread(void* parameters)
   // Variables
   struct socket_thread_parameters* data = (struct socket_thread_parameters*)parameters;
   int CLIENT_SOCKET = data->client_socket;
-  char buffer[BUFFER_SIZE];
+  char* buffer = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char buffer2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   char client_address[BUFFER_SIZE]; 
@@ -823,7 +825,13 @@ void* socket_thread(void* parameters)
   int receive_data_result; 
   struct sockaddr_in addr, cl_addr; 
 
-  memset(buffer,0,sizeof(buffer));
+  // define macros
+  #define pointer_reset_all \
+  free(buffer); \
+  buffer = NULL; \
+  free(data); \
+  data = NULL;
+  
   memset(buffer2,0,sizeof(buffer2));
   memset(message,0,sizeof(message));
   memset(client_address,0,sizeof(client_address));
@@ -834,15 +842,32 @@ void* socket_thread(void* parameters)
   sprintf(buffer2,"%d",SEND_DATA_PORT); 
 
   // receive the data
-  memset(buffer, 0, sizeof(buffer)); 
   receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,1,TOTAL_CONNECTION_TIME_SETTINGS);
   if (receive_data_result < 2)
   {
     close(CLIENT_SOCKET);
-    pointer_reset(data);
+    pointer_reset_all;
     pthread_exit((void *)(intptr_t)0);
-  }  
+  } 
 
+  // check if the message length is correct for the type of message
+  if (strnlen(buffer,52428800) > 25)
+  {
+    memcpy(message,&buffer[25],strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25);
+    if ((strncmp(message,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0 || strncmp(message,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(message,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(message,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) == 0 || strncmp(message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS",BUFFER_SIZE) == 0 || strncmp(message,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) == 0 || strncmp(message,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) == 0 || strncmp(message,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) == 0 || strncmp(message,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(message,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",BUFFER_SIZE) == 0 || strncmp(message,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",BUFFER_SIZE) == 0 || strncmp(message,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0) && (strnlen(buffer,52428800) == 52428800))
+    {
+      close(CLIENT_SOCKET);
+      pointer_reset_all;
+      pthread_exit((void *)(intptr_t)0);
+    }
+  }
+  else
+  {
+    close(CLIENT_SOCKET);
+    pointer_reset_all;
+    pthread_exit((void *)(intptr_t)0);
+  }
+  
   // get the current time
   get_current_UTC_time;
   
@@ -968,6 +993,6 @@ void* socket_thread(void* parameters)
    } 
  }
 close(CLIENT_SOCKET);
-pointer_reset(data);
+pointer_reset_all;
 pthread_exit((void *)(intptr_t)1);
 }

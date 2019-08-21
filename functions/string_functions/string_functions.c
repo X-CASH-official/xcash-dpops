@@ -78,7 +78,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
     }
     // copy the field's data
     memcpy(result,&str1[start],LENGTH);
- 
+ color_print(network_data_nodes_list.network_data_nodes_public_address[0],"blue");
     // remove all the formating from the result, if it is not a database document
     if (strstr(result,"username") == NULL && strstr(result,"total_vote_count") == NULL && strstr(result,"public_address_created_reserve_proof") == NULL && strstr(result,"reserve_bytes_data_hash") == NULL)
     {
@@ -105,7 +105,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
     error_message.total++;
     return 0;
   }  
-
+color_print(network_data_nodes_list.network_data_nodes_public_address[0],"blue");
   return 1;
 }
 
@@ -308,7 +308,7 @@ int string_replace(char *data, const char* STR1, const char* STR2)
   if (strstr(data,STR1) != NULL)
   { 
     // Variables
-    char* datacopy = (char*)calloc(52428800,sizeof(char)); // 50 MB
+    char* datacopy = (char*)calloc(BUFFER_SIZE,sizeof(char)); // 50 MB
     char* string;
     size_t data_length;
     size_t str2_length;

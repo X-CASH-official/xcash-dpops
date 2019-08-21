@@ -2089,7 +2089,7 @@ int reset_variables_allocated_on_the_heap_test()
     {
       fprintf(stderr,"Current progress for insert_multiple_documents_into_collection_json: %zu / 1000",count);
       fprintf(stderr,"\r");
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0);
+      insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,sizeof(MESSAGE)-1,0);
       if (count == 0)
       {    
         current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;

@@ -855,17 +855,25 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
 {
   // Variables
   int count = 0;
-  char buffer [BUFFER_SIZE];
-  char data[BUFFER_SIZE];
+  char* buffer = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
 
-  memset(message, 0, strnlen(message,BUFFER_SIZE)); 
-  memset(data,0,sizeof(data)); 
+  // define macros
+  #define pointer_reset_all \
+  free(buffer); \
+  buffer = NULL; \
+  free(data); \
+  data = NULL;
+
+  memset(message, 0, strlen(message)); 
+  memset(data,0,strlen(data));
   for (;;)
   { 
-    memset(&buffer, 0, sizeof(buffer));
-    // check the size of the data that were about to receive. If it is over BUFFER_SIZE then dont accept it, since it will cause a buffer overflow
-    if (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= BUFFER_SIZE)
+    memset(buffer, 0, strlen(buffer));
+    // check the size of the data that were about to receive. If the total data plus the data were about to receive is over 50 MB then dont accept it, since it will cause a buffer overflow
+    if ((recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= 52428800 - strnlen(data,BUFFER_SIZE) && strnlen(data,BUFFER_SIZE) > 0) || (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= 52428800 && strnlen(data,BUFFER_SIZE) == 0))
     {
+      pointer_reset_all;
       return 0;
     }    
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
@@ -903,7 +911,10 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
     }
     usleep(200000);   
   }
+  pointer_reset_all;
   return 2;
+
+  #undef pointer_reset_all
 }
 
 
@@ -921,7 +932,7 @@ int sync_all_block_verifiers_list()
   struct database_multiple_documents_fields database_multiple_documents_fields;
   char message[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char* data3 = (char*)calloc(52428800,sizeof(char)); // 50 MB
   size_t count;
   size_t count2;
 
@@ -934,7 +945,6 @@ int sync_all_block_verifiers_list()
 
   memset(message,0,sizeof(message));
   memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
 
   // reset the previous current and next block verifiers list
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -974,7 +984,7 @@ int sync_all_block_verifiers_list()
     memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
     memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
     printf("%s\n",data3);
-    memset(data3,0,sizeof(data3));
+    memset(data3,0,strlen(data3));
 
     if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
     {
@@ -1200,7 +1210,7 @@ int get_synced_block_verifiers()
 {
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
   size_t count;
   size_t count2;
 
@@ -1226,7 +1236,7 @@ int get_synced_block_verifiers()
   printf("Connecting to a random network data node to get a list of current block verifiers\n");
 
   memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
+  memset(data2,0,strlen(data2));
 
   // send the message to a random network data node
   do
@@ -1308,7 +1318,7 @@ int sync_check_reserve_proofs_database()
   // Variables
   char message[BUFFER_SIZE];
   char reserve_proofs_database[BUFFER_SIZE]; 
-  char data[BUFFER_SIZE];
+  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char data2[BUFFER_SIZE]; 
   size_t count;
   size_t counter;
@@ -1322,7 +1332,6 @@ int sync_check_reserve_proofs_database()
 
   memset(message,0,sizeof(message));
   memset(reserve_proofs_database,0,sizeof(reserve_proofs_database));
-  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
   print_start_message("Checking if the reserve proofs database is synced");
@@ -1375,7 +1384,7 @@ int sync_check_reserve_proofs_database()
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,sizeof(data));
+    memset(data,0,strlen(data));
     memset(data2,0,sizeof(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
@@ -1579,7 +1588,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,0);
+      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,52428800,0);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
@@ -1618,7 +1627,7 @@ int sync_check_reserve_bytes_database()
 {
   // Variables
   char message[BUFFER_SIZE];
-  char data[BUFFER_SIZE];
+  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char data2[BUFFER_SIZE];
   size_t count;
 
@@ -1630,7 +1639,6 @@ int sync_check_reserve_bytes_database()
   return 0;
 
   memset(message,0,sizeof(message));
-  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
   print_start_message("Checking if the reserve bytes database is synced");
@@ -1662,7 +1670,7 @@ int sync_check_reserve_bytes_database()
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));
+    memset(data2,0,sizeof(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
       memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
@@ -1915,7 +1923,7 @@ int sync_reserve_bytes_database()
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,0);
+      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,52428800,0);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
@@ -2018,7 +2026,7 @@ int sync_check_delegates_database()
 {
   // Variables
   char message[BUFFER_SIZE];
-  char data[BUFFER_SIZE];
+  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char data2[BUFFER_SIZE];
   size_t count;
 
@@ -2031,7 +2039,6 @@ int sync_check_delegates_database()
   return 0;
 
   memset(message,0,sizeof(message));
-  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
   print_start_message("Checking if the delegates database is synced");
@@ -2062,7 +2069,7 @@ int sync_check_delegates_database()
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,sizeof(data));
+    memset(data,0,strlen(data));
     memset(data2,0,sizeof(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
@@ -2114,7 +2121,7 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_delegates_database()
 {
   // Variables
-  char* data = (char*)calloc(10485760,sizeof(char));  // 10 MB
+  char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
   char data2[BUFFER_SIZE];
   size_t count;
   size_t count2;
@@ -2237,7 +2244,7 @@ int sync_delegates_database()
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0);
+  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,10485760,0);
 
   pointer_reset_all;
   return 1;
@@ -2261,7 +2268,7 @@ int sync_check_statistics_database()
 {
   // Variables
   char message[BUFFER_SIZE];
-  char data[BUFFER_SIZE];
+  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char data2[BUFFER_SIZE];
   size_t count;
 
@@ -2274,7 +2281,6 @@ int sync_check_statistics_database()
   return 0;
 
   memset(message,0,sizeof(message));
-  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
   print_start_message("Checking if the statistics database is synced");
@@ -2305,7 +2311,7 @@ int sync_check_statistics_database()
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,sizeof(data));
+    memset(data,0,strlen(data));
     memset(data2,0,sizeof(data2));
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
     {
@@ -2357,7 +2363,7 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_statistics_database()
 {
   // Variables
-  char* data = (char*)calloc(10485760,sizeof(char));  // 10 MB
+  char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
   char data2[BUFFER_SIZE];
   size_t count;
   size_t count2;
@@ -2480,7 +2486,7 @@ int sync_statistics_database()
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0);
+  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,10485760,0);
 
   pointer_reset_all;
   return 1;

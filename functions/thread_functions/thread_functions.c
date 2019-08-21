@@ -110,7 +110,7 @@ Return: NULL
 void* insert_multiple_documents_into_collection_json_thread(void* parameters)
 {
   struct insert_multiple_documents_into_collection_json_thread_parameters* data = parameters;
-  int settings = insert_multiple_documents_into_collection_json(data->DATABASE, data->COLLECTION, data->DATA, 1);
+  int settings = insert_multiple_documents_into_collection_json(data->DATABASE, data->COLLECTION, data->DATA, data->DATA_TOTAL_LENGTH, 1);
   pthread_exit((void *)(intptr_t)settings);
 }
 

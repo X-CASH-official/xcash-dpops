@@ -685,7 +685,7 @@ int database_test()
   memcpy(data_test,DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
   memcpy(data_test+strlen(data_test),",",1);
   memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
-  if (insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data_test,0) == 1 && get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION,0) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  if (insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data_test,BUFFER_SIZE,0) == 1 && get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION,0) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for inserting multiple documents into a collection using json data","green");
     count_test++;
@@ -701,7 +701,7 @@ int database_test()
   memcpy(data_test,DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
   memcpy(data_test+strlen(data_test),",",1);
   memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
-  struct insert_multiple_documents_into_collection_json_thread_parameters insert_multiple_documents_into_collection_json_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,data_test};
+  struct insert_multiple_documents_into_collection_json_thread_parameters insert_multiple_documents_into_collection_json_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,data_test,BUFFER_SIZE};
   pthread_create(&thread_id, NULL, &insert_multiple_documents_into_collection_json_thread,(void *)&insert_multiple_documents_into_collection_json_thread_parameters);
   if (thread_settings(thread_id) == 1 && get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION,0) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {

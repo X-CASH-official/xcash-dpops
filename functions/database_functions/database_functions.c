@@ -202,7 +202,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int insert_multiple_documents_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS)
+int insert_multiple_documents_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const size_t DATA_TOTAL_LENGTH, const int THREAD_SETTINGS)
 {
   // Variables
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -266,7 +266,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   }
 
   // create a copy of the data since were going to be changing where the data is referencing
-  memcpy(data2,DATA,strnlen(DATA,BUFFER_SIZE));
+  append_string(data2,DATA,DATA_TOTAL_LENGTH);
 
   // count how many documents are in the data
   count = string_count(DATA,"},{") + 1;
