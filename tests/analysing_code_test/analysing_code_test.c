@@ -161,7 +161,7 @@ int analysing_code_test()
       if (strstr(data_test,"Name: ") != NULL && strstr(data_test,"\"Name: \"") == NULL)
       {
         // save the function name
-        string_replace(data_test, "Name: ", "");
+        string_replace(data_test,BUFFER_SIZE, "Name: ", "");
         memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
         memcpy(result_test,data_test,strnlen(data_test,BUFFER_SIZE));
         // reset the counters
@@ -349,18 +349,18 @@ int analysing_code_test()
       }
       else if (uninitialized_variable_counter == 1 && (strstr(data_test,"=") == NULL && strstr(data_test,"malloc") == NULL && strstr(data_test,"calloc") == NULL && strstr(data_test,"struct") == NULL) && strncmp(data_test,"\n",BUFFER_SIZE) != 0)
       {
-        string_replace(data_test,"(char*)malloc(BUFFER_SIZE)","");
-        string_replace(data_test,"(char*)calloc(BUFFER_SIZE,sizeof(char))","");        
-        string_replace(data_test,"=","");
-        string_replace(data_test,"[BUFFER_SIZE]","");
-        string_replace(data_test,"FILE*","");
-        string_replace(data_test,"char*","");
-        string_replace(data_test,"char","");
-        string_replace(data_test,"int","");
-        string_replace(data_test,"size_t","");
-        string_replace(data_test," ","");
-        string_replace(data_test,"\n","");
-        string_replace(data_test,";","");
+        string_replace(data_test,BUFFER_SIZE,"(char*)malloc(BUFFER_SIZE)","");
+        string_replace(data_test,BUFFER_SIZE,"(char*)calloc(BUFFER_SIZE,sizeof(char))","");        
+        string_replace(data_test,BUFFER_SIZE,"=","");
+        string_replace(data_test,BUFFER_SIZE,"[BUFFER_SIZE]","");
+        string_replace(data_test,BUFFER_SIZE,"FILE*","");
+        string_replace(data_test,BUFFER_SIZE,"char*","");
+        string_replace(data_test,BUFFER_SIZE,"char","");
+        string_replace(data_test,BUFFER_SIZE,"int","");
+        string_replace(data_test,BUFFER_SIZE,"size_t","");
+        string_replace(data_test,BUFFER_SIZE," ","");
+        string_replace(data_test,BUFFER_SIZE,"\n","");
+        string_replace(data_test,BUFFER_SIZE,";","");
         memcpy(uninitialized_variable_data.data[uninitialized_variable_data.count],data_test,strnlen(data_test,BUFFER_SIZE));
         uninitialized_variable_data.count++;
       }

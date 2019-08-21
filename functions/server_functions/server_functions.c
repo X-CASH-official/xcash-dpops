@@ -230,6 +230,7 @@ int start_current_round_start_blocks()
   } 
 
   color_print("Your block verifier is the main data network node so your block verifier will create the block","green");
+  printf("\n");
 
   // get a block template
   if (get_block_template(data,0) == 0)
@@ -476,6 +477,7 @@ int data_network_node_create_block()
   if (memcmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
   {    
     color_print("Your block verifier is the main data network node so your block verifier will create the block","green");
+    printf("\n");
 
     // get a block template
     if (get_block_template(data,0) == 0)
@@ -674,8 +676,8 @@ int data_network_node_create_block()
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(data,"{\"block_height\":\"",17);
     memcpy(data+17,data3,strnlen(data3,BUFFER_SIZE));
-    memcpy(data+sizeof(data),"\"}",2);
-    memset(data3,0,sizeof(data3));
+    memcpy(data+strlen(data),"\"}",2);
+    memset(data3,0,strlen(data3));
     memcpy(data3,"reserve_bytes_",14);
     sprintf(data3+14,"%zu",count2);
     if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,0) == 0)
@@ -2497,7 +2499,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"reserve_proofs_data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
+  if (parse_json_data(MESSAGE,"reserve_proofs_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
   }
@@ -2528,7 +2530,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
       memcpy(data2,"reserve_proofs_data_hash_",25);  
       sprintf(data2+25,"%zu",count); 
       // parse the message
-      if (parse_json_data(MESSAGE,data2,data) == 0 || strlen(data) != DATA_HASH_LENGTH)
+      if (parse_json_data(MESSAGE,data2,data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
       {
         SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
       }
@@ -2608,7 +2610,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"file",data) == 0)
+  if (parse_json_data(MESSAGE,"file",data,sizeof(data)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
@@ -2622,7 +2624,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
 
   // parse the message
   memset(data,0,sizeof(data));
-  if (parse_json_data(MESSAGE,"data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
+  if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
@@ -2716,7 +2718,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"file",data) == 0)
+  if (parse_json_data(MESSAGE,"file",data,52428800) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
   }
@@ -2788,7 +2790,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
+  if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
   }
@@ -2869,7 +2871,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"file",data) == 0)
+  if (parse_json_data(MESSAGE,"file",data,sizeof(data)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
@@ -2883,7 +2885,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   // parse the message
   memset(data,0,sizeof(data));
-  if (parse_json_data(MESSAGE,"data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
+  if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
@@ -2977,7 +2979,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"file",data) == 0)
+  if (parse_json_data(MESSAGE,"file",data,52428800) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
   }
@@ -3058,7 +3060,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   // parse the message
   memset(data,0,sizeof(data));
-  if (parse_json_data(MESSAGE,"data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
+  if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
@@ -3228,7 +3230,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
 
   // parse the message
   memset(data,0,sizeof(data));
-  if (parse_json_data(MESSAGE,"data_hash",data) == 0 || strlen(data) != DATA_HASH_LENGTH)
+  if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
   }
@@ -3400,7 +3402,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"delegates_public_address",delegates_public_address) == 0 || strlen(delegates_public_address) != XCASH_WALLET_LENGTH || memcmp(delegates_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address",public_address) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof) == 0)
+  if (parse_json_data(MESSAGE,"delegates_public_address",delegates_public_address,sizeof(delegates_public_address)) == 0 || strlen(delegates_public_address) != XCASH_WALLET_LENGTH || memcmp(delegates_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof,sizeof(reserve_proof)) == 0)
   {
     send_data(CLIENT_SOCKET,"Could not parse the message",1);
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not parse the message");
@@ -3531,7 +3533,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   char public_address[BUFFER_SIZE];
   char reserve_proof[BUFFER_SIZE];
   char* data = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  char* data2 = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char data3[BUFFER_SIZE];
   // since were going to be changing where data and data2 are referencing, we need to create a copy to pointer_reset
   char* datacopy = data; 
@@ -3585,7 +3587,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",block_verifiers_public_address) == 0 || strlen(block_verifiers_public_address) != XCASH_WALLET_LENGTH || memcmp(block_verifiers_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address_that_created_the_reserve_proof",data) == 0 || strlen(data) != XCASH_WALLET_LENGTH || memcmp(data,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",data2) == 0)
+  if (parse_json_data(MESSAGE,"public_address",block_verifiers_public_address,sizeof(block_verifiers_public_address)) == 0 || strlen(block_verifiers_public_address) != XCASH_WALLET_LENGTH || memcmp(block_verifiers_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address_that_created_the_reserve_proof",data,XCASH_WALLET_LENGTH+1) == 0 || strlen(data) != XCASH_WALLET_LENGTH || memcmp(data,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",data2,BUFFER_SIZE) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not parse the message");
   }
@@ -3677,7 +3679,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"delegate_name",delegate_name) == 0 || parse_json_data(MESSAGE,"public_address",delegate_public_address) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"delegates_IP_address",delegates_IP_address) == 0)
+  if (parse_json_data(MESSAGE,"delegate_name",delegate_name,sizeof(delegate_name)) == 0 || parse_json_data(MESSAGE,"public_address",delegate_public_address,sizeof(delegate_public_address)) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"delegates_IP_address",delegates_IP_address,sizeof(delegates_IP_address)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not parse the message");
   }
@@ -3770,7 +3772,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",delegate_public_address) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (parse_json_data(MESSAGE,"public_address",delegate_public_address,sizeof(delegate_public_address)) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not parse the message");
   }
@@ -3844,7 +3846,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",delegate_public_address) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"item",item) == 0 || parse_json_data(MESSAGE,"value",value) == 0)
+  if (parse_json_data(MESSAGE,"public_address",delegate_public_address,sizeof(delegate_public_address)) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"item",item,sizeof(item)) == 0 || parse_json_data(MESSAGE,"value",value,sizeof(value)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not parse the message");
   }
@@ -3917,7 +3919,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob",data) == 0)
+  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data");
   }
@@ -3988,7 +3990,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob",data) == 0 || parse_json_data(MESSAGE,"public_address",data2) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data");
   }
@@ -4054,7 +4056,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob",data) == 0 || parse_json_data(MESSAGE,"public_address",data2) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not parse the data");
   }
@@ -4145,7 +4147,7 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"vote_settings",data) == 0 || parse_json_data(MESSAGE,"vote_data",data2) == 0 || strlen(data2) != DATA_HASH_LENGTH)
+  if (parse_json_data(MESSAGE,"vote_settings",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"vote_data",data2,sizeof(data2)) == 0 || strlen(data2) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not parse the data");
   }
@@ -4211,7 +4213,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",public_address) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"vrf_secret_key",vrf_secret_key_data) == 0 || strlen(vrf_secret_key_data) != VRF_SECRET_KEY_LENGTH || parse_json_data(MESSAGE,"vrf_public_key",vrf_public_key_data) == 0 || strlen(vrf_public_key_data) != VRF_PUBLIC_KEY_LENGTH || parse_json_data(MESSAGE,"random_data",random_data) == 0 || strlen(random_data) != RANDOM_STRING_LENGTH)
+  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"vrf_secret_key",vrf_secret_key_data,sizeof(vrf_secret_key_data)) == 0 || strlen(vrf_secret_key_data) != VRF_SECRET_KEY_LENGTH || parse_json_data(MESSAGE,"vrf_public_key",vrf_public_key_data,sizeof(vrf_public_key_data)) == 0 || strlen(vrf_public_key_data) != VRF_PUBLIC_KEY_LENGTH || parse_json_data(MESSAGE,"random_data",random_data,sizeof(random_data)) == 0 || strlen(random_data) != RANDOM_STRING_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not parse the data");
   }
@@ -4285,7 +4287,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob_signature",data) == 0 || strlen(data) != XCASH_SIGN_DATA_LENGTH || memcmp(data,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address",data2) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != XCASH_SIGN_DATA_LENGTH || memcmp(data,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not parse the data");
   }

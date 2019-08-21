@@ -1305,7 +1305,7 @@ int add_data_hash_to_network_block_string(char* network_block_string, char *netw
   memcpy(network_block_string_data_hash,network_block_string,strnlen(network_block_string,BUFFER_SIZE));
   
   // replace the reserve bytes with the network block string data hash
-  if (string_replace(network_block_string_data_hash,data,data2) == 0)
+  if (string_replace(network_block_string_data_hash,BUFFER_SIZE,data,data2) == 0)
   {
     memcpy(error_message.function[error_message.total],"add_data_hash_to_network_block_string",37);
     memcpy(error_message.data[error_message.total],"Could not add the data hash to the network block string",55);
@@ -1749,7 +1749,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     // replace the block validation signatures with the GET_BLOCK_TEMPLATE_RESERVED_BYTES
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     { 
-      string_replace(network_block_string,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_RESERVED_BYTES);
+      string_replace(network_block_string,BUFFER_SIZE,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_RESERVED_BYTES);
     }
 
     // check if at least 67 of the next block verifiers in the previous block signed the data in the current block

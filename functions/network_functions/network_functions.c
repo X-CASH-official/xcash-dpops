@@ -1003,7 +1003,7 @@ int sync_all_block_verifiers_list()
  
     // parse the message
     memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"previous_block_verifiers_name_list",data2) == 0)
+    if (parse_json_data(data3,"previous_block_verifiers_name_list",data2,sizeof(data2)) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
@@ -1016,7 +1016,7 @@ int sync_all_block_verifiers_list()
     }
 
     memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"previous_block_verifiers_public_address_list",data2) == 0)
+    if (parse_json_data(data3,"previous_block_verifiers_public_address_list",data2,sizeof(data2)) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
@@ -1029,7 +1029,7 @@ int sync_all_block_verifiers_list()
     }
 
     memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"previous_block_verifiers_IP_address_list",data2) == 0)
+    if (parse_json_data(data3,"previous_block_verifiers_IP_address_list",data2,sizeof(data2)) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
@@ -1043,7 +1043,7 @@ int sync_all_block_verifiers_list()
 
     // parse the message
     memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"current_block_verifiers_name_list",data2) == 0)
+    if (parse_json_data(data3,"current_block_verifiers_name_list",data2,sizeof(data2)) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
@@ -1056,7 +1056,7 @@ int sync_all_block_verifiers_list()
     }
 
     memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"current_block_verifiers_public_address_list",data2) == 0)
+    if (parse_json_data(data3,"current_block_verifiers_public_address_list",data2,sizeof(data2)) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
@@ -1069,7 +1069,7 @@ int sync_all_block_verifiers_list()
     }
 
     memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"current_block_verifiers_IP_address_list",data2) == 0)
+    if (parse_json_data(data3,"current_block_verifiers_IP_address_list",data2,sizeof(data2)) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
@@ -1083,7 +1083,7 @@ int sync_all_block_verifiers_list()
 
     // parse the message
     memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"next_block_verifiers_name_list",data2) == 0)
+    if (parse_json_data(data3,"next_block_verifiers_name_list",data2,sizeof(data2)) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
@@ -1096,7 +1096,7 @@ int sync_all_block_verifiers_list()
     }
 
     memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"next_block_verifiers_public_address_list",data2) == 0)
+    if (parse_json_data(data3,"next_block_verifiers_public_address_list",data2,sizeof(data2)) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
@@ -1109,7 +1109,7 @@ int sync_all_block_verifiers_list()
     }
 
     memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"next_block_verifiers_IP_address_list",data2) == 0)
+    if (parse_json_data(data3,"next_block_verifiers_IP_address_list",data2,sizeof(data2)) == 0)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
     } 
@@ -1272,7 +1272,7 @@ int get_synced_block_verifiers()
 
   // parse the message
   memset(data,0,sizeof(data));
-  if (parse_json_data(data2,"block_verifiers_public_address_list",data) == 0)
+  if (parse_json_data(data2,"block_verifiers_public_address_list",data,sizeof(data)) == 0)
   {
     GET_SYNCED_BLOCK_VERIFIERS_ERROR("Could not parse the message");
   } 
@@ -1286,7 +1286,7 @@ int get_synced_block_verifiers()
 
   // parse the message
   memset(data,0,sizeof(data));
-  if (parse_json_data(data2,"block_verifiers_IP_address_list",data) == 0)
+  if (parse_json_data(data2,"block_verifiers_IP_address_list",data,sizeof(data)) == 0)
   {
     GET_SYNCED_BLOCK_VERIFIERS_ERROR("Could not parse the message");
   } 
@@ -1397,7 +1397,7 @@ int sync_check_reserve_proofs_database()
       {
         memcpy(reserve_proofs_database,data,strnlen(data,BUFFER_SIZE));
       } 
-      parse_json_data(data,"reserve_proofs_database",data2);
+      parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2));
       memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       if (memcmp(data2,"true",4) == 0)
       {
@@ -1532,7 +1532,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
     memcpy(data2,"reserve_proofs_database_",24);
     sprintf(data2+24,"%zu",count2);
 
-    if (parse_json_data(RESERVE_PROOFS_DATABASE,data2,data) == 0)
+    if (parse_json_data(RESERVE_PROOFS_DATABASE,data2,data,52428800) == 0)
     {
       SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
     }
@@ -1572,7 +1572,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
 
       // parse the message
       memset(data3,0,sizeof(data3));
-      if (parse_json_data(data,"reserve_proofs_database",data3) == 0 || memcmp(data3,"",1) == 0)
+      if (parse_json_data(data,"reserve_proofs_database",data3,sizeof(data3)) == 0 || memcmp(data3,"",1) == 0)
       {
         SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
       }
@@ -1678,7 +1678,7 @@ int sync_check_reserve_bytes_database()
     }
     else
     {
-      parse_json_data(data,"reserve_bytes_database",data2);
+      parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2));
       memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       if (memcmp(data2,"true",4) == 0)
       {
@@ -1867,7 +1867,7 @@ int sync_reserve_bytes_database()
 
     // parse the message
     memset(data3,0,sizeof(data3));
-    if (parse_json_data(data,"reserve_bytes_database",data3) == 0)
+    if (parse_json_data(data,"reserve_bytes_database",data3,sizeof(data3)) == 0)
     {
       SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
     }
@@ -1907,7 +1907,7 @@ int sync_reserve_bytes_database()
 
       // parse the message
       memset(data3,0,sizeof(data3));
-      if (parse_json_data(data,"reserve_bytes_database",data3) == 0 || memcmp(data3,"",1) == 0)
+      if (parse_json_data(data,"reserve_bytes_database",data3,sizeof(data3)) == 0 || memcmp(data3,"",1) == 0)
       {
         SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
       }
@@ -1983,7 +1983,7 @@ int sync_reserve_bytes_database()
       }
       else
       {
-        parse_json_data(data,"reserve_bytes_database",data2);
+        parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2));
         memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,sizeof(synced_block_verifiers.vote_settings[count])));
         if (memcmp(data2,"true",4) == 0)
         {
@@ -2078,7 +2078,7 @@ int sync_check_delegates_database()
     }
     else
     {
-      parse_json_data(data,"delegates_database",data2);
+      parse_json_data(data,"delegates_database",data2,sizeof(data2));
       memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       if (memcmp(data2,"true",4) == 0)
       {
@@ -2233,7 +2233,7 @@ int sync_delegates_database()
 
   // parse the message
   memset(data2,0,sizeof(data2));
-  if (parse_json_data(data,"delegates_database",data2) == 0 || memcmp(data2,"",1) == 0)
+  if (parse_json_data(data,"delegates_database",data2,sizeof(data2)) == 0 || memcmp(data2,"",1) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
   }
@@ -2320,7 +2320,7 @@ int sync_check_statistics_database()
     }
     else
     {
-      parse_json_data(data,"statistics_database",data2);
+      parse_json_data(data,"statistics_database",data2,sizeof(data2));
       memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       if (memcmp(data2,"true",4) == 0)
       {
@@ -2475,7 +2475,7 @@ int sync_statistics_database()
 
   // parse the message
   memset(data2,0,sizeof(data2));
-  if (parse_json_data(data,"statistics_database",data2) == 0 || memcmp(data2,"",1) == 0)
+  if (parse_json_data(data,"statistics_database",data2,sizeof(data2)) == 0 || memcmp(data2,"",1) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
   }

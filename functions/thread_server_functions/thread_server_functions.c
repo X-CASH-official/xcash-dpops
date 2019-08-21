@@ -52,11 +52,9 @@ void* current_block_height_timer_thread()
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  color_print(network_data_nodes_list.network_data_nodes_public_address[0],"yellow");
-
-  sync_block_verifiers_minutes(1);
+  sync_block_verifiers_minutes(0);
   get_current_block_height(current_block_height,0);
-  if (data_network_node_create_block() == 0)
+  if (start_new_round() == 0)
   {
     print_error_message;
   }
@@ -782,7 +780,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   memset(message,0,sizeof(message));
   memset(VRF_data.block_blob_signature[data->COUNT],0,strnlen(VRF_data.block_blob_signature[data->COUNT],BUFFER_SIZE));
   memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],BUFFER_SIZE));
-  if (parse_json_data(data2,"block_blob_signature",message) == 1 && strlen(message) == XCASH_SIGN_DATA_LENGTH && memcmp(message,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
+  if (parse_json_data(data2,"block_blob_signature",message,sizeof(message)) == 1 && strlen(message) == XCASH_SIGN_DATA_LENGTH && memcmp(message,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
   {
     memcpy(VRF_data.block_blob_signature[data->COUNT],message,XCASH_SIGN_DATA_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],message,XCASH_SIGN_DATA_LENGTH);

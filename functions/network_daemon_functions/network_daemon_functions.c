@@ -61,7 +61,7 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
     GET_BLOCK_TEMPLATE_ERROR("Could not create the block template");
   }
   
-  if (parse_json_data(data,"blocktemplate_blob",result) == 0)
+  if (parse_json_data(data,"blocktemplate_blob",result, BUFFER_SIZE) == 0)
   {
     GET_BLOCK_TEMPLATE_ERROR("Could not create the block template");
   }
@@ -166,7 +166,7 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
   }
   memset(message,0,sizeof(message));
   
-  if (parse_json_data(data,"blob",message) == 0)
+  if (parse_json_data(data,"blob",message, sizeof(message)) == 0)
   {
     GET_BLOCK_SETTINGS_ERROR("Could not get the block settings");
   }
@@ -229,7 +229,7 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   }
   memset(message,0,sizeof(message));
   
-  if (parse_json_data(data,"blob",message) == 0)
+  if (parse_json_data(data,"blob",message,sizeof(message)) == 0)
   {
     GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR("Could not get the blocks reserve bytes data hash");
   }
@@ -355,7 +355,7 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
     GET_CURRENT_BLOCK_HEIGHT_ERROR("Could not get the current block height");
   }
   
-  if (parse_json_data(data,"count",result) == 0)
+  if (parse_json_data(data,"count",result, BUFFER_SIZE) == 0)
   {
     GET_CURRENT_BLOCK_HEIGHT_ERROR("Could not get the current block height");
   }
@@ -400,7 +400,7 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
     GET_PREVIOUS_BLOCK_HASH_ERROR("Could not get the previous block hash");
   }
   
-  if (parse_json_data(data,"hash",result) == 0)
+  if (parse_json_data(data,"hash",result, BUFFER_SIZE) == 0)
   {
     GET_PREVIOUS_BLOCK_HASH_ERROR("Could not get the previous block hash");
   }

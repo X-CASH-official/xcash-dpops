@@ -97,7 +97,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   pthread_rwlock_unlock(&rwlock);
 
   // format the message
-  if (string_replace(result,"\"","\\\"") == 0)
+  if (string_replace(result,52428800,"\"","\\\"") == 0)
   {
     SIGN_DATA_ERROR("Could not create the message");
   }
@@ -114,7 +114,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     SIGN_DATA_ERROR("Could not create the message");
   } 
 
-  if (parse_json_data(data,"signature",result) == 0)
+  if (parse_json_data(data,"signature",result,52428800) == 0)
   {
     SIGN_DATA_ERROR("Could not create the message");
   }
@@ -228,7 +228,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memset(data,0,sizeof(data));
 
   // parse the message
-  if (parse_json_data(MESSAGE,"message_settings",message_settings) == 0 || parse_json_data(MESSAGE,"public_address",public_address) == 0 || parse_json_data(MESSAGE,"previous_block_hash",message_previous_block_hash) == 0 || parse_json_data(MESSAGE,"current_round_part",message_current_round_part) == 0 || parse_json_data(MESSAGE,"current_round_part_backup_node",message_current_round_part_backup_node) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature) == 0)
+  if (parse_json_data(MESSAGE,"message_settings",message_settings,sizeof(message_settings)) == 0 || parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"previous_block_hash",message_previous_block_hash,sizeof(message_previous_block_hash)) == 0 || parse_json_data(MESSAGE,"current_round_part",message_current_round_part,sizeof(message_current_round_part)) == 0 || parse_json_data(MESSAGE,"current_round_part_backup_node",message_current_round_part_backup_node,sizeof(message_current_round_part_backup_node)) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature,sizeof(xcash_proof_of_stake_signature)) == 0)
   {
     VERIFY_DATA_ERROR("Could not parse the message");
   }
@@ -299,7 +299,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   // create the message
   memcpy(result,MESSAGE,message_length);
   memcpy(result+message_length,"}",1);
-  if (string_replace(result,"\"","\\\"") == 0)
+  if (string_replace(result,52428800,"\"","\\\"") == 0)
   {
     VERIFY_DATA_ERROR("Invalid message");
   } 
@@ -320,7 +320,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     VERIFY_DATA_ERROR("Could not verify the data");
   } 
     
-  if (parse_json_data(result,"good",data) == 0)
+  if (parse_json_data(result,"good",data,sizeof(data)) == 0)
   {
     VERIFY_DATA_ERROR("Could not verify the data");
   }

@@ -702,10 +702,10 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     memcpy(data,message,strnlen(message,BUFFER_SIZE));
     bson_free(message);
 
-    string_replace(data,"{ \"$numberInt\" : ","");
-    string_replace(data,"{ \"$numberDouble\" : ","");
-    string_replace(data,"{ \"$numberLong\" : ","");
-    string_replace(data," }, ",", ");
+    string_replace(data,BUFFER_SIZE,"{ \"$numberInt\" : ","");
+    string_replace(data,BUFFER_SIZE,"{ \"$numberDouble\" : ","");
+    string_replace(data,BUFFER_SIZE,"{ \"$numberLong\" : ","");
+    string_replace(data,BUFFER_SIZE," }, ",", ");
 
     count = 1;
   }
@@ -828,10 +828,10 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
 
       if ((strncmp(DATA,"",BUFFER_SIZE) == 0) || (strncmp(DATA,"",BUFFER_SIZE) != 0 && strstr(data,DATA) != NULL))
       {
-        string_replace(data,"{ \"$numberInt\" : ","");
-        string_replace(data,"{ \"$numberDouble\" : ","");
-        string_replace(data,"{ \"$numberLong\" : ","");
-        string_replace(data," }, ",", ");
+        string_replace(data,BUFFER_SIZE,"{ \"$numberInt\" : ","");
+        string_replace(data,BUFFER_SIZE,"{ \"$numberDouble\" : ","");
+        string_replace(data,BUFFER_SIZE,"{ \"$numberLong\" : ","");
+        string_replace(data,BUFFER_SIZE," }, ",", ");
 
         // parse the json data      
         database_multiple_documents_parse_json_data(data,result,counter);

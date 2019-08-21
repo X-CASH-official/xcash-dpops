@@ -273,7 +273,7 @@ void general_network_test()
   // parse the data
   if (settings == 1)
   {
-    if (parse_json_data(string,"message_settings",data_test) == 0)
+    if (parse_json_data(string,"message_settings",data_test,BUFFER_SIZE) == 0)
     {
       color_print("FAILED! Test for creating the server","red");
       color_print("FAILED! Test for sending and receving data using sockets","red");

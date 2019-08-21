@@ -29,7 +29,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
+int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, const size_t RESULT_TOTAL_LENGTH)
 {
   // Variables
   char str[BUFFER_SIZE];
@@ -78,24 +78,23 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
     }
     // copy the field's data
     memcpy(result,&str1[start],LENGTH);
- color_print(network_data_nodes_list.network_data_nodes_public_address[0],"blue");
     // remove all the formating from the result, if it is not a database document
     if (strstr(result,"username") == NULL && strstr(result,"total_vote_count") == NULL && strstr(result,"public_address_created_reserve_proof") == NULL && strstr(result,"reserve_bytes_data_hash") == NULL)
     {
-      string_replace(result, "\"", "");
-      string_replace(result, ",", "");
-      string_replace(result, "[", "");
-      string_replace(result, "]", "");
-      string_replace(result, "{", "");
-      string_replace(result, "}", "");
+      string_replace(result,RESULT_TOTAL_LENGTH, "\"", "");
+      string_replace(result,RESULT_TOTAL_LENGTH, ",", "");
+      string_replace(result,RESULT_TOTAL_LENGTH, "[", "");
+      string_replace(result,RESULT_TOTAL_LENGTH, "]", "");
+      string_replace(result,RESULT_TOTAL_LENGTH, "{", "");
+      string_replace(result,RESULT_TOTAL_LENGTH, "}", "");
     }
     else
     {
-      string_replace(result, "{ \"$numberInt\" : \"", "");
-      string_replace(result, "{ \"$numberDouble\" : \"", "");
-      string_replace(result, "{ \"$numberLong\" : \"", "");
-      string_replace(result, ".0\" }", "");
-      string_replace(result,"\"{\"","{\"");
+      string_replace(result,RESULT_TOTAL_LENGTH, "{ \"$numberInt\" : \"", "");
+      string_replace(result,RESULT_TOTAL_LENGTH, "{ \"$numberDouble\" : \"", "");
+      string_replace(result,RESULT_TOTAL_LENGTH, "{ \"$numberLong\" : \"", "");
+      string_replace(result,RESULT_TOTAL_LENGTH, ".0\" }", "");
+      string_replace(result,RESULT_TOTAL_LENGTH,"\"{\"","{\"");
     }
   }
   else
@@ -105,7 +104,6 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result)
     error_message.total++;
     return 0;
   }  
-color_print(network_data_nodes_list.network_data_nodes_public_address[0],"blue");
   return 1;
 }
 
@@ -302,13 +300,14 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int string_replace(char *data, const char* STR1, const char* STR2)
+int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1, const char* STR2)
 {  
   // check if the str to replace exist in the string
   if (strstr(data,STR1) != NULL)
   { 
     // Variables
-    char* datacopy = (char*)calloc(BUFFER_SIZE,sizeof(char)); // 50 MB
+    char* datacopy = (char*)calloc(52428800,sizeof(char)); // 50 MB
+    char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
     char* string;
     size_t data_length;
     size_t str2_length;
@@ -318,10 +317,23 @@ int string_replace(char *data, const char* STR1, const char* STR2)
 
     // define macros
     #define REPLACE_STRING "|REPLACE_STRING|" 
+    #define pointer_reset_all \
+    free(datacopy); \
+    datacopy = NULL; \
+    free(data2); \
+    data2 = NULL;
 
     // check if the memory needed was allocated on the heap successfully
-    if (datacopy == NULL)
+    if (datacopy == NULL || data2 == NULL)
     {
+      if (datacopy != NULL)
+      {
+        pointer_reset(datacopy);
+      }
+      if (data2 != NULL)
+      {
+        pointer_reset(data2);
+      }
       memcpy(error_message.function[error_message.total],"string_replace",14);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
@@ -329,53 +341,60 @@ int string_replace(char *data, const char* STR1, const char* STR2)
       exit(0);
     } 
 
+    // copy the string to data2
+    memcpy(data2,data,strnlen(data,52428800));
+
     // get the occurences of STR1   
-    total = string_count(data,(char*)STR1);
+    total = string_count(data2,(char*)STR1);
 
     // replace the string with the REPLACE_STRING
     for (count = 0; count < total; count++)
     {
       // reset the variables
       memset(datacopy,0,strlen(datacopy));
-      data_length = strnlen(data,BUFFER_SIZE);
-      start = data_length - strnlen(strstr(data,STR1),BUFFER_SIZE);
+      data_length = strnlen(data2,52428800);
+      start = data_length - strnlen(strstr(data2,STR1),52428800);
    
-      // get a pointer to where the rest of the data string should be copied to
-      string = strstr(data,STR1)+strnlen(STR1,BUFFER_SIZE);
+      // get a pointer to where the rest of the data2 string should be copied to
+      string = strstr(data2,STR1)+strnlen(STR1,BUFFER_SIZE);
            
       // copy the bytes before STR1 to the new string
-      memcpy(datacopy,data,start);
+      memcpy(datacopy,data2,start);
       // copy STR2 to the new string
       memcpy(datacopy+strlen(datacopy),REPLACE_STRING,sizeof(REPLACE_STRING)-1);
       // copy the bytes after STR1 to the new string
-      memcpy(datacopy+strlen(datacopy),string,strnlen(string,BUFFER_SIZE));
+      memcpy(datacopy+strlen(datacopy),string,strnlen(string,52428800));
       // copy the new string to the string pointer
-      memset(data,0,data_length);
-      memcpy(data,datacopy,strlen(datacopy));
+      memset(data2,0,data_length);
+      memcpy(data2,datacopy,strlen(datacopy));
     }
     // replace the REPLACE_STRING with STR2
     for (count = 0; count < total; count++)
     {
       // reset the variables
       memset(datacopy,0,strlen(datacopy));
-      data_length = strnlen(data,BUFFER_SIZE);
-      str2_length = strnlen(STR2,BUFFER_SIZE);
-      start = data_length - strnlen(strstr(data,REPLACE_STRING),BUFFER_SIZE);
+      data_length = strnlen(data2,52428800);
+      str2_length = strnlen(STR2,52428800);
+      start = data_length - strnlen(strstr(data2,REPLACE_STRING),52428800);
    
       // get a pointer to where the rest of the data string should be copied to
-      string = strstr(data,REPLACE_STRING)+(sizeof(REPLACE_STRING)-1);
+      string = strstr(data2,REPLACE_STRING)+(sizeof(REPLACE_STRING)-1);
            
       // copy the bytes before REPLACE_STRING to the new string
-      memcpy(datacopy,data,start);
+      memcpy(datacopy,data2,start);
       // copy STR2 to the new string
       memcpy(datacopy+start,STR2,str2_length);
       // copy the bytes after REPLACE_STRING to the new string
-      memcpy(datacopy+start+str2_length,string,strnlen(string,BUFFER_SIZE));
+      memcpy(datacopy+start+str2_length,string,strnlen(string,52428800));
       // copy the new string to the string pointer
-      memset(data,0,data_length);
-      memcpy(data,datacopy,strlen(datacopy));
+      memset(data2,0,data_length);
+      memcpy(data2,datacopy,strlen(datacopy));
     }
-    pointer_reset(datacopy);
+
+    // copy data2 to the string
+    memset(data,0,strlen(data));
+    memcpy(data,data2,strnlen(data2,DATA_TOTAL_LENGTH));
+    pointer_reset_all;
     return 1;
   }
   else
@@ -384,6 +403,7 @@ int string_replace(char *data, const char* STR1, const char* STR2)
   } 
 
   #undef REPLACE_STRING
+  #undef pointer_reset_all
 }
 
 
