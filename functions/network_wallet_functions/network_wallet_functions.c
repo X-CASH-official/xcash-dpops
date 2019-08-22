@@ -205,14 +205,7 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
 
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-
-  // define macros
-  #define CHECK_RESEVE_PROOFS_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"check_reserve_proofs",20); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
-  error_message.total++; \
-  return 0;
+  char data2[BUFFER_SIZE];  
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -226,21 +219,19 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
 
   if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"check reserve proof",HTTP_SETTINGS) <= 0)
   {  
-    CHECK_RESEVE_PROOFS_ERROR("Could not verify the reserve proof");
+    return 0;
   }
 
   // check if the reserve proof is valid
   if (strstr(data2,"\"good\": true") == NULL || strstr(data2,"\"spent\": 0") == NULL)
   {  
-    CHECK_RESEVE_PROOFS_ERROR("Could not verify the reserve proof");
+    return 0;
   }
 
   // parse the message
   if (parse_json_data(data2,"total",result, BUFFER_SIZE) == 0)
   {
-    CHECK_RESEVE_PROOFS_ERROR("Could not verify the reserve proof");
+    return 0;
   }
   return 1;
-
-  #undef CHECK_RESEVE_PROOFS_ERROR
 }

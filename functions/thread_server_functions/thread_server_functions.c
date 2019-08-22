@@ -143,11 +143,7 @@ void* check_reserve_proofs_timer_thread()
       pthread_detach(thread_id[count]); \
     } \
   }
-
-  pthread_rwlock_wrlock(&rwlock);
-  reserve_proofs_settings = 1;
-  pthread_rwlock_unlock(&rwlock);
-
+  
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 4; count++)
   {
@@ -169,10 +165,10 @@ void* check_reserve_proofs_timer_thread()
   for (;;)
   {
     get_current_UTC_time;
-    if (current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec == 25)
+    if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec == 25)
     {
       // wait for any block verifiers sending messages
-      sync_block_verifiers_seconds(30);
+      sync_block_verifiers_seconds(0);
 
       // check if all block verifiers have the same invalid_reserve_proofs struct
 
@@ -223,7 +219,7 @@ void* check_reserve_proofs_timer_thread()
       SEND_DATA_SOCKET_THREAD(data2);
 
       // wait for the block verifiers to process the votes
-      sync_block_verifiers_seconds(40);
+      sync_block_verifiers_seconds(10);
 
       // process the vote results
       if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
@@ -332,7 +328,7 @@ void* check_reserve_proofs_timer_thread()
       if (check_reserve_proofs(data,database_multiple_documents_fields.value[0][0],database_multiple_documents_fields.value[0][3],0) == 0)
       {
         // the proof is invalid, check if it is a unique reserve proof
-        for (count = 0, settings = 1; count < invalid_reserve_proofs.count; count++)
+        for (count = 0, settings = 1; count <= invalid_reserve_proofs.count; count++)
         {
           if (strncmp(invalid_reserve_proofs.reserve_proof[count],database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF) == 0)
           {
@@ -340,7 +336,7 @@ void* check_reserve_proofs_timer_thread()
           }
         }
 
-        if (settings != 0)
+        if (settings == 1)
         {
           // add the reserve proof to the invalid_reserve_proofs struct
           pthread_rwlock_wrlock(&rwlock);

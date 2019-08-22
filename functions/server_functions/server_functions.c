@@ -3388,7 +3388,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memset(data3,0,sizeof(data3));
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
+  if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
   {
     send_data(CLIENT_SOCKET,"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",1);
     return 0;
@@ -3541,7 +3541,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   memset(data3,0,sizeof(data3));
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (current_UTC_date_and_time->tm_min % 4 == 0 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
+  if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
   {
     return 1;
   }
@@ -3553,13 +3553,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",block_verifiers_public_address,sizeof(block_verifiers_public_address)) == 0 || strlen(block_verifiers_public_address) != XCASH_WALLET_LENGTH || memcmp(block_verifiers_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address_that_created_the_reserve_proof",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof,sizeof(reserve_proof)) == 0 || memcmp(reserve_proof,"ReserveProofV1",14) != 0)
+  if (parse_json_data(MESSAGE,"public_address",block_verifiers_public_address,sizeof(block_verifiers_public_address)) == 0 || strlen(block_verifiers_public_address) != XCASH_WALLET_LENGTH || memcmp(block_verifiers_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address_that_created_the_reserve_proof",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof,sizeof(reserve_proof)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not parse the message");
   }
 
   // check if the reserve proof is unique  
-  for (count3 = 0, settings = 1; count3 < invalid_reserve_proofs.count; count3++)
+  for (count3 = 0, settings = 1; count3 <= invalid_reserve_proofs.count; count3++)
   {
     if (strncmp(invalid_reserve_proofs.reserve_proof[count3],reserve_proof,sizeof(reserve_proof)) == 0)
     {

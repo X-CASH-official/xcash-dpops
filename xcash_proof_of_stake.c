@@ -524,9 +524,9 @@ int main(int parameters_count, char* parameters[])
     exit(0);  
   }
 
-  color_print("Started the check reserve proofs timer thread","green");
+  color_print("Started the check reserve proofs timer thread","green");*/
 
-  // start the check_delegates_online_status_timer_thread
+  /*// start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
     memcpy(error_message.function[error_message.total],"main",4);
