@@ -36,13 +36,13 @@ int main(int parameters_count, char* parameters[])
   // Variables
   char data[BUFFER_SIZE];
   size_t count = 0;
-  size_t count2 = 0;
+  size_t count2 = 0; 
 
   // threads
   pthread_t thread_id_1;
   pthread_t thread_id_2;
   pthread_t thread_id_3;
-
+  
   // define macros
   #define database_reset \
   mongoc_client_destroy(database_client); \
@@ -262,7 +262,7 @@ int main(int parameters_count, char* parameters[])
   error_message.total = 0;
 
   // initialize the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
   {
     invalid_reserve_proofs.block_verifier_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
     invalid_reserve_proofs.public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));

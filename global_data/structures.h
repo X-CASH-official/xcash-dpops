@@ -195,9 +195,9 @@ struct error_message {
 };
 
 struct invalid_reserve_proofs {  
-    char* block_verifier_public_address[BLOCK_VERIFIERS_AMOUNT]; // The block verifiers public address that added the reserve proof
-    char* public_address[BLOCK_VERIFIERS_AMOUNT]; // The public address that created the reserve proof
-    char* reserve_proof[BLOCK_VERIFIERS_AMOUNT]; // The reserve proof
+    char* block_verifier_public_address[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The block verifiers public address that added the reserve proof
+    char* public_address[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The public address that created the reserve proof
+    char* reserve_proof[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The reserve proof
     int count; // The amount of reserve proofs in the invalid_reserve_proofs struct
 };
 
