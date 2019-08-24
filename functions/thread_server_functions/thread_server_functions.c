@@ -143,7 +143,7 @@ void* check_reserve_proofs_timer_thread()
       pthread_detach(thread_id[count]); \
     } \
   }
-  
+
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 4; count++)
   {
@@ -401,8 +401,8 @@ void* check_delegates_online_status_timer_thread()
   {
     for (count2 = 0; count2 < 19; count2++)
     {
-      database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-      database_multiple_documents_fields.value[count][count2] = (char*)calloc(100,sizeof(char));
+      database_multiple_documents_fields.item[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
       if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
       {
         memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
@@ -419,9 +419,9 @@ void* check_delegates_online_status_timer_thread()
 
 
   for (;;)
-  {
+  {    
     get_current_UTC_time;
-    if (current_UTC_date_and_time->tm_min % 5 == 0)
+    if (current_UTC_date_and_time->tm_min % 5 == 1 && current_UTC_date_and_time->tm_sec == 0)
     {
       // get the top 150 delegates by total votes
       if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,"delegates","",&database_multiple_documents_fields,1,150,1,"total_vote_count",0) == 0)
@@ -441,7 +441,7 @@ void* check_delegates_online_status_timer_thread()
          memcpy(message+19,database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);
          memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
 
-         if (get_delegate_online_status(database_multiple_documents_fields.value[count][2]) == 1)
+         if (get_delegate_online_status(database_multiple_documents_fields.value[count][3]) == 1)
          {
            memset(data,0,sizeof(data));
            memcpy(data,"{\"online_status\":\"true\"}",24);
@@ -450,7 +450,6 @@ void* check_delegates_online_status_timer_thread()
          {
            memset(data,0,sizeof(data));
            memcpy(data,"{\"online_status\":\"false\"}",25);
-           print_error_message;
          }   
          if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
          {
@@ -473,7 +472,7 @@ void* check_delegates_online_status_timer_thread()
       database_multiple_documents_fields.document_count = 0;
       database_multiple_documents_fields.database_fields_count = 0;
     }
-    sleep(60);
+    usleep(200000);
   }
   pthread_exit((void *)(intptr_t)1);
 }

@@ -46,7 +46,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
 #define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
 #define SEND_DATA_PORT 8000 // The port that is used by all nodes to send and receive data
-#define MAXIMUM_CONNECTIONS 100 // The maximum connections a node can have at one time
+#define MAXIMUM_CONNECTIONS 1000 // The maximum connections a node can have at one time
 #define TOTAL_CONNECTION_TIME_SETTINGS 10 // The total time a client is given to connect to the server and send data
 #define SOCKET_CONNECTION_TIMEOUT_SETTINGS 10000 // The time in milliseconds, to wait before a connection is cancelled
 #define SOCKET_DATA_TIMEOUT_SETTINGS 10 // The time in between read calls where there is no data
@@ -76,7 +76,7 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_CONNECTION "mongodb://localhost:27017" // the database connection string
 #define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
 #define DATABASE_ARRAY_COUNT 150 // The maximum amount of parsed item and value from the database
-#define TOTAL_RESERVE_PROOFS_DATABASES 1 // The total reserve proofs databases
+#define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
 
 // network data nodes
 #define NETWORK_DATA_NODES_AMOUNT 2 // The amount of network data nodes

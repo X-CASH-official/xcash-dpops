@@ -62,6 +62,32 @@ int start_new_round()
   error_message.total++; \
   return 0;
 
+  #define RESET_VARIABLES \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count])); \
+    memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key[count])); \
+    memset(VRF_data.block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[count])); \
+    memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen(VRF_data.block_verifiers_vrf_public_key[count])); \
+    memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count])); \
+    memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); \
+    memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count])); \
+    memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count])); \
+    memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count])); \
+  } \
+  memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4)); \
+  memset(VRF_data.vrf_secret_key_round_part_4,0,strlen(VRF_data.vrf_secret_key_round_part_4)); \
+  memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4)); \
+  memset(VRF_data.vrf_public_key_round_part_4,0,strlen((const char*)VRF_data.vrf_public_key_round_part_4)); \
+  memset(VRF_data.vrf_alpha_string_data_round_part_4,0,strlen(VRF_data.vrf_alpha_string_data_round_part_4)); \
+  memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)); \
+  memset(VRF_data.vrf_proof_data_round_part_4,0,strlen(VRF_data.vrf_proof_data_round_part_4)); \
+  memset(VRF_data.vrf_proof_round_part_4,0,strlen((const char*)VRF_data.vrf_proof_round_part_4)); \
+  memset(VRF_data.vrf_beta_string_data_round_part_4,0,strlen(VRF_data.vrf_beta_string_data_round_part_4)); \
+  memset(VRF_data.vrf_beta_string_round_part_4,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_4)); \
+  memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash)); \
+  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+
   memset(data,0,sizeof(data));
 
   // start a new round
@@ -72,36 +98,7 @@ int start_new_round()
   memcpy(data,"A new round is starting for block ",34);
   memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
   print_start_message(data);
-  
-  // reset the variables 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count])); 
-    memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key[count])); 
-    memset(VRF_data.block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[count])); 
-    memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen(VRF_data.block_verifiers_vrf_public_key[count])); 
-    memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count])); 
-    memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); 
-    
-    memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
-    memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));
-    memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count]));
-  }
-
-  // reset the VRF_data struct
-  memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4));
-  memset(VRF_data.vrf_secret_key_round_part_4,0,strlen(VRF_data.vrf_secret_key_round_part_4));
-  memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4));
-  memset(VRF_data.vrf_public_key_round_part_4,0,strlen((const char*)VRF_data.vrf_public_key_round_part_4));
-  memset(VRF_data.vrf_alpha_string_data_round_part_4,0,strlen(VRF_data.vrf_alpha_string_data_round_part_4));
-  memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_4));
-  memset(VRF_data.vrf_proof_data_round_part_4,0,strlen(VRF_data.vrf_proof_data_round_part_4));
-  memset(VRF_data.vrf_proof_round_part_4,0,strlen((const char*)VRF_data.vrf_proof_round_part_4));
-  memset(VRF_data.vrf_beta_string_data_round_part_4,0,strlen(VRF_data.vrf_beta_string_data_round_part_4));
-  memset(VRF_data.vrf_beta_string_round_part_4,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_4));
-  memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash));
-  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
-
+ 
   /*// check if all of the databases are synced
   if (check_if_databases_are_synced() == 0)
   {
@@ -135,6 +132,8 @@ int start_new_round()
     // this is the first block of the network
     color_print("The current block is the first block on the network, meaning the the main network node will create this block","green");
 
+    RESET_VARIABLES;
+
     pthread_rwlock_wrlock(&rwlock);
     // set the main_network_data_node_create_block so the main network data node can create the block
     main_network_data_node_create_block = 1;
@@ -156,6 +155,8 @@ int start_new_round()
         START_NEW_ROUND_ERROR("Could not check if the databases are synced. This means that your database is out of sync, and you need to resync your databases");
       }
     }
+
+    RESET_VARIABLES
 
     pthread_rwlock_wrlock(&rwlock);
     // reset the current_round_part and current_round_part_backup_node
@@ -1397,6 +1398,8 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not add the network block string data hash");
     }
 
+    add_round_statistics();
+
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes(0);
 
@@ -1664,39 +1667,34 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_total_rounds from the database");
     }
-    count2 = strnlen(data,BUFFER_SIZE);
     sscanf(data, "%zu", &number);
     number++;
     memset(data,0,sizeof(data));
     memcpy(data,"{\"block_verifier_total_rounds\":\"",32);
     sprintf(data+32,"%zu",number); 
-    memcpy(data+32+count2,"\"}",2);
+    memcpy(data+strlen(data),"\"}",2);
     if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_total_rounds in the database");
     }
 
-    // add one to the block_verifier_online_total_rounds for every block verifier that is currently online
-    if (send_data_socket((const char*)previous_block_verifiers_list.block_verifiers_IP_address[count],SEND_DATA_PORT,"") == 1)
+    // add one to the block_verifier_online_total_rounds
+    memset(data,0,sizeof(data));
+    if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_online_total_rounds",data,0) == 0)
     {
-      memset(data,0,sizeof(data));
-      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_online_total_rounds",data,0) == 0)
-      {
-        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_online_total_rounds from the database");
-      }
-      count2 = strnlen(data,BUFFER_SIZE);
-      sscanf(data, "%zu", &number);
-      number++;
-      memset(data,0,sizeof(data));
-      memcpy(data,"{\"block_verifier_online_total_rounds\":\"",39);
-      sprintf(data+39,"%zu",number); 
-      memcpy(data+39+count2,"\"}",2);
-      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
-      {
-        ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
-      }
+      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_online_total_rounds from the database");
     }
-
+    sscanf(data, "%zu", &number);
+    number++;
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"block_verifier_online_total_rounds\":\"",39);
+    sprintf(data+39,"%zu",number); 
+    memcpy(data+strlen(data),"\"}",2);
+    if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
+    {
+      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
+    }
+    
     // add one to the block_producer_total_rounds and the current block height to the block_producer_block_heights if the public address is the block producer
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))
     {
@@ -1705,13 +1703,12 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_total_rounds from the database");
       }
-      count2 = strnlen(data,BUFFER_SIZE);
       sscanf(data, "%zu", &number);
       number++;
       memset(data,0,sizeof(data));
-      memcpy(data,"{\"block_producer_total_rounds\":\"",39);
-      sprintf(data+39,"%zu",number); 
-      memcpy(data+39+count2,"\"}",2);
+      memcpy(data,"{\"block_producer_total_rounds\":\"",32);
+      sprintf(data+32,"%zu",number); 
+      memcpy(data+strlen(data),"\"}",2);
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_total_rounds in the database");
@@ -1722,12 +1719,12 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database");
       }      
-      memcpy(data,",",1);
-      memcpy(data+1,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,sizeof(data)));
-      memset(data2,0,strnlen(data2,sizeof(data2)));
+      memcpy(data+strlen(data),"|",1);
+      memcpy(data+strlen(data),BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,sizeof(data)));
+      memset(data2,0,sizeof(data2));
       memcpy(data2,"{\"block_producer_block_heights\":\"",33);
       memcpy(data2+33,data,strnlen(data,sizeof(data2)));
-      memcpy(data2+33+strnlen(data,sizeof(data2)),"\"}",2);
+      memcpy(data2+strlen(data2),"\"}",2);
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
@@ -1759,7 +1756,6 @@ int add_round_statistics()
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
-  char settings[BUFFER_SIZE];
   char delegates_name[BUFFER_SIZE];
   char block_verifier_total_rounds_delegates_name[BUFFER_SIZE];
   char best_block_verifier_online_percentage_delegate_name[BUFFER_SIZE];
@@ -1770,12 +1766,6 @@ int add_round_statistics()
   char message4[BUFFER_SIZE];
   char message5[BUFFER_SIZE];
   char message6[BUFFER_SIZE];
-  char message7[BUFFER_SIZE];
-  char message8[BUFFER_SIZE];
-  char message9[BUFFER_SIZE];
-  char message10[BUFFER_SIZE];
-  char message11[BUFFER_SIZE];
-  char message12[BUFFER_SIZE];
   size_t block_verifier_total_rounds_count = 0;
   size_t block_verifier_total_rounds_count2 = 0;
   size_t most_block_producer_total_rounds_count = 0;
@@ -1792,13 +1782,6 @@ int add_round_statistics()
 
   // define macros
   #define MESSAGE "{\"username\":\"xcash\"}"
-  #define DATABASE_COLLECTION "statistics"
-
-  #define ADD_ROUND_STATISTICS_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"add_round_statistics",20); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
-  error_message.total++; \
-  return 0;
   
   // set the collection
   collection = mongoc_client_get_collection(database_client, DATABASE_NAME,"delegates");
@@ -1810,129 +1793,109 @@ int add_round_statistics()
     memset(data,0,sizeof(data));
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
-    memset(settings,0,sizeof(settings));
     memset(delegates_name,0,sizeof(delegates_name));
-    memset(block_verifier_total_rounds_delegates_name,0,sizeof(block_verifier_total_rounds_delegates_name));
-    memset(best_block_verifier_online_percentage_delegate_name,0,sizeof(best_block_verifier_online_percentage_delegate_name));
-    memset(most_block_producer_total_rounds_delegate_name,0,sizeof(most_block_producer_total_rounds_delegate_name));
-    memset(message1,0,sizeof(message1));
-    memset(message2,0,sizeof(message2));
-    memset(message3,0,sizeof(message3));
-    memset(message4,0,sizeof(message4));
-    memset(message5,0,sizeof(message5));
-    memset(message6,0,sizeof(message6));
-    memset(message7,0,sizeof(message7));
-    memset(message8,0,sizeof(message8));
-    memset(message9,0,sizeof(message9));
-    memset(message10,0,sizeof(message10));
-    memset(message11,0,sizeof(message11));
-    memset(message12,0,sizeof(message12)); 
 
     message = bson_as_canonical_extended_json(current_document, NULL);
     memcpy(data,message,strnlen(message,sizeof(data)));
     bson_free(message);
 
-    // get the delegate_name
-    memcpy(data2,", \"",3);
-    memcpy(data2+3,"delegate_name",13);
-    memcpy(data2+16,"\" : \"",5);
+    color_print(data,"yellow");
 
-    message_copy1 = strstr(data,data2) + strnlen(data2,BUFFER_SIZE);
+    // get the delegate_name
+    memcpy(data2,", \"delegate_name\" : \"",21);
+    message_copy1 = strstr(data,data2) + 21;
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(delegates_name,message_copy1,message_copy2 - message_copy1);
     memset(data2,0,sizeof(data2));
 
     // get the block_verifier_total_rounds
-    memcpy(data2,", \"",3);
-    memcpy(data2+3,"block_verifier_total_rounds",27);
-    memcpy(data2+30,"\" : \"",5);
-
-    message_copy1 = strstr(data,data2) + strnlen(data2,BUFFER_SIZE);
+    memcpy(data2,", \"block_verifier_total_rounds\" : \"",35);
+    message_copy1 = strstr(data,data2) + 35;
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(data3,message_copy1,message_copy2 - message_copy1);
     sscanf(data3, "%zu", &block_verifier_total_rounds_count2);
     sscanf(data3, "%lf", &total2);
-    memset(data,0,sizeof(data));
     memset(data2,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
 
     if (block_verifier_total_rounds_count2 > block_verifier_total_rounds_count)
     {
       block_verifier_total_rounds_count = block_verifier_total_rounds_count2;
-      memset(block_verifier_total_rounds_delegates_name,0,strnlen(block_verifier_total_rounds_delegates_name,BUFFER_SIZE));
-      memcpy(block_verifier_total_rounds_delegates_name,delegates_name,strnlen(delegates_name,BUFFER_SIZE));
+      memset(block_verifier_total_rounds_delegates_name,0,sizeof(block_verifier_total_rounds_delegates_name));
+      memcpy(block_verifier_total_rounds_delegates_name,delegates_name,strnlen(delegates_name,sizeof(block_verifier_total_rounds_delegates_name)));
+      color_print(block_verifier_total_rounds_delegates_name,"green");
     }
-
+    
     // get the block_verifier_online_total_rounds
-    memcpy(data2,", \"",3);
-    memcpy(data2+3,"block_verifier_online_total_rounds",34);
-    memcpy(data2+34,"\" : \"",5);
-
-    message_copy1 = strstr(data,data2) + strnlen(data2,BUFFER_SIZE);
+    memcpy(data2,", \"block_verifier_online_total_rounds\" : \"",42);
+    message_copy1 = strstr(data,data2) + 42;
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(data3,message_copy1,message_copy2 - message_copy1);
+    color_print(data3,"yellow");
     sscanf(data3, "%lf", &total3);
-    memset(data,0,sizeof(data));
     memset(data2,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
 
-    if (total3 / total2 > total)
+    if (total2 != 0)
     {
-      total = total3 / total2;
-      memset(best_block_verifier_online_percentage_delegate_name,0,strnlen(best_block_verifier_online_percentage_delegate_name,BUFFER_SIZE));
-      memcpy(best_block_verifier_online_percentage_delegate_name,delegates_name,strnlen(delegates_name,BUFFER_SIZE));
+      if (total3 / total2 > total)
+      {
+        total = total3 / total2;
+        memset(best_block_verifier_online_percentage_delegate_name,0,sizeof(best_block_verifier_online_percentage_delegate_name));
+        memcpy(best_block_verifier_online_percentage_delegate_name,delegates_name,strnlen(delegates_name,sizeof(best_block_verifier_online_percentage_delegate_name)));
+      }
     }
-
+ 
     // get the block_producer_total_rounds
-    memcpy(data2,", \"",3);
-    memcpy(data2+3,"block_producer_total_rounds",27);
-    memcpy(data2+30,"\" : \"",5);
-    message_copy1 = strstr(data,data2) + strnlen(data2,BUFFER_SIZE);
+    memcpy(data2,", \"block_producer_total_rounds\" : \"",35);
+    message_copy1 = strstr(data,data2) + 35;
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(data3,message_copy1,message_copy2 - message_copy1);
     sscanf(data3, "%zu", &most_block_producer_total_rounds_count2);
     memset(data,0,sizeof(data));
     memset(data2,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
 
     if (most_block_producer_total_rounds_count2 > most_block_producer_total_rounds_count)
     {
       most_block_producer_total_rounds_count = most_block_producer_total_rounds_count2;
-      memset(most_block_producer_total_rounds_delegate_name,0,strnlen(most_block_producer_total_rounds_delegate_name,BUFFER_SIZE));
-      memcpy(most_block_producer_total_rounds_delegate_name,delegates_name,strnlen(delegates_name,BUFFER_SIZE));
+      memset(most_block_producer_total_rounds_delegate_name,0,sizeof(most_block_producer_total_rounds_delegate_name));
+      memcpy(most_block_producer_total_rounds_delegate_name,delegates_name,strnlen(delegates_name,sizeof(most_block_producer_total_rounds_delegate_name)));
     }
   }
 
   // create the message
   memcpy(message1,"{\"most_total_rounds_delegate_name\":\"",36);
   memcpy(message1+36,block_verifier_total_rounds_delegates_name,strnlen(block_verifier_total_rounds_delegates_name,sizeof(message1)));
-  memcpy(message1+36+strnlen(block_verifier_total_rounds_delegates_name,sizeof(message1)),"\"}",2);
+  memcpy(message1+strlen(message1),"\"}",2);
 
-  memcpy(message2,"{\"most_total_rounds\":\"",25);
-  sprintf(message2+25,"%zu",block_verifier_total_rounds_count);
-  memcpy(message2+strnlen(message2,sizeof(message2)),"\"}",2);
+  memcpy(message2,"{\"most_total_rounds\":\"",22);
+  sprintf(message2+22,"%zu",block_verifier_total_rounds_count);
+  memcpy(message2+strlen(message2),"\"}",2);
 
   memcpy(message3,"{\"best_block_verifier_online_percentage_delegate_name\":\"",56);
-  memcpy(message3+56,best_block_verifier_online_percentage_delegate_name,strnlen(settings,sizeof(message3)));
-  memcpy(message3+56+strnlen(best_block_verifier_online_percentage_delegate_name,sizeof(message3)),"\"}",2);
+  memcpy(message3+56,best_block_verifier_online_percentage_delegate_name,strnlen(best_block_verifier_online_percentage_delegate_name,sizeof(message3)));
+  memcpy(message3+strlen(message3),"\"}",2);
 
-  memcpy(message4,"{\"best_block_verifier_online_percentage\":\"",45);
-  sprintf(message4+45,"%lf",total);
-  memcpy(message4+strnlen(message4,sizeof(message4)),"\"}",2);
+  memcpy(message4,"{\"best_block_verifier_online_percentage\":\"",42);
+  sprintf(message4+42,"%.2lf",total);
+  memcpy(message4+strlen(message4),"\"}",2);
 
   memcpy(message5,"{\"most_block_producer_total_rounds_delegate_name\":\"",51);
   memcpy(message5+51,most_block_producer_total_rounds_delegate_name,strnlen(most_block_producer_total_rounds_delegate_name,sizeof(message5)));
-  memcpy(message5+51+strnlen(most_block_producer_total_rounds_delegate_name,sizeof(message5)),"\"}",2);
+  memcpy(message5+strlen(message5),"\"}",2);
 
-  memcpy(message6,"{\"most_block_producer_total_rounds\":\"",40);
-  sprintf(message6+40,"%zu",most_block_producer_total_rounds_count);
-  memcpy(message6+strnlen(message6,sizeof(message6)),"\"}",2);
+  memcpy(message6,"{\"most_block_producer_total_rounds\":\"",37);
+  sprintf(message6+37,"%zu",most_block_producer_total_rounds_count);
+  memcpy(message6+strlen(message6),"\"}",2);
 
-  // update the database
-  if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,message6,0) == 0)
+  /*// update the database
+  if (update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message6,0) == 0)
   {
     ADD_ROUND_STATISTICS_ERROR("Could not update the round statistics in the database");
-  }
+  }*/
   return 1;
 
-  #undef DATABASE_COLLECTION
   #undef MESSAGE
   #undef ADD_ROUND_STATISTICS_ERROR
 }

@@ -2533,12 +2533,7 @@ int get_delegate_online_status(const char* HOST)
   */
   const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
   if (SOCKET == -1)
-  { 
-    memcpy(str,"Error creating socket for sending data to ",42);
-    memcpy(str+42,HOST,HOST_LENGTH);
-    memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
-    memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-    error_message.total++; 
+  {     
     return 0;
   }
 
@@ -2546,12 +2541,7 @@ int get_delegate_online_status(const char* HOST)
   const struct hostent* HOST_NAME = gethostbyname(HOST); 
   if (HOST_NAME == NULL)
   {
-    close(SOCKET);
-    memcpy(str,"Error invalid hostname of ",26);
-    memcpy(str+26,HOST,HOST_LENGTH);
-    memcpy(error_message.function[error_message.total],"get_delegate_online_status",26);
-    memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-    error_message.total++;
+    close(SOCKET);    
     return 0;
   } 
 
@@ -2585,7 +2575,7 @@ int get_delegate_online_status(const char* HOST)
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
   {    
-    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,1000) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   
       if (socket_settings == 0)
       {        
