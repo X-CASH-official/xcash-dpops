@@ -462,7 +462,7 @@ int data_network_node_create_block()
   main_network_data_node_create_block = 1;
 
   // wait for the block verifiers to process the votes
-  //sync_block_verifiers_minutes(4);
+  sync_block_verifiers_minutes(4);
 
   pthread_rwlock_wrlock(&rwlock);
   // set the current_round_part
@@ -471,7 +471,7 @@ int data_network_node_create_block()
 
   // set the current_round_part_backup_node
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-  memcpy(current_round_part_backup_node,"5",1);
+  memcpy(current_round_part_backup_node,"2",1);
   pthread_rwlock_unlock(&rwlock);
 
   // check if the block verifier is the main network data node
@@ -859,27 +859,6 @@ int start_part_4_of_round()
   } \
   else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
   { \
-    memset(current_round_part,0,sizeof(current_round_part)); \
-    memcpy(current_round_part,"1",1); \
-    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"3",1); \
-  } \
-  else if (memcmp(current_round_part_backup_node,"3",1) == 0) \
-  { \
-    memset(current_round_part,0,sizeof(current_round_part)); \
-    memcpy(current_round_part,"1",1); \
-    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"4",1); \
-  } \
-  else if (memcmp(current_round_part_backup_node,"4",1) == 0) \
-  { \
-    memset(current_round_part,0,sizeof(current_round_part)); \
-    memcpy(current_round_part,"1",1); \
-    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"5",1); \
-  } \
-  else if (memcmp(current_round_part_backup_node,"5",1) == 0) \
-  { \
     data_network_node_create_block(); \
   } \
   pthread_rwlock_unlock(&rwlock); \
@@ -903,12 +882,6 @@ int start_part_4_of_round()
       color_print("Your block verifier is the block producer","green");
       printf("\n");
     }
-
-    pthread_rwlock_wrlock(&rwlock);
-    // set the current_round_part
-    memset(current_round_part,0,sizeof(current_round_part));
-    memcpy(current_round_part,"1",1);
-    pthread_rwlock_unlock(&rwlock);
   
     // create a random VRF public key and secret key
     if (create_random_VRF_keys((unsigned char*)VRF_data.vrf_public_key_round_part_4,(unsigned char*)VRF_data.vrf_secret_key_round_part_4) != 1 || crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_4) != 1)
@@ -969,7 +942,7 @@ int start_part_4_of_round()
     SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(5);
+    sync_block_verifiers_seconds(10);
 
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1002,12 +975,6 @@ int start_part_4_of_round()
   
 
     // at this point all block verifiers should have the all of the other block verifiers secret key, public key and random data
-
-    pthread_rwlock_wrlock(&rwlock);
-    // set the current_round_part
-    memset(current_round_part,0,sizeof(current_round_part));
-    memcpy(current_round_part,"2",1);
-    pthread_rwlock_unlock(&rwlock);
 
     // create the VRF alpha string using all of the random data from the block verifiers
     memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen(VRF_data.vrf_alpha_string_round_part_4));
@@ -1121,17 +1088,11 @@ int start_part_4_of_round()
     }
     
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(10);
+    sync_block_verifiers_seconds(30);
 
 
 
     // at this point all block verifiers should have the same VRF data and the network block
-
-    pthread_rwlock_wrlock(&rwlock);
-    // set the current_round_part
-    memset(current_round_part,0,sizeof(current_round_part));
-    memcpy(current_round_part,"3",1);
-    pthread_rwlock_unlock(&rwlock);
 
     memcpy(VRF_data.block_blob,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
 
@@ -1261,17 +1222,11 @@ int start_part_4_of_round()
     SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(15);
+    sync_block_verifiers_seconds(40);
 
 
 
     // at this point all block verifiers should have the same VRF data, network block string and all block verifiers signed data
-
-    pthread_rwlock_wrlock(&rwlock);
-    // set the current_round_part
-    memset(current_round_part,0,strlen(current_round_part));
-    memcpy(current_round_part,"4",1);
-    pthread_rwlock_unlock(&rwlock);
 
     // process the data and add the block verifiers signatures to the block
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1373,13 +1328,13 @@ int start_part_4_of_round()
     }    
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(20);
+    sync_block_verifiers_seconds(45);
 
     // send the message to all block verifiers
     SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(25);
+    sync_block_verifiers_seconds(55);
 
     // process the vote results
     if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
@@ -1397,8 +1352,6 @@ int start_part_4_of_round()
     {
       START_PART_4_OF_ROUND_ERROR("Could not add the network block string data hash");
     }
-
-    add_round_statistics();
 
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes(0);
@@ -3825,7 +3778,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   memset(data2,0,sizeof(data2));
 
   // verify the data
-  if (verify_data(MESSAGE,0,1) == 0 || memcmp(current_round_part_backup_node,"5",1) != 0 || main_network_data_node_create_block != 1)
+  if (verify_data(MESSAGE,0,1) == 0 || memcmp(current_round_part_backup_node,"2",1) != 0 || main_network_data_node_create_block != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data");
   }

@@ -168,7 +168,7 @@ void* check_reserve_proofs_timer_thread()
     if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec == 25)
     {
       // wait for any block verifiers sending messages
-      sync_block_verifiers_seconds(0);
+      sync_block_verifiers_seconds(30);
 
       // check if all block verifiers have the same invalid_reserve_proofs struct
 
@@ -219,7 +219,7 @@ void* check_reserve_proofs_timer_thread()
       SEND_DATA_SOCKET_THREAD(data2);
 
       // wait for the block verifiers to process the votes
-      sync_block_verifiers_seconds(10);
+      sync_block_verifiers_seconds(40);
 
       // process the vote results
       if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
@@ -1001,19 +1001,19 @@ void* socket_thread(void* parameters)
  {  
    server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(CLIENT_SOCKET,(const char*)buffer);
  } 
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec % 30 >= 5 && current_UTC_date_and_time->tm_sec % 30 < 10)
+ else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec % 60 >= 10 && current_UTC_date_and_time->tm_sec % 60 < 30)
  {
    server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
  }         
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec % 30 < 5)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec % 60 < 10)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec % 30 >= 10 && current_UTC_date_and_time->tm_sec % 30 < 15)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec % 60 >= 30 && current_UTC_date_and_time->tm_sec % 60 < 40)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && current_UTC_date_and_time->tm_sec % 30 >= 20 && current_UTC_date_and_time->tm_sec % 30 < 25)
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && current_UTC_date_and_time->tm_sec % 60 >= 45 && current_UTC_date_and_time->tm_sec % 60 < 55)
  {
    server_receive_data_socket_node_to_node((const char*)buffer);
  }

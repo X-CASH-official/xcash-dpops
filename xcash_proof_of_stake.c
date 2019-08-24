@@ -496,7 +496,6 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }*/
   }
-
  
   print_start_message("Starting all of the threads");
 
