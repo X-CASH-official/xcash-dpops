@@ -3286,7 +3286,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   size_t count;
-  int  count2;
+  size_t count2;
   int settings = 0;
 
   // define macros
@@ -3318,18 +3318,36 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"delegates_public_address",delegates_public_address,sizeof(delegates_public_address)) == 0 || strlen(delegates_public_address) != XCASH_WALLET_LENGTH || memcmp(delegates_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof,sizeof(reserve_proof)) == 0)
+  for (count = 0, count2 = 0; count < 5; count++)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not parse the message");
+    if (count == 1)
+    {
+      memcpy(delegates_public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+    }
+    if (count == 2)
+    {
+      memcpy(reserve_proof,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+    }
+    if (count == 3)
+    {
+      memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+    }
+    count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+  }
+
+  // check if the data is valid
+  if (strlen(delegates_public_address) != XCASH_WALLET_LENGTH || memcmp(delegates_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Invalid data");
   }
 
   // create the message
   memcpy(data,"{\"reserve_proof\":\"",18);
-  memcpy(data+18,reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
+  memcpy(data+18,reserve_proof,strnlen(reserve_proof,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
 
   memcpy(data3,"{\"public_address_created_reserve_proof\":\"",41);
-  memcpy(data3+41,reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
+  memcpy(data3+41,public_address,strnlen(public_address,sizeof(data3)));
   memcpy(data3+strlen(data3),"\"}",2);
 
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
@@ -3340,8 +3358,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
 
     // check if the reserve proof is in the database
     if (count_documents_in_collection(DATABASE_NAME,data2,data,0) != 0)
-    {
-      send_data(CLIENT_SOCKET,"The reserve proof is already in the database",1);
+    {      
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database");
     }
     // check if another proof from the public address is already in the database
@@ -3363,14 +3380,13 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   {
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
-      memset(data2,0,sizeof(data2));
-      memcpy(data2,"reserve_proofs_",15);
-      sprintf(data2+15,"%zu",count);
-      if (count_documents_in_collection(DATABASE_NAME,data2,data3,0) > 0)
+      memset(data,0,sizeof(data));
+      memcpy(data,"reserve_proofs_",15);
+      sprintf(data+15,"%zu",count);
+      while (count_documents_in_collection(DATABASE_NAME,data,data3,0) > 0)
       {
-        if (delete_document_from_collection(DATABASE_NAME,data2,data3,0) == 0)
+        if (delete_document_from_collection(DATABASE_NAME,data,data3,0) == 0)
         {
-          send_data(CLIENT_SOCKET,"The previous reserve proof could not be cancelled for this public address. Please wait a few minutes and try again.",1);
           SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The previous reserve proof could not be cancelled for this public address");
         }
       }
@@ -3386,16 +3402,17 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(data+strlen(data),"\",\"total\":\"",11);
   memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
   memcpy(data+strlen(data),"\",\"reserve_proof\":\"",19);
-  memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
+  memcpy(data+strlen(data),reserve_proof,strnlen(reserve_proof,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
 
+  pthread_rwlock_wrlock(&rwlock);
   // add the reserve proof to the database
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
     sprintf(data+15,"%zu",count);
-    if (count_documents_in_collection(DATABASE_NAME,data2,data,0) < 1000)
+    if (count_documents_in_collection(DATABASE_NAME,data2,data,0) < MAXIMUM_INVALID_RESERERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
     {
       if (insert_document_into_collection_json(DATABASE_NAME,data,data2,0) == 1)
       {        
@@ -3407,6 +3424,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
       }         
     }
   }
+  pthread_rwlock_unlock(&rwlock);
   send_data(CLIENT_SOCKET,"The vote was successfully added to the database}",0);
   return 1;
   
@@ -3543,7 +3561,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
 
   // parse the message
-  for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
+  for (count = 0, count2 = 0; count < 5; count++)
   {
     if (count == 1)
     {
@@ -3598,11 +3616,11 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
 
-  /*// add the delegate to the database
+  // add the delegate to the database
   if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database");
-  }*/
+  }
 
   send_data(CLIENT_SOCKET,"Registered the delegate}",0);
   return 1;
@@ -3629,6 +3647,8 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   // Variables
   char data[BUFFER_SIZE];
   char delegate_public_address[XCASH_WALLET_LENGTH+1];
+  size_t count;
+  size_t count2;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -3649,9 +3669,19 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",delegate_public_address,sizeof(delegate_public_address)) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  for (count = 0, count2 = 0; count < 3; count++)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not parse the message");
+    if (count == 1)
+    {
+      memcpy(delegate_public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+    }
+    count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+  }
+
+  // check if the data is valid
+  if (strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Invalid data");
   }
 
   // create the message
@@ -3666,10 +3696,10 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   }
 
   // remove the delegate from the database
-  /*if (delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) == 0)
+  if (delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) == 0)
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate could not be removed from the database");
-  }*/
+  }
 
   send_data(CLIENT_SOCKET,"Removed the delegate}",0);
   return 1;
@@ -3699,6 +3729,8 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   char delegate_public_address[XCASH_WALLET_LENGTH+1];
   char item[BUFFER_SIZE];
   char value[BUFFER_SIZE];
+  size_t count;
+  size_t count2;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -3722,9 +3754,27 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",delegate_public_address,sizeof(delegate_public_address)) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"item",item,sizeof(item)) == 0 || parse_json_data(MESSAGE,"value",value,sizeof(value)) == 0)
+  for (count = 0, count2 = 0; count < 5; count++)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not parse the message");
+    if (count == 1)
+    {
+      memcpy(item,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+    }
+    if (count == 2)
+    {
+      memcpy(value,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+    }
+    if (count == 3)
+    {
+      memcpy(delegate_public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+    }
+    count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+  }
+
+  // check if the data is valid
+  if (strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid data");
   }
 
   // error check
@@ -3745,10 +3795,10 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   memcpy(data2+strlen(data2),"\"}",2);
 
   // update the delegate in the database
-  /*if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,data2,0) == 0)
+  if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,data2,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database");
-  }*/
+  }
 
   send_data(CLIENT_SOCKET,"Updated the delegates information}",0);
   return 1;
