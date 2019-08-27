@@ -980,7 +980,7 @@ int sync_all_block_verifiers_list()
     get_current_UTC_time;
     
     memcpy(data3,"Connecting to network data node ",32);
-    memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data3)));
+    memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],52428800));
     memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
     memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
     printf("%s\n",data3);
@@ -989,7 +989,7 @@ int sync_all_block_verifiers_list()
     if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
     {
       memcpy(data2,"Could not receive data from network data node ",46);
-      memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
+      memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],52428800));
       color_print(data2,"red");
       memset(data2,0,sizeof(data2));
       printf("Connecting to a different network data node\n\n");
@@ -1774,7 +1774,7 @@ int sync_reserve_bytes_database()
   // get the current reserve bytes database
   sscanf(current_block_height,"%zu", &number);
   number--;
-  if (number < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  if (number < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
   {
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the current block height",0);
   }

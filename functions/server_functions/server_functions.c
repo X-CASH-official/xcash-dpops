@@ -470,7 +470,7 @@ int data_network_node_create_block()
   main_network_data_node_create_block = 1;
 
   // wait for the block verifiers to process the votes
-  sync_block_verifiers_minutes(4);
+  //sync_block_verifiers_minutes(4);
 
   pthread_rwlock_wrlock(&rwlock);
   // set the current_round_part
@@ -509,7 +509,7 @@ int data_network_node_create_block()
     memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
     memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
     memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
-    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"5",1);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"2",1);
     memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,BUFFER_SIZE));
     memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1",99);
 
@@ -646,6 +646,10 @@ int data_network_node_create_block()
         pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
         pthread_detach(thread_id[count]);
       }
+      if (count % 25 == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
+      {
+        usleep(500000);
+      }
     }
 
     sleep(10);
@@ -676,7 +680,7 @@ int data_network_node_create_block()
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
     sscanf(current_block_height,"%zu", &count);
-    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the current block height");
     }
@@ -784,21 +788,6 @@ int start_part_4_of_round()
   return 0;  
 
   #define SEND_DATA_SOCKET_THREAD(message) \
-  sleep(2); \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
-    { \
-      memset(send_data_socket_thread_parameters[count].HOST,0,sizeof(send_data_socket_thread_parameters[count].HOST)); \
-      memset(send_data_socket_thread_parameters[count].DATA,0,sizeof(send_data_socket_thread_parameters[count].DATA)); \
-      memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE)); \
-      memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
-      pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
-      pthread_detach(thread_id[count]); \
-    } \
-  }
-
-  #define SEND_DATA_SOCKET_BLOCK_PRODUCER_THREAD(message) \
   sleep(2); \
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
@@ -1092,7 +1081,7 @@ int start_part_4_of_round()
       }
 
       // send the message to all block verifiers
-      SEND_DATA_SOCKET_BLOCK_PRODUCER_THREAD(data);
+      SEND_DATA_SOCKET_THREAD(data);
     }
     
     // wait for the block verifiers to process the votes
@@ -1262,7 +1251,7 @@ int start_part_4_of_round()
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
     sscanf(current_block_height,"%zu", &count);
-    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
     {
       START_PART_4_OF_ROUND_ERROR("Could not get the current block height");
     }
@@ -1390,7 +1379,6 @@ int start_part_4_of_round()
 
     #undef START_PART_4_OF_ROUND_ERROR
     #undef SEND_DATA_SOCKET_THREAD
-    #undef SEND_DATA_SOCKET_BLOCK_PRODUCER_THREAD
     #undef RESTART_ROUND
 }
 
@@ -1540,7 +1528,7 @@ int update_databases()
   
   // get the previous block height
   sscanf(current_block_height, "%zu", &count);
-  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
   {
     UPDATE_DATABASE_ERROR("Could not get the current block height");
   }
@@ -1994,7 +1982,7 @@ int calculate_main_nodes_roles()
   memset(data3,0,sizeof(data3));
   
   sscanf(current_block_height,"%zu", &count);
-  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
   {
     CALCULATE_MAIN_NODES_ROLES("Could not get the current block height");
   }
@@ -3351,7 +3339,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
   if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
   {
-    send_data(CLIENT_SOCKET,"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",1);
+    send_data(CLIENT_SOCKET,"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",0);
     return 0;
   }
 
@@ -3380,7 +3368,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
 
   // check if the data is valid
-  if (strlen(delegates_public_address) != XCASH_WALLET_LENGTH || memcmp(delegates_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (strlen(delegates_public_address) != XCASH_WALLET_LENGTH || memcmp(delegates_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(reserve_proof) > BUFFER_SIZE_RESERVE_PROOF)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Invalid data");
   }
@@ -4066,7 +4054,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
   {    
     // get the previous network block string
     sscanf(current_block_height,"%zu", &count);
-    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
     {
       SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not get the current block height");
     }
