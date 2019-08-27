@@ -182,8 +182,9 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   char* result = (char*)calloc(52428800,sizeof(char)); // 50 MB
   char data[BUFFER_SIZE];
   char* string = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  size_t message_length = strlen(MESSAGE) - 134;
+  size_t message_length;
   size_t count;
+  size_t count2;
   int settings = 0;
 
   // define macros
@@ -228,10 +229,126 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memset(data,0,sizeof(data));
 
   // parse the message
-  if (parse_json_data(MESSAGE,"message_settings",message_settings,sizeof(message_settings)) == 0 || parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"previous_block_hash",message_previous_block_hash,sizeof(message_previous_block_hash)) == 0 || parse_json_data(MESSAGE,"current_round_part",message_current_round_part,sizeof(message_current_round_part)) == 0 || parse_json_data(MESSAGE,"current_round_part_backup_node",message_current_round_part_backup_node,sizeof(message_current_round_part_backup_node)) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature,sizeof(xcash_proof_of_stake_signature)) == 0)
-  {
-    VERIFY_DATA_ERROR("Could not parse the message");
+  if (strstr(MESSAGE,"}") != NULL)
+  { 
+    if (parse_json_data(MESSAGE,"message_settings",message_settings,sizeof(message_settings)) == 0)
+    {
+      VERIFY_DATA_ERROR("Could not parse the message");
+    }
   }
+  else
+  {
+    memcpy(message_settings,MESSAGE,strnlen(MESSAGE,sizeof(message_settings)) - strnlen(strstr(MESSAGE,"|"),sizeof(message_settings)));
+  }  
+
+  if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",sizeof(message_settings)) == 0)
+  {
+    if (strstr(MESSAGE,"}") != NULL)
+    { 
+      if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature,sizeof(xcash_proof_of_stake_signature)) == 0)
+      {
+        VERIFY_DATA_ERROR("Could not parse the message");
+      }
+    }
+    else
+    {
+      if (strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",sizeof(message_settings)) == 0)
+      {
+        if (string_count(MESSAGE,"|") == 5)
+        {
+          for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
+          {
+            if (count == 3)
+            {
+              memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+            }
+            if (count == 4)
+            {
+              memcpy(xcash_proof_of_stake_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+            }
+            count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+          }
+        }
+        else
+        {
+          VERIFY_DATA_ERROR("Could not parse the message");
+        }  
+      }
+      else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",sizeof(message_settings)) == 0)
+      {
+        if (string_count(MESSAGE,"|") == 5)
+        {
+          for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
+          {
+            if (count == 3)
+            {
+              memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+            }
+            if (count == 4)
+            {
+              memcpy(xcash_proof_of_stake_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+            }
+            count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+          }
+        }
+        else
+        {
+          VERIFY_DATA_ERROR("Could not parse the message");
+        }  
+      }
+      else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",sizeof(message_settings)) == 0)
+      {
+        if (string_count(MESSAGE,"|") == 3)
+        {
+          for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
+          {
+            if (count == 1)
+            {
+              memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+            }
+            if (count == 2)
+            {
+              memcpy(xcash_proof_of_stake_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+            }
+            count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+          }
+        }
+        else
+        {
+          VERIFY_DATA_ERROR("Could not parse the message");
+        }  
+      }
+      else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",sizeof(message_settings)) == 0)
+      {
+        if (string_count(MESSAGE,"|") == 5)
+        {
+          for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
+          {
+            if (count == 3)
+            {
+              memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+            }
+            if (count == 4)
+            {
+              memcpy(xcash_proof_of_stake_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+            }
+            count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+          }
+        }
+        else
+        {
+          VERIFY_DATA_ERROR("Could not parse the message");
+        }  
+      }  
+    }    
+  }
+  else
+  {    
+    if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"previous_block_hash",message_previous_block_hash,sizeof(message_previous_block_hash)) == 0 || parse_json_data(MESSAGE,"current_round_part",message_current_round_part,sizeof(message_current_round_part)) == 0 || parse_json_data(MESSAGE,"current_round_part_backup_node",message_current_round_part_backup_node,sizeof(message_current_round_part_backup_node)) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature,sizeof(xcash_proof_of_stake_signature)) == 0)
+    {
+      VERIFY_DATA_ERROR("Could not parse the message");
+    }
+  }  
 
   // check that the block verifier that sent the data is the correct main node
   if (strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",sizeof(message_settings)) == 0 && strncmp(public_address,main_nodes_list.block_producer_public_address,BUFFER_SIZE) != 0)
@@ -254,7 +371,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     }
     memset(data,0,strnlen(data,BUFFER_SIZE));
   }  
-  else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(message_settings)) == 0)
+  else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",sizeof(message_settings)) == 0)
   {
     memset(data,0,sizeof(data));
   } 
@@ -276,32 +393,57 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   }
 
   // verify if the previous block hash is correct
-  if (get_previous_block_hash(previous_block_hash,0) == 0)
+  if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",sizeof(message_settings)) != 0)
   {
-    VERIFY_DATA_ERROR("Could not get the previous block hash");
-  }
-  if (strncmp(previous_block_hash,message_previous_block_hash,BUFFER_SIZE) != 0)
-  {
-    VERIFY_DATA_ERROR("Invalid previous block hash");
-  }
-
-  pthread_rwlock_rdlock(&rwlock);
-  /*// verify if the current_round_part_backup_node
-  if (VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS == 1)
-  {
-    if (memcmp(current_round_part,message_current_round_part,1) != 0 || memcmp(current_round_part_backup_node,message_current_round_part_backup_node,1) != 0)
+    if (get_previous_block_hash(previous_block_hash,0) == 0)
     {
-      VERIFY_DATA_ERROR("Invalid current_round_part or current_round_part_backup_node");
+      VERIFY_DATA_ERROR("Could not get the previous block hash");
     }
-  }*/
-  pthread_rwlock_unlock(&rwlock);
-  
+    if (strncmp(previous_block_hash,message_previous_block_hash,BUFFER_SIZE) != 0)
+    {
+      VERIFY_DATA_ERROR("Invalid previous block hash");
+    }
+
+    pthread_rwlock_rdlock(&rwlock);
+    /*// verify if the current_round_part_backup_node
+    if (VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS == 1)
+    {
+      if (memcmp(current_round_part,message_current_round_part,1) != 0 || memcmp(current_round_part_backup_node,message_current_round_part_backup_node,1) != 0)
+      {
+        VERIFY_DATA_ERROR("Invalid current_round_part or current_round_part_backup_node");
+      }
+    }*/
+    pthread_rwlock_unlock(&rwlock);
+  }
+   
   // create the message
-  memcpy(result,MESSAGE,message_length);
-  memcpy(result+message_length,"}",1);
-  if (string_replace(result,52428800,"\"","\\\"") == 0)
+  if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",sizeof(message_settings)) == 0 || strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",sizeof(message_settings)) == 0)
   {
-    VERIFY_DATA_ERROR("Invalid message");
+    if (strstr(MESSAGE,"previous_block_hash") == NULL)
+    {
+      message_length = strlen(MESSAGE) - 94;
+      memcpy(result,MESSAGE,message_length);
+    }
+    else
+    {
+      message_length = strlen(MESSAGE) - 134;
+      memcpy(result,MESSAGE,message_length);
+      memcpy(result+message_length,"}",1);  
+      if (string_replace(result,52428800,"\"","\\\"") == 0)
+      {
+        VERIFY_DATA_ERROR("Invalid message");
+      }   
+    }
+  }
+  else
+  {
+    message_length = strlen(MESSAGE) - 134;
+    memcpy(result,MESSAGE,message_length);
+    memcpy(result+message_length,"}",1);
+    if (string_replace(result,52428800,"\"","\\\"") == 0)
+    {
+      VERIFY_DATA_ERROR("Invalid message");
+    } 
   } 
     
   // create the message
@@ -313,12 +455,13 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memcpy(string+75+message_length+XCASH_WALLET_LENGTH,"\",\"signature\":\"",15);
   memcpy(string+90+message_length+XCASH_WALLET_LENGTH,xcash_proof_of_stake_signature,XCASH_SIGN_DATA_LENGTH);
   memcpy(string+90+message_length+XCASH_WALLET_LENGTH+XCASH_SIGN_DATA_LENGTH,"\"}}",3);
+
   memset(result,0,strnlen(result,BUFFER_SIZE));
 
   if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",HTTP_SETTINGS) <= 0)
   {
     VERIFY_DATA_ERROR("Could not verify the data");
-  } 
+  }
     
   if (parse_json_data(result,"good",data,sizeof(data)) == 0)
   {
