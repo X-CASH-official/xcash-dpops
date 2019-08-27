@@ -276,6 +276,12 @@ void* check_reserve_proofs_timer_thread()
         sprintf(data2+26,"%zu",block_verifiers_score);
         memcpy(data2+strlen(data2),"\"}",2);
 
+        pthread_rwlock_rdlock(&rwlock);
+        while(database_settings != 1)
+        {
+          sleep(1);
+        }
+        pthread_rwlock_unlock(&rwlock);
         if (update_document_from_collection(DATABASE_NAME,"delegates",data,data2,0) == 0)
         {
           memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
@@ -451,6 +457,12 @@ void* check_delegates_online_status_timer_thread()
            memset(data,0,sizeof(data));
            memcpy(data,"{\"online_status\":\"false\"}",25);
          }   
+         pthread_rwlock_rdlock(&rwlock);
+         while(database_settings != 1)
+         {
+           sleep(1);
+         }
+         pthread_rwlock_unlock(&rwlock);
          if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
          {
            memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);

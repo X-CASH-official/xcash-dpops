@@ -1444,6 +1444,9 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
   // define macros
   #define pointer_reset_all \
+  pthread_rwlock_wrlock(&rwlock); \
+  database_settings = 1; \
+  pthread_rwlock_unlock(&rwlock); \
   free(string); \
   string = NULL; \
   free(data); \
@@ -1555,6 +1558,11 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   {
     document_options = BCON_NEW("sort", "{", "public_address", BCON_INT32(-1), "}");
   }
+
+  // have the database not add any new documents
+  pthread_rwlock_wrlock(&rwlock);
+  database_settings = 0;
+  pthread_rwlock_unlock(&rwlock);
 
   // reserve proofs all
   if (strncmp(COLLECTION,"reserve_proofs",BUFFER_SIZE) == 0)

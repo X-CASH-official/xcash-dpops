@@ -402,6 +402,13 @@ int start_current_round_start_blocks()
   count2 = ((blockchain_data.block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   sprintf(data3+14,"%zu",count2);
 
+  pthread_rwlock_rdlock(&rwlock);
+  while(database_settings != 1)
+  {
+    sleep(1);
+  }
+  pthread_rwlock_unlock(&rwlock);
+
   /*if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
@@ -1554,6 +1561,13 @@ int update_databases()
   count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   sprintf(data3+14,"%zu",count2);
 
+  pthread_rwlock_rdlock(&rwlock);
+  while(database_settings != 1)
+  {
+    sleep(1);
+  }
+  pthread_rwlock_unlock(&rwlock);
+
   if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
   {
     UPDATE_DATABASE_ERROR("Could not add the new block to the database");
@@ -1627,6 +1641,12 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memcpy(data,"{\"block_verifier_total_rounds\":\"",32);
     sprintf(data+32,"%zu",number); 
     memcpy(data+strlen(data),"\"}",2);
+    pthread_rwlock_rdlock(&rwlock);
+    while(database_settings != 1)
+    {
+      sleep(1);
+    }
+    pthread_rwlock_unlock(&rwlock);
     if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_total_rounds in the database");
@@ -1644,6 +1664,12 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memcpy(data,"{\"block_verifier_online_total_rounds\":\"",39);
     sprintf(data+39,"%zu",number); 
     memcpy(data+strlen(data),"\"}",2);
+    pthread_rwlock_rdlock(&rwlock);
+    while(database_settings != 1)
+    {
+      sleep(1);
+    }
+    pthread_rwlock_unlock(&rwlock);
     if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
@@ -1663,6 +1689,12 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memcpy(data,"{\"block_producer_total_rounds\":\"",32);
       sprintf(data+32,"%zu",number); 
       memcpy(data+strlen(data),"\"}",2);
+      pthread_rwlock_rdlock(&rwlock);
+      while(database_settings != 1)
+      {
+        sleep(1);
+      }
+      pthread_rwlock_unlock(&rwlock);
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_total_rounds in the database");
@@ -1679,6 +1711,12 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memcpy(data2,"{\"block_producer_block_heights\":\"",33);
       memcpy(data2+33,data,strnlen(data,sizeof(data2)));
       memcpy(data2+strlen(data2),"\"}",2);
+      pthread_rwlock_rdlock(&rwlock);
+      while(database_settings != 1)
+      {
+        sleep(1);
+      }
+      pthread_rwlock_unlock(&rwlock);
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,0) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
@@ -1843,6 +1881,12 @@ int add_round_statistics()
   sprintf(message6+37,"%zu",most_block_producer_total_rounds_count);
   memcpy(message6+strlen(message6),"\"}",2);
 
+  pthread_rwlock_rdlock(&rwlock);
+  while(database_settings != 1)
+  {
+    sleep(1);
+  }
+    pthread_rwlock_unlock(&rwlock);
   /*// update the database
   if (update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message6,0) == 0)
   {
@@ -3385,6 +3429,12 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
       sprintf(data+15,"%zu",count);
       while (count_documents_in_collection(DATABASE_NAME,data,data3,0) > 0)
       {
+        pthread_rwlock_rdlock(&rwlock);
+        while(database_settings != 1)
+        {
+          sleep(1);
+        }
+        pthread_rwlock_unlock(&rwlock);
         if (delete_document_from_collection(DATABASE_NAME,data,data3,0) == 0)
         {
           SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The previous reserve proof could not be cancelled for this public address");
@@ -3406,6 +3456,10 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(data+strlen(data),"\"}",2);
 
   pthread_rwlock_wrlock(&rwlock);
+  while(database_settings != 1)
+  {
+    sleep(1);
+  }
   // add the reserve proof to the database
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
@@ -3617,10 +3671,16 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(data+strlen(data),"\"}",2);
 
   // add the delegate to the database
+  pthread_rwlock_rdlock(&rwlock);
+  while(database_settings != 1)
+  {
+    sleep(1);
+  }
+  pthread_rwlock_unlock(&rwlock);
   if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database");
-  }
+  }  
 
   send_data(CLIENT_SOCKET,"Registered the delegate}",0);
   return 1;
@@ -3696,6 +3756,12 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   }
 
   // remove the delegate from the database
+  pthread_rwlock_rdlock(&rwlock);
+  while(database_settings != 1)
+  {
+    sleep(1);
+  }
+  pthread_rwlock_unlock(&rwlock);
   if (delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) == 0)
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate could not be removed from the database");
@@ -3793,6 +3859,13 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   memcpy(data+strlen(data),"\":\"",3);
   memcpy(data2+strlen(data),value,strnlen(value,BUFFER_SIZE));
   memcpy(data2+strlen(data2),"\"}",2);
+
+  pthread_rwlock_rdlock(&rwlock);
+  while(database_settings != 1)
+  {
+    sleep(1);
+  }
+  pthread_rwlock_unlock(&rwlock);
 
   // update the delegate in the database
   if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,data2,0) == 0)

@@ -57,6 +57,7 @@ int main(int parameters_count, char* parameters[])
   memset(current_block_height,0,sizeof(current_block_height));
   memset(current_round_part,0,sizeof(current_round_part));
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
+  database_settings = 1;
 
   pthread_rwlock_init(&rwlock,NULL);
 
