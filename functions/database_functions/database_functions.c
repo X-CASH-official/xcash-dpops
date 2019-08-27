@@ -1430,6 +1430,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   mongoc_collection_t* collection = NULL;
   mongoc_cursor_t* document_settings = NULL;
   bson_t* document = NULL;  
+  bson_t* document_options = NULL;
   char* message;
   unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
@@ -1460,6 +1461,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
   #define database_reset_all \
   bson_destroy(document); \
+  bson_destroy(document_options); \
   mongoc_cursor_destroy(document_settings); \
   mongoc_collection_destroy(collection); \
   if (THREAD_SETTINGS == 1) \
@@ -1540,11 +1542,24 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     return 0;
   }
 
-
+  // sort the documents
+  if (strstr(COLLECTION,"reserve_proofs") != NULL)
+  {
+    document_options = BCON_NEW("sort", "{", "public_address_created_reserve_proof", BCON_INT32(-1), "}");
+  }
+  else if (strstr(COLLECTION,"reserve_bytes") != NULL)
+  {
+    document_options = BCON_NEW("sort", "{", "block_height", BCON_INT32(-1), "}");
+  }
+  else if (strstr(COLLECTION,"delegates") != NULL)
+  {
+    document_options = BCON_NEW("sort", "{", "public_address", BCON_INT32(-1), "}");
+  }
 
   // reserve proofs all
   if (strncmp(COLLECTION,"reserve_proofs",BUFFER_SIZE) == 0)
-  {      
+  {  
+    document_options = BCON_NEW("sort", "{", "", BCON_INT32(-1), "}");    
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memset(data2,0,strlen(data2));
@@ -1564,7 +1579,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data,0,strnlen(data,52428800));
       count2 = 0;
 
-      document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+      document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
       while (mongoc_cursor_next(document_settings, &current_document))
       { 
         // get the current document  
@@ -1607,6 +1622,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   // reserve bytes all
   else if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
   { 
+    document_options = BCON_NEW("sort", "{", "", BCON_INT32(-1), "}");
     sscanf(current_block_height,"%zu", &count3);
     if (count3 < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {      
@@ -1634,7 +1650,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data,0,strnlen(data,52428800));
       count2 = 0;
 
-      document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+      document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
       while (mongoc_cursor_next(document_settings, &current_document))
       { 
         // get the current document  
@@ -1689,7 +1705,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     memset(data,0,strnlen(data,52428800));
     count2 = 0;
 
-    document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+    document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
     while (mongoc_cursor_next(document_settings, &current_document))
     { 
       // get the current document  
