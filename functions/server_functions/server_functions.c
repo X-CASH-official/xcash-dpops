@@ -232,7 +232,7 @@ int start_current_round_start_blocks()
   pthread_rwlock_unlock(&rwlock);
 
   // wait for all block verifiers to sync the database
-  sync_block_verifiers_minutes(1);
+  //sync_block_verifiers_minutes(1);
 
   // check if the block verifier is the main network data node
   if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
@@ -776,10 +776,10 @@ int data_network_node_create_block()
     sync_block_verifiers_minutes(0);
 
     // submit the block to the network
-    /*if (submit_block_template(data,0) == 0)
+    if (submit_block_template(data,0) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the network block string");
-    }*/
+    }
   }
   else
   {
@@ -1397,7 +1397,7 @@ int start_part_4_of_round()
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes(0);
 
-    /*// have the block producer submit the block to the network
+    // have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       submit_block_template(data,0);
@@ -1418,7 +1418,7 @@ int start_part_4_of_round()
         }
         sleep(2);
       }    
-    }*/
+    }
     return 1;
 
     #undef START_PART_4_OF_ROUND_ERROR
@@ -1823,8 +1823,6 @@ int add_round_statistics()
     memcpy(data,message,strnlen(message,sizeof(data)));
     bson_free(message);
 
-    color_print(data,"yellow");
-
     // get the delegate_name
     memcpy(data2,", \"delegate_name\" : \"",21);
     message_copy1 = strstr(data,data2) + 21;
@@ -1855,7 +1853,6 @@ int add_round_statistics()
     message_copy1 = strstr(data,data2) + 42;
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(data3,message_copy1,message_copy2 - message_copy1);
-    color_print(data3,"yellow");
     sscanf(data3, "%lf", &total3);
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));

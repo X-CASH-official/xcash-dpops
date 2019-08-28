@@ -50,6 +50,7 @@ void* current_block_height_timer_thread()
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   size_t count;
+  int settings = 0;
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -63,26 +64,29 @@ void* current_block_height_timer_thread()
   else
   {
     printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
-  } */
-
-  sync_block_verifiers_minutes(0);
-  get_current_block_height(current_block_height,0);
-  if (start_new_round() == 0)
-  {
-    print_error_message;
-  }
-  else
-  {
-    printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
-  }
+  }*/
 
   for (;;)
   {
     // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
     usleep(200000);
     get_current_UTC_time;
-    if (current_UTC_date_and_time->tm_min % 5 == 0 && current_UTC_date_and_time->tm_sec == 0)
+    if ((settings == 0 && current_UTC_date_and_time->tm_min % 5 == 0 && current_UTC_date_and_time->tm_sec == 0) || (settings == 1 && current_UTC_date_and_time->tm_min % 5 == 0))
     {
+      if (settings == 0)
+      {
+        get_current_block_height(current_block_height,0);
+        if (start_new_round() == 0)
+        {
+          print_error_message;
+        }
+        else
+        {
+          printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
+        }
+        settings = 1;
+        continue;
+      }
       // try for the next 5 seconds and if not then a new block is not going to be added to the network
       for (count = 0; count < 5; count++)
       {
@@ -100,7 +104,7 @@ void* current_block_height_timer_thread()
           else
           {
             printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
-          } 
+          }           
         }
         sleep(1);
       }
