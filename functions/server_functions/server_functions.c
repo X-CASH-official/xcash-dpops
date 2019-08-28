@@ -234,6 +234,9 @@ int start_current_round_start_blocks()
   color_print("Your block verifier is the main data network node so your block verifier will create the block","green");
   printf("\n");
 
+  // wait for all block verifiers to sync the database
+  sync_block_verifiers_minutes(1);
+
   // get a block template
   if (get_block_template(data,0) == 0)
   {
@@ -409,19 +412,18 @@ int start_current_round_start_blocks()
   }
   pthread_rwlock_unlock(&rwlock);
 
-  /*if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
-  {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
-  }*/
-
-  // wait for the block verifiers to process the votes
-  sync_block_verifiers_minutes(0);
-
   // have the main network data node submit the block to the network
-  /*if (submit_block_template(data,0) == 0)
+  if (submit_block_template(data,0) == 1)
+  {
+    if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+    {
+      START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
+    }    
+  }
+  else
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the block to the network");
-  }*/
+  } 
   
   return 1;
   

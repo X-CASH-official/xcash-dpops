@@ -28,7 +28,7 @@ Return: The number of passed string_functions test
 int string_functions_test()
 {
   // define macros
-  #define STRING_FUNCTIONS_TOTAL_TEST 47
+  #define STRING_FUNCTIONS_TOTAL_TEST 48
 
   #define DATA1 "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}"
   #define DATA2 "[{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"},{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}]"
@@ -52,6 +52,23 @@ int string_functions_test()
   xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
   */
   #define MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"public_address\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"previous_block_hash\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"current_round_part\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"current_round_part_backup_node\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"data\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n}"
+
+
+
+/* 
+  The purpose of this message is for the main network data node to send the network block string and database data to the block verifiers for the start block
+ 
+  message_settings - The type of the message
+  block_blob - The block_blob.
+  database_data - The database data
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (1-4).
+  current_round_part_backup_node - The current main node in the current round part (0-5)
+  data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
+  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK "{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"block_blob\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"public_address\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"previous_block_hash\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"current_round_part\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"current_round_part_backup_node\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"data\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"xcash_proof_of_stake_signature\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n}"
 
 
 
@@ -834,6 +851,20 @@ int string_functions_test()
   else
   {
     color_print("PASSED! Test for parsing MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK","green");
+    count_test++;
+  }
+
+  // test for parsing MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK
+  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  memcpy(result_test,MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK,strnlen(MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK,BUFFER_SIZE));
+  if (parse_json_data(result_test,"message_settings",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"block_blob",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"database_data",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK",BUFFER_SIZE) != 0)
+  {
+    color_print("FAILED! Test for parsing MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for parsing MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK","green");
     count_test++;
   }
 
@@ -1627,6 +1658,7 @@ int string_functions_test()
   #undef MAIN_NODES_TO_NODES_PART_4_OF_ROUND
   #undef NODES_TO_NODES_VOTE_RESULTS
   #undef BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK
+  #undef MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK
   #undef MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK
   #undef NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE
   #undef NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE

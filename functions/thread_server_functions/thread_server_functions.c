@@ -54,9 +54,9 @@ void* current_block_height_timer_thread()
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  sync_block_verifiers_minutes(4);
+  sync_block_verifiers_minutes(0);
   get_current_block_height(current_block_height,0);
-  if (data_network_node_create_block() == 0)
+  if (start_new_round() == 0)
   {
     print_error_message;
   }
