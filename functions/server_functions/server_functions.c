@@ -176,7 +176,7 @@ int start_new_round()
       pthread_rwlock_unlock(&rwlock);
       if (data_network_node_create_block() == 0)
       {      
-        START_NEW_ROUND_ERROR("start_current_round_start_blocks error");
+        START_NEW_ROUND_ERROR("data_network_node_create_block error");
       } 
     }
     if (start_part_4_of_round() == 0)
@@ -207,10 +207,15 @@ int start_current_round_start_blocks()
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
+  struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   size_t count; 
   size_t count2; 
 
+  // threads
+  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
+
   // define macros
+  #define DATABASE_COLLECTION "reserve_bytes_1"
   #define START_CURRENT_ROUND_START_BLOCKS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
@@ -222,20 +227,24 @@ int start_current_round_start_blocks()
   memset(data3,0,sizeof(data3));
 
   // set the main_network_data_node_create_block so the main network data node can create the block
+  pthread_rwlock_wrlock(&rwlock);
   main_network_data_node_create_block = 1;
+  pthread_rwlock_unlock(&rwlock);
+
+  // wait for all block verifiers to sync the database
+  sync_block_verifiers_minutes(1);
 
   // check if the block verifier is the main network data node
   if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
   {
     color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round","red");
-    return 0;
+    printf("\n");
+    sync_block_verifiers_minutes(0);
+    return 1;
   } 
 
   color_print("Your block verifier is the main data network node so your block verifier will create the block","green");
   printf("\n");
-
-  // wait for all block verifiers to sync the database
-  sync_block_verifiers_minutes(1);
 
   // get a block template
   if (get_block_template(data,0) == 0)
@@ -400,11 +409,6 @@ int start_current_round_start_blocks()
   memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
   memcpy(data2+strlen(data2),"\"}",2);
 
-  memset(data3,0,sizeof(data3,BUFFER_SIZE));
-  memcpy(data3,"reserve_bytes_",14);
-  count2 = ((blockchain_data.block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-  sprintf(data3+14,"%zu",count2);
-
   pthread_rwlock_rdlock(&rwlock);
   while(database_settings != 1)
   {
@@ -412,21 +416,55 @@ int start_current_round_start_blocks()
   }
   pthread_rwlock_unlock(&rwlock);
 
+  // create the message
+  memset(data3,0,sizeof(data3));
+  memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"",101);
+  memcpy(data3+101,data2,strnlen(data2,sizeof(data3)));
+  memcpy(data3+strlen(data3),"\",\r\n}",5);
+  
+  // sign_data
+  if (sign_data(data3,0) == 0)
+  { 
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign_data");
+  }
+
+  // send the database data to all block verifiers and add the block verifier signature to the blockchain data struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {    
+      memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
+      memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA));
+      memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
+      memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA)));
+      send_and_receive_data_socket_thread_parameters[count].COUNT = count;
+      pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
+      pthread_detach(thread_id[count]);
+    }
+    if (count % 25 == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
+    {
+      usleep(500000);
+    }
+  }
+
+  sync_block_verifiers_minutes(0);
+
   // have the main network data node submit the block to the network
   if (submit_block_template(data,0) == 1)
   {
-    if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+    if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0) == 0)
     {
       START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
-    }    
+    }
   }
   else
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the block to the network");
-  } 
+  }
   
   return 1;
   
+  #undef DATABASE_COLLECTION
   #undef START_CURRENT_ROUND_START_BLOCKS_ERROR
 }
 
@@ -469,7 +507,9 @@ int data_network_node_create_block()
   print_start_message(data);
 
   // set the main_network_data_node_create_block so the main network data node can create the block
+  pthread_rwlock_wrlock(&rwlock);
   main_network_data_node_create_block = 1;
+  pthread_rwlock_unlock(&rwlock);
 
   // wait for the block verifiers to process the votes
   //sync_block_verifiers_minutes(4);
@@ -642,8 +682,8 @@ int data_network_node_create_block()
       {  
         memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
         memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA));
-        memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE));
-        memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,BUFFER_SIZE));
+        memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
+        memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA)));
         send_and_receive_data_socket_thread_parameters[count].COUNT = count;
         pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
         pthread_detach(thread_id[count]);
@@ -797,8 +837,8 @@ int start_part_4_of_round()
     { \
       memset(send_data_socket_thread_parameters[count].HOST,0,sizeof(send_data_socket_thread_parameters[count].HOST)); \
       memset(send_data_socket_thread_parameters[count].DATA,0,sizeof(send_data_socket_thread_parameters[count].DATA)); \
-      memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE)); \
-      memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
+      memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_data_socket_thread_parameters[count].HOST))); \
+      memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,sizeof(send_data_socket_thread_parameters[count].DATA))); \
       pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
       pthread_detach(thread_id[count]); \
     } \
@@ -869,7 +909,9 @@ int start_part_4_of_round()
   memset(data3,0,sizeof(data3));
 
   // set the main_network_data_node_create_block so the main network data node can create the block
+  pthread_rwlock_wrlock(&rwlock);
   main_network_data_node_create_block = 0;
+  pthread_rwlock_unlock(&rwlock);
 
   // wait for all block verifiers to sync the database
   sync_block_verifiers_minutes(1);
@@ -3874,6 +3916,56 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_main_network_data_node_to_block_verifier_start_block
+Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_main_network_data_node_to_block_verifier_start_block(const char* MESSAGE)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+
+  // define macros
+  #define DATABASE_COLLECTION "reserve_bytes_1"
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK(settings) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  error_message.total++; \
+  return 0;
+
+  // verify the message
+  if (verify_data(MESSAGE,0,0) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not verify the message");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"database_data",data,sizeof(data)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not parse the data");
+  }
+
+  // add the data to the database
+  memcpy(data2,data,strlen(data)-2);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0);
+
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block
 Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK message
 Parameters:
@@ -3889,7 +3981,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   char data2[BUFFER_SIZE];
 
   // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR(settings) \
+  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
@@ -3901,19 +3993,19 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   // verify the data
   if (verify_data(MESSAGE,0,1) == 0 || memcmp(current_round_part_backup_node,"2",1) != 0 || main_network_data_node_create_block != 1)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not verify data");
   }
 
   // parse the message
   if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not parse the data");
   }
 
   // sign the network block string
   if (sign_network_block_string(data2,data,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign the network block string");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not sign the network block string");
   }
 
   // create the message
@@ -3925,17 +4017,17 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   // sign_data
   if (sign_data(data,0) == 0)
   { 
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not sign_data");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not sign_data");
   }
   
   // send the network block signature to the main network data node
   if (send_data(CLIENT_SOCKET,data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not send the data to the main network data node");
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not send the data to the main network data node");
   }
   return 1;
   
-  #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR
+  #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK
 }
 
 
