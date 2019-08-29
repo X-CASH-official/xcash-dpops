@@ -914,7 +914,7 @@ int start_part_4_of_round()
   pthread_rwlock_unlock(&rwlock);
 
   // wait for all block verifiers to sync the database
-  color_print("Waiting for all block verifiers to sync","green");
+  color_print("Waiting for all block verifiers to sync the databases","green");
   printf("\n");
   sync_block_verifiers_minutes(1);
 
@@ -1320,14 +1320,14 @@ int start_part_4_of_round()
     sprintf(data3,"%zu",count);
     if (count != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {    
-      if (verify_network_block_data(1,1,1,data3,data2) == 0)
+      if (verify_network_block_data(1,1,1,"0",data2) == 0)
       {
         START_PART_4_OF_ROUND_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
       }
     }
     else
     {
-      if (verify_network_block_data(0,1,1,data3,data2) == 0)
+      if (verify_network_block_data(0,1,1,"0",data2) == 0)
       {
         START_PART_4_OF_ROUND_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
       }

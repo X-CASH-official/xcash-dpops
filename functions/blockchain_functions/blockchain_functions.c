@@ -439,16 +439,14 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
       NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR("Could not get the current block height, Invalid unlock_block");
     }
     sscanf(current_block_height, "%zu", &number);
-    number += 61;
   }
   else
   {
     sscanf(BLOCK_HEIGHT, "%zu", &number);
-    number += 60;
   }  
 
   //blockchain_data.unlock_block_data_length = 2;
-  if (number > 2097091)
+  if ((number + UNLOCK_BLOCK_AMOUNT) > 2097091)
   {
     blockchain_data.unlock_block_data_length = 8;
   }
@@ -483,9 +481,6 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   memcpy(blockchain_data.vin_type_data,&DATA[count-blockchain_data.vin_type_data_length],blockchain_data.vin_type_data_length);
 
   // block_height
-  sscanf(current_block_height, "%zu", &number);
-  number += 1;
-
   //blockchain_data.block_height_data_length = 2;
   if (number > 2097151)
   {
@@ -835,7 +830,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   else
   {
     message_copy1 = strstr(DATA,BLOCKCHAIN_RESERVED_BYTES_DATA_HASH);
-    count = strnlen(DATA,BUFFER_SIZE) - strnlen(message_copy1,BUFFER_SIZE) + 260;
+    count = strnlen(DATA,BUFFER_SIZE) - strnlen(message_copy1,BUFFER_SIZE) + (sizeof(BLOCKCHAIN_RESERVED_BYTES_DATA_HASH)-1);
   }
 
   // ringct_version
@@ -1476,7 +1471,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_reward_transaction_version");
   }
 
-  /*// unlock_block
+  // unlock_block
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
     if (get_current_block_height(current_block_height,0) == 0)
@@ -1484,19 +1479,15 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not get the current block height");
     }
     sscanf(current_block_height, "%zu", &number);
-    if ((blockchain_data.unlock_block <= 2097091 && blockchain_data.unlock_block_data_length != 6) || (blockchain_data.unlock_block > 2097091 && blockchain_data.unlock_block_data_length != 8) || blockchain_data.unlock_block != number+61)
-    {
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid unlock_block");
-    }
   }
   else
   {
-    sscanf(BLOCK_HEIGHT, "%zu", &number);
-    if ((blockchain_data.unlock_block <= 2097091 && blockchain_data.unlock_block_data_length != 6) || (blockchain_data.unlock_block > 2097091 && blockchain_data.unlock_block_data_length != 8) || blockchain_data.unlock_block != number+60)
-    {
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid unlock_block");
-    }
-  }*/  
+    sscanf(BLOCK_HEIGHT, "%zu", &number);    
+  }  
+  if ((blockchain_data.unlock_block <= 2097091 && blockchain_data.unlock_block_data_length != 6) || (blockchain_data.unlock_block > 2097091 && blockchain_data.unlock_block_data_length != 8) || blockchain_data.unlock_block != (number + UNLOCK_BLOCK_AMOUNT))
+  {
+    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid unlock_block");
+  }
 
   // block_reward_input
   if (blockchain_data.block_reward_input_data_length != sizeof(BLOCK_REWARD_INPUT)-1 || memcmp(blockchain_data.block_reward_input_data,BLOCK_REWARD_INPUT,sizeof(BLOCK_REWARD_INPUT)-1) != 0)
@@ -1510,10 +1501,10 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid vin_type");
   }
 
-  /*// block_height
+  // block_height
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
-    if ((blockchain_data.block_height <= 2097151 && blockchain_data.block_height_data_length != 6) || (blockchain_data.block_height > 2097151 && blockchain_data.block_height_data_length != 8) || blockchain_data.block_height != number+1)
+    if ((blockchain_data.block_height <= 2097151 && blockchain_data.block_height_data_length != 6) || (blockchain_data.block_height > 2097151 && blockchain_data.block_height_data_length != 8) || blockchain_data.block_height != number)
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_height");
     }
@@ -1524,7 +1515,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_height");
     }
-  }*/
+  }
   
 
   // block_reward_output
@@ -1753,7 +1744,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not convert the blockchain struct to a network block string");
     }
-    
+
     // replace the block validation signatures with the GET_BLOCK_TEMPLATE_RESERVED_BYTES
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     { 
