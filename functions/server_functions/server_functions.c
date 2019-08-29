@@ -914,6 +914,8 @@ int start_part_4_of_round()
   pthread_rwlock_unlock(&rwlock);
 
   // wait for all block verifiers to sync the database
+  color_print("Waiting for all block verifiers to sync","green");
+  printf("\n");
   sync_block_verifiers_minutes(1);
 
   start:
@@ -1398,6 +1400,8 @@ int start_part_4_of_round()
     }
 
     // wait for the block verifiers to process the votes
+    color_print("Waiting to submit the block to the network","green");
+    printf("\n");
     sync_block_verifiers_minutes(0);
 
     // have the block producer submit the block to the network
@@ -1924,13 +1928,6 @@ int add_round_statistics()
   sprintf(message6+37,"%zu",most_block_producer_total_rounds_count);
   memcpy(message6+strlen(message6),"\"}",2);
 
-  color_print(message1,"yellow");
-  color_print(message2,"yellow");
-  color_print(message3,"yellow");
-  color_print(message4,"yellow");
-  color_print(message5,"yellow");
-  color_print(message6,"yellow");
-
   pthread_rwlock_rdlock(&rwlock);
   while(database_settings != 1)
   {
@@ -1939,10 +1936,10 @@ int add_round_statistics()
   pthread_rwlock_unlock(&rwlock);
 
   // update the database
-  /*if (update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message6,0) == 0)
+  if (update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message6,0) == 0)
   {
     ADD_ROUND_STATISTICS_ERROR("Could not update the round statistics in the database");
-  }*/
+  }
   return 1;
 
   #undef MESSAGE

@@ -2,7 +2,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <netdb.h> 
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <poll.h>
 #include <signal.h>
 #include <pthread.h>
 #include <time.h>

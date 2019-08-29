@@ -1751,8 +1751,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     // create a network block string
     if (blockchain_data_to_network_block_string(network_block_string) == 0)
     {
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string, The block was not signed by the required amount of block validation nodes");
+      VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not convert the blockchain struct to a network block string");
     }
+    
     // replace the block validation signatures with the GET_BLOCK_TEMPLATE_RESERVED_BYTES
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     { 
@@ -1764,11 +1765,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     {       
       if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],"5369675631",10) == 0)
       {
-        // check the signed data               
+        // check the signed data 
+        printf("checking if %s is match with %s",previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count]);              
         if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],network_block_string) == 1)
         {
           number++;
-          break;
         }
       }
     }
