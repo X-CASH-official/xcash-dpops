@@ -55,7 +55,7 @@ void* current_block_height_timer_thread()
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  /*sync_block_verifiers_minutes(0);
+  /*sync_block_verifiers_minutes(3);
   get_current_block_height(current_block_height,0);
   if (start_new_round() == 0)
   {

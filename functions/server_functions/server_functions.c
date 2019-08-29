@@ -146,13 +146,13 @@ int start_new_round()
   else if (settings == 2)
   {
     // this is a X-CASH proof of stake block so this is not the start blocks of the network
-    if (settings2 == 2)
+    if (settings2 == 2 && memcmp(VRF_data.block_blob,"",1) != 0)
     {
       // update all of the databases 
       color_print("Updating the previous rounds data in the databases","green");
       if (update_databases() == 0)
       {  
-        START_NEW_ROUND_ERROR("Could not check if the databases are synced. This means that your database is out of sync, and you need to resync your databases");
+        START_NEW_ROUND_ERROR("Could not update the databases for the previous round");
       }
     }
 
@@ -1338,6 +1338,9 @@ int start_part_4_of_round()
 	    START_PART_4_OF_ROUND_ERROR("Could not convert the blockchain_data to a network_block_string");	
 	  }
 
+    memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+    memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
+
     // get the data hash of the network block string
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
@@ -1519,7 +1522,7 @@ int update_block_verifiers_list()
   // copy the database_multiple_documents_fields to the next_block_verifiers_list
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (strncmp(database_multiple_documents_fields.value[count][11],"true",BUFFER_SIZE) == 0)
+    if (strncmp(database_multiple_documents_fields.value[count][12],"true",BUFFER_SIZE) == 0)
     {
        memcpy(next_block_verifiers_list.block_verifiers_name[count],database_multiple_documents_fields.value[count][4],strnlen(database_multiple_documents_fields.value[count][4],sizeof(next_block_verifiers_list.block_verifiers_name[count])));
        memcpy(next_block_verifiers_list.block_verifiers_public_address[count],database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],sizeof(next_block_verifiers_list.block_verifiers_public_address[count])));
@@ -1600,7 +1603,7 @@ int update_databases()
   }
   pthread_rwlock_unlock(&rwlock);
 
-  if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+  /*if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
   {
     UPDATE_DATABASE_ERROR("Could not add the new block to the database");
   }
@@ -1608,7 +1611,7 @@ int update_databases()
   if (add_block_verifiers_round_statistics((const char*)data) == 0)
   {
     UPDATE_DATABASE_ERROR("Could not update the block verifiers round statistics");
-  }
+  }*/
 
   if (add_round_statistics() == 0)
   {
@@ -1805,7 +1808,12 @@ int add_round_statistics()
   char* message_copy2;
 
   // define macros
-  #define MESSAGE "{\"username\":\"xcash\"}"
+  #define MESSAGE "{\"username\":\"XCASH\"}"
+  #define ADD_ROUND_STATISTICS_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"add_round_statistics",20); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  error_message.total++; \
+  return 0;
   
   // set the collection
   collection = mongoc_client_get_collection(database_client, DATABASE_NAME,"delegates");
@@ -1845,7 +1853,6 @@ int add_round_statistics()
       block_verifier_total_rounds_count = block_verifier_total_rounds_count2;
       memset(block_verifier_total_rounds_delegates_name,0,sizeof(block_verifier_total_rounds_delegates_name));
       memcpy(block_verifier_total_rounds_delegates_name,delegates_name,strnlen(delegates_name,sizeof(block_verifier_total_rounds_delegates_name)));
-      color_print(block_verifier_total_rounds_delegates_name,"green");
     }
     
     // get the block_verifier_online_total_rounds
@@ -1910,14 +1917,22 @@ int add_round_statistics()
   sprintf(message6+37,"%zu",most_block_producer_total_rounds_count);
   memcpy(message6+strlen(message6),"\"}",2);
 
+  color_print(message1,"yellow");
+  color_print(message2,"yellow");
+  color_print(message3,"yellow");
+  color_print(message4,"yellow");
+  color_print(message5,"yellow");
+  color_print(message6,"yellow");
+
   pthread_rwlock_rdlock(&rwlock);
   while(database_settings != 1)
   {
     sleep(1);
   }
-    pthread_rwlock_unlock(&rwlock);
-  /*// update the database
-  if (update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message6,0) == 0)
+  pthread_rwlock_unlock(&rwlock);
+
+  // update the database
+  /*if (update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message1,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message2,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message3,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message4,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message5,0) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message6,0) == 0)
   {
     ADD_ROUND_STATISTICS_ERROR("Could not update the round statistics in the database");
   }*/
