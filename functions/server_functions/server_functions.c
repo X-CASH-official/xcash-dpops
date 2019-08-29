@@ -1603,7 +1603,7 @@ int update_databases()
   }
   pthread_rwlock_unlock(&rwlock);
 
-  /*if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+  if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
   {
     UPDATE_DATABASE_ERROR("Could not add the new block to the database");
   }
@@ -1611,7 +1611,7 @@ int update_databases()
   if (add_block_verifiers_round_statistics((const char*)data) == 0)
   {
     UPDATE_DATABASE_ERROR("Could not update the block verifiers round statistics");
-  }*/
+  }
 
   if (add_round_statistics() == 0)
   {
@@ -1814,6 +1814,13 @@ int add_round_statistics()
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   return 0;
+
+  memset(message1,0,sizeof(message1));
+  memset(message2,0,sizeof(message2));
+  memset(message3,0,sizeof(message3));
+  memset(message4,0,sizeof(message4));
+  memset(message5,0,sizeof(message5));
+  memset(message6,0,sizeof(message6));
   
   // set the collection
   collection = mongoc_client_get_collection(database_client, DATABASE_NAME,"delegates");
