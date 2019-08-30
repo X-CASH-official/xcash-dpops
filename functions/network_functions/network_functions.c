@@ -61,7 +61,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   char buffer2[BUFFER_SIZE];
   char* post_request_data;
   char str[BUFFER_SIZE]; 
-  char* message = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   size_t count; 
   size_t counter = 0; 
   size_t receive_data_result; 
@@ -855,8 +855,8 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
 {
   // Variables
   int count = 0;
-  char* buffer = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* buffer = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
 
   // define macros
   #define pointer_reset_all \
@@ -871,7 +871,7 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
   { 
     memset(buffer, 0, strlen(buffer));
     // check the size of the data that were about to receive. If the total data plus the data were about to receive is over 50 MB then dont accept it, since it will cause a buffer overflow
-    if ((recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= 52428800 - strnlen(data,BUFFER_SIZE) && strnlen(data,BUFFER_SIZE) > 0) || (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= 52428800 && strnlen(data,BUFFER_SIZE) == 0))
+    if ((recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE - strnlen(data,BUFFER_SIZE) && strnlen(data,BUFFER_SIZE) > 0) || (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE && strnlen(data,BUFFER_SIZE) == 0))
     {
       pointer_reset_all;
       return 0;
@@ -932,7 +932,7 @@ int sync_all_block_verifiers_list()
   struct database_multiple_documents_fields database_multiple_documents_fields;
   char message[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  char* data3 = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
 
@@ -980,7 +980,7 @@ int sync_all_block_verifiers_list()
     get_current_UTC_time;
     
     memcpy(data3,"Connecting to network data node ",32);
-    memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],52428800));
+    memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
     memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
     memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
     printf("%s\n",data3);
@@ -989,7 +989,7 @@ int sync_all_block_verifiers_list()
     if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
     {
       memcpy(data2,"Could not receive data from network data node ",46);
-      memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],52428800));
+      memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
       color_print(data2,"red");
       memset(data2,0,sizeof(data2));
       printf("Connecting to a different network data node\n\n");
@@ -1210,7 +1210,7 @@ int get_synced_block_verifiers()
 {
   // Variables
   char data[BUFFER_SIZE];
-  char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
 
@@ -1318,7 +1318,7 @@ int sync_check_reserve_proofs_database()
   // Variables
   char message[BUFFER_SIZE];
   char reserve_proofs_database[BUFFER_SIZE]; 
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE]; 
   size_t count;
   size_t counter;
@@ -1441,7 +1441,7 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
 {
   // Variables
-  char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   size_t count;
@@ -1532,7 +1532,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
     memcpy(data2,"reserve_proofs_database_",24);
     sprintf(data2+24,"%zu",count2);
 
-    if (parse_json_data(RESERVE_PROOFS_DATABASE,data2,data,52428800) == 0)
+    if (parse_json_data(RESERVE_PROOFS_DATABASE,data2,data,MAXIMUM_BUFFER_SIZE) == 0)
     {
       SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
     }
@@ -1588,7 +1588,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,52428800,0);
+      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,MAXIMUM_BUFFER_SIZE,0);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
@@ -1627,7 +1627,7 @@ int sync_check_reserve_bytes_database()
 {
   // Variables
   char message[BUFFER_SIZE];
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   size_t count;
 
@@ -1721,7 +1721,7 @@ int sync_reserve_bytes_database()
 {
   // Variables
   char message[BUFFER_SIZE];
-  char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   size_t count;
@@ -1923,7 +1923,7 @@ int sync_reserve_bytes_database()
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,52428800,0);
+      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,MAXIMUM_BUFFER_SIZE,0);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
@@ -2026,7 +2026,7 @@ int sync_check_delegates_database()
 {
   // Variables
   char message[BUFFER_SIZE];
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   size_t count;
 
@@ -2121,7 +2121,7 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_delegates_database()
 {
   // Variables
-  char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   size_t count;
   size_t count2;
@@ -2268,7 +2268,7 @@ int sync_check_statistics_database()
 {
   // Variables
   char message[BUFFER_SIZE];
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   size_t count;
 
@@ -2363,7 +2363,7 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_statistics_database()
 {
   // Variables
-  char* data = (char*)calloc(52428800,sizeof(char));  // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   size_t count;
   size_t count2;

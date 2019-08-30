@@ -286,7 +286,7 @@ int start_current_round_start_blocks()
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
+    memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
   }   
 
   // convert the vrf alpha string to a string
@@ -342,12 +342,12 @@ int start_current_round_start_blocks()
   memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[0],blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[0],blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,crypto_vrf_PUBLICKEYBYTES);
   memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[0],blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
   for (count = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",VRF_SECRET_KEY_LENGTH);
-    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],"0000000000000000000000000000000000000000000000000000000000000000",VRF_PUBLIC_KEY_LENGTH);
-    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
   }
 
   // add the next block verifiers
@@ -359,7 +359,7 @@ int start_current_round_start_blocks()
   // add 0's for the block validation nodes signature, except for the first block validation node signature
   for (count = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_RESERVED_BYTES,sizeof(GET_BLOCK_TEMPLATE_RESERVED_BYTES)-1);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA)-1);
   }
   
   // convert the blockchain_data to a network_block_string
@@ -570,7 +570,7 @@ int data_network_node_create_block()
 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
+      memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
     }   
 
     // convert the vrf alpha string to a string
@@ -626,12 +626,12 @@ int data_network_node_create_block()
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[0],blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[0],blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,crypto_vrf_PUBLICKEYBYTES);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[0],blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
-    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
     for (count = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",VRF_SECRET_KEY_LENGTH);
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],"0000000000000000000000000000000000000000000000000000000000000000",VRF_PUBLIC_KEY_LENGTH);
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
     }
 
     // add the next block verifiers
@@ -698,7 +698,7 @@ int data_network_node_create_block()
 
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (memcmp(VRF_data.block_blob_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH) != 0)
+      if (memcmp(VRF_data.block_blob_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1) != 0)
       {
         count2++;
       }
@@ -852,10 +852,6 @@ int start_part_4_of_round()
   printf("\n"); \
   color_print(message,"red"); \
   memset(data,0,sizeof(data)); \
-  memcpy(data,"Restarting the round for block ",31); \
-  memcpy(data+31,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
-  print_start_message(data); \
-  printf("\n"); \
   memset(data,0,sizeof(data)); \
   memset(data2,0,sizeof(data2)); \
   memset(data3,0,sizeof(data3)); \
@@ -888,6 +884,10 @@ int start_part_4_of_round()
     memcpy(current_round_part,"1",1); \
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"1",1); \
+    memcpy(data,"Restarting the round with backup block producer 1 for block ",60); \
+    memcpy(data+60,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
+    print_start_message(data); \
+    printf("\n"); \
   } \
   else if (memcmp(current_round_part_backup_node,"1",1) == 0) \
   { \
@@ -895,6 +895,10 @@ int start_part_4_of_round()
     memcpy(current_round_part,"1",1); \
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"2",1); \
+    memcpy(data,"Restarting the round with backup block producer 2 for block ",60); \
+    memcpy(data+60,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
+    print_start_message(data); \
+    printf("\n"); \
   } \
   else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
   { \
@@ -1001,11 +1005,11 @@ int start_part_4_of_round()
       }
       else
       {
-        memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",VRF_SECRET_KEY_LENGTH);
-        memcpy(VRF_data.block_verifiers_vrf_secret_key[count],"0000000000000000000000000000000000000000000000000000000000000000",crypto_vrf_SECRETKEYBYTES);
-        memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],"0000000000000000000000000000000000000000000000000000000000000000",VRF_PUBLIC_KEY_LENGTH);
-        memcpy(VRF_data.block_verifiers_vrf_public_key[count],"00000000000000000000000000000000",crypto_vrf_PUBLICKEYBYTES);
-        memcpy(VRF_data.block_verifiers_random_data[count],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
+        memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
+        memcpy(VRF_data.block_verifiers_vrf_secret_key[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY)-1);
+        memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
+        memcpy(VRF_data.block_verifiers_vrf_public_key[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY)-1);
+        memcpy(VRF_data.block_verifiers_random_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
       }
     }
 
@@ -1034,7 +1038,7 @@ int start_part_4_of_round()
       }
       else
       {
-        memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
+        memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
       }
     }
 
@@ -1066,7 +1070,7 @@ int start_part_4_of_round()
       {
         counter = counter % BLOCK_VERIFIERS_AMOUNT;
         // check if the block verifier created the data
-        if (memcmp(VRF_data.block_verifiers_vrf_secret_key_data[counter],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",VRF_SECRET_KEY_LENGTH) != 0 && memcmp(VRF_data.block_verifiers_vrf_public_key_data[counter],"0000000000000000000000000000000000000000000000000000000000000000",VRF_PUBLIC_KEY_LENGTH) != 0 && memcmp(VRF_data.block_verifiers_random_data[counter],"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH) != 0)
+        if (memcmp(VRF_data.block_verifiers_vrf_secret_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1) != 0 && memcmp(VRF_data.block_verifiers_vrf_public_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1) != 0 && memcmp(VRF_data.block_verifiers_random_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1) != 0)
         {
           break;
         }
@@ -1216,7 +1220,7 @@ int start_part_4_of_round()
       memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count],VRF_data.block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
 
       memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_RESERVED_BYTES,sizeof(GET_BLOCK_TEMPLATE_RESERVED_BYTES)-1);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA)-1);
 
       for (counter = 0, count2 = 0; counter < RANDOM_STRING_LENGTH; counter++, count2 += 2)
       {
@@ -1281,8 +1285,8 @@ int start_part_4_of_round()
       }
       else
       {
-        memcpy(VRF_data.block_blob_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",XCASH_SIGN_DATA_LENGTH);
+        memcpy(VRF_data.block_blob_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
       }
     }
 
@@ -1400,7 +1404,7 @@ int start_part_4_of_round()
     }
 
     // wait for the block verifiers to process the votes
-    color_print("Waiting to submit the block to the network","green");
+    color_print("Waiting for the block producer to submit the block to the network","green");
     printf("\n");
     sync_block_verifiers_minutes(0);
 
@@ -2676,8 +2680,8 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
 
   // define macros
   #define pointer_reset_all \
@@ -2718,7 +2722,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"file",data,52428800) == 0)
+  if (parse_json_data(MESSAGE,"file",data,MAXIMUM_BUFFER_SIZE) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
   }
@@ -2733,7 +2737,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   // create the message
   memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"",139);
-  memcpy(data+139,data2,strnlen(data2,52428800));
+  memcpy(data+139,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
@@ -2937,8 +2941,8 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
 
   // define macros
   #define pointer_reset_all \
@@ -2979,7 +2983,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"file",data,52428800) == 0)
+  if (parse_json_data(MESSAGE,"file",data,MAXIMUM_BUFFER_SIZE) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
   }
@@ -2994,7 +2998,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // create the message
   memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"",137);
-  memcpy(data+137,data2,strnlen(data2,52428800));
+  memcpy(data+137,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
@@ -3111,8 +3115,8 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -3163,7 +3167,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   // create the message
   memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"delegates_database\": \"",129);
-  memcpy(data+129,data2,strnlen(data2,52428800));
+  memcpy(data+129,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
@@ -3280,8 +3284,8 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
-  char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
 
   // define macros
   #define DATABASE_COLLECTION "statistics"
@@ -3332,7 +3336,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   // create the message
   memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"statistics_database\": \"",131);
-  memcpy(data+131,data2,strnlen(data2,52428800));
+  memcpy(data+131,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data

@@ -726,13 +726,13 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
 
   // vrf_data_round_part_4
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,&DATA[count],VRF_DATA_LENGTH);
-  count += VRF_DATA_LENGTH + sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,&DATA[count],sizeof(VRF_DATA)-1);
+  count += (sizeof(VRF_DATA)-1) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1);
 
   // vrf_data
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data,&DATA[count],VRF_DATA_LENGTH);
-  count += VRF_DATA_LENGTH + sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data,&DATA[count],sizeof(VRF_DATA)-1);
+  count += (sizeof(VRF_DATA)-1) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1);
 
   // block_verifiers_vrf_secret_key_data
   message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
@@ -1126,16 +1126,16 @@ int blockchain_data_to_network_block_string(char *result)
   count += 64;
 
   // vrf_data_round_part_4
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,"74727565",VRF_DATA_LENGTH);
-  memcpy(result+count,blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,VRF_DATA_LENGTH);
-  count += VRF_DATA_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,VRF_DATA,sizeof(VRF_DATA)-1);
+  memcpy(result+count,blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,sizeof(VRF_DATA)-1);
+  count += sizeof(VRF_DATA)-1;
   memcpy(result+count,BLOCKCHAIN_DATA_SEGMENT_STRING,64);
   count += 64;
 
   // vrf_data
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data,"74727565",VRF_DATA_LENGTH);
-  memcpy(result+count,blockchain_data.blockchain_reserve_bytes.vrf_data,VRF_DATA_LENGTH);
-  count += VRF_DATA_LENGTH;
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data,VRF_DATA,sizeof(VRF_DATA)-1);
+  memcpy(result+count,blockchain_data.blockchain_reserve_bytes.vrf_data,sizeof(VRF_DATA)-1);
+  count += sizeof(VRF_DATA)-1;
   memcpy(result+count,BLOCKCHAIN_DATA_SEGMENT_STRING,64);
   count += 64;
 
@@ -1196,7 +1196,7 @@ int blockchain_data_to_network_block_string(char *result)
   count += 64;
 
   // block_validation_node_signature_data  
-  blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length = BLOCK_VALIDATION_NODE_SIGNED_BLOCK_LENGTH;
+  blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length = XCASH_SIGN_DATA_LENGTH*2;
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     // convert the string to hexadecimal
@@ -1639,11 +1639,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid vrf_data_round_part_4");
   }
   memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,11));
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,"74727565",VRF_DATA_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,VRF_DATA,sizeof(VRF_DATA)-1);
 
   // vrf_data
   memset(blockchain_data.blockchain_reserve_bytes.vrf_data,0,strnlen(blockchain_data.blockchain_reserve_bytes.vrf_data,11));
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data,"74727565",VRF_DATA_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_data,VRF_DATA,sizeof(VRF_DATA)-1);
 
   // verify that all of the data to create the VRF data is correct
   memset(data,0,strlen(data));
@@ -1656,7 +1656,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     }
     else
     {
-      memcpy(data+strlen(data),"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH);
+      memcpy(data+strlen(data),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
     }
   } 
 
@@ -1679,7 +1679,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   // check what block verifiers vrf secret key and vrf public key to use
   if (main_network_data_node_create_block == 0)
   {
-    if (memcmp(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",RANDOM_STRING_LENGTH*2) != 0)
+    if (memcmp(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING_DATA)-1) != 0)
     {
       for (count = 0; count < DATA_HASH_LENGTH; count += 2)
       {
@@ -1745,10 +1745,10 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not convert the blockchain struct to a network block string");
     }
 
-    // replace the block validation signatures with the GET_BLOCK_TEMPLATE_RESERVED_BYTES
+    // replace the block validation signatures with the GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     { 
-      string_replace(network_block_string,BUFFER_SIZE,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_RESERVED_BYTES);
+      string_replace(network_block_string,BUFFER_SIZE,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA);
     }
 
     // check if at least 67 of the next block verifiers in the previous block signed the data in the current block
