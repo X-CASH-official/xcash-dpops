@@ -400,13 +400,13 @@ int start_current_round_start_blocks()
   }
 
   // update the reserve bytes database
-  memset(data2,0,sizeof(data2,BUFFER_SIZE));
+  memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"block_height\":\"",17);
-  memcpy(data2+17,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+  memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
   memcpy(data2+strlen(data2),"\",\"reserve_bytes_data_hash\":\"",29);
   memcpy(data2+strlen(data2),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
   memcpy(data2+strlen(data2),"\",\"reserve_bytes\":\"",19);
-  memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
+  memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
 
   pthread_rwlock_rdlock(&rwlock);
@@ -415,6 +415,13 @@ int start_current_round_start_blocks()
     sleep(1);
   }
   pthread_rwlock_unlock(&rwlock);
+
+  // add the network block string to the database
+  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0) == 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
+  }
+  sleep(1);
 
   // create the message
   memset(data3,0,sizeof(data3));
@@ -428,7 +435,7 @@ int start_current_round_start_blocks()
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign_data");
   }
 
-  // send the database data to all block verifiers and add the block verifier signature to the blockchain data struct
+  // send the database data to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
@@ -449,17 +456,14 @@ int start_current_round_start_blocks()
 
   sync_block_verifiers_minutes(0);
 
-  // have the main network data node submit the block to the network
-  if (submit_block_template(data,0) == 1)
+  // have the main network data node submit the block to the network  
+  if (submit_block_template(data,0) == 0)
   {
-    if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0) == 0)
-    {
-      START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
-    }
-  }
-  else
-  {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the block to the network");
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"{\"block_height\":\"",17);
+    memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+    memcpy(data2+strlen(data2),"\"}",2);
+    delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,0);
   }
   
   return 1;
@@ -772,13 +776,82 @@ int data_network_node_create_block()
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the network block string data hash");
     }
 
+    // update the reserve bytes database
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"{\"block_height\":\"",17);
+    memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+    memcpy(data2+strlen(data2),"\",\"reserve_bytes_data_hash\":\"",29);
+    memcpy(data2+strlen(data2),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
+    memcpy(data2+strlen(data2),"\",\"reserve_bytes\":\"",19);
+    memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,sizeof(data2)));
+    memcpy(data2+strlen(data2),"\"}",2);
+
+    pthread_rwlock_rdlock(&rwlock);
+    while(database_settings != 1)
+    {
+      sleep(1);
+    }
+    pthread_rwlock_unlock(&rwlock);
+
+    // add the network block string to the database
+    sscanf(current_block_height, "%zu", &count);
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,"reserve_bytes_",14);
+    count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+    sprintf(data3+14,"%zu",count2);
+    if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the new block to the database");
+    }
+    sleep(1);
+
+    // create the message
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"",101);
+    memcpy(data3+101,data2,strnlen(data2,sizeof(data3)));
+    memcpy(data3+strlen(data3),"\",\r\n}",5);
+  
+    // sign_data
+    if (sign_data(data3,0) == 0)
+    { 
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
+    }
+
+    // send the database data to all block verifiers
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+      {    
+        memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
+        memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA));
+        memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
+        memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA)));
+        send_and_receive_data_socket_thread_parameters[count].COUNT = count;
+        pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
+        pthread_detach(thread_id[count]);
+      }
+      if (count % 25 == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
+      {
+        usleep(500000);
+      }
+    }
+
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes(0);
 
     // submit the block to the network
     if (submit_block_template(data,0) == 0)
     {
-      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the network block string");
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,"{\"block_height\":\"",17);
+      memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+      memcpy(data2+strlen(data2),"\"}",2);
+      sscanf(current_block_height, "%zu", &count);
+      memset(data3,0,sizeof(data3));
+      memcpy(data3,"reserve_bytes_",14);
+      count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+      sprintf(data3+14,"%zu",count2);
+      delete_document_from_collection(DATABASE_NAME,data3,data2,0);
     }
   }
   else
@@ -1403,6 +1476,34 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not add the network block string data hash");
     }
 
+    // update the reserve bytes database
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"{\"block_height\":\"",17);
+    memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+    memcpy(data2+strlen(data2),"\",\"reserve_bytes_data_hash\":\"",29);
+    memcpy(data2+strlen(data2),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
+    memcpy(data2+strlen(data2),"\",\"reserve_bytes\":\"",19);
+    memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,sizeof(data2)));
+    memcpy(data2+strlen(data2),"\"}",2);
+
+    pthread_rwlock_rdlock(&rwlock);
+    while(database_settings != 1)
+    {
+      sleep(1);
+    }
+    pthread_rwlock_unlock(&rwlock);
+
+    // add the network block string to the database
+    sscanf(current_block_height, "%zu", &count);
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,"reserve_bytes_",14);
+    count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+    sprintf(data3+14,"%zu",count2);
+    if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+    {
+      START_PART_4_OF_ROUND_ERROR("Could not add the new block to the database");
+    }
+
     // wait for the block verifiers to process the votes
     color_print("Waiting for the block producer to submit the block to the network","green");
     printf("\n");
@@ -1411,7 +1512,19 @@ int start_part_4_of_round()
     // have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
-      submit_block_template(data,0);
+      if (submit_block_template(data,0) == 0)
+      {
+        memset(data2,0,sizeof(data2));
+        memcpy(data2,"{\"block_height\":\"",17);
+        memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+        memcpy(data2+strlen(data2),"\"}",2);
+        sscanf(current_block_height, "%zu", &count);
+        memset(data3,0,sizeof(data3));
+        memcpy(data3,"reserve_bytes_",14);
+        count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+        sprintf(data3+14,"%zu",count2);
+        delete_document_from_collection(DATABASE_NAME,data3,data2,0);
+      }
     }
     sleep(2);
     if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) == 0)
@@ -1421,7 +1534,19 @@ int start_part_4_of_round()
       {
         if (network_data_node_settings == 1 && memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
         {
-          submit_block_template(data,0);
+          if (submit_block_template(data,0) == 0)
+          {
+            memset(data2,0,sizeof(data2));
+            memcpy(data2,"{\"block_height\":\"",17);
+            memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+            memcpy(data2+strlen(data2),"\"}",2);
+            sscanf(current_block_height, "%zu", &count);
+            memset(data3,0,sizeof(data3));
+            memcpy(data3,"reserve_bytes_",14);
+            count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+            sprintf(data3+14,"%zu",count2);
+            delete_document_from_collection(DATABASE_NAME,data3,data2,0);
+          }
           if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) != 0)
           {
             break;
@@ -1587,33 +1712,7 @@ int update_databases()
     UPDATE_DATABASE_ERROR("Could not get the current block height");
   }
   count--;
-  sprintf(data,"%zu",count);
-
-  // update the databases from the last rounds statistics
-  // create the message
-  memcpy(data2,"{\"block_height\":\"",17);
-  memcpy(data2+strlen(data2),data,strnlen(data,BUFFER_SIZE));
-  memcpy(data2+strlen(data2),"\",\"reserve_bytes_data_hash\":\"",29);
-  memcpy(data2+strlen(data2),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
-  memcpy(data2+strlen(data2),"\",\"reserve_bytes\":\"",19);
-  memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
-  memcpy(data2+strlen(data2),"\"}",2);
-
-  memcpy(data3,"reserve_bytes_",14);
-  count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-  sprintf(data3+14,"%zu",count2);
-
-  pthread_rwlock_rdlock(&rwlock);
-  while(database_settings != 1)
-  {
-    sleep(1);
-  }
-  pthread_rwlock_unlock(&rwlock);
-
-  if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
-  {
-    UPDATE_DATABASE_ERROR("Could not add the new block to the database");
-  }
+  sprintf(data,"%zu",count); 
 
   if (add_block_verifiers_round_statistics((const char*)data) == 0)
   {

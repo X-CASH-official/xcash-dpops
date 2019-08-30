@@ -1298,6 +1298,7 @@ int add_data_hash_to_network_block_string(char* network_block_string, char *netw
   }
 
   // copy the reserve bytes data hash
+  memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash));
   memcpy(VRF_data.reserve_bytes_data_hash,data2,DATA_HASH_LENGTH);
 
   // add the data hash to the network block string
