@@ -2585,6 +2585,22 @@ int get_delegate_online_status(const char* HOST)
     }
   }
 
+  // check for the XCASH daemon port
+  serv_addr.sin_port = htons(XCASH_DAEMON_PORT);
+
+  // connect to the socket
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  {    
+    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,1000) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
+    {   
+      if (socket_settings == 0)
+      {        
+        close(SOCKET);
+        return 1;
+      } 
+    }
+  }
+
   close(SOCKET);
   return 0;
 
