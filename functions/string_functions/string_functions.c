@@ -306,8 +306,8 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
   if (strstr(data,STR1) != NULL)
   { 
     // Variables
-    char* datacopy = (char*)calloc(52428800,sizeof(char)); // 50 MB
-    char* data2 = (char*)calloc(52428800,sizeof(char)); // 50 MB
+    char* datacopy = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
     char* string;
     size_t data_length;
     size_t str2_length;
@@ -342,7 +342,7 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
     } 
 
     // copy the string to data2
-    memcpy(data2,data,strnlen(data,52428800));
+    memcpy(data2,data,strnlen(data,MAXIMUM_BUFFER_SIZE));
 
     // get the occurences of STR1   
     total = string_count(data2,(char*)STR1);
@@ -352,8 +352,8 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
     {
       // reset the variables
       memset(datacopy,0,strlen(datacopy));
-      data_length = strnlen(data2,52428800);
-      start = data_length - strnlen(strstr(data2,STR1),52428800);
+      data_length = strnlen(data2,MAXIMUM_BUFFER_SIZE);
+      start = data_length - strnlen(strstr(data2,STR1),MAXIMUM_BUFFER_SIZE);
    
       // get a pointer to where the rest of the data2 string should be copied to
       string = strstr(data2,STR1)+strnlen(STR1,BUFFER_SIZE);
@@ -363,7 +363,7 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
       // copy STR2 to the new string
       memcpy(datacopy+strlen(datacopy),REPLACE_STRING,sizeof(REPLACE_STRING)-1);
       // copy the bytes after STR1 to the new string
-      memcpy(datacopy+strlen(datacopy),string,strnlen(string,52428800));
+      memcpy(datacopy+strlen(datacopy),string,strnlen(string,MAXIMUM_BUFFER_SIZE));
       // copy the new string to the string pointer
       memset(data2,0,data_length);
       memcpy(data2,datacopy,strlen(datacopy));
@@ -373,9 +373,9 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
     {
       // reset the variables
       memset(datacopy,0,strlen(datacopy));
-      data_length = strnlen(data2,52428800);
-      str2_length = strnlen(STR2,52428800);
-      start = data_length - strnlen(strstr(data2,REPLACE_STRING),52428800);
+      data_length = strnlen(data2,MAXIMUM_BUFFER_SIZE);
+      str2_length = strnlen(STR2,MAXIMUM_BUFFER_SIZE);
+      start = data_length - strnlen(strstr(data2,REPLACE_STRING),MAXIMUM_BUFFER_SIZE);
    
       // get a pointer to where the rest of the data string should be copied to
       string = strstr(data2,REPLACE_STRING)+(sizeof(REPLACE_STRING)-1);
@@ -385,7 +385,7 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
       // copy STR2 to the new string
       memcpy(datacopy+start,STR2,str2_length);
       // copy the bytes after REPLACE_STRING to the new string
-      memcpy(datacopy+start+str2_length,string,strnlen(string,52428800));
+      memcpy(datacopy+start+str2_length,string,strnlen(string,MAXIMUM_BUFFER_SIZE));
       // copy the new string to the string pointer
       memset(data2,0,data_length);
       memcpy(data2,datacopy,strlen(datacopy));

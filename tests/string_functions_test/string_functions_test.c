@@ -251,6 +251,37 @@ int string_functions_test()
   */
   #define NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST "{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_IP_address_list\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"public_address\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"previous_block_hash\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"current_round_part\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"current_round_part_backup_node\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"data\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"xcash_proof_of_stake_signature\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}"
   
+
+
+  /* 
+  The purpose of this message is for the blokc verifier to check their current time with the network data nodes
+ 
+  message_settings - The type of the message
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (1-4).
+  current_round_part_backup_node - The current main node in the current round part (0-5)
+  data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
+  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"public_address\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"previous_block_hash\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_round_part\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_round_part_backup_node\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"data\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"xcash_proof_of_stake_signature\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}"
+
+
+
+  /* 
+  The purpose of this message is for the blokc verifier to check their current time with the network data nodes
+ 
+  message_settings - The type of the message
+  current_time - The current time.
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (1-4).
+  current_round_part_backup_node - The current main node in the current round part (0-5)
+  data - A random 100 character string. This is the data that the xcash_proof_of_stake_signature is used for. The random data  will create a different xcash_proof_of_stake_signature for every message, even if the message data is the same.
+  xcash_proof_of_stake_signature - The xcash_proof_of_stake_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME "{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_time\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"public_address\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"previous_block_hash\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_round_part\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_round_part_backup_node\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"data\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"xcash_proof_of_stake_signature\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}"
+
  
 
   // Delegates commands
@@ -934,6 +965,34 @@ int string_functions_test()
   else
   {
     color_print("PASSED! Test for parsing BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK","green");
+    count_test++;
+  }
+
+  // test for parsing BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME
+  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  memcpy(result_test,BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME,strnlen(BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME,BUFFER_SIZE));
+  if (parse_json_data(result_test,"message_settings",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0)
+  {
+    color_print("FAILED! Test for parsing BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for parsing BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME","green");
+    count_test++;
+  }
+
+  // test for parsing NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME
+  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  memcpy(result_test,NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME,strnlen(NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME,BUFFER_SIZE));
+  if (parse_json_data(result_test,"message_settings",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_time",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"public_address",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"previous_block_hash",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"current_round_part_backup_node",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"data",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0 || parse_json_data(result_test,"xcash_proof_of_stake_signature",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME",BUFFER_SIZE) != 0)
+  {
+    color_print("FAILED! Test for parsing NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for parsing NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME","green");
     count_test++;
   }
 
@@ -1659,6 +1718,8 @@ int string_functions_test()
   #undef BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK
   #undef MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK
   #undef MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK
+  #undef BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME
+  #undef NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME
   #undef NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE
   #undef NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE
   #undef NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE

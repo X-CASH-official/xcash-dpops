@@ -18,6 +18,7 @@
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
 #include "server_functions.h"
+#include "string_functions.h"
 #include "thread_server_functions.h"
 
 #include "xcash_proof_of_stake_test.h"
@@ -35,8 +36,11 @@ int main(int parameters_count, char* parameters[])
 
   // Variables
   char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  long int current_time;
   size_t count = 0;
   size_t count2 = 0; 
+  int settings;
 
   // threads
   pthread_t thread_id_1;
@@ -494,6 +498,85 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }*/
+  }
+
+  // check the block verifiers current time, if it is not a network data node
+  color_print("Checking if the current time is synchronized with the network","green");
+  for (count = 0, settings = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      settings = 1;
+      break;
+    }
+  }
+
+  if (settings != 1)
+  {
+    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      // create the message
+      memset(data,0,sizeof(data));
+      memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}",95);
+
+      // sign_data
+      if (sign_data(data,0) == 0)
+      { 
+        memcpy(error_message.function[error_message.total],"main",4);
+        memcpy(error_message.data[error_message.total],"Could not sign the data",23);
+        error_message.total++;
+        print_error_message; 
+        database_reset;
+        exit(0);
+      }
+
+      if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+      {
+        memcpy(error_message.function[error_message.total],"main",4);
+        memcpy(error_message.data[error_message.total],"Could not receive data from ",28);
+        memcpy(error_message.data[error_message.total]+28,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
+        error_message.total++;
+        print_error_message; 
+        database_reset;
+        exit(0);
+      }
+
+      if (verify_data(data,0,0) == 0)
+      {
+        memcpy(error_message.function[error_message.total],"main",4);
+        memcpy(error_message.data[error_message.total],"Could not verify the data from ",31);
+        memcpy(error_message.data[error_message.total]+31,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
+        error_message.total++;
+        print_error_message; 
+        database_reset;
+        exit(0);
+     }
+
+      // parse the message
+      memset(data,0,sizeof(data));
+      if (parse_json_data(data2,"current_time",data,sizeof(data)) == 0 || memcmp(data,"",1) == 0)
+      {
+        memcpy(error_message.function[error_message.total],"main",4);
+        memcpy(error_message.data[error_message.total],"Could not receive data from ",28);
+        memcpy(error_message.data[error_message.total]+28,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
+        error_message.total++;
+        print_error_message; 
+        database_reset;
+        exit(0);
+      }
+
+      sscanf(data,"%ld", &current_time);
+
+      if (time(0) - current_time > 2)
+      {
+        memcpy(error_message.function[error_message.total],"main",4);
+        memcpy(error_message.data[error_message.total],"Invalid current time",20);
+        error_message.total++;
+        print_error_message; 
+        database_reset;
+        exit(0);
+      }
+    }
   }
  
   print_start_message("Starting all of the threads");

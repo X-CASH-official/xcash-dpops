@@ -3935,6 +3935,62 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time",93); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  error_message.total++; \
+  send_data(CLIENT_SOCKET,"Could not update the delegates information}",0); \
+  return 0;
+
+  memset(data,0,sizeof(data));
+
+  // verify the message
+  if (verify_data(MESSAGE,0,0) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR("Could not verify the message");
+  }
+  
+  // create the message
+  memset(data,0,strlen(data));
+  memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_time\": \"",112);
+  sprintf(data+112,"%ld",time(0));
+  memcpy(data+strlen(data),"\",\r\n}",5);
+
+  // sign_data
+  if (sign_data(data,0) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR("Could not sign_data");
+  }
+  
+  // send the network block signature to the main network data node
+  if (send_data(CLIENT_SOCKET,data,1) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR("Could not send the data to the block verifier");
+  }
+  return 1;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_main_network_data_node_to_block_verifier_start_block
 Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK message
 Parameters:
