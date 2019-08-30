@@ -454,7 +454,11 @@ int start_current_round_start_blocks()
     }
   }
 
-  sync_block_verifiers_minutes(0);
+  do
+  {
+    usleep(200000);
+    get_current_UTC_time;
+  } while (current_UTC_date_and_time->tm_min != 4 && current_UTC_date_and_time->tm_sec != 50); 
 
   // have the main network data node submit the block to the network  
   if (submit_block_template(data,0) == 0)
@@ -837,7 +841,11 @@ int data_network_node_create_block()
     }
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_minutes(0);
+    do
+    {
+      usleep(200000);
+      get_current_UTC_time;
+    } while (current_UTC_date_and_time->tm_min != 4 && current_UTC_date_and_time->tm_sec != 50); 
 
     // submit the block to the network
     if (submit_block_template(data,0) == 0)
@@ -859,7 +867,11 @@ int data_network_node_create_block()
     printf("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block\n\n");
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_minutes(0);
+    do
+    {
+      usleep(200000);
+      get_current_UTC_time;
+    } while (current_UTC_date_and_time->tm_min != 4 && current_UTC_date_and_time->tm_sec != 50); 
   }
   
   return 1;
@@ -1507,7 +1519,11 @@ int start_part_4_of_round()
     // wait for the block verifiers to process the votes
     color_print("Waiting for the block producer to submit the block to the network","green");
     printf("\n");
-    sync_block_verifiers_minutes(0);
+    do
+    {
+      usleep(200000);
+      get_current_UTC_time;
+    } while (current_UTC_date_and_time->tm_min != 4 && current_UTC_date_and_time->tm_sec != 50); 
 
     // have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
