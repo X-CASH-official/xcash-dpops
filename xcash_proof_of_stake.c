@@ -61,9 +61,9 @@ int main(int parameters_count, char* parameters[])
 
   pthread_rwlock_init(&rwlock,NULL);
 
-  // initialize the previous, current and next block_verifiers_list struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
+    // initialize the previous, current and next block_verifiers_list struct 
     memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
     memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count]));
     memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
@@ -75,17 +75,15 @@ int main(int parameters_count, char* parameters[])
     memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
     memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
     memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
-  }
 
-  // initialize the synced_block_verifiers struct 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
+    // initialize the synced_block_verifiers struct 
     memset(synced_block_verifiers.synced_block_verifiers_public_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_public_address[count]));
     memset(synced_block_verifiers.synced_block_verifiers_IP_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_IP_address[count]));
     memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count]));
+
   }
   synced_block_verifiers.vote_settings_true = 0;
-  synced_block_verifiers.vote_settings_false = 0;
+  synced_block_verifiers.vote_settings_false = 0; 
 
   // initialize the main_nodes_list struct 
   memset(main_nodes_list.block_producer_public_address,0,sizeof(main_nodes_list.block_producer_public_address));
