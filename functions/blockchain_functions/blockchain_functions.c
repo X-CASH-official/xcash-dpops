@@ -1757,7 +1757,6 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],"5369675631",10) == 0)
       {
         // check the signed data 
-        printf("checking if %s is match with %s",previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count]);              
         if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],network_block_string) == 1)
         {
           number++;

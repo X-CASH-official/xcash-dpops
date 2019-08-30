@@ -3973,7 +3973,10 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 
   // add the data to the database
   memcpy(data2,data,strlen(data)-2);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0);
+  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
+  }
 
   return 1;
 
@@ -4099,7 +4102,14 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
 
   if ((count == 1 && memcmp(network_data_nodes_list.network_data_nodes_public_address[0],data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,data2,XCASH_WALLET_LENGTH) == 0))
   { 
-    memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
+    if (memcmp(VRF_data.block_blob,"",1) == 0)
+    {
+      memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
+    }
+    else
+    {
+      SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Invalid main node");
+    }    
   }
   else
   {
@@ -4334,7 +4344,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   // process the vote data
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0)
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(VRF_data.block_verifiers_vrf_secret_key_data[count],"",1) == 0 && memcmp(VRF_data.block_verifiers_vrf_secret_key[count],"",1) == 0 && memcmp(VRF_data.block_verifiers_vrf_public_key_data[count],"",1) == 0 && memcmp(VRF_data.block_verifiers_vrf_public_key[count],"",1) == 0 && memcmp(VRF_data.block_verifiers_random_data[count],"",1) == 0)
     {
       memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],vrf_secret_key_data,VRF_SECRET_KEY_LENGTH);
       memcpy(VRF_data.block_verifiers_vrf_secret_key[count],vrf_secret_key,crypto_vrf_SECRETKEYBYTES);
@@ -4392,9 +4402,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   // process the vote data
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0 && memcmp(VRF_data.block_blob_signature[count],"",1) == 0)
     {
-      memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));
       memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
     }
   } 
