@@ -239,7 +239,11 @@ int start_current_round_start_blocks()
   {
     color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round","red");
     printf("\n");
-    sync_block_verifiers_minutes(0);
+    do
+    {
+      usleep(200000);
+      get_current_UTC_time;
+    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50); 
     return 1;
   } 
 
@@ -343,6 +347,7 @@ int start_current_round_start_blocks()
   memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[0],blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,crypto_vrf_PUBLICKEYBYTES);
   memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[0],blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
+  
   for (count = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
@@ -364,26 +369,16 @@ int start_current_round_start_blocks()
   
   // convert the blockchain_data to a network_block_string
   memset(data,0,sizeof(data));
-  if (blockchain_data_to_network_block_string(VRF_data.block_blob) == 0)
+  if (blockchain_data_to_network_block_string(data) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the blockchain_data to a network_block_string");
   }
 
   // sign the network block string
-  memset(data,0,sizeof(data));
-  if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
+  if (sign_network_block_string(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[0],data,0) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign the network block string");
   }
-
-  // convert the network_block_string to a blockchain_data
-  if (network_block_string_to_blockchain_data(VRF_data.block_blob,"0") == 0)
-  {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign_data");
-  }
-
-  // add the main network data nodes signature to the block
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[0],data,XCASH_SIGN_DATA_LENGTH);
 
   // convert the blockchain_data to a network_block_string
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
@@ -1003,9 +998,9 @@ int start_part_4_of_round()
   pthread_rwlock_unlock(&rwlock);
 
   // wait for all block verifiers to sync the database
-  color_print("Waiting for all block verifiers to sync the databases","green");
+  /*color_print("Waiting for all block verifiers to sync the databases","green");
   printf("\n");
-  sync_block_verifiers_minutes(1);
+  sync_block_verifiers_minutes(1);*/
 
   start:
 
@@ -1519,11 +1514,11 @@ int start_part_4_of_round()
     // wait for the block verifiers to process the votes
     color_print("Waiting for the block producer to submit the block to the network","green");
     printf("\n");
-    do
+    /*do
     {
       usleep(200000);
       get_current_UTC_time;
-    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50); 
+    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);*/
 
     // have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
@@ -1540,6 +1535,7 @@ int start_part_4_of_round()
         count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
         sprintf(data3+14,"%zu",count2);
         delete_document_from_collection(DATABASE_NAME,data3,data2,0);
+        exit(0);
       }
     }
     sleep(2);
