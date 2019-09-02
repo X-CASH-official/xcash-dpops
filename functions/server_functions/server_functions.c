@@ -126,7 +126,7 @@ int start_new_round()
     START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
   }
 
-  // check if the block verifier is a current block verifier
+  /*// check if the block verifier is a current block verifier
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
@@ -155,7 +155,7 @@ int start_new_round()
       RESTART_XCASH_DAEMON(1);
     }
   }  
-  pthread_rwlock_unlock(&rwlock);
+  pthread_rwlock_unlock(&rwlock);*/
 
   // check if the current block height - 1 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
   sscanf(current_block_height,"%zu", &count);
