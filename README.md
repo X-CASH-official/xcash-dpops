@@ -117,21 +117,13 @@ If you have already added MongoDB to your path, you can just type in any termina
 
 ## Setting up the xcashd and xcash-wallet-RPC
 
-First you will need to run xcashd in the background. Navigate to the folder that contains the xcash binaries, then run  
-`./xcashd`
+First you need to add xcashd and xcash-wallet-rpc to your path  
+To add xcashd and xcash-wallet-rpc to your PATH (replace "XCASH_FOLDER" with the location of the folder that contains the xcashd and xcash-wallet-rpc
+`echo -e '\nexport PATH=XCASH_FOLDER:$PATH' >> ~/.profile && source ~/.profile`
 
-Next you need to run a xcash-wallet-rpc. Depending on if this is the consensus node or the consensus backup node, you will need to the run the wallet that contains the public address in the [Proof of stake](https://github.com/X-CASH-official/Proof_of_stake) for the CONSENSUS_NODE_PUBLIC_ADDRESS or CONSENSUS_BACKUP_NODE_PUBLIC_ADDRESS
-
-To run the rpc wallet you can run  
-`./xcash-wallet-rpc --wallet-file NAME_OF_WALLET_FILE --password WALLET_FILE_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
-
-Just replace NAME_OF_WALLET_FILE with the name of your wallet file and WALLET_FILE_PASSWORD with the password of that wallet file. Make sure to use port 18285 as this is the port that is used in the program.
-
-We suggest you use the screen command to run the program in the background, this way you can still maintenance the server. To do this run  
-`screen -dmS Daemon ./xcashd`
-
-You can also run the RPC wallet this way as well  
-`screen -dmS RPC-Wallet ./xcash-wallet-rpc --wallet-file NAME_OF_WALLET_FILE --password WALLET_FILE_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
+You will need to use the screen command to run the xcashd and xcash-wallet-rpc, this way you can still maintenance the server and the xcash_proof_of_stake program will be able to restart the daemon when your delegate is a block verifier. To do this run  
+`screen -dmS Daemon xcashd`  
+`screen -dmS RPC-Wallet xcash-wallet-rpc --wallet-file NAME_OF_WALLET_FILE --password WALLET_FILE_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon`
 
 To bring the screen from the bacground process to the active process run  
 `screen -x NAME_OF_BACKGROUNDS_SCREEN`
