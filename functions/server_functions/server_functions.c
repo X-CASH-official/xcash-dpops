@@ -467,6 +467,15 @@ int start_current_round_start_blocks()
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
   }
 
+  memset(data3,0,sizeof(data3));
+
+  // create the verify_block file for the X-CASH Daemon
+  if (get_path(data3,0) == 0 || write_file(data3,VRF_data.reserve_bytes_data_hash) == 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the verify_block file");
+  }
+  sleep(2);
+
   // create the message
   memset(data3,0,sizeof(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"",101);
@@ -852,7 +861,15 @@ int data_network_node_create_block()
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the new block to the database");
     }
-    sleep(1);
+
+    memset(data3,0,sizeof(data3));
+
+    // create the verify_block file for the X-CASH Daemon
+    if (get_path(data3,0) == 0 || write_file(data3,VRF_data.reserve_bytes_data_hash) == 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the verify_block file");
+    }
+    sleep(2);
 
     // create the message
     memset(data3,0,sizeof(data3));
@@ -1562,6 +1579,15 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not add the new block to the database");
     }
 
+    memset(data3,0,sizeof(data2));
+
+    // create the verify_block file for the X-CASH Daemon
+    if (get_path(data3,0) == 0 || write_file(data3,VRF_data.reserve_bytes_data_hash) == 0)
+    {
+      START_PART_4_OF_ROUND_ERROR("Could not create the verify_block file");
+    }
+    sleep(2);
+
     // wait for the block verifiers to process the votes
     color_print("Waiting for the block producer to submit the block to the network","green");
     printf("\n");
@@ -1590,34 +1616,50 @@ int start_part_4_of_round()
       }
     }
     sleep(2);
-    if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) == 0)
+
+    if (network_data_node_settings == 1)
     {
-      // the block was not submitted to the network. Loop through each network data node until it is submitted to the network
-      for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+      memset(data3,0,sizeof(data3));
+      if (get_current_block_height(data3,0) == 0)
       {
-        if (network_data_node_settings == 1 && memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+        START_PART_4_OF_ROUND_ERROR("Could not get the current block height");
+      }
+
+      if (strncmp(data3,current_block_height,sizeof(data3)) == 0)
+      {
+        // the block was not submitted to the network. Loop through each network data node until it is submitted to the network
+        for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
         {
-          if (submit_block_template(data,0) == 0)
+          if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
           {
-            memset(data2,0,sizeof(data2));
-            memcpy(data2,"{\"block_height\":\"",17);
-            memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
-            memcpy(data2+strlen(data2),"\"}",2);
-            sscanf(current_block_height, "%zu", &count);
-            memset(data3,0,sizeof(data3));
-            memcpy(data3,"reserve_bytes_",14);
-            count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-            sprintf(data3+14,"%zu",count2);
-            delete_document_from_collection(DATABASE_NAME,data3,data2,0);
-            START_PART_4_OF_ROUND_ERROR("Could not submit the block to the network");
+            if (submit_block_template(data,0) == 0)
+            {
+              memset(data2,0,sizeof(data2));
+              memcpy(data2,"{\"block_height\":\"",17);
+              memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+              memcpy(data2+strlen(data2),"\"}",2);
+              sscanf(current_block_height, "%zu", &count);
+              memset(data3,0,sizeof(data3));
+              memcpy(data3,"reserve_bytes_",14);
+              count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+              sprintf(data3+14,"%zu",count2);
+              delete_document_from_collection(DATABASE_NAME,data3,data2,0);
+              START_PART_4_OF_ROUND_ERROR("Could not submit the block to the network");
+            }
+
+            if (get_current_block_height(data3,0) == 0)
+            {
+              START_PART_4_OF_ROUND_ERROR("Could not get the current block height");
+            }
+
+            if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) != 0)
+            {
+              break;
+            }
           }
-          if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) != 0)
-          {
-            break;
-          }
-        }
-        sleep(2);
-      }    
+          sleep(2);
+        } 
+      }   
     }
     return 1;
 
