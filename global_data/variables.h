@@ -41,6 +41,7 @@ pthread_rwlock_t rwlock;
 char current_block_height[BUFFER_SIZE]; // The current block height
 int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
+int current_block_verifier_settings; // 1 if the delegate is a block verifier, 0 if not
 int database_settings; // 1 if the database can have documents added to it, 0 if not
 
 #endif

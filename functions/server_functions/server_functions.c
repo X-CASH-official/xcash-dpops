@@ -62,6 +62,20 @@ int start_new_round()
   error_message.total++; \
   return 0;
 
+  #define RESTART_XCASH_DAEMON(settings) \
+  if (settings == 0) \
+  { \
+    system("screen -XS Daemon quit"); \
+    sleep(10); \
+    system("screen -dmS Daemon xcashd"); \
+  } \
+  else if (settings == 1) \
+  { \
+    system("screen -XS Daemon quit"); \
+    sleep(10); \
+    system("screen -dmS Daemon xcashd --block-verifier"); \
+  } \
+
   #define RESET_VARIABLES \
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
@@ -111,6 +125,37 @@ int start_new_round()
   {
     START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
   }
+
+  // check if the block verifier is a current block verifier
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      break;
+    }
+  }
+
+  pthread_rwlock_rdlock(&rwlock);
+  if (count == BLOCK_VERIFIERS_AMOUNT)
+  {
+    // check to see if the X-CASH daemon needs to be restarted
+    if (current_block_verifier_settings == 1)
+    {
+      current_block_verifier_settings = 0;
+      RESTART_XCASH_DAEMON(0);
+    }
+    return 1;
+  }
+  else
+  {
+    // check to see if the X-CASH daemon needs to be restarted
+    if (current_block_verifier_settings == 0)
+    {
+      current_block_verifier_settings = 1;
+      RESTART_XCASH_DAEMON(1);
+    }
+  }  
+  pthread_rwlock_unlock(&rwlock);
 
   // check if the current block height - 1 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
   sscanf(current_block_height,"%zu", &count);
@@ -186,9 +231,11 @@ int start_new_round()
       printf("\n");
     }
   }
-  return 1;
+  return 2;
 
   #undef START_NEW_ROUND_ERROR
+  #undef RESTART_XCASH_DAEMON
+  #undef RESET_VARIABLES
 }
 
 
@@ -411,12 +458,14 @@ int start_current_round_start_blocks()
   }
   pthread_rwlock_unlock(&rwlock);
 
+  color_print(VRF_data.block_blob,"yellow");
+  exit(0);
+
   // add the network block string to the database
   if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
   }
-  sleep(1);
 
   // create the message
   memset(data3,0,sizeof(data3));
@@ -449,11 +498,11 @@ int start_current_round_start_blocks()
     }
   }
 
-  do
+  /*do
   {
     usleep(200000);
     get_current_UTC_time;
-  } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50); 
+  } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);*/
 
   // have the main network data node submit the block to the network  
   if (submit_block_template(data,0) == 0)
@@ -463,6 +512,7 @@ int start_current_round_start_blocks()
     memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
     memcpy(data2+strlen(data2),"\"}",2);
     delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,0);
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not submit the block to the network");
   }
   
   return 1;
@@ -855,6 +905,7 @@ int data_network_node_create_block()
       count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
       sprintf(data3+14,"%zu",count2);
       delete_document_from_collection(DATABASE_NAME,data3,data2,0);
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not submit the block to the network");
     }
   }
   else
@@ -1535,7 +1586,7 @@ int start_part_4_of_round()
         count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
         sprintf(data3+14,"%zu",count2);
         delete_document_from_collection(DATABASE_NAME,data3,data2,0);
-        exit(0);
+        START_PART_4_OF_ROUND_ERROR("Could not submit the block to the network");
       }
     }
     sleep(2);
@@ -1558,6 +1609,7 @@ int start_part_4_of_round()
             count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
             sprintf(data3+14,"%zu",count2);
             delete_document_from_collection(DATABASE_NAME,data3,data2,0);
+            START_PART_4_OF_ROUND_ERROR("Could not submit the block to the network");
           }
           if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) != 0)
           {
@@ -2544,6 +2596,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   return 0;
 
   memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // get the database data hash for the reserve bytes database
   if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
@@ -2563,7 +2616,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,data,1) == 0)
+  if (send_data(CLIENT_SOCKET,data,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node");
   }

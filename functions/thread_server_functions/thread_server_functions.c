@@ -56,11 +56,12 @@ void* current_block_height_timer_thread()
   char data2[BUFFER_SIZE];
   size_t count;
   int settings = 0;
+  int block_verifier_settings;
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  sync_block_verifiers_minutes(1);
+  sync_block_verifiers_minutes(0);
   get_current_block_height(current_block_height,0);
   if (start_current_round_start_blocks() == 0)
   {
@@ -81,9 +82,14 @@ void* current_block_height_timer_thread()
       if (settings == 0)
       {
         get_current_block_height(current_block_height,0);
-        if (start_new_round() == 0)
+        block_verifier_settings = start_new_round();
+        if (block_verifier_settings == 0)
         {
           print_error_message;
+        }
+        else if (block_verifier_settings == 1)
+        {
+          printf("\033[1;31mYour delegate is not a block verifier for network block %s\033[0m\n",current_block_height);
         }
         else
         {
@@ -102,14 +108,19 @@ void* current_block_height_timer_thread()
           memset(current_block_height,0,strlen(current_block_height));
           memcpy(current_block_height,data,strnlen(data,BUFFER_SIZE));
 
-          if (start_new_round() == 0)
+          block_verifier_settings = start_new_round();
+          if (block_verifier_settings == 0)
           {
             print_error_message;
+          }
+          else if (block_verifier_settings == 1)
+          {
+            printf("\033[1;31mYour delegate is not a block verifier for network block %s\033[0m\n",current_block_height);
           }
           else
           {
             printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
-          }           
+          }         
         }
         sleep(1);
       }
