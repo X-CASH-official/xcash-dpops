@@ -280,7 +280,7 @@ int start_current_round_start_blocks()
   pthread_rwlock_unlock(&rwlock);
 
   // wait for all block verifiers to sync the database
-  //sync_block_verifiers_minutes(1);
+  sync_block_verifiers_minutes(1);
 
   // check if the block verifier is the main network data node
   if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
@@ -459,28 +459,24 @@ int start_current_round_start_blocks()
   }
   pthread_rwlock_unlock(&rwlock);
 
-  color_print(VRF_data.block_blob,"yellow");
-  exit(0);
-
   // add the network block string to the database
   if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
   }
 
-  memset(data3,0,sizeof(data3));
-
   // create the verify_block file for the X-CASH Daemon
-  if (get_path(data3,0) == 0 || write_file(data3,VRF_data.reserve_bytes_data_hash) == 0)
+  if (get_path(data3,0) == 0 || write_file(VRF_data.reserve_bytes_data_hash,data3) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the verify_block file");
   }
-  sleep(2);
 
   // create the message
   memset(data3,0,sizeof(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"",101);
   memcpy(data3+101,data2,strnlen(data2,sizeof(data3)));
+  memcpy(data3+strlen(data3),"\",\r\n \"reserve_bytes_data_hash\": \"",33);
+  memcpy(data3+strlen(data3),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
   memcpy(data3+strlen(data3),"\",\r\n}",5);
   
   // sign_data
@@ -508,11 +504,13 @@ int start_current_round_start_blocks()
     }
   }
 
-  /*do
+  color_print("Waiting for the block producer to submit the block to the network","green");
+  printf("\n");
+  do
   {
     usleep(200000);
     get_current_UTC_time;
-  } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);*/
+  } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);
 
   // have the main network data node submit the block to the network  
   if (submit_block_template(data,0) == 0)
@@ -575,7 +573,7 @@ int data_network_node_create_block()
   pthread_rwlock_unlock(&rwlock);
 
   // wait for the block verifiers to process the votes
-  //sync_block_verifiers_minutes(4);
+  sync_block_verifiers_minutes(4);
 
   pthread_rwlock_wrlock(&rwlock);
   // set the current_round_part
@@ -866,7 +864,7 @@ int data_network_node_create_block()
     memset(data3,0,sizeof(data3));
 
     // create the verify_block file for the X-CASH Daemon
-    if (get_path(data3,0) == 0 || write_file(data3,VRF_data.reserve_bytes_data_hash) == 0)
+    if (get_path(data3,0) == 0 || write_file(VRF_data.reserve_bytes_data_hash,data3) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the verify_block file");
     }
@@ -876,6 +874,8 @@ int data_network_node_create_block()
     memset(data3,0,sizeof(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"",101);
     memcpy(data3+101,data2,strnlen(data2,sizeof(data3)));
+    memcpy(data3+strlen(data3),"\",\r\n \"reserve_bytes_data_hash\": \"",33);
+    memcpy(data3+strlen(data3),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
     memcpy(data3+strlen(data3),"\",\r\n}",5);
   
     // sign_data
@@ -903,6 +903,8 @@ int data_network_node_create_block()
       }
     }
 
+    color_print("Waiting for the block producer to submit the block to the network","green");
+    printf("\n");
     // wait for the block verifiers to process the votes
     do
     {
@@ -1067,9 +1069,9 @@ int start_part_4_of_round()
   pthread_rwlock_unlock(&rwlock);
 
   // wait for all block verifiers to sync the database
-  /*color_print("Waiting for all block verifiers to sync the databases","green");
+  color_print("Waiting for all block verifiers to sync the databases","green");
   printf("\n");
-  sync_block_verifiers_minutes(1);*/
+  sync_block_verifiers_minutes(1);
 
   start:
 
@@ -1580,10 +1582,10 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not add the new block to the database");
     }
 
-    memset(data3,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
 
     // create the verify_block file for the X-CASH Daemon
-    if (get_path(data3,0) == 0 || write_file(data3,VRF_data.reserve_bytes_data_hash) == 0)
+    if (get_path(data3,0) == 0 || write_file(VRF_data.reserve_bytes_data_hash,data3) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not create the verify_block file");
     }
@@ -1592,11 +1594,11 @@ int start_part_4_of_round()
     // wait for the block verifiers to process the votes
     color_print("Waiting for the block producer to submit the block to the network","green");
     printf("\n");
-    /*do
+    do
     {
       usleep(200000);
       get_current_UTC_time;
-    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);*/
+    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);
 
     // have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
@@ -1794,13 +1796,13 @@ int update_block_verifiers_list()
     }
   }
 
-  if (settings >= (BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT))
+  if (settings > (BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT))
   {
-    settings = 2;
+    settings = 1;
   }
   else
   {
-    settings = 1;
+    settings = 2;
   } 
 
   return settings;
@@ -4242,6 +4244,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
 
   // define macros
   #define DATABASE_COLLECTION "reserve_bytes_1"
@@ -4253,6 +4256,10 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   error_message.total++; \
   return 0;
 
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
   {   
@@ -4260,16 +4267,24 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"database_data",data,sizeof(data)) == 0)
+  if (parse_json_data(MESSAGE,"database_data",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"reserve_bytes_data_hash",data2,sizeof(data2)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not parse the data");
   }
 
   // add the data to the database
-  memcpy(data2,data,strlen(data)-2);
-  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0) == 0)
+  memcpy(data3,data,strlen(data)-2);
+  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data3,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
+  }
+
+  memset(data3,0,sizeof(data3));
+
+  // create the verify_block file for the X-CASH Daemon
+  if (get_path(data3,0) == 0 || write_file(data2,data3) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not create the verify_block file");
   }
 
   return 1;

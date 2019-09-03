@@ -430,6 +430,7 @@ int get_path(char *result, const int MESSAGE_SETTINGS)
 
   // Variables
   char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
 
   // define macros
   #define GET_PATH_ERROR(settings) \
@@ -442,13 +443,16 @@ int get_path(char *result, const int MESSAGE_SETTINGS)
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_path\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get path",MESSAGE_SETTINGS) <= 0)
   {  
-    GET_PATH_ERROR("Could not get the previous block hash");
+    GET_PATH_ERROR("Could not get the path");
   }
   
-  if (parse_json_data(data,"path",result, BUFFER_SIZE) == 0)
+  if (parse_json_data(data,"path",data2, BUFFER_SIZE) == 0 || string_replace(data2,sizeof(data2),"\\","") == 0)
   {
-    GET_PATH_ERROR("Could not get the previous block hash");
+    GET_PATH_ERROR("Could not get the path");
   }
+
+  memcpy(result,data2,strlen(data2));
+
   return 1;
 
   #undef GET_PATH_ERROR
