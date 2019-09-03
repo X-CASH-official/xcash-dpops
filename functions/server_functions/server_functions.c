@@ -42,7 +42,7 @@ Functions
 -----------------------------------------------------------------------------------------------------------
 Name: start_new_round
 Description: Checks if the round is a start block round or not
-Return: NULL
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -112,19 +112,20 @@ int start_new_round()
   memcpy(data,"A new round is starting for block ",34);
   memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
   print_start_message(data);
+
+  // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
+  settings = update_block_verifiers_list();
+  if (settings == 0)
+  {
+    START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
+  }
  
   /*// check if all of the databases are synced
-  if (check_if_databases_are_synced() == 0)
+  if (check_if_databases_are_synced(settings) == 0)
   {
     START_NEW_ROUND_ERROR("Could not check if the database is synced. Your block verifier will now sit out for the remainder of the round");
   }
   */
-
-  // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
-  if (update_block_verifiers_list() == 0)
-  {
-    START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
-  }
 
   /*// check if the block verifier is a current block verifier
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -244,7 +245,7 @@ int start_new_round()
 -----------------------------------------------------------------------------------------------------------
 Name: start_current_round_start_blocks
 Description: Runs the round where the network data node will create the first block of the X-CASH proof of stake block on the network
-Return: NULL
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -536,7 +537,7 @@ int start_current_round_start_blocks()
 -----------------------------------------------------------------------------------------------------------
 Name: data_network_node_create_block
 Description: Runs the round where the main network data node will create the block and have the block verifiers sign the block. This only runs if the block producer and the 5 backup block producers cant create the block
-Return: NULL
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -1674,6 +1675,7 @@ int start_part_4_of_round()
 -----------------------------------------------------------------------------------------------------------
 Name: update_block_verifiers_list
 Description: Updates the block verifiers list struct
+Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to sync from a random network data node
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -1683,6 +1685,7 @@ int update_block_verifiers_list()
   struct database_multiple_documents_fields database_multiple_documents_fields;
   size_t count;
   size_t count2;
+  int settings = 0;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -1777,7 +1780,30 @@ int update_block_verifiers_list()
       pointer_reset(database_multiple_documents_fields.value[count][count2]);
     }
   }  
-  return 1;
+
+  // check if more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT are new block verifiers
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+    {
+      if (memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH) == 0)
+      {
+        settings++;
+        break;
+      }
+    }
+  }
+
+  if (settings >= (BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT))
+  {
+    settings = 2;
+  }
+  else
+  {
+    settings = 1;
+  } 
+
+  return settings;
 
   #undef DATABASE_COLLECTION
 }
@@ -1788,6 +1814,7 @@ int update_block_verifiers_list()
 -----------------------------------------------------------------------------------------------------------
 Name: update_databases
 Description: Updates the databases
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -1842,6 +1869,7 @@ Name: add_block_verifiers_round_statistics
 Description: Adds the block verifier statistics to the database after adding the block to the network
 Parameters:
   BLOCK_HEIGHT - The block height
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -1983,6 +2011,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
 -----------------------------------------------------------------------------------------------------------
 Name: add_round_statistics
 Description: Adds the round statistics to the database after adding the block to the network
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -2160,10 +2189,13 @@ int add_round_statistics()
 -----------------------------------------------------------------------------------------------------------
 Name: check_if_databases_are_synced
 Description: Checks if the databases are synced, and if not syncs the databases
+Paramters:
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int check_if_databases_are_synced()
+int check_if_databases_are_synced(const int SETTINGS)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -2186,25 +2218,25 @@ int check_if_databases_are_synced()
   sprintf(data,"%zu",count);
 
   // check if your reserve proofs database is synced
-  if (sync_check_reserve_proofs_database() == 0)
+  if (sync_check_reserve_proofs_database(SETTINGS) == 0)
   {
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve proofs database is updated. This means you might need to sync the reserve proofs database.");
   }
 
   // check if your reserve bytes database is synced
-  if (sync_check_reserve_bytes_database() == 0)
+  if (sync_check_reserve_bytes_database(SETTINGS) == 0)
   {    
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.");
   }
 
   // check if your delegates database is synced
-  if (sync_check_delegates_database() == 0)
+  if (sync_check_delegates_database(SETTINGS) == 0)
   {
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the delegates database is updated. This means you might need to sync the delegates database.");
   }
 
   // check if your statistics database is synced
-  if (sync_check_statistics_database() == 0)
+  if (sync_check_statistics_database(SETTINGS) == 0)
   {
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the statistics database is updated. This means you might need to sync the statistics database.");
   }

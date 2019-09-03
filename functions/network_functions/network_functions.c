@@ -1309,11 +1309,13 @@ int get_synced_block_verifiers()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_reserve_proofs_database
 Description: Checks if the block verifier needs to sync the reserve proofs database
+Paramters:
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_check_reserve_proofs_database()
+int sync_check_reserve_proofs_database(const int SETTINGS)
 {
   // Variables
   char message[BUFFER_SIZE];
@@ -1382,40 +1384,82 @@ int sync_check_reserve_proofs_database()
 
   printf("Sending all block verifiers a message to check if the reserve proofs database is synced\n"); 
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  if (SETTINGS == 1)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-      synced_block_verifiers.vote_settings_connection_timeout++;
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+      {
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
+      }
+      else
+      {
+        if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE) == 0)
+        {
+          memcpy(reserve_proofs_database,data,strnlen(data,BUFFER_SIZE));
+        } 
+        parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      }   
     }
-    else
-    {
-      if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE) == 0)
-      {
-        memcpy(reserve_proofs_database,data,strnlen(data,BUFFER_SIZE));
-      } 
-      parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2));
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      if (memcmp(data2,"true",4) == 0)
-      {
-        synced_block_verifiers.vote_settings_true++;
-      }
-      else if (memcmp(data2,"false",5) == 0)
-      {
-        synced_block_verifiers.vote_settings_false++;
-      }
-    }   
-  }
 
-  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
-  {
-    color_print("The reserve proofs database is not synced","red");
-    if (sync_reserve_proofs_database(reserve_proofs_database) == 0)
+    if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
+      color_print("The reserve proofs database is not synced","red");
+      if (sync_reserve_proofs_database(reserve_proofs_database, SETTINGS) == 0)
+      {
+        SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
+      }
+    }
+  }
+  else if (SETTINGS == 2)
+  {
+    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+      {
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
+      }
+      else
+      {
+        if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE) == 0)
+        {
+          memcpy(reserve_proofs_database,data,strnlen(data,BUFFER_SIZE));
+        } 
+        parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      }   
+    }
+
+    if (synced_block_verifiers.vote_settings_false > 0 || synced_block_verifiers.vote_settings_connection_timeout > 0)
+    {
+      color_print("The reserve proofs database is not synced","red");
+      if (sync_reserve_proofs_database(reserve_proofs_database, SETTINGS) == 0)
+      {
+        SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
+      }
     }
   }
 
@@ -1434,11 +1478,12 @@ Name: sync_reserve_proofs_database
 Description: Syncs the reserve proofs database
 Paramters:
   RESERVE_PROOFS_DATABASE - The RESERVE_PROOFS_DATABASE data from a random network data node
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
+int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int SETTINGS)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1491,9 +1536,11 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
   start:
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
-       if their was a lot of connection_timeouts, to where a majority vote could not be calculated, then select a random network data node instead
+       select a random network data node to sync from if
+       there was a lot of connection_timeouts, to where a majority vote could not be calculated,
+       there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
     */
-    if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
+    if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT && SETTINGS == 1)
     {
       count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
       if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
@@ -1501,7 +1548,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
         goto start;
       }
     }
-    else
+    else if (SETTINGS == 1)
     {
       count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
       for (counter = 0, settings = 0; counter < NETWORK_DATA_NODES_AMOUNT; counter++)
@@ -1512,6 +1559,14 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
         }
       }
       if (settings != 1)    
+      {
+        goto start;
+      }
+    }
+    else if (SETTINGS == 2)
+    {
+      count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT-1);
+      if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
       {
         goto start;
       }
@@ -1619,11 +1674,13 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE)
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_reserve_bytes_database
 Description: Checks if the block verifier needs to sync the reserve bytes database
+Paramters:
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_check_reserve_bytes_database()
+int sync_check_reserve_bytes_database(const int SETTINGS)
 {
   // Variables
   char message[BUFFER_SIZE];
@@ -1667,36 +1724,74 @@ int sync_check_reserve_bytes_database()
 
   printf("Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  if (SETTINGS == 1)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-      synced_block_verifiers.vote_settings_connection_timeout++;
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+      {
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
+      }
+      else
+      {
+        parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      }   
     }
-    else
-    {
-      parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2));
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      if (memcmp(data2,"true",4) == 0)
-      {
-        synced_block_verifiers.vote_settings_true++;
-      }
-      else if (memcmp(data2,"false",5) == 0)
-      {
-        synced_block_verifiers.vote_settings_false++;
-      }
-    }   
-  }
 
-  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
-  {
-    color_print("The reserve bytes database is not synced","red");
-    if (sync_reserve_bytes_database() == 0)
+    if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
+      color_print("The reserve bytes database is not synced","red");
+      if (sync_reserve_bytes_database(SETTINGS) == 0)
+      {
+        SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
+      }
+    }
+  }
+  else if (SETTINGS == 2)
+  {
+    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+      {
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
+      }
+      else
+      {
+        parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      }   
+    }
+
+    if (synced_block_verifiers.vote_settings_false > 0 || synced_block_verifiers.vote_settings_connection_timeout > 0)
+    {
+      color_print("The reserve bytes database is not synced","red");
+      if (sync_reserve_bytes_database(SETTINGS) == 0)
+      {
+        SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
+      }
     }
   }
 
@@ -1713,11 +1808,13 @@ int sync_check_reserve_bytes_database()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_reserve_bytes_database
 Description: Syncs the reserve bytes database
+Paramters:
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_bytes_database()
+int sync_reserve_bytes_database(const int SETTINGS)
 {
   // Variables
   char message[BUFFER_SIZE];
@@ -1797,9 +1894,11 @@ int sync_reserve_bytes_database()
     start:
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
-       if their was a lot of connection_timeouts, to where a majority vote could not be calculated, then select a random network data node instead
+       select a random network data node to sync from if
+       there was a lot of connection_timeouts, to where a majority vote could not be calculated,
+       there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
     */
-    if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
+    if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT && SETTINGS == 1)
     {
       count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
       if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
@@ -1807,7 +1906,7 @@ int sync_reserve_bytes_database()
         goto start;
       }
     }
-    else
+    else if (SETTINGS == 1)
     {
       count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
       for (counter = 0, settings = 0; counter < NETWORK_DATA_NODES_AMOUNT; counter++)
@@ -1818,6 +1917,14 @@ int sync_reserve_bytes_database()
         }
       }
       if (settings != 1)    
+      {
+        goto start;
+      }
+    }
+    else if (SETTINGS == 2)
+    {
+      count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT-1);
+      if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
       {
         goto start;
       }
@@ -2018,11 +2125,13 @@ int sync_reserve_bytes_database()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_delegates_database
 Description: Checks if the block verifier needs to sync the delegates database
+Paramters:
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_check_delegates_database()
+int sync_check_delegates_database(const int SETTINGS)
 {
   // Variables
   char message[BUFFER_SIZE];
@@ -2067,36 +2176,74 @@ int sync_check_delegates_database()
 
   printf("Sending all block verifiers a message to check if the delegates database is synced\n"); 
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  if (SETTINGS == 1)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-      synced_block_verifiers.vote_settings_connection_timeout++;
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+      {
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
+      }
+      else
+      {
+        parse_json_data(data,"delegates_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      }   
     }
-    else
-    {
-      parse_json_data(data,"delegates_database",data2,sizeof(data2));
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      if (memcmp(data2,"true",4) == 0)
-      {
-        synced_block_verifiers.vote_settings_true++;
-      }
-      else if (memcmp(data2,"false",5) == 0)
-      {
-        synced_block_verifiers.vote_settings_false++;
-      }
-    }   
-  }
 
-  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
-  {
-    color_print("The delegates database is not synced","red");
-    if (sync_delegates_database() == 0)
+    if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database");
+      color_print("The delegates database is not synced","red");
+      if (sync_delegates_database(SETTINGS) == 0)
+      {
+        SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database database");
+      }
+    }
+  }
+  else if (SETTINGS == 2)
+  {
+    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+      {
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
+      }
+      else
+      {
+        parse_json_data(data,"delegates_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      }   
+    }
+
+    if (synced_block_verifiers.vote_settings_false > 0 || synced_block_verifiers.vote_settings_connection_timeout > 0)
+    {
+      color_print("The delegates database is not synced","red");
+      if (sync_delegates_database(SETTINGS) == 0)
+      {
+        SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database database");
+      }
     }
   }
 
@@ -2114,11 +2261,13 @@ int sync_check_delegates_database()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_delegates_database
 Description: Syncs the reserve proofs database
+Paramters:
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_delegates_database()
+int sync_delegates_database(const int SETTINGS)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -2169,9 +2318,11 @@ int sync_delegates_database()
   start:
 
   /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
-     if their was a lot of connection_timeouts, to where a majority vote could not be calculated, then select a random network data node instead
+     select a random network data node to sync from if
+     there was a lot of connection_timeouts, to where a majority vote could not be calculated,
+     there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
   */
-  if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
+  if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT && SETTINGS == 1)
   {
     count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
     if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
@@ -2179,7 +2330,7 @@ int sync_delegates_database()
       goto start;
     }
   }
-  else
+  else if (SETTINGS == 1)
   {
     count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
     for (count2 = 0, settings = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
@@ -2190,6 +2341,14 @@ int sync_delegates_database()
       }
     }
     if (settings != 1)    
+    {
+      goto start;
+    }
+  }
+  else if (SETTINGS == 2)
+  {
+    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT-1);
+    if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       goto start;
     }
@@ -2260,11 +2419,13 @@ int sync_delegates_database()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_statistics_database
 Description: Checks if the block verifier needs to sync the statistics database
+Paramters:
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_check_statistics_database()
+int sync_check_statistics_database(const int SETTINGS)
 {
   // Variables
   char message[BUFFER_SIZE];
@@ -2309,36 +2470,74 @@ int sync_check_statistics_database()
 
   printf("Sending all block verifiers a message to check if the statistics database is synced\n"); 
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  if (SETTINGS == 1)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-      synced_block_verifiers.vote_settings_connection_timeout++;
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+      {
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
+      }
+      else
+      {
+        parse_json_data(data,"statistics_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      }   
     }
-    else
-    {
-      parse_json_data(data,"statistics_database",data2,sizeof(data2));
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      if (memcmp(data2,"true",4) == 0)
-      {
-        synced_block_verifiers.vote_settings_true++;
-      }
-      else if (memcmp(data2,"false",5) == 0)
-      {
-        synced_block_verifiers.vote_settings_false++;
-      }
-    }   
-  }
 
-  if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
-  {
-    color_print("The statistics database is not synced","red");
-    if (sync_statistics_database() == 0)
+    if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database");
+      color_print("The statistics database is not synced","red");
+      if (sync_statistics_database(SETTINGS) == 0)
+      {
+        SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database database");
+      }
+    }
+  }
+  else if (SETTINGS == 2)
+  {
+    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+      {
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
+      }
+      else
+      {
+        parse_json_data(data,"statistics_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      }   
+    }
+
+    if (synced_block_verifiers.vote_settings_false > 0 || synced_block_verifiers.vote_settings_connection_timeout > 0)
+    {
+      color_print("The statistics database is not synced","red");
+      if (sync_statistics_database(SETTINGS) == 0)
+      {
+        SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database database");
+      }
     }
   }
 
@@ -2356,11 +2555,13 @@ int sync_check_statistics_database()
 -----------------------------------------------------------------------------------------------------------
 Name: sync_statistics_database
 Description: Syncs the reserve proofs database
+Paramters:
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_statistics_database()
+int sync_statistics_database(const int SETTINGS)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -2411,9 +2612,11 @@ int sync_statistics_database()
   start:
 
   /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
-     if their was a lot of connection_timeouts, to where a majority vote could not be calculated, then select a random network data node instead
+     select a random network data node to sync from if
+     there was a lot of connection_timeouts, to where a majority vote could not be calculated,
+     there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
   */
-  if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
+  if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT && SETTINGS == 1)
   {
     count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
     if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
@@ -2421,7 +2624,7 @@ int sync_statistics_database()
       goto start;
     }
   }
-  else
+  else if (SETTINGS == 1)
   {
     count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
     for (count2 = 0, settings = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
@@ -2432,6 +2635,14 @@ int sync_statistics_database()
       }
     }
     if (settings != 1)    
+    {
+      goto start;
+    }
+  }
+  else if (SETTINGS == 2)
+  {
+    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT-1);
+    if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       goto start;
     }

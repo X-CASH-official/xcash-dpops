@@ -15,7 +15,7 @@ int update_block_verifiers_list();
 int update_databases();
 int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT);
 int add_round_statistics();
-int check_if_databases_are_synced();
+int check_if_databases_are_synced(const int SETTINGS);
 int calculate_main_nodes_roles();
 int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(const int CLIENT_SOCKET);
