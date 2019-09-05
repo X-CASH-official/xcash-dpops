@@ -61,18 +61,18 @@ void* current_block_height_timer_thread()
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  /*sync_block_verifiers_minutes(0);
+  sync_block_verifiers_minutes(4);
   get_current_block_height(current_block_height,0);
-  if (start_current_round_start_blocks() == 0)
+  if (start_new_round() == 0)
   {
     print_error_message;
   }
   else
   {
     printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
-  }*/
+  }
 
-  for (;;)
+  /*for (;;)
   {
     // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
     usleep(200000);
@@ -125,7 +125,7 @@ void* current_block_height_timer_thread()
         sleep(1);
       }
     }
-  }
+  }*/
   pthread_exit((void *)(intptr_t)1);
 }
 
@@ -980,6 +980,10 @@ void* socket_thread(void* parameters)
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
    server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES\"") != NULL)
+ {
+   server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(CLIENT_SOCKET,(const char*)buffer);
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {

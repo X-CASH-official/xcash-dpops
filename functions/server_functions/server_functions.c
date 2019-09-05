@@ -728,7 +728,7 @@ int data_network_node_create_block()
     memset(data3,0,sizeof(data3));
     memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"",103);
     memcpy(data3+103,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
-    memcpy(data3+sizeof(data3),"\",\r\n}",5);
+    memcpy(data3+strlen(data3),"\",\r\n}",5);
   
     // sign_data
     if (sign_data(data3,0) == 0)
@@ -1069,9 +1069,9 @@ int start_part_4_of_round()
   pthread_rwlock_unlock(&rwlock);
 
   // wait for all block verifiers to sync the database
-  color_print("Waiting for all block verifiers to sync the databases","green");
+  /*color_print("Waiting for all block verifiers to sync the databases","green");
   printf("\n");
-  sync_block_verifiers_minutes(1);
+  sync_block_verifiers_minutes(1);*/
 
   start:
 
@@ -1258,12 +1258,10 @@ int start_part_4_of_round()
     }
 
     memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
-    memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
     // create the block template and send it to all block verifiers if the block verifier is the block producer
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
-      memset(VRF_data.block_blob,0,sizeof(VRF_data.block_blob));
       if (get_block_template(VRF_data.block_blob,0) == 0)
       {
         START_PART_4_OF_ROUND_ERROR("Could not get a block template");
@@ -1273,7 +1271,7 @@ int start_part_4_of_round()
       memset(data,0,sizeof(data));
       memcpy(data,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"",97);
       memcpy(data+97,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
-      memcpy(data+sizeof(data),"\",\r\n}",5);
+      memcpy(data+strlen(data),"\",\r\n}",5);
 
       // sign_data
       if (sign_data(data,0) == 0)
@@ -1291,8 +1289,6 @@ int start_part_4_of_round()
 
 
     // at this point all block verifiers should have the same VRF data and the network block
-
-    memcpy(VRF_data.block_blob,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
 
     // check if the network block string was created from the correct block verifier
     if (memcmp(VRF_data.block_blob,"",1) == 0)
@@ -1473,8 +1469,8 @@ int start_part_4_of_round()
     // verify the block
     memset(data3,0,sizeof(data3));
     sprintf(data3,"%zu",count);
-    if (count != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
-    {    
+    if (count+1 != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    {
       if (verify_network_block_data(1,1,1,"0",data2) == 0)
       {
         START_PART_4_OF_ROUND_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
@@ -1591,14 +1587,14 @@ int start_part_4_of_round()
     }
     sleep(2);
 
-    // wait for the block verifiers to process the votes
+    /*// wait for the block verifiers to process the votes
     color_print("Waiting for the block producer to submit the block to the network","green");
     printf("\n");
     do
     {
       usleep(200000);
       get_current_UTC_time;
-    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);
+    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);*/
 
     // have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
@@ -2657,9 +2653,14 @@ Return: 0 if an error has occured, 1 if successfull
 
 int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET)
 {
+   // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
   size_t count;
   size_t count2;
 
@@ -2669,10 +2670,12 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96); \
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
+  send_data(CLIENT_SOCKET,"Could not get the reserve bytes data hash}",0); \
   return 0;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
 
   // get the database data hash for the reserve bytes database
   if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
@@ -2681,15 +2684,38 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   }
 
   // create the message
-  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"data_hash\": \"",115);
-  memcpy(data+115,data2,DATA_HASH_LENGTH);
-  memcpy(data+243,"\",\r\n}",5);
+  memcpy(data,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD|",72);
+  memcpy(data+72,data2,DATA_HASH_LENGTH);
+  memcpy(data+200,"|",1);
   
   // sign_data
-  if (sign_data(data,0) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data");
+  memset(data2,0,sizeof(data2));
+  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
+  memcpy(message+60,data,strnlen(data,sizeof(message)));
+  memcpy(message+strlen(message),"\"}}",3);
+
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",0) <= 0)
+  {  
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not create the message");
+  } 
+
+  memset(message,0,sizeof(message));
+
+  if (parse_json_data(data2,"signature",message,sizeof(message)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not create the message");
   }
+
+  // check if the returned data is valid
+  if (strlen(message) != XCASH_SIGN_DATA_LENGTH && strncmp(message,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not create the message");
+  }
+
+  memcpy(data+strlen(data),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"|",1);
+  memcpy(data+strlen(data),message,XCASH_SIGN_DATA_LENGTH);
+  memcpy(data+strlen(data),"|}",2);
 
   // send the data
   if (send_data(CLIENT_SOCKET,data,0) == 0)
@@ -2700,6 +2726,116 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
 
   #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes
+Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  char message2[BUFFER_SIZE];
+  size_t count;
+  size_t count2;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes",68); \
+  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  error_message.total++; \
+  send_data(CLIENT_SOCKET,"Could not get the network blocks reserve bytes}",0); \
+  return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+  memset(message2,0,sizeof(message2));
+  
+  if (parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not create the message");
+  }
+
+  // create the message
+  memcpy(data2,"{\"block_height\": \"",18);
+  memcpy(data2+18,data,strnlen(data,sizeof(data2)));
+  memcpy(data2+strlen(data2),"\"}",2);
+
+  sscanf(data,"%zu", &count);
+  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not get the current block height");
+  }
+  count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+  memset(data,0,sizeof(data));
+  memcpy(data,"reserve_bytes_",14);
+  sprintf(data+14,"%zu",count2);
+
+  // get the data hash
+  if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes",message,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not get the previous blocks reserve bytes");
+  }
+
+  // create the message
+  memcpy(message2,"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES|",43);
+  memcpy(message2+43,message,strnlen(message,sizeof(message2)));
+  memcpy(message2+strlen(message2),"|",1);
+  
+  // sign_data
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
+  memcpy(data+60,message2,strnlen(message2,sizeof(data)));
+  memcpy(data+strlen(data),"\"}}",3);
+
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",0) <= 0)
+  {  
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not create the message");
+  } 
+
+  memset(data,0,sizeof(data));
+
+  if (parse_json_data(data2,"signature",data,sizeof(data)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not create the message");
+  }
+
+  // check if the returned data is valid
+  if (strlen(data) != XCASH_SIGN_DATA_LENGTH && strncmp(data,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not create the message");
+  }
+
+  memcpy(message2+strlen(message2),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(message2+strlen(message2),"|",1);
+  memcpy(message2+strlen(message2),data,XCASH_SIGN_DATA_LENGTH);
+  memcpy(message2+strlen(message2),"|}",2);
+
+  // send the data
+  if (send_data(CLIENT_SOCKET,message2,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node");
+  }
+  return 1;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR
 }
 
 

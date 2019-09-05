@@ -285,6 +285,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   size_t count;
   size_t count2;
   size_t count3;
+  size_t counter;
   size_t number;
   char* current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -806,14 +807,15 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   count += blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length + 64;
 
   // block_validation_node_signature_data
-  message_copy1 = strstr(DATA+count,BLOCKCHAIN_DATA_SEGMENT_STRING);
-  blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length = (strlen(DATA) - strlen(message_copy1)) - count;
+  message_copy1 = strstr((char*)DATA,BLOCKCHAIN_DATA_SEGMENT_SIGN_DATA_STRING);
+  blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length = XCASH_SIGN_DATA_LENGTH*2;
   
-  size_t count5 = string_count(DATA,"5369675631");
-  for (count3 = 0; count3 < count5; count3++)
+  for (counter = 64, count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
   { 
-    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count3],&DATA[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count3],&message_copy1[counter],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length);
     count += blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length + 64;
+    counter += blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length + 64;
+    
     // convert the hexadecimal string to a string
     for (number = 0, count2 = 0; number < blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length; count2++, number += 2)
     {
