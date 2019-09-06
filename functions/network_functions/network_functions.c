@@ -163,7 +163,12 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   }  
 
   // convert the hostname if used, to an IP address
-  const struct hostent* HOST_NAME = gethostbyname(HOST); 
+  memset(str,0,sizeof(str));
+  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
+  const struct hostent* HOST_NAME = gethostbyname(str); 
   if (HOST_NAME == NULL)
   {
     if (MESSAGE_SETTINGS == 1)
@@ -458,7 +463,12 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   } 
 
   // convert the hostname if used, to an IP address
-  const struct hostent* HOST_NAME = gethostbyname(HOST); 
+  memset(str,0,sizeof(str));
+  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
+  const struct hostent* HOST_NAME = gethostbyname(str); 
   if (HOST_NAME == NULL)
   {
     if (MESSAGE_SETTINGS == 1)
@@ -703,7 +713,12 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   } 
 
   // convert the hostname if used, to an IP address
-  const struct hostent* HOST_NAME = gethostbyname(HOST); 
+  memset(str,0,sizeof(str));
+  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
+  const struct hostent* HOST_NAME = gethostbyname(str); 
   if (HOST_NAME == NULL)
   {    
     memcpy(str,"Error invalid hostname of ",26);
@@ -2749,7 +2764,12 @@ int get_delegate_online_status(const char* HOST)
   }
 
   // convert the hostname if used, to an IP address
-  const struct hostent* HOST_NAME = gethostbyname(HOST); 
+  memset(str,0,sizeof(str));
+  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
+  const struct hostent* HOST_NAME = gethostbyname(str); 
   if (HOST_NAME == NULL)
   {
     close(SOCKET);    

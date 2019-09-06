@@ -574,7 +574,12 @@ void* send_data_socket_thread(void* parameters)
   } 
 
   // convert the hostname if used, to an IP address
-  const struct hostent* HOST_NAME = gethostbyname(data->HOST); 
+  memset(str,0,sizeof(str));
+  memcpy(str,data->HOST,strnlen(data->HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.",""); 
+  const struct hostent* HOST_NAME = gethostbyname(str); 
   if (HOST_NAME == NULL)
   {
     SEND_DATA_SOCKET_ERROR;
@@ -727,7 +732,12 @@ void* send_and_receive_data_socket_thread(void* parameters)
   } 
 
   // convert the hostname if used, to an IP address
-  const struct hostent* HOST_NAME = gethostbyname(data->HOST); 
+  memset(str,0,sizeof(str));
+  memcpy(str,data->HOST,strnlen(data->HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.",""); 
+  const struct hostent* HOST_NAME = gethostbyname(str); 
   if (HOST_NAME == NULL)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
