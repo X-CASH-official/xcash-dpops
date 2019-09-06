@@ -4030,7 +4030,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not register the delegate}",0); \
-  print_error_message; \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -4285,9 +4284,9 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   memcpy(data+strlen(data),"\"}",2);
 
   memcpy(data2,"{\"",2);
-  memcpy(data2+2,item,strnlen(item,BUFFER_SIZE));
-  memcpy(data+strlen(data),"\":\"",3);
-  memcpy(data2+strlen(data),value,strnlen(value,BUFFER_SIZE));
+  memcpy(data2+2,item,strnlen(item,sizeof(data2)));
+  memcpy(data2+strlen(data2),"\":\"",3);
+  memcpy(data2+strlen(data2),value,strnlen(value,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
 
   pthread_rwlock_rdlock(&rwlock);
