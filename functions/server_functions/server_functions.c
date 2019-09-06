@@ -3768,7 +3768,6 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not add the reserve proof to the database}",0); \
-  print_error_message; \
   return 0;
 
   memset(delegates_public_address,0,sizeof(delegates_public_address));
@@ -3831,12 +3830,12 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     sprintf(data2+15,"%zu",count);
 
     // check if the reserve proof is in the database
-    if (count_documents_in_collection(DATABASE_NAME,data2,data,0) != 0)
+    if (count_documents_in_collection(DATABASE_NAME,data2,data,0) > 0)
     {      
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database");
     }
     // check if another proof from the public address is already in the database
-    if (count_documents_in_collection(DATABASE_NAME,data2,data3,0) != 0)
+    if (count_documents_in_collection(DATABASE_NAME,data2,data3,0) > 0)
     {      
       settings = 1;
     }
@@ -4031,6 +4030,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not register the delegate}",0); \
+  print_error_message; \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -4074,18 +4074,18 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(data+strlen(data),"\"}",2);
 
   // check if the public address is already registered
-  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) != 0)
+  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) > 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public address is already registered");
   }
 
   // create the message
   memcpy(data,"{\"IP_address\":\"",15);
-  memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,BUFFER_SIZE));
-  memcpy(data+strlen(data),"\"}",2);  
+  memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
+  memcpy(data+strlen(data),"\"}",2); 
 
   // check if the IP address is already registered
-  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) != 0)
+  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) > 0)
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates IP address is already registered");
   }
