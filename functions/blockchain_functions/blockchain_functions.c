@@ -1360,8 +1360,6 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   char* message_copy1;
 
   // define macros
-  #define BLOCK_VALIDATION_NODE_SIGNATURE_DATA "7c424c4f434b434841494e5f444154415f5345474d454e545f535452494e477c5369675631"
-
   #define pointer_reset_all \
   free(previous_block_hash); \
   previous_block_hash = NULL; \
@@ -1723,7 +1721,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   if (BLOCK_VALIDATION_SIGNATURES_SETTINGS == 1)
   {  
     // get the next block verifiers public addresses from the previous network blocks reserve bytes
-    message_copy1 = strstr(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES,BLOCK_VALIDATION_NODE_SIGNATURE_DATA);
+    message_copy1 = strstr(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_SIGN_DATA_STRING);
     count2 = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + 64);
     count = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + 64 + (((XCASH_WALLET_LENGTH*2)+sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1)*BLOCK_VERIFIERS_AMOUNT));
     memcpy(previous_network_block_reserve_bytes_block_verifiers_public_addresses_data,&PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES[count],count2 - count);
@@ -1791,13 +1789,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transactions");
     }
-  }
-  
+  }  
 
   pointer_reset_all;
   return 1;
 
-  #undef BLOCK_VALIDATION_NODE_SIGNATURE_DATA
   #undef pointer_reset_all
   #undef VERIFY_NETWORK_BLOCK_DATA_ERROR
 }

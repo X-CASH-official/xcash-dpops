@@ -280,6 +280,8 @@ int start_current_round_start_blocks()
   pthread_rwlock_unlock(&rwlock);
 
   // wait for all block verifiers to sync the database
+  color_print("Waiting for all block verifiers to sync the databases","green");
+  printf("\n");
   sync_block_verifiers_minutes(1);
 
   // check if the block verifier is the main network data node
@@ -1549,7 +1551,7 @@ int start_part_4_of_round()
     {
       START_PART_4_OF_ROUND_ERROR("Could not add the network block string data hash");
     }
-
+    
     // update the reserve bytes database
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\"block_height\":\"",17);
@@ -3766,6 +3768,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not add the reserve proof to the database}",0); \
+  print_error_message; \
   return 0;
 
   memset(delegates_public_address,0,sizeof(delegates_public_address));
@@ -3892,10 +3895,10 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    sprintf(data+15,"%zu",count);
+    sprintf(data2+15,"%zu",count);
     if (count_documents_in_collection(DATABASE_NAME,data2,data,0) < MAXIMUM_INVALID_RESERERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
     {
-      if (insert_document_into_collection_json(DATABASE_NAME,data,data2,0) == 1)
+      if (insert_document_into_collection_json(DATABASE_NAME,data2,data,0) == 1)
       {        
         break;
       }
