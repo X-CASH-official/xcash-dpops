@@ -116,7 +116,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     memcpy(message+counter,"Content-Length: ",16);
     counter += 16;
-    sprintf(str, "%zu", strlen(DATA));
+    snprintf(str, sizeof(str)-1, "%zu", strlen(DATA));
     memcpy(message+counter,str,strnlen(str,BUFFER_SIZE));
     counter += strnlen(str,BUFFER_SIZE);
   } 
@@ -197,7 +197,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   }
 
   // convert the port to a string  
-  sprintf(buffer2,"%d",PORT);  
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
 
   // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
@@ -496,7 +496,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   }
     
   // convert the port to a string  
-  sprintf(buffer2,"%d",PORT); 
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT); 
    
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
@@ -739,7 +739,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   }
     
   // convert the port to a string  
-  sprintf(buffer2,"%d",PORT); 
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT); 
    
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
@@ -952,9 +952,9 @@ int sync_all_block_verifiers_list()
   size_t count2;
 
   // define macros
-  #define SYNC_ALL_BLOCK_VERIFIERS_LIST(settings) \
+  #define SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_all_block_verifiers_list",29); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -1013,14 +1013,14 @@ int sync_all_block_verifiers_list()
 
     if (verify_data(data3,0,0) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not verify data");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not verify data");
     }
  
     // parse the message
     memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"previous_block_verifiers_name_list",data2,sizeof(data2)) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
     } 
 
     // parse the previous_block_verifiers_name_list
@@ -1033,7 +1033,7 @@ int sync_all_block_verifiers_list()
     memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"previous_block_verifiers_public_address_list",data2,sizeof(data2)) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
     } 
 
     // parse the previous_block_verifiers_public_address_list
@@ -1046,7 +1046,7 @@ int sync_all_block_verifiers_list()
     memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"previous_block_verifiers_IP_address_list",data2,sizeof(data2)) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
     } 
 
     // parse the previous_block_verifiers_IP_address_list
@@ -1060,7 +1060,7 @@ int sync_all_block_verifiers_list()
     memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"current_block_verifiers_name_list",data2,sizeof(data2)) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
     } 
 
     // parse the current_block_verifiers_name_list
@@ -1073,7 +1073,7 @@ int sync_all_block_verifiers_list()
     memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"current_block_verifiers_public_address_list",data2,sizeof(data2)) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
     } 
 
     // parse the current_block_verifiers_public_address_list
@@ -1086,7 +1086,7 @@ int sync_all_block_verifiers_list()
     memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"current_block_verifiers_IP_address_list",data2,sizeof(data2)) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
     } 
 
     // parse the current_block_verifiers_IP_address_list
@@ -1100,7 +1100,7 @@ int sync_all_block_verifiers_list()
     memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"next_block_verifiers_name_list",data2,sizeof(data2)) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
     } 
 
     // parse the next_block_verifiers_name_list
@@ -1113,7 +1113,7 @@ int sync_all_block_verifiers_list()
     memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"next_block_verifiers_public_address_list",data2,sizeof(data2)) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
     } 
 
     // parse the next_block_verifiers_public_address_list
@@ -1126,7 +1126,7 @@ int sync_all_block_verifiers_list()
     memset(data2,0,sizeof(data2));
     if (parse_json_data(data3,"next_block_verifiers_IP_address_list",data2,sizeof(data2)) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not parse the message");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
     } 
 
     // parse the next_block_verifiers_IP_address_list
@@ -1166,7 +1166,7 @@ int sync_all_block_verifiers_list()
     // get the top 100 delegates by total votes
     if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,"delegates","",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_AMOUNT,1,"total_vote_count",0) == 0)
     {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST("Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round");
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round");
     }
 
     // copy the database_multiple_documents_fields to the next, current and previous block verifiers list
@@ -1208,7 +1208,7 @@ int sync_all_block_verifiers_list()
   }
   return 1;
   
-  #undef SYNC_ALL_BLOCK_VERIFIERS_LIST  
+  #undef SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR  
 }
 
 
@@ -1234,7 +1234,7 @@ int get_synced_block_verifiers()
   
   #define GET_SYNCED_BLOCK_VERIFIERS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_synced_block_verifiers",26); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -1343,7 +1343,7 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
   // define macros  
   #define SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -1372,13 +1372,13 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memcpy(message+strlen(message),"\"reserve_proofs_data_hash_",26);
-    sprintf(message+strlen(message),"%zu",count);
+    snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
     memcpy(message+strlen(message),"\": \"",4);
     // get the database data hash for the reserve proofs database
     memset(data,0,strlen(data));
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_proofs_",15);  
-    sprintf(data2+15,"%zu",count);
+    snprintf(data2+15,sizeof(data2)-1,"%zu",count);
     if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -1593,14 +1593,14 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
     memcpy(data,"Connecting to block verifier ",29);
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
     memcpy(data+strlen(data)," to sync reserve_proofs_",24);
-    sprintf(data+strlen(data),"%zu",count2);
+    snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
     printf("%s\n",data);
 
     // parse the RESERVE_PROOFS_DATABASE
     memset(data,0,strlen(data));
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_database_",24);
-    sprintf(data2+24,"%zu",count2);
+    snprintf(data2+24,sizeof(data2)-1,"%zu",count2);
 
     if (parse_json_data(RESERVE_PROOFS_DATABASE,data2,data,MAXIMUM_BUFFER_SIZE) == 0)
     {
@@ -1612,7 +1612,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
       // sync the database
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
-      sprintf(data+strlen(data),"%zu",count2);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
       memcpy(data+strlen(data)," is not synced, downloading it from ",36);
       memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],36);
       color_print(data,"red");
@@ -1620,7 +1620,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
       // create the message
       memset(data2,0,sizeof(data2));
       memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_proofs_",133);
-      sprintf(data2+133,"%zu",count2);
+      snprintf(data2+133,sizeof(data2)-1,"%zu",count2);
       memcpy(data2+strlen(data2),"\",\r\n}",5);
 
       // sign_data
@@ -1650,7 +1650,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
       // add the data to the database
       memset(data2,0,sizeof(data2));
       memcpy(data2,"reserve_proofs_",15);
-      sprintf(data2+15,"%zu",count2);
+      snprintf(data2+15,sizeof(data2)-1,"%zu",count2);
 
       // delete the collection from the database
       delete_collection_from_database(DATABASE_NAME,data2,0);
@@ -1662,7 +1662,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
-      sprintf(data+strlen(data),"%zu",count2);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
       memcpy(data+strlen(data)," has been synced successfully\n",31);
       color_print(data,"green");
     }
@@ -1670,7 +1670,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
     {
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
-      sprintf(data+strlen(data),"%zu",count2);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
       memcpy(data+strlen(data)," is already synced\n",19);
       color_print(data,"green");
     }
@@ -1706,7 +1706,7 @@ int sync_check_reserve_bytes_database(const int SETTINGS)
   // define macros
   #define SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -1897,7 +1897,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2+strlen(data2),"reserve_bytes_",14);
-    sprintf(data2+strlen(data2),"%zu",count2);    
+    snprintf(data2+strlen(data2),sizeof(data2)-1,"%zu",count2);    
     if (count_all_documents_in_collection(DATABASE_NAME,data2,0) <= 0)
     {
       break;
@@ -1949,14 +1949,14 @@ int sync_reserve_bytes_database(const int SETTINGS)
     memcpy(data,"Connecting to block verifier ",29);
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
     memcpy(data+strlen(data)," to sync reserve_bytes_",23);
-    sprintf(data+strlen(data),"%zu",count2);
+    snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE,"%zu",count2);
     color_print(data,"green");
 
     // get the database data hash
     memset(data,0,strlen(data));
     memset(data2,0,sizeof(data2));
     memcpy(data2+strlen(data2),"reserve_bytes_",14);
-    sprintf(data2+strlen(data2),"%zu",count2);
+    snprintf(data2+strlen(data2),sizeof(data2)-1,"%zu",count2);
     if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
     {
       SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database",0);
@@ -1965,7 +1965,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
     // create the message
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"file\": \"reserve_bytes_",128);
-    sprintf(data2+128,"%zu",count2);
+    snprintf(data2+128,sizeof(data2)-1,"%zu",count2);
     memcpy(data2+strlen(data2),"\",\r\n \"data_hash\": \"",19);
     memcpy(data2+strlen(data2),data,DATA_HASH_LENGTH);
     memcpy(data2+strlen(data2),"\",\r\n}",5);
@@ -1999,7 +1999,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
       // sync the database
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
-      sprintf(data+strlen(data),"%zu",count2);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
       memcpy(data+strlen(data)," is not synced, downloading it from ",36);
       memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],36);
       color_print(data,"red");
@@ -2007,7 +2007,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
       // create the message
       memset(data2,0,sizeof(data2));
       memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_bytes_",131);
-      sprintf(data2+131,"%zu",count2);
+      snprintf(data2+131,sizeof(data2)-1,"%zu",count2);
       memcpy(data2+strlen(data2),"\",\r\n}",5);
 
       // sign_data
@@ -2037,7 +2037,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
       // add the data to the database
       memset(data2,0,sizeof(data2));
       memcpy(data2,"reserve_bytes_",14);
-      sprintf(data2+14,"%zu",count2);
+      snprintf(data2+14,sizeof(data2)-1,"%zu",count2);
 
       // delete the collection from the database
       delete_collection_from_database(DATABASE_NAME,data2,0);
@@ -2049,7 +2049,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
-      sprintf(data+strlen(data),"%zu",count2);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
       memcpy(data+strlen(data)," has been synced successfully\n",31);
       color_print(data,"green");
     }
@@ -2057,7 +2057,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
     {
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
-      sprintf(data+strlen(data),"%zu",count2);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
       memcpy(data+strlen(data)," is already synced\n",19);
       color_print(data,"green");
     }
@@ -2158,7 +2158,7 @@ int sync_check_delegates_database(const int SETTINGS)
   #define DATABASE_COLLECTION "delegates"
   #define SYNC_CHECK_DELEGATES_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -2373,7 +2373,6 @@ int sync_delegates_database(const int SETTINGS)
   memcpy(data,"Connecting to block verifier ",29);
   memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
   memcpy(data+strlen(data)," to sync the delegates database",31);
-  sprintf(data2+strlen(data),"%zu",count);
   color_print(data,"green");
 
   // get the database data hash
@@ -2385,7 +2384,7 @@ int sync_delegates_database(const int SETTINGS)
   // create the message
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"",118);
-  sprintf(data2+118,"%zu",count);
+  snprintf(data2+118,sizeof(data2)-1,"%zu",count);
   memcpy(data2+strlen(data2),"\",\r\n}",5);
 
   // sign_data
@@ -2452,7 +2451,7 @@ int sync_check_statistics_database(const int SETTINGS)
   #define DATABASE_COLLECTION "statistics"
   #define SYNC_CHECK_STATISTICS_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -2595,7 +2594,7 @@ int sync_statistics_database(const int SETTINGS)
   if (settings == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_statistics_database",24); \
-    memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
+    memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
     error_message.total++; \
     pointer_reset_all; \
     return 0; \
@@ -2603,7 +2602,7 @@ int sync_statistics_database(const int SETTINGS)
   else \
   { \
     memset(data,0,strlen(data)); \
-    memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
+    memcpy(data+strlen(data),message,sizeof(message)-1); \
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
@@ -2667,7 +2666,6 @@ int sync_statistics_database(const int SETTINGS)
   memcpy(data,"Connecting to block verifier ",29);
   memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
   memcpy(data+strlen(data)," to sync the statistics database",32);
-  sprintf(data2+strlen(data),"%zu",count);
   color_print(data,"green");
 
   // get the database data hash
@@ -2679,7 +2677,7 @@ int sync_statistics_database(const int SETTINGS)
   // create the message
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"",118);
-  sprintf(data2+118,"%zu",count);
+  snprintf(data2+118,sizeof(data2)-1,"%zu",count);
   memcpy(data2+strlen(data2),"\",\r\n}",5);
 
   // sign_data

@@ -39,14 +39,14 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   // Variables
   char previous_block_hash[BUFFER_SIZE];
   char random_data[RANDOM_STRING_LENGTH+1];
-  char* result = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char data[BUFFER_SIZE];
   char string[BUFFER_SIZE];
 
   // define macros
   #define SIGN_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sign_data",9); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   pointer_reset(result); \
   return 0;
@@ -97,7 +97,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   pthread_rwlock_unlock(&rwlock);
 
   // format the message
-  if (string_replace(result,52428800,"\"","\\\"") == 0)
+  if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
   {
     SIGN_DATA_ERROR("Could not create the message");
   }
@@ -114,7 +114,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     SIGN_DATA_ERROR("Could not create the message");
   } 
 
-  if (parse_json_data(data,"signature",result,52428800) == 0)
+  if (parse_json_data(data,"signature",result,MAXIMUM_BUFFER_SIZE) == 0)
   {
     SIGN_DATA_ERROR("Could not create the message");
   }
@@ -179,9 +179,9 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   char message_current_round_part[BUFFER_SIZE];
   char message_current_round_part_backup_node[BUFFER_SIZE];
   char xcash_proof_of_stake_signature[BUFFER_SIZE];
-  char* result = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char data[BUFFER_SIZE];
-  char* string = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   size_t message_length;
   size_t count;
   size_t count2;
@@ -190,7 +190,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   // define macros
   #define VERIFY_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"verify_data",11); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message; \
   return 0;
@@ -429,7 +429,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       message_length = strlen(MESSAGE) - 134;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
-      if (string_replace(result,52428800,"\"","\\\"") == 0)
+      if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
       {
         VERIFY_DATA_ERROR("Invalid message");
       }   
@@ -440,7 +440,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     message_length = strlen(MESSAGE) - 134;
     memcpy(result,MESSAGE,message_length);
     memcpy(result+message_length,"}",1);
-    if (string_replace(result,52428800,"\"","\\\"") == 0)
+    if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
     {
       VERIFY_DATA_ERROR("Invalid message");
     } 

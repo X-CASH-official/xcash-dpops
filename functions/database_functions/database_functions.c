@@ -1387,15 +1387,15 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   { 
     // get the current document  
     message = bson_as_canonical_extended_json(current_document, NULL);
-    if (strnlen(database_data,52428800) == 0)
+    if (strnlen(database_data,MAXIMUM_BUFFER_SIZE) == 0)
     {
-      memcpy(database_data+strnlen(database_data,52428800),"{",1);
+      memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),"{",1);
     }
     else
     {
-      memcpy(database_data+strnlen(database_data,52428800),",{",2);
+      memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),",{",2);
     }
-    memcpy(database_data+strnlen(database_data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
+    memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
     bson_free(message);
   }
   
@@ -1433,7 +1433,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   bson_t* document_options = NULL;
   char* message;
   unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(52428800,sizeof(char)); // 50 MB
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* reserve_proofs_data_hash[TOTAL_RESERVE_PROOFS_DATABASES];
   char* reserve_bytes_data_hash[10000];
@@ -1572,7 +1572,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
-      sprintf(data2+15,"%zu",count);
+      snprintf(data2+15,BUFFER_SIZE,"%zu",count);
 
       // set the collection
       if (THREAD_SETTINGS == 0)
@@ -1584,7 +1584,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
          collection = mongoc_client_get_collection(database_client_thread, DATABASE, data2);
       }
 
-      memset(data,0,strnlen(data,52428800));
+      memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE));
       count2 = 0;
 
       document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
@@ -1592,29 +1592,29 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       { 
         // get the current document  
         message = bson_as_canonical_extended_json(current_document, NULL);
-        if (strnlen(data,52428800) == 0)
+        if (strnlen(data,MAXIMUM_BUFFER_SIZE) == 0)
         {
-          memcpy(data+strnlen(data,52428800),"{",1);
+          memcpy(data+strnlen(data,MAXIMUM_BUFFER_SIZE),"{",1);
         }
         else
         {
-          memcpy(data+strnlen(data,52428800),",{",2);
+          memcpy(data+strnlen(data,MAXIMUM_BUFFER_SIZE),",{",2);
         }
-        memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
+        memcpy(data+strnlen(data,MAXIMUM_BUFFER_SIZE),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
         bson_free(message);
       }
       // get the data hash of the collection  
       memset(string,0,strnlen(string,BUFFER_SIZE));    
-      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
+      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
       memset(reserve_proofs_data_hash[count-1],0,strlen(reserve_proofs_data_hash[count-1]));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
       {
-        sprintf(reserve_proofs_data_hash[count-1]+count2,"%02x",string[count3] & 0xFF);
+        snprintf(reserve_proofs_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
       }
     }
 
     // get the data hash of the all of the reserve proofs data hash
-    memset(data,0,strnlen(data,52428800));
+    memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE));
     for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memcpy(data+strlen(data),reserve_proofs_data_hash[count],DATA_HASH_LENGTH);
@@ -1622,7 +1622,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
     // get the data hash of the collection
     memset(string,0,strlen(string));
-    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
+    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
   }
 
 
@@ -1643,7 +1643,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);  
-      sprintf(data2+14,"%zu",count);
+      snprintf(data2+14,BUFFER_SIZE,"%zu",count);
 
       // set the collection
       if (THREAD_SETTINGS == 0)
@@ -1655,7 +1655,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
          collection = mongoc_client_get_collection(database_client_thread, DATABASE, data2);
       }
 
-      memset(data,0,strnlen(data,52428800));
+      memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE));
       count2 = 0;
 
       document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
@@ -1663,29 +1663,29 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       { 
         // get the current document  
         message = bson_as_canonical_extended_json(current_document, NULL);
-        if (strnlen(data,52428800) == 0)
+        if (strnlen(data,MAXIMUM_BUFFER_SIZE) == 0)
         {
-          memcpy(data+strnlen(data,52428800),"{",1);
+          memcpy(data+strnlen(data,MAXIMUM_BUFFER_SIZE),"{",1);
         }
         else
         {
-          memcpy(data+strnlen(data,52428800),",{",2);
+          memcpy(data+strnlen(data,MAXIMUM_BUFFER_SIZE),",{",2);
         }
-        memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
+        memcpy(data+strnlen(data,MAXIMUM_BUFFER_SIZE),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
         bson_free(message);
       }
       // get the data hash of the collection  
       memset(string,0,strnlen(string,BUFFER_SIZE)); 
-      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
+      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
       memset(reserve_bytes_data_hash[count-1],0,strlen(reserve_bytes_data_hash[count-1]));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
       {
-        sprintf(reserve_bytes_data_hash[count-1]+count2,"%02x",string[count3] & 0xFF);
+        snprintf(reserve_bytes_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
       }
     }
 
     // get the data hash of the all of the reserve proofs data hash
-    memset(data,0,strnlen(data,52428800));
+    memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE));
     for (count = 0; count < counter; count++)
     {
       memcpy(data+strlen(data),reserve_bytes_data_hash[count],DATA_HASH_LENGTH);
@@ -1693,7 +1693,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
     // get the data hash of the collection
     memset(string,0,strlen(string));
-    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
+    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
   }
 
 
@@ -1710,7 +1710,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
        collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
     }
 
-    memset(data,0,strnlen(data,52428800));
+    memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE));
     count2 = 0;
 
     document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
@@ -1718,27 +1718,27 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     { 
       // get the current document  
       message = bson_as_canonical_extended_json(current_document, NULL);
-      if (strnlen(data,52428800) == 0)
+      if (strnlen(data,MAXIMUM_BUFFER_SIZE) == 0)
       {
-        memcpy(data+strnlen(data,52428800),"{",1);
+        memcpy(data+strnlen(data,MAXIMUM_BUFFER_SIZE),"{",1);
       }
       else
       {
-        memcpy(data+strnlen(data,52428800),",{",2);
+        memcpy(data+strnlen(data,MAXIMUM_BUFFER_SIZE),",{",2);
       }
-      memcpy(data+strnlen(data,52428800),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
+      memcpy(data+strnlen(data,MAXIMUM_BUFFER_SIZE),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
       bson_free(message);
     }
     // get the data hash of the collection
     memset(string,0,strlen(string));
-    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,52428800));
+    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
   }
 
   // convert the data hash to a string
   memset(data_hash,0,strlen(data_hash));
   for (count = 0, count2 = 0; count < DATA_HASH_LENGTH / 2; count++, count2 += 2)
   {
-    sprintf(data_hash+count2,"%02x",string[count] & 0xFF);
+    snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count] & 0xFF);
   }
 
   pointer_reset_all;

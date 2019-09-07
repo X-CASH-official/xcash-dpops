@@ -211,7 +211,7 @@ void* check_reserve_proofs_timer_thread()
       // convert the SHA512 data hash to a string
       for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
       {
-        sprintf(data2+count,"%02x",data[count2] & 0xFF);
+        snprintf(data2+count,sizeof(data2)-1,"%02x",data[count2] & 0xFF);
       }
 
       // reset the current_round_part_vote_data.vote_results_valid struct
@@ -266,7 +266,7 @@ void* check_reserve_proofs_timer_thread()
       {
         memset(data,0,sizeof(data));
         memcpy(data,"reserve_proofs_",15);
-        sprintf(data+15,"%d",count);
+        snprintf(data+15,sizeof(data)-1,"%d",count);
         for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
         {
           memset(data2,0,sizeof(data2));
@@ -299,7 +299,7 @@ void* check_reserve_proofs_timer_thread()
 
         memset(data2,0,sizeof(data2));
         memcpy(data2,"{\"block_verifiers_score\":\"",26);
-        sprintf(data2+26,"%zu",block_verifiers_score);
+        snprintf(data2+26,sizeof(data2)-1,"%zu",block_verifiers_score);
         memcpy(data2+strlen(data2),"\"}",2);
 
         pthread_rwlock_rdlock(&rwlock);
@@ -339,7 +339,7 @@ void* check_reserve_proofs_timer_thread()
     // select a random reserve proofs collection
     memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
-    sprintf(data+15,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
+    snprintf(data+15,sizeof(data)-1,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
 
     // select a random document in the collection
     count = count_all_documents_in_collection(DATABASE_NAME,data,0);
@@ -586,7 +586,7 @@ void* send_data_socket_thread(void* parameters)
   }
     
   // convert the port to a string  
-  sprintf(buffer2,"%d",SEND_DATA_PORT); 
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
    
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
@@ -744,7 +744,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   }
     
   // convert the port to a string  
-  sprintf(buffer2,"%d",SEND_DATA_PORT); 
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
    
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
@@ -928,7 +928,7 @@ void* socket_thread(void* parameters)
   memcpy(client_address,data->client_address,strnlen(data->client_address,BUFFER_SIZE)); 
 
   // convert the port to a string
-  sprintf(buffer2,"%d",SEND_DATA_PORT); 
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
 
   // receive the data
   receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,1,TOTAL_CONNECTION_TIME_SETTINGS);

@@ -58,7 +58,7 @@ int start_new_round()
   // define macros
   #define START_NEW_ROUND_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_new_round",15); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -162,12 +162,12 @@ int start_new_round()
   sscanf(current_block_height,"%zu", &count);
   count = count - 1;
   memset(data,0,sizeof(data,BUFFER_SIZE));
-  sprintf(data,"%zu",count);
+  snprintf(data,sizeof(data)-1,"%zu",count);
   settings = get_block_settings(data,0);
   sscanf(current_block_height,"%zu", &count);
   count = count - 2;
   memset(data,0,sizeof(data,BUFFER_SIZE));
-  sprintf(data,"%zu",count);
+  snprintf(data,sizeof(data)-1,"%zu",count);
   settings2 = get_block_settings(data,0);
   if (settings == 0)
   {    
@@ -266,7 +266,7 @@ int start_current_round_start_blocks()
   #define DATABASE_COLLECTION "reserve_bytes_1"
   #define START_CURRENT_ROUND_START_BLOCKS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
   
@@ -335,8 +335,8 @@ int start_current_round_start_blocks()
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not get the previous block hash");
   }  
 
-  memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,64);
-  memcpy(VRF_data.vrf_alpha_string_round_part_4,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,64);
+  memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,BLOCK_HASH_LENGTH);
+  memcpy(VRF_data.vrf_alpha_string_round_part_4,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BLOCK_HASH_LENGTH);
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -344,9 +344,9 @@ int start_current_round_start_blocks()
   }   
 
   // convert the vrf alpha string to a string
-  for (count2 = 0, count = 0; count2 < (((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_AMOUNT) + 128) / 2; count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < (((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_AMOUNT) + (BLOCK_HASH_LENGTH*2)) / 2; count2++, count += 2)
   {
-    sprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
+    snprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,BUFFER_SIZE-1,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
   }
 
   if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
@@ -365,19 +365,19 @@ int start_current_round_start_blocks()
   // convert all of the VRF data to a string
   for (count2 = 0, count = 0; count2 < crypto_vrf_SECRETKEYBYTES; count2++, count += 2)
   {
-    sprintf(VRF_data.vrf_secret_key_data_round_part_4+count,"%02x",VRF_data.vrf_secret_key_round_part_4[count2] & 0xFF);
+    snprintf(VRF_data.vrf_secret_key_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_secret_key_round_part_4[count2] & 0xFF);
   }
   for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
   {
-    sprintf(VRF_data.vrf_public_key_data_round_part_4+count,"%02x",VRF_data.vrf_public_key_round_part_4[count2] & 0xFF);
+    snprintf(VRF_data.vrf_public_key_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_public_key_round_part_4[count2] & 0xFF);
   }
   for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
   {
-    sprintf(VRF_data.vrf_proof_data_round_part_4+count,"%02x",VRF_data.vrf_proof_round_part_4[count2] & 0xFF);
+    snprintf(VRF_data.vrf_proof_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_proof_round_part_4[count2] & 0xFF);
   }
   for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
   {
-    sprintf(VRF_data.vrf_beta_string_data_round_part_4+count,"%02x",VRF_data.vrf_beta_string_round_part_4[count2] & 0xFF);
+    snprintf(VRF_data.vrf_beta_string_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_beta_string_round_part_4[count2] & 0xFF);
   }  
 
   // add all of the VRF data to the blockchain_data struct
@@ -558,7 +558,7 @@ int data_network_node_create_block()
   // define macros
   #define DATA_NETWORK_NODE_CREATE_BLOCK_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -628,8 +628,8 @@ int data_network_node_create_block()
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous block hash");
     }  
 
-    memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,64);
-    memcpy(VRF_data.vrf_alpha_string_round_part_4,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,64);
+    memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,BLOCK_HASH_LENGTH);
+    memcpy(VRF_data.vrf_alpha_string_round_part_4,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BLOCK_HASH_LENGTH);
 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -637,9 +637,9 @@ int data_network_node_create_block()
     }   
 
     // convert the vrf alpha string to a string
-    for (count2 = 0, count = 0; count2 < (((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_AMOUNT) + 128) / 2; count2++, count += 2)
+    for (count2 = 0, count = 0; count2 < (((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_AMOUNT) + (BLOCK_HASH_LENGTH*2)) / 2; count2++, count += 2)
     {
-      sprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
+      snprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,BUFFER_SIZE-1,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
     }
 
     if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
@@ -658,19 +658,19 @@ int data_network_node_create_block()
     // convert all of the VRF data to a string
     for (count2 = 0, count = 0; count2 < crypto_vrf_SECRETKEYBYTES; count2++, count += 2)
     {
-      sprintf(VRF_data.vrf_secret_key_data_round_part_4+count,"%02x",VRF_data.vrf_secret_key_round_part_4[count2] & 0xFF);
+      snprintf(VRF_data.vrf_secret_key_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_secret_key_round_part_4[count2] & 0xFF);
     }
     for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
     {
-      sprintf(VRF_data.vrf_public_key_data_round_part_4+count,"%02x",VRF_data.vrf_public_key_round_part_4[count2] & 0xFF);
+      snprintf(VRF_data.vrf_public_key_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_public_key_round_part_4[count2] & 0xFF);
     }
     for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
     {
-      sprintf(VRF_data.vrf_proof_data_round_part_4+count,"%02x",VRF_data.vrf_proof_round_part_4[count2] & 0xFF);
+      snprintf(VRF_data.vrf_proof_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_proof_round_part_4[count2] & 0xFF);
     }
     for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
     {
-      sprintf(VRF_data.vrf_beta_string_data_round_part_4+count,"%02x",VRF_data.vrf_beta_string_round_part_4[count2] & 0xFF);
+      snprintf(VRF_data.vrf_beta_string_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_beta_string_round_part_4[count2] & 0xFF);
     }  
 
     // add all of the VRF data to the blockchain_data struct
@@ -790,14 +790,14 @@ int data_network_node_create_block()
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the current block height");
     }
     count--;
-    sprintf(data3,"%zu",count);
+    snprintf(data3,sizeof(data3)-1,"%zu",count);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(data,"{\"block_height\":\"",17);
     memcpy(data+17,data3,strnlen(data3,BUFFER_SIZE));
     memcpy(data+strlen(data),"\"}",2);
     memset(data3,0,strlen(data3));
     memcpy(data3,"reserve_bytes_",14);
-    sprintf(data3+14,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
     if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,0) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
@@ -805,7 +805,7 @@ int data_network_node_create_block()
 
     // verify the block
     memset(data3,0,sizeof(data3));
-    sprintf(data3,"%zu",count);
+    snprintf(data3,sizeof(data3)-1,"%zu",count);
     if (count+1 != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {    
       if (verify_network_block_data(1,1,1,data3,data2) == 0)
@@ -857,7 +857,7 @@ int data_network_node_create_block()
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-    sprintf(data3+14,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
     if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the new block to the database");
@@ -925,7 +925,7 @@ int data_network_node_create_block()
       memset(data3,0,sizeof(data3));
       memcpy(data3,"reserve_bytes_",14);
       count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-      sprintf(data3+14,"%zu",count2);
+      snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
       delete_document_from_collection(DATABASE_NAME,data3,data2,0);
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not submit the block to the network");
     }
@@ -978,7 +978,7 @@ int start_part_4_of_round()
   // define macros
   #define START_PART_4_OF_ROUND_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_part_4_of_round",21); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;  
 
@@ -1092,13 +1092,13 @@ int start_part_4_of_round()
     // convert the VRF secret key to hexadecimal
     for (count = 0, counter = 0; count < crypto_vrf_SECRETKEYBYTES; count++, counter += 2)
     {
-      sprintf(VRF_data.vrf_secret_key_data_round_part_4+counter,"%02x",VRF_data.vrf_secret_key_round_part_4[count] & 0xFF);
+      snprintf(VRF_data.vrf_secret_key_data_round_part_4+counter,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_secret_key_round_part_4[count] & 0xFF);
     }
 
     // convert the VRF public key to hexadecimal
     for (count = 0, counter = 0; count < crypto_vrf_PUBLICKEYBYTES; count++, counter += 2)
     {
-      sprintf(VRF_data.vrf_public_key_data_round_part_4+counter,"%02x",VRF_data.vrf_public_key_round_part_4[count] & 0xFF);
+      snprintf(VRF_data.vrf_public_key_data_round_part_4+counter,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_public_key_round_part_4[count] & 0xFF);
     } 
 
     // create the message
@@ -1196,9 +1196,9 @@ int start_part_4_of_round()
     }
 
     // convert the vrf alpha string to a string
-    for (count2 = 0, count = 0; count2 < (((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_AMOUNT) + 128) / 2; count2++, count += 2)
+    for (count2 = 0, count = 0; count2 < (((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_AMOUNT) + (BLOCK_HASH_LENGTH*2)) / 2; count2++, count += 2)
     {
-      sprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
+      snprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,BUFFER_SIZE-1,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
     }
 
     memset(data,0,sizeof(data));
@@ -1208,7 +1208,7 @@ int start_part_4_of_round()
     // convert the SHA512 data hash to a string
     for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
     {
-      sprintf(data2+count,"%02x",data[count2] & 0xFF);
+      snprintf(data2+count,sizeof(data2)-1,"%02x",data[count2] & 0xFF);
     }
 
     // check what block verifiers vrf secret key and vrf public key to use
@@ -1252,11 +1252,11 @@ int start_part_4_of_round()
     // convert the vrf proof and vrf beta string to a string
     for (counter = 0, count = 0; counter < crypto_vrf_PROOFBYTES; counter++, count += 2)
     {
-      sprintf(VRF_data.vrf_proof_data_round_part_4+count,"%02x",VRF_data.vrf_proof_round_part_4[counter] & 0xFF);
+      snprintf(VRF_data.vrf_proof_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_proof_round_part_4[counter] & 0xFF);
     }
     for (counter = 0, count = 0; counter < crypto_vrf_OUTPUTBYTES; counter++, count += 2)
     {
-      sprintf(VRF_data.vrf_beta_string_data_round_part_4+count,"%02x",VRF_data.vrf_beta_string_round_part_4[counter] & 0xFF);
+      snprintf(VRF_data.vrf_beta_string_data_round_part_4+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",VRF_data.vrf_beta_string_round_part_4[counter] & 0xFF);
     }
 
     memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
@@ -1373,11 +1373,11 @@ int start_part_4_of_round()
 
       for (counter = 0, count2 = 0; counter < RANDOM_STRING_LENGTH; counter++, count2 += 2)
       {
-        sprintf(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count]+count2,"%02x",VRF_data.block_verifiers_random_data[count][counter] & 0xFF);
+        snprintf(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count]+count2,RANDOM_STRING_LENGTH,"%02x",VRF_data.block_verifiers_random_data[count][counter] & 0xFF);
       }
     }
 
-    memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,64);
+    memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,BLOCK_HASH_LENGTH);
 
     // convert the blockchain_data to a network_block_string
     memset(data,0,sizeof(data));
@@ -1455,14 +1455,14 @@ int start_part_4_of_round()
       START_PART_4_OF_ROUND_ERROR("Could not get the current block height");
     }
     count--;
-    sprintf(data3,"%zu",count);
+    snprintf(data3,sizeof(data3)-1,"%zu",count);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(data,"{\"block_height\":\"",17);
     memcpy(data+17,data3,strnlen(data3,sizeof(data)));
     memcpy(data+strlen(data),"\"}",2);
     memset(data3,0,strlen(data3));
     memcpy(data3,"reserve_bytes_",14);
-    sprintf(data3+14,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
     if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,0) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not get the previous blocks reserve bytes");
@@ -1470,7 +1470,7 @@ int start_part_4_of_round()
 
     // verify the block
     memset(data3,0,sizeof(data3));
-    sprintf(data3,"%zu",count);
+    snprintf(data3,sizeof(data3)-1,"%zu",count);
     if (count+1 != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {
       if (verify_network_block_data(1,1,1,"0",data2) == 0)
@@ -1504,7 +1504,7 @@ int start_part_4_of_round()
     // convert the SHA512 data hash to a string
     for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
     {
-      sprintf(data3+count,"%02x",data2[count2] & 0xFF);
+      snprintf(data3+count,sizeof(data3)-1,"%02x",data2[count2] & 0xFF);
     }
 
     // reset the current_round_part_vote_data.vote_results_valid struct
@@ -1574,7 +1574,7 @@ int start_part_4_of_round()
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-    sprintf(data3+14,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
     if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not add the new block to the database");
@@ -1611,7 +1611,7 @@ int start_part_4_of_round()
         memset(data3,0,sizeof(data3));
         memcpy(data3,"reserve_bytes_",14);
         count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-        sprintf(data3+14,"%zu",count2);
+        snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
         delete_document_from_collection(DATABASE_NAME,data3,data2,0);
         START_PART_4_OF_ROUND_ERROR("Could not submit the block to the network");
       }
@@ -1643,7 +1643,7 @@ int start_part_4_of_round()
               memset(data3,0,sizeof(data3));
               memcpy(data3,"reserve_bytes_",14);
               count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-              sprintf(data3+14,"%zu",count2);
+              snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
               delete_document_from_collection(DATABASE_NAME,data3,data2,0);
               START_PART_4_OF_ROUND_ERROR("Could not submit the block to the network");
             }
@@ -1830,7 +1830,7 @@ int update_databases()
   // define macros
   #define UPDATE_DATABASE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"update_databases",16); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -1845,7 +1845,7 @@ int update_databases()
     UPDATE_DATABASE_ERROR("Could not get the current block height");
   }
   count--;
-  sprintf(data,"%zu",count); 
+  snprintf(data,sizeof(data)-1,"%zu",count); 
 
   if (add_block_verifiers_round_statistics((const char*)data) == 0)
   {
@@ -1888,7 +1888,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
   
   #define ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"add_block_verifiers_round_statistics",36); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -1914,7 +1914,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     number++;
     memset(data,0,sizeof(data));
     memcpy(data,"{\"block_verifier_total_rounds\":\"",32);
-    sprintf(data+32,"%zu",number); 
+    snprintf(data+32,sizeof(data)-1,"%zu",number); 
     memcpy(data+strlen(data),"\"}",2);
     pthread_rwlock_rdlock(&rwlock);
     while(database_settings != 1)
@@ -1937,7 +1937,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     number++;
     memset(data,0,sizeof(data));
     memcpy(data,"{\"block_verifier_online_total_rounds\":\"",39);
-    sprintf(data+39,"%zu",number); 
+    snprintf(data+39,sizeof(data)-1,"%zu",number); 
     memcpy(data+strlen(data),"\"}",2);
     pthread_rwlock_rdlock(&rwlock);
     while(database_settings != 1)
@@ -1962,7 +1962,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       number++;
       memset(data,0,sizeof(data));
       memcpy(data,"{\"block_producer_total_rounds\":\"",32);
-      sprintf(data+32,"%zu",number); 
+      snprintf(data+32,sizeof(data)-1,"%zu",number); 
       memcpy(data+strlen(data),"\"}",2);
       pthread_rwlock_rdlock(&rwlock);
       while(database_settings != 1)
@@ -2052,7 +2052,7 @@ int add_round_statistics()
   #define MESSAGE "{\"username\":\"XCASH\"}"
   #define ADD_ROUND_STATISTICS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"add_round_statistics",20); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -2146,7 +2146,7 @@ int add_round_statistics()
   memcpy(message1+strlen(message1),"\"}",2);
 
   memcpy(message2,"{\"most_total_rounds\":\"",22);
-  sprintf(message2+22,"%zu",block_verifier_total_rounds_count);
+  snprintf(message2+22,sizeof(message2)-1,"%zu",block_verifier_total_rounds_count);
   memcpy(message2+strlen(message2),"\"}",2);
 
   memcpy(message3,"{\"best_block_verifier_online_percentage_delegate_name\":\"",56);
@@ -2154,7 +2154,7 @@ int add_round_statistics()
   memcpy(message3+strlen(message3),"\"}",2);
 
   memcpy(message4,"{\"best_block_verifier_online_percentage\":\"",42);
-  sprintf(message4+42,"%.2lf",total);
+  snprintf(message4+42,sizeof(message4)-1,"%.2lf",total);
   memcpy(message4+strlen(message4),"\"}",2);
 
   memcpy(message5,"{\"most_block_producer_total_rounds_delegate_name\":\"",51);
@@ -2162,7 +2162,7 @@ int add_round_statistics()
   memcpy(message5+strlen(message5),"\"}",2);
 
   memcpy(message6,"{\"most_block_producer_total_rounds\":\"",37);
-  sprintf(message6+37,"%zu",most_block_producer_total_rounds_count);
+  snprintf(message6+37,sizeof(message6)-1,"%zu",most_block_producer_total_rounds_count);
   memcpy(message6+strlen(message6),"\"}",2);
 
   pthread_rwlock_rdlock(&rwlock);
@@ -2204,7 +2204,7 @@ int check_if_databases_are_synced(const int SETTINGS)
   // define macros
   #define CHECK_IF_DATABASES_ARE_SYNCED_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"check_if_databases_are_synced",29); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -2215,7 +2215,7 @@ int check_if_databases_are_synced(const int SETTINGS)
   // get the previous block height
   sscanf(current_block_height, "%zu", &count);
   count--;
-  sprintf(data,"%zu",count);
+  snprintf(data,sizeof(data)-1,"%zu",count);
 
   // check if your reserve proofs database is synced
   if (sync_check_reserve_proofs_database(SETTINGS) == 0)
@@ -2267,13 +2267,13 @@ int calculate_main_nodes_roles()
   int count3;
   int counter;
   int main_nodes_count;
-  int number[64];
+  int number[DATA_HASH_LENGTH/2];
   int settings = 1;
 
   // define macros
   #define CALCULATE_MAIN_NODES_ROLES(settings) \
   memcpy(error_message.function[error_message.total],"calculate_main_nodes_roles",26); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -2287,12 +2287,12 @@ int calculate_main_nodes_roles()
     CALCULATE_MAIN_NODES_ROLES("Could not get the current block height");
   }
   count--;
-  sprintf(data2,"%zu",count);
+  snprintf(data2,sizeof(data2)-1,"%zu",count);
 
   // calculate the database to get the reserve byte data
   count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memcpy(data,"reserve_bytes_",14);
-  sprintf(data+14,"%d",count2);
+  snprintf(data+14,sizeof(data)-1,"%d",count2);
 
   // create the message
   memcpy(data3,"{\"block_height\":\"",17);
@@ -2503,7 +2503,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list",100); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -2604,7 +2604,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",86); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
   
@@ -2670,7 +2670,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   #define DATABASE_COLLECTION "reserve_bytes"
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not get the reserve bytes data hash}",0); \
   return 0;
@@ -2759,7 +2759,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes",68); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not get the network blocks reserve bytes}",0); \
   return 0;
@@ -2787,7 +2787,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memset(data,0,sizeof(data));
   memcpy(data,"reserve_bytes_",14);
-  sprintf(data+14,"%zu",count2);
+  snprintf(data+14,sizeof(data)-1,"%zu",count2);
 
   // get the data hash
   if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes",message,0) == 0)
@@ -2865,7 +2865,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update",107); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -2906,11 +2906,11 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memcpy(message+strlen(message),"\"reserve_proofs_database_",25);
-      sprintf(message+strlen(message),"%zu",count);
+      snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
       memcpy(message+strlen(message),"\": \"",4);      
       memset(data2,0,strlen(data2));  
       memcpy(data2,"reserve_proofs_data_hash_",25);  
-      sprintf(data2+25,"%zu",count); 
+      snprintf(data2+25,sizeof(data2)-1,"%zu",count); 
       // parse the message
       if (parse_json_data(MESSAGE,data2,data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
       {
@@ -2919,7 +2919,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
       // get the database data hash for the reserve proofs database
       memset(data2,0,sizeof(data2));  
       memcpy(data2,"reserve_proofs_",15);  
-      sprintf(data2+15,"%zu",count);
+      snprintf(data2+15,sizeof(data2)-1,"%zu",count);
       if (get_database_data_hash(reserve_proofs_database,DATABASE_NAME,data2,0) == 0)
       {
         SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -2978,7 +2978,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update",103); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -3070,7 +3070,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update",106); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -3158,7 +3158,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update",106); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -3239,7 +3239,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update",102); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -3331,7 +3331,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update",105); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -3420,7 +3420,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   #define DATABASE_COLLECTION "delegates"
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update",98); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -3506,7 +3506,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update",101); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -3590,7 +3590,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   #define DATABASE_COLLECTION "statistics"
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update",99); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -3675,7 +3675,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",102); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -3765,7 +3765,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_add_reserve_proof",68); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not add the reserve proof to the database}",0); \
   return 0;
@@ -3827,7 +3827,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    sprintf(data2+15,"%zu",count);
+    snprintf(data2+15,sizeof(data2)-1,"%zu",count);
 
     // check if the reserve proof is in the database
     if (count_documents_in_collection(DATABASE_NAME,data2,data,0) > 0)
@@ -3855,7 +3855,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     {
       memset(data,0,sizeof(data));
       memcpy(data,"reserve_proofs_",15);
-      sprintf(data+15,"%zu",count);
+      snprintf(data+15,sizeof(data)-1,"%zu",count);
       while (count_documents_in_collection(DATABASE_NAME,data,data3,0) > 0)
       {
         pthread_rwlock_rdlock(&rwlock);
@@ -3894,7 +3894,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    sprintf(data2+15,"%zu",count);
+    snprintf(data2+15,sizeof(data2)-1,"%zu",count);
     if (count_documents_in_collection(DATABASE_NAME,data2,data,0) < MAXIMUM_INVALID_RESERERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
     {
       if (insert_document_into_collection_json(DATABASE_NAME,data2,data,0) == 1)
@@ -3943,7 +3943,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs",84); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -4027,7 +4027,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_register_delegates",70); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not register the delegate}",0); \
   return 0;
@@ -4143,7 +4143,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   #define DATABASE_COLLECTION "delegates"
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_remove_delegates",68); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not remove the delegate}",0); \
   return 0;
@@ -4231,7 +4231,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   #define DATABASE_COLLECTION "delegates"
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_update_delegates",68); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not update the delegates information}",0); \
   return 0;
@@ -4330,7 +4330,7 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time",93); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   send_data(CLIENT_SOCKET,"Could not update the delegates information}",0); \
   return 0;
@@ -4346,7 +4346,7 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   // create the message
   memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_time\": \"",112);
-  sprintf(data+112,"%ld",time(0));
+  snprintf(data+112,sizeof(data)-1,"%ld",time(0));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
@@ -4390,7 +4390,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -4452,7 +4452,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -4521,7 +4521,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4",59); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -4592,7 +4592,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4_create_new_block",76); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -4629,14 +4629,14 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
       SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not get the current block height");
     }
     count--;
-    sprintf(data3,"%zu",count);
+    snprintf(data3,sizeof(data3)-1,"%zu",count);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(message,"{\"block_height\":\"",17);
     memcpy(message+17,data3,strnlen(data3,sizeof(message)));
     memcpy(message+strlen(message),"\"}",2);
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
-    sprintf(data3+14,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
     memset(data2,0,sizeof(data2));
     if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,0) == 0)
     {
@@ -4657,7 +4657,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     // convert the SHA512 data hash to a string
     for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
     {
-      sprintf(current_round_part_vote_data.current_vote_results+count,"%02x",data[count2] & 0xFF);
+      snprintf(current_round_part_vote_data.current_vote_results+count,DATA_HASH_LENGTH,"%02x",data[count2] & 0xFF);
     }
   }
   return 1;
@@ -4687,7 +4687,7 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_node",39); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -4748,7 +4748,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data",70); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -4827,7 +4827,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",82); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -4931,7 +4931,7 @@ int create_server(const int MESSAGE_SETTINGS)
   }
  
   // convert the port to a string
-  sprintf(buffer,"%d",SEND_DATA_PORT);  
+  snprintf(buffer,sizeof(buffer)-1,"%d",SEND_DATA_PORT);  
  
   memset(&addr, 0, sizeof(addr));
   /* setup the connection

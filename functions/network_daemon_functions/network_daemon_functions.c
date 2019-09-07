@@ -44,7 +44,7 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
   // define macros
   #define GET_BLOCK_TEMPLATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_block_template",18); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
   
@@ -96,7 +96,7 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   // define macros
   #define SUBMIT_BLOCK_TEMPLATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"submit_block_template",21); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
   
@@ -148,7 +148,7 @@ int get_block_settings(char* block_height, const int HTTP_SETTINGS)
   // define macros
   #define GET_BLOCK_SETTINGS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_block_settings",18); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -211,7 +211,7 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   // define macros
   #define GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_block_reserve_byte_data_hash",32); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
   
@@ -272,7 +272,7 @@ int verify_blockchain_network_transactions(char* transactions[], const size_t AM
   // define macros
   #define VERIFY_BLOCKCHAIN_NETWORK_TRANSACTIONS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"verify_blockchain_network_transactions",38); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -344,7 +344,7 @@ int get_current_block_height(char *result, const int MESSAGE_SETTINGS)
   // define macros
   #define GET_CURRENT_BLOCK_HEIGHT_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_current_block_height",24); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -389,7 +389,7 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
   // define macros
   #define GET_PREVIOUS_BLOCK_HASH_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_previous_block_hash",23); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -435,7 +435,7 @@ int get_path(char *result, const int MESSAGE_SETTINGS)
   // define macros
   #define GET_PATH_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_path",8); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 

@@ -41,7 +41,7 @@ int get_public_address(const int MESSAGE_SETTINGS)
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
   #define GET_PUBLIC_ADDRESS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_public_address",18); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -96,7 +96,7 @@ int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SE
   // define macros
   #define SIGN_NETWORK_BLOCK_STRING_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sign_network_block_string",25); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
 
@@ -151,7 +151,7 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
   // define macros
   #define DATA_VERIFY_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"data_verify",11); \
-  memcpy(error_message.data[error_message.total],settings,strnlen(settings,sizeof(error_message.data[error_message.total]))); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
   

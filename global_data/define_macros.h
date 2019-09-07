@@ -21,7 +21,12 @@ Using define statements instead of constants for increased efficiency
 // network block string 
 #define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "00000000" // the network block nonce used when the block producer creates the block
 #define CONSENSUS_NODE_NETWORK_BLOCK_NONCE "11111111" // the network block nonce used when the consensus node creates the block
-#define NETWORK_VERSION "0d0d" // the network version
+#define NETWORK_VERSION "0d0d" // The network version
+#define TIMESTAMP_LENGTH 10 // The length of the timestamp
+#define BLOCK_HASH_LENGTH 64 // The length of the block hash
+#define STEALTH_ADDRESS_OUTPUT_LENGTH 64 // The length of the stealth address output
+#define TRANSACTION_PUBLIC_KEY_LENGTH 66 // The length of the transaction public key
+#define TRANSACTION_LENGTH 64 // The length of a transaction
 #define BLOCK_REWARD_TRANSACTION_VERSION "02"
 #define BLOCK_REWARD_INPUT "01"
 #define VIN_TYPE "ff"
@@ -55,7 +60,7 @@ Using define statements instead of constants for increased efficiency
 // Network
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
 #define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
-#define SEND_DATA_PORT 8000 // The port that is used by all nodes to send and receive data
+#define SEND_DATA_PORT 18283 // The port that is used by all nodes to send and receive data
 #define MAXIMUM_CONNECTIONS 1000 // The maximum connections a node can have at one time
 #define TOTAL_CONNECTION_TIME_SETTINGS 10 // The total time a client is given to connect to the server and send data
 #define SOCKET_CONNECTION_TIMEOUT_SETTINGS 10000 // The time in milliseconds, to wait before a connection is cancelled
@@ -72,6 +77,7 @@ Using define statements instead of constants for increased efficiency
 
 #define RANDOM_STRING_LENGTH 100 // The length of the random string
 #define DATA_HASH_LENGTH 128 // The length of the SHA2-512 hash
+#define BITS_IN_BYTE 8 // 8 bits in 1 byte
 #define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address
 #define BLOCK_VERIFIERS_NAME_TOTAL_LENGTH 100 // The maximum length of the block verifiers name
 #define MAXIMUM_INVALID_RESERERVE_PROOFS 50000 // The maximum invalid reserve proofs for the delegates

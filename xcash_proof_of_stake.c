@@ -32,7 +32,7 @@ Main function
 int main(int parameters_count, char* parameters[])
 {
   // iniltize the random number generator
-  srand(time(0));
+  srand(time(NULL));
 
   // Variables
   char data[BUFFER_SIZE];
@@ -53,6 +53,14 @@ int main(int parameters_count, char* parameters[])
   mongoc_client_pool_destroy(database_client_thread_pool); \
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup();
+
+  #define MAIN_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"main",4); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  print_error_message; \
+  database_reset; \
+  exit(0);
 
   memset(data,0,sizeof(data));
 
@@ -335,12 +343,7 @@ int main(int parameters_count, char* parameters[])
   }
   else
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not get the wallets public address",40);
-    error_message.total++;
-    print_error_message; 
-    database_reset;
-    exit(0);
+    MAIN_ERROR("Could not get the wallets public address");
   }
 
   // check if the program needs to run the test
@@ -365,12 +368,7 @@ int main(int parameters_count, char* parameters[])
   // get the current block height
   if (get_current_block_height(current_block_height,0) == 0)
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not get the current block height",38);
-    error_message.total++;
-    print_error_message; 
-    database_reset;
-    exit(0);
+    MAIN_ERROR("Could not get the current block height");
   }
 
   start:
@@ -382,12 +380,7 @@ int main(int parameters_count, char* parameters[])
   memcpy(data+117,"\"}",2);
   if (read_document_field_from_collection(DATABASE_NAME,"delegates",data,"IP_address",block_verifiers_IP_address,0) == 0)
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not get the block verifiers IP address",44);
-    error_message.total++;
-    print_error_message; 
-    database_reset;
-    exit(0);
+    MAIN_ERROR("Could not get the block verifiers IP address");
   }
 
   // check if the block verifier has any of the databases
@@ -399,21 +392,11 @@ int main(int parameters_count, char* parameters[])
     // sync the databases and then recheck if the block verifier is a network data node
     if (sync_all_block_verifiers_list() == 0)
     {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
-      error_message.total++;
-      print_error_message; 
-      database_reset;
-      exit(0);
+      MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
     }
     /*if (check_if_databases_are_synced() == 0)
     {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not check if the databases are synced",43);
-      error_message.total++;
-      print_error_message; 
-      database_reset;
-      exit(0);
+      MAIN_ERROR("Could not check if the databases are synced");
     }*/
     goto start;
   }
@@ -455,24 +438,14 @@ int main(int parameters_count, char* parameters[])
     // sync the previous, current and next block verifiers list
     if (sync_all_block_verifiers_list() == 0)
     {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
-      error_message.total++;
-      print_error_message; 
-      database_reset;
-      exit(0);
+      MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
     }
     if (count2 != NETWORK_DATA_NODES_AMOUNT)
     {
       // check if all of the databases are synced
       /*if (check_if_databases_are_synced() == 0)
       {
-        memcpy(error_message.function[error_message.total],"main",4);
-        memcpy(error_message.data[error_message.total],"Could not check if the databases are synced",43);
-        error_message.total++;
-        print_error_message; 
-        database_reset;
-        exit(0);
+        MAIN_ERROR("Could not check if the databases are synced");
       }*/
     }
   }
@@ -481,23 +454,13 @@ int main(int parameters_count, char* parameters[])
     // sync the previous, current and next block verifiers list
     if (sync_all_block_verifiers_list() == 0)
     {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
-      error_message.total++;
-      print_error_message; 
-      database_reset;
-      exit(0);
+      MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
     }
 
     /*// check if all of the databases are synced
     if (check_if_databases_are_synced() == 0)
     {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not check if the databases are synced",43);
-      error_message.total++;
-      print_error_message; 
-      database_reset;
-      exit(0);
+      MAIN_ERROR("Could not check if the databases are synced");
     }*/
   }
 
@@ -523,12 +486,7 @@ int main(int parameters_count, char* parameters[])
       // sign_data
       if (sign_data(data,0) == 0)
       { 
-        memcpy(error_message.function[error_message.total],"main",4);
-        memcpy(error_message.data[error_message.total],"Could not sign the data",23);
-        error_message.total++;
-        print_error_message; 
-        database_reset;
-        exit(0);
+        MAIN_ERROR("Could not sign the data");
       }
 
       if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
@@ -568,14 +526,9 @@ int main(int parameters_count, char* parameters[])
 
       sscanf(data,"%ld", &current_time);
 
-      if (time(0) - current_time > 2)
+      if (time(NULL) - current_time > 2)
       {
-        memcpy(error_message.function[error_message.total],"main",4);
-        memcpy(error_message.data[error_message.total],"Invalid current time",20);
-        error_message.total++;
-        print_error_message; 
-        database_reset;
-        exit(0);
+        MAIN_ERROR("Invalid current time");
       }
     }
   }
@@ -585,12 +538,7 @@ int main(int parameters_count, char* parameters[])
   // start the block height timer thread
   if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not sync the previous, current and next block verifiers list",66);
-    error_message.total++;
-    print_error_message; 
-    database_reset;
-    exit(0);
+    MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
   }
   
   color_print("Started the current block height timer thread","green");
@@ -598,12 +546,7 @@ int main(int parameters_count, char* parameters[])
   /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not start the check_reserve_proofs_timer_thread",53);
-    error_message.total++;
-    print_error_message; 
-    database_reset;
-    exit(0);  
+    MAIN_ERROR("Could not start the check_reserve_proofs_timer_thread");
   }
 
   color_print("Started the check reserve proofs timer thread","green");*/
@@ -611,12 +554,7 @@ int main(int parameters_count, char* parameters[])
   /*// start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not start the check_delegates_online_status_timer_thread",62);
-    error_message.total++;
-    print_error_message; 
-    database_reset;
-    exit(0);
+    MAIN_ERROR("Could not start the check_delegates_online_status_timer_thread");
   }
 
   color_print("Started the check delegates online status timer thread","green");*/
@@ -626,12 +564,7 @@ int main(int parameters_count, char* parameters[])
   {
     if (create_server(1) == 0)
     {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not start the server",26);
-      error_message.total++;
-      print_error_message; 
-      database_reset;
-      exit(0);
+      MAIN_ERROR("Could not start the server");
     }
   } 
 
