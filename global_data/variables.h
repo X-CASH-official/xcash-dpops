@@ -37,6 +37,7 @@ struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve pro
 char current_round_part[2]; // The current round part (1-4)
 char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 pthread_rwlock_t rwlock;
+pthread_rwlock_t rwlock_reserve_proofs;
 
 char current_block_height[BUFFER_SIZE]; // The current block height
 int error_message_count; // The error message count
