@@ -21,10 +21,8 @@ Return: Writes the correct code
 Color available values:
   red = Error
   green = Success
-  lightblue = Start of a new round
-  blue = Start of a new part of a round
-  purple = Voting information
-  yellow = Alerts when you are one of the main nodes
+  blue = Start of a new round and general round information
+  yellow = block producer information
   white = General information
 -----------------------------------------------------------------------------------------------------------
 */

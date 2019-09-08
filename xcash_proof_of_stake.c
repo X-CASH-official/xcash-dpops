@@ -537,20 +537,20 @@ int main(int parameters_count, char* parameters[])
   print_start_message("Starting all of the threads");
 
   // start the block height timer thread
-  /*if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
+  if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
     MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
   }
   
-  color_print("Started the current block height timer thread","green");*/
+  color_print("Started the current block height timer thread","green");
 
-  // start the check_reserve_proofs_timer_thread
+  /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
   {
     MAIN_ERROR("Could not start the check_reserve_proofs_timer_thread");
   }
 
-  color_print("Started the check reserve proofs timer thread","green");
+  color_print("Started the check reserve proofs timer thread","green");*/
 
   /*// start the check_delegates_online_status_timer_thread
   if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
