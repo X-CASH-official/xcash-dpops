@@ -163,7 +163,7 @@ void* check_reserve_proofs_timer_thread()
   print_error_message;
 
   #define SEND_DATA_SOCKET_THREAD(message) \
-  sleep(2); \
+  sleep(BLOCK_VERIFIERS_SETTINGS); \
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \

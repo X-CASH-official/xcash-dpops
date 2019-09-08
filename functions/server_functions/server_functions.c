@@ -4893,7 +4893,7 @@ int create_server(const int MESSAGE_SETTINGS)
   memcpy(error_message.function[error_message.total],"create_server",13); \
   memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
   error_message.total++; \
-  return 0;  
+  exit(0);  
 
   // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
   signal(SIGCHLD, SIG_IGN);
@@ -4950,6 +4950,7 @@ int create_server(const int MESSAGE_SETTINGS)
     memcpy(error_message.data[error_message.total],"Error connecting to port ",25);
     memcpy(error_message.data[error_message.total]+25,buffer,strnlen(buffer,BUFFER_SIZE));
     error_message.total++;
+    return 0;
   } 
 
   // set the maximum simultaneous connections

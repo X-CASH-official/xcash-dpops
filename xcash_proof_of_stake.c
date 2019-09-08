@@ -73,7 +73,6 @@ int main(int parameters_count, char* parameters[])
   database_settings = 1;
 
   pthread_rwlock_init(&rwlock,NULL);
-  pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {

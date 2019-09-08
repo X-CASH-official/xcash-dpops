@@ -62,6 +62,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
 #define SEND_DATA_PORT 18283 // The port that is used by all nodes to send and receive data
 #define MAXIMUM_CONNECTIONS 1000 // The maximum connections a node can have at one time
+#define BLOCK_VERIFIERS_SETTINGS 2 // The time in seconds to wait to send data to the block verifiers
 #define TOTAL_CONNECTION_TIME_SETTINGS 10 // The total time a client is given to connect to the server and send data
 #define SOCKET_CONNECTION_TIMEOUT_SETTINGS 10000 // The time in milliseconds, to wait before a connection is cancelled
 #define SOCKET_DATA_TIMEOUT_SETTINGS 10 // The time in between read calls where there is no data
