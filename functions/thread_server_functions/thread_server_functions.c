@@ -5,6 +5,7 @@
 #include <netdb.h> 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/epoll.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -190,7 +191,7 @@ void* check_reserve_proofs_timer_thread()
       pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
       pthread_detach(thread_id[count]); \
     } \
-    if (count % 25 == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT) \
+    if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT) \
     { \
        usleep(500000); \
     } \
@@ -929,216 +930,49 @@ void* send_and_receive_data_socket_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: socket_thread
-Description: socket_thread
-Parameters:
-  parameters - A pointer to the socket_thread_parameters struct
-  struct socket_thread_parameters
-    client_socket - The client socket
-    client_address - The client address
-Return: 0 if an error has occured, 1 if successfull
+Name: socket_receive_data_thread
+Description: socket receive data thread
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* socket_thread(void* parameters)
-{ 
+void* socket_receive_data_thread(void* parameters)
+{
   // Variables
-  struct socket_thread_parameters* data = (struct socket_thread_parameters*)parameters;
-  int CLIENT_SOCKET = data->client_socket;
-  char* buffer = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char buffer2[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
-  char client_address[BUFFER_SIZE]; 
-  int len;
-  int receive_data_result; 
-  struct sockaddr_in addr, cl_addr; 
+  struct epoll_event* events = calloc(MAXIMUM_CONNECTIONS, sizeof(struct epoll_event));
+  int count;
+  int count2;
 
   // define macros
-  #define pointer_reset_all \
-  free(buffer); \
-  buffer = NULL; \
-  free(data); \
-  data = NULL;
-  
-  memset(buffer2,0,sizeof(buffer2));
-  memset(data2,0,sizeof(data2));
-  memset(message,0,sizeof(message));
-  memset(client_address,0,sizeof(client_address));
+  #define SOCKET_RECEIVE_DATA_THREAD_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"socket_receive_data_thread",26); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  error_message.total++; \
+  pthread_exit((void *)(intptr_t)1);
 
-  memcpy(client_address,data->client_address,strnlen(data->client_address,BUFFER_SIZE)); 
-
-  // convert the port to a string
-  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
-
-  // receive the data
-  receive_data_result = receive_data(CLIENT_SOCKET,buffer,SOCKET_END_STRING,1,TOTAL_CONNECTION_TIME_SETTINGS);
-  if (receive_data_result < 2)
+  if (events == NULL)
   {
-    close(CLIENT_SOCKET);
-    pointer_reset_all;
-    pthread_exit((void *)(intptr_t)0);
-  } 
+    SOCKET_RECEIVE_DATA_THREAD_ERROR("Could not allocate the memory needed on the heap");
+  }
 
-  // check if the message length is correct for the type of message
-  if (strnlen(buffer,MAXIMUM_BUFFER_SIZE) > 25 && strstr(buffer,"}") != NULL)
+  /* get the events that have a ready signal
+  set the timeout settings to -1 to wait until any file descriptor is ready
+  */  
+  while ((count = epoll_wait(epoll_fd, events, MAXIMUM_CONNECTIONS, -1)) > 0)
   {
-    memcpy(data2,&buffer[25],strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25);
-    if ((strncmp(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(data2,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0) && (strnlen(buffer,MAXIMUM_BUFFER_SIZE) == MAXIMUM_BUFFER_SIZE))
+    for (count2 = 0; count2 < count; count2++)
     {
-      close(CLIENT_SOCKET);
-      pointer_reset_all;
-      pthread_exit((void *)(intptr_t)0);
+      if (events[count2].data.fd == server_socket)
+      {
+        // a file descriptor is ready for a new socket connection
+        new_socket_thread();
+      }
+      else
+      {
+        // a file descriptor is ready for a current socket connection
+        socket_thread(events[count2].data.fd);
+      }
     }
   }
-  else
-  {
-    memcpy(data2,buffer,strnlen(buffer,sizeof(data2)) - strnlen(strstr(buffer,"|"),sizeof(data2)));
-    if (strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) != 0 && strncmp(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) != 0 && strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0)
-    {
-      close(CLIENT_SOCKET);
-      pointer_reset_all;
-      pthread_exit((void *)(intptr_t)0);
-    }
-  }
-  
-  // get the current time
-  get_current_UTC_time;
-  
-  memcpy(message,"Received ",9);
-  memcpy(message+9,data2,strnlen(data2,sizeof(message)));
-  memcpy(message+strlen(message)," from ",6);
-  memcpy(message+strlen(message),data->client_address,strnlen(client_address,BUFFER_SIZE));
-  memcpy(message+strlen(message)," on port ",9);
-  memcpy(message+strlen(message),buffer2,strnlen(buffer2,BUFFER_SIZE));
-  memcpy(message+strlen(message),"\n",1);
-  memcpy(message+strlen(message),asctime(current_UTC_date_and_time),strnlen(asctime(current_UTC_date_and_time),BUFFER_SIZE));
-  color_print(message,"green");
-
- // check if a certain type of message has been received 
- if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)
- {
-   server_received_data_xcash_proof_of_stake_test_data(CLIENT_SOCKET,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
- {
-   server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(CLIENT_SOCKET);
- } 
- else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
- {
-   server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET);
- } 
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET);
- }
- else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES\"") != NULL)
- {
-   server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(CLIENT_SOCKET,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
- } 
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
- }  
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
- }  
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
- }
- else if (strstr(buffer,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL)
- {
-   server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(CLIENT_SOCKET,(const char*)buffer);
- } 
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
- }  
- else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL)
- {
-   server_receive_data_socket_nodes_to_block_verifiers_register_delegates(CLIENT_SOCKET,(const char*)buffer);
- }            
- else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") != NULL)
- {
-   server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(CLIENT_SOCKET,(const char*)buffer);
- } 
- else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL)
- {
-   server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
- } 
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(CLIENT_SOCKET,(const char*)buffer);
- } 
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\"") != NULL && main_network_data_node_create_block == 1)
- {  
-   server_receive_data_socket_main_network_data_node_to_block_verifier_start_block((const char*)buffer);
- } 
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\"") != NULL)
- {  
-   server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(CLIENT_SOCKET,(const char*)buffer);
- } 
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec % 60 >= 10 && current_UTC_date_and_time->tm_sec % 60 < 30)
- {
-   server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
- }         
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec % 60 < 10)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
- }  
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec % 60 >= 30 && current_UTC_date_and_time->tm_sec % 60 < 40)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
- }  
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && (current_UTC_date_and_time->tm_sec % 60 >= 45 && current_UTC_date_and_time->tm_sec % 60 < 55) || (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec % 60 >= 30 && current_UTC_date_and_time->tm_sec % 60 < 40))
- {
-   server_receive_data_socket_node_to_node((const char*)buffer);
- }
- else
- {
-   printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
-
-   // send the message 
-   if (send_data(CLIENT_SOCKET,buffer,1) == 1)
-   {
-     printf("Sent %s to %s on port %s\r\n",buffer,client_address,buffer2);
-   } 
-   else
-   {
-     printf("\033[1;31mError sending data to %s on port %s\033[0m\n",client_address,buffer2); 
-   } 
- }
-close(CLIENT_SOCKET);
-pointer_reset_all;
-pthread_exit((void *)(intptr_t)1);
+  pointer_reset(events);
+  pthread_exit((void *)(intptr_t)1);
 }

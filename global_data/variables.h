@@ -39,6 +39,10 @@ char current_round_part_backup_node[2]; // The current main node in the current 
 pthread_rwlock_t rwlock;
 pthread_rwlock_t rwlock_reserve_proofs;
 
+pthread_t server_threads[1000];
+int epoll_fd;
+int server_socket;
+
 char current_block_height[BUFFER_SIZE]; // The current block height
 int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not

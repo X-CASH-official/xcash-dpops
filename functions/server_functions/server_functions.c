@@ -4,9 +4,11 @@
 #include <netdb.h> 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/epoll.h>
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
+#include <sys/sysinfo.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -490,6 +492,7 @@ int start_current_round_start_blocks()
   // send the database data to all block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
+    sleep(BLOCK_VERIFIERS_SETTINGS);
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {    
       memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
@@ -500,7 +503,7 @@ int start_current_round_start_blocks()
       pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
       pthread_detach(thread_id[count]);
     }
-    if (count % 25 == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
+    if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
     {
       usleep(500000);
     }
@@ -741,6 +744,7 @@ int data_network_node_create_block()
     // send the network block string to all block verifiers and add the block verifier signature to the blockchain data struct
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
+      sleep(BLOCK_VERIFIERS_SETTINGS);
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
       {  
         memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
@@ -751,7 +755,7 @@ int data_network_node_create_block()
         pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
         pthread_detach(thread_id[count]);
       }
-      if (count % 25 == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
+      if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
       {
         usleep(500000);
       }
@@ -870,7 +874,7 @@ int data_network_node_create_block()
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the verify_block file");
     }
-    sleep(2);
+    sleep(BLOCK_VERIFIERS_SETTINGS);
 
     // create the message
     memset(data3,0,sizeof(data3));
@@ -899,7 +903,7 @@ int data_network_node_create_block()
         pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
         pthread_detach(thread_id[count]);
       }
-      if (count % 25 == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
+      if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
       {
         usleep(500000);
       }
@@ -983,7 +987,7 @@ int start_part_4_of_round()
   return 0;  
 
   #define SEND_DATA_SOCKET_THREAD(message) \
-  sleep(2); \
+  sleep(BLOCK_VERIFIERS_SETTINGS); \
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
@@ -995,7 +999,7 @@ int start_part_4_of_round()
       pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
       pthread_detach(thread_id[count]); \
     } \
-    if (count % 25 == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT) \
+    if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT) \
     { \
        usleep(500000); \
     } \
@@ -1373,7 +1377,7 @@ int start_part_4_of_round()
 
       for (counter = 0, count2 = 0; counter < RANDOM_STRING_LENGTH; counter++, count2 += 2)
       {
-        snprintf(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count]+count2,RANDOM_STRING_LENGTH*2,"%02x",VRF_data.block_verifiers_random_data[count][counter] & 0xFF);
+        snprintf(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count]+count2,RANDOM_STRING_LENGTH,"%02x",VRF_data.block_verifiers_random_data[count][counter] & 0xFF);
       }
     }
 
@@ -1587,7 +1591,7 @@ int start_part_4_of_round()
     {
       START_PART_4_OF_ROUND_ERROR("Could not create the verify_block file");
     }
-    sleep(2);
+    sleep(BLOCK_VERIFIERS_SETTINGS);
 
     // wait for the block verifiers to process the votes
     color_print("Waiting for the block producer to submit the block to the network","blue");
@@ -1616,7 +1620,7 @@ int start_part_4_of_round()
         START_PART_4_OF_ROUND_ERROR("Could not submit the block to the network");
       }
     }
-    sleep(2);
+    sleep(BLOCK_VERIFIERS_SETTINGS);
 
     if (network_data_node_settings == 1)
     {
@@ -1658,7 +1662,7 @@ int start_part_4_of_round()
               break;
             }
           }
-          sleep(2);
+          sleep(BLOCK_VERIFIERS_SETTINGS);
         } 
       }   
     }
@@ -3969,18 +3973,30 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not parse the message");
   }
-  
+
+  // check if the reserve proof is unique 
   pthread_rwlock_wrlock(&rwlock_reserve_proofs);
-  // check if the reserve proof is valid
-  memset(data3,0,sizeof(data3));
-  if (check_reserve_proofs(data3,public_address,reserve_proof,0) == 0)
+  for (count3 = 0, settings = 1; count3 <= invalid_reserve_proofs.count; count3++)
   {
-    // add the reserve proof to the invalid_reserve_proofs struct
-    memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],block_verifiers_public_address,strnlen(block_verifiers_public_address,XCASH_WALLET_LENGTH));
-    memcpy(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count],public_address,strnlen(public_address,XCASH_WALLET_LENGTH));
-    memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
-    invalid_reserve_proofs.count++;
+    if (strncmp(invalid_reserve_proofs.reserve_proof[count3],reserve_proof,sizeof(reserve_proof)) == 0)
+    {
+      settings = 0;
+    }
   }
+  
+  if (settings == 1)
+  {
+    // check if the reserve proof is valid
+    memset(data3,0,sizeof(data3));
+    if (check_reserve_proofs(data3,public_address,reserve_proof,0) == 0)
+    {
+      // add the reserve proof to the invalid_reserve_proofs struct
+      memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],block_verifiers_public_address,strnlen(block_verifiers_public_address,XCASH_WALLET_LENGTH));
+      memcpy(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count],public_address,strnlen(public_address,XCASH_WALLET_LENGTH));
+      memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
+      invalid_reserve_proofs.count++;
+    }
+  } 
   pthread_rwlock_unlock(&rwlock_reserve_proofs);
   return 1;
   
@@ -4863,6 +4879,7 @@ int create_server(const int MESSAGE_SETTINGS)
 {
   // Constants
   const int SOCKET_OPTION = 1; 
+  const int THREADS = get_nprocs()*2;
 
   // Variables
   char buffer[BUFFER_SIZE];
@@ -4870,6 +4887,8 @@ int create_server(const int MESSAGE_SETTINGS)
   int receive_data_result; 
   struct sockaddr_in addr, cl_addr; 
   struct socket_thread_parameters* socket_thread_parameters;
+  struct epoll_event events;
+  size_t count;
 
   // threads
   pthread_t thread_id;
@@ -4897,8 +4916,8 @@ int create_server(const int MESSAGE_SETTINGS)
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
   */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM, 0);
-  if (SOCKET == -1)
+  server_socket = socket(AF_INET, SOCK_STREAM, 0);
+  if (server_socket == -1)
   {
     SERVER_ERROR("Error creating socket");
   }
@@ -4908,7 +4927,7 @@ int create_server(const int MESSAGE_SETTINGS)
   SO_REUSEADDR = allows for reuse of the same address, so one can shutdown and restart the program without errors
   SO_REUSEPORT = allows for reuse of the same port, so one can shutdown and restart the program without errors
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &SOCKET_OPTION,sizeof(int)) != 0)
+  if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &SOCKET_OPTION,sizeof(int)) != 0)
   {
     SERVER_ERROR("Error setting socket options");
   } 
@@ -4932,17 +4951,18 @@ int create_server(const int MESSAGE_SETTINGS)
   addr.sin_port = htons(SEND_DATA_PORT);
  
   // connect to 0.0.0.0
-  if (bind(SOCKET, (struct sockaddr *) &addr, sizeof(addr)) != 0)
+  if (bind(server_socket, (struct sockaddr *) &addr, sizeof(addr)) != 0)
   {    
     memcpy(error_message.function[error_message.total],"create_server",13);
     memcpy(error_message.data[error_message.total],"Error connecting to port ",25);
     memcpy(error_message.data[error_message.total]+25,buffer,strnlen(buffer,BUFFER_SIZE));
     error_message.total++;
-    return 0;
+    print_error_message;
+    exit(0);
   } 
 
   // set the maximum simultaneous connections
-  if (listen(SOCKET, MAXIMUM_CONNECTIONS) != 0)
+  if (listen(server_socket, MAXIMUM_CONNECTIONS) != 0)
   {
     SERVER_ERROR("Error creating the server");
   }
@@ -4953,35 +4973,302 @@ int create_server(const int MESSAGE_SETTINGS)
     printf("Waiting for a connection...\n\n");
   }
 
-  for (;;)
+  /* create the epoll file descriptor
+  EPOLL_CLOEXEC = close access to the epoll_fd when the process or fork closes
+  */
+  epoll_fd = epoll_create1(EPOLL_CLOEXEC);
+
+  if (epoll_fd < 0)
   {
-    socket_thread_parameters = malloc(sizeof(struct socket_thread_parameters));
-    memset(socket_thread_parameters->client_address,0,sizeof(socket_thread_parameters->client_address));
-    len = sizeof(cl_addr);
-    socket_thread_parameters->client_socket = accept(SOCKET, (struct sockaddr *) &cl_addr, (socklen_t*)&len);
-    inet_ntop(AF_INET, &(cl_addr.sin_addr), socket_thread_parameters->client_address, BUFFER_SIZE);
-
-    if (socket_thread_parameters->client_socket == -1 || socket_thread_parameters->client_address == NULL)
-    {      
-      continue;
-    }
-
-    // check if the IP address has a reverse DNS associated with it
-    struct in_addr ip_address_data;
-    inet_aton(socket_thread_parameters->client_address, &ip_address_data);
-    const struct hostent* HOST_NAME = gethostbyaddr((const void *)&ip_address_data, sizeof(ip_address_data), AF_INET);
-    if (HOST_NAME != NULL)
-    {
-      memset(socket_thread_parameters->client_address,0,sizeof(socket_thread_parameters->client_address));
-      memcpy(socket_thread_parameters->client_address,HOST_NAME->h_name,strnlen(HOST_NAME->h_name,sizeof(socket_thread_parameters->client_address)));
-    }
-
-    // create a new process for each server connection
-    pthread_create(&thread_id, NULL, &socket_thread,(void *)socket_thread_parameters);
-    pthread_detach(thread_id); 
+    SERVER_ERROR("Error creating the server");
   }
-   return 1;
 
-   #undef SOCKET_FILE_DESCRIPTORS_LENGTH
-   #undef SERVER_ERROR
+  /* create the epoll_event struct
+  EPOLLIN = signal when the file secriptor is ready to read
+  EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
+  */  
+  events.events = EPOLLIN | EPOLLET;
+  events.data.fd = server_socket;
+
+  if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &events) < 0)
+  {
+    SERVER_ERROR("Error creating the server");
+  }
+
+  for (count = 0; count < THREADS-1; count++)
+  {
+    if (pthread_create(&server_threads[count], NULL, socket_receive_data_thread, NULL) < 0)
+    {
+      SERVER_ERROR("Error creating the server");
+    }
+  }
+
+  // run the socket_receive_data_thread on the mian thread
+  socket_receive_data_thread(NULL);
+
+  return 1;
+
+  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
+  #undef SERVER_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: new_socket_thread
+Description: new socket thread
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int new_socket_thread()
+{
+  // Variables
+  int client_socket;
+  struct sockaddr_in addr;
+  socklen_t addrlen = sizeof(addr);
+  struct epoll_event events;
+
+  client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen);
+  if (client_socket < 0)
+  {
+    return 0;
+  }
+  
+  /* create the epoll_event struct
+  EPOLLIN = signal when the file secriptor is ready to read
+  EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
+  */
+  events.events = EPOLLIN | EPOLLET;
+  events.data.fd = client_socket;
+
+  if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events) < 0)
+  {
+    close(client_socket);
+    return 0;
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: socket_thread
+Description: socket thread
+Parameters:
+  client_socket - The client socket
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int socket_thread(int client_socket)
+{
+  // Variables
+  char* buffer = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char buffer2[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  char client_address[BUFFER_SIZE]; 
+  int len;
+  int receive_data_result; 
+  struct in_addr ip_address_data;
+  struct sockaddr_in addr;
+  socklen_t addrlength = sizeof(addr);
+  
+  memset(buffer2,0,sizeof(buffer2));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+  memset(client_address,0,sizeof(client_address));
+
+  // convert the port to a string
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
+
+  // receive the data
+  receive_data_result = receive_data(client_socket,buffer,SOCKET_END_STRING,1,TOTAL_CONNECTION_TIME_SETTINGS);
+  if (receive_data_result < 2)
+  {
+    pointer_reset(buffer);
+    return 0;
+  } 
+
+  // check if the message length is correct for the type of message
+  if (strnlen(buffer,MAXIMUM_BUFFER_SIZE) > 25 && strstr(buffer,"}") != NULL)
+  {
+    memcpy(data2,&buffer[25],strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25);
+    if ((strncmp(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(data2,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0) && (strnlen(buffer,MAXIMUM_BUFFER_SIZE) == MAXIMUM_BUFFER_SIZE))
+    {
+      pointer_reset(buffer);
+      return 0;
+    }
+  }
+  else
+  {
+    memcpy(data2,buffer,strnlen(buffer,sizeof(data2)) - strnlen(strstr(buffer,"|"),sizeof(data2)));
+    if (strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) != 0 && strncmp(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) != 0 && strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0)
+    {
+      pointer_reset(buffer);
+      return 0;
+    }
+  }
+
+  if (getpeername(client_socket, (struct sockaddr *) &addr, &addrlength) < 0 || inet_ntop(AF_INET, &addr.sin_addr, client_address, sizeof(client_address)) == NULL)
+  {
+    pointer_reset(buffer);
+    return 0;
+  }
+  
+  // check if the IP address has a reverse DNS associated with it 
+  if (inet_aton(client_address, &ip_address_data) == 0)
+  {
+    pointer_reset(buffer);
+    return 0;
+  }
+
+  const struct hostent* HOST_NAME = gethostbyaddr((const void *)&ip_address_data, sizeof(ip_address_data), AF_INET);
+  if (HOST_NAME != NULL)
+  {
+    memset(client_address,0,sizeof(client_address));
+    memcpy(client_address,HOST_NAME->h_name,strnlen(HOST_NAME->h_name,sizeof(client_address)));
+  }
+  
+  // get the current time
+  get_current_UTC_time;
+  
+  memcpy(message,"Received ",9);
+  memcpy(message+9,data2,strnlen(data2,sizeof(message)));
+  memcpy(message+strlen(message)," from ",6);
+  memcpy(message+strlen(message),client_address,strnlen(client_address,BUFFER_SIZE));
+  memcpy(message+strlen(message)," on port ",9);
+  memcpy(message+strlen(message),buffer2,strnlen(buffer2,BUFFER_SIZE));
+  memcpy(message+strlen(message),"\n",1);
+  memcpy(message+strlen(message),asctime(current_UTC_date_and_time),strnlen(asctime(current_UTC_date_and_time),BUFFER_SIZE));
+  color_print(message,"green");
+
+ // check if a certain type of message has been received 
+ if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)
+ {
+   server_received_data_xcash_proof_of_stake_test_data(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
+ {
+   server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(client_socket);
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
+ {
+   server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(client_socket);
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES\"") != NULL)
+ {
+   server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update(client_socket,(const char*)buffer);
+ }  
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(client_socket,(const char*)buffer);
+ }  
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL)
+ {
+   server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
+ }  
+ else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL)
+ {
+   server_receive_data_socket_nodes_to_block_verifiers_register_delegates(client_socket,(const char*)buffer);
+ }            
+ else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") != NULL)
+ {
+   server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL)
+ {
+   server_receive_data_socket_nodes_to_block_verifiers_update_delegates(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\"") != NULL && main_network_data_node_create_block == 1)
+ {  
+   server_receive_data_socket_main_network_data_node_to_block_verifier_start_block((const char*)buffer);
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\"") != NULL)
+ {  
+   server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec % 60 >= 10 && current_UTC_date_and_time->tm_sec % 60 < 30)
+ {
+   server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
+ }         
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec % 60 < 10)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
+ }  
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec % 60 >= 30 && current_UTC_date_and_time->tm_sec % 60 < 40)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
+ }  
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && (current_UTC_date_and_time->tm_sec % 60 >= 45 && current_UTC_date_and_time->tm_sec % 60 < 55) || (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec % 60 >= 30 && current_UTC_date_and_time->tm_sec % 60 < 40))
+ {
+   server_receive_data_socket_node_to_node((const char*)buffer);
+ }
+ else
+ {
+   printf("Received %s from %s on port %s\r\n",buffer,client_address,buffer2);
+
+   // send the message 
+   if (send_data(client_socket,buffer,1) == 1)
+   {
+     printf("Sent %s to %s on port %s\r\n",buffer,client_address,buffer2);
+   } 
+   else
+   {
+     printf("\033[1;31mError sending data to %s on port %s\033[0m\n",client_address,buffer2); 
+   } 
+ }
+pointer_reset(buffer);
+return 1;
 }

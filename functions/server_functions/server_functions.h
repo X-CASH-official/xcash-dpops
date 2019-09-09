@@ -45,4 +45,6 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE);
 int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const char* MESSAGE);
 int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature(const char* MESSAGE);
 int create_server(const int MESSAGE_SETTINGS);
+int new_socket_thread();
+int socket_thread(int client_socket);
 #endif

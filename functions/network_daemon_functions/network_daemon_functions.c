@@ -396,7 +396,7 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
   memset(data,0,sizeof(data));
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_last_block_header\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get previous block hash",MESSAGE_SETTINGS) <= 0)
-  {  
+  {
     GET_PREVIOUS_BLOCK_HASH_ERROR("Could not get the previous block hash");
   }
   
