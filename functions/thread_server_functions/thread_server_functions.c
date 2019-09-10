@@ -970,6 +970,7 @@ void* socket_receive_data_thread(void* parameters)
       {
         // a file descriptor is ready for a current socket connection
         socket_thread(events[count2].data.fd);
+        close(events[count2].data.fd);
       }
     }
   }

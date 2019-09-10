@@ -4976,7 +4976,7 @@ int create_server(const int MESSAGE_SETTINGS)
   /* create the epoll file descriptor
   EPOLL_CLOEXEC = close access to the epoll_fd when the process or fork closes
   */
-  epoll_fd = epoll_create1(EPOLL_CLOEXEC);
+  epoll_fd = epoll_create1(0);
 
   if (epoll_fd < 0)
   {
