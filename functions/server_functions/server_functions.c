@@ -4879,7 +4879,7 @@ int create_server(const int MESSAGE_SETTINGS)
 {
   // Constants
   const int SOCKET_OPTION = 1; 
-  const int THREADS = get_nprocs()*2;
+  const int THREADS = get_nprocs();
 
   // Variables
   char buffer[BUFFER_SIZE];

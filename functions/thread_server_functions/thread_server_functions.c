@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <unistd.h>
+#include <sys/sysinfo.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <signal.h>
@@ -937,8 +938,11 @@ Description: socket receive data thread
 
 void* socket_receive_data_thread(void* parameters)
 {
+  // Constants
+  const int CONNECTIONS_PER_THREAD = MAXIMUM_CONNECTIONS / get_nprocs();
+  
   // Variables
-  struct epoll_event* events = calloc(MAXIMUM_CONNECTIONS, sizeof(struct epoll_event));
+  struct epoll_event* events = calloc(CONNECTIONS_PER_THREAD, sizeof(struct epoll_event));
   int count;
   int count2;
 
@@ -957,7 +961,7 @@ void* socket_receive_data_thread(void* parameters)
   /* get the events that have a ready signal
   set the timeout settings to -1 to wait until any file descriptor is ready
   */  
-  while ((count = epoll_wait(epoll_fd, events, MAXIMUM_CONNECTIONS, -1)) > 0)
+  while ((count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, -1)) > 0)
   {
     for (count2 = 0; count2 < count; count2++)
     {
