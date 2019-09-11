@@ -960,8 +960,10 @@ void* socket_receive_data_thread(void* parameters)
 
   /* get the events that have a ready signal
   set the timeout settings to -1 to wait until any file descriptor is ready
-  */  
-  while ((count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, -1)) > 0)
+  */ 
+ for (;;)
+ { 
+  while ((count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, 100)) > 0)
   {
     for (count2 = 0; count2 < count; count2++)
     {
@@ -973,11 +975,12 @@ void* socket_receive_data_thread(void* parameters)
       else
       {
         // a file descriptor is ready for a current socket connection
-        socket_thread(events[count2].data.fd);
-        close(events[count2].data.fd);
+       socket_thread(events[count2].data.fd);
+       close(events[count2].data.fd);
       }
     }
   }
-  pointer_reset(events);
-  pthread_exit((void *)(intptr_t)1);
+}
+pointer_reset(events);
+pthread_exit((void *)(intptr_t)1);
 }

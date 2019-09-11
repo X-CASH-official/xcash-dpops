@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
+#include <errno.h>
 #include <sys/sysinfo.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
@@ -4889,6 +4890,7 @@ int create_server(const int MESSAGE_SETTINGS)
   struct socket_thread_parameters* socket_thread_parameters;
   struct epoll_event events;
   size_t count;
+  int settings;
 
   // threads
   pthread_t thread_id;
@@ -4961,6 +4963,10 @@ int create_server(const int MESSAGE_SETTINGS)
     exit(0);
   } 
 
+  // set the socket to non blocking, to avoid the server stopping when a client diconnects
+  settings = fcntl(server_socket, F_GETFL);
+  fcntl(server_socket, F_SETFL, settings | O_NONBLOCK);
+
   // set the maximum simultaneous connections
   if (listen(server_socket, MAXIMUM_CONNECTIONS) != 0)
   {
@@ -5030,8 +5036,15 @@ int new_socket_thread()
   socklen_t addrlen = sizeof(addr);
   struct epoll_event events;
 
+  start:
+
   client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen);
-  if (client_socket < 0)
+  if (client_socket < 0 && errno == EWOULDBLOCK)
+  {
+    sleep(1);
+    goto start;
+  }
+  else if (client_socket < 0 && errno != EWOULDBLOCK)
   {
     return 0;
   }
