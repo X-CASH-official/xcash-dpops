@@ -52,9 +52,9 @@ Using define statements instead of constants for increased efficiency
 #define GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" // The place holder bytes for a block verifier that does not create a block verifier signature
 
 // proof of stake
-#define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_SELECTED_AMOUNT 4 // The amount of block verifiers selected. The top 100 that are online are the block verifiers
-#define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid.
+#define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid.
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 
 // Network

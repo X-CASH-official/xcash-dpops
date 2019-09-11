@@ -143,6 +143,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
       error_message.total++;
     }
+    pointer_reset(message);
     return 0;
   }
 
@@ -158,6 +159,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
       error_message.total++;       
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }  
@@ -180,6 +182,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
@@ -236,6 +239,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
           memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
           error_message.total++; 
         }
+        pointer_reset(message);
         close(SOCKET);
         return 0;
       } 
@@ -257,6 +261,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
@@ -276,6 +281,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
@@ -308,6 +314,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
@@ -335,6 +342,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
@@ -353,6 +361,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
@@ -379,7 +388,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     // the HTTP result does not contain a header
     memcpy(result+strlen(result),message,strnlen(message,BUFFER_SIZE));
   }
-    
+  pointer_reset(message);
   close(SOCKET);
   return 1;
 
