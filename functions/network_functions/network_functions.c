@@ -830,22 +830,79 @@ Description: Sends data to a socket
 Parameters:
   SOCKET - The socket
   data - The data to send
-  APPEND_STRING_SETTINGS - 1 to append an end string to the data, else 0
+  DATA_LENGTH - The length of data, only used when MESSAGE_SETTINGS is not either 0 or 1
+  MESSAGE_SETTINGS - 0 to not change the message, 1 to append the SOCKET_END_STRING, any other HTTP status code to prepend the HTTP headers
+  MESSAGE_DATA_SETTINGS - The message data settings
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_data(const int SOCKET, char* data, const int APPEND_STRING_SETTINGS)
+int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, const int MESSAGE_SETTINGS, const char* MESSAGE_DATA_SETTINGS)
 {
-  if (APPEND_STRING_SETTINGS == 1)
+  // Variables
+  size_t count;
+  size_t total;
+  size_t sent;
+  size_t bytes;
+
+  if (MESSAGE_SETTINGS == 1)
   {
+    // append the SOCKET_END_STRING to the message since this is a socket message
     memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
+    total = strlen(data);
   }    
-  const int TOTAL = strnlen(data,BUFFER_SIZE);
-  int sent = 0;
-  int bytes = 0;
+  else if (MESSAGE_SETTINGS != 0)
+  {
+    // prepend the HTTP headers to the message
+
+    // Variables
+    char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    char current_date_and_time_data[BUFFER_SIZE];
+
+    memset(current_date_and_time_data,0,sizeof(current_date_and_time_data));
+
+    // get the current time
+    get_current_UTC_time;
+
+    strftime(current_date_and_time_data,sizeof(current_date_and_time_data),"%a, %d %b %Y %H:%M:%S GMT",current_UTC_date_and_time);
+
+    memcpy(message,"HTTP/1.1 ",9);
+    snprintf(message+9,MAXIMUM_BUFFER_SIZE,"%d",MESSAGE_SETTINGS);
+    if (MESSAGE_SETTINGS == 200)
+    {
+      memcpy(message+strlen(message)," OK",3);
+    }
+    else if (MESSAGE_SETTINGS == 400)
+    {
+      memcpy(message+strlen(message)," Bad Request",12);
+    }
+    else if (MESSAGE_SETTINGS == 404)
+    {
+      memcpy(message+strlen(message)," Not Found",10);
+    }
+    memcpy(message+strlen(message),"\r\nConnection: close\r\nContent-Length: ",37);
+    snprintf(message+strlen(message),MAXIMUM_BUFFER_SIZE,"%ld",DATA_LENGTH);
+    memcpy(message+strlen(message),"\r\nContent-Language: en\r\nContent-Type: ",38);
+    memcpy(message+strlen(message),MESSAGE_DATA_SETTINGS,strnlen(MESSAGE_DATA_SETTINGS,MAXIMUM_BUFFER_SIZE));
+    memcpy(message+strlen(message),"\r\nServer: xcash_proof_of_stake version 1.0.0\r\nDate: ",52);
+    memcpy(message+strlen(message),current_date_and_time_data,strnlen(current_date_and_time_data,MAXIMUM_BUFFER_SIZE));
+    memcpy(message+strlen(message),HTTP_SOCKET_END_STRING,sizeof(HTTP_SOCKET_END_STRING)-1);
+    count = strlen(message);
+    memcpy(message+count,data,DATA_LENGTH);
+    memset(data,0,DATA_LENGTH);
+    memcpy(data,message,count+DATA_LENGTH);
+    total = count+DATA_LENGTH;
+    pointer_reset(message);
+  } 
+  else
+  {
+    total = strlen(data);
+  }
+       
+  sent = 0;
+  bytes = 0;
   do {
-    bytes = write(SOCKET,data+sent,TOTAL-sent);
+    bytes = write(SOCKET,data+sent,total-sent);
     if (bytes < 0)
     {             
       return 0;
@@ -855,7 +912,7 @@ int send_data(const int SOCKET, char* data, const int APPEND_STRING_SETTINGS)
       break;
     }
     sent+=bytes;
-    } while (sent < TOTAL);
+    } while (sent < total);
     return 1;
 }
 
