@@ -301,7 +301,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     printf("Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
   }
-  if (send_data(SOCKET,message,0) == 0)
+  if (send_data(SOCKET,message,0,0,"") == 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -599,7 +599,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   }
   memset(message,0,sizeof(message));
   memcpy(message,DATA,strnlen(DATA,sizeof(message)));
-  if (send_data(SOCKET,message,1) == 0)
+  if (send_data(SOCKET,message,0,1,"") == 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -808,7 +808,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   // send the message 
   memset(message,0,sizeof(message));
   memcpy(message,DATA,strnlen(DATA,sizeof(message)));
-  if (send_data(SOCKET,message,1) == 0)
+  if (send_data(SOCKET,message,0,1,"") == 0)
   {  
     memcpy(str,"Error sending data to ",22);
     memcpy(str+22,HOST,HOST_LENGTH);
@@ -959,12 +959,12 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
     }    
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
     recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
-    if (buffer[0] != '\0' && strstr(buffer,STRING) == NULL)
+    if (buffer[0] != '\0' && (strstr(buffer,STRING) == NULL || strstr(buffer,HTTP_SOCKET_END_STRING) == NULL))
     {
       // there is data, but this is not the final data
       memcpy(data+strlen(data),buffer,strnlen(buffer,BUFFER_SIZE));
     }
-    if (buffer[0] != '\0' && strstr(buffer,STRING) != NULL)
+    if (buffer[0] != '\0' && (strstr(buffer,STRING) != NULL || strstr(buffer,HTTP_SOCKET_END_STRING) != NULL))
     {
       // there is data, and this is the final data
       memcpy(data+strlen(data),buffer,strnlen(buffer,BUFFER_SIZE));

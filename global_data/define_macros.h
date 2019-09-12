@@ -10,6 +10,9 @@ Using define statements instead of constants for increased efficiency
 // Blockchain
 #define XCASH_WALLET_LENGTH 98 // The length of a XCA addres
 #define XCASH_WALLET_PREFIX "XCA" // The prefix of a XCA address
+#define XCASH_TOTAL_SUPPLY 100000000000 // The total supply
+#define XCASH_PREMINE_TOTAL_SUPPLY 40000000000 // The total supply of the premine
+#define XCASH_PREMINE_CIRCULATING_SUPPLY 7000000000 // The circulating supply of the premine
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 240501 // the start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // the block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
@@ -68,13 +71,14 @@ Using define statements instead of constants for increased efficiency
 #define SOCKET_DATA_TIMEOUT_SETTINGS 10 // The time in between read calls where there is no data
 #define RECEIVE_DATA_TIMEOUT_SETTINGS 5 // The maximum amount of time to wait for the total data, once data has been read
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
+#define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 
 // lengths
 #define BUFFER_SIZE 164000
 #define BUFFER_SIZE_RESERVE_PROOF 10000
 #define BUFFER_SIZE_NETWORK_BLOCK_DATA 500
 #define BUFFER_SIZE_NETWORK_BLOCK_TRANSACTIONS_DATA 100
-#define MAXIMUM_BUFFER_SIZE 164000 // 50 MB
+#define MAXIMUM_BUFFER_SIZE 52428800 // 50 MB
 
 #define RANDOM_STRING_LENGTH 100 // The length of the random string
 #define DATA_HASH_LENGTH 128 // The length of the SHA2-512 hash
@@ -95,6 +99,10 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
 #define DATABASE_ARRAY_COUNT 150 // The maximum amount of parsed item and value from the database
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
+#define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The total delegates database fields
+#define TOTAL_RESERVE_PROOFS_DATABASE_FIELDS 4 // The total delegates database fields
+#define TOTAL_DELEGATES_DATABASE_FIELDS 18 // The total delegates database fields
+#define TOTAL_STATISTICS_DATABASE_FIELDS 7 // The total statistics database fields
 
 // network data nodes
 #define NETWORK_DATA_NODES_AMOUNT 2 // The amount of network data nodes

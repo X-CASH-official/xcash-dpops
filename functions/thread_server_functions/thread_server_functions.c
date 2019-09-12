@@ -199,7 +199,7 @@ void* check_reserve_proofs_timer_thread()
   }
 
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < 4; count++)
+  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count++)
   {
     database_multiple_documents_fields.item[0][count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
     database_multiple_documents_fields.value[0][count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -388,7 +388,7 @@ void* check_reserve_proofs_timer_thread()
 
 
     // reset the database_multiple_documents_fields
-    for (count = 0; count < 4; count++)
+    for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count++)
     {
       memset(database_multiple_documents_fields.item[0][count],0,strlen(database_multiple_documents_fields.item[0][count]));
       memset(database_multiple_documents_fields.value[0][count],0,strlen(database_multiple_documents_fields.value[0][count]));
