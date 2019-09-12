@@ -20,6 +20,7 @@ int calculate_main_nodes_roles();
 int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_get_statistics(const int CLIENT_SOCKET);
+int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET);
 int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(const int CLIENT_SOCKET);
 int server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(const int CLIENT_SOCKET);
 int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET);

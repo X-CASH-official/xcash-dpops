@@ -2758,6 +2758,100 @@ int server_receive_data_socket_get_statistics(const int CLIENT_SOCKET)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_delegates
+Description: Runs the code when the server receives /getdelegates
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
+{
+  // Variables
+  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  struct database_multiple_documents_fields database_data;
+  int document_count = 0;
+  size_t count = 0;
+  size_t counter = 0;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  #define DATABASE_FIELDS "public_address|total_vote_count_number|IP_address|about|website|team|server_settings|block_verifier_online_total_rounds|block_producer_total_rounds|VRF_node_public_and_secret_key_total_rounds|VRF_node_random_data_total_rounds|VRF_node_next_main_nodes_total_rounds|block_producer_block_heights|VRF_node_public_and_private_key_block_heights|VRF_node_random_data_block_heights|VRF_node_next_main_nodes_block_heights|"
+ 
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(settings) \
+  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
+  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  pointer_reset(message); \
+  if (settings == 0) \
+  { \
+    pointer_reset_database_array; \
+  } \
+  return 0;
+
+  #define pointer_reset_database_array \
+  for (count = 0; count < document_count; count++) \
+  { \
+    for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++) \
+    { \
+      pointer_reset(database_data.item[count][counter]); \
+      pointer_reset(database_data.value[count][counter]); \
+    } \
+  }
+
+  // get how many documents are in the database
+  document_count = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
+  if (document_count <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(1);
+  }
+  else if (document_count > BLOCK_VERIFIERS_AMOUNT)
+  {
+    document_count = BLOCK_VERIFIERS_AMOUNT;
+  }
+  
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < document_count; count++)
+  {
+    for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++)
+    {
+      database_data.item[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      database_data.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    }
+  }
+  database_data.document_count = 0;
+  database_data.database_fields_count = 0;
+
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_data,1,document_count,1,"total_vote_count_number",0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(0);
+  }
+  
+  if (create_json_data_from_database_multiple_documents_array(&database_data,message,DATABASE_FIELDS) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(0);
+  }
+
+  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(0);
+  }
+
+  pointer_reset(message);
+  pointer_reset_database_array;
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef DATABASE_FIELDS
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR
+  #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list
 Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST message
 Parameters:
@@ -5441,6 +5535,10 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"GET /getstatistics HTTP/1.1") != NULL)
  {
    server_receive_data_socket_get_statistics(client_socket);
+ } 
+ else if (strstr(buffer,"GET /getdelegates HTTP/1.1") != NULL)
+ {
+   server_receive_data_socket_get_delegates(client_socket);
  } 
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
  {
