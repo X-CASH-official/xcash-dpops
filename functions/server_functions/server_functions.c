@@ -2490,6 +2490,81 @@ int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET,
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_files
+Description: gets the files
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  unsigned char* data = (unsigned char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(unsigned char));
+  char data2[BUFFER_SIZE];
+  long file_size;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR \
+  memcpy(data,"{\"Error\":\"Could not get the file\"}",34); \
+  send_data(CLIENT_SOCKET,data,strlen(data),400,"application/json"); \
+  pointer_reset(data); \
+  return 0;
+
+  memset(data2,0,sizeof(data2));
+
+  // get the file
+  memcpy(data2,&MESSAGE[(strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5],(strlen(MESSAGE) - strlen(strstr(MESSAGE," HTTP/1.1"))) - ((strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5));
+  file_size = read_file(data,data2);
+  if (file_size == 0)
+  {
+    file_size = read_file(data,"index.html");
+    if (file_size == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
+    }
+  }
+
+  memset(data2,0,sizeof(data2));
+
+  if (strstr(MESSAGE,".html") != NULL)
+  {
+    memcpy(data2,"text/html",9);
+  }
+  else if (strstr(MESSAGE,".js") != NULL)
+  {
+    memcpy(data2,"application/javascript",22);
+  }
+  else if (strstr(MESSAGE,".css") != NULL)
+  {
+    memcpy(data2,"text/css",8);
+  }
+  else if (strstr(MESSAGE,".png") != NULL)
+  {
+    memcpy(data2,"image/png",9);
+  }
+  else if (strstr(MESSAGE,".jpg") != NULL || strstr(MESSAGE,".jpeg") != NULL)
+  {
+    memcpy(data2,"image/jpeg",10);
+  }  
+
+  if (send_data(CLIENT_SOCKET,data,(const long)file_size,200,data2) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
+  }
+
+  pointer_reset(data);
+  return 1;
+
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list
 Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST message
 Parameters:
@@ -5166,6 +5241,10 @@ int socket_thread(int client_socket)
  {
    server_received_data_xcash_proof_of_stake_test_data(client_socket,(const char*)buffer);
  }
+ else if (strstr(buffer,"GET /") != NULL && (strstr(buffer,".html") != NULL || strstr(buffer,".js") != NULL || strstr(buffer,".css") != NULL || strstr(buffer,".png") != NULL || strstr(buffer,".jpg") != NULL || strstr(buffer,".jpeg") != NULL))
+ {
+   server_receive_data_socket_get_files(client_socket,(const char*)buffer);
+ } 
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
  {
    server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(client_socket);
