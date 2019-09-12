@@ -2565,6 +2565,199 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_statistics
+Description: Runs the code when the server receives /getstatistics
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_statistics(const int CLIENT_SOCKET)
+{
+    // Variables
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
+  size_t count = 0;
+  size_t count2 = 0;
+  size_t counter = 0;
+  size_t number = 0;
+  size_t current_block_height = 0;
+  double generated_supply;
+  struct database_document_fields database_data;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  int document_count = 0;
+
+  // define macros
+  #define DATABASE_FIELDS "username|"
+  #define DATA "{\"username\":\"XCASH\"}"
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(settings) \
+  memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE)); \
+  memcpy(data,"{\"Error\":\"Could not get statistics\"}",36); \
+  send_data(CLIENT_SOCKET,data,strlen(data),400,"application/json"); \
+  pointer_reset(data); \
+  if (settings == 0) \
+  { \
+    pointer_reset_database_array; \
+  } \
+  return 400;
+  
+
+  #define pointer_reset_database_array \
+  for (count = 0; count < 11; count++) \
+  { \
+    pointer_reset(database_data.item[count]); \
+    pointer_reset(database_data.value[count]); \
+  } \
+  for (count = 0; count < document_count; count++) \
+  { \
+    for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++) \
+    { \
+      pointer_reset(database_multiple_documents_fields.item[count][counter]); \
+      pointer_reset(database_multiple_documents_fields.value[count][counter]); \
+    } \
+  }
+  
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // check if there is any data in the database that matches the message
+  if (count_documents_in_collection(DATABASE_NAME,"statistics",DATA,0) <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(1);
+  }
+
+  // get how many documents are in the database
+  document_count = count_all_documents_in_collection(DATABASE_NAME,"delegates",0);
+  if (document_count <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(1);
+  }
+  else if (document_count > BLOCK_VERIFIERS_AMOUNT)
+  {
+    document_count = BLOCK_VERIFIERS_AMOUNT;
+  }
+
+  // initialize the database_document_fields struct 
+  for (count = 0; count < 11; count++)
+  {
+    database_data.item[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  }
+  database_data.count = 0;
+
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < document_count; count++)
+  {
+    for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++)
+    {
+      database_multiple_documents_fields.item[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      database_multiple_documents_fields.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    }
+  }
+  database_multiple_documents_fields.document_count = 0;
+  database_multiple_documents_fields.database_fields_count = 0;
+
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,"delegates","",&database_multiple_documents_fields,1,document_count,1,"total_vote_count_number",0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(0);
+  }
+
+  if (read_document_all_fields_from_collection(DATABASE_NAME,"statistics",DATA,&database_data,0) == 0)
+  {
+    pointer_reset_database_array;
+    SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(0);
+  }
+
+  // get the current block height
+  if (get_current_block_height(data,0) == 0)
+  {
+    pointer_reset_database_array;
+    SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(0);
+  }
+  memcpy(database_data.item[database_data.count],"current_block_height",20);
+  memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
+  database_data.count++;
+
+  // get the xcash proof of stake round number
+  sscanf(data,"%zu", &current_block_height);
+  count = current_block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT;  
+  memset(data,0,strlen(data));
+  sprintf(data,"%zu",count);
+
+  memcpy(database_data.item[database_data.count],"xcash_proof_of_stake_round_number",33);
+  memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
+  database_data.count++;
+
+  // get the total votes
+  for (count = 0, count2 = 0; count < document_count; count++)
+  {
+    for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++)
+    {
+      if (strncmp(database_multiple_documents_fields.item[count][counter],"total_vote_count",BUFFER_SIZE) == 0)
+      {
+        sscanf(database_multiple_documents_fields.value[count][counter],"%zu", &number);
+        count2 += number;
+      }
+    }
+  }
+
+  memset(data,0,strlen(data));
+  sprintf(data,"%zu",count2);
+
+  memcpy(database_data.item[database_data.count],"total_votes",11);
+  memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
+  database_data.count++;
+
+  // get the xcash_proof_of_stake_circulating_percentage
+  generated_supply = 190734.9 + XCASH_PREMINE_TOTAL_SUPPLY;
+  for (counter = 2; counter < current_block_height; counter++)
+  { 
+    generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / 524288;
+  }  
+
+  number = ((size_t)((((double)count2) / (generated_supply - (XCASH_PREMINE_TOTAL_SUPPLY - XCASH_PREMINE_CIRCULATING_SUPPLY))) * 100) | 0);
+
+  memset(data,0,strlen(data));
+  sprintf(data,"%zu",number);
+
+  memcpy(database_data.item[database_data.count],"xcash_proof_of_stake_circulating_percentage",43);
+  memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
+  database_data.count++;
+  
+  memset(data,0,strnlen(data,BUFFER_SIZE));
+
+  // create a json string out of the database array of item and value
+  if (create_json_data_from_database_document_array(&database_data,data,DATABASE_FIELDS) == 0)
+  {
+    pointer_reset_database_array;
+    SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(0);
+  }
+
+  if (send_data(CLIENT_SOCKET,data,strlen(data),200,"application/json") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(0);
+  }
+ 
+  pointer_reset_database_array;  
+  pointer_reset(data);  
+  return 200;
+
+  #undef DATABASE_COLLECTION
+  #undef DATABASE_FIELDS
+  #undef DATA
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR
+  #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list
 Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST message
 Parameters:
@@ -5244,6 +5437,10 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"GET /") != NULL && (strstr(buffer,".html") != NULL || strstr(buffer,".js") != NULL || strstr(buffer,".css") != NULL || strstr(buffer,".png") != NULL || strstr(buffer,".jpg") != NULL || strstr(buffer,".jpeg") != NULL))
  {
    server_receive_data_socket_get_files(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"GET /getstatistics HTTP/1.1") != NULL)
+ {
+   server_receive_data_socket_get_statistics(client_socket);
  } 
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
  {
