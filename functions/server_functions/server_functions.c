@@ -5151,12 +5151,14 @@ int socket_thread(int client_socket)
   
   memcpy(message,"Received ",9);
   memcpy(message+9,data2,strnlen(data2,sizeof(message)));
-  memcpy(message+strlen(message)," from ",6);
-  memcpy(message+strlen(message),client_address,strnlen(client_address,BUFFER_SIZE));
-  memcpy(message+strlen(message)," on port ",9);
-  memcpy(message+strlen(message),buffer2,strnlen(buffer2,BUFFER_SIZE));
   memcpy(message+strlen(message),"\n",1);
-  memcpy(message+strlen(message),asctime(current_UTC_date_and_time),strnlen(asctime(current_UTC_date_and_time),BUFFER_SIZE));
+  memcpy(message+strlen(message),client_address,strnlen(client_address,sizeof(message)));
+  memcpy(message+strlen(message)," on port ",9);
+  memcpy(message+strlen(message),buffer2,strnlen(buffer2,sizeof(message)));
+  memcpy(message+strlen(message),"\n",1);
+  memset(data2,0,sizeof(data2));
+  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC",current_UTC_date_and_time);
+  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
   color_print(message,"green");
 
  // check if a certain type of message has been received 
