@@ -16,29 +16,30 @@ Description: Reads the file
 Parameters:
   result - The data read from the file
   file_name - The file name
-Return: 0 if an error has occured, 1 if successfull
+Return: 0 if an error has occured, otherwise the file length
 -----------------------------------------------------------------------------------------------------------
 */
 
-int read_file(char *result, const char* FILE_NAME)
+long read_file(unsigned char *result, const char* FILE_NAME)
 {
   // Variables
   FILE* file;
+  long file_size;
 
   // check if the file exist
-  file = fopen(FILE_NAME,"r");
+  file = fopen(FILE_NAME,"rb");
   if (file != NULL)
   {
     // the file exist, read the data in the result
     fseek(file, 0, SEEK_END);
-    const long file_size = ftell(file);
+    file_size = ftell(file);
     if (file_size == -1)
     {
       fclose(file);
       return 0;
     }
     fseek(file, 0, SEEK_SET); 
-    if (fread(result, sizeof(char), file_size, file) != (size_t)file_size)
+    if (fread(result, sizeof(unsigned char), file_size, file) != (size_t)file_size)
     {
       fclose(file);
       return 0;
@@ -49,7 +50,7 @@ int read_file(char *result, const char* FILE_NAME)
   {
     return 0;
   }  
-  return 1;
+  return file_size;
 }
 
 /*
