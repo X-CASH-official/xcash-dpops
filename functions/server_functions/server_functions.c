@@ -2516,7 +2516,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   memset(data2,0,sizeof(data2));
 
   // get the file
-  memcpy(data2,&MESSAGE[(strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5],(strlen(MESSAGE) - strlen(strstr(MESSAGE," HTTP/1.1"))) - ((strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5));
+  memcpy(data2,&MESSAGE[(strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5],(strlen(MESSAGE) - strlen(strstr(MESSAGE," HTTP/"))) - ((strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5));
   file_size = read_file(data,data2);
   if (file_size == 0)
   {
@@ -2565,15 +2565,15 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_get_statistics
-Description: Runs the code when the server receives /getstatistics
+Name: server_receive_data_socket_delegates_website_get_statistics
+Description: Runs the code when the server receives /delegateswebsitegetstatistics
 Parameters:
   CLIENT_SOCKET - The socket to send data to
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_get_statistics(const int CLIENT_SOCKET)
+int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT_SOCKET)
 {
     // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
@@ -2647,6 +2647,10 @@ int server_receive_data_socket_get_statistics(const int CLIENT_SOCKET)
   {
     database_data.item[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
     database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    if (database_data.item[count] == NULL || database_data.value[count] == NULL)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(1);
+    }
   }
   database_data.count = 0;
 
@@ -2657,6 +2661,10 @@ int server_receive_data_socket_get_statistics(const int CLIENT_SOCKET)
     {
       database_multiple_documents_fields.item[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
       database_multiple_documents_fields.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      if (database_multiple_documents_fields.item[count][counter] == NULL || database_multiple_documents_fields.value[count][counter] == NULL)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(1);
+      }
     }
   }
   database_multiple_documents_fields.document_count = 0;
@@ -2818,6 +2826,10 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
     {
       database_data.item[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
       database_data.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      if (database_data.item[count][counter] == NULL || database_data.value[count][counter] == NULL)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(1);
+      }
     }
   }
   database_data.document_count = 0;
@@ -2845,6 +2857,187 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   #undef DATABASE_COLLECTION
   #undef DATABASE_FIELDS
   #undef SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR
+  #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_delegates_statistics
+Description: Runs the code when the server receives /getdelegates
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET, const char* DATA)
+{
+  // Variables
+  char data2[BUFFER_SIZE];
+  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));  
+  size_t count = 0;
+  size_t counter = 0;
+  struct database_document_fields database_data;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  int document_count = 0;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  #define DATABASE_FIELDS ""
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(settings) \
+  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
+  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  pointer_reset(message); \
+  if (settings == 0) \
+  { \
+    pointer_reset_database_array; \
+  } \
+  return 0;
+  
+  #define pointer_reset_database_array \
+  for (count = 0; count < TOTAL_DELEGATES_DATABASE_FIELDS+1; count++) \
+  { \
+    pointer_reset(database_data.item[count]); \
+    pointer_reset(database_data.value[count]); \
+  } \
+  for (count = 0; count < document_count; count++) \
+  { \
+    for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++) \
+    { \
+      pointer_reset(database_multiple_documents_fields.item[count][counter]); \
+      pointer_reset(database_multiple_documents_fields.value[count][counter]); \
+    } \
+  }
+
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  // get the parameter1
+  memcpy(data2,&DATA[28],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-28);
+
+  // error check
+  if (strncmp(data2,"",BUFFER_SIZE) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
+  } 
+
+  const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
+
+  // check if the data is a public address or a delegate name
+  memcpy(message,"{\"",2);
+  if (memcmp(data2,XCASH_WALLET_PREFIX,3) == 0 && DATA_LENGTH == XCASH_WALLET_LENGTH)
+  {
+    memcpy(message+2,"public_address\":\"",17);
+    memcpy(message+19,data2,DATA_LENGTH);
+    memcpy(message+19+DATA_LENGTH,"\"}",2);
+  }
+  else
+  {
+    memcpy(message+2,"delegate_name\":\"",16);
+    memcpy(message+18,data2,DATA_LENGTH);
+    memcpy(message+18+DATA_LENGTH,"\"}",2);
+  }
+
+  // check if there is any data in the database that matches the message
+  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,message,0) <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
+  }
+  
+  // initialize the database_document_fields struct 
+  for (count = 0; count < TOTAL_DELEGATES_DATABASE_FIELDS+1; count++)
+  {
+    database_data.item[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    if (database_data.item[count] == NULL || database_data.value[count] == NULL)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
+    }
+  }
+  database_data.count = 0;
+
+  // get how many documents are in the database
+  document_count = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
+  if (document_count <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
+  }
+  else if (document_count > BLOCK_VERIFIERS_AMOUNT)
+  {
+    document_count = BLOCK_VERIFIERS_AMOUNT;
+  }
+
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < document_count; count++)
+  {
+    for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS+1; counter++)
+    {
+      database_multiple_documents_fields.item[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      database_multiple_documents_fields.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      if (database_multiple_documents_fields.item[count][counter] == NULL || database_multiple_documents_fields.value[count][counter] == NULL)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
+      }
+    }
+  }
+  database_multiple_documents_fields.document_count = 0;
+  database_multiple_documents_fields.database_fields_count = 0;
+  
+  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,&database_data,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
+  }
+
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,1,"total_vote_count",0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
+  }
+
+  // get the delegates rank
+  for (count = 0, counter = 0; count < database_multiple_documents_fields.document_count; count++)
+  {
+    if (strncmp(database_multiple_documents_fields.item[count][0],data2,XCASH_WALLET_LENGTH) == 0 || strncmp(database_multiple_documents_fields.item[count][4],data2,BUFFER_SIZE) == 0)
+    {
+      break;
+    }
+    counter++;
+  }
+
+  memset(data2,0,sizeof(data2));
+  sprintf(data2, "%zu", counter);
+  memcpy(database_data.item[18],"current_delegate_rank",21);
+  memcpy(database_data.value[18],data2,strnlen(data2,BUFFER_SIZE));
+  database_data.count++;
+
+  memset(message,0,strnlen(message,BUFFER_SIZE)); 
+
+  // create a json string out of the database array of item and value
+  if (create_json_data_from_database_document_array(&database_data,message,DATABASE_FIELDS) == 0)
+  {    
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
+  }
+
+  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
+  }
+  
+  pointer_reset_database_array;
+  pointer_reset(message);
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef DATABASE_FIELDS
+  #undef GET_DELEGATES_STATISTICS_ERROR
   #undef pointer_reset_database_array
 }
 
@@ -5469,9 +5662,10 @@ int socket_thread(int client_socket)
   } 
 
   // check if the message length is correct for the type of message
-  if (strstr,buffer,"GET / HTTP/1.1" != NULL || strstr,buffer,"POST / HTTP/1.1" != NULL)
+  if (strstr,buffer,"GET / HTTP/" != NULL || strstr,buffer,"POST / HTTP/" != NULL)
   {
-    memcpy(data2,buffer,strnlen(buffer,sizeof(data2)) - strnlen(strstr(buffer,"\r\n"),sizeof(data2)));
+    memcpy(data2,"HTTP ",5);
+    memcpy(data2+5,buffer,strnlen(buffer,sizeof(data2)) - strnlen(strstr(buffer," HTTP/"),sizeof(data2)));
   }
   else if (strnlen(buffer,MAXIMUM_BUFFER_SIZE) > 25 && strstr(buffer,"}") != NULL)
   {
@@ -5541,13 +5735,17 @@ int socket_thread(int client_socket)
  {
    server_receive_data_socket_get_files(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"GET /getstatistics HTTP/1.1") != NULL)
+ else if (strstr(buffer,"GET /delegateswebsitegetstatistics HTTP/") != NULL)
  {
-   server_receive_data_socket_get_statistics(client_socket);
+   server_receive_data_socket_delegates_website_get_statistics(client_socket);
  } 
- else if (strstr(buffer,"GET /getdelegates HTTP/1.1") != NULL)
+ else if (strstr(buffer,"GET /getdelegates HTTP/") != NULL)
  {
    server_receive_data_socket_get_delegates(client_socket);
+ } 
+ else if (strstr(buffer,"GET /getdelegatesstatistics?") != NULL)
+ {
+   server_receive_data_socket_get_delegates_statistics(client_socket,(const char*)buffer);
  } 
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
  {
