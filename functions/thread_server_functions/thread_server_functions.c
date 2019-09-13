@@ -467,6 +467,9 @@ void* check_delegates_online_status_timer_thread()
   size_t count;
   size_t count2;
   struct database_multiple_documents_fields database_multiple_documents_fields;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
   
   memset(message,0,sizeof(message));
   memset(data,0,sizeof(data));
@@ -474,7 +477,7 @@ void* check_delegates_online_status_timer_thread()
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < BLOCK_VERIFIERS_SELECTED_AMOUNT; count++)
   {
-    for (count2 = 0; count2 < 19; count2++)
+    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
     {
       database_multiple_documents_fields.item[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
       database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -499,7 +502,7 @@ void* check_delegates_online_status_timer_thread()
     if (current_UTC_date_and_time->tm_min % 5 == 1 && current_UTC_date_and_time->tm_sec == 0)
     {
       // get the top 150 delegates by total votes
-      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,"delegates","",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_SELECTED_AMOUNT,1,"total_vote_count",0) == 0)
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_SELECTED_AMOUNT,1,"total_vote_count",0) == 0)
       {
         memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
         memcpy(error_message.data[error_message.total],"Could not get the top 150 delegates to check their online status. This means the delegates database might be unsynced, and you might have to sync the database.",159);
@@ -532,7 +535,7 @@ void* check_delegates_online_status_timer_thread()
            sleep(1);
          }
          pthread_rwlock_unlock(&rwlock);
-         if (update_document_from_collection(DATABASE_NAME,"delegates",message,data,0) == 0)
+         if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
          {
            memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
            memcpy(error_message.data[error_message.total],"Could not update a delegates online status. This means the delegates database might be unsynced, and you might have to sync the database",136);
@@ -544,7 +547,7 @@ void* check_delegates_online_status_timer_thread()
       // reset the database_multiple_documents_fields
       for (count = 0; count < BLOCK_VERIFIERS_SELECTED_AMOUNT; count++)
       {
-        for (count2 = 0; count2 < 19; count2++)
+        for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
         {
           memset(database_multiple_documents_fields.item[count][count2],0,strlen(database_multiple_documents_fields.item[count][count2]));
           memset(database_multiple_documents_fields.value[count][count2],0,strlen(database_multiple_documents_fields.value[count][count2]));
@@ -556,6 +559,8 @@ void* check_delegates_online_status_timer_thread()
     usleep(200000);
   }
   pthread_exit((void *)(intptr_t)1);
+
+  #undef DATABASE_COLLECTION
 }
 
 
