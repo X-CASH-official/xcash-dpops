@@ -13,8 +13,8 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_TOTAL_SUPPLY 100000000000 // The total supply
 #define XCASH_PREMINE_TOTAL_SUPPLY 40000000000 // The total supply of the premine
 #define XCASH_PREMINE_CIRCULATING_SUPPLY 7000000000 // The circulating supply of the premine
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 240501 // the start block height for X-CASH proof of stake
-#define BLOCK_TIME 5 // the block time in minutes
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 240501 // The start block height for X-CASH proof of stake
+#define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
 #define MAXIMUM_TRANSACATIONS_PER_BLOCK 1000000 // The maximum amount of transaction per block
@@ -22,8 +22,8 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a xcash_proof_of_stake_signature for the signed datas
 
 // network block string 
-#define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "00000000" // the network block nonce used when the block producer creates the block
-#define CONSENSUS_NODE_NETWORK_BLOCK_NONCE "11111111" // the network block nonce used when the consensus node creates the block
+#define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "00000000" // The network block nonce used when the block producer creates the block
+#define CONSENSUS_NODE_NETWORK_BLOCK_NONCE "11111111" // The network block nonce used when the consensus node creates the block
 #define NETWORK_VERSION "0d0d" // The network version
 #define TIMESTAMP_LENGTH 10 // The length of the timestamp
 #define BLOCK_HASH_LENGTH 64 // The length of the block hash
@@ -106,10 +106,10 @@ Using define statements instead of constants for increased efficiency
 
 // network data nodes
 #define NETWORK_DATA_NODES_AMOUNT 2 // The amount of network data nodes
-#define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP" // the first network data nodes public address
-#define NETWORK_DATA_NODE_1_IP_ADDRESS "10.10.10.1" // the first network data nodes IP address
-#define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS "XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B" // the second network data nodes public address
-#define NETWORK_DATA_NODE_2_IP_ADDRESS "10.10.10.2" // the second network data nodes IP address
+#define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP" // The first network data nodes public address
+#define NETWORK_DATA_NODE_1_IP_ADDRESS "10.10.10.1" // The first network data nodes IP address
+#define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS "XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B" // The second network data nodes public address
+#define NETWORK_DATA_NODE_2_IP_ADDRESS "10.10.10.2" // The second network data nodes IP address
 
 // Test
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"

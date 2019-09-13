@@ -79,7 +79,7 @@ void* current_block_height_timer_thread()
     // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
     usleep(200000);
     get_current_UTC_time;
-    if ((settings == 0 && current_UTC_date_and_time->tm_min % 5 == 0 && current_UTC_date_and_time->tm_sec == 0) || (settings == 1 && current_UTC_date_and_time->tm_min % 5 == 0))
+    if ((settings == 0 && current_UTC_date_and_time->tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time->tm_sec == 0) || (settings == 1 && current_UTC_date_and_time->tm_min % BLOCK_TIME == 0))
     {
       if (settings == 0)
       {
@@ -236,7 +236,7 @@ void* check_reserve_proofs_timer_thread()
   for (;;)
   {
     get_current_UTC_time;
-    if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec == 25)
+    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec == 25)
     {
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
       sync_block_verifiers_seconds(30);
@@ -499,7 +499,7 @@ void* check_delegates_online_status_timer_thread()
   for (;;)
   {    
     get_current_UTC_time;
-    if (current_UTC_date_and_time->tm_min % 5 == 1 && current_UTC_date_and_time->tm_sec == 0)
+    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 1 && current_UTC_date_and_time->tm_sec == 0)
     {
       // get the top 150 delegates by total votes
       if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_SELECTED_AMOUNT,1,"total_vote_count",0) == 0)

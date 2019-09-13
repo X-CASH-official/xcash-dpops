@@ -147,7 +147,7 @@ do \
 { \
   usleep(200000); \
   get_current_UTC_time; \
-} while (current_UTC_date_and_time->tm_min % 5 != minutes); 
+} while (current_UTC_date_and_time->tm_min % BLOCK_TIME != minutes); 
 
 
 
@@ -163,7 +163,7 @@ do \
 { \
   usleep(200000); \
   get_current_UTC_time; \
-} while (current_UTC_date_and_time->tm_sec % 60 != seconds);
+} while (current_UTC_date_and_time->tm_sec != seconds);
 
 
 

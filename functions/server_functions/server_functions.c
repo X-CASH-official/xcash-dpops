@@ -296,7 +296,7 @@ int start_current_round_start_blocks()
     {
       usleep(200000);
       get_current_UTC_time;
-    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50); 
+    } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50); 
     return 1;
   } 
 
@@ -516,7 +516,7 @@ int start_current_round_start_blocks()
   {
     usleep(200000);
     get_current_UTC_time;
-  } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);
+  } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50);
 
   // have the main network data node submit the block to the network  
   if (submit_block_template(data,0) == 0)
@@ -917,7 +917,7 @@ int data_network_node_create_block()
     {
       usleep(200000);
       get_current_UTC_time;
-    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50); 
+    } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50); 
 
     // submit the block to the network
     if (submit_block_template(data,0) == 0)
@@ -944,7 +944,7 @@ int data_network_node_create_block()
     {
       usleep(200000);
       get_current_UTC_time;
-   } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50); 
+   } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50); 
   }
   
   return 1;
@@ -1601,7 +1601,7 @@ int start_part_4_of_round()
     {
       usleep(200000);
       get_current_UTC_time;
-    } while (current_UTC_date_and_time->tm_min % 5 != 4 || current_UTC_date_and_time->tm_sec % 60 != 50);
+    } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50);
 
     // have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
@@ -4338,7 +4338,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memset(data3,0,sizeof(data3));
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
+  if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
   {
     send_data(CLIENT_SOCKET,"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",0,0,"");
     return 0;
@@ -4513,7 +4513,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   memset(data3,0,sizeof(data3));
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
+  if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
   {
     return 1;
   }
@@ -5835,19 +5835,19 @@ int socket_thread(int client_socket)
  {  
    server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec % 60 >= 10 && current_UTC_date_and_time->tm_sec % 60 < 30)
+ else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec >= 10 && current_UTC_date_and_time->tm_sec < 30)
  {
    server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
  }         
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec % 60 < 10)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec < 10)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec % 60 >= 30 && current_UTC_date_and_time->tm_sec % 60 < 40)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec >= 30 && current_UTC_date_and_time->tm_sec < 40)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time->tm_sec % 60 >= 45 && current_UTC_date_and_time->tm_sec % 60 < 55) || (current_UTC_date_and_time->tm_min % 5 == 4 && current_UTC_date_and_time->tm_sec % 60 >= 30 && current_UTC_date_and_time->tm_sec % 60 < 40)))
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time->tm_sec >= 45 && current_UTC_date_and_time->tm_sec < 55) || (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec >= 30 && current_UTC_date_and_time->tm_sec < 40)))
  {
    server_receive_data_socket_node_to_node((const char*)buffer);
  }
