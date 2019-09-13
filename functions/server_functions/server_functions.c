@@ -2601,7 +2601,6 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
     pointer_reset_database_array; \
   } \
   return 400;
-  
 
   #define pointer_reset_database_array \
   for (count = 0; count < 11; count++) \
@@ -2737,7 +2736,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
   database_data.count++;
   
-  memset(data,0,strnlen(data,BUFFER_SIZE));
+  memset(data,0,strlen(data));
 
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_document_array(&database_data,data,DATABASE_FIELDS) == 0)
@@ -2806,6 +2805,13 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
       pointer_reset(database_data.item[count][counter]); \
       pointer_reset(database_data.value[count][counter]); \
     } \
+  }
+
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
   }
 
   // get how many documents are in the database
@@ -2921,6 +2927,8 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     exit(0);
   }
 
+  memset(data2,0,sizeof(data2));
+
   // get the parameter1
   memcpy(data2,&DATA[28],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-28);
 
@@ -3018,7 +3026,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   memcpy(database_data.value[18],data2,strnlen(data2,BUFFER_SIZE));
   database_data.count++;
 
-  memset(message,0,strnlen(message,BUFFER_SIZE)); 
+  memset(message,0,strlen(message)); 
 
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_document_array(&database_data,message,DATABASE_FIELDS) == 0)
@@ -3084,6 +3092,15 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
     pointer_reset(database_data.value[count]); \
   }
 
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  memset(data2,0,sizeof(data2));
+
   // get the parameter1
   memcpy(data2,&DATA[29],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-29);
 
@@ -3134,7 +3151,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(0);
   }
   
-  memset(message,0,strnlen(message,BUFFER_SIZE));
+  memset(message,0,strlen(message));
 
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_document_array(&database_data,message,DATABASE_FIELDS) == 0)
@@ -3154,6 +3171,165 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   #undef DATABASE_COLLECTION
   #undef DATABASE_FIELDS
   #undef GET_DELEGATES_INFORMATION_ERROR
+  #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_delegates_voters_list
+Description: Runs the code when the server receives /getdelegatesvoterslist
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET, const char* DATA)
+{
+    // Variables
+  char data2[BUFFER_SIZE];
+  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));  
+  int count = 0;
+  int counter = 0;
+  struct database_multiple_documents_fields database_data;
+  int document_count = 0;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(settings) \
+  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memcpy(message,"{\"Error\":\"Could not get the delegates voters list\"}",51); \
+  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  pointer_reset(message); \
+  if (settings == 0) \
+  { \
+    pointer_reset_database_array; \
+  } \
+  return 0;
+
+  #define pointer_reset_database_array \
+  for (count = 0; count < document_count; count++) \
+  { \
+    for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++) \
+    { \
+      pointer_reset(database_data.item[count][counter]); \
+      pointer_reset(database_data.value[count][counter]); \
+    } \
+  }
+  
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  memset(data2,0,sizeof(data2));
+
+  // get the parameter1
+  memcpy(data2,&DATA[28],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-28);
+
+  // error check
+  if (strncmp(data2,"",BUFFER_SIZE) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(1);
+  } 
+
+  const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
+
+  // get the delegates public address
+  if (memcmp(data2,XCASH_WALLET_PREFIX,3) != 0 || DATA_LENGTH != XCASH_WALLET_LENGTH)
+  {
+    memcpy(message,"{\"delegate_name\":\"",18);
+    memcpy(message+18,data2,DATA_LENGTH);
+    memcpy(message+18+DATA_LENGTH,"\"}",2);
+    memset(data2,0,sizeof(data2));
+
+    if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"public_address",data2,0) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(1);
+    }
+  }
+
+  // create the message
+  memset(message,0,strlen(message));
+  memcpy(message,"{\"public_address_voted_for\":\"",29);
+  memcpy(message+29,data2,XCASH_WALLET_LENGTH);
+  memcpy(message+127,"\"}",2);
+
+  // check how many reserve proofs are for the public address
+  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  { 
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"reserve_proofs_",15);
+    sprintf(data2+15,"%d",count);
+
+    counter = count_documents_in_collection(DATABASE_NAME,data2,message,0);
+    if (counter < 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(1);
+    }
+    document_count += counter;
+  }
+  if (document_count <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(1);
+  }
+
+  // initialize the database_multiple_documents_fields struct
+  fprintf(stderr,"%d",document_count);
+  for (count = 0; count < document_count; count++)
+  {
+    for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++)
+    {
+      database_data.item[count][counter] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+      database_data.value[count][counter] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+
+      if (database_data.item[count][counter] == NULL || database_data.value[count][counter] == NULL)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(1);
+      }
+    }
+  }
+  database_data.document_count = 0;
+  database_data.database_fields_count = 0;
+
+  // get all of the reserve proofs for the public address
+  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  { 
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"reserve_proofs_",15);
+    sprintf(data2+15,"%d",count);
+
+    counter = count_documents_in_collection(DATABASE_NAME,data2,message,0);
+    if (counter > 0)
+    {      
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data2,"",&database_data,1,counter,0,"",0) == 0)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(0);
+      }
+    }
+  }
+
+  memset(message,0,strlen(message)); 
+
+  if (create_json_data_from_database_multiple_documents_array(&database_data,message,"") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(0);
+  }  
+
+  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(0);
+  }
+
+  pointer_reset_database_array;
+  pointer_reset(message);
+  return 1;
+
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR
   #undef pointer_reset_database_array
 }
 
@@ -5866,6 +6042,10 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"GET /getdelegatesinformation?") != NULL)
  {
    server_receive_data_socket_get_delegates_information(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"GET /getdelegatesvoterslist?") != NULL)
+ {
+   server_receive_data_socket_get_delegates_voters_list(client_socket,(const char*)buffer);
  } 
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
  {
