@@ -3045,6 +3045,122 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_delegates_information
+Description: Runs the code when the server receives /getdelegatesinformation
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET, const char* DATA)
+{
+  // Variables
+  char data2[BUFFER_SIZE];
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));  
+  int count = 0;
+  struct database_document_fields database_data;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  #define DATABASE_FIELDS "total_vote_count|total_vote_count_number|IP_address|delegate_name|block_verifier_score|online_status|block_verifier_total_rounds|block_verifier_online_total_rounds|block_verifier_online_percentage|block_producer_total_rounds|VRF_node_public_and_secret_key_total_rounds|VRF_node_random_data_total_rounds|VRF_node_next_main_nodes_total_rounds|block_producer_block_heights|VRF_node_public_and_secret_key_block_heights|VRF_node_random_data_block_heights|VRF_node_next_main_nodes_block_heights|"
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(settings) \
+  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
+  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  pointer_reset(message); \
+  if (settings == 0) \
+  { \
+    pointer_reset_database_array; \
+  } \
+  return 0;
+  
+  #define pointer_reset_database_array \
+  for (count = 0; count < TOTAL_DELEGATES_DATABASE_FIELDS; count++) \
+  { \
+    pointer_reset(database_data.item[count]); \
+    pointer_reset(database_data.value[count]); \
+  }
+
+  // get the parameter1
+  memcpy(data2,&DATA[29],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-29);
+
+  // error check
+  if (strncmp(data2,"",BUFFER_SIZE) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(1);
+  } 
+
+  const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
+  
+  // check if the data is a public address or a delegate name
+  memcpy(message,"{\"",2);
+  if (memcmp(data2,XCASH_WALLET_PREFIX,3) == 0 && DATA_LENGTH == XCASH_WALLET_LENGTH)
+  {
+    memcpy(message+2,"public_address\":\"",17);
+    memcpy(message+19,data2,DATA_LENGTH);
+    memcpy(message+19+DATA_LENGTH,"\"}",2);
+  }
+  else
+  {
+    memcpy(message+2,"delegate_name\":\"",16);
+    memcpy(message+18,data2,DATA_LENGTH);
+    memcpy(message+18+DATA_LENGTH,"\"}",2);
+  }
+  
+  // check if there is any data in the database that matches the message
+  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,message,0) <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(1);
+  }
+  
+  // initialize the database_document_fields struct 
+  for (count = 0; count < TOTAL_DELEGATES_DATABASE_FIELDS; count++)
+  {
+    database_data.item[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    if (database_data.item[count] == NULL || database_data.value[count] == NULL)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(1);
+    }
+  }
+  database_data.count = 0;
+  
+  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,&database_data,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(0);
+  }
+  
+  memset(message,0,strnlen(message,BUFFER_SIZE));
+
+  // create a json string out of the database array of item and value
+  if (create_json_data_from_database_document_array(&database_data,message,DATABASE_FIELDS) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(0);
+  }
+
+  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
+  }
+  
+  pointer_reset_database_array;
+  pointer_reset(message);
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef DATABASE_FIELDS
+  #undef GET_DELEGATES_INFORMATION_ERROR
+  #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list
 Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST message
 Parameters:
@@ -5746,6 +5862,10 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"GET /getdelegatesstatistics?") != NULL)
  {
    server_receive_data_socket_get_delegates_statistics(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"GET /getdelegatesinformation?") != NULL)
+ {
+   server_receive_data_socket_get_delegates_information(client_socket,(const char*)buffer);
  } 
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
  {
