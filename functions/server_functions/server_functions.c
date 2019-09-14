@@ -3453,7 +3453,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
-  memcpy(message,"{\"Error\":\"Could not get the delegates voters list\"}",51); \
+  memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
   if (settings == 0) \
   { \
@@ -3553,6 +3553,96 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   #undef TOTAL_BLOCKS_FOUND_DATABASE_FIELDS
   #undef SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR
+  #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_blocks_found
+Description: Runs the code when the server receives /getblocksfound
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
+{
+  // Variables
+  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));  
+  int count = 0;
+  int counter = 0;
+  struct database_multiple_documents_fields database_data;
+  int document_count = 0;
+
+  // define macros
+  #define DATABASE_COLLECTION "blocks_found"
+  #define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(settings) \
+  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memcpy(message,"{\"Error\":\"Could not get the delegates blocks found\"}",52); \
+  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  pointer_reset(message); \
+  if (settings == 0) \
+  { \
+    pointer_reset_database_array; \
+  } \
+  return 0;
+
+  #define pointer_reset_database_array \
+  for (count = 0; count < document_count; count++) \
+  { \
+    for (counter = 0; counter < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; counter++) \
+    { \
+      pointer_reset(database_data.item[count][counter]); \
+      pointer_reset(database_data.value[count][counter]); \
+    } \
+  }
+
+  // get the total blocks found
+  document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,0);
+
+  // initialize the database_data struct 
+  for (count = 0; count < document_count; count++)
+  {
+    for (counter = 0; counter < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; counter++)
+    {
+      database_data.item[count][counter] = (char*)calloc(100,sizeof(char));
+      database_data.value[count][counter] = (char*)calloc(100,sizeof(char));
+
+      if (database_data.item[count][counter] == NULL || database_data.value[count][counter] == NULL)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1);
+      }
+    }
+  }
+  database_data.document_count = 0;
+  database_data.database_fields_count = 0;
+
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_data,1,document_count,0,"",0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
+  }
+  
+  if (create_json_data_from_database_multiple_documents_array(&database_data,message,"") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
+  } 
+  
+  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
+  }
+  
+  pointer_reset(message);
+  pointer_reset_database_array; 
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR
   #undef pointer_reset_database_array
 }
 
@@ -6277,6 +6367,10 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"GET /shareddelegateswebsitegetstatistics HTTP/") != NULL && shared_delegates_website == 1)
  {
    server_receive_data_socket_shared_delegates_website_get_statistics(client_socket);
+ } 
+ else if (strstr(buffer,"GET /getblocksfound HTTP/") != NULL && shared_delegates_website == 1)
+ {
+   server_receive_data_socket_get_blocks_found(client_socket);
  } 
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
  {
