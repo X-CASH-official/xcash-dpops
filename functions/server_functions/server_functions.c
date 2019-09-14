@@ -2930,7 +2930,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   memset(data2,0,sizeof(data2));
 
   // get the parameter1
-  memcpy(data2,&DATA[28],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-28);
+  memcpy(data2,&DATA[39],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-39);
 
   // error check
   if (strncmp(data2,"",BUFFER_SIZE) == 0)
@@ -3102,7 +3102,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   memset(data2,0,sizeof(data2));
 
   // get the parameter1
-  memcpy(data2,&DATA[29],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-29);
+  memcpy(data2,&DATA[40],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-40);
 
   // error check
   if (strncmp(data2,"",BUFFER_SIZE) == 0)
@@ -3189,7 +3189,7 @@ Return: 0 if an error has occured, 1 if successfull
 
 int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET, const char* DATA)
 {
-    // Variables
+  // Variables
   char data2[BUFFER_SIZE];
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));  
   int count = 0;
@@ -3229,7 +3229,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   memset(data2,0,sizeof(data2));
 
   // get the parameter1
-  memcpy(data2,&DATA[28],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-28);
+  memcpy(data2,&DATA[39],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-39);
 
   // error check
   if (strncmp(data2,"",BUFFER_SIZE) == 0)
@@ -3279,7 +3279,6 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   }
 
   // initialize the database_multiple_documents_fields struct
-  fprintf(stderr,"%d",document_count);
   for (count = 0; count < document_count; count++)
   {
     for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++)
@@ -3331,6 +3330,94 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
 
   #undef SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR
   #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_round_statistics
+Description: Runs the code when the server receives /getroundstatistics
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, const char* DATA)
+{
+  // Variables
+  char message[BUFFER_SIZE];  
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];  
+  size_t count = 0;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR \
+  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memcpy(message,"{\"Error\":\"Could not get the round statistics\"}",46); \
+  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  return 0;
+
+  memset(message,0,sizeof(message));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  // get the parameter1
+  memcpy(data2,&DATA[35],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-35);
+
+  // error check
+  if (strncmp(data2,"",BUFFER_SIZE) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR;
+  } 
+
+  const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
+
+  // calculate what reserve_bytes database the reserve bytes data will be in
+  sscanf(data2,"%zu", &count);
+  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR;
+  }
+
+  count = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+  memcpy(data3,"reserve_bytes_",14);
+  sprintf(data3+14,"%zu",count);
+
+  // create the message
+  memcpy(message,"{\"block_height\":\"",17);
+  memcpy(message+17,data2,strnlen(data2,sizeof(message)));
+  memcpy(message+strlen(message),"\"}",2);
+
+  // check if there is any data in the database that matches the message
+  if (count_documents_in_collection(DATABASE_NAME,data3,message,0) <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR;
+  }
+
+  memset(data2,0,sizeof(data2));
+
+  if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR;
+  }
+
+  // create a json string out of the database array of item and value
+  memset(message,0,sizeof(message));
+  memcpy(message,"{\"reserve_bytes\":\"",18);
+  memcpy(message+18,data2,strnlen(data2,sizeof(message)));
+  memcpy(message+strlen(message),"\"}",2);
+
+  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR;
+  }
+  
+  return 1;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR
 }
 
 
@@ -6035,17 +6122,21 @@ int socket_thread(int client_socket)
  {
    server_receive_data_socket_get_delegates(client_socket);
  } 
- else if (strstr(buffer,"GET /getdelegatesstatistics?") != NULL)
+ else if (strstr(buffer,"GET /getdelegatesstatistics?parameter1=") != NULL)
  {
    server_receive_data_socket_get_delegates_statistics(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"GET /getdelegatesinformation?") != NULL)
+ else if (strstr(buffer,"GET /getdelegatesinformation?parameter1=") != NULL)
  {
    server_receive_data_socket_get_delegates_information(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"GET /getdelegatesvoterslist?") != NULL)
+ else if (strstr(buffer,"GET /getdelegatesvoterslist?parameter1=") != NULL)
  {
    server_receive_data_socket_get_delegates_voters_list(client_socket,(const char*)buffer);
+ } 
+ else if (strstr(buffer,"GET /getroundstatistics?parameter1=") != NULL)
+ {
+   server_receive_data_socket_get_round_statistics(client_socket,(const char*)buffer);
  } 
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
  {
