@@ -49,4 +49,9 @@ int main_network_data_node_create_block; // 1 if the main network data node can 
 int current_block_verifier_settings; // 1 if the delegate is a block verifier, 0 if not
 int database_settings; // 1 if the database can have documents added to it, 0 if not
 
+int delegates_website; // 1 if the running the delegates websites, 0 if not
+int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
+double fee; // the fee
+long long int minimum_amount; // the minimum amount to send a payment
+
 #endif

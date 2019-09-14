@@ -2694,7 +2694,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   sscanf(data,"%zu", &current_block_height);
   count = current_block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT;  
   memset(data,0,strlen(data));
-  sprintf(data,"%zu",count);
+  snprintf(data,MAXIMUM_BUFFER_SIZE,"%zu",count);
 
   memcpy(database_data.item[database_data.count],"xcash_proof_of_stake_round_number",33);
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
@@ -2714,7 +2714,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   }
 
   memset(data,0,strlen(data));
-  sprintf(data,"%zu",count2);
+  snprintf(data,MAXIMUM_BUFFER_SIZE,"%zu",count2);
 
   memcpy(database_data.item[database_data.count],"total_votes",11);
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
@@ -2730,7 +2730,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   number = ((size_t)((((double)count2) / (generated_supply - (XCASH_PREMINE_TOTAL_SUPPLY - XCASH_PREMINE_CIRCULATING_SUPPLY))) * 100) | 0);
 
   memset(data,0,strlen(data));
-  sprintf(data,"%zu",number);
+  snprintf(data,MAXIMUM_BUFFER_SIZE,"%zu",number);
 
   memcpy(database_data.item[database_data.count],"xcash_proof_of_stake_circulating_percentage",43);
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
@@ -2991,6 +2991,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     {
       database_multiple_documents_fields.item[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
       database_multiple_documents_fields.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      
       if (database_multiple_documents_fields.item[count][counter] == NULL || database_multiple_documents_fields.value[count][counter] == NULL)
       {
         SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
@@ -3021,7 +3022,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   }
 
   memset(data2,0,sizeof(data2));
-  sprintf(data2, "%zu", counter);
+  snprintf(data2, sizeof(data2), "%zu", counter);
   memcpy(database_data.item[18],"current_delegate_rank",21);
   memcpy(database_data.value[18],data2,strnlen(data2,BUFFER_SIZE));
   database_data.count++;
@@ -3264,7 +3265,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   { 
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    sprintf(data2+15,"%d",count);
+    snprintf(data2+15,sizeof(data2),"%d",count);
 
     counter = count_documents_in_collection(DATABASE_NAME,data2,message,0);
     if (counter < 0)
@@ -3300,7 +3301,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   { 
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    sprintf(data2+15,"%d",count);
+    snprintf(data2+15,sizeof(data2),"%d",count);
 
     counter = count_documents_in_collection(DATABASE_NAME,data2,message,0);
     if (counter > 0)
@@ -3384,7 +3385,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
 
   count = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memcpy(data3,"reserve_bytes_",14);
-  sprintf(data3+14,"%zu",count);
+  snprintf(data3+14,sizeof(data3),"%zu",count);
 
   // create the message
   memcpy(message,"{\"block_height\":\"",17);
@@ -6110,31 +6111,31 @@ int socket_thread(int client_socket)
  {
    server_received_data_xcash_proof_of_stake_test_data(client_socket,(const char*)buffer);
  }
- else if (strstr(buffer,"GET /") != NULL && (strstr(buffer,".html") != NULL || strstr(buffer,".js") != NULL || strstr(buffer,".css") != NULL || strstr(buffer,".png") != NULL || strstr(buffer,".jpg") != NULL || strstr(buffer,".jpeg") != NULL))
+ else if (strstr(buffer,"GET /") != NULL && (delegates_website == 1 || shared_delegates_website == 1) && (strstr(buffer,".html") != NULL || strstr(buffer,".js") != NULL || strstr(buffer,".css") != NULL || strstr(buffer,".png") != NULL || strstr(buffer,".jpg") != NULL || strstr(buffer,".jpeg") != NULL))
  {
    server_receive_data_socket_get_files(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"GET /delegateswebsitegetstatistics HTTP/") != NULL)
+ else if (strstr(buffer,"GET /delegateswebsitegetstatistics HTTP/") != NULL && delegates_website == 1)
  {
    server_receive_data_socket_delegates_website_get_statistics(client_socket);
  } 
- else if (strstr(buffer,"GET /getdelegates HTTP/") != NULL)
+ else if (strstr(buffer,"GET /getdelegates HTTP/") != NULL && delegates_website == 1)
  {
    server_receive_data_socket_get_delegates(client_socket);
  } 
- else if (strstr(buffer,"GET /getdelegatesstatistics?parameter1=") != NULL)
+ else if (strstr(buffer,"GET /getdelegatesstatistics?parameter1=") != NULL && delegates_website == 1)
  {
    server_receive_data_socket_get_delegates_statistics(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"GET /getdelegatesinformation?parameter1=") != NULL)
+ else if (strstr(buffer,"GET /getdelegatesinformation?parameter1=") != NULL && delegates_website == 1)
  {
    server_receive_data_socket_get_delegates_information(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"GET /getdelegatesvoterslist?parameter1=") != NULL)
+ else if (strstr(buffer,"GET /getdelegatesvoterslist?parameter1=") != NULL && delegates_website == 1)
  {
    server_receive_data_socket_get_delegates_voters_list(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"GET /getroundstatistics?parameter1=") != NULL)
+ else if (strstr(buffer,"GET /getroundstatistics?parameter1=") != NULL && delegates_website == 1)
  {
    server_receive_data_socket_get_round_statistics(client_socket,(const char*)buffer);
  } 

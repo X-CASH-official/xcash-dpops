@@ -97,6 +97,7 @@ Using define statements instead of constants for increased efficiency
 // Database
 #define DATABASE_CONNECTION "mongodb://localhost:27017" // The database connection string
 #define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
+#define DATABASE_NAME_DELEGATES "XCASH_PROOF_OF_STAKE_DELEGATES" // The name of the database for the delegates
 #define DATABASE_ARRAY_COUNT 150 // The maximum amount of parsed item and value from the database
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
 #define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The total delegates database fields
@@ -115,5 +116,11 @@ Using define statements instead of constants for increased efficiency
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"
 #define INVALID_PARAMETERS_ERROR_MESSAGE \
 "\n\nParameters\n" \
-"--test - Run the test to make sure the program is compatible with your system\n"
+"--test - Run the test to make sure the program is compatible with your system\n\n" \
+"--delegates_website - Run the delegates website\n\n" \
+"--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
+"The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \
+"The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)\n\n" \
+"--test_data_add - Add test data to the databases\n\n" \
+"--test_data_remove - Remove test data from the databases\n\n"
 #endif

@@ -346,12 +346,90 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not get the wallets public address");
   }
 
+  // set the default delegate website and shared delegate website settings
+  delegates_website = 0;
+  shared_delegates_website = 0;
+
   // check if the program needs to run the test
   if (parameters_count == 2)
   {
     if (strncmp(parameters[1],"--test",BUFFER_SIZE) == 0)
     {
       test();
+      database_reset;
+      exit(0);
+    }
+    else if (strncmp(parameters[1],"--delegates_website",BUFFER_SIZE) == 0)
+    {
+      delegates_website = 1;
+    }
+    else if (strncmp(parameters[1],"--test_data_add",BUFFER_SIZE) == 0)
+    {
+      memset(data,0,sizeof(data));
+      
+      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\",\"block_count\":\"10\"}",0);
+      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\",\"block_count\":\"10\"}",0);
+
+      memset(data,0,strlen(data));
+      memcpy(data,"{\"public_address\":\"",19);
+      memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+      memcpy(data+117,"\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}",59);
+      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses",data,0);
+
+      memset(data,0,strlen(data));
+      memcpy(data,"{\"public_address\":\"",19);
+      memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+      memcpy(data+117,"\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}",73);
+      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses_payments",data,0);
+      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses_payments",data,0);
+
+      memset(data,0,strlen(data));
+      memcpy(data,"{\"public_address_created_reserve_proof\":\"",41);
+      memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+      memcpy(data+139,"\",\"public_address_voted_for\":\"",30);
+      memcpy(data+169,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+      memcpy(data+267,"\",\"total\":\"10\",\"reserve_proof\":\"15\"}",36);
+      insert_document_into_collection_json(DATABASE_NAME,"reserve_proofs_5",data,0);
+      insert_document_into_collection_json(DATABASE_NAME,"reserve_proofs_10",data,0);
+      insert_document_into_collection_json(DATABASE_NAME,"reserve_proofs_10",data,0);
+      insert_document_into_collection_json(DATABASE_NAME,"reserve_proofs_15",data,0);
+
+      color_print("The database test data has been added successfully\n","green");
+      database_reset;
+      exit(0);
+    }
+    else if (strncmp(parameters[1],"--test_data_remove",BUFFER_SIZE) == 0)
+    {
+      memset(data,0,strlen(data));
+      
+      delete_document_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","{\"block_height\":\"5\"}",0);
+      delete_document_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","{\"block_height\":\"5\"}",0);
+
+      memset(data,0,strlen(data));
+      memcpy(data,"{\"public_address\":\"",19);
+      memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+      memcpy(data+117,"\"}",2);
+      delete_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,0);
+
+      memset(data,0,strlen(data));
+      memcpy(data,"{\"public_address\":\"",19);
+      memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+      memcpy(data+117,"\"}",2);
+      delete_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses_payments",data,0);
+      delete_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses_payments",data,0);
+
+      memset(data,0,strlen(data));
+      memcpy(data,"{\"public_address_voted_for\":\"",29);
+      memcpy(data+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+      memcpy(data+127,"\"}",2);
+      delete_document_from_collection(DATABASE_NAME,"reserve_proofs_5",data,0);
+      delete_document_from_collection(DATABASE_NAME,"reserve_proofs_10",data,0);
+      delete_document_from_collection(DATABASE_NAME,"reserve_proofs_10",data,0);
+      delete_document_from_collection(DATABASE_NAME,"reserve_proofs_15",data,0);
+
+      color_print("The database test data has been removed successfully\n","green");
+      database_reset;
+      exit(0);
     }
     else
     {
@@ -360,9 +438,28 @@ int main(int parameters_count, char* parameters[])
       error_message.total++;
       print_error_message; 
       printf(INVALID_PARAMETERS_ERROR_MESSAGE);
-    }  
-    database_reset;
-    exit(0);
+      database_reset;
+      exit(0);
+    }      
+  }
+  else if (parameters_count == 6)
+  {
+    if (strncmp(parameters[1],"--shared_delegates_website",BUFFER_SIZE) == 0 && strncmp(parameters[2],"--fee",BUFFER_SIZE) == 0 || strncmp(parameters[4],"--minimum_amount",BUFFER_SIZE) == 0)
+    {
+      shared_delegates_website = 1;
+      sscanf(parameters[3], "%lf", &fee);
+      sscanf(parameters[5], "%lld", &minimum_amount);
+    }
+    else
+    {
+      memcpy(error_message.function[error_message.total],"main",4);
+      memcpy(error_message.data[error_message.total],"Invalid parameters",18);
+      error_message.total++;
+      print_error_message; 
+      printf(INVALID_PARAMETERS_ERROR_MESSAGE);
+      database_reset;
+      exit(0);
+    }      
   }
 
   // get the current block height
