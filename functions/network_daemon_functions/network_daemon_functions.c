@@ -9,6 +9,7 @@
 #include "structures.h"
 #include "variables.h"
 
+#include "database_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "server_functions.h"
@@ -456,4 +457,77 @@ int get_path(char *result, const int MESSAGE_SETTINGS)
   return 1;
 
   #undef GET_PATH_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: check_found_block
+Description: Checks to see if your wallet address found the previous block on the network
+Return: 0 if an error has occured, 1 if you did not find the previous block on the network, 2 if you did find the previous block on the network
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_found_block()
+{  
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char* message;
+  char result[BUFFER_SIZE];
+  size_t block_height;
+  size_t count;
+  size_t counter;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(result,0,sizeof(result));
+
+  // get the previous block height
+  sscanf(current_block_height, "%zu", &block_height);
+  block_height--;
+  memset(result,0,sizeof(result));
+  sprintf(data2,"%zu",block_height);
+
+  // create the message
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"block_height\":\"",17);
+  memcpy(data+17,data2,strnlen(data2,sizeof(data)));
+  memcpy(data+strlen(data),"\"}",2);
+
+  // get the reserve_bytes database for the block
+  count = ((block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"reserve_bytes_",14);
+  snprintf(data2+14,sizeof(data2)-1,"%zu",count);
+
+  // get the reserve byte data
+  memset(result,0,sizeof(result));
+  if (read_document_field_from_collection(DATABASE_NAME,data2,data,"reserve_bytes",result,0) == 0)
+  {
+    return 0;
+  }
+
+  // convert the public_address to a string
+  memset(data2,0,sizeof(data2));
+  memset(data,0,sizeof(data));
+  for (count = 0, counter = 0; count < XCASH_WALLET_LENGTH*2; counter++, count += 2)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,&xcash_wallet_public_address[count],2);
+    data[counter] = (int)strtol(data2, NULL, 16);
+  }
+
+  // check if the block verifier was the block producer for the previous block
+  message = strstr(result,data);
+  if (message != NULL && strstr(message,data) != NULL)
+  {
+    return 2;
+  }
+  return 1;
 }
