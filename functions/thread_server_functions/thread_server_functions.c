@@ -177,7 +177,8 @@ void* check_reserve_proofs_timer_thread()
   memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
-  print_error_message;
+  print_error_message; \
+  continue;
 
   #define SEND_DATA_SOCKET_THREAD(message) \
   sleep(BLOCK_VERIFIERS_SETTINGS); \
@@ -569,10 +570,11 @@ void* check_delegates_online_status_timer_thread()
 -----------------------------------------------------------------------------------------------------------
 Name: add_block_to_blocks_found
 Description: Adds the block to the blocks_found database
+Return: 0 if an error has occured, else the block reward
 -----------------------------------------------------------------------------------------------------------
 */
 
-int add_block_to_blocks_found()
+long long int add_block_to_blocks_found()
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -690,16 +692,17 @@ int add_block_to_blocks_found()
   memcpy(data+strlen(data),"\",\"block_count\":\"",17);
   memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
-  
+
   if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"blocks_found",data,0) == 0)
   {
     ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not add the block to the blocks_found database.\nCould not check if the block verifier found the last block.");
   }
   pointer_reset_database_array;
-  return 1;
+  return block_reward_number;
 
   #undef TOTAL_BLOCKS_FOUND_DATABASE_FIELDS
   #undef ADD_BLOCK_TO_BLOCKS_FOUND_ERROR
+  #undef pointer_reset_database_array
 }
 
 
@@ -868,6 +871,55 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
 
   #undef CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR
   #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: block_height_timer_thread
+Description: Checks if the block verifier has found a block
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* block_height_timer_thread()
+{
+  // Variables
+  long long int block_reward_number;
+
+  // define macros
+  #define BLOCK_HEIGHT_TIMER_THREAD_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"block_height_timer_thread",25); \
+  memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
+  error_message.total++; \
+  print_error_message; \
+  continue;
+
+  for (;;)
+  {   
+    get_current_UTC_time;
+    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time->tm_sec == 10)
+    {
+      // check if you found the previous block in the network
+      if (check_found_block() == 2)
+      {
+        block_reward_number = add_block_to_blocks_found();
+        if (block_reward_number == 0)
+        {
+          BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not add the previous block that the block verifier found to the database");
+        }
+
+        if (calculate_block_reward_for_each_delegate(block_reward_number) == 0)
+        {
+          BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not calculate the block reward for each delegate");
+        }
+      }
+    }
+    usleep(200000);
+  }
+  pthread_exit((void *)(intptr_t)1);
+
+  #undef BLOCK_HEIGHT_TIMER_THREAD_ERROR
 }
 
 

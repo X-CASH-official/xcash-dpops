@@ -2648,7 +2648,11 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
     database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
     if (database_data.item[count] == NULL || database_data.value[count] == NULL)
     {
-      SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(1);
+      memcpy(error_message.function[error_message.total],"server_receive_data_socket_delegates_website_get_statistics",59);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
+      exit(0);
     }
   }
   database_data.count = 0;
@@ -2662,7 +2666,11 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
       database_multiple_documents_fields.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
       if (database_multiple_documents_fields.item[count][counter] == NULL || database_multiple_documents_fields.value[count][counter] == NULL)
       {
-        SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(1);
+        memcpy(error_message.function[error_message.total],"server_receive_data_socket_delegates_website_get_statistics",59);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
       }
     }
   }
@@ -2834,7 +2842,11 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
       database_data.value[count][counter] = (char*)calloc(BUFFER_SIZE,sizeof(char));
       if (database_data.item[count][counter] == NULL || database_data.value[count][counter] == NULL)
       {
-        SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(1);
+        memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates",40);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
       }
     }
   }
@@ -2968,7 +2980,11 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
     if (database_data.item[count] == NULL || database_data.value[count] == NULL)
     {
-      SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
+      memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_statistics",51);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
+      exit(0);
     }
   }
   database_data.count = 0;
@@ -2994,7 +3010,11 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
       
       if (database_multiple_documents_fields.item[count][counter] == NULL || database_multiple_documents_fields.value[count][counter] == NULL)
       {
-        SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
+        memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_statistics",51);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
       }
     }
   }
@@ -3142,7 +3162,11 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
 
     if (database_data.item[count] == NULL || database_data.value[count] == NULL)
     {
-      SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(1);
+      memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_information",52);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
+      exit(0);
     }
   }
   database_data.count = 0;
@@ -3289,7 +3313,11 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
 
       if (database_data.item[count][counter] == NULL || database_data.value[count][counter] == NULL)
       {
-        SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(1);
+        memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_voters_list",52);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
       }
     }
   }
@@ -3488,7 +3516,11 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
       if (database_multiple_documents_fields.item[count][counter] == NULL || database_multiple_documents_fields.value[count][counter] == NULL)
       {
-        SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(1);
+        memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
       }
     }
   }
@@ -3615,7 +3647,11 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
 
       if (database_data.item[count][counter] == NULL || database_data.value[count][counter] == NULL)
       {
-        SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1);
+        memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_blocks_found",43);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
       }
     }
   }
@@ -3720,7 +3756,11 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
 
     if (database_data.item[count] == NULL || database_data.value[count] == NULL)
     {
-      SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1);
+      memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_information",57);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
+      exit(0);
     }
   }
   database_data.count = 0;
@@ -3841,7 +3881,11 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
 
       if (database_data.item[count][counter] == NULL || database_data.value[count][counter] == NULL)
       {
-        SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1);
+        memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_payment_information",65);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
       }
     }
   }

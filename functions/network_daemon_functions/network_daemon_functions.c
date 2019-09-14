@@ -499,12 +499,12 @@ int get_previous_block_information(char *block_hash, char *block_reward, char *b
 
   // get the previous block information
   memset(data2,0,sizeof(data2));
-  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"get previous block information",MESSAGE_SETTINGS) <= 0)
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"get previous block information",0) <= 0)
   { 
     return 0;
   }
 
-  if (parse_json_data(data2,"hash",block_hash) == 0 || parse_json_data(data2,"reward",block_reward) == 0 || parse_json_data(data2,"timestamp",block_date_and_time) == 0)
+  if (parse_json_data(data2,"hash",block_hash,BUFFER_SIZE) == 0 || parse_json_data(data2,"reward",block_reward,BUFFER_SIZE) == 0 || parse_json_data(data2,"timestamp",block_date_and_time,BUFFER_SIZE) == 0)
   {
     return 0;
   }
