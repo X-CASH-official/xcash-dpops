@@ -463,6 +463,58 @@ int get_path(char *result, const int MESSAGE_SETTINGS)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_previous_block_information
+Description: Gets the information of the previous block of the network
+Parameters:
+  block_date_and_time - The string where you want the previous block date and time to be saved to
+  block_hash - The string where you want the previous block hash to be saved to
+  block_reward - The string where you want the previous block reward to be saved to
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_previous_block_information(char *block_hash, char *block_reward, char *block_date_and_time)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  size_t block_height;
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  
+  // get the previous block height
+  sscanf(current_block_height, "%zu", &block_height);
+  block_height--;
+  sprintf(data2,"%zu",block_height);
+
+  // create the message
+  memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":",66);
+  memcpy(data+66,data2,strnlen(data2,sizeof(data)));
+  memcpy(data+66+strnlen(data2,sizeof(data)),"}}",2);
+
+  // get the previous block information
+  memset(data2,0,sizeof(data2));
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"get previous block information",MESSAGE_SETTINGS) <= 0)
+  { 
+    return 0;
+  }
+
+  if (parse_json_data(data2,"hash",block_hash) == 0 || parse_json_data(data2,"reward",block_reward) == 0 || parse_json_data(data2,"timestamp",block_date_and_time) == 0)
+  {
+    return 0;
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: check_found_block
 Description: Checks to see if your wallet address found the previous block on the network
 Return: 0 if an error has occured, 1 if you did not find the previous block on the network, 2 if you did find the previous block on the network
