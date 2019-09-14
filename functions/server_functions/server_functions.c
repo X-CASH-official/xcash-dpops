@@ -3650,6 +3650,122 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_public_address_information
+Description: Runs the code when the server receives /getpublicaddressinformation
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_public_address_information(const int CLIENT_SOCKET, const char* DATA)
+{
+  // Variables
+  char data2[BUFFER_SIZE];
+  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));  
+  int count = 0;
+  struct database_document_fields database_data;
+
+  // define macros
+  #define DATABASE_COLLECTION "public_addresses"
+  #define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(settings) \
+  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
+  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  pointer_reset(message); \
+  if (settings == 0) \
+  { \
+    pointer_reset_database_array; \
+  } \
+  return 0;
+  
+  #define pointer_reset_database_array \
+  for (count = 0; count < TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS; count++) \
+  { \
+    pointer_reset(database_data.item[count]); \
+    pointer_reset(database_data.value[count]); \
+  }
+
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL)
+  {
+    color_print("Could not allocate the memory needed on the heap","red");
+    exit(0);
+  }
+
+  memset(data2,0,sizeof(data2));
+
+  // get the parameter1
+  memcpy(data2,&DATA[48],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-48);
+
+  // error check
+  if (strncmp(data2,"",BUFFER_SIZE) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1);
+  } 
+
+  const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
+  
+  // check if the data is a public address or a delegate name
+  memcpy(message,"{\"",2);
+  memcpy(message+2,"public_address\":\"",17);
+  memcpy(message+19,data2,DATA_LENGTH);
+  memcpy(message+19+DATA_LENGTH,"\"}",2);
+  
+  // check if there is any data in the database that matches the message
+  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,message,0) <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(1);
+  }
+  
+  // initialize the database_document_fields struct 
+  for (count = 0; count < TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS; count++)
+  {
+    database_data.item[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+    database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    if (database_data.item[count] == NULL || database_data.value[count] == NULL)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(1);
+    }
+  }
+  database_data.count = 0;
+  
+  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,&database_data,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
+  }
+  
+  memset(message,0,strlen(message));
+
+  // create a json string out of the database array of item and value
+  if (create_json_data_from_database_document_array(&database_data,message,"") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
+  }
+
+  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
+  }
+  
+  pointer_reset_database_array;
+  pointer_reset(message);
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR
+  #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list
 Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST message
 Parameters:
@@ -6371,6 +6487,10 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"GET /getblocksfound HTTP/") != NULL && shared_delegates_website == 1)
  {
    server_receive_data_socket_get_blocks_found(client_socket);
+ } 
+ else if (strstr(buffer,"GET /getpublicaddressinformation?public_address=") != NULL && shared_delegates_website == 0)
+ {
+   server_receive_data_socket_get_public_address_information(client_socket,(const char*)buffer);
  } 
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
  {
