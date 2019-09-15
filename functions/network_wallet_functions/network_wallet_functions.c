@@ -73,6 +73,53 @@ int get_public_address(const int MESSAGE_SETTINGS)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: send_payment
+Description: Sends a payment
+Parameters:
+  PUBLIC_ADDRESS - The public address to send the payment to
+  TOTAL - The total amount for the payment (in atomic units)
+  tx_hash - The transaction hash of the payment
+  tx_key - The transaction key of the payment
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int send_payment(const char* PUBLIC_ADDRESS, const char* TOTAL, char *tx_hash, char *tx_key)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char data[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+
+  memset(data,0,sizeof(data));
+  memset(message,0,sizeof(message));
+
+  // create the message
+  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"transfer_split\",\"params\":{\"destinations\":[{\"amount\":",88);
+  memcpy(message+88,TOTAL,strnlen(TOTAL,BUFFER_SIZE);
+  memcpy(message+strlen(message),",\"address\":\"",12);
+  memcpy(message+strlen(message),PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\"}],\"priority\":0,\"ring_size\":21,\"get_tx_keys\": true}}",53);
+
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,600,"send payment",0) <= 0)
+  {  
+    return 0;
+  }
+  
+  if (parse_json_data(data,"tx_hash_list",tx_hash,BUFFER_SIZE) == 0 || parse_json_data(data,"tx_key_list",tx_key,BUFFER_SIZE) == 0)
+  {
+    return 0;
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: sign_network_block_string
 Description: Signs the network block string
 Parameters:
