@@ -99,7 +99,7 @@ int send_payment(const char* PUBLIC_ADDRESS, const char* TOTAL, char *tx_hash, c
 
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"transfer_split\",\"params\":{\"destinations\":[{\"amount\":",88);
-  memcpy(message+88,TOTAL,strnlen(TOTAL,BUFFER_SIZE);
+  memcpy(message+88,TOTAL,strnlen(TOTAL,sizeof(message)));
   memcpy(message+strlen(message),",\"address\":\"",12);
   memcpy(message+strlen(message),PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
   memcpy(message+strlen(message),"\"}],\"priority\":0,\"ring_size\":21,\"get_tx_keys\": true}}",53);

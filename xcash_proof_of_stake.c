@@ -46,6 +46,8 @@ int main(int parameters_count, char* parameters[])
   pthread_t thread_id_1;
   pthread_t thread_id_2;
   pthread_t thread_id_3;
+  pthread_t thread_id_4;
+  pthread_t thread_id_5;
   
   // define macros
   #define database_reset \
@@ -632,10 +634,10 @@ int main(int parameters_count, char* parameters[])
  
   // print_start_message("Starting all of the threads");
 
-  /*// start the block height timer thread
+  /*// start the current block height timer thread
   if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
-    MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
+    MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
   
   color_print("Started the current block height timer thread","green");*/
@@ -655,6 +657,27 @@ int main(int parameters_count, char* parameters[])
   }
 
   color_print("Started the check delegates online status timer thread","green");*/
+
+  /*// start the block height timer thread
+  if (shared_delegates_website == 1)
+  {
+    if (pthread_create(&thread_id_1, NULL, &block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_4) != 0)
+    {
+      MAIN_ERROR("Could not start the block_height_timer_thread");
+    }
+  
+    color_print("Started the current block height timer thread","green");
+
+    // start the payment timer thread
+    if (pthread_create(&thread_id_1, NULL, &payment_timer_thread, NULL) != 0 && pthread_detach(thread_id_5) != 0)
+    {
+      MAIN_ERROR("Could not start the block_height_timer_thread");
+    }
+  
+    color_print("Started the payment_timer_thread","green");
+   }*/
+
+  
   // start the server
   for (;;)
   {
