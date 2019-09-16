@@ -2505,6 +2505,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   unsigned char* data = (unsigned char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(unsigned char));
   char data2[BUFFER_SIZE];
   long file_size;
+  int settings = 0;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR \
@@ -2521,6 +2522,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   if (file_size == 0)
   {
     file_size = read_file(data,"index.html");
+    settings = 1;
     if (file_size == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
@@ -2529,7 +2531,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
 
   memset(data2,0,sizeof(data2));
 
-  if (strstr(MESSAGE,".html") != NULL)
+  if (strstr(MESSAGE,".html") != NULL || settings == 1)
   {
     memcpy(data2,"text/html",9);
   }
@@ -2548,7 +2550,12 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   else if (strstr(MESSAGE,".jpg") != NULL || strstr(MESSAGE,".jpeg") != NULL)
   {
     memcpy(data2,"image/jpeg",10);
-  }  
+  }
+  else
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
+  }
+  
 
   if (send_data(CLIENT_SOCKET,data,(const long)file_size,200,data2) == 0)
   {
@@ -2904,7 +2911,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define DATABASE_FIELDS ""
+  #define DATABASE_FIELDS "current_delegate_rank|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
@@ -6314,7 +6321,7 @@ int create_server(const int MESSAGE_SETTINGS)
 {
   // Constants
   const int SOCKET_OPTION = 1; 
-  const int THREADS = get_nprocs();
+  const int THREADS = get_nprocs()*2;
 
   // Variables
   char buffer[BUFFER_SIZE];
@@ -6541,7 +6548,7 @@ int socket_thread(int client_socket)
   } 
 
   // check if the message length is correct for the type of message
-  if (strstr,buffer,"GET / HTTP/" != NULL || strstr,buffer,"POST / HTTP/" != NULL)
+  if (strstr(buffer,"GET /") != NULL)
   {
     memcpy(data2,"HTTP ",5);
     memcpy(data2+5,buffer,strnlen(buffer,sizeof(data2)) - strnlen(strstr(buffer," HTTP/"),sizeof(data2)));
@@ -6610,10 +6617,6 @@ int socket_thread(int client_socket)
  {
    server_received_data_xcash_proof_of_stake_test_data(client_socket,(const char*)buffer);
  }
- else if (strstr(buffer,"GET /") != NULL && (delegates_website == 1 || shared_delegates_website == 1) && (strstr(buffer,".html") != NULL || strstr(buffer,".js") != NULL || strstr(buffer,".css") != NULL || strstr(buffer,".png") != NULL || strstr(buffer,".jpg") != NULL || strstr(buffer,".jpeg") != NULL))
- {
-   server_receive_data_socket_get_files(client_socket,(const char*)buffer);
- } 
  else if (strstr(buffer,"GET /delegateswebsitegetstatistics HTTP/") != NULL && delegates_website == 1)
  {
    server_receive_data_socket_delegates_website_get_statistics(client_socket);
@@ -6755,14 +6758,12 @@ int socket_thread(int client_socket)
    server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
  }  
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time->tm_sec >= 45 && current_UTC_date_and_time->tm_sec < 55) || (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec >= 30 && current_UTC_date_and_time->tm_sec < 40)))
- {
+ {   
    server_receive_data_socket_node_to_node((const char*)buffer);
  }
  else
  {
-   memset(buffer,0,strlen(buffer));
-   memcpy(buffer,"{\"Error\":\"Could not get the file\"}",34);
-   send_data(client_socket,buffer,strlen(buffer),400,"application/json");
+   server_receive_data_socket_get_files(client_socket,(const char*)buffer);
  }
 pointer_reset(buffer);
 return 1;

@@ -634,13 +634,13 @@ int main(int parameters_count, char* parameters[])
  
   // print_start_message("Starting all of the threads");
 
-  /*// start the current block height timer thread
+  // start the current block height timer thread
   if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
   {
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
   
-  color_print("Started the current block height timer thread","green");*/
+  color_print("Started the current block height timer thread","green");
 
   /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
@@ -676,16 +676,12 @@ int main(int parameters_count, char* parameters[])
   
     color_print("Started the payment_timer_thread","green");
    }*/
-
   
   // start the server
-  for (;;)
+  if (create_server(1) == 0)
   {
-    if (create_server(1) == 0)
-    {
-      MAIN_ERROR("Could not start the server");
-    }
-  } 
+    MAIN_ERROR("Could not start the server");
+  }
 
   database_reset;
   return 0;  

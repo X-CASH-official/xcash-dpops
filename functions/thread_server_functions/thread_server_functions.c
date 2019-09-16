@@ -1591,7 +1591,7 @@ void* socket_receive_data_thread(void* parameters)
   */ 
  for (;;)
  { 
-  while ((count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, 100)) > 0)
+  while ((count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, -1)) > 0)
   {
     for (count2 = 0; count2 < count; count2++)
     {

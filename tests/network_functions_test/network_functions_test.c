@@ -221,7 +221,7 @@ void general_network_test()
   if (settings == 1)
   {
     if (pthread_detach(thread_id) != 0)
-    {      
+    {
       color_print("FAILED! Test for creating the server","red");
       color_print("FAILED! Test for sending and receving data using sockets","red");
       settings = 0;
@@ -245,7 +245,7 @@ void general_network_test()
       color_print("FAILED! Test for sending and receving data using sockets","red");
     }
   }
- 
+  
   if (settings == 1)
   {
     memset(string,0,strlen(string));
@@ -258,7 +258,7 @@ void general_network_test()
   }
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-
+  
   // verify the message
   if (settings == 1)
   {
@@ -269,7 +269,7 @@ void general_network_test()
       settings = 0;
     }
   }
-
+  
   // parse the data
   if (settings == 1)
   {

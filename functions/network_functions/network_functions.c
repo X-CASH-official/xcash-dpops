@@ -959,7 +959,7 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
     }    
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
     recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
-    if (buffer[0] != '\0' && (strstr(buffer,STRING) == NULL || strstr(buffer,HTTP_SOCKET_END_STRING) == NULL))
+    if (buffer[0] != '\0' && (strstr(buffer,STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL))
     {
       // there is data, but this is not the final data
       memcpy(data+strlen(data),buffer,strnlen(buffer,BUFFER_SIZE));
