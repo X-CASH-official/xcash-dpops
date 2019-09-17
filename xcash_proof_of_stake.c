@@ -18,6 +18,7 @@
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
 #include "server_functions.h"
+#include "block_verifiers_synchronize_functions.h"
 #include "string_functions.h"
 #include "thread_server_functions.h"
 
