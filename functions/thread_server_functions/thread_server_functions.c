@@ -1604,6 +1604,7 @@ void* socket_receive_data_thread(void* parameters)
       {
         // a file descriptor is ready for a current socket connection
        socket_thread(events[count2].data.fd);
+       epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[count2].data.fd, &events_copy);
        close(events[count2].data.fd);
       }
     }

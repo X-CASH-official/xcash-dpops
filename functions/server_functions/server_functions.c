@@ -6329,7 +6329,6 @@ int create_server(const int MESSAGE_SETTINGS)
   int receive_data_result; 
   struct sockaddr_in addr, cl_addr; 
   struct socket_thread_parameters* socket_thread_parameters;
-  struct epoll_event events;
   size_t count;
   int settings;
 
@@ -6420,9 +6419,7 @@ int create_server(const int MESSAGE_SETTINGS)
     printf("Waiting for a connection...\n\n");
   }
 
-  /* create the epoll file descriptor
-  EPOLL_CLOEXEC = close access to the epoll_fd when the process or fork closes
-  */
+  // create the epoll file descriptor
   epoll_fd = epoll_create1(0);
 
   if (epoll_fd < 0)
@@ -6434,10 +6431,10 @@ int create_server(const int MESSAGE_SETTINGS)
   EPOLLIN = signal when the file secriptor is ready to read
   EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
   */  
-  events.events = EPOLLIN | EPOLLET;
-  events.data.fd = server_socket;
+  events_copy.events = EPOLLIN | EPOLLET;
+  events_copy.data.fd = server_socket;
 
-  if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &events) < 0)
+  if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &events_copy) < 0)
   {
     SERVER_ERROR("Error creating the server");
   }
@@ -6482,7 +6479,7 @@ int new_socket_thread()
   client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen);
   if (client_socket < 0 && errno == EWOULDBLOCK)
   {
-    sleep(1);
+    usleep(200000);
     goto start;
   }
   else if (client_socket < 0 && errno != EWOULDBLOCK)
@@ -6493,8 +6490,9 @@ int new_socket_thread()
   /* create the epoll_event struct
   EPOLLIN = signal when the file secriptor is ready to read
   EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
+  EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
   */
-  events.events = EPOLLIN | EPOLLET;
+  events.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
   events.data.fd = client_socket;
 
   if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events) < 0)

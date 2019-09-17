@@ -1,6 +1,7 @@
 #ifndef VARIABLES_H_   /* Include guard */
 #define VARIABLES_H_
 
+#include <sys/epoll.h>
 #include <pthread.h>
 
 #include "structures.h"
@@ -41,6 +42,7 @@ pthread_rwlock_t rwlock_reserve_proofs;
 
 pthread_t server_threads[1000];
 int epoll_fd;
+struct epoll_event events_copy;
 int server_socket;
 
 char current_block_height[BUFFER_SIZE]; // The current block height
