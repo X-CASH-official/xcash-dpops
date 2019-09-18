@@ -86,9 +86,9 @@ int VRF_functions_test()
 
   // write the start test message
   color_print(TEST_OUTLINE,"blue");
-  printf("\033[1;34mVRF functions test - Total test: %d\033[0m\n",VRF_TOTAL_TEST);
+  fprintf(stderr,"\033[1;34mVRF functions test - Total test: %d\033[0m\n",VRF_TOTAL_TEST);
   color_print(TEST_OUTLINE,"blue");
-  printf("\n");
+  fprintf(stderr,"\n");
 
   // create a random VRF public key and secret key
   if (create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 1)
@@ -180,19 +180,19 @@ int VRF_functions_test()
   // write the end test message
   if (count_test == VRF_TOTAL_TEST)
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"green");
-    printf("\033[1;32mVRF functions test - Passed test: %d, Failed test: 0\033[0m\n",VRF_TOTAL_TEST);
+    fprintf(stderr,"\033[1;32mVRF functions test - Passed test: %d, Failed test: 0\033[0m\n",VRF_TOTAL_TEST);
     color_print(TEST_OUTLINE,"green");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
   }
   else
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"red");
-    printf("\033[1;31mVRF functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,VRF_TOTAL_TEST-count_test);
+    fprintf(stderr,"\033[1;31mVRF functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,VRF_TOTAL_TEST-count_test);
     color_print(TEST_OUTLINE,"red");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
   } 
   pointer_reset_all;
   return count_test;

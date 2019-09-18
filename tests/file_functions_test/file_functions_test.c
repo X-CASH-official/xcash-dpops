@@ -43,9 +43,9 @@ int file_functions_test()
 
   // write the start test message
   color_print(TEST_OUTLINE,"blue");
-  printf("\033[1;34mfile functions test - Total test: %d\033[0m\n",READ_AND_WRITE_FILE_TEST);
+  fprintf(stderr,"\033[1;34mfile functions test - Total test: %d\033[0m\n",READ_AND_WRITE_FILE_TEST);
   color_print(TEST_OUTLINE,"blue");
-  printf("\n");
+  fprintf(stderr,"\n");
 
   // run the test
 
@@ -112,19 +112,19 @@ int file_functions_test()
   // write the end test message
   if (count_test == READ_AND_WRITE_FILE_TEST)
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"green");
-    printf("\033[1;32mfile functions test - Passed test: %d, Failed test: 0\033[0m\n",READ_AND_WRITE_FILE_TEST);
+    fprintf(stderr,"\033[1;32mfile functions test - Passed test: %d, Failed test: 0\033[0m\n",READ_AND_WRITE_FILE_TEST);
     color_print(TEST_OUTLINE,"green");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
   }
   else
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"red");
-    printf("\033[1;31mfile functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,READ_AND_WRITE_FILE_TEST-count_test);
+    fprintf(stderr,"\033[1;31mfile functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,READ_AND_WRITE_FILE_TEST-count_test);
     color_print(TEST_OUTLINE,"red");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
   } 
   return count_test;
 

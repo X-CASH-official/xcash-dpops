@@ -336,7 +336,7 @@ int main(int parameters_count, char* parameters[])
   color_print("X-CASH Proof Of Stake, Version 1.0.0\n","green");
 
   // get the wallets public address
-  printf("Getting the public address\n");
+  fprintf(stderr,"Getting the public address\n");
   if (get_public_address(0) == 1)
   {  
     // print the public address

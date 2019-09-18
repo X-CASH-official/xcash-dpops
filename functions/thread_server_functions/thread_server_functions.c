@@ -71,7 +71,7 @@ void* current_block_height_timer_thread()
   }
   else
   {
-    printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
+    fprintf(stderr,"\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
   }*/
 
   for (;;)
@@ -91,11 +91,11 @@ void* current_block_height_timer_thread()
         }
         else if (block_verifier_settings == 1)
         {
-          printf("\033[1;31mYour delegate is not a block verifier for network block %s\033[0m\n",current_block_height);
+          fprintf(stderr,"\033[1;31mYour delegate is not a block verifier for network block %s\033[0m\n",current_block_height);
         }
         else
         {
-          printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
+          fprintf(stderr,"\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
         }
         settings = 1;
         continue;
@@ -117,11 +117,11 @@ void* current_block_height_timer_thread()
           }
           else if (block_verifier_settings == 1)
           {
-            printf("\033[1;31mYour delegate is not a block verifier for network block %s\033[0m\n",current_block_height);
+            fprintf(stderr,"\033[1;31mYour delegate is not a block verifier for network block %s\033[0m\n",current_block_height);
           }
           else
           {
-            printf("\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
+            fprintf(stderr,"\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
           }         
         }
         sleep(1);

@@ -1409,7 +1409,7 @@ int sync_all_block_verifiers_list()
     memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\",\r\n}",103);
 
     start:
-    printf("Connecting to a random network data node to get a list of previous, current and next block verifiers\n");
+    fprintf(stderr,"Connecting to a random network data node to get a list of previous, current and next block verifiers\n");
 
     // send the message to a random network data node
     do
@@ -1424,7 +1424,7 @@ int sync_all_block_verifiers_list()
     memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
     memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
     memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
-    printf("%s\n",data3);
+    fprintf(stderr,"%s\n",data3);
     memset(data3,0,strlen(data3));
 
     if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
@@ -1433,7 +1433,7 @@ int sync_all_block_verifiers_list()
       memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
       color_print(data2,"red");
       memset(data2,0,sizeof(data2));
-      printf("Connecting to a different network data node\n\n");
+      fprintf(stderr,"Connecting to a different network data node\n\n");
       goto start;
     }
 
@@ -1674,7 +1674,7 @@ int get_synced_block_verifiers()
   synced_block_verifiers.vote_settings_false = 0;
 
   start:
-  printf("Connecting to a random network data node to get a list of current block verifiers\n");
+  fprintf(stderr,"Connecting to a random network data node to get a list of current block verifiers\n");
 
   memset(data,0,sizeof(data));
   memset(data2,0,strlen(data2));
@@ -1693,7 +1693,7 @@ int get_synced_block_verifiers()
   memcpy(data+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
   memcpy(data+strlen(data)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
   memcpy(data+strlen(data),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
-  printf("%s\n",data);
+  fprintf(stderr,"%s\n",data);
   memset(data,0,sizeof(data));
 
   if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,GET_SYNCED_BLOCK_VERIFIERS_DATA,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
@@ -1702,7 +1702,7 @@ int get_synced_block_verifiers()
     memcpy(data+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     color_print(data,"red");
     memset(data,0,sizeof(data));
-    printf("Connecting to a different network data node\n\n");
+    fprintf(stderr,"Connecting to a different network data node\n\n");
     goto start;
   }
 
@@ -1823,7 +1823,7 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
   // select a random network data node to copy the reserve proofs database hashes from
   counter = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
 
-  printf("Sending all block verifiers a message to check if the reserve proofs database is synced\n"); 
+  fprintf(stderr,"Sending all block verifiers a message to check if the reserve proofs database is synced\n"); 
 
   if (SETTINGS == 1)
   {
@@ -2020,7 +2020,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
     memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
     memcpy(data+strlen(data)," to sync reserve_proofs_",24);
     snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
-    printf("%s\n",data);
+    fprintf(stderr,"%s\n",data);
 
     // parse the RESERVE_PROOFS_DATABASE
     memset(data,0,strlen(data));
@@ -2163,7 +2163,7 @@ int sync_check_reserve_bytes_database(const int SETTINGS)
     SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
   }
 
-  printf("Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
+  fprintf(stderr,"Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
 
   if (SETTINGS == 1)
   {
@@ -2518,7 +2518,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
       SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data",0);
     }
 
-    printf("Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
+    fprintf(stderr,"Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
  
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -2615,7 +2615,7 @@ int sync_check_delegates_database(const int SETTINGS)
     SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sign_data");
   }
 
-  printf("Sending all block verifiers a message to check if the delegates database is synced\n"); 
+  fprintf(stderr,"Sending all block verifiers a message to check if the delegates database is synced\n"); 
 
   if (SETTINGS == 1)
   {
@@ -2908,7 +2908,7 @@ int sync_check_statistics_database(const int SETTINGS)
     SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sign_data");
   }
 
-  printf("Sending all block verifiers a message to check if the statistics database is synced\n"); 
+  fprintf(stderr,"Sending all block verifiers a message to check if the statistics database is synced\n"); 
 
   if (SETTINGS == 1)
   {

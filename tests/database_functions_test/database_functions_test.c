@@ -71,9 +71,9 @@ int database_test()
 
   // write the start test message
   color_print(TEST_OUTLINE,"blue");
-  printf("\033[1;34mdatabase test - Total test: %d\033[0m\n",DATABASE_TEST);
+  fprintf(stderr,"\033[1;34mdatabase test - Total test: %d\033[0m\n",DATABASE_TEST);
   color_print(TEST_OUTLINE,"blue");
-  printf("\n");
+  fprintf(stderr,"\n");
 
   // run the test
 
@@ -745,19 +745,19 @@ int database_test()
   // write the end test message
   if (count_test == DATABASE_TEST)
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"green");
-    printf("\033[1;32mdatabase test - Passed test: %d, Failed test: 0\033[0m\n",DATABASE_TEST);
+    fprintf(stderr,"\033[1;32mdatabase test - Passed test: %d, Failed test: 0\033[0m\n",DATABASE_TEST);
     color_print(TEST_OUTLINE,"green");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
   }
   else
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"red");
-    printf("\033[1;31mdatabase test - Passed test: %d, Failed test: %d\033[0m\n",count_test,DATABASE_TEST-count_test);
+    fprintf(stderr,"\033[1;31mdatabase test - Passed test: %d, Failed test: %d\033[0m\n",count_test,DATABASE_TEST-count_test);
     color_print(TEST_OUTLINE,"red");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
   }   
   return count_test;
 

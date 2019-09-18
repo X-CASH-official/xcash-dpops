@@ -190,7 +190,7 @@ int analysing_code_test()
         }  
         uninitialized_variable_data.count = 0;        
         count = 0;
-        printf("Analysing function %s",data_test);
+        fprintf(stderr,"Analysing function %s",data_test);
       }
 
 
@@ -213,11 +213,11 @@ int analysing_code_test()
         pointer_reset_all_counter = 0;
         if (count != pointer_reset_all_count)
         {
-          printf("\033[1;31mpointer_reset_all does not contain enough resets\033[0m\n");
+          fprintf(stderr,"\033[1;31mpointer_reset_all does not contain enough resets\033[0m\n");
         }
         else
         {
-          printf("\033[1;32mpointer_reset_all does contain enough resets\033[0m\n");
+          fprintf(stderr,"\033[1;32mpointer_reset_all does contain enough resets\033[0m\n");
           count_test++;
         }
       }
@@ -260,7 +260,7 @@ int analysing_code_test()
           }
           else if (counter != count)
           {
-            printf("\033[1;31mreturn statement has not reset all variables allocated on the heap at line %zu \033[0m\n",line_count);
+            fprintf(stderr,"\033[1;31mreturn statement has not reset all variables allocated on the heap at line %zu \033[0m\n",line_count);
           }
           counter = 0;  
         }
@@ -282,11 +282,11 @@ int analysing_code_test()
       {
         if (define_count != undefine_count)
         {
-          printf("\033[1;31mAll define statments are not undefined at the end of the function\033[0m\n");
+          fprintf(stderr,"\033[1;31mAll define statments are not undefined at the end of the function\033[0m\n");
         }
         else
         {
-          printf("\033[1;32mAll define statments are undefined at the end of the function\033[0m\n");
+          fprintf(stderr,"\033[1;32mAll define statments are undefined at the end of the function\033[0m\n");
           count_test++;
         }
         
@@ -295,7 +295,7 @@ int analysing_code_test()
         {
           if (memcmp(uninitialized_variable_data.data[data_count],"0",1) != 0)
           {
-            printf("\033[1;31mVariable %s is run in code and not initialized\033[0m\n",uninitialized_variable_data.data[data_count]);
+            fprintf(stderr,"\033[1;31mVariable %s is run in code and not initialized\033[0m\n",uninitialized_variable_data.data[data_count]);
           }
           else
           {
@@ -304,21 +304,21 @@ int analysing_code_test()
         } 
         if (data_counter == uninitialized_variable_data.count)
         {
-          printf("\033[1;32mAll variables are initialized before they are ran in the code\033[0m\n");
+          fprintf(stderr,"\033[1;32mAll variables are initialized before they are ran in the code\033[0m\n");
           count_test++;
         }  
 
         // check if any return or exit statements have not reset all variables allocated on the heap  
         if (return_count == return_count_total)
         {
-          printf("\033[1;32mAll return or exit statements have reset all variables allocated on the heap\033[0m\n");
+          fprintf(stderr,"\033[1;32mAll return or exit statements have reset all variables allocated on the heap\033[0m\n");
           count_test++;
         }
 
         // check if no unsafe string functions are ran in the code
         if (string_count == 0)
         {
-          printf("\033[1;32mNo unsafe string functions are ran in the code\033[0m\n");
+          fprintf(stderr,"\033[1;32mNo unsafe string functions are ran in the code\033[0m\n");
           count_test++;
         }
 
@@ -336,7 +336,7 @@ int analysing_code_test()
       // check for unsafe functions
       if ((strstr(data_test,"strcmp") != NULL || strstr(data_test,"strcpy") != NULL || strstr(data_test,"strcat") != NULL || strstr(data_test,"sprintf") != NULL || strstr(data_test,"strlen") != NULL) && (strstr(data_test,"\"strcmp\"") == NULL && strstr(data_test,"\"strcpy\"") == NULL && strstr(data_test,"\"strcat\"") == NULL && strstr(data_test,"\"sprintf\"") == NULL && strstr(data_test,"\"strlen\"") == NULL))
       {
-        printf("\033[1;31mUnsafe string function at line %zu \033[0m\n",line_count);
+        fprintf(stderr,"\033[1;31mUnsafe string function at line %zu \033[0m\n",line_count);
         string_count++;
       }
 

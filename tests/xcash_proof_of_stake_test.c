@@ -38,7 +38,7 @@ void test()
   #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 154
 
   // write the test message
-  printf("Starting Test\n\n");
+  fprintf(stderr,"Starting Test\n\n");
 
   // initialize the variables
   string2_test = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -76,19 +76,19 @@ void test()
   // write the end test message
   if (xcash_proof_of_stake_total_passed_test == XCASH_PROOF_OF_STAKE_TOTAL_TEST)
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"green");
-    printf("\033[1;32mX-CASH proof of stake test results - Passed test: %d, Failed test: 0\033[0m\n",XCASH_PROOF_OF_STAKE_TOTAL_TEST);
+    fprintf(stderr,"\033[1;32mX-CASH proof of stake test results - Passed test: %d, Failed test: 0\033[0m\n",XCASH_PROOF_OF_STAKE_TOTAL_TEST);
     color_print(TEST_OUTLINE,"green");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
   }
   else
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"red");
-    printf("\033[1;31mX-CASH proof of stake test results - Passed test: %d, Failed test: %d\033[0m\n",xcash_proof_of_stake_total_passed_test,XCASH_PROOF_OF_STAKE_TOTAL_TEST-xcash_proof_of_stake_total_passed_test);
+    fprintf(stderr,"\033[1;31mX-CASH proof of stake test results - Passed test: %d, Failed test: %d\033[0m\n",xcash_proof_of_stake_total_passed_test,XCASH_PROOF_OF_STAKE_TOTAL_TEST-xcash_proof_of_stake_total_passed_test);
     color_print(TEST_OUTLINE,"red");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
   }
 
   pointer_reset(string2_test);

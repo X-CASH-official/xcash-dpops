@@ -263,9 +263,9 @@ int reset_variables_allocated_on_the_heap_test()
 
   // write the start test message
   color_print(TEST_OUTLINE,"blue");
-  printf("\033[1;34mReset variables allocated on the heap test - Total test: %d\033[0m\n",RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST);
+  fprintf(stderr,"\033[1;34mReset variables allocated on the heap test - Total test: %d\033[0m\n",RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST);
   color_print(TEST_OUTLINE,"blue");
-  printf("\n");
+  fprintf(stderr,"\n");
 
   // run the test
 
@@ -3758,19 +3758,19 @@ int reset_variables_allocated_on_the_heap_test()
   // write the end test message
   if (count_test == RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST)
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"green");
-    printf("\033[1;32mReset variables allocated on the heap test - Passed test: %d, Failed test: 0\033[0m\n",RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST);
+    fprintf(stderr,"\033[1;32mReset variables allocated on the heap test - Passed test: %d, Failed test: 0\033[0m\n",RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST);
     color_print(TEST_OUTLINE,"green");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
   }
   else
   {
-    printf("\n");
+    fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"red");
-    printf("\033[1;31mReset variables allocated on the heap test - Passed test: %d, Failed test: 1\033[0m\n",count_test);
+    fprintf(stderr,"\033[1;31mReset variables allocated on the heap test - Passed test: %d, Failed test: 1\033[0m\n",count_test);
     color_print(TEST_OUTLINE,"red");
-    printf("\n\n");
+    fprintf(stderr,"\n\n");
     exit(0);
   } 
   pointer_reset(process_id_file);

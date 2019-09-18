@@ -30,31 +30,31 @@ Color available values:
 #define color_print(string,color) \
 if (memcmp(color,"red",3) == 0) \
 { \
-  printf("\033[1;31m%s\033[0m\n",string); \
+  fprintf(stderr,"\033[1;31m%s\033[0m\n",string); \
 } \
 else if (memcmp(color,"green",5) == 0) \
 { \
-  printf("\033[1;32m%s\033[0m\n",string); \
+  fprintf(stderr,"\033[1;32m%s\033[0m\n",string); \
 } \
 else if (memcmp(color,"yellow",6) == 0) \
 { \
-  printf("\033[1;33m%s\033[0m\n",string); \
+  fprintf(stderr,"\033[1;33m%s\033[0m\n",string); \
 } \
 else if (memcmp(color,"blue",4) == 0) \
 { \
-  printf("\033[1;34m%s\033[0m\n",string); \
+  fprintf(stderr,"\033[1;34m%s\033[0m\n",string); \
 } \
 else if (memcmp(color,"purple",6) == 0) \
 { \
-  printf("\033[1;35m%s\033[0m\n",string); \
+  fprintf(stderr,"\033[1;35m%s\033[0m\n",string); \
 } \
 else if (memcmp(color,"lightblue",9) == 0) \
 { \
-  printf("\033[1;36m%s\033[0m\n",string); \
+  fprintf(stderr,"\033[1;36m%s\033[0m\n",string); \
 } \
 else \
 { \
-  printf("%s",string); \
+  fprintf(stderr,"%s",string); \
 }
 
 
@@ -83,16 +83,16 @@ Description: Prints all of the functions and error messages
 */
 
 #define print_error_message \
-printf("\n\n"); \
+fprintf(stderr,"\n\n"); \
 color_print(TEST_OUTLINE,"red"); \
-printf("\033[1;31m%s: Error\033[0m\n",error_message.function[0]); \
+fprintf(stderr,"\033[1;31m%s: Error\033[0m\n",error_message.function[0]); \
 get_current_UTC_time; \
-printf("\033[1;31m%s\033[0m",asctime(current_UTC_date_and_time)); \
+fprintf(stderr,"\033[1;31m%s\033[0m",asctime(current_UTC_date_and_time)); \
 color_print(TEST_OUTLINE,"red"); \
-printf("\033[1;31mFunction Calls:\033[0m\n"); \
+fprintf(stderr,"\033[1;31mFunction Calls:\033[0m\n"); \
 for (error_message_count = 0; error_message_count < error_message.total; error_message_count++) \
 { \
-  printf("\033[1;31m#%d %s: %s\033[0m\n",error_message_count+1,error_message.function[error_message_count],error_message.data[error_message_count]); \
+  fprintf(stderr,"\033[1;31m#%d %s: %s\033[0m\n",error_message_count+1,error_message.function[error_message_count],error_message.data[error_message_count]); \
 } \
 for (error_message_count = 0; error_message_count < DATABASE_ARRAY_COUNT; error_message_count++) \
 { \
@@ -113,11 +113,11 @@ Description: Prints the start message of a section
 */
 
 #define print_start_message(string) \
-printf("\n"); \
+fprintf(stderr,"\n"); \
 color_print(TEST_OUTLINE,"blue"); \
-printf("\033[1;34m%s\033[0m\n",string); \
+fprintf(stderr,"\033[1;34m%s\033[0m\n",string); \
 get_current_UTC_time; \
-printf("\033[1;34m%s\033[0m",asctime(current_UTC_date_and_time)); \
+fprintf(stderr,"\033[1;34m%s\033[0m",asctime(current_UTC_date_and_time)); \
 color_print(TEST_OUTLINE,"blue");
 
 

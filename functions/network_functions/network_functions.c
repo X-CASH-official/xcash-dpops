@@ -299,7 +299,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // send the message
   if (MESSAGE_SETTINGS == 1)
   {
-    printf("Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
+    fprintf(stderr,"Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
   }
   if (send_data(SOCKET,message,0,0,"") == 0)
   {
@@ -595,7 +595,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   // send the message 
   if (MESSAGE_SETTINGS == 1)
   {
-    printf("Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
+    fprintf(stderr,"Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
   }
   memset(message,0,sizeof(message));
   memcpy(message,DATA,strnlen(DATA,sizeof(message)));

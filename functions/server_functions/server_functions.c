@@ -234,7 +234,7 @@ int start_new_round()
     {
       print_error_message;
       color_print("Your block verifier will wait until the next round","red");
-      printf("\n");
+      fprintf(stderr,"\n");
     }
   }
   return 2;
@@ -286,14 +286,14 @@ int start_current_round_start_blocks()
 
   // wait for all block verifiers to sync the database
   color_print("Waiting for all block verifiers to sync the databases","blue");
-  printf("\n");
+  fprintf(stderr,"\n");
   sync_block_verifiers_minutes(1);
 
   // check if the block verifier is the main network data node
   if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
   {
     color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round","yellow");
-    printf("\n");
+    fprintf(stderr,"\n");
     do
     {
       usleep(200000);
@@ -303,7 +303,7 @@ int start_current_round_start_blocks()
   } 
 
   color_print("Your block verifier is the main data network node so your block verifier will create the block","yellow");
-  printf("\n");
+  fprintf(stderr,"\n");
 
   // get a block template
   if (get_block_template(data,0) == 0)
@@ -513,7 +513,7 @@ int start_current_round_start_blocks()
   }
 
   color_print("Waiting for the block producer to submit the block to the network","blue");
-  printf("\n");
+  fprintf(stderr,"\n");
   do
   {
     usleep(200000);
@@ -597,7 +597,7 @@ int data_network_node_create_block()
   if (memcmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
   {    
     color_print("Your block verifier is the main data network node so your block verifier will create the block","yellow");
-    printf("\n");
+    fprintf(stderr,"\n");
 
     // get a block template
     if (get_block_template(data,0) == 0)
@@ -913,7 +913,7 @@ int data_network_node_create_block()
     }
 
     color_print("Waiting for the block producer to submit the block to the network","blue");
-    printf("\n");
+    fprintf(stderr,"\n");
     // wait for the block verifiers to process the votes
     do
     {
@@ -939,7 +939,7 @@ int data_network_node_create_block()
   }
   else
   {
-    printf("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block\n\n");
+    fprintf(stderr,"Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block\n\n");
 
     // wait for the block verifiers to process the votes
     do
@@ -1009,7 +1009,7 @@ int start_part_4_of_round()
   }
 
   #define RESTART_ROUND(message) \
-  printf("\n"); \
+  fprintf(stderr,"\n"); \
   color_print(message,"red"); \
   memset(data,0,sizeof(data)); \
   memset(data,0,sizeof(data)); \
@@ -1047,7 +1047,7 @@ int start_part_4_of_round()
     memcpy(data,"Restarting the round with backup block producer 1 for block ",60); \
     memcpy(data+60,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
     print_start_message(data); \
-    printf("\n"); \
+    fprintf(stderr,"\n"); \
   } \
   else if (memcmp(current_round_part_backup_node,"1",1) == 0) \
   { \
@@ -1058,7 +1058,7 @@ int start_part_4_of_round()
     memcpy(data,"Restarting the round with backup block producer 2 for block ",60); \
     memcpy(data+60,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
     print_start_message(data); \
-    printf("\n"); \
+    fprintf(stderr,"\n"); \
   } \
   else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
   { \
@@ -1079,7 +1079,7 @@ int start_part_4_of_round()
 
   // wait for all block verifiers to sync the database
   color_print("Waiting for all block verifiers to sync the databases","blue");
-  printf("\n");
+  fprintf(stderr,"\n");
   sync_block_verifiers_minutes(1);
 
   start:
@@ -1087,7 +1087,7 @@ int start_part_4_of_round()
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       color_print("Your block verifier is the block producer","yellow");
-      printf("\n");
+      fprintf(stderr,"\n");
     }
   
     // create a random VRF public key and secret key
@@ -1598,7 +1598,7 @@ int start_part_4_of_round()
 
     // wait for the block verifiers to process the votes
     color_print("Waiting for the block producer to submit the block to the network","blue");
-    printf("\n");
+    fprintf(stderr,"\n");
     do
     {
       usleep(200000);
@@ -3658,8 +3658,8 @@ int create_server(const int MESSAGE_SETTINGS)
 
   if (MESSAGE_SETTINGS == 1)
   {
-    printf("\033[1;32mConnected to port %s\033[0m\n",buffer);
-    printf("Waiting for a connection...\n\n");
+    fprintf(stderr,"\033[1;32mConnected to port %s\033[0m\n",buffer);
+    fprintf(stderr,"Waiting for a connection...\n\n");
   }
 
   // create the epoll file descriptor
