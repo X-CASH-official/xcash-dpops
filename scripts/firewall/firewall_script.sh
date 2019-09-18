@@ -63,8 +63,8 @@ iptables -A INPUT -d 255.255.255.255 -j DROP
  
 # Block different attacks
 # block one computer from opening too many connections (100 simultaneous connections) if this gives trouble with post remove this or increase the limit
-iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
-iptables -t filter -I INPUT -p tcp --syn --dport 443 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
+# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
+iptables -t filter -I INPUT -p tcp --syn --dport 18283 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
  
 # Accept specific packets
 # Accept ICMP
