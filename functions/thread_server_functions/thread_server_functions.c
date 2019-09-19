@@ -1052,7 +1052,7 @@ void* payment_timer_thread()
 
         // check if the current_total is over the minimum amount
         sscanf(current_total, "%lld", &number);
-        if (number >= (minimum_amount * 1000000))
+        if (number >= (minimum_amount * XCASH_WALLET_DECIMAL_PLACES_AMOUNT))
         {
           // send the payment
           memset(data,0,sizeof(data));

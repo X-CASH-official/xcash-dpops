@@ -70,15 +70,15 @@ int start_new_round()
   #define RESTART_XCASH_DAEMON(settings) \
   if (settings == 0) \
   { \
-    system("screen -XS Daemon quit"); \
+    system("systemctl stop XCASH_Daemon_Block_Verifier"); \
     sleep(10); \
-    system("screen -dmS Daemon xcashd"); \
+    system("systemctl start XCASH_Daemon"); \
   } \
   else if (settings == 1) \
   { \
-    system("screen -XS Daemon quit"); \
+    system("systemctl stop XCASH_Daemon"); \
     sleep(10); \
-    system("screen -dmS Daemon xcashd --block-verifier"); \
+    system("systemctl start XCASH_Daemon_Block_Verifier"); \
   } \
 
   #define RESET_VARIABLES \
