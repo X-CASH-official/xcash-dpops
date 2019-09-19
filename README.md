@@ -23,7 +23,7 @@ X-CASH DPOPS is a variation of DPOS and DBFT. The key features of X-CASH DPOPS a
  
 This program allows one to run a DPOPS node, a shared delegates website, and a delegates website.
 
-**If you plan on running a shared delegates website or a delegates website you will need to run the website on the same system as the DPOPS node**
+**If you plan on running a shared delegates website or a delegates website, you will need to run the website on the same system as the DPOPS node**
 
 **By running a DPOPS node (solo or shared) you will need the computer to be online and running at all times**
  
@@ -65,7 +65,7 @@ The following table summarizes the tools and libraries required to run XCASH DPO
  
  
 ## Recommendations For the XCASH Wallet
-It is recommended if you are going to run a solo node, to not keep all of your XCASH on the server. The recommended way is to create an empty wallet and leave that on the server, to collect the block rewards, and then use your main wallet to vote for the new wallet that you created on the server.
+It is recommended if you are going to run a XCASH DPOPS node, to not keep all of your XCASH on the server. The recommended way is to create an empty wallet and leave that on the server, to collect the block rewards, and then use your main wallet to vote for the new wallet that you created on the server.
 
 
 
@@ -213,9 +213,12 @@ WantedBy=multi-user.target
 
 You will need to change the **User** to the user of the system
 
-You will need to change the **PIDFile** to the full path of the `Installed-Programs/systemdpid` folder
+You will need to change the **PIDFile** to the full path of the `mongod.pid` file
 
 You will need to change the **ExecStart** to the full path of the `mongod` file
+
+Reload systemd after you have made any changes to the systemd service files  
+`systemctl daemon-reload`
 
 
 ### XCASH Daemon
@@ -236,18 +239,56 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
+Make sure to leave the RuntimeMaxSec in the systemd service file, as the XCASH Daemon usually needs to restart after a while to prevent it from not synchronizing
+
 You will need to change the **User** to the user of the system
 
-You will need to change the **PIDFile** to the full path of the `Installed-Programs/systemdpid` folder
+You will need to change the **PIDFile** to the full path of the `xcash_daemon.pid` file
 
 You will need to change the **ExecStart** to the full path of the `xcashd` file
+
+Reload systemd after you have made any changes to the systemd service files  
+`systemctl daemon-reload`
+
+
+
+### XCASH Daemon Block Verifier
+This is the systemd file for XCASH Daemon when you are a block verifier  
+**Only run the XCASH Daemon service file, as the XCASH DPOPS program will determine if your a block verifier and start the correct systemd service file**
+```
+[Unit]
+Description=XCASH Daemon Block Verifier systemd file
+ 
+[Service]
+Type=forking
+User=root
+PIDFile=/root/Installed-Programs/systemdpid/xcash_daemon.pid
+ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcashd --block_verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --detach --pidfile /root/Installed-Programs/systemdpid/xcash_daemon.pid
+RuntimeMaxSec=15d
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
+```
+
+Make sure to leave the RuntimeMaxSec in the systemd service file, as the XCASH Daemon usually needs to restart after a while to prevent it from not synchronizing
+
+You will need to change the **User** to the user of the system
+
+You will need to change the **PIDFile** to the full path of the `xcash_daemon.pid` file
+
+You will need to change the **ExecStart** to the full path of the `xcashd` file
+
+Reload systemd after you have made any changes to the systemd service files  
+`systemctl daemon-reload`
+
 
 
 ### XCASH Wallet
 This is the systemd file for XCASH Wallet
 ```
 [Unit]
-Description=XCASH Wallet RPC
+Description=XCASH Wallet
  
 [Service]
 Type=simple
@@ -263,6 +304,9 @@ WantedBy=multi-user.target
 You will need to change the **User** to the user of the system
 
 You will need to change the **WALLET_FILE_NAME** with the name of your wallet file, and the **PASSWORD** with the password of your wallet file.
+
+Reload systemd after you have made any changes to the systemd service files  
+`systemctl daemon-reload`
 
 
 ### XCASH DPOPS
@@ -283,6 +327,8 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
+The LimitNOFILE will allow the XCASH DPOPS program to utilize up to 64000 concurrent file descriptors instead of the default 4096 for a linux process. The actual XCASH DPOPS program is limited to only accept up to 1000 concurrent connections due to that DPOPS usage and shared delegates website or delegates website usage will not be that much at the start. This will help with DDOS at this time and the limits in the XCASH DPOPS program will be updated.
+
 You will need to change the **User** to the user of the system
 
 You will need to change the **ExecStart** to the full path of the `XCASH_DPOPS` file and add any startup flags if running a shared delegates website or a delegates website
@@ -290,6 +336,9 @@ You will need to change the **ExecStart** to the full path of the `XCASH_DPOPS` 
 To run the XCASH DPOPS node and the shared delegates website, add the flag `--shared_delegates_website`
 
 To run the XCASH DPOPS node and the delegates website, add the flag `--delegates_website`
+
+Reload systemd after you have made any changes to the systemd service files  
+`systemctl daemon-reload`
  
  
  
@@ -329,7 +378,7 @@ To view the logs for any service file. you can run
 To view only the last 100 lines of the log file, you can run  
 `journalctl --unit=name_of_service_file_without.service -n 100 --output cat`
 
-To view live logging of XCASH DPOPS, you can run
+To view live logging of XCASH DPOPS, you can run  
 `journalctl --unit=XCASH_DPOPS --follow -n 100 --output cat`
  
  
