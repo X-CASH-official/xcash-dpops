@@ -1,0 +1,11 @@
+[Unit]
+Description=XCASH Wallet RPC
+ 
+[Service]
+Type=simple
+User=root
+ExecStart=/root/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target

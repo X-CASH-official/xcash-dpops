@@ -1,0 +1,13 @@
+[Unit]
+Description=XCASH DPOPS
+ 
+[Service]
+Type=simple
+LimitNOFILE=64000
+User=root
+WorkingDirectory=/root/Installed-Programs/XCASH_DPOPS/
+ExecStart=/root/Installed-Programs/XCASH_DPOPS/XCASH_DPOPS
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
