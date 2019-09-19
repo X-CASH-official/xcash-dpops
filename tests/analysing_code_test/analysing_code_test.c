@@ -140,7 +140,7 @@ int analysing_code_test()
       exit(0);
     }
   }  
-  memcpy(analysing_code_test_files.data[0],"xcash_proof_of_stake_website_server_test.c",strnlen("xcash_proof_of_stake_website_server_test.c",BUFFER_SIZE));
+  memcpy(analysing_code_test_files.data[0],"XCASH_DPOPS_website_server_test.c",strnlen("XCASH_DPOPS_website_server_test.c",BUFFER_SIZE));
   analysing_code_test_files.count = 1;
   data_count = 0;
 

@@ -2396,8 +2396,8 @@ int calculate_main_nodes_roles()
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: server_received_data_xcash_proof_of_stake_test_data
-Description: Runs the code when the server receives the xcash_proof_of_stake_test_data message
+Name: server_received_data_XCASH_DPOPS_test_data
+Description: Runs the code when the server receives the XCASH_DPOPS_test_data message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   message - The message
@@ -2405,7 +2405,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, const char* MESSAGE)
+int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // verify the message
   if (verify_data(MESSAGE,0,1) == 0)
@@ -3856,7 +3856,7 @@ int socket_thread(int client_socket)
  // check if a certain type of message has been received 
  if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)
  {
-   server_received_data_xcash_proof_of_stake_test_data(client_socket,(const char*)buffer);
+   server_received_data_XCASH_DPOPS_test_data(client_socket,(const char*)buffer);
  }
  else if (strstr(buffer,"GET /delegateswebsitegetstatistics HTTP/") != NULL && delegates_website == 1)
  {

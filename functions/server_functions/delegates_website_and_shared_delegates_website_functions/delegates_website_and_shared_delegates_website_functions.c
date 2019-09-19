@@ -266,7 +266,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   memset(data,0,strlen(data));
   snprintf(data,MAXIMUM_BUFFER_SIZE,"%zu",count);
 
-  memcpy(database_data.item[database_data.count],"xcash_proof_of_stake_round_number",33);
+  memcpy(database_data.item[database_data.count],"XCASH_DPOPS_round_number",33);
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
   database_data.count++;
 
@@ -290,7 +290,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
   database_data.count++;
 
-  // get the xcash_proof_of_stake_circulating_percentage
+  // get the XCASH_DPOPS_circulating_percentage
   generated_supply = 190734.9 + XCASH_PREMINE_TOTAL_SUPPLY;
   for (counter = 2; counter < current_block_height; counter++)
   { 
@@ -302,7 +302,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   memset(data,0,strlen(data));
   snprintf(data,MAXIMUM_BUFFER_SIZE,"%zu",number);
 
-  memcpy(database_data.item[database_data.count],"xcash_proof_of_stake_circulating_percentage",43);
+  memcpy(database_data.item[database_data.count],"XCASH_DPOPS_circulating_percentage",43);
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
   database_data.count++;
   

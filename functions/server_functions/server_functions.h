@@ -16,7 +16,7 @@ int update_databases();
 int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT);
 int add_round_statistics();
 int calculate_main_nodes_roles();
-int server_received_data_xcash_proof_of_stake_test_data(const int CLIENT_SOCKET, const char* MESSAGE);
+int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs(const char* MESSAGE);
 int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const int CLIENT_SOCKET, const char* MESSAGE);

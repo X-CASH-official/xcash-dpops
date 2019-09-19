@@ -389,7 +389,7 @@ It is recomeneded to run the X-CASH Proof of stake test before you run the main 
 To run the X-CASH Proof of stake test, make sure to have already started the XCASH Daemon, XCASH Wallet and MongoDB systemd services, and to have stopped the XCASH DPOPS systemd service if it was already running.  
 
 Navigate to the folder that contains the binary, then run  
-`./xcash_proof_of_stake --test`
+`./XCASH_DPOPS --test`
  
 The test will return the number of passed and failed test on the bottom of the console. The failed test need to be 0 before you run the node. If the output is not showing 0 for failed test, then you need to scroll through the testing output and find what test failed (It will be red instead of green). If this is a system compatibility test, then you will need to fix the system. If this is a core test that has failed, then you need to possibly rebuild, or contact us with your OS version, and we can look into it.
 

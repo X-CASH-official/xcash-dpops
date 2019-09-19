@@ -13,13 +13,14 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_TOTAL_SUPPLY 100000000000 // The total supply
 #define XCASH_PREMINE_TOTAL_SUPPLY 40000000000 // The total supply of the premine
 #define XCASH_PREMINE_CIRCULATING_SUPPLY 7000000000 // The circulating supply of the premine
+#define XCASH_WALLET_DECIMAL_PLACES_AMOUNT 1000000
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 240501 // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
 #define MAXIMUM_TRANSACATIONS_PER_BLOCK 1000000 // The maximum amount of transaction per block
-#define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a xcash_proof_of_stake_signature for the signed data
-#define XCASH_SIGN_DATA_LENGTH 93 // The length of a xcash_proof_of_stake_signature for the signed datas
+#define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a XCASH_DPOPS_signature for the signed data
+#define XCASH_SIGN_DATA_LENGTH 93 // The length of a XCASH_DPOPS_signature for the signed datas
 
 // network block string 
 #define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "00000000" // The network block nonce used when the block producer creates the block

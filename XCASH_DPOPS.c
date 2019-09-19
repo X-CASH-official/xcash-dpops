@@ -22,7 +22,7 @@
 #include "string_functions.h"
 #include "thread_server_functions.h"
 
-#include "xcash_proof_of_stake_test.h"
+#include "XCASH_DPOPS_test.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -333,7 +333,7 @@ int main(int parameters_count, char* parameters[])
   memcpy(current_round_part_backup_node,"0",1);
 
   // write the message
-  color_print("X-CASH Proof Of Stake, Version 1.0.0\n","green");
+  color_print("XCASH_DPOPS - Version 1.0.0\n","green");
 
   // get the wallets public address
   fprintf(stderr,"Getting the public address\n");

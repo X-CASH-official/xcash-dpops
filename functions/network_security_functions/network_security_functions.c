@@ -140,7 +140,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   memcpy(message+message_length+118+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,current_round_part_backup_node,1);
   memcpy(message+message_length+119+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,"\",\r\n \"data\": \"",14);
   memcpy(message+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,random_data,RANDOM_STRING_LENGTH);
-  memcpy(message+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH,"\",\r\n \"xcash_proof_of_stake_signature\": \"",40);
+  memcpy(message+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH,"\",\r\n \"XCASH_DPOPS_signature\": \"",40);
   memcpy(message+message_length+173+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH,result,XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH);
   memcpy(message+message_length+173+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH+XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH,"\",\r\n}",5);
   pthread_rwlock_unlock(&rwlock);
@@ -178,7 +178,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   char message_previous_block_hash[BUFFER_SIZE];
   char message_current_round_part[BUFFER_SIZE];
   char message_current_round_part_backup_node[BUFFER_SIZE];
-  char xcash_proof_of_stake_signature[BUFFER_SIZE];
+  char XCASH_DPOPS_signature[BUFFER_SIZE];
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char data[BUFFER_SIZE];
   char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
@@ -225,7 +225,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memset(message_previous_block_hash,0,sizeof(message_previous_block_hash));
   memset(message_current_round_part,0,sizeof(message_current_round_part));
   memset(message_current_round_part_backup_node,0,sizeof(message_current_round_part_backup_node));
-  memset(xcash_proof_of_stake_signature,0,sizeof(xcash_proof_of_stake_signature));
+  memset(XCASH_DPOPS_signature,0,sizeof(XCASH_DPOPS_signature));
   memset(data,0,sizeof(data));
 
   // parse the message
@@ -245,7 +245,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   {
     if (strstr(MESSAGE,"}") != NULL)
     { 
-      if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature,sizeof(xcash_proof_of_stake_signature)) == 0)
+      if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"XCASH_DPOPS_signature",XCASH_DPOPS_signature,sizeof(XCASH_DPOPS_signature)) == 0)
       {
         VERIFY_DATA_ERROR("Could not parse the message");
       }
@@ -264,7 +264,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
             }
             if (count == 4)
             {
-              memcpy(xcash_proof_of_stake_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
             }
             count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
           }
@@ -286,7 +286,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
             }
             if (count == 4)
             {
-              memcpy(xcash_proof_of_stake_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
             }
             count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
           }
@@ -308,7 +308,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
             }
             if (count == 2)
             {
-              memcpy(xcash_proof_of_stake_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
             }
             count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
           }
@@ -330,7 +330,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
             }
             if (count == 4)
             {
-              memcpy(xcash_proof_of_stake_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
             }
             count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
           }
@@ -344,7 +344,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   }
   else
   {    
-    if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"previous_block_hash",message_previous_block_hash,sizeof(message_previous_block_hash)) == 0 || parse_json_data(MESSAGE,"current_round_part",message_current_round_part,sizeof(message_current_round_part)) == 0 || parse_json_data(MESSAGE,"current_round_part_backup_node",message_current_round_part_backup_node,sizeof(message_current_round_part_backup_node)) == 0 || parse_json_data(MESSAGE,"xcash_proof_of_stake_signature",xcash_proof_of_stake_signature,sizeof(xcash_proof_of_stake_signature)) == 0)
+    if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"previous_block_hash",message_previous_block_hash,sizeof(message_previous_block_hash)) == 0 || parse_json_data(MESSAGE,"current_round_part",message_current_round_part,sizeof(message_current_round_part)) == 0 || parse_json_data(MESSAGE,"current_round_part_backup_node",message_current_round_part_backup_node,sizeof(message_current_round_part_backup_node)) == 0 || parse_json_data(MESSAGE,"XCASH_DPOPS_signature",XCASH_DPOPS_signature,sizeof(XCASH_DPOPS_signature)) == 0)
     {
       VERIFY_DATA_ERROR("Could not parse the message");
     }
@@ -453,7 +453,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memcpy(string+62+message_length,"\",\"address\":\"",13);
   memcpy(string+75+message_length,public_address,XCASH_WALLET_LENGTH);
   memcpy(string+75+message_length+XCASH_WALLET_LENGTH,"\",\"signature\":\"",15);
-  memcpy(string+90+message_length+XCASH_WALLET_LENGTH,xcash_proof_of_stake_signature,XCASH_SIGN_DATA_LENGTH);
+  memcpy(string+90+message_length+XCASH_WALLET_LENGTH,XCASH_DPOPS_signature,XCASH_SIGN_DATA_LENGTH);
   memcpy(string+90+message_length+XCASH_WALLET_LENGTH+XCASH_SIGN_DATA_LENGTH,"\"}}",3);
 
   memset(result,0,strnlen(result,BUFFER_SIZE));

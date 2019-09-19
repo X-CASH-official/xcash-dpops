@@ -14,7 +14,7 @@
 #include "reset_variables_allocated_on_the_heap_test.h"
 #include "string_functions_test.h"
 #include "VRF_functions_test.h"
-#include "xcash_proof_of_stake_test.h"
+#include "XCASH_DPOPS_test.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ Description: Run the test
 void test()
 {
   // Variables
-  int xcash_proof_of_stake_total_passed_test = 0;
+  int XCASH_DPOPS_total_passed_test = 0;
 
   // define macros
   #define XCASH_PROOF_OF_STAKE_TOTAL_TEST 154
@@ -64,17 +64,17 @@ void test()
   } 
 
   // run the tests
-  xcash_proof_of_stake_total_passed_test += blockchain_functions_test();
-  xcash_proof_of_stake_total_passed_test += database_test(); 
-  xcash_proof_of_stake_total_passed_test += file_functions_test();
-  xcash_proof_of_stake_total_passed_test += network_functions_test();
-  xcash_proof_of_stake_total_passed_test += string_functions_test();
-  xcash_proof_of_stake_total_passed_test += VRF_functions_test();
-  xcash_proof_of_stake_total_passed_test += reset_variables_allocated_on_the_heap_test();
-  //xcash_proof_of_stake_total_passed_test += analysing_code_test();
+  XCASH_DPOPS_total_passed_test += blockchain_functions_test();
+  XCASH_DPOPS_total_passed_test += database_test(); 
+  XCASH_DPOPS_total_passed_test += file_functions_test();
+  XCASH_DPOPS_total_passed_test += network_functions_test();
+  XCASH_DPOPS_total_passed_test += string_functions_test();
+  XCASH_DPOPS_total_passed_test += VRF_functions_test();
+  XCASH_DPOPS_total_passed_test += reset_variables_allocated_on_the_heap_test();
+  //XCASH_DPOPS_total_passed_test += analysing_code_test();
 
   // write the end test message
-  if (xcash_proof_of_stake_total_passed_test == XCASH_PROOF_OF_STAKE_TOTAL_TEST)
+  if (XCASH_DPOPS_total_passed_test == XCASH_PROOF_OF_STAKE_TOTAL_TEST)
   {
     fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"green");
@@ -86,7 +86,7 @@ void test()
   {
     fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\033[1;31mX-CASH proof of stake test results - Passed test: %d, Failed test: %d\033[0m\n",xcash_proof_of_stake_total_passed_test,XCASH_PROOF_OF_STAKE_TOTAL_TEST-xcash_proof_of_stake_total_passed_test);
+    fprintf(stderr,"\033[1;31mX-CASH proof of stake test results - Passed test: %d, Failed test: %d\033[0m\n",XCASH_DPOPS_total_passed_test,XCASH_PROOF_OF_STAKE_TOTAL_TEST-XCASH_DPOPS_total_passed_test);
     color_print(TEST_OUTLINE,"red");
     fprintf(stderr,"\n\n");
   }
