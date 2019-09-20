@@ -23,7 +23,7 @@ X-CASH DPOPS is a variation of DPOS and DBFT. The key features of X-CASH DPOPS a
  
 This program allows one to run a DPOPS node, a shared delegates website, and a delegates website.
 
-**If you plan on running a shared delegates website or a delegates website, you will need to run the website on the same system as the DPOPS node**
+**If you plan on running a [shared delegates website](https://github.com/X-CASH-official/XCASH_DPOPS_shared_delegates_website) or a [delegates website](https://github.com/X-CASH-official/XCASH_DPOPS_delegates_website), you will need to run the website on the same system as the DPOPS node**
 
 **By running a DPOPS node (solo or shared) you will need the computer to be online and running at all times**
  
