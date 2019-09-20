@@ -116,7 +116,7 @@ After you have built the MongoDB C driver from source, you will need to run
  
 ### Cloning the Repository
 ```
-cd ~Installed-Programs 
+cd ~/Installed-Programs 
 git clone https://github.com/X-CASH-official/XCASH_DPOPS.git
 ```
  
@@ -124,10 +124,10 @@ git clone https://github.com/X-CASH-official/XCASH_DPOPS.git
  
 ### Build Instructions
  
-X-CASH Proof of stake uses a Make file.
+XCASH_DPOPS uses a Make file.
  
 After cloning the repository, navigate to the folder  
-`cd ~/Installed-Programs/XCASH_proof_of_stake`
+`cd ~/Installed-Programs/XCASH_DPOPS`
  
 Then use the make file to build the binary file  
 `make clean ; make release`

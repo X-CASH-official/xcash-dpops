@@ -122,6 +122,7 @@ Using define statements instead of constants for increased efficiency
 "--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
 "The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \
 "The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)\n\n" \
+"--disable_synchronizing_databases_and_starting_timers - Disables synchronzing the databases and starting the timers. Used for testing.\n\n" \
 "--test_data_add - Add test data to the databases\n\n" \
 "--test_data_remove - Remove test data from the databases\n\n"
 #endif

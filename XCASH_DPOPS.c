@@ -44,11 +44,7 @@ int main(int parameters_count, char* parameters[])
   int settings;
 
   // threads
-  pthread_t thread_id_1;
-  pthread_t thread_id_2;
-  pthread_t thread_id_3;
-  pthread_t thread_id_4;
-  pthread_t thread_id_5;
+  pthread_t thread_id[5];
   
   // define macros
   #define database_reset \
@@ -349,6 +345,12 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not get the wallets public address");
   }
 
+  // get the current block height
+  if (get_current_block_height(current_block_height,0) == 0)
+  {
+    MAIN_ERROR("Could not get the current block height");
+  }
+
   // set the default delegate website and shared delegate website settings
   delegates_website = 0;
   shared_delegates_website = 0;
@@ -434,6 +436,10 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
+    else if (strncmp(parameters[1],"--disable_synchronizing_databases_and_starting_timers",BUFFER_SIZE) == 0)
+    {
+      goto disable_synchronizing_databases_and_starting_timers;
+    }
     else
     {
       memcpy(error_message.function[error_message.total],"main",4);
@@ -447,7 +453,7 @@ int main(int parameters_count, char* parameters[])
   }
   else if (parameters_count == 6)
   {
-    if (strncmp(parameters[1],"--shared_delegates_website",BUFFER_SIZE) == 0 && strncmp(parameters[2],"--fee",BUFFER_SIZE) == 0 || strncmp(parameters[4],"--minimum_amount",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[1],"--shared_delegates_website",BUFFER_SIZE) == 0 && strncmp(parameters[2],"--fee",BUFFER_SIZE) == 0 && strncmp(parameters[4],"--minimum_amount",BUFFER_SIZE) == 0)
     {
       shared_delegates_website = 1;
       sscanf(parameters[3], "%lf", &fee);
@@ -463,12 +469,6 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }      
-  }
-
-  // get the current block height
-  if (get_current_block_height(current_block_height,0) == 0)
-  {
-    MAIN_ERROR("Could not get the current block height");
   }
 
   start:
@@ -636,7 +636,7 @@ int main(int parameters_count, char* parameters[])
   // print_start_message("Starting all of the threads");
 
   // start the current block height timer thread
-  if (pthread_create(&thread_id_1, NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_1) != 0)
+  if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
   {
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
@@ -644,7 +644,7 @@ int main(int parameters_count, char* parameters[])
   color_print("Started the current block height timer thread","green");
 
   /*// start the check_reserve_proofs_timer_thread
-  if (pthread_create(&thread_id_2, NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id_2) != 0)
+  if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
   {
     MAIN_ERROR("Could not start the check_reserve_proofs_timer_thread");
   }
@@ -652,7 +652,7 @@ int main(int parameters_count, char* parameters[])
   color_print("Started the check reserve proofs timer thread","green");*/
 
   /*// start the check_delegates_online_status_timer_thread
-  if (pthread_create(&thread_id_3, NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id_3) != 0)
+  if (pthread_create(&thread_id[2], NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id[2]) != 0)
   {
     MAIN_ERROR("Could not start the check_delegates_online_status_timer_thread");
   }
@@ -662,7 +662,7 @@ int main(int parameters_count, char* parameters[])
   /*// start the block height timer thread
   if (shared_delegates_website == 1)
   {
-    if (pthread_create(&thread_id_1, NULL, &block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id_4) != 0)
+    if (pthread_create(&thread_id[3], NULL, &block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[3]) != 0)
     {
       MAIN_ERROR("Could not start the block_height_timer_thread");
     }
@@ -670,13 +670,15 @@ int main(int parameters_count, char* parameters[])
     color_print("Started the current block height timer thread","green");
 
     // start the payment timer thread
-    if (pthread_create(&thread_id_1, NULL, &payment_timer_thread, NULL) != 0 && pthread_detach(thread_id_5) != 0)
+    if (pthread_create(&thread_id[4], NULL, &payment_timer_thread, NULL) != 0 && pthread_detach(thread_id[4]) != 0)
     {
       MAIN_ERROR("Could not start the block_height_timer_thread");
     }
   
     color_print("Started the payment_timer_thread","green");
    }*/
+
+   disable_synchronizing_databases_and_starting_timers:
   
   // start the server
   if (create_server(1) == 0)

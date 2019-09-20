@@ -74,11 +74,11 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   // get the file
   if (shared_delegates_website == 1)
   {
-    memcpy(data2,"shared_delegates_website/",26);
+    memcpy(data2,"shared_delegates_website/",25);
   }
   if (delegates_website == 1)
   {
-    memcpy(data2,"delegates_website/",19);
+    memcpy(data2,"delegates_website/",18);
   }
   memcpy(data2+strlen(data2),&MESSAGE[(strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5],(strlen(MESSAGE) - strlen(strstr(MESSAGE," HTTP/"))) - ((strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5));
   file_size = read_file(data,data2);
