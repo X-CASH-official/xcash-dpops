@@ -1,0 +1,11 @@
+[Unit]
+Description=firewall
+ 
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=root
+ExecStart=/root/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+ 
+[Install]
+WantedBy=multi-user.target

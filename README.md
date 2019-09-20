@@ -133,36 +133,6 @@ Then use the make file to build the binary file
 `make clean ; make release`
  
  
-## How To Setup the Firewall
- 
-We will need to setup a firewall for our DPOPS node. The goal of settings up the firewall is to block any DDOS attacks. We will use IPtables for the firewall
- 
-The firewall is configured for a solo node setup. To configure the firewall for a shared delegates website or delegates website:
- 
-Open the firewall script  
-`nano ~/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh`
- 
-Uncomment these 3 lines (by removing the `#`) if running a shared delegates website or delegates website  
-`# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP`
- 
-`# iptables -A INPUT -p tcp --dport 80 -j ACCEPT`
- 
-`# iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283`
- 
-If you want to run the shared delegates website or delegates website using HTTPS, you will need to install a webserver like nginx and configure it.
- 
-Now we need to run the firewall script and activate it  
-```
-chmod +x ~/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh
-~/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh
-iptables-save > /etc/network/iptables.up.rules
-iptables-apply -t 60
-```
- 
-You should then open another connection to the server to make sure it worked and did not lock you out. Then press y to confirm the changes for the firewall.
- 
- 
- 
  
 ## How To Setup and Install the Systemd Files
 
@@ -339,6 +309,65 @@ To run the XCASH DPOPS node and the delegates website, add the flag `--delegates
 
 Reload systemd after you have made any changes to the systemd service files  
 `systemctl daemon-reload`
+
+
+
+### Firewall
+This is the systemd file for firewall
+```
+[Unit]
+Description=firewall
+ 
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=root
+ExecStart=/root/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+ 
+[Install]
+WantedBy=multi-user.target
+```
+
+You will need to change the **User** to the user of the system
+
+You will need to change the **ExecStart** to the full path of the `firewall_script.sh` file
+
+Reload systemd after you have made any changes to the systemd service files  
+`systemctl daemon-reload`
+
+
+
+## How To Setup the Firewall
+ 
+We will need to setup a firewall for our DPOPS node. The goal of settings up the firewall is to block any DDOS attacks. We will use IPtables for the firewall
+ 
+The firewall is configured for a solo node setup. To configure the firewall for a shared delegates website or delegates website:
+ 
+Open the firewall script  
+`nano ~/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh`
+ 
+Uncomment these 3 lines (by removing the `#`) if running a shared delegates website or delegates website  
+`# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP`
+ 
+`# iptables -A INPUT -p tcp --dport 80 -j ACCEPT`
+ 
+`# iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283`
+ 
+If you want to run the shared delegates website or delegates website using HTTPS, you will need to install a webserver like nginx and configure it.
+ 
+Now we need to run the firewall script and activate it  
+```
+chmod +x ~/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+~/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+iptables-save > /etc/network/iptables.up.rules
+iptables-apply -t 60
+```
+ 
+You should then open another connection to the server to make sure it worked and did not lock you out. Then press y to confirm the changes for the firewall.
+
+Now we need to enable the firewall systemd service file to run this script after a restart  
+`systemctl enable firewall`
+ 
  
  
  
