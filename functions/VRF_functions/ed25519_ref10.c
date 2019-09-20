@@ -466,6 +466,23 @@ ge25519_p3_to_cached(ge25519_cached *r, const ge25519_p3 *p)
     fe25519_mul(r->T2d, p->T, d2);
 }
 
+static void
+ge25519_p3_to_precomp(ge25519_precomp *pi, const ge25519_p3 *p)
+{
+    fe25519 recip;
+    fe25519 x;
+    fe25519 y;
+    fe25519 xy;
+
+    fe25519_invert(recip, p->Z);
+    fe25519_mul(x, p->X, recip);
+    fe25519_mul(y, p->Y, recip);
+    fe25519_add(pi->yplusx, y, x);
+    fe25519_sub(pi->yminusx, y, x);
+    fe25519_mul(xy, x, y);
+    fe25519_mul(pi->xy2d, xy, d2);
+}
+
 /*
  r = p
  */
