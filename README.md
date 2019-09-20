@@ -388,7 +388,7 @@ It is recomeneded to run the X-CASH Proof of stake test before you run the main 
  
 To run the X-CASH Proof of stake test, make sure to have already started the XCASH Daemon, XCASH Wallet and MongoDB systemd services, and to have stopped the XCASH DPOPS systemd service if it was already running. 
 
-Navigate to the folder that contains the binary
+Navigate to the folder that contains the binary  
 Rebuild the binary in debug mode  
 `make clean ; make debug`
 
