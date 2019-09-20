@@ -436,10 +436,6 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
-    else if (strncmp(parameters[1],"--disable_synchronizing_databases_and_starting_timers",BUFFER_SIZE) == 0)
-    {
-      goto disable_synchronizing_databases_and_starting_timers;
-    }
     else
     {
       memcpy(error_message.function[error_message.total],"main",4);
@@ -469,6 +465,14 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }      
+  }
+
+  for (count = 0; count < parameters_count; count++)
+  {
+    if (strncmp(parameters[count],"--disable_synchronizing_databases_and_starting_timers",BUFFER_SIZE) == 0)
+    {
+      goto disable_synchronizing_databases_and_starting_timers;
+    }
   }
 
   start:

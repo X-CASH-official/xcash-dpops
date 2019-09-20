@@ -867,7 +867,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     strftime(current_date_and_time_data,sizeof(current_date_and_time_data),"%a, %d %b %Y %H:%M:%S GMT",current_UTC_date_and_time);
 
     memcpy(message,"HTTP/1.1 ",9);
-    snprintf(message+9,MAXIMUM_BUFFER_SIZE,"%d",MESSAGE_SETTINGS);
+    snprintf(message+9,MAXIMUM_BUFFER_SIZE-9,"%d",MESSAGE_SETTINGS);
     if (MESSAGE_SETTINGS == 200)
     {
       memcpy(message+strlen(message)," OK",3);
