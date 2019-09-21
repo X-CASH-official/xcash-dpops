@@ -367,9 +367,9 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
-    memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count],0,strnlen((char*)blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
-    memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count],0,strnlen((char*)blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memset(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count],0,strnlen(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
@@ -1649,7 +1649,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   memcpy(data,blockchain_data.previous_block_hash_data,blockchain_data.previous_block_hash_data_length);
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count]) == crypto_vrf_SECRETKEYBYTES && strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count]) == crypto_vrf_PUBLICKEYBYTES && strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count]) == RANDOM_STRING_LENGTH)
+    if (strlen((char*)blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count]) == crypto_vrf_SECRETKEYBYTES && strlen((char*)blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count]) == crypto_vrf_PUBLICKEYBYTES && strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count]) == RANDOM_STRING_LENGTH)
     {
       memcpy(data+strlen(data),blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count],RANDOM_STRING_LENGTH);
     }

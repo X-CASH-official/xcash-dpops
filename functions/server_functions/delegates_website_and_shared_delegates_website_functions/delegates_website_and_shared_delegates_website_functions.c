@@ -65,7 +65,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR \
   memcpy(data,"{\"Error\":\"Could not get the file\"}",34); \
-  send_data(CLIENT_SOCKET,data,strlen(data),400,"application/json"); \
+  send_data(CLIENT_SOCKET,data,strlen((const char*)data),400,"application/json"); \
   pointer_reset(data); \
   return 0;
 
@@ -127,7 +127,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   }
   
 
-  if (send_data(CLIENT_SOCKET,data,(const long)file_size,200,data2) == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)data,(const long)file_size,200,data2) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
   }
@@ -171,7 +171,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   #define SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(settings) \
   memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE)); \
   memcpy(data,"{\"Error\":\"Could not get statistics\"}",36); \
-  send_data(CLIENT_SOCKET,data,strlen(data),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)data,strlen(data),400,"application/json"); \
   pointer_reset(data); \
   if (settings == 0) \
   { \
@@ -185,7 +185,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
     pointer_reset(database_data.item[count]); \
     pointer_reset(database_data.value[count]); \
   } \
-  for (count = 0; count < document_count; count++) \
+  for (count = 0; (int)count < document_count; count++) \
   { \
     for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++) \
     { \
@@ -235,7 +235,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   database_data.count = 0;
 
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < document_count; count++)
+  for (count = 0; (int)count < document_count; count++)
   {
     for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++)
     {
@@ -286,7 +286,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   database_data.count++;
 
   // get the total votes
-  for (count = 0, count2 = 0; count < document_count; count++)
+  for (count = 0, count2 = 0; (int)count < document_count; count++)
   {
     for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++)
     {
@@ -330,7 +330,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
     SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(0);
   }
 
-  if (send_data(CLIENT_SOCKET,data,strlen(data),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)data,strlen(data),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR(0);
   }
@@ -374,7 +374,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
-  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
   if (settings == 0) \
   { \
@@ -383,7 +383,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   return 0;
 
   #define pointer_reset_database_array \
-  for (count = 0; count < document_count; count++) \
+  for (count = 0; (int)count < document_count; count++) \
   { \
     for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++) \
     { \
@@ -411,7 +411,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   }
   
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < document_count; count++)
+  for (count = 0; (int)count < document_count; count++)
   {
     for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++)
     {
@@ -440,7 +440,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(0);
   }
 
-  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(0);
   }
@@ -486,7 +486,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
-  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
   if (settings == 0) \
   { \
@@ -500,7 +500,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     pointer_reset(database_data.item[count]); \
     pointer_reset(database_data.value[count]); \
   } \
-  for (count = 0; count < document_count; count++) \
+  for (count = 0; (int)count < document_count; count++) \
   { \
     for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS; counter++) \
     { \
@@ -578,7 +578,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   }
 
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < document_count; count++)
+  for (count = 0; (int)count < document_count; count++)
   {
     for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS+1; counter++)
     {
@@ -632,7 +632,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
   }
 
-  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
   }
@@ -675,7 +675,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
-  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
   if (settings == 0) \
   { \
@@ -761,7 +761,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(0);
   }
 
-  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
   }
@@ -803,7 +803,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates voters list\"}",51); \
-  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
   if (settings == 0) \
   { \
@@ -866,7 +866,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   { 
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2),"%d",count);
+    snprintf(data2+15,sizeof(data2)-16,"%d",count);
 
     counter = count_documents_in_collection(DATABASE_NAME,data2,message,0);
     if (counter < 0)
@@ -906,7 +906,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   { 
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2),"%d",count);
+    snprintf(data2+15,sizeof(data2)-16,"%d",count);
 
     counter = count_documents_in_collection(DATABASE_NAME,data2,message,0);
     if (counter > 0)
@@ -925,7 +925,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(0);
   }  
 
-  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(0);
   }
@@ -963,7 +963,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
   #define SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the round statistics\"}",46); \
-  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   return 0;
 
   memset(message,0,sizeof(message));
@@ -979,8 +979,6 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
     SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR;
   } 
 
-  const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
-
   // calculate what reserve_bytes database the reserve bytes data will be in
   sscanf(data2,"%zu", &count);
   if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
@@ -990,7 +988,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
 
   count = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memcpy(data3,"reserve_bytes_",14);
-  snprintf(data3+14,sizeof(data3),"%zu",count);
+  snprintf(data3+14,sizeof(data3)-15,"%zu",count);
 
   // create the message
   memcpy(message,"{\"block_height\":\"",17);
@@ -1016,7 +1014,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
   memcpy(message+18,data2,strnlen(data2,sizeof(message)));
   memcpy(message+strlen(message),"\"}",2);
 
-  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR;
   }
@@ -1059,7 +1057,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
-  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   if (settings == 0) \
   { \
     pointer_reset_database_array; \
@@ -1129,7 +1127,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   { 
     memset(data,0,strlen(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data),"%d",count);
+    snprintf(data+15,sizeof(data)-16,"%d",count);
 
     total_votes += count_documents_in_collection(DATABASE_NAME_DELEGATES,data,message,0);
   }
@@ -1152,7 +1150,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   snprintf(message+strlen(message),sizeof(message),"%lld",minimum_amount);
   memcpy(message+strlen(message),"\"}",2);
 
-  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
   }
@@ -1193,7 +1191,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   #define SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates blocks found\"}",52); \
-  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
   if (settings == 0) \
   { \
@@ -1245,7 +1243,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
   } 
   
-  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
   }
@@ -1287,7 +1285,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
-  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   if (settings == 0) \
   { \
     pointer_reset_database_array; \
@@ -1355,7 +1353,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
   }
 
-  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
   }
@@ -1399,7 +1397,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
-  send_data(CLIENT_SOCKET,message,strlen(message),400,"application/json"); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
   if (settings == 0) \
   { \
@@ -1482,7 +1480,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0);
   }
 
-  if (send_data(CLIENT_SOCKET,message,strlen(message),200,"application/json") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0);
   }

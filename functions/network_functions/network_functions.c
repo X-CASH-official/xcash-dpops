@@ -301,7 +301,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     fprintf(stderr,"Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
   }
-  if (send_data(SOCKET,message,0,0,"") == 0)
+  if (send_data(SOCKET,(unsigned char*)message,0,0,"") == 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -599,7 +599,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   }
   memset(message,0,sizeof(message));
   memcpy(message,DATA,strnlen(DATA,sizeof(message)));
-  if (send_data(SOCKET,message,0,1,"") == 0)
+  if (send_data(SOCKET,(unsigned char*)message,0,1,"") == 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -808,7 +808,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   // send the message 
   memset(message,0,sizeof(message));
   memcpy(message,DATA,strnlen(DATA,sizeof(message)));
-  if (send_data(SOCKET,message,0,1,"") == 0)
+  if (send_data(SOCKET,(unsigned char*)message,0,1,"") == 0)
   {  
     memcpy(str,"Error sending data to ",22);
     memcpy(str+22,HOST,HOST_LENGTH);
@@ -841,15 +841,15 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
 {
   // Variables
   size_t count;
-  size_t total;
-  size_t sent;
-  size_t bytes;
+  long long int total;
+  long long int sent;
+  long long int bytes;
 
   if (MESSAGE_SETTINGS == 1)
   {
     // append the SOCKET_END_STRING to the message since this is a socket message
-    memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
-    total = strlen(data);
+    memcpy(data+strlen((const char*)data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
+    total = strlen((const char*)data);
   }    
   else if (MESSAGE_SETTINGS != 0)
   {
@@ -896,7 +896,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   } 
   else
   {
-    total = strlen(data);
+    total = strlen((const char*)data);
   }
        
   sent = 0;
@@ -952,7 +952,7 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
   { 
     memset(buffer, 0, strlen(buffer));
     // check the size of the data that were about to receive. If the total data plus the data were about to receive is over 50 MB then dont accept it, since it will cause a buffer overflow
-    if ((recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE - strnlen(data,BUFFER_SIZE) && strnlen(data,BUFFER_SIZE) > 0) || (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE && strnlen(data,BUFFER_SIZE) == 0))
+    if (((int)recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE - (int)strnlen(data,BUFFER_SIZE) && (int)strnlen(data,BUFFER_SIZE) > 0) || ((int)recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE && strnlen(data,BUFFER_SIZE) == 0))
     {
       pointer_reset_all;
       return 0;
@@ -1013,7 +1013,6 @@ Return: 1 if the IP address is online, 0 if the IP address is offline
 int get_delegate_online_status(const char* HOST)
 {
   // Constants
-  const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
   size_t count;
 
   // Variables

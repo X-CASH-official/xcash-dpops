@@ -209,10 +209,10 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
   char* datacopy = data2; 
-  mongoc_client_t* database_client_thread;
+  mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
-  bson_t* document;
+  bson_t* document = NULL;
   size_t count;
   size_t count2;
 
@@ -1572,7 +1572,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
-      snprintf(data2+15,BUFFER_SIZE,"%zu",count);
+      snprintf(data2+15,BUFFER_SIZE-16,"%zu",count);
 
       // set the collection
       if (THREAD_SETTINGS == 0)
@@ -1604,7 +1604,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
         bson_free(message);
       }
       // get the data hash of the collection  
-      memset(string,0,strnlen(string,BUFFER_SIZE));    
+      memset(string,0,strlen((char*)string));    
       crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
       memset(reserve_proofs_data_hash[count-1],0,strlen(reserve_proofs_data_hash[count-1]));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
@@ -1614,14 +1614,14 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     }
 
     // get the data hash of the all of the reserve proofs data hash
-    memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE));
+    memset(data,0,strlen(data));
     for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memcpy(data+strlen(data),reserve_proofs_data_hash[count],DATA_HASH_LENGTH);
     }
 
     // get the data hash of the collection
-    memset(string,0,strlen(string));
+    memset(string,0,strlen((char*)string));
     crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
   }
 
@@ -1643,7 +1643,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);  
-      snprintf(data2+14,BUFFER_SIZE,"%zu",count);
+      snprintf(data2+14,BUFFER_SIZE-15,"%zu",count);
 
       // set the collection
       if (THREAD_SETTINGS == 0)
@@ -1655,7 +1655,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
          collection = mongoc_client_get_collection(database_client_thread, DATABASE, data2);
       }
 
-      memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE));
+      memset(data,0,strlen(data));
       count2 = 0;
 
       document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
@@ -1675,7 +1675,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
         bson_free(message);
       }
       // get the data hash of the collection  
-      memset(string,0,strnlen(string,BUFFER_SIZE)); 
+      memset(string,0,strlen((char*)string)); 
       crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
       memset(reserve_bytes_data_hash[count-1],0,strlen(reserve_bytes_data_hash[count-1]));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
@@ -1685,14 +1685,14 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     }
 
     // get the data hash of the all of the reserve proofs data hash
-    memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE));
+    memset(data,0,strlen(data));
     for (count = 0; count < counter; count++)
     {
       memcpy(data+strlen(data),reserve_bytes_data_hash[count],DATA_HASH_LENGTH);
     }
 
     // get the data hash of the collection
-    memset(string,0,strlen(string));
+    memset(string,0,strlen((char*)string));
     crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
   }
 
@@ -1730,7 +1730,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       bson_free(message);
     }
     // get the data hash of the collection
-    memset(string,0,strlen(string));
+    memset(string,0,strlen((char*)string));
     crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
   }
 

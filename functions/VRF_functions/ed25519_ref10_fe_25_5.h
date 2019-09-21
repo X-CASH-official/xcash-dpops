@@ -95,7 +95,7 @@ fe25519_add(fe25519 h, const fe25519 f, const fe25519 g)
  |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
  */
 
-static void fe25519_sub(fe25519 h, const fe25519 f, const fe25519 g)
+static inline void fe25519_sub(fe25519 h, const fe25519 f, const fe25519 g)
 {
     int32_t h0 = f[0] - g[0];
     int32_t h1 = f[1] - g[1];
@@ -162,7 +162,7 @@ static inline void fe25519_neg(fe25519 h, const fe25519 f)
  Preconditions: b in {0,1}.
  */
 
-static void fe25519_cmov(fe25519 f, const fe25519 g, unsigned int b)
+static inline void fe25519_cmov(fe25519 f, const fe25519 g, unsigned int b)
 {
     const uint32_t mask = (uint32_t) (-(int32_t) b);
 
@@ -211,7 +211,7 @@ static void fe25519_cmov(fe25519 f, const fe25519 g, unsigned int b)
     f[9] = f9 ^ x9;
 }
 
-static void fe25519_cswap(fe25519 f, fe25519 g, unsigned int b)
+static inline void fe25519_cswap(fe25519 f, fe25519 g, unsigned int b)
 {
     const uint32_t mask = (uint32_t) (-(int64_t) b);
 
@@ -389,7 +389,7 @@ static inline int fe25519_iszero(const fe25519 f)
  With tighter constraints on inputs can squeeze carries into int32.
  */
 
-static void
+static inline void
 fe25519_mul(fe25519 h, const fe25519 f, const fe25519 g)
 {
     int32_t f0 = f[0];
@@ -659,7 +659,7 @@ fe25519_mul(fe25519 h, const fe25519 f, const fe25519 g)
  |h| bounded by 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
  */
 
-static void
+static inline void
 fe25519_sq(fe25519 h, const fe25519 f)
 {
     int32_t f0 = f[0];
@@ -831,7 +831,7 @@ fe25519_sq(fe25519 h, const fe25519 f)
  |h| bounded by 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
  */
 
-static void
+static inline void
 fe25519_sq2(fe25519 h, const fe25519 f)
 {
     int32_t f0 = f[0];
@@ -1003,7 +1003,7 @@ fe25519_sq2(fe25519 h, const fe25519 f)
     h[9] = (int32_t) h9;
 }
 
-static void
+static inline void
 fe25519_scalar_product(fe25519 h, const fe25519 f, uint32_t n)
 {
     int64_t sn = (int64_t) n;

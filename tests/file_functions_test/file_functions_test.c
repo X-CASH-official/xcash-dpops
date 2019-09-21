@@ -63,7 +63,7 @@ int file_functions_test()
 
   // read the file
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (read_file(data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0)
+  if (read_file((unsigned char*)data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0)
   {
     color_print("FAILED! Test for reading the file","red");
   }
@@ -93,7 +93,7 @@ int file_functions_test()
 
    // read the file
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  struct read_file_thread_parameters read_file_thread_parameters = {data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY};
+  struct read_file_thread_parameters read_file_thread_parameters = {(unsigned char*)data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY};
   pthread_create(&thread_id, NULL, &read_file_thread,(void *)&read_file_thread_parameters);
   if (thread_settings(thread_id) == 0)
   {

@@ -215,9 +215,9 @@ int blockchain_functions_test()
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count]));
-    memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count]));
+    memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count],0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count]));
     memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count]));
-    memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count]));
+    memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count],0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count]));
     memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count]));
     memset(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count]));
     memset(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count],0,strlen(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count]));

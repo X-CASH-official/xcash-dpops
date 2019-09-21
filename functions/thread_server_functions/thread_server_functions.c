@@ -165,7 +165,6 @@ void* check_reserve_proofs_timer_thread()
   int count;
   int count2;
   size_t block_verifiers_score;
-  int settings;
   struct send_data_socket_thread_parameters send_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   struct database_multiple_documents_fields database_multiple_documents_fields;
 
@@ -330,7 +329,7 @@ void* check_reserve_proofs_timer_thread()
       {
         memset(data,0,sizeof(data));
         memcpy(data,"reserve_proofs_",15);
-        snprintf(data+15,sizeof(data)-1,"%d",count);
+        snprintf(data+15,sizeof(data)-16,"%d",count);
         for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
         {
           memset(data2,0,sizeof(data2));
@@ -361,7 +360,7 @@ void* check_reserve_proofs_timer_thread()
 
         memset(data2,0,sizeof(data2));
         memcpy(data2,"{\"block_verifiers_score\":\"",26);
-        snprintf(data2+26,sizeof(data2)-1,"%zu",block_verifiers_score);
+        snprintf(data2+26,sizeof(data2)-27,"%zu",block_verifiers_score);
         memcpy(data2+strlen(data2),"\"}",2);
 
         pthread_rwlock_rdlock(&rwlock_reserve_proofs);
@@ -398,7 +397,7 @@ void* check_reserve_proofs_timer_thread()
     // select a random reserve proofs collection
     memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-1,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
+    snprintf(data+15,sizeof(data)-16,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
 
     // select a random document in the collection
     count = count_all_documents_in_collection(DATABASE_NAME,data,0);
@@ -586,8 +585,8 @@ long long int add_block_to_blocks_found()
   int count;
   int count2;
   long long int number;
-  long long int block_height_number;
-  long long int block_reward_number;
+  long long int block_height_number = 0;
+  long long int block_reward_number = 0;
   struct database_multiple_documents_fields database_data;
   int document_count = 0;
 
@@ -727,14 +726,13 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   char data3[BUFFER_SIZE];
   char current_delegates_public_address[XCASH_WALLET_LENGTH+1];
   char current_delegates_total_votes[BUFFER_SIZE];
-  int count;
-  int counter;
+  size_t count;
+  size_t counter;
   int public_address_count;
   long long int number;
   long long int total_votes;
   long long int current_delegates_block_reward;
   struct database_multiple_documents_fields database_data;
-  int document_count = 0;  
 
   // define macros
   #define CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR(message) \
@@ -745,7 +743,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   return 0;
 
   #define pointer_reset_database_array \
-  for (count = 0; count < public_address_count; count++) \
+  for (count = 0; (int)count < public_address_count; count++) \
   { \
     for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++) \
     { \
@@ -769,7 +767,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   { 
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-1,"%d",count);
+    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
     public_address_count += count_documents_in_collection(DATABASE_NAME,data2,data,0);
   }
 
@@ -780,7 +778,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   }
 
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < public_address_count; count++)
+  for (count = 0; (int)count < public_address_count; count++)
   {
     for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++)
     {
@@ -796,7 +794,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   { 
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-1,"%d",count);
+    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
     counter = count_documents_in_collection(DATABASE_NAME,data2,data,0);
     if (counter > 0)
     {
@@ -959,8 +957,8 @@ void* payment_timer_thread()
   char inactivity_count[BUFFER_SIZE];
   char payment_tx_hash[BUFFER_SIZE];
   char payment_tx_key[BUFFER_SIZE];
-  int count;
-  int counter; 
+  size_t count;
+  size_t counter; 
   long long int number;
   long long int amount_of_payments;
   long long int updated_total;
@@ -980,7 +978,7 @@ void* payment_timer_thread()
   continue;
 
   #define pointer_reset_database_array \
-  for (count = 0; count < document_count; count++) \
+  for (count = 0; (int)count < document_count; count++) \
   { \
     for (counter = 0; counter < TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS; counter++) \
     { \
@@ -1007,7 +1005,7 @@ void* payment_timer_thread()
 
       // initialize the database_multiple_documents_fields struct 
       document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses",0);
-      for (count = 0; count < document_count; count++)
+      for (count = 0; (int)count < document_count; count++)
       {
         for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++)
         {
@@ -1257,9 +1255,7 @@ void* send_data_socket_thread(void* parameters)
   }
     
   // convert the port to a string  
-  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
-   
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT);
   
   /* setup the connection
   AF_INET = IPV4
@@ -1365,7 +1361,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   char str[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
-  int count;
+  int count = 0;
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
@@ -1416,8 +1412,6 @@ void* send_and_receive_data_socket_thread(void* parameters)
     
   // convert the port to a string  
   snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
-   
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
   /* setup the connection
   AF_INET = IPV4
@@ -1496,7 +1490,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   { 
     memset(&buffer, 0, sizeof(buffer));
     // check the size of the data that were about to receive. If it is over BUFFER_SIZE then dont accept it, since it will cause a buffer overflow
-    if ((recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= sizeof(buffer) - strnlen(message,sizeof(buffer)) && strnlen(message,sizeof(buffer)) > 0) || (recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= sizeof(buffer) && strnlen(message,sizeof(buffer)) == 0))
+    if (((int)recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) - (int)strnlen(message,sizeof(buffer)) && (int)strnlen(message,sizeof(buffer)) > 0) || ((int)recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) && (int)strnlen(message,sizeof(buffer)) == 0))
     {
       SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
     }    
@@ -1564,7 +1558,7 @@ Description: socket receive data thread
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* socket_receive_data_thread(void* parameters)
+void* socket_receive_data_thread()
 {
   // Constants
   const int CONNECTIONS_PER_THREAD = MAXIMUM_CONNECTIONS / get_nprocs();

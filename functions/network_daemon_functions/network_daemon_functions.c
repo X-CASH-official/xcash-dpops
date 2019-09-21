@@ -107,7 +107,7 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"submit_block\",\"params\":[\"",61);
   memcpy(message+61,data,DATA_LENGTH);
   memcpy(message+61+DATA_LENGTH,"\"]}",3);
-  memset(data,0,sizeof(data));
+  memset(data,0,strlen(data));
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"submit block template",HTTP_SETTINGS) <= 0)
   {  
@@ -522,11 +522,7 @@ Return: 0 if an error has occured, 1 if you did not find the previous block on t
 */
 
 int check_found_block()
-{  
-  // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-
+{ 
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
@@ -556,7 +552,7 @@ int check_found_block()
   count = ((block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memset(data2,0,sizeof(data2));
   memcpy(data2,"reserve_bytes_",14);
-  snprintf(data2+14,sizeof(data2)-1,"%zu",count);
+  snprintf(data2+14,sizeof(data2)-15,"%zu",count);
 
   // get the reserve byte data
   memset(result,0,sizeof(result));

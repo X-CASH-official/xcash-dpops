@@ -467,7 +467,7 @@ int main(int parameters_count, char* parameters[])
     }      
   }
 
-  for (count = 0; count < parameters_count; count++)
+  for (count = 0; count < (size_t)parameters_count; count++)
   {
     if (strncmp(parameters[count],"--disable_synchronizing_databases_and_starting_timers",BUFFER_SIZE) == 0)
     {

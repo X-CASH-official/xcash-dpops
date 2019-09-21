@@ -235,7 +235,7 @@ struct database_multiple_documents_fields {
 };
 
  struct read_file_thread_parameters {
-    char* result; // The data read from the file
+    unsigned char* result; // The data read from the file
     const char* FILE_NAME; // The file name
 };
 

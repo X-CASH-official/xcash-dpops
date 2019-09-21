@@ -17,5 +17,5 @@ void* block_height_timer_thread();
 void* payment_timer_thread();
 void* send_data_socket_thread(void* parameters);
 void* send_and_receive_data_socket_thread(void* parameters);
-void* socket_receive_data_thread(void* parameters);
+void* socket_receive_data_thread();
 #endif

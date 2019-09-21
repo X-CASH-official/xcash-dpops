@@ -46,7 +46,7 @@ static const randombytes_implementation *implementation;
 
 static void randombytes_init_if_needed(void){
 	
-    implementation == NULL;
+    implementation = NULL;
 }
 
 int randombytes_set_implementation(randombytes_implementation *impl){

@@ -466,7 +466,7 @@ ge25519_p3_to_cached(ge25519_cached *r, const ge25519_p3 *p)
     fe25519_mul(r->T2d, p->T, d2);
 }
 
-static void
+void
 ge25519_p3_to_precomp(ge25519_precomp *pi, const ge25519_p3 *p)
 {
     fe25519 recip;

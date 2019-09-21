@@ -56,7 +56,6 @@ int start_new_round()
   // Variables
   char data[BUFFER_SIZE];
   size_t count;
-  size_t count2;
   int settings;
   int settings2;
 
@@ -85,9 +84,9 @@ int start_new_round()
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count])); \
-    memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key[count])); \
+    memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen((const char*)VRF_data.block_verifiers_vrf_secret_key[count])); \
     memset(VRF_data.block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[count])); \
-    memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen(VRF_data.block_verifiers_vrf_public_key[count])); \
+    memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen((const char*)VRF_data.block_verifiers_vrf_public_key[count])); \
     memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count])); \
     memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); \
     memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count])); \
@@ -95,7 +94,7 @@ int start_new_round()
     memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count])); \
   } \
   memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4)); \
-  memset(VRF_data.vrf_secret_key_round_part_4,0,strlen(VRF_data.vrf_secret_key_round_part_4)); \
+  memset(VRF_data.vrf_secret_key_round_part_4,0,strlen((const char*)VRF_data.vrf_secret_key_round_part_4)); \
   memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4)); \
   memset(VRF_data.vrf_public_key_round_part_4,0,strlen((const char*)VRF_data.vrf_public_key_round_part_4)); \
   memset(VRF_data.vrf_alpha_string_data_round_part_4,0,strlen(VRF_data.vrf_alpha_string_data_round_part_4)); \
@@ -166,12 +165,12 @@ int start_new_round()
   // check if the current block height - 1 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
   sscanf(current_block_height,"%zu", &count);
   count = count - 1;
-  memset(data,0,sizeof(data,BUFFER_SIZE));
+  memset(data,0,sizeof(data));
   snprintf(data,sizeof(data)-1,"%zu",count);
   settings = get_block_settings(data,0);
   sscanf(current_block_height,"%zu", &count);
   count = count - 2;
-  memset(data,0,sizeof(data,BUFFER_SIZE));
+  memset(data,0,sizeof(data));
   snprintf(data,sizeof(data)-1,"%zu",count);
   settings2 = get_block_settings(data,0);
   if (settings == 0)
@@ -345,7 +344,7 @@ int start_current_round_start_blocks()
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
+    memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen((const char*)VRF_data.vrf_alpha_string_round_part_4),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
   }   
 
   // convert the vrf alpha string to a string
@@ -354,7 +353,7 @@ int start_current_round_start_blocks()
     snprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,BUFFER_SIZE-1,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
   }
 
-  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
+  if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf proof");
   }
@@ -362,7 +361,7 @@ int start_current_round_start_blocks()
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf beta string");
   }
-  if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
+  if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the VRF data");
   }
@@ -390,7 +389,7 @@ int start_current_round_start_blocks()
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4,VRF_data.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,VRF_data.vrf_public_key_round_part_4,crypto_vrf_PUBLICKEYBYTES);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,VRF_data.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4,VRF_data.vrf_alpha_string_round_part_4,strnlen(VRF_data.vrf_alpha_string_round_part_4,BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4,VRF_data.vrf_alpha_string_round_part_4,strnlen((const char*)VRF_data.vrf_alpha_string_round_part_4,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,strnlen(VRF_data.vrf_alpha_string_data_round_part_4,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_4,VRF_data.vrf_proof_round_part_4,crypto_vrf_PROOFBYTES);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_4,VRF_data.vrf_proof_data_round_part_4,VRF_PROOF_LENGTH);
@@ -443,7 +442,7 @@ int start_current_round_start_blocks()
   }
 
   // add the data hash to the network block string
-  memset(data,0,sizeof(data,BUFFER_SIZE));
+  memset(data,0,sizeof(data));
   if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the network block string data hash");
@@ -555,7 +554,6 @@ int data_network_node_create_block()
   char data3[BUFFER_SIZE];
   struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   size_t count; 
-  size_t counter;
   size_t count2; 
 
   // threads
@@ -639,7 +637,7 @@ int data_network_node_create_block()
 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
+      memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen((const char*)VRF_data.vrf_alpha_string_round_part_4),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
     }   
 
     // convert the vrf alpha string to a string
@@ -648,7 +646,7 @@ int data_network_node_create_block()
       snprintf(VRF_data.vrf_alpha_string_data_round_part_4+count,BUFFER_SIZE-1,"%02x",VRF_data.vrf_alpha_string_round_part_4[count2] & 0xFF);
     }
 
-    if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
+    if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the vrf proof");
     }
@@ -656,7 +654,7 @@ int data_network_node_create_block()
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the vrf beta string");
     }
-    if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
+    if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the VRF data");
     }
@@ -684,7 +682,7 @@ int data_network_node_create_block()
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4,VRF_data.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,VRF_data.vrf_public_key_round_part_4,crypto_vrf_PUBLICKEYBYTES);
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,VRF_data.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
-    memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4,VRF_data.vrf_alpha_string_round_part_4,strnlen(VRF_data.vrf_alpha_string_round_part_4,BUFFER_SIZE));
+    memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4,VRF_data.vrf_alpha_string_round_part_4,strnlen((const char*)VRF_data.vrf_alpha_string_round_part_4,BUFFER_SIZE));
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,strnlen(VRF_data.vrf_alpha_string_data_round_part_4,BUFFER_SIZE));
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_4,VRF_data.vrf_proof_round_part_4,crypto_vrf_PROOFBYTES);
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_4,VRF_data.vrf_proof_data_round_part_4,VRF_PROOF_LENGTH);
@@ -804,7 +802,7 @@ int data_network_node_create_block()
     memcpy(data+strlen(data),"\"}",2);
     memset(data3,0,strlen(data3));
     memcpy(data3,"reserve_bytes_",14);
-    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
     if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,0) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
@@ -864,7 +862,7 @@ int data_network_node_create_block()
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
     if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the new block to the database");
@@ -932,7 +930,7 @@ int data_network_node_create_block()
       memset(data3,0,sizeof(data3));
       memcpy(data3,"reserve_bytes_",14);
       count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-      snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
+      snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
       delete_document_from_collection(DATABASE_NAME,data3,data2,0);
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not submit the block to the network");
     }
@@ -977,7 +975,7 @@ int start_part_4_of_round()
   size_t count2;
   size_t counter;
   struct send_data_socket_thread_parameters send_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
-  int block_producer_backup_settings[BLOCK_PRODUCERS_BACKUP_AMOUNT];
+  int block_producer_backup_settings[BLOCK_PRODUCERS_BACKUP_AMOUNT] = {0,0,0,0,0};
 
   // threads
   pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
@@ -1016,24 +1014,24 @@ int start_part_4_of_round()
   memset(data2,0,sizeof(data2)); \
   memset(data3,0,sizeof(data3)); \
   memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4)); \
-  memset(VRF_data.vrf_secret_key_round_part_4,0,strlen(VRF_data.vrf_secret_key_round_part_4)); \
+  memset(VRF_data.vrf_secret_key_round_part_4,0,strlen((const char*)VRF_data.vrf_secret_key_round_part_4)); \
   memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4)); \
-  memset(VRF_data.vrf_public_key_round_part_4,0,strlen(VRF_data.vrf_public_key_round_part_4)); \
+  memset(VRF_data.vrf_public_key_round_part_4,0,strlen((const char*)VRF_data.vrf_public_key_round_part_4)); \
   memset(VRF_data.vrf_alpha_string_data_round_part_4,0,strlen(VRF_data.vrf_alpha_string_data_round_part_4)); \
-  memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen(VRF_data.vrf_alpha_string_round_part_4)); \
+  memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)); \
   memset(VRF_data.vrf_proof_data_round_part_4,0,strlen(VRF_data.vrf_proof_data_round_part_4)); \
-  memset(VRF_data.vrf_proof_round_part_4,0,strlen(VRF_data.vrf_proof_round_part_4)); \
+  memset(VRF_data.vrf_proof_round_part_4,0,strlen((const char*)VRF_data.vrf_proof_round_part_4)); \
   memset(VRF_data.vrf_beta_string_data_round_part_4,0,strlen(VRF_data.vrf_beta_string_data_round_part_4)); \
-  memset(VRF_data.vrf_beta_string_round_part_4,0,strlen(VRF_data.vrf_beta_string_round_part_4)); \
+  memset(VRF_data.vrf_beta_string_round_part_4,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_4)); \
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob)); \
   memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash)); \
   memset(current_round_part_vote_data.current_vote_results,0,sizeof(current_round_part_vote_data.current_vote_results)); \
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count])); \
-    memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key[count])); \
+    memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen((const char*)VRF_data.block_verifiers_vrf_secret_key[count])); \
     memset(VRF_data.block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[count])); \
-    memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen(VRF_data.block_verifiers_vrf_public_key[count])); \
+    memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen((const char*)VRF_data.block_verifiers_vrf_public_key[count])); \
     memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count])); \
     memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); \
   } \
@@ -1184,21 +1182,21 @@ int start_part_4_of_round()
     // at this point all block verifiers should have the all of the other block verifiers secret key, public key and random data
 
     // create the VRF alpha string using all of the random data from the block verifiers
-    memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen(VRF_data.vrf_alpha_string_round_part_4));
-    if (get_previous_block_hash(VRF_data.vrf_alpha_string_round_part_4,0) == 0)
+    memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_4));
+    if (get_previous_block_hash((char*)VRF_data.vrf_alpha_string_round_part_4,0) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not get the previous block hash");
     }
     
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strlen(VRF_data.block_verifiers_vrf_secret_key[count]) == crypto_vrf_SECRETKEYBYTES && strlen(VRF_data.block_verifiers_vrf_public_key[count]) == crypto_vrf_PUBLICKEYBYTES && strlen(VRF_data.block_verifiers_random_data[count]) == RANDOM_STRING_LENGTH)
+      if (strlen((const char*)VRF_data.block_verifiers_vrf_secret_key[count]) == crypto_vrf_SECRETKEYBYTES && strlen((const char*)VRF_data.block_verifiers_vrf_public_key[count]) == crypto_vrf_PUBLICKEYBYTES && strlen(VRF_data.block_verifiers_random_data[count]) == RANDOM_STRING_LENGTH)
       {
-        memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),VRF_data.block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
+        memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen((const char*)VRF_data.vrf_alpha_string_round_part_4),VRF_data.block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
       }
       else
       {
-        memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen(VRF_data.vrf_alpha_string_round_part_4),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
+        memcpy(VRF_data.vrf_alpha_string_round_part_4+strlen((const char*)VRF_data.vrf_alpha_string_round_part_4),GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
       }
     }
 
@@ -1243,7 +1241,7 @@ int start_part_4_of_round()
     memcpy(VRF_data.vrf_public_key_data_round_part_4,VRF_data.block_verifiers_vrf_public_key_data[counter],VRF_PUBLIC_KEY_LENGTH);
     memcpy(VRF_data.vrf_public_key_round_part_4,VRF_data.block_verifiers_vrf_public_key[counter],crypto_vrf_PUBLICKEYBYTES);
 
-    if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
+    if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not create the vrf proof");
     }
@@ -1251,7 +1249,7 @@ int start_part_4_of_round()
     {
       START_PART_4_OF_ROUND_ERROR("Could not create the vrf beta string");
     }
-    if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
+    if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not create the VRF data");
     }
@@ -1360,7 +1358,7 @@ int start_part_4_of_round()
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4,VRF_data.vrf_secret_key_data_round_part_4,VRF_SECRET_KEY_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,VRF_data.vrf_public_key_round_part_4,crypto_vrf_PUBLICKEYBYTES);
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,VRF_data.vrf_public_key_data_round_part_4,VRF_PUBLIC_KEY_LENGTH);
-    memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4,VRF_data.vrf_alpha_string_round_part_4,strnlen(VRF_data.vrf_alpha_string_round_part_4,BUFFER_SIZE));
+    memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4,VRF_data.vrf_alpha_string_round_part_4,strnlen((const char*)VRF_data.vrf_alpha_string_round_part_4,BUFFER_SIZE));
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4,VRF_data.vrf_alpha_string_data_round_part_4,strnlen(VRF_data.vrf_alpha_string_data_round_part_4,BUFFER_SIZE));
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_4,VRF_data.vrf_proof_round_part_4,crypto_vrf_PROOFBYTES);
     memcpy(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_4,VRF_data.vrf_proof_data_round_part_4,VRF_PROOF_LENGTH);
@@ -1469,7 +1467,7 @@ int start_part_4_of_round()
     memcpy(data+strlen(data),"\"}",2);
     memset(data3,0,strlen(data3));
     memcpy(data3,"reserve_bytes_",14);
-    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
     if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,0) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not get the previous blocks reserve bytes");
@@ -1581,7 +1579,7 @@ int start_part_4_of_round()
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
     if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not add the new block to the database");
@@ -1618,7 +1616,7 @@ int start_part_4_of_round()
         memset(data3,0,sizeof(data3));
         memcpy(data3,"reserve_bytes_",14);
         count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-        snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
+        snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
         delete_document_from_collection(DATABASE_NAME,data3,data2,0);
         START_PART_4_OF_ROUND_ERROR("Could not submit the block to the network");
       }
@@ -1650,7 +1648,7 @@ int start_part_4_of_round()
               memset(data3,0,sizeof(data3));
               memcpy(data3,"reserve_bytes_",14);
               count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-              snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
+              snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
               delete_document_from_collection(DATABASE_NAME,data3,data2,0);
               START_PART_4_OF_ROUND_ERROR("Could not submit the block to the network");
             }
@@ -1832,7 +1830,6 @@ int update_databases()
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   size_t count;
-  size_t count2;
 
   // define macros
   #define UPDATE_DATABASE_ERROR(settings) \
@@ -1887,7 +1884,6 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   size_t count;
-  size_t count2;
   size_t number;
 
   // define macros
@@ -1921,7 +1917,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     number++;
     memset(data,0,sizeof(data));
     memcpy(data,"{\"block_verifier_total_rounds\":\"",32);
-    snprintf(data+32,sizeof(data)-1,"%zu",number); 
+    snprintf(data+32,sizeof(data)-33,"%zu",number); 
     memcpy(data+strlen(data),"\"}",2);
     pthread_rwlock_rdlock(&rwlock);
     while(database_settings != 1)
@@ -1944,7 +1940,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     number++;
     memset(data,0,sizeof(data));
     memcpy(data,"{\"block_verifier_online_total_rounds\":\"",39);
-    snprintf(data+39,sizeof(data)-1,"%zu",number); 
+    snprintf(data+39,sizeof(data)-40,"%zu",number); 
     memcpy(data+strlen(data),"\"}",2);
     pthread_rwlock_rdlock(&rwlock);
     while(database_settings != 1)
@@ -1969,7 +1965,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       number++;
       memset(data,0,sizeof(data));
       memcpy(data,"{\"block_producer_total_rounds\":\"",32);
-      snprintf(data+32,sizeof(data)-1,"%zu",number); 
+      snprintf(data+32,sizeof(data)-33,"%zu",number); 
       memcpy(data+strlen(data),"\"}",2);
       pthread_rwlock_rdlock(&rwlock);
       while(database_settings != 1)
@@ -2153,7 +2149,7 @@ int add_round_statistics()
   memcpy(message1+strlen(message1),"\"}",2);
 
   memcpy(message2,"{\"most_total_rounds\":\"",22);
-  snprintf(message2+22,sizeof(message2)-1,"%zu",block_verifier_total_rounds_count);
+  snprintf(message2+22,sizeof(message2)-23,"%zu",block_verifier_total_rounds_count);
   memcpy(message2+strlen(message2),"\"}",2);
 
   memcpy(message3,"{\"best_block_verifier_online_percentage_delegate_name\":\"",56);
@@ -2161,7 +2157,7 @@ int add_round_statistics()
   memcpy(message3+strlen(message3),"\"}",2);
 
   memcpy(message4,"{\"best_block_verifier_online_percentage\":\"",42);
-  snprintf(message4+42,sizeof(message4)-1,"%.2lf",total);
+  snprintf(message4+42,sizeof(message4)-43,"%.2lf",total);
   memcpy(message4+strlen(message4),"\"}",2);
 
   memcpy(message5,"{\"most_block_producer_total_rounds_delegate_name\":\"",51);
@@ -2169,7 +2165,7 @@ int add_round_statistics()
   memcpy(message5+strlen(message5),"\"}",2);
 
   memcpy(message6,"{\"most_block_producer_total_rounds\":\"",37);
-  snprintf(message6+37,sizeof(message6)-1,"%zu",most_block_producer_total_rounds_count);
+  snprintf(message6+37,sizeof(message6)-38,"%zu",most_block_producer_total_rounds_count);
   memcpy(message6+strlen(message6),"\"}",2);
 
   pthread_rwlock_rdlock(&rwlock);
@@ -2236,7 +2232,7 @@ int calculate_main_nodes_roles()
   // calculate the database to get the reserve byte data
   count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memcpy(data,"reserve_bytes_",14);
-  snprintf(data+14,sizeof(data)-1,"%d",count2);
+  snprintf(data+14,sizeof(data)-15,"%d",count2);
 
   // create the message
   memcpy(data3,"{\"block_height\":\"",17);
@@ -2286,40 +2282,40 @@ int calculate_main_nodes_roles()
       if (main_nodes_count == 1)
       {
         // calculate the block_producer_backup_block_verifier_1
-        memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address)));
       }
       if (main_nodes_count == 2)
       {
         // calculate the block_producer_backup_block_verifier_2
-        memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address)));
       }
       if (main_nodes_count == 3)
       {
         // calculate the block_producer_backup_block_verifier_3
-        memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address)));
       }
       if (main_nodes_count == 4)
       {
         // calculate the block_producer_backup_block_verifier_4
-        memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address)));
       }
       if (main_nodes_count == 5)
       {
         // calculate the block_producer_backup_block_verifier_5
-        memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address)));
       }    
@@ -2340,48 +2336,48 @@ int calculate_main_nodes_roles()
       if (strncmp(main_nodes_list.block_producer_public_address,"",1) == 0)
       {
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_public_address,0,sizeof(main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_IP_address,0,sizeof(main_nodes_list.block_producer_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_public_address,0,sizeof(main_nodes_list.block_producer_public_address));
+        memset(main_nodes_list.block_producer_IP_address,0,sizeof(main_nodes_list.block_producer_IP_address));
         memcpy(main_nodes_list.block_producer_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_public_address)));
         memcpy(main_nodes_list.block_producer_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_IP_address)));
       } 
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,"",1) == 0)
       {
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_1_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address)));
       } 
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,"",1) == 0)
       {
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_2_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address)));
       } 
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,"",1) == 0)
       {
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_3_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address)));
       } 
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,"",1) == 0)
       {
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_4_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address)));
       }   
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,"",1) == 0)
       {
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH));
-        memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+        memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address));
+        memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_5_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address)));
         memcpy(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address)));
       } 
@@ -2414,7 +2410,7 @@ int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, const ch
   }
   else
   {
-    if (send_data(CLIENT_SOCKET,(char*)MESSAGE,0,1,"") == 1)
+    if (send_data(CLIENT_SOCKET,(unsigned char*)MESSAGE,0,1,"") == 1)
     {
       return 1;
     }
@@ -2456,7 +2452,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_add_reserve_proof",68); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  send_data(CLIENT_SOCKET,"Could not add the reserve proof to the database}",0,0,""); \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not add the reserve proof to the database}",0,0,""); \
   return 0;
 
   memset(delegates_public_address,0,sizeof(delegates_public_address));
@@ -2469,7 +2465,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
   if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
   {
-    send_data(CLIENT_SOCKET,"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",0,0,"");
+    send_data(CLIENT_SOCKET,(unsigned char*)"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",0,0,"");
     return 0;
   }
 
@@ -2516,7 +2512,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-1,"%zu",count);
+    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
 
     // check if the reserve proof is in the database
     if (count_documents_in_collection(DATABASE_NAME,data2,data,0) > 0)
@@ -2544,7 +2540,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     {
       memset(data,0,sizeof(data));
       memcpy(data,"reserve_proofs_",15);
-      snprintf(data+15,sizeof(data)-1,"%zu",count);
+      snprintf(data+15,sizeof(data)-16,"%zu",count);
       while (count_documents_in_collection(DATABASE_NAME,data,data3,0) > 0)
       {
         pthread_rwlock_rdlock(&rwlock);
@@ -2583,7 +2579,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-1,"%zu",count);
+    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
     if (count_documents_in_collection(DATABASE_NAME,data2,data,0) < MAXIMUM_INVALID_RESERERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
     {
       if (insert_document_into_collection_json(DATABASE_NAME,data2,data,0) == 1)
@@ -2597,7 +2593,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     }
   }
   pthread_rwlock_unlock(&rwlock);
-  send_data(CLIENT_SOCKET,"The vote was successfully added to the database}",0,0,"");
+  send_data(CLIENT_SOCKET,(unsigned char*)"The vote was successfully added to the database}",0,0,"");
   return 1;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR
@@ -2623,9 +2619,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   char public_address[XCASH_WALLET_LENGTH+1];
   char reserve_proof[MAXIMUM_INVALID_RESERERVE_PROOFS];  
   char data3[BUFFER_SIZE];
-  // since were going to be changing where data and data2 are referencing, we need to create a copy to pointer_reset
-  size_t count;
-  size_t count2;
   size_t count3;
   int settings;
 
@@ -2661,7 +2654,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
 
   // check if the reserve proof is unique 
   pthread_rwlock_wrlock(&rwlock_reserve_proofs);
-  for (count3 = 0, settings = 1; count3 <= invalid_reserve_proofs.count; count3++)
+  for (count3 = 0, settings = 1; (int)count3 <= invalid_reserve_proofs.count; count3++)
   {
     if (strncmp(invalid_reserve_proofs.reserve_proof[count3],reserve_proof,sizeof(reserve_proof)) == 0)
     {
@@ -2718,7 +2711,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_register_delegates",70); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  send_data(CLIENT_SOCKET,"Could not register the delegate}",0,0,""); \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not register the delegate}",0,0,""); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -2800,7 +2793,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database");
   }  
 
-  send_data(CLIENT_SOCKET,"Registered the delegate}",0,0,"");
+  send_data(CLIENT_SOCKET,(unsigned char*)"Registered the delegate}",0,0,"");
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -2834,7 +2827,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_remove_delegates",68); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  send_data(CLIENT_SOCKET,"Could not remove the delegate}",0,0,""); \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not remove the delegate}",0,0,""); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -2885,7 +2878,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate could not be removed from the database");
   }
 
-  send_data(CLIENT_SOCKET,"Removed the delegate}",0,0,"");
+  send_data(CLIENT_SOCKET,(unsigned char*)"Removed the delegate}",0,0,"");
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -2922,7 +2915,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_update_delegates",68); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  send_data(CLIENT_SOCKET,"Could not update the delegates information}",0,0,""); \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not update the delegates information}",0,0,""); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -2991,7 +2984,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database");
   }
 
-  send_data(CLIENT_SOCKET,"Updated the delegates information}",0,0,"");
+  send_data(CLIENT_SOCKET,(unsigned char*)"Updated the delegates information}",0,0,"");
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -3021,7 +3014,7 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time",93); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  send_data(CLIENT_SOCKET,"Could not update the delegates information}",0,0,""); \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not update the delegates information}",0,0,""); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -3035,7 +3028,7 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   // create the message
   memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_time\": \"",112);
-  snprintf(data+112,sizeof(data)-1,"%ld",time(0));
+  snprintf(data+112,sizeof(data)-113,"%ld",time(NULL));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
@@ -3045,7 +3038,7 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   }
   
   // send the network block signature to the main network data node
-  if (send_data(CLIENT_SOCKET,data,0,1,"") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR("Could not send the data to the block verifier");
   }
@@ -3179,7 +3172,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   }
   
   // send the network block signature to the main network data node
-  if (send_data(CLIENT_SOCKET,data,0,1,"") == 0)
+  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not send the data to the main network data node");
   }
@@ -3217,7 +3210,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  memset(VRF_data.block_blob,0,sizeof(VRF_data.block_blob));
+  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
   // verify the data
   if (verify_data(MESSAGE,0,1) == 0)
@@ -3325,7 +3318,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     memcpy(message+strlen(message),"\"}",2);
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
-    snprintf(data3+14,sizeof(data3)-1,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
     memset(data2,0,sizeof(data2));
     if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,0) == 0)
     {
@@ -3568,15 +3561,9 @@ int create_server(const int MESSAGE_SETTINGS)
 
   // Variables
   char buffer[BUFFER_SIZE];
-  int len;
-  int receive_data_result; 
-  struct sockaddr_in addr, cl_addr; 
-  struct socket_thread_parameters* socket_thread_parameters;
+  struct sockaddr_in addr; 
   size_t count;
   int settings;
-
-  // threads
-  pthread_t thread_id;
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
@@ -3682,7 +3669,7 @@ int create_server(const int MESSAGE_SETTINGS)
     SERVER_ERROR("Error creating the server");
   }
 
-  for (count = 0; count < THREADS-1; count++)
+  for (count = 0; (int)count < THREADS-1; count++)
   {
     if (pthread_create(&server_threads[count], NULL, socket_receive_data_thread, NULL) < 0)
     {
@@ -3766,7 +3753,6 @@ int socket_thread(int client_socket)
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   char client_address[BUFFER_SIZE]; 
-  int len;
   int receive_data_result; 
   struct in_addr ip_address_data;
   struct sockaddr_in addr;
