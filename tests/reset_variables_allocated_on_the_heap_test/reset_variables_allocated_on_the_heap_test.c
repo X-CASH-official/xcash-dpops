@@ -114,7 +114,6 @@ int reset_variables_allocated_on_the_heap_test()
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
   unsigned char vrf_proof[crypto_vrf_PROOFBYTES];
   unsigned char vrf_beta[crypto_vrf_OUTPUTBYTES];
-  pthread_t thread_id;
   int settings2 = 1;
   char* transactions[5];
 
@@ -2576,11 +2575,6 @@ int reset_variables_allocated_on_the_heap_test()
   {
     color_print("All other test will not be run","red");
   }
-
-  // create the server
-  pthread_create(&thread_id, NULL, &create_server_on_separate_thread,NULL);
-  pthread_detach(thread_id);
-  sleep(1);
 
   // send_and_receive_data_socket 
   // read the current system memory usage

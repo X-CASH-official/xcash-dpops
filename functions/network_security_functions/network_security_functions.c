@@ -126,23 +126,20 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   }
   
   pthread_rwlock_rdlock(&rwlock);
-  // create the message
-  message_length = strlen(message) - 1;
-  const size_t XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH = strnlen(result,BUFFER_SIZE);
-  
-  memcpy(message+message_length," \"public_address\": \"",20);
-  memcpy(message+message_length+20,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(message+message_length+20+XCASH_WALLET_LENGTH,"\",\r\n \"previous_block_hash\": \"",29);
-  memcpy(message+message_length+49+XCASH_WALLET_LENGTH,previous_block_hash,previous_block_hash_LENGTH);  
-  memcpy(message+message_length+49+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,"\",\r\n \"current_round_part\": \"",28);
-  memcpy(message+message_length+77+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,current_round_part,1);
-  memcpy(message+message_length+78+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,"\",\r\n \"current_round_part_backup_node\": \"",40);
-  memcpy(message+message_length+118+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,current_round_part_backup_node,1);
-  memcpy(message+message_length+119+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,"\",\r\n \"data\": \"",14);
-  memcpy(message+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,random_data,RANDOM_STRING_LENGTH);
-  memcpy(message+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH,"\",\r\n \"XCASH_DPOPS_signature\": \"",40);
-  memcpy(message+message_length+173+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH,result,XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH);
-  memcpy(message+message_length+173+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH+XCASH_PROOF_OF_STAKE_SIGNATURE_LENGTH,"\",\r\n}",5);
+  // create the message  
+  memcpy(message+strlen(message)-1," \"public_address\": \"",20);
+  memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
+  memcpy(message+strlen(message),previous_block_hash,previous_block_hash_LENGTH);  
+  memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
+  memcpy(message+strlen(message),current_round_part,1);
+  memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);
+  memcpy(message+strlen(message),current_round_part_backup_node,1);
+  memcpy(message+strlen(message),"\",\r\n \"data\": \"",14);
+  memcpy(message+strlen(message),random_data,RANDOM_STRING_LENGTH);
+  memcpy(message+strlen(message),"\",\r\n \"XCASH_DPOPS_signature\": \"",31);
+  memcpy(message+strlen(message),result,XCASH_SIGN_DATA_LENGTH);
+  memcpy(message+strlen(message),"\",\r\n}",5);
   pthread_rwlock_unlock(&rwlock);
 
   pointer_reset(result);
@@ -387,7 +384,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     }
     if (settings == 0)
     {
-      VERIFY_DATA_ERROR("Invalid message");
+      VERIFY_DATA_ERROR("Invalid message1");
     }
     memset(data,0,sizeof(data));
   }
@@ -426,23 +423,23 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     }
     else
     {
-      message_length = strlen(MESSAGE) - 134;
+      message_length = strlen(MESSAGE) - 125;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
       if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
       {
-        VERIFY_DATA_ERROR("Invalid message");
+        VERIFY_DATA_ERROR("Invalid message2");
       }   
     }
   }
   else
   {
-    message_length = strlen(MESSAGE) - 134;
+    message_length = strlen(MESSAGE) - 125;
     memcpy(result,MESSAGE,message_length);
     memcpy(result+message_length,"}",1);
     if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
     {
-      VERIFY_DATA_ERROR("Invalid message");
+      VERIFY_DATA_ERROR("Invalid message3");
     } 
   } 
     
@@ -471,7 +468,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   // check if the returned data is valid
   if (strncmp(data,"true",BUFFER_SIZE) != 0)
   {
-     VERIFY_DATA_ERROR("Invalid message");
+     VERIFY_DATA_ERROR("Invalid message4");
   }
  
   pointer_reset_all;
