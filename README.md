@@ -160,14 +160,15 @@ This is the systemd file for MongoDB
 [Unit]
 Description=MongoDB Database Server
 After=network.target
- 
+
 [Service]
 Type=forking
 User=root
+Type=oneshot
+RemainAfterExit=yes
 PIDFile=/root/Installed-Programs/systemdpid/mongod.pid
-ExecStart=/root/Installed-Programs/mongodb-linux-x86_64-ubuntu1804-4.2.0/bin/mongod
-Restart=always
- 
+ExecStart=/root/Installed-Programs/mongodb-linux-x86_64-ubuntu1804-4.2.0/bin/mongod --fork --syslog
+
 LimitFSIZE=infinity
 LimitCPU=infinity
 LimitAS=infinity
@@ -176,7 +177,7 @@ LimitNPROC=64000
 LimitMEMLOCK=infinity
 TasksMax=infinity
 TasksAccounting=false
- 
+
 [Install]
 WantedBy=multi-user.target
 ```
