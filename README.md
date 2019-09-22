@@ -26,6 +26,37 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 **If you plan on running a [shared delegates website](https://github.com/X-CASH-official/XCASH_DPOPS_shared_delegates_website) or a [delegates website](https://github.com/X-CASH-official/XCASH_DPOPS_delegates_website), you will need to run the website on the same system as the DPOPS node**
 
 **By running a DPOPS node (solo or shared) you will need the computer to be online and running at all times**
+
+
+## Table of Contents  
+[System Requirements](#system-requirements)  
+[Dependencies](#dependencies)  
+[Recommendations For the XCASH Wallet](#recommendations-for-the-xcash-wallet)  
+[Installation Process](#installation-process)  
+* [Installation Path](#installation-path)  
+* [Install System Packages](#install-system-packages) 
+* [Installing MongoDB From Binaries](#installing-mongodb-from-binaries)  
+* [Building the MongoDB C Driver From Source](#building-the-mongodb-c-driver-from-source)  
+* [Cloning the Repository](#cloning-the-repository)  
+* [Build Instructions](#build-instructions)  
+
+[How To Setup and Install the Systemd Files](#how-to-setup-and-install-the-systemd-files)  
+* [MongoDB](#mongodb)  
+* [XCASH Daemon](#xcash-daemon)  
+* [XCASH Daemon Block Verifier](#xcash-daemon-block-verifier)  
+* [XCASH Wallet](#xcash-wallet)
+* [XCASH DPOPS](#xcash-dpops)
+* [Firewall](#firewall)  
+
+[How To Setup the Firewall](#how-to-setup-the-firewall)  
+[How To Run Each Component](#how-to-run-each-component)  
+[How To View Logs For Each Component](how-to-view-logs-for-each-component)  
+[Running X-CASH Proof of stake test](#running-x-cash-proof-of-stake-test)  
+[How to Register a Delegate](#how-to-register-a-delegate)  
+[How to Vote For a Delegate](#how-to-vote-for-a-delegate)  
+[How to Update a Delegates Information](#how-to-update-a-delegates-information)  
+[How to Remove a Delegate](#how-to-remove-a-delegate)  
+
  
 ## System Requirements
  
