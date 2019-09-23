@@ -151,7 +151,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   SOL_SOCKET = socket level
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -457,7 +457,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   SOL_SOCKET = socket level
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -714,7 +714,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   SOL_SOCKET = socket level
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {   
     memcpy(str,"Error setting socket timeout for sending data to ",49);
     memcpy(str+49,HOST,HOST_LENGTH);
@@ -952,31 +952,31 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
   { 
     memset(buffer, 0, strlen(buffer));
     // check the size of the data that were about to receive. If the total data plus the data were about to receive is over 50 MB then dont accept it, since it will cause a buffer overflow
-    if (((int)recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE - (int)strnlen(data,BUFFER_SIZE) && (int)strnlen(data,BUFFER_SIZE) > 0) || ((int)recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE && strnlen(data,BUFFER_SIZE) == 0))
+    if (((int)recvfrom(SOCKET, buffer, MAXIMUM_BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE - (int)strlen(data) && (int)strlen(data) > 0) || ((int)recvfrom(SOCKET, buffer, MAXIMUM_BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE && strlen(data) == 0))
     {
       pointer_reset_all;
       return 0;
     }    
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
-    recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
+    recvfrom(SOCKET, buffer, MAXIMUM_BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
     if (buffer[0] != '\0' && (strstr(buffer,STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL))
     {
       // there is data, but this is not the final data
-      memcpy(data+strlen(data),buffer,strnlen(buffer,BUFFER_SIZE));
+      memcpy(data+strlen(data),buffer,strnlen(buffer,MAXIMUM_BUFFER_SIZE));
     }
     if (buffer[0] != '\0' && (strstr(buffer,STRING) != NULL || strstr(buffer,HTTP_SOCKET_END_STRING) != NULL))
     {
       // there is data, and this is the final data
-      memcpy(data+strlen(data),buffer,strnlen(buffer,BUFFER_SIZE));
+      memcpy(data+strlen(data),buffer,strnlen(buffer,MAXIMUM_BUFFER_SIZE));
       // if the final message has the SOCKET_END_STRING in the message, remove it
       if (strstr(data,SOCKET_END_STRING) != NULL)
       {
         // remove SOCKET_END_STRING from the message
-        memcpy(message,data,strnlen(data,BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1));
+        memcpy(message,data,strnlen(data,MAXIMUM_BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1));
       }
       else
       {
-        memcpy(message,data,strnlen(data,BUFFER_SIZE));
+        memcpy(message,data,strnlen(data,MAXIMUM_BUFFER_SIZE));
       }      
       break;
     }
@@ -987,6 +987,7 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
       count++;
       if (count > (RECEIVE_DATA_SOCKET_TIMEOUT * 5))
       {
+        pointer_reset_all;
         return 1;
       }
     }

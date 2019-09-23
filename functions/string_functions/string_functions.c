@@ -345,7 +345,7 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
     memcpy(data2,data,strnlen(data,MAXIMUM_BUFFER_SIZE));
 
     // get the occurences of STR1   
-    total = string_count(data2,(char*)STR1);
+    total = string_count(data2,STR1);
 
     // replace the string with the REPLACE_STRING
     for (count = 0; count < total; count++)

@@ -158,7 +158,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   size_t count2 = 0;
   size_t counter = 0;
   size_t number = 0;
-  size_t current_block_height = 0;
+  size_t block_height = 0;
   double generated_supply;
   struct database_document_fields database_data;
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -276,8 +276,8 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   database_data.count++;
 
   // get the xcash proof of stake round number
-  sscanf(data,"%zu", &current_block_height);
-  count = current_block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT;  
+  sscanf(data,"%zu", &block_height);
+  count = block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT;  
   memset(data,0,strlen(data));
   snprintf(data,MAXIMUM_BUFFER_SIZE,"%zu",count);
 
@@ -307,7 +307,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
 
   // get the XCASH_DPOPS_circulating_percentage
   generated_supply = 190734.9 + XCASH_PREMINE_TOTAL_SUPPLY;
-  for (counter = 2; counter < current_block_height; counter++)
+  for (counter = 2; counter < block_height; counter++)
   { 
     generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / 524288;
   }  

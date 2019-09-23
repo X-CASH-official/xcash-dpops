@@ -287,15 +287,15 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   size_t count3;
   size_t counter;
   size_t number;
-  char* current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3;
   char* message_copy1;
 
   // define macros
   #define pointer_reset_all \
-  free(current_block_height); \
-  current_block_height = NULL; \
+  free(block_height); \
+  block_height = NULL; \
   free(data2); \
   data2 = NULL;
 
@@ -307,11 +307,11 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   return 0; 
 
   // check if the memory needed was allocated on the heap successfully
-  if (current_block_height == NULL || data2 == NULL)
+  if (block_height == NULL || data2 == NULL)
   {
-    if (current_block_height != NULL)
+    if (block_height != NULL)
     {
-      pointer_reset(current_block_height);
+      pointer_reset(block_height);
     }
     if (data2 != NULL)
     {
@@ -435,11 +435,11 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   // get the current block height
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
-    if (get_current_block_height(current_block_height, 0) == 0)
+    if (get_current_block_height(block_height, 0) == 0)
     {
       NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR("Could not get the current block height, Invalid unlock_block");
     }
-    sscanf(current_block_height, "%zu", &number);
+    sscanf(block_height, "%zu", &number);
   }
   else
   {
@@ -805,7 +805,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   count += blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length + BLOCK_HASH_LENGTH;
 
   // block_validation_node_signature_data
-  message_copy1 = strstr((char*)DATA,BLOCKCHAIN_DATA_SEGMENT_SIGN_DATA_STRING);
+  message_copy1 = strstr((const char*)DATA,BLOCKCHAIN_DATA_SEGMENT_SIGN_DATA_STRING);
   blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data_length = XCASH_SIGN_DATA_LENGTH*2;
   
   for (counter = BLOCK_HASH_LENGTH, count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
@@ -1349,7 +1349,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   size_t count3;
   size_t number;
   char* previous_block_hash = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* current_block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* network_block_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1361,8 +1361,8 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   #define pointer_reset_all \
   free(previous_block_hash); \
   previous_block_hash = NULL; \
-  free(current_block_height); \
-  current_block_height = NULL; \
+  free(block_height); \
+  block_height = NULL; \
   free(data); \
   data = NULL; \
   free(data2); \
@@ -1384,15 +1384,15 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   return 0; 
 
   // check if the memory needed was allocated on the heap successfully
-  if (previous_block_hash == NULL || current_block_height == NULL || data == NULL || data2 == NULL || network_block_string == NULL || previous_network_block_reserve_bytes_block_verifiers_public_addresses_data == NULL)
+  if (previous_block_hash == NULL || block_height == NULL || data == NULL || data2 == NULL || network_block_string == NULL || previous_network_block_reserve_bytes_block_verifiers_public_addresses_data == NULL)
   {
     if (previous_block_hash != NULL)
     {
       pointer_reset(previous_block_hash);
     }
-    if (current_block_height != NULL)
+    if (block_height != NULL)
     {
-      pointer_reset(current_block_height);
+      pointer_reset(block_height);
     }
     if (data != NULL)
     {
@@ -1473,11 +1473,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   // unlock_block
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
-    if (get_current_block_height(current_block_height,0) == 0)
+    if (get_current_block_height(block_height,0) == 0)
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not get the current block height");
     }
-    sscanf(current_block_height, "%zu", &number);
+    sscanf(block_height, "%zu", &number);
   }
   else
   {
