@@ -19,7 +19,7 @@ X-CASH DPOPS is a variation of DPOS and DBFT. The key features of X-CASH DPOPS a
 * Blocks can be verified in the XCASH Daemon with a detailed explanation of the reserve bytes in the block.
  
 * Using a decentralized database system, to hold all of the voting data and reserve bytes data.
-* The block format is to only store a hash of the contents of the reserve bytes data in the block, and store the actual reserve bytes data in the decentralized datbase, to reduce the extra size of the blockchain, while keeping all of the rounds data.
+* The block format is to only store a hash of the contents of the reserve bytes data in the block, and store the actual reserve bytes data in the decentralized database, to reduce the extra size of the blockchain, while keeping all of the rounds data.
  
 This program allows one to run a DPOPS node, a shared delegates website, and a delegates website.
 
@@ -52,10 +52,14 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 [How To Run Each Component](#how-to-run-each-component)  
 [How To View Logs For Each Component](how-to-view-logs-for-each-component)  
 [Running X-CASH Proof of stake test](#running-x-cash-proof-of-stake-test)  
-[How to Register a Delegate](#how-to-register-a-delegate)  
-[How to Vote For a Delegate](#how-to-vote-for-a-delegate)  
-[How to Update a Delegates Information](#how-to-update-a-delegates-information)  
-[How to Remove a Delegate](#how-to-remove-a-delegate)  
+[How to Use the XCASH DPOPS Wallet Commands](#how-to-use-the-xcash-dpops-wallet-commands)  
+*  [How to Register a Delegate](#how-to-register-a-delegate)  
+*  [How to Vote For a Delegate](#how-to-vote-for-a-delegate)  
+*  [How to Update a Delegates Information](#how-to-update-a-delegates-information)  
+*  [How to Remove a Delegate](#how-to-remove-a-delegate)  
+
+### Appendix
+[How to Setup a Domain Name Instead of an IP Address](#how-to-setup-a-domain-name-instead-of-an-ip-address)  
 [How to Setup the Test](#how-to-setup-the-test)
 
  
@@ -138,7 +142,7 @@ sudo chown $USER /data/db
  
 ### Building the MongoDB C Driver From Source
  
-Visit the offical websites installation instructions at [http://mongoc.org/libmongoc/current/installing.html](http://mongoc.org/libmongoc/current/installing.html)
+Visit the official websites installation instructions at [http://mongoc.org/libmongoc/current/installing.html](http://mongoc.org/libmongoc/current/installing.html)
 You will need to follow the instructions for [Building from a release tarball](http://mongoc.org/libmongoc/current/installing.html#building-from-a-release-tarball) or [Building from git](http://mongoc.org/libmongoc/current/installing.html#building-from-git) since you need the header files, not just the library files.
  
 After you have built the MongoDB C driver from source, you will need to run  
@@ -461,7 +465,11 @@ The test will return the number of passed and failed test on the bottom of the c
 
 
 
-## How to Register a Delegate
+## How to Use the XCASH DPOPS Wallet Commands
+
+
+
+### How to Register a Delegate
 Make sure to stop the XCASH Wallet service if it is running  
 `systemctl stop XCASH_Wallet`
 
@@ -476,7 +484,7 @@ Replace delegate_IP_address with your VPS/dedicated servers IP Address or a doma
 
 
 
-## How to Vote For a Delegate
+### How to Vote For a Delegate
 Make sure to stop the XCASH Wallet service if it is running  
 `systemctl stop XCASH_Wallet`
 
@@ -490,7 +498,7 @@ Replace delegates_public_address with the delegates public address
 
 
 
-## How to Update a Delegates Information
+### How to Update a Delegates Information
 Make sure to stop the XCASH Wallet service if it is running  
 `systemctl stop XCASH_Wallet`
 
@@ -513,7 +521,7 @@ Replace value with the updated information
 
 
 
-## How to Remove a Delegate
+### How to Remove a Delegate
 Make sure to stop the XCASH Wallet service if it is running  
 `systemctl stop XCASH_Wallet`
 
@@ -521,6 +529,24 @@ Open the wallet file in the `xcash-wallet-cli`
 
 Once the wallet is fully synchronized run the following:  
 `delegate_remove`
+
+
+# Appendix
+
+
+
+## How to Setup a Domain Name Instead of an IP Address
+The XCASH DPOPS system needs a IP Address when registering a delegate to be able to let other delegates know where to send messages to. One can instead setup a domain name (**without the www.**) and register this instead of an IP address. The possible benefits of using a domain name over an IP address could be:
+
+* One can change IP's from their domain page if they change servers instead of having to update that info in the DPOPS database.
+* It would probably be more recognizable if there was a problem, since in the XCASH_DPOPS logs and the XCASH_Daemon logs it will print the source and destination of messages.
+
+To Setup a domain instead of an IP address, go to the domain registrar you have purchased the domain name from. Add an A record to the domain. Each domain registrar is going to be a little different, so you will want to check if they have an official article on how to add an A record.
+
+Now you need to setup the reverse DNS as well. Go to the hosting dashboard of the place where you are renting the server. Not all hosting companies let you change the reverse DNS, so you might not be able to change the reverse DNS. Navigate to the server your are renting. At this point their should be something that says modify the reverse DNS or something similar. Change it to the domain name you used in the first step.
+
+At this point you can now register the domain name (**without the www.**) to the XCASH DPOPS system.
+
 
 
 
