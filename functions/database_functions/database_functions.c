@@ -259,6 +259,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
+      pointer_reset_all;
       return 0;
     }
     // set the collection

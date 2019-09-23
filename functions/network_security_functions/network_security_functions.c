@@ -190,6 +190,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message; \
+  pointer_reset_all; \
   return 0;
 
   #define pointer_reset_all \

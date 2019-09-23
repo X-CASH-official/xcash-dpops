@@ -1766,6 +1766,7 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
   memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  pointer_reset(data); \
   return 0;
 
   memset(message,0,sizeof(message));
@@ -1898,6 +1899,7 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
 
   color_print("The reserve proofs database is synced","green");
   
+  pointer_reset(data);
   return 1;
   
   #undef SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR  
