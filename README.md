@@ -56,6 +56,7 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 [How to Vote For a Delegate](#how-to-vote-for-a-delegate)  
 [How to Update a Delegates Information](#how-to-update-a-delegates-information)  
 [How to Remove a Delegate](#how-to-remove-a-delegate)  
+[How to Setup the Test](#how-to-setup-the-test)
 
  
 ## System Requirements
@@ -520,3 +521,93 @@ Open the wallet file in the `xcash-wallet-cli`
 
 Once the wallet is fully synchronized run the following:  
 `delegate_remove`
+
+
+
+## How to Setup the Test
+Create a `XCASH_DPOPS_Test` folder in the `Installed-Programs` folder
+
+Make sure you have installed the packages to [build XCASH from source](https://github.com/X-CASH-official/X-CASH#compiling-x-cash-from-source)
+
+Copy the X-CASH and XCASH_DPOPS folders from the `Installed-Programs` folder to the `XCASH_DPOPS_Test` folder  
+```
+cp -a ~/Installed-Programs/X-CASH ~/Installed-Programs/XCASH_DPOPS_Test/X-CASH 
+cp -a ~/Installed-Programs/XCASH_DPOPS ~/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS
+```
+
+Navigate to each folder and change the branch to the `test` branch, and build the binaries  
+```
+cd ~/Installed-Programs/XCASH_DPOPS_Test/X-CASH
+git checkout test
+make clean ; make release
+cd ~/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS
+git checkout test
+make clean ; make release
+```
+
+Create a wallet file for the wallet you are going to register. **Make sure this is an empty wallet.** This should be a different wallet then the wallet you plan to register for the official DPOPS, to keep your wallets privacy until the official DPOPS  
+```
+cd ~/Installed-Programs/XCASH_DPOPS_Test/X-CASH/build/release/bin
+./xcash-wallet-cli
+```
+
+Register your wallet with the XCASH team to get **XCASH_DPOPS_TEST XCASH** sent to the wallet
+
+Create a `XCASH_DPOPS_Blockchain_Test` folder in the `Installed-Programs`
+```
+cd ~/Installed-Programs
+mkdir XCASH_DPOPS_Blockchain_Test
+```
+
+Download the XCASH test blockchain from our blockchain download server
+```
+cd ~/Installed-Programs/XCASH_DPOPS_Test/
+wget http://
+```
+
+After the XCASH_DPOPS_Blockchain has downloaded, stop all of the systemd services  
+```
+systemctl stop MongoDB
+systemctl stop XCASH_Daemon
+systemctl stop XCASH_Wallet
+systemctl stop XCASH_DPOPS
+```
+
+Import the XCASH_DPOPS_Blockchain and save the blockchain in the `XCASH_DPOPS_Blockchain_Test` folder  
+```
+/root/Installed-Programs/XCASH_DPOPS_Test/X-CASH/build/release/bin/xcash-blockchain-import --input-file /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain --data-dir /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test
+```
+
+After the blockchain has been imported configure the `XCASH_Daemon`, `XCASH_Daemon_Block_Verifier`, `XCASH_Wallet` and `XCASH_DPOPS` systemd service files for the XCASH_DPOPS test. You should just have to add `/XCASH_DPOPS_Test` to every full path in the systemd service files.
+
+Reload systemd after you have made any changes to the systemd service files  
+`systemctl daemon-reload`
+
+start all of the systemd services  
+```
+systemctl start MongoDB
+systemctl start XCASH_Daemon
+systemctl start XCASH_Wallet
+systemctl start XCASH_DPOPS
+```
+
+Check if your wallet has a any XCASH_DPOS_TEST XCASH in it  
+```
+curl -X POST http://localhost:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_balance"}' -H 'Content-Type: application/json'
+```
+
+Register the wallet into the DPOPS system  
+Replace `DELEGATE_NAME` with a delegate name  
+Replace `DELEGATE_IP_ADDRESS` with the servers public IP address, or a domain name
+```
+curl -X POST http://localhost:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"delegate_register","params":{"delegate_name":"DELEGATE_NAME","delegate_IP_address":"DELEGATE_IP_ADDRESS"}}' -H 'Content-Type: application/json'
+```
+
+Vote for the wallet  
+Replace `DELEGATES_PUBLIC_ADDRESS` with the wallets public address
+```
+curl -X POST http://localhost:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"vote","params":{"delegate_public_address":"DELEGATES_PUBLIC_ADDRESS"}' -H 'Content-Type: application/json'
+```
+
+Open the log files for XCASH_DPOPS  
+`journalctl --unit=XCASH_DPOPS --follow -n 100 --output cat`
