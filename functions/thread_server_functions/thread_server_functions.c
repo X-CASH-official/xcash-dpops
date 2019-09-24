@@ -74,7 +74,7 @@ void* current_block_height_timer_thread()
     fprintf(stderr,"\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
   }
 
-  for (;;)
+  /*for (;;)
   {
     // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
     usleep(200000);
@@ -127,7 +127,7 @@ void* current_block_height_timer_thread()
         sleep(1);
       }
     }
-  }
+  }*/
   pthread_exit((void *)(intptr_t)1);
 }
 
@@ -1208,6 +1208,7 @@ void* send_data_socket_thread(void* parameters)
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
   char message[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
@@ -1221,6 +1222,7 @@ void* send_data_socket_thread(void* parameters)
   memset(buffer2,0,sizeof(buffer2));
   memset(str,0,sizeof(str));
   memset(message,0,sizeof(message));
+  memset(data2,0,sizeof(data2));
 
   /* Create the socket  
   AF_INET = IPV4 support
@@ -1303,12 +1305,14 @@ void* send_data_socket_thread(void* parameters)
   memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING));
   memcpy(str,"Sending ",8);
   memcpy(str+8,&message[25],strlen(message) - strlen(strstr(message,"\",\r\n")) - 25);
-  memcpy(str+strlen(str)," to ",4);
+  memcpy(str+strlen(str),"\n",1);
   memcpy(str+strlen(str),data->HOST,HOST_LENGTH);
   memcpy(str+strlen(str)," on port ",9);
   memcpy(str+strlen(str),buffer2,strnlen(buffer2,BUFFER_SIZE));
   memcpy(str+strlen(str),"\n",1);
-  memcpy(str+strlen(str),asctime(current_UTC_date_and_time),strnlen(asctime(current_UTC_date_and_time),BUFFER_SIZE));
+  memset(data2,0,sizeof(data2));
+  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
+  memcpy(str+strlen(str),data2,strnlen(data2,sizeof(str)));
   color_print(str,"green");
   memset(str,0,sizeof(str));
 
@@ -1459,12 +1463,14 @@ void* send_and_receive_data_socket_thread(void* parameters)
   memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING));
   memcpy(str,"Sending ",8);
   memcpy(str+8,&message[25],strlen(message) - strlen(strstr(message,"\",\r\n")) - 25);
-  memcpy(str+strlen(str)," to ",4);
+  memcpy(str+strlen(str),"\n",1);
   memcpy(str+strlen(str),data->HOST,HOST_LENGTH);
   memcpy(str+strlen(str)," on port ",9);
   memcpy(str+strlen(str),buffer2,strnlen(buffer2,BUFFER_SIZE));
   memcpy(str+strlen(str),"\n",1);
-  memcpy(str+strlen(str),asctime(current_UTC_date_and_time),strnlen(asctime(current_UTC_date_and_time),BUFFER_SIZE));
+  memset(data2,0,sizeof(data2));
+  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
+  memcpy(str+strlen(str),data2,strnlen(data2,sizeof(str)));
   color_print(str,"green");
   memset(str,0,sizeof(str));
  

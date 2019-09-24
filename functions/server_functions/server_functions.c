@@ -1075,10 +1075,10 @@ int start_part_4_of_round(void)
   main_network_data_node_create_block = 0;
   pthread_rwlock_unlock(&rwlock);
 
-  // wait for all block verifiers to sync the database
+  /*// wait for all block verifiers to sync the database
   color_print("Waiting for all block verifiers to sync the databases","blue");
   fprintf(stderr,"\n");
-  sync_block_verifiers_minutes(1);
+  sync_block_verifiers_minutes(1);*/
 
   start:
 
