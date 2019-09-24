@@ -28,7 +28,7 @@ Return: The number of passed blockchain test
 -----------------------------------------------------------------------------------------------------------
 */
 
-int blockchain_functions_test()
+int blockchain_functions_test(void)
 { 
   // Variables
   size_t count;

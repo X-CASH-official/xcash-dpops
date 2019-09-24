@@ -51,7 +51,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int start_new_round()
+int start_new_round(void)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -253,7 +253,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int start_current_round_start_blocks()
+int start_current_round_start_blocks(void)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -546,7 +546,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int data_network_node_create_block()
+int data_network_node_create_block(void)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -965,7 +965,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int start_part_4_of_round()
+int start_part_4_of_round(void)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -1684,7 +1684,7 @@ Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to 
 -----------------------------------------------------------------------------------------------------------
 */
 
-int update_block_verifiers_list()
+int update_block_verifiers_list(void)
 {
   // Variables
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -1823,7 +1823,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int update_databases()
+int update_databases(void)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -2018,7 +2018,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int add_round_statistics()
+int add_round_statistics(void)
 {
   // Constants
   const bson_t* current_document;
@@ -2196,7 +2196,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int calculate_main_nodes_roles()
+int calculate_main_nodes_roles(void)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -3557,7 +3557,7 @@ int create_server(const int MESSAGE_SETTINGS)
 {
   // Constants
   const int SOCKET_OPTION = 1; 
-  const int THREADS = get_nprocs();
+  const int THREADS = get_nprocs()*2;
 
   // Variables
   char buffer[BUFFER_SIZE];
@@ -3696,12 +3696,12 @@ Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-int new_socket_thread()
+int new_socket_thread(void)
 {
   // Variables
   int client_socket;
   struct sockaddr_in addr;
-  socklen_t addrlen = sizeof(addr);
+  socklen_t addrlen = sizeof(struct sockaddr_in);
   struct epoll_event events;
 
   start:
@@ -3988,7 +3988,7 @@ int socket_thread(int client_socket)
  {   
    server_receive_data_socket_node_to_node((const char*)buffer);
  }
- else
+ else if (strstr(buffer,"GET /") != NULL)
  {
    server_receive_data_socket_get_files(client_socket,(const char*)buffer);
  }

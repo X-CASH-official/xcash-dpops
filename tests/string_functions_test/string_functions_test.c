@@ -25,7 +25,7 @@ Return: The number of passed string_functions test
 -----------------------------------------------------------------------------------------------------------
 */
 
-int string_functions_test()
+int string_functions_test(void)
 {
   // define macros
   #define STRING_FUNCTIONS_TOTAL_TEST 50

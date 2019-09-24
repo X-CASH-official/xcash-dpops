@@ -521,7 +521,7 @@ Return: 0 if an error has occured, 1 if you did not find the previous block on t
 -----------------------------------------------------------------------------------------------------------
 */
 
-int check_found_block()
+int check_found_block(void)
 { 
   // Variables
   char data[BUFFER_SIZE];

@@ -68,7 +68,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  socklen_t socket_option_settings = sizeof(socket_settings);
+  socklen_t socket_option_settings = sizeof(int);
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
@@ -205,7 +205,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
   const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
   
-  memset(&serv_addr,0,sizeof(serv_addr));
+  memset(&serv_addr,0,sizeof(struct sockaddr_in));
   /* setup the connection
   AF_INET = IPV4
   INADDR_ANY = connect to 0.0.0.0
@@ -222,7 +222,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
     if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   
@@ -427,7 +427,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  socklen_t socket_option_settings = sizeof(socket_settings);
+  socklen_t socket_option_settings = sizeof(int);
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
@@ -513,7 +513,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   AF_INET = IPV4
   use htons to convert the port from host byte order to network byte order short
   */
-  memset(&serv_addr,0,sizeof(serv_addr));
+  memset(&serv_addr,0,sizeof(struct sockaddr_in));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
   serv_addr.sin_port = htons(PORT);
@@ -525,7 +525,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
     if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   
@@ -685,7 +685,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  socklen_t socket_option_settings = sizeof(socket_settings);
+  socklen_t socket_option_settings = sizeof(int);
 
   // define macros
   #define SEND_DATA_SOCKET_ERROR(message) \
@@ -756,7 +756,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   AF_INET = IPV4
   use htons to convert the port from host byte order to network byte order short
   */
-  memset(&serv_addr,0,sizeof(serv_addr));
+  memset(&serv_addr,0,sizeof(struct sockaddr_in));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
   serv_addr.sin_port = htons(PORT);
@@ -768,7 +768,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
     if (poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   
@@ -1021,7 +1021,7 @@ int get_delegate_online_status(const char* HOST)
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  socklen_t socket_option_settings = sizeof(socket_settings);
+  socklen_t socket_option_settings = sizeof(int);
 
   // define macros
   #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
@@ -1068,7 +1068,7 @@ int get_delegate_online_status(const char* HOST)
   AF_INET = IPV4
   use htons to convert the port from host byte order to network byte order short
   */
-  memset(&serv_addr,0,sizeof(serv_addr));
+  memset(&serv_addr,0,sizeof(struct sockaddr_in));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
   serv_addr.sin_port = htons(SEND_DATA_PORT);
@@ -1080,7 +1080,7 @@ int get_delegate_online_status(const char* HOST)
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
     if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,1000) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   
@@ -1096,7 +1096,7 @@ int get_delegate_online_status(const char* HOST)
   serv_addr.sin_port = htons(XCASH_DAEMON_PORT);
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
     if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,1000) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   

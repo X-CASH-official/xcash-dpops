@@ -22,8 +22,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE);
-int sync_all_block_verifiers_list();
-int get_synced_block_verifiers();
+int sync_all_block_verifiers_list(void);
+int get_synced_block_verifiers(void);
 int sync_check_reserve_proofs_database(const int SETTINGS);
 int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int SETTINGS);
 int sync_check_reserve_bytes_database(const int SETTINGS);

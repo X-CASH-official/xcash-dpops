@@ -29,7 +29,7 @@ Return: The number of passed analysing_code test
 -----------------------------------------------------------------------------------------------------------
 */
 
-int analysing_code_test()
+int analysing_code_test(void)
 { 
   // structures
   struct uninitialized_variable_data {

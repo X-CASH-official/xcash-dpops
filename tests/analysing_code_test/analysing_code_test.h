@@ -7,5 +7,5 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int analysing_code_test();
+int analysing_code_test(void);
 #endif

@@ -27,7 +27,7 @@ Return: The number of passed file_functions test
 -----------------------------------------------------------------------------------------------------------
 */
 
-int file_functions_test()
+int file_functions_test(void)
 {   
   // Variables
   pthread_t thread_id;

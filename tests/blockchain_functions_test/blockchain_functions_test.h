@@ -7,5 +7,5 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int blockchain_functions_test();
+int blockchain_functions_test(void);
 #endif

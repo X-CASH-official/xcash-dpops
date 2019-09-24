@@ -23,6 +23,5 @@ void* count_documents_in_collection_thread(void* parameters);
 void* count_all_documents_in_collection_thread(void* parameters);
 void* get_database_data_thread(void* parameters);
 void* get_database_data_hash_thread(void* parameters);
-void* update_delegates_online_status_thread();
 int thread_settings(pthread_t thread_id);
 #endif

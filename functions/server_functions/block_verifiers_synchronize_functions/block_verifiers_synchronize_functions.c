@@ -1363,7 +1363,7 @@ Description: Sync the previous, current and next block verifiers from a network 
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_all_block_verifiers_list()
+int sync_all_block_verifiers_list(void)
 {
   // Variables
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -1643,7 +1643,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int get_synced_block_verifiers()
+int get_synced_block_verifiers(void)
 {
   // Variables
   char data[BUFFER_SIZE];

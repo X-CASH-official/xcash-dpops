@@ -30,7 +30,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int create_database_connection()
+int create_database_connection(void)
 {
   // Variables
   mongoc_uri_t* uri;

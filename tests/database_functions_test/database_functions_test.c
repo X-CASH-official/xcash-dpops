@@ -29,7 +29,7 @@ Return: The number of passed database test
 -----------------------------------------------------------------------------------------------------------
 */
 
-int database_test()
+int database_test(void)
 {   
   // Variables  
   int count;

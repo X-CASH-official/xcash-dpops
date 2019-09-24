@@ -63,7 +63,7 @@ void* current_block_height_timer_thread()
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  /*sync_block_verifiers_minutes(0);
+  sync_block_verifiers_minutes(0);
   get_current_block_height(current_block_height,0);
   if (start_new_round() == 0)
   {
@@ -72,7 +72,7 @@ void* current_block_height_timer_thread()
   else
   {
     fprintf(stderr,"\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
-  }*/
+  }
 
   for (;;)
   {
@@ -573,7 +573,7 @@ Return: 0 if an error has occured, else the block reward
 -----------------------------------------------------------------------------------------------------------
 */
 
-long long int add_block_to_blocks_found()
+long long int add_block_to_blocks_found(void)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -1211,7 +1211,7 @@ void* send_data_socket_thread(void* parameters)
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  socklen_t socket_option_settings = sizeof(socket_settings);
+  socklen_t socket_option_settings = sizeof(int);
 
   // define macros
   #define SEND_DATA_SOCKET_ERROR \
@@ -1261,7 +1261,7 @@ void* send_data_socket_thread(void* parameters)
   AF_INET = IPV4
   use htons to convert the port from host byte order to network byte order short
   */
-  memset(&serv_addr,0,sizeof(serv_addr));
+  memset(&serv_addr,0,sizeof(struct sockaddr_in));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(SEND_DATA_PORT);
@@ -1273,7 +1273,7 @@ void* send_data_socket_thread(void* parameters)
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
     if (poll(&socket_file_descriptors,1,TOTAL_CONNECTION_TIME_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   
@@ -1365,7 +1365,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  socklen_t socket_option_settings = sizeof(socket_settings);
+  socklen_t socket_option_settings = sizeof(int);
 
   // define macros
   #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR \
@@ -1417,7 +1417,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   AF_INET = IPV4
   use htons to convert the port from host byte order to network byte order short
   */
-  memset(&serv_addr,0,sizeof(serv_addr));
+  memset(&serv_addr,0,sizeof(struct sockaddr_in));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(SEND_DATA_PORT);
@@ -1429,7 +1429,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) != 0)
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
     if (poll(&socket_file_descriptors,1,TOTAL_CONNECTION_TIME_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
     {   

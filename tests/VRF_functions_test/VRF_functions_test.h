@@ -7,5 +7,5 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int VRF_functions_test();
+int VRF_functions_test(void);
 #endif

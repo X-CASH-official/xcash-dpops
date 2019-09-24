@@ -8,5 +8,5 @@ Function prototypes
 */
 
 size_t get_program_memory_usage(char* process_id_file);
-int reset_variables_allocated_on_the_heap_test();
+int reset_variables_allocated_on_the_heap_test(void);
 #endif

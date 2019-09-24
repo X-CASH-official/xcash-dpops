@@ -35,7 +35,7 @@ Return: The number of passed network_daemon test
 -----------------------------------------------------------------------------------------------------------
 */
 
-void network_daemon_test()
+void network_daemon_test(void)
 {  
   // Variables
   char* transactions[5];
@@ -158,7 +158,7 @@ Return: The number of passed general_network test
 -----------------------------------------------------------------------------------------------------------
 */
 
-void general_network_test()
+void general_network_test(void)
 {  
   // Variables
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -314,7 +314,7 @@ Return: The number of passed network_security test
 -----------------------------------------------------------------------------------------------------------
 */
 
-void network_security_test()
+void network_security_test(void)
 {  
   // define macros
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
@@ -369,7 +369,7 @@ Return: The number of passed network_wallet test
 -----------------------------------------------------------------------------------------------------------
 */
 
-void network_wallet_test()
+void network_wallet_test(void)
 { 
   // define macros
   #define CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS "XCA1va68ZVYVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rk16g7dYjbcKDwsAggp8Z1dNjPgcCzkcV7hDg99Wtk8nyUBBK4K7"
@@ -438,7 +438,7 @@ Return: The number of passed network test
 -----------------------------------------------------------------------------------------------------------
 */
 
-int network_functions_test()
+int network_functions_test(void)
 {
   // define macros
   #define NETWORK_TOTAL_TEST 13

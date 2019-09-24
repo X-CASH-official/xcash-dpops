@@ -7,5 +7,5 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int file_functions_test();
+int file_functions_test(void);
 #endif

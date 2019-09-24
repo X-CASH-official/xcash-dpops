@@ -29,7 +29,7 @@ Description: Run the test
 -----------------------------------------------------------------------------------------------------------
 */
 
-void test()
+void test(void)
 {
   // Variables
   int XCASH_DPOPS_total_passed_test = 0;
