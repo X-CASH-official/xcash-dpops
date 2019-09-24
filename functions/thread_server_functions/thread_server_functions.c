@@ -56,6 +56,8 @@ void* current_block_height_timer_thread()
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
   int settings = 0;
   int block_verifier_settings;
@@ -63,7 +65,7 @@ void* current_block_height_timer_thread()
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  sync_block_verifiers_minutes(0);
+  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,0);
   get_current_block_height(current_block_height,0);
   if (start_new_round() == 0)
   {
@@ -78,7 +80,7 @@ void* current_block_height_timer_thread()
   {
     // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
     usleep(200000);
-    get_current_UTC_time;
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if ((settings == 0 && current_UTC_date_and_time->tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time->tm_sec == 0) || (settings == 1 && current_UTC_date_and_time->tm_min % BLOCK_TIME == 0))
     {
       if (settings == 0)
@@ -160,6 +162,8 @@ void* check_reserve_proofs_timer_thread()
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   char* message = (char*)calloc(524288000,sizeof(char)); // 500 MB
   char* reserve_proofs[MAXIMUM_INVALID_RESERERVE_PROOFS];
   int count;
@@ -235,11 +239,11 @@ void* check_reserve_proofs_timer_thread()
 
   for (;;)
   {
-    get_current_UTC_time;
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec == 25)
     {
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
-      sync_block_verifiers_seconds(30);
+      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
 
       // copy all of the reserve proofs to the reserve_proofs array
       for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
@@ -308,7 +312,7 @@ void* check_reserve_proofs_timer_thread()
       SEND_DATA_SOCKET_THREAD(data2);
 
       // wait for the block verifiers to process the votes
-      sync_block_verifiers_seconds(40);
+      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,40);
 
       // process the vote results
       if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
@@ -464,6 +468,8 @@ void* check_delegates_online_status_timer_thread()
   // Variables
   char message[BUFFER_SIZE];
   char data[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
   size_t count2;
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -498,7 +504,7 @@ void* check_delegates_online_status_timer_thread()
 
   for (;;)
   {    
-    get_current_UTC_time;
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 1 && current_UTC_date_and_time->tm_sec == 0)
     {
       // get the top 150 delegates by total votes
@@ -899,6 +905,8 @@ Description: Checks if the block verifier has found a block
 void* block_height_timer_thread()
 {
   // Variables
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   long long int block_reward_number;
 
   // define macros
@@ -911,7 +919,7 @@ void* block_height_timer_thread()
 
   for (;;)
   {   
-    get_current_UTC_time;
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time->tm_sec == 10)
     {
       // check if you found the previous block in the network
@@ -957,6 +965,8 @@ void* payment_timer_thread()
   char inactivity_count[BUFFER_SIZE];
   char payment_tx_hash[BUFFER_SIZE];
   char payment_tx_key[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
   size_t counter; 
   long long int number;
@@ -990,7 +1000,7 @@ void* payment_timer_thread()
   for (;;)
   {
     // check if it is UTC 00:00
-    get_current_UTC_time;
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time->tm_hour == 0 && current_UTC_date_and_time->tm_min == 0)
     {
       color_print("It is UTC 00:00\nSending the daily payments","green");
@@ -1168,8 +1178,8 @@ void* payment_timer_thread()
         }
       }
     }
-    print_start_message("Delegates payments")
-    memset(data,0,sizeof(data));    
+    memset(data,0,sizeof(data));  
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Delegates payments",data);      
     memcpy(data,"Amount of payments: ",20);
     snprintf(data+strlen(data),sizeof(data)-1,"%lld",amount_of_payments);
     memcpy(data,"\nTotal amount: ",15);
@@ -1209,6 +1219,8 @@ void* send_data_socket_thread(void* parameters)
   char str[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
@@ -1300,6 +1312,9 @@ void* send_data_socket_thread(void* parameters)
     SEND_DATA_SOCKET_ERROR;
   }
 
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
   // send the message   
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
   memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING));
@@ -1365,6 +1380,8 @@ void* send_and_receive_data_socket_thread(void* parameters)
   char str[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   int count = 0;
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
@@ -1457,6 +1474,9 @@ void* send_and_receive_data_socket_thread(void* parameters)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
   }
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // send the message   
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));

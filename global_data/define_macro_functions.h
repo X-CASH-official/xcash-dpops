@@ -86,7 +86,7 @@ Description: Prints all of the functions and error messages
 fprintf(stderr,"\n\n"); \
 color_print(TEST_OUTLINE,"red"); \
 fprintf(stderr,"\033[1;31m%s: Error\033[0m\n",error_message.function[0]); \
-get_current_UTC_time; \
+get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 fprintf(stderr,"\033[1;31m%s\033[0m",asctime(current_UTC_date_and_time)); \
 color_print(TEST_OUTLINE,"red"); \
 fprintf(stderr,"\033[1;31mFunction Calls:\033[0m\n"); \
@@ -107,17 +107,22 @@ error_message.total = 0;
 -----------------------------------------------------------------------------------------------------------
 Name: print_start_message
 Parameters:
+  current_date_and_time -  The current date and time
+  current_UTC_date_and_time - The current UTC date and time
   string - the message
+  buffer - the buffer to print the time
 Description: Prints the start message of a section
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define print_start_message(string) \
+#define print_start_message(current_date_and_time,current_UTC_date_and_time,string,buffer) \
 fprintf(stderr,"\n"); \
 color_print(TEST_OUTLINE,"blue"); \
 fprintf(stderr,"\033[1;34m%s\033[0m\n",string); \
-get_current_UTC_time; \
-fprintf(stderr,"\033[1;34m%s\033[0m",asctime(current_UTC_date_and_time)); \
+get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
+memset(buffer,0,sizeof(buffer)); \
+strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time); \
+fprintf(stderr,"\033[1;34m%s\033[0m",buffer); \
 color_print(TEST_OUTLINE,"blue");
 
 
@@ -126,10 +131,13 @@ color_print(TEST_OUTLINE,"blue");
 -----------------------------------------------------------------------------------------------------------
 Name: get_current_UTC_time
 Description: Gets the current UTC time
+Parameters:
+  current_date_and_time -  The current date and time
+  current_UTC_date_and_time - The current UTC date and time
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define get_current_UTC_time \
+#define get_current_UTC_time(current_date_and_time,current_UTC_date_and_time) \
 time(&current_date_and_time); \
 current_UTC_date_and_time = gmtime(&current_date_and_time);
 
@@ -139,14 +147,18 @@ current_UTC_date_and_time = gmtime(&current_date_and_time);
 -----------------------------------------------------------------------------------------------------------
 Name: sync_block_verifiers_minutes
 Description: Syncs the block verifiers to a specific minute
+Parameters:
+  current_date_and_time -  The current date and time
+  current_UTC_date_and_time - The current UTC date and time
+  minutes - The minutes
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define sync_block_verifiers_minutes(minutes) \
+#define sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,minutes) \
 do \
 { \
   usleep(200000); \
-  get_current_UTC_time; \
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != minutes); 
 
 
@@ -155,15 +167,40 @@ do \
 -----------------------------------------------------------------------------------------------------------
 Name: sync_block_verifiers_seconds
 Description: Syncs the block verifiers to a specific second
+Parameters:
+  current_date_and_time -  The current date and time
+  current_UTC_date_and_time - The current UTC date and time
+  seconds - The seconds
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define sync_block_verifiers_seconds(seconds) \
+#define sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,seconds) \
 do \
 { \
   usleep(200000); \
-  get_current_UTC_time; \
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 } while (current_UTC_date_and_time->tm_sec != seconds);
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_block_verifiers_minutes_and_seconds
+Description: Syncs the block verifiers to a specific minute and second
+Parameters:
+  current_date_and_time -  The current date and time
+  current_UTC_date_and_time - The current UTC date and time
+  minutes - The minutes
+  seconds - The seconds
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,minutes,seconds) \
+do \
+{ \
+  usleep(200000); \
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
+} while (current_UTC_date_and_time->tm_min % BLOCK_TIME != minutes && current_UTC_date_and_time->tm_sec != seconds);
 
 
 

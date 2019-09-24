@@ -16,11 +16,11 @@ Global Variables
 mongoc_client_t* database_client;
 mongoc_client_pool_t* database_client_thread_pool;
 
-// network data nodes
-int network_data_node_settings; // 1 if a network data node, 0 if not a network data node
-
 time_t current_date_and_time;
-struct tm* current_UTC_date_and_time; 
+struct tm* current_UTC_date_and_time;
+
+// network data nodes
+int network_data_node_settings; // 1 if a network data node, 0 if not a network data node 
 
 char xcash_wallet_public_address[XCASH_WALLET_LENGTH+1]; // Holds your wallets public address
 char block_verifiers_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address

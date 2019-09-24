@@ -55,6 +55,9 @@ int start_new_round(void)
 {
   // Variables
   char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
   int settings;
   int settings2;
@@ -107,6 +110,7 @@ int start_new_round(void)
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
   memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // start a new round
   if (get_current_block_height(current_block_height,0) == 0)
@@ -115,7 +119,7 @@ int start_new_round(void)
   }
   memcpy(data,"A new round is starting for block ",34);
   memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
-  print_start_message(data);
+  print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
 
   // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
   settings = update_block_verifiers_list();
@@ -259,6 +263,8 @@ int start_current_round_start_blocks(void)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   size_t count; 
   size_t count2; 
@@ -286,18 +292,14 @@ int start_current_round_start_blocks(void)
   // wait for all block verifiers to sync the database
   color_print("Waiting for all block verifiers to sync the databases","blue");
   fprintf(stderr,"\n");
-  sync_block_verifiers_minutes(1);
+  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);
 
   // check if the block verifier is the main network data node
   if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
   {
     color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round","yellow");
     fprintf(stderr,"\n");
-    do
-    {
-      usleep(200000);
-      get_current_UTC_time;
-    } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50); 
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
     return 1;
   } 
 
@@ -513,11 +515,7 @@ int start_current_round_start_blocks(void)
 
   color_print("Waiting for the block producer to submit the block to the network","blue");
   fprintf(stderr,"\n");
-  do
-  {
-    usleep(200000);
-    get_current_UTC_time;
-  } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50);
+  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
   // have the main network data node submit the block to the network  
   if (submit_block_template(data,0) == 0)
@@ -552,6 +550,8 @@ int data_network_node_create_block(void)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   size_t count; 
   size_t count2; 
@@ -571,7 +571,7 @@ int data_network_node_create_block(void)
   memset(data3,0,sizeof(data3));
 
   memcpy(data,"The block producer and all backup block producers have not been able to create the network block\nThe main network data node will now create the network block",157);
-  print_start_message(data);
+  print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
 
   // set the main_network_data_node_create_block so the main network data node can create the block
   pthread_rwlock_wrlock(&rwlock);
@@ -579,7 +579,7 @@ int data_network_node_create_block(void)
   pthread_rwlock_unlock(&rwlock);
 
   // wait for the block verifiers to process the votes
-  sync_block_verifiers_minutes(4);
+  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,4);
 
   pthread_rwlock_wrlock(&rwlock);
   // set the current_round_part
@@ -913,11 +913,7 @@ int data_network_node_create_block(void)
     color_print("Waiting for the block producer to submit the block to the network","blue");
     fprintf(stderr,"\n");
     // wait for the block verifiers to process the votes
-    do
-    {
-      usleep(200000);
-      get_current_UTC_time;
-    } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50); 
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
     // submit the block to the network
     if (submit_block_template(data,0) == 0)
@@ -940,11 +936,7 @@ int data_network_node_create_block(void)
     fprintf(stderr,"Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block\n\n");
 
     // wait for the block verifiers to process the votes
-    do
-    {
-      usleep(200000);
-      get_current_UTC_time;
-   } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50); 
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
   }
   
   return 1;
@@ -971,6 +963,8 @@ int start_part_4_of_round(void)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count = 0;
   size_t count2;
   size_t counter;
@@ -1010,7 +1004,6 @@ int start_part_4_of_round(void)
   fprintf(stderr,"\n"); \
   color_print(message,"red"); \
   memset(data,0,sizeof(data)); \
-  memset(data,0,sizeof(data)); \
   memset(data2,0,sizeof(data2)); \
   memset(data3,0,sizeof(data3)); \
   memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4)); \
@@ -1044,7 +1037,7 @@ int start_part_4_of_round(void)
     memcpy(current_round_part_backup_node,"1",1); \
     memcpy(data,"Restarting the round with backup block producer 1 for block ",60); \
     memcpy(data+60,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
-    print_start_message(data); \
+    print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2); \
     fprintf(stderr,"\n"); \
   } \
   else if (memcmp(current_round_part_backup_node,"1",1) == 0) \
@@ -1055,7 +1048,7 @@ int start_part_4_of_round(void)
     memcpy(current_round_part_backup_node,"2",1); \
     memcpy(data,"Restarting the round with backup block producer 2 for block ",60); \
     memcpy(data+60,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
-    print_start_message(data); \
+    print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2); \
     fprintf(stderr,"\n"); \
   } \
   else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
@@ -1063,7 +1056,7 @@ int start_part_4_of_round(void)
     data_network_node_create_block(); \
   } \
   pthread_rwlock_unlock(&rwlock); \
-  sync_block_verifiers_seconds(0); \
+  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,0); \
   goto start;  
 
   memset(data,0,sizeof(data));
@@ -1078,7 +1071,7 @@ int start_part_4_of_round(void)
   /*// wait for all block verifiers to sync the database
   color_print("Waiting for all block verifiers to sync the databases","blue");
   fprintf(stderr,"\n");
-  sync_block_verifiers_minutes(1);*/
+  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);*/
 
   start:
 
@@ -1147,7 +1140,7 @@ int start_part_4_of_round(void)
     SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(10);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,10);
 
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1291,7 +1284,7 @@ int start_part_4_of_round(void)
     }
     
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(30);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
 
 
 
@@ -1423,7 +1416,7 @@ int start_part_4_of_round(void)
     SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(40);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,40);
 
 
 
@@ -1532,13 +1525,13 @@ int start_part_4_of_round(void)
     }    
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(45);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,45);
 
     // send the message to all block verifiers
     SEND_DATA_SOCKET_THREAD(data3);
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(55);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,55);
 
     // process the vote results
     if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
@@ -1597,11 +1590,7 @@ int start_part_4_of_round(void)
     // wait for the block verifiers to process the votes
     color_print("Waiting for the block producer to submit the block to the network","blue");
     fprintf(stderr,"\n");
-    do
-    {
-      usleep(200000);
-      get_current_UTC_time;
-    } while (current_UTC_date_and_time->tm_min % BLOCK_TIME != 4 || current_UTC_date_and_time->tm_sec != 50);
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
     // have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
@@ -3561,6 +3550,9 @@ int create_server(const int MESSAGE_SETTINGS)
 
   // Variables
   char buffer[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   struct sockaddr_in addr; 
   size_t count;
   int settings;
@@ -3578,10 +3570,11 @@ int create_server(const int MESSAGE_SETTINGS)
   signal(SIGCHLD, SIG_IGN);
   
   memset(buffer,0,sizeof(buffer));
+  memset(data,0,sizeof(data));
 
   if (MESSAGE_SETTINGS == 1)
   {
-    print_start_message("Creating the server");
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Creating the server",data);
   }
   
   /* Create the socket  
@@ -3825,7 +3818,7 @@ int socket_thread(int client_socket)
   }
   
   // get the current time
-  get_current_UTC_time;
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
   
   memcpy(message,"Received ",9);
   memcpy(message+9,data2,strnlen(data2,sizeof(message)));

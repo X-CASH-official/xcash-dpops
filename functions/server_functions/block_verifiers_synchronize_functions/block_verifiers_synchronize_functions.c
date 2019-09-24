@@ -57,6 +57,8 @@ int check_if_databases_are_synced(const int SETTINGS)
 {
   // Variables
   char data[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
 
   // define macros
@@ -68,7 +70,7 @@ int check_if_databases_are_synced(const int SETTINGS)
 
   memset(data,0,sizeof(data));
 
-  print_start_message("Checking if databases are synced");
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if databases are synced",data);
 
   // get the previous block height
   sscanf(current_block_height, "%zu", &count);
@@ -1369,6 +1371,8 @@ int sync_all_block_verifiers_list(void)
   struct database_multiple_documents_fields database_multiple_documents_fields;
   char message[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
@@ -1399,7 +1403,7 @@ int sync_all_block_verifiers_list(void)
 
   if (network_data_node_settings == 0)
   {
-    print_start_message("Syncing the previous, current and next block verifiers directly from a network data node, to be able to update the database");
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Syncing the previous, current and next block verifiers directly from a network data node, to be able to update the database",data2);
 
     // create the message
     memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\",\r\n}",103);
@@ -1414,7 +1418,7 @@ int sync_all_block_verifiers_list(void)
     } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
   
     // get the current time
-    get_current_UTC_time;
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     
     memcpy(data3,"Connecting to network data node ",32);
     memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
@@ -1562,7 +1566,8 @@ int sync_all_block_verifiers_list(void)
   }
   else
   {
-    print_start_message("Loading the previous, current and next block verifiers from the database");
+    memset(data2,0,sizeof(data2));
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Loading the previous, current and next block verifiers from the database",data2);
 
     // initialize the database_multiple_documents_fields struct 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1682,7 +1687,7 @@ int get_synced_block_verifiers(void)
   } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
   
   // get the current time
-  get_current_UTC_time;
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   memset(data,0,sizeof(data));
   memcpy(data,"Connecting to network data node ",32);
@@ -1759,6 +1764,8 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
   char reserve_proofs_database[BUFFER_SIZE]; 
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE]; 
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
 
   // define macros  
@@ -1773,7 +1780,7 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
   memset(reserve_proofs_database,0,sizeof(reserve_proofs_database));
   memset(data2,0,sizeof(data2));
 
-  print_start_message("Checking if the reserve proofs database is synced");
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the reserve proofs database is synced",data2);
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -2121,6 +2128,8 @@ int sync_check_reserve_bytes_database(const int SETTINGS)
   char message[BUFFER_SIZE];
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
 
   // define macros
@@ -2133,7 +2142,7 @@ int sync_check_reserve_bytes_database(const int SETTINGS)
   memset(message,0,sizeof(message));
   memset(data2,0,sizeof(data2));
 
-  print_start_message("Checking if the reserve bytes database is synced");
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the reserve bytes database is synced",data2);
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -2572,6 +2581,8 @@ int sync_check_delegates_database(const int SETTINGS)
   char message[BUFFER_SIZE];
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
 
   // define macros
@@ -2585,7 +2596,7 @@ int sync_check_delegates_database(const int SETTINGS)
   memset(message,0,sizeof(message));
   memset(data2,0,sizeof(data2));
 
-  print_start_message("Checking if the delegates database is synced");
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the delegates database is synced",data2);
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -2865,6 +2876,8 @@ int sync_check_statistics_database(const int SETTINGS)
   char message[BUFFER_SIZE];
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
 
   // define macros
@@ -2878,7 +2891,7 @@ int sync_check_statistics_database(const int SETTINGS)
   memset(message,0,sizeof(message));
   memset(data2,0,sizeof(data2));
 
-  print_start_message("Checking if the statistics database is synced");
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the statistics database is synced",data2);
 
   if (get_synced_block_verifiers() == 0)
   {

@@ -841,6 +841,8 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
 {
   // Variables
   size_t count;
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   long long int total;
   long long int sent;
   long long int bytes;
@@ -862,7 +864,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     memset(current_date_and_time_data,0,sizeof(current_date_and_time_data));
 
     // get the current time
-    get_current_UTC_time;
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
     strftime(current_date_and_time_data,sizeof(current_date_and_time_data),"%a, %d %b %Y %H:%M:%S GMT",current_UTC_date_and_time);
 

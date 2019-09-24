@@ -329,7 +329,7 @@ int main(int parameters_count, char* parameters[])
   memcpy(current_round_part_backup_node,"0",1);
 
   // write the message
-  color_print("XCASH_DPOPS - Version 1.0.0\n","green");
+  color_print("XCASH DPOPS - Version 1.0.0\n","green");
 
   // get the wallets public address
   fprintf(stderr,"Getting the public address\n");
@@ -637,7 +637,7 @@ int main(int parameters_count, char* parameters[])
     }
   }
  
-  // print_start_message("Starting all of the threads");
+  // print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads");
 
   // start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
