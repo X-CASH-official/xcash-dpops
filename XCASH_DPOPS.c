@@ -372,9 +372,9 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
-    else if (memcmp(parameters[1],"--synchronize_database",22) == 0)
+    else if (memcmp(parameters[1],"--synchronize_database_from_network_data_node",45) == 0)
     {
-      test();
+      check_if_databases_are_synced(2);
       database_reset;
       exit(0);
     }
