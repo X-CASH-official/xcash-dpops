@@ -614,7 +614,7 @@ mkdir XCASH_DPOPS_Blockchain_Test
 Download the XCASH test blockchain from our blockchain download server
 ```
 cd ~/Installed-Programs/XCASH_DPOPS_Test/
-wget http://
+wget http://147.135.68.247:8000/XCASH_DPOPS_Blockchain_Test
 ```
 
 After the XCASH_DPOPS_Blockchain has downloaded, stop all of the systemd services  
