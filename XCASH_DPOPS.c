@@ -285,7 +285,7 @@ int main(int parameters_count, char* parameters[])
   color_print("XCASH DPOPS - Version 1.0.0\n","green");
 
   // check if they want to display the parameters
-  if (parameters_count == 2 && memcmp(parameters[1],"--parameters",12) == 0)
+  if (parameters_count == 2 && strncmp(parameters[1],"--parameters",BUFFER_SIZE) == 0)
   {
     printf(INVALID_PARAMETERS_ERROR_MESSAGE);
     exit(0);
@@ -366,23 +366,23 @@ int main(int parameters_count, char* parameters[])
   // check if the program needs to run the test
   if (parameters_count == 2)
   {    
-    if (memcmp(parameters[1],"--test",6) == 0)
+    if (strncmp(parameters[1],"--test",BUFFER_SIZE) == 0)
     {
       test();
       database_reset;
       exit(0);
     }
-    else if (memcmp(parameters[1],"--synchronize_database_from_network_data_node",45) == 0)
+    else if (strncmp(parameters[1],"--synchronize_database_from_network_data_node",BUFFER_SIZE) == 0)
     {
       check_if_databases_are_synced(2);
       database_reset;
       exit(0);
     }
-    else if (memcmp(parameters[1],"--delegates_website",19) == 0)
+    else if (strncmp(parameters[1],"--delegates_website",BUFFER_SIZE) == 0)
     {
       delegates_website = 1;
     }
-    else if (memcmp(parameters[1],"--test_data_add",15) == 0)
+    else if (strncmp(parameters[1],"--test_data_add",BUFFER_SIZE) == 0)
     {
       memset(data,0,sizeof(data));
       
@@ -483,11 +483,11 @@ int main(int parameters_count, char* parameters[])
 
   for (count = 0; count < (size_t)parameters_count; count++)
   {    
-    if (memcmp(parameters[count],"--total_threads",15) == 0)
+    if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0)
     {
       sscanf(parameters[count+1], "%d", &total_threads);
     }
-    if (memcmp(parameters[count],"--disable_synchronizing_databases_and_starting_timers",53) == 0)
+    if (strncmp(parameters[count],"--disable_synchronizing_databases_and_starting_timers",BUFFER_SIZE) == 0)
     {
       goto disable_synchronizing_databases_and_starting_timers;
     }
