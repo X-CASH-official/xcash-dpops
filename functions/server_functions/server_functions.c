@@ -9,7 +9,6 @@
 #include <signal.h>
 #include <pthread.h>
 #include <errno.h>
-#include <sys/sysinfo.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -3546,7 +3545,6 @@ int create_server(const int MESSAGE_SETTINGS)
 {
   // Constants
   const int SOCKET_OPTION = 1; 
-  const int THREADS = get_nprocs()*2;
 
   // Variables
   char buffer[BUFFER_SIZE];
@@ -3662,7 +3660,7 @@ int create_server(const int MESSAGE_SETTINGS)
     SERVER_ERROR("Error creating the server");
   }
 
-  for (count = 0; (int)count < THREADS-1; count++)
+  for (count = 0; (int)count < total_threads-1; count++)
   {
     if (pthread_create(&server_threads[count], NULL, socket_receive_data_thread, NULL) < 0)
     {

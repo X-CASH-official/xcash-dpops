@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h> 
 #include <pthread.h>
-#include <sys/mman.h>
+#include <sys/sysinfo.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -281,6 +281,16 @@ int main(int parameters_count, char* parameters[])
   }
   invalid_reserve_proofs.count = 0;
 
+  // write the message
+  color_print("XCASH DPOPS - Version 1.0.0\n","green");
+
+  // check if they want to display the parameters
+  if (memcmp(parameters[1],"--parameters",12) == 0)
+  {
+    printf(INVALID_PARAMETERS_ERROR_MESSAGE);
+    exit(0);
+  }
+
   // initialize the database connection
   mongoc_init();
 
@@ -328,9 +338,6 @@ int main(int parameters_count, char* parameters[])
   memcpy(current_round_part,"1",1);
   memcpy(current_round_part_backup_node,"0",1);
 
-  // write the message
-  color_print("XCASH DPOPS - Version 1.0.0\n","green");
-
   // get the wallets public address
   fprintf(stderr,"Getting the public address\n");
   if (get_public_address(0) == 1)
@@ -351,24 +358,31 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not get the current block height");
   }
 
-  // set the default delegate website and shared delegate website settings
+  // set the default parameter settings
+  total_threads = get_nprocs()*2;
   delegates_website = 0;
   shared_delegates_website = 0;
 
   // check if the program needs to run the test
   if (parameters_count == 2)
-  {
-    if (strncmp(parameters[1],"--test",BUFFER_SIZE) == 0)
+  {    
+    if (memcmp(parameters[1],"--test",6) == 0)
     {
       test();
       database_reset;
       exit(0);
     }
-    else if (strncmp(parameters[1],"--delegates_website",BUFFER_SIZE) == 0)
+    else if (memcmp(parameters[1],"--synchronize_database",22) == 0)
+    {
+      test();
+      database_reset;
+      exit(0);
+    }
+    else if (memcmp(parameters[1],"--delegates_website",19) == 0)
     {
       delegates_website = 1;
     }
-    else if (strncmp(parameters[1],"--test_data_add",BUFFER_SIZE) == 0)
+    else if (memcmp(parameters[1],"--test_data_add",15) == 0)
     {
       memset(data,0,sizeof(data));
       
@@ -468,8 +482,12 @@ int main(int parameters_count, char* parameters[])
   }
 
   for (count = 0; count < (size_t)parameters_count; count++)
-  {
-    if (strncmp(parameters[count],"--disable_synchronizing_databases_and_starting_timers",BUFFER_SIZE) == 0)
+  {    
+    if (memcmp(parameters[count],"--total_threads",15) == 0)
+    {
+      sscanf(parameters[count+1], "%d", &total_threads);
+    }
+    if (memcmp(parameters[count],"--disable_synchronizing_databases_and_starting_timers",53) == 0)
     {
       goto disable_synchronizing_databases_and_starting_timers;
     }

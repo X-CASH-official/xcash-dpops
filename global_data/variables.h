@@ -53,6 +53,7 @@ int database_settings; // 1 if the database can have documents added to it, 0 if
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
+int total_threads; // The total threads
 double fee; // the fee
 long long int minimum_amount; // the minimum amount to send a payment
 

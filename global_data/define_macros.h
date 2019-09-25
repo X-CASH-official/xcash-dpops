@@ -116,12 +116,15 @@ Using define statements instead of constants for increased efficiency
 // Test
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"
 #define INVALID_PARAMETERS_ERROR_MESSAGE \
-"\n\nParameters\n" \
+"Parameters\n" \
+"--parameters - Show a list of all valid parameters\n\n" \
 "--test - Run the test to make sure the program is compatible with your system\n\n" \
+"--total_threads \"total_threads\" - The total threads to use.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
 "--delegates_website - Run the delegates website\n\n" \
 "--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
 "The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \
 "The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)\n\n" \
+"--synchronize_database - Synchronize the database from a network data node.\n\n" \
 "--disable_synchronizing_databases_and_starting_timers - Disables synchronzing the databases and starting the timers. Used for testing.\n\n" \
 "--test_data_add - Add test data to the databases\n\n" \
 "--test_data_remove - Remove test data from the databases\n\n"
