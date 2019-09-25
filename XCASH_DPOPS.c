@@ -285,7 +285,7 @@ int main(int parameters_count, char* parameters[])
   color_print("XCASH DPOPS - Version 1.0.0\n","green");
 
   // check if they want to display the parameters
-  if (memcmp(parameters[1],"--parameters",12) == 0)
+  if (parameters_count == 2 && memcmp(parameters[1],"--parameters",12) == 0)
   {
     printf(INVALID_PARAMETERS_ERROR_MESSAGE);
     exit(0);
