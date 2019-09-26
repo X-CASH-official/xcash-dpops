@@ -14,7 +14,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_PREMINE_TOTAL_SUPPLY 40000000000 // The total supply of the premine
 #define XCASH_PREMINE_CIRCULATING_SUPPLY 7000000000 // The circulating supply of the premine
 #define XCASH_WALLET_DECIMAL_PLACES_AMOUNT 1000000
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 240501 // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 440875 // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
@@ -125,7 +125,7 @@ Using define statements instead of constants for increased efficiency
 "The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \
 "The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)\n\n" \
 "--synchronize_database_from_network_data_node - Synchronize the database from a network data node.\n\n" \
-"--disable_synchronizing_databases_and_starting_timers - Disables synchronzing the databases and starting the timers. Used for testing.\n\n" \
+"--disable_synchronizing_databases_and_starting_timers - Disables synchronizing the databases and starting the timers. Used for testing.\n\n" \
 "--test_data_add - Add test data to the databases\n\n" \
 "--test_data_remove - Remove test data from the databases\n\n"
 #endif

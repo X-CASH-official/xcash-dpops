@@ -47,6 +47,10 @@ int main(int parameters_count, char* parameters[])
   pthread_t thread_id[5];
   
   // define macros
+  #define MESSAGE "{\"username\":\"XCASH\"}"
+  #define DATABASE_COLLECTION_DELEGATES_DATA_1 "{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"online\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+  #define DATABASE_COLLECTION_DELEGATES_DATA_2 "{\"public_address\":\"XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.202\",\"delegate_name\":\"delegate_2\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"online\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+  #define DATABASE_COLLECTION_STATISTICS_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"delegate_name_1\",\"most_total_rounds\":\"0\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_1\",\"best_block_verifier_online_percentage\":\"0\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_1\",\"most_block_producer_total_rounds\":\"0\"}"
   #define database_reset \
   mongoc_client_destroy(database_client); \
   mongoc_client_pool_destroy(database_client_thread_pool); \
@@ -330,6 +334,16 @@ int main(int parameters_count, char* parameters[])
     mongoc_uri_destroy(uri_thread_pool);
     mongoc_cleanup();
     exit(0);
+  }
+
+  // check if it should create the default database data
+  memset(data,0,sizeof(data));
+  if (read_document_field_from_collection(DATABASE_NAME,"statistics",MESSAGE,"username",data,0) == 0)
+  {
+    // create the database collections with the default database data
+    insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,0);  
+    insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2,0); 
+    insert_document_into_collection_json(DATABASE_NAME,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);  
   }
 
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
@@ -709,7 +723,9 @@ int main(int parameters_count, char* parameters[])
   }
 
   database_reset;
-  return 0;  
-
+  return 0; 
+  
+  #undef MESSAGE
   #undef database_reset
+  #undef MAIN_ERROR
 }

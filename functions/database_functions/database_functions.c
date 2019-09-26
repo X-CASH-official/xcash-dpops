@@ -339,6 +339,7 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
   bson_error_t error;
   bson_t* document = NULL;  
   char* message;
+  int count = 0;
 
   // define macros
   #define database_reset_all \
@@ -380,7 +381,15 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
     message = bson_as_canonical_extended_json(current_document, NULL);
     memcpy(result,message,strnlen(message,BUFFER_SIZE));
     bson_free(message);
+    count = 1;
   }
+
+  if (count != 1)
+  {
+    database_reset_all;
+    return 0;
+  }
+
   database_reset_all;
   return 1;
 
@@ -504,7 +513,12 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     memset(result,0,strlen(result));
     memcpy(result,message_copy1,message_copy2 - message_copy1);
   }
-  
+  else
+  {
+    pointer_reset_all; 
+    database_reset_all; 
+    return 0;
+  }
 
   pointer_reset_all; 
   database_reset_all; 
@@ -716,6 +730,13 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     // parse the json data
     database_document_parse_json_data(data,result);
   }  
+  else
+  {
+    pointer_reset(data);
+    database_reset_all;
+    return 0;
+  }
+  
 
   pointer_reset(data);
   database_reset_all;
