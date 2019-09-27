@@ -1666,6 +1666,29 @@ int start_part_4_of_round(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sort_delegates
+Description: sort delegates
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sort_delegates(const void* DELEGATES1, const void* DELEGATES2)
+{
+  // Variables
+  size_t count;
+  size_t count2;
+  struct delegates* delegates1 = *(struct delegates**)DELEGATES1;
+  struct delegates* delegates2 = *(struct delegates**)DELEGATES2;
+  
+  sscanf(delegates1->total_vote_count, "%zu", &count);
+  sscanf(delegates2->total_vote_count, "%zu", &count2);
+
+  return count - count2;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: update_block_verifiers_list
 Description: Updates the block verifiers list struct
 Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to sync from a random network data node
@@ -1675,6 +1698,7 @@ Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to 
 int update_block_verifiers_list(void)
 {
   // Variables
+  struct delegates* delegates;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   size_t count;
   size_t count2;
@@ -1744,8 +1768,8 @@ int update_block_verifiers_list(void)
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
-  // get the top 150 delegates by total votes  
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,MAXIMUM_AMOUNT_OF_DELEGATES,1,"total_vote_count",0) == 0)
+  // get all of the delegates  
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,MAXIMUM_AMOUNT_OF_DELEGATES,0,"",0) == 0)
   {
     memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
     memcpy(error_message.data[error_message.total],"Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round",163);
@@ -1753,14 +1777,82 @@ int update_block_verifiers_list(void)
     return 0;
   }
 
+  delegates = malloc(database_multiple_documents_fields.document_count * sizeof(struct delegates));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (delegates == NULL)
+  {
+    memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  }
+
+  // initialize the delegates struct
+  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  {
+    delegates[count].public_address = (char*)calloc(100,sizeof(char));
+    delegates[count].total_vote_count = (char*)calloc(100,sizeof(char));
+    delegates[count].IP_address = (char*)calloc(100,sizeof(char));
+    delegates[count].delegate_name = (char*)calloc(100,sizeof(char));
+    delegates[count].about = (char*)calloc(1025,sizeof(char));
+    delegates[count].website = (char*)calloc(100,sizeof(char));
+    delegates[count].team = (char*)calloc(100,sizeof(char));
+    delegates[count].pool_mode = (char*)calloc(100,sizeof(char));
+    delegates[count].fee_structure = (char*)calloc(100,sizeof(char));
+    delegates[count].server_settings = (char*)calloc(100,sizeof(char));
+    delegates[count].block_verifier_score = (char*)calloc(100,sizeof(char));
+    delegates[count].online_status = (char*)calloc(100,sizeof(char));
+    delegates[count].block_verifier_total_rounds = (char*)calloc(100,sizeof(char));
+    delegates[count].block_verifier_online_total_rounds = (char*)calloc(100,sizeof(char));
+    delegates[count].block_verifier_online_percentage = (char*)calloc(100,sizeof(char));
+    delegates[count].block_producer_total_rounds = (char*)calloc(100,sizeof(char));
+    delegates[count].block_producer_block_heights = (char*)calloc(50000,sizeof(char));
+
+    if (delegates[count].public_address == NULL || delegates[count].total_vote_count == NULL || delegates[count].IP_address == NULL || delegates[count].delegate_name == NULL || delegates[count].about == NULL || delegates[count].website == NULL || delegates[count].team == NULL || delegates[count].pool_mode == NULL || delegates[count].fee_structure == NULL || delegates[count].server_settings == NULL || delegates[count].block_verifier_score == NULL || delegates[count].online_status == NULL || delegates[count].block_verifier_total_rounds == NULL || delegates[count].block_verifier_online_total_rounds == NULL || delegates[count].block_verifier_online_percentage == NULL || delegates[count].block_producer_total_rounds == NULL || delegates[count].block_producer_block_heights == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message;  
+      exit(0);
+    }
+  }
+
+  // convert the database_multiple_documents_fields to an array of structs
+  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  {
+    memcpy(delegates[count].public_address,database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],100));
+    memcpy(delegates[count].total_vote_count,database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],100));
+    memcpy(delegates[count].IP_address,database_multiple_documents_fields.value[count][2],strnlen(database_multiple_documents_fields.value[count][2],100));
+    memcpy(delegates[count].delegate_name,database_multiple_documents_fields.value[count][3],strnlen(database_multiple_documents_fields.value[count][3],100));
+    memcpy(delegates[count].about,database_multiple_documents_fields.value[count][4],strnlen(database_multiple_documents_fields.value[count][4],100));
+    memcpy(delegates[count].website,database_multiple_documents_fields.value[count][5],strnlen(database_multiple_documents_fields.value[count][5],100));
+    memcpy(delegates[count].team,database_multiple_documents_fields.value[count][6],strnlen(database_multiple_documents_fields.value[count][6],100));
+    memcpy(delegates[count].pool_mode,database_multiple_documents_fields.value[count][7],strnlen(database_multiple_documents_fields.value[count][7],100));
+    memcpy(delegates[count].fee_structure,database_multiple_documents_fields.value[count][8],strnlen(database_multiple_documents_fields.value[count][8],100));
+    memcpy(delegates[count].server_settings,database_multiple_documents_fields.value[count][9],strnlen(database_multiple_documents_fields.value[count][9],100));
+    memcpy(delegates[count].block_verifier_score,database_multiple_documents_fields.value[count][10],strnlen(database_multiple_documents_fields.value[count][10],100));
+    memcpy(delegates[count].online_status,database_multiple_documents_fields.value[count][11],strnlen(database_multiple_documents_fields.value[count][11],100));
+    memcpy(delegates[count].block_verifier_total_rounds,database_multiple_documents_fields.value[count][12],strnlen(database_multiple_documents_fields.value[count][12],100));
+    memcpy(delegates[count].block_verifier_online_total_rounds,database_multiple_documents_fields.value[count][13],strnlen(database_multiple_documents_fields.value[count][13],100));
+    memcpy(delegates[count].block_verifier_online_percentage,database_multiple_documents_fields.value[count][14],strnlen(database_multiple_documents_fields.value[count][14],100));
+    memcpy(delegates[count].block_producer_total_rounds,database_multiple_documents_fields.value[count][15],strnlen(database_multiple_documents_fields.value[count][15],100));
+    memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],100));
+  }
+  
+  // sort the delegates by total_vote_count
+  qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates*),&sort_delegates);
+
   // copy the database_multiple_documents_fields to the next_block_verifiers_list
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (strncmp(database_multiple_documents_fields.value[count][12],"true",BUFFER_SIZE) == 0)
+    if (strncmp(delegates[count].online_status,"true",BUFFER_SIZE) == 0)
     {
-       memcpy(next_block_verifiers_list.block_verifiers_name[count],database_multiple_documents_fields.value[count][4],strnlen(database_multiple_documents_fields.value[count][4],sizeof(next_block_verifiers_list.block_verifiers_name[count])));
-       memcpy(next_block_verifiers_list.block_verifiers_public_address[count],database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],sizeof(next_block_verifiers_list.block_verifiers_public_address[count])));
-       memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],database_multiple_documents_fields.value[count][3],strnlen(database_multiple_documents_fields.value[count][3],sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
+       memcpy(next_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(next_block_verifiers_list.block_verifiers_name[count])));
+       memcpy(next_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(next_block_verifiers_list.block_verifiers_public_address[count])));
+       memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
     } 
   }
 
@@ -1795,6 +1887,38 @@ int update_block_verifiers_list(void)
   {
     settings = 2;
   } 
+
+  // reset the database_multiple_documents_fields struct
+  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  {
+    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
+    {
+      pointer_reset(database_multiple_documents_fields.item[count][count2]);
+      pointer_reset(database_multiple_documents_fields.value[count][count2]);
+    }
+  }
+
+  // reset the delegates struct
+  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  {
+    pointer_reset(delegates[count].public_address);
+    pointer_reset(delegates[count].total_vote_count);
+    pointer_reset(delegates[count].IP_address);
+    pointer_reset(delegates[count].delegate_name);
+    pointer_reset(delegates[count].about);
+    pointer_reset(delegates[count].website);
+    pointer_reset(delegates[count].team);
+    pointer_reset(delegates[count].pool_mode);
+    pointer_reset(delegates[count].fee_structure);
+    pointer_reset(delegates[count].server_settings);
+    pointer_reset(delegates[count].block_verifier_score);
+    pointer_reset(delegates[count].online_status);
+    pointer_reset(delegates[count].block_verifier_total_rounds);
+    pointer_reset(delegates[count].block_verifier_online_total_rounds);
+    pointer_reset(delegates[count].block_verifier_online_percentage);
+    pointer_reset(delegates[count].block_producer_total_rounds);
+    pointer_reset(delegates[count].block_producer_block_heights);
+  }
 
   return settings;
 

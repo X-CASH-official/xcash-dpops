@@ -716,10 +716,7 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     message = bson_as_canonical_extended_json(current_document, NULL);
     memcpy(data,message,strnlen(message,BUFFER_SIZE));
     bson_free(message);
-
-    string_replace(data,BUFFER_SIZE,"{ \"$numberInt\" : ","");
-    string_replace(data,BUFFER_SIZE,"{ \"$numberDouble\" : ","");
-    string_replace(data,BUFFER_SIZE,"{ \"$numberLong\" : ","");
+    
     string_replace(data,BUFFER_SIZE," }, ",", ");
 
     count = 1;
@@ -850,9 +847,6 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
 
       if ((strncmp(DATA,"",BUFFER_SIZE) == 0) || (strncmp(DATA,"",BUFFER_SIZE) != 0 && strstr(data,DATA) != NULL))
       {
-        string_replace(data,BUFFER_SIZE,"{ \"$numberInt\" : ","");
-        string_replace(data,BUFFER_SIZE,"{ \"$numberDouble\" : ","");
-        string_replace(data,BUFFER_SIZE,"{ \"$numberLong\" : ","");
         string_replace(data,BUFFER_SIZE," }, ",", ");
 
         // parse the json data      
@@ -877,6 +871,127 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     return 0;
   }
 
+  pointer_reset(data);
+  database_reset_all;
+  return 1;
+
+  #undef database_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_block_verifiers
+Description: Gets the top 100 delegates from the database and sorts them by total_vote_count
+Parameters:
+  result - A database_multiple_documents_fields struct to hold the data
+  struct database_multiple_documents_fields
+    document_count - The number of documents
+    database_fields_count - The number of items in the database document
+    item[100][100] - The database document items
+    value[100][100] - The database document values
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_block_verifiers(struct database_multiple_documents_fields *result)
+{
+  // Constants
+  const bson_t* current_document;
+
+  // Variables
+  mongoc_collection_t* collection;
+  mongoc_cursor_t* document_settings = NULL;
+  bson_t* document = NULL;  
+  bson_t* document_options = NULL;
+  char* message;
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  size_t count;
+  size_t count2;
+  size_t counter = 0;
+  struct database_multiple_documents_fields* database_multiple_documents_fields = NULL;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  #define database_reset_all \
+  bson_destroy(document); \
+  bson_destroy(document_options); \
+  mongoc_cursor_destroy(document_settings); \
+  mongoc_collection_destroy(collection);
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    memcpy(error_message.function[error_message.total],"read_multiple_documents_all_fields_from_collection",50);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  }
+
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  {
+    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
+    {
+      // allocate more for the about and the block_producer_block_heights
+      if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
+      {
+        database_multiple_documents_fields->item[count][count2] = (char*)calloc(100,sizeof(char));
+        database_multiple_documents_fields->value[count][count2] = (char*)calloc(50000,sizeof(char));
+      }
+      else if (count2 == 4)
+      {
+        database_multiple_documents_fields->item[count][count2] = (char*)calloc(100,sizeof(char));
+        database_multiple_documents_fields->value[count][count2] = (char*)calloc(1025,sizeof(char));
+      }
+      else
+      {
+        database_multiple_documents_fields->item[count][count2] = (char*)calloc(100,sizeof(char));
+        database_multiple_documents_fields->value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+      }
+      
+      if (database_multiple_documents_fields->item[count][count2] == NULL || database_multiple_documents_fields->value[count][count2] == NULL)
+      {
+        memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
+      }
+    } 
+  } 
+  database_multiple_documents_fields->document_count = 0;
+  database_multiple_documents_fields->database_fields_count = 0;
+
+  // set the collection
+  collection = mongoc_client_get_collection(database_client, DATABASE_NAME, DATABASE_COLLECTION);
+  
+  document = bson_new();
+  if (!document)
+  {
+    pointer_reset(data);
+    database_reset_all;
+    return 0;
+  }
+ 
+  document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
+  while (mongoc_cursor_next(document_settings, &current_document))
+  {
+    message = bson_as_canonical_extended_json(current_document, NULL);
+    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memcpy(data,message,strnlen(message,BUFFER_SIZE));
+    bson_free(message); 
+      
+    string_replace(data,BUFFER_SIZE," }, ",", ");
+
+    // parse the json data      
+    database_multiple_documents_parse_json_data(data,database_multiple_documents_fields,counter);
+    counter++;
+    database_multiple_documents_fields->document_count++;
+  }
+  
   pointer_reset(data);
   database_reset_all;
   return 1;
@@ -1951,4 +2066,3 @@ int update_delegates_online_status(const char* DATABASE, const char* COLLECTION,
   #undef pointer_reset_all
   #undef database_reset_all
 }
-

@@ -8,7 +8,7 @@ Function prototypes
 */
 
 void* current_block_height_timer_thread();
-int compare(const void* STRING1, const void* STRING2);
+int sort_invalid_reserve_proofs(const void* STRING1, const void* STRING2);
 void* check_reserve_proofs_timer_thread();
 void* check_delegates_online_status_timer_thread();
 void* check_maximum_delegates_timer_thread();

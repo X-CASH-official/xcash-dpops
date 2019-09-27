@@ -136,14 +136,14 @@ void* current_block_height_timer_thread()
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: compare
-Description: compare function for sorting
+Name: sort_invalid_reserve_proofs
+Description: sort invalid reserve proofs
 -----------------------------------------------------------------------------------------------------------
 */
 
-int compare(const void* STRING1, const void* STRING2)
+int sort_invalid_reserve_proofs(const void* STRING1, const void* STRING2)
 {
-  return strcmp(STRING1, STRING2);
+  return (strcmp((char*)STRING1, (char*)STRING2));
 }
 
 
@@ -253,7 +253,7 @@ void* check_reserve_proofs_timer_thread()
       }
 
       // sort the invalid reserve proofs struct so the data hash is the same
-      qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),compare);
+      qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),sort_invalid_reserve_proofs);
 
       // get the data hash of the invalid_reserve_proofs struct
       memset(message,0,strlen(message));

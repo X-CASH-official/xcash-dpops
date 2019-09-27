@@ -205,16 +205,36 @@ struct invalid_reserve_proofs {
 // database struct
 struct database_document_fields {
     size_t count; // The amount of items in the database_document_fields struct
-    char* item[DATABASE_ARRAY_COUNT]; // The item
-    char* value[DATABASE_ARRAY_COUNT]; // The value
+    char* item[MAXIMUM_AMOUNT_OF_DELEGATES]; // The item
+    char* value[MAXIMUM_AMOUNT_OF_DELEGATES]; // The value
 };
 
 struct database_multiple_documents_fields {
     size_t document_count; // The amount of documents in the database_multiple_documents_fields
     size_t database_fields_count; // The amount of items in each document
-    char* item[DATABASE_ARRAY_COUNT][DATABASE_ARRAY_COUNT]; // The item
-    char* value[DATABASE_ARRAY_COUNT][DATABASE_ARRAY_COUNT]; // The value
+    char* item[MAXIMUM_AMOUNT_OF_DELEGATES][DATABASE_ARRAY_COUNT]; // The item
+    char* value[MAXIMUM_AMOUNT_OF_DELEGATES][DATABASE_ARRAY_COUNT]; // The value
 };
+
+  struct delegates {
+    char* public_address;
+    char* total_vote_count;
+    char* IP_address;
+    char* delegate_name;
+    char* about;
+    char* website;
+    char* team;
+    char* pool_mode;
+    char* fee_structure;
+    char* server_settings;
+    char* block_verifier_score;
+    char* online_status;
+    char* block_verifier_total_rounds;
+    char* block_verifier_online_total_rounds;
+    char* block_verifier_online_percentage;
+    char* block_producer_total_rounds;
+    char* block_producer_block_heights;
+  };
 
 
 
