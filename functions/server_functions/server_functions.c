@@ -2774,6 +2774,12 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memset(delegate_public_address,0,sizeof(delegate_public_address));
   memset(delegates_IP_address,0,sizeof(delegates_IP_address));
 
+  // check if the maximum amount of delegates has been registered
+  if (count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0) >= MAXIMUM_AMOUNT_OF_DELEGATES)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The maximum amount of delegates has been registered");
+  }
+
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
   {   
