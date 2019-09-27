@@ -598,6 +598,114 @@ void* check_delegates_online_status_timer_thread()
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_maximum_delegates_timer_thread
+Description: Checks the top 150 delegates every round to update their online status
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* check_maximum_delegates_timer_thread()
+{
+  // Variables
+  char message[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
+  size_t count;
+  size_t count2;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  
+  memset(message,0,sizeof(message));
+
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  {
+    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
+    {
+      // allocate more for the about and the block_producer_block_heights
+      if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
+      {
+        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+        database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
+      }
+      else if (count2 == 4)
+      {
+        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+        database_multiple_documents_fields.value[count][count2] = (char*)calloc(1025,sizeof(char));
+      }
+      else
+      {
+        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+        database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+      }
+      
+      if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
+      {
+        memcpy(error_message.function[error_message.total],"check_maximum_delegates_timer_thread",36);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message;  
+        exit(0);
+      }
+    } 
+  } 
+  database_multiple_documents_fields.document_count = 0;
+  database_multiple_documents_fields.database_fields_count = 0;
+
+
+  for (;;)
+  {    
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time->tm_hour == 0 && current_UTC_date_and_time->tm_min == 10)
+    {
+      // get all of the delegates
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,MAXIMUM_AMOUNT_OF_DELEGATES,0,"",0) == 0)
+      {
+        memcpy(error_message.function[error_message.total],"check_maximum_delegates_timer_thread",36);
+        memcpy(error_message.data[error_message.total],"Could not get the top 150 delegates to check their online status. This means the delegates database might be unsynced, and you might have to sync the database.",159);
+        error_message.total++;
+        print_error_message;
+      } 
+
+      // check if any of them have a total_vote_count of 0  
+      for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+      {
+         if (memcmp(database_multiple_documents_fields.value[count][TOTAL_DELEGATES_DATABASE_FIELDS-1],"0",1) == 0)
+         {
+           // delete the delegate from the database
+           memset(message,0,sizeof(message));
+           memcpy(message,"{\"public_address\":\"",19);
+           memcpy(message+19,database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);
+           memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
+           delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,0);
+         }
+      }
+
+      // reset the database_multiple_documents_fields
+      for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+      {
+        for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
+        {
+          memset(database_multiple_documents_fields.item[count][count2],0,strlen(database_multiple_documents_fields.item[count][count2]));
+          memset(database_multiple_documents_fields.value[count][count2],0,strlen(database_multiple_documents_fields.value[count][count2]));
+        }
+      }
+      database_multiple_documents_fields.document_count = 0;
+      database_multiple_documents_fields.database_fields_count = 0;
+    }
+    usleep(200000);
+  }
+  pthread_exit((void *)(intptr_t)1);
+
+  #undef DATABASE_COLLECTION
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: add_block_to_blocks_found
 Description: Adds the block to the blocks_found database
 Return: 0 if an error has occured, else the block reward

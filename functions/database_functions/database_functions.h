@@ -25,6 +25,6 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
 int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
 int get_database_data(char *database_data, const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
 int get_database_data_hash(char *data_hash, const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
-int read_multiple_documents_all_fields_from_collection(struct database_multiple_documents_fields *result);
+//int read_multiple_documents_all_fields_from_collection(struct database_multiple_documents_fields *result);
 int update_delegates_online_status(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
 #endif
