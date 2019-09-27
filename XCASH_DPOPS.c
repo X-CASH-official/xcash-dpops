@@ -41,15 +41,14 @@ int main(int parameters_count, char* parameters[])
   long int current_time;
   size_t count = 0;
   size_t count2 = 0; 
-  int settings;
 
   // threads
   pthread_t thread_id[5];
   
   // define macros
   #define MESSAGE "{\"username\":\"XCASH\"}"
-  #define DATABASE_COLLECTION_DELEGATES_DATA_1 "{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"online\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
-  #define DATABASE_COLLECTION_DELEGATES_DATA_2 "{\"public_address\":\"XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.202\",\"delegate_name\":\"delegate_2\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"online\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+  #define DATABASE_COLLECTION_DELEGATES_DATA_1 "{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"online\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+  #define DATABASE_COLLECTION_DELEGATES_DATA_2 "{\"public_address\":\"XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.202\",\"delegate_name\":\"delegate_name_2\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"online\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
   #define DATABASE_COLLECTION_STATISTICS_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"delegate_name_1\",\"most_total_rounds\":\"0\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_1\",\"best_block_verifier_online_percentage\":\"0\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_1\",\"most_block_producer_total_rounds\":\"0\"}"
   #define database_reset \
   mongoc_client_destroy(database_client); \
@@ -602,16 +601,7 @@ int main(int parameters_count, char* parameters[])
 
   // check the block verifiers current time, if it is not a network data node
   color_print("Checking if the current time is synchronized with the network","green");
-  for (count = 0, settings = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-  {
-    if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-    {
-      settings = 1;
-      break;
-    }
-  }
-
-  if (settings != 1)
+  if (network_data_node_settings != 1)
   {
     for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
     {
@@ -671,13 +661,13 @@ int main(int parameters_count, char* parameters[])
  
   // print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads");
 
-  // start the current block height timer thread
+  /*// start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
   {
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
   
-  color_print("Started the current block height timer thread","green");
+  color_print("Started the current block height timer thread","green");*/
 
   /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)

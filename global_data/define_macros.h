@@ -109,9 +109,9 @@ Using define statements instead of constants for increased efficiency
 // network data nodes
 #define NETWORK_DATA_NODES_AMOUNT 2 // The amount of network data nodes
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP" // The first network data nodes public address
-#define NETWORK_DATA_NODE_1_IP_ADDRESS "10.10.10.1" // The first network data nodes IP address
+#define NETWORK_DATA_NODE_1_IP_ADDRESS "192.168.1.201" // The first network data nodes IP address
 #define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS "XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B" // The second network data nodes public address
-#define NETWORK_DATA_NODE_2_IP_ADDRESS "10.10.10.2" // The second network data nodes IP address
+#define NETWORK_DATA_NODE_2_IP_ADDRESS "192.168.1.202" // The second network data nodes IP address
 
 // Test
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"

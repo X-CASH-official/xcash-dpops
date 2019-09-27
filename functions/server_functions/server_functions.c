@@ -2468,7 +2468,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   {
     if (count == 1)
     {
-      memcpy(delegates_public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      memcpy(data,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
     }
     if (count == 2)
     {
@@ -2480,6 +2480,27 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     }
     count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
   }
+
+  // check if they have voted using the delegates name or delegates public address
+  if (strlen(data) != XCASH_WALLET_LENGTH)
+  {
+    // create the message
+    memcpy(data2,"{\"delegate_name\":\"",18);
+    memcpy(data2+18,data,strnlen(data,sizeof(data2)));
+    memcpy(data2+strlen(data2),"\"}",2);
+
+    // get the delegates public address
+    if (read_document_field_from_collection(DATABASE_NAME,"delegates",data2,"public_address",data3,0) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Invalid data");
+    }
+
+    memset(data,0,sizeof(data));
+    memcpy(data,data3,XCASH_WALLET_LENGTH);
+    memset(data3,0,sizeof(data3));
+  }
+
+  memcpy(delegates_public_address,data,XCASH_WALLET_LENGTH);
 
   // check if the data is valid
   if (strlen(delegates_public_address) != XCASH_WALLET_LENGTH || memcmp(delegates_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(reserve_proof) > BUFFER_SIZE_RESERVE_PROOF)
