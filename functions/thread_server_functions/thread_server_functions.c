@@ -507,12 +507,27 @@ void* check_delegates_online_status_timer_thread()
   memset(data,0,sizeof(data));
 
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < BLOCK_VERIFIERS_SELECTED_AMOUNT; count++)
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
     for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
     {
-      database_multiple_documents_fields.item[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-      database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+      // allocate more for the about and the block_producer_block_heights
+      if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
+      {
+        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+        database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
+      }
+      else if (count2 == 4)
+      {
+        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+        database_multiple_documents_fields.value[count][count2] = (char*)calloc(1025,sizeof(char));
+      }
+      else
+      {
+        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+        database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+      }
+      
       if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
       {
         memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
@@ -532,8 +547,8 @@ void* check_delegates_online_status_timer_thread()
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 1 && current_UTC_date_and_time->tm_sec == 0)
     {
-      // get the top 150 delegates by total votes
-      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_SELECTED_AMOUNT,1,"total_vote_count",0) == 0)
+      // get all of the delegates
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,MAXIMUM_AMOUNT_OF_DELEGATES,0,"",0) == 0)
       {
         memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
         memcpy(error_message.data[error_message.total],"Could not get the top 150 delegates to check their online status. This means the delegates database might be unsynced, and you might have to sync the database.",159);
@@ -550,7 +565,7 @@ void* check_delegates_online_status_timer_thread()
          memcpy(message+19,database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);
          memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
 
-         if (get_delegate_online_status(database_multiple_documents_fields.value[count][3]) == 1)
+         if (get_delegate_online_status(database_multiple_documents_fields.value[count][2]) == 1)
          {
            memset(data,0,sizeof(data));
            memcpy(data,"{\"online_status\":\"true\"}",24);
@@ -576,7 +591,7 @@ void* check_delegates_online_status_timer_thread()
        }
 
       // reset the database_multiple_documents_fields
-      for (count = 0; count < BLOCK_VERIFIERS_SELECTED_AMOUNT; count++)
+      for (count = 0; count < database_multiple_documents_fields.document_count; count++)
       {
         for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
         {

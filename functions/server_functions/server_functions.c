@@ -1745,7 +1745,7 @@ int update_block_verifiers_list(void)
   database_multiple_documents_fields.database_fields_count = 0;
 
   // get the top 150 delegates by total votes  
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,BLOCK_VERIFIERS_SELECTED_AMOUNT,1,"total_vote_count",0) == 0)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,MAXIMUM_AMOUNT_OF_DELEGATES,1,"total_vote_count",0) == 0)
   {
     memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
     memcpy(error_message.data[error_message.total],"Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round",163);
