@@ -500,7 +500,6 @@ void* check_delegates_online_status_timer_thread()
   database_multiple_documents_fields.database_fields_count = 0;
 
 
-
   for (;;)
   {    
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
