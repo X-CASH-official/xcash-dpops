@@ -198,6 +198,7 @@ struct invalid_reserve_proofs {
     char* block_verifier_public_address[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The block verifiers public address that added the reserve proof
     char* public_address[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The public address that created the reserve proof
     char* reserve_proof[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The reserve proof
+    size_t reserve_proof_amount[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The reserve proof amount
     int count; // The amount of reserve proofs in the invalid_reserve_proofs struct
 };
 

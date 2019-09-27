@@ -2722,9 +2722,11 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
     if (check_reserve_proofs(data3,public_address,reserve_proof,0) == 0)
     {
       // add the reserve proof to the invalid_reserve_proofs struct
+      sscanf(data3,"%zu", &count3);      
       memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],block_verifiers_public_address,strnlen(block_verifiers_public_address,XCASH_WALLET_LENGTH));
       memcpy(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count],public_address,strnlen(public_address,XCASH_WALLET_LENGTH));
       memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
+      invalid_reserve_proofs.reserve_proof_amount[invalid_reserve_proofs.count] = count3;
       invalid_reserve_proofs.count++;
     }
   } 

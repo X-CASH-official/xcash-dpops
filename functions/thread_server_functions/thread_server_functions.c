@@ -161,12 +161,14 @@ void* check_reserve_proofs_timer_thread()
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
   char* message = (char*)calloc(524288000,sizeof(char)); // 500 MB
   char* reserve_proofs[MAXIMUM_INVALID_RESERERVE_PROOFS];
   int count;
   int count2;
+  size_t block_verifiers_total_vote_count;
   size_t block_verifiers_score;
   struct send_data_socket_thread_parameters send_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -257,6 +259,7 @@ void* check_reserve_proofs_timer_thread()
       memset(message,0,strlen(message));
       memset(data,0,sizeof(data));
       memset(data2,0,sizeof(data2));
+      memset(data3,0,sizeof(data3));
       if (invalid_reserve_proofs.count > 0)
       {
         for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
@@ -341,6 +344,30 @@ void* check_reserve_proofs_timer_thread()
           memcpy(data2+strlen(data2),"\"}",2);
           delete_document_from_collection(DATABASE_NAME,data,data2,0);
         }       
+      }
+
+      // update all of the delegates total_vote_count
+      for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+      {
+        memset(data,0,sizeof(data));
+        memset(data2,0,sizeof(data2));
+        memset(data3,0,sizeof(data3));
+        memcpy(data3,"{\"public_address\":\"",19);
+        memcpy(data3+strlen(data3),invalid_reserve_proofs.block_verifier_public_address[count2],XCASH_WALLET_LENGTH);
+        memcpy(data3+strlen(data3),"\"}",2);
+
+        read_document_field_from_collection(DATABASE_NAME,"delegates",data3,"total_vote_count",data,0);
+
+        sscanf(data,"%zu", &block_verifiers_total_vote_count);
+        block_verifiers_total_vote_count-= invalid_reserve_proofs.reserve_proof_amount[count2];
+        memset(data,0,sizeof(data));
+        snprintf(data,sizeof(data)-1,"%zu",block_verifiers_total_vote_count);  
+
+        memcpy(data2,"{\"total_vote_count\":\"",21);
+        memcpy(data2+strlen(data2),data,strnlen(data,sizeof(data2)));
+        memcpy(data2+strlen(data2),"\"}",2);
+
+        update_document_from_collection(DATABASE_NAME,"delegates",data3,data2,0);  
       }
       
       // update all of the block verifiers score
