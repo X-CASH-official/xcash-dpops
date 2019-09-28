@@ -376,26 +376,22 @@ int main(int parameters_count, char* parameters[])
   delegates_website = 0;
   shared_delegates_website = 0;
 
-  // check if the program needs to run the test
-  if (parameters_count == 2)
+  // check the parameters
+  for (count = 0, count2 = 0; count < (size_t)parameters_count; count++)
   {    
-    if (strncmp(parameters[1],"--test",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--test",BUFFER_SIZE) == 0)
     {
       test();
       database_reset;
       exit(0);
     }
-    else if (strncmp(parameters[1],"--synchronize_database_from_network_data_node",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--synchronize_database_from_network_data_node",BUFFER_SIZE) == 0)
     {
       check_if_databases_are_synced(2);
       database_reset;
       exit(0);
     }
-    else if (strncmp(parameters[1],"--delegates_website",BUFFER_SIZE) == 0)
-    {
-      delegates_website = 1;
-    }
-    else if (strncmp(parameters[1],"--test_data_add",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--test_data_add",BUFFER_SIZE) == 0)
     {
       memset(data,0,sizeof(data));
       
@@ -430,7 +426,7 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
-    else if (strncmp(parameters[1],"--test_data_remove",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--test_data_remove",BUFFER_SIZE) == 0)
     {
       memset(data,0,strlen(data));
       
@@ -463,47 +459,35 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
-    else
-    {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Invalid parameters",18);
-      error_message.total++;
-      print_error_message; 
-      printf(INVALID_PARAMETERS_ERROR_MESSAGE);
-      database_reset;
-      exit(0);
-    }      
-  }
-  else if (parameters_count == 6)
-  {
-    if (strncmp(parameters[1],"--shared_delegates_website",BUFFER_SIZE) == 0 && strncmp(parameters[2],"--fee",BUFFER_SIZE) == 0 && strncmp(parameters[4],"--minimum_amount",BUFFER_SIZE) == 0)
-    {
-      shared_delegates_website = 1;
-      sscanf(parameters[3], "%lf", &fee);
-      sscanf(parameters[5], "%lld", &minimum_amount);
-    }
-    else
-    {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Invalid parameters",18);
-      error_message.total++;
-      print_error_message; 
-      printf(INVALID_PARAMETERS_ERROR_MESSAGE);
-      database_reset;
-      exit(0);
-    }      
-  }
-
-  for (count = 0; count < (size_t)parameters_count; count++)
-  {    
-    if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0)
-    {
-      sscanf(parameters[count+1], "%d", &total_threads);
-    }
     if (strncmp(parameters[count],"--disable_synchronizing_databases_and_starting_timers",BUFFER_SIZE) == 0)
     {
-      goto disable_synchronizing_databases_and_starting_timers;
+      count2 = 1;
     }
+    if (strncmp(parameters[count],"--delegates_website",BUFFER_SIZE) == 0)
+    {
+      delegates_website = 1;
+    }
+    if (strncmp(parameters[count],"--shared_delegates_website",BUFFER_SIZE) == 0)
+    {
+      shared_delegates_website = 1;
+    }
+    if (strncmp(parameters[count],"--fee",BUFFER_SIZE) == 0 && count+1 != parameters_count)
+    {
+      sscanf(parameters[count+1], "%lf", &fee);
+    }
+    if (strncmp(parameters[count],"--minimum_amount",BUFFER_SIZE) == 0 && count+1 != parameters_count)
+    {
+      sscanf(parameters[count+1], "%lld", &minimum_amount);
+    }
+    if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count+1 != parameters_count)
+    {
+      sscanf(parameters[count+1], "%d", &total_threads);
+    }    
+  }
+
+  if (count2 == 1)
+  {
+    goto disable_synchronizing_databases_and_starting_timers;
   }
 
   start:
