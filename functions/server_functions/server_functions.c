@@ -1676,13 +1676,13 @@ int sort_delegates(const void* DELEGATES1, const void* DELEGATES2)
   // Variables
   size_t count;
   size_t count2;
-  struct delegates* delegates1 = *(struct delegates**)DELEGATES1;
-  struct delegates* delegates2 = *(struct delegates**)DELEGATES2;
+  struct delegates* delegates1 = (struct delegates*)DELEGATES1;
+  struct delegates* delegates2 = (struct delegates*)DELEGATES2;
   
   sscanf(delegates1->total_vote_count, "%zu", &count);
   sscanf(delegates2->total_vote_count, "%zu", &count2);
 
-  return count - count2;
+  return count2 - count;
 }
 
 
@@ -1697,8 +1697,7 @@ Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to 
 
 int update_block_verifiers_list(void)
 {
-  // Variables
-  struct delegates* delegates;
+  // Variables  
   struct database_multiple_documents_fields database_multiple_documents_fields;
   size_t count;
   size_t count2;
@@ -1777,17 +1776,7 @@ int update_block_verifiers_list(void)
     return 0;
   }
 
-  delegates = malloc(database_multiple_documents_fields.document_count * sizeof(struct delegates));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (delegates == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message;  
-    exit(0);
-  }
+  struct delegates delegates[database_multiple_documents_fields.document_count];
 
   // initialize the delegates struct
   for (count = 0; count < database_multiple_documents_fields.document_count; count++)
@@ -1843,7 +1832,7 @@ int update_block_verifiers_list(void)
   }
   
   // sort the delegates by total_vote_count
-  qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates*),&sort_delegates);
+  qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),sort_delegates);
 
   // copy the database_multiple_documents_fields to the next_block_verifiers_list
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)

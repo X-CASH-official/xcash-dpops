@@ -471,15 +471,15 @@ int main(int parameters_count, char* parameters[])
     {
       shared_delegates_website = 1;
     }
-    if (strncmp(parameters[count],"--fee",BUFFER_SIZE) == 0 && count+1 != parameters_count)
+    if (strncmp(parameters[count],"--fee",BUFFER_SIZE) == 0 && count+1 != (size_t)parameters_count)
     {
       sscanf(parameters[count+1], "%lf", &fee);
     }
-    if (strncmp(parameters[count],"--minimum_amount",BUFFER_SIZE) == 0 && count+1 != parameters_count)
+    if (strncmp(parameters[count],"--minimum_amount",BUFFER_SIZE) == 0 && count+1 != (size_t)parameters_count)
     {
       sscanf(parameters[count+1], "%lld", &minimum_amount);
     }
-    if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count+1 != parameters_count)
+    if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count+1 != (size_t)parameters_count)
     {
       sscanf(parameters[count+1], "%d", &total_threads);
     }    
