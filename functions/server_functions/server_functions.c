@@ -2665,14 +2665,14 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   if (check_reserve_proofs(data2,public_address,reserve_proof,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is invalid");
-  } 
+  }
 
-  // check if the reserve proof is greater than or equal to the minimum reserve proof amount
+  /*// check if the reserve proof is greater than or equal to the minimum reserve proof amount
   sscanf(data2,"%zu", &count);
   if (count < MINIMUM_AMOUNT_RESERVE_PROOF)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is not greater than or equal to the minimum amount");
-  }
+  }*/
 
   // remove any reserve proofs that were created by the public address
   if (settings == 1)
@@ -2718,12 +2718,12 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   // add the reserve proof to the database
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
-    memset(data2,0,sizeof(data2));
-    memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-    if (count_documents_in_collection(DATABASE_NAME,data2,data,0) < MAXIMUM_INVALID_RESERERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,"reserve_proofs_",15);
+    snprintf(data3+15,sizeof(data3)-16,"%zu",count);
+    if (count_documents_in_collection(DATABASE_NAME,data3,data,0) < MAXIMUM_INVALID_RESERERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
     {
-      if (insert_document_into_collection_json(DATABASE_NAME,data2,data,0) == 1)
+      if (insert_document_into_collection_json(DATABASE_NAME,data3,data,0) == 1)
       {        
         break;
       }
@@ -2751,16 +2751,22 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
   }
 
+  fprintf(stderr,"previous_total:%s,vote_amount:%s\n\n",message2,data2);
+
   sscanf(message2,"%zu", &count);
   sscanf(data2,"%zu", &count2);
   count+= count2;
   memset(message2,0,sizeof(message2));
   snprintf(message2,sizeof(message2)-1,"%zu",count);  
 
+  fprintf(stderr,"data:%s\n",message2);
+
   memset(message,0,sizeof(message));
   memcpy(message,"{\"total_vote_count\":\"",21);
   memcpy(message+strlen(message),message2,strnlen(message2,sizeof(message)));
   memcpy(message+strlen(message),"\"}",2);
+
+  fprintf(stderr,"data:%s,update:%s\n\n",data3,message);
 
   // add the total of the reserve proof to the total_vote_count of the delegate
   if (update_document_from_collection(DATABASE_NAME,"delegates",data3,message,0) == 0)
@@ -4183,6 +4189,10 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"GET /") != NULL)
  {
    server_receive_data_socket_get_files(client_socket,(const char*)buffer);
+ }
+ if (error_message.total != 0)
+ {
+   print_error_message;
  }
 pointer_reset(buffer);
 return 1;
