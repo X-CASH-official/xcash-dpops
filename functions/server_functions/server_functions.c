@@ -1701,6 +1701,7 @@ int update_block_verifiers_list(void)
   struct database_multiple_documents_fields database_multiple_documents_fields;
   size_t count;
   size_t count2;
+  size_t total_delegates;
   int settings = 0;
 
   // define macros
@@ -1746,29 +1747,46 @@ int update_block_verifiers_list(void)
     memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
   }
 
+  // get the total document count for the delegates database
+  total_delegates = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
+
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < total_delegates; count++)
   {
     for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
     {
-      database_multiple_documents_fields.item[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-      database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE,sizeof(char));
+       // allocate more for the about and the block_producer_block_heights
+       if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
+       {
+         database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+         database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
+       }
+       else if (count2 == 4)
+       {
+         database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+         database_multiple_documents_fields.value[count][count2] = (char*)calloc(1025,sizeof(char));
+       }
+       else
+       {
+         database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+         database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+       }
 
-      if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
-      {
-        memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-        error_message.total++;
-        print_error_message;  
-        exit(0);
-      }
-    }     
-  } 
+       if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
+       {
+         memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+         error_message.total++;
+         print_error_message;  
+         exit(0);
+       }
+     }      
+   } 
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
   // get all of the delegates  
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,MAXIMUM_AMOUNT_OF_DELEGATES,0,"",0) == 0)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,total_delegates,0,"",0) == 0)
   {
     memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
     memcpy(error_message.data[error_message.total],"Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round",163);
@@ -1845,16 +1863,6 @@ int update_block_verifiers_list(void)
     } 
   }
 
-  // reset the database_multiple_documents_fields
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
-    {
-      pointer_reset(database_multiple_documents_fields.item[count][count2]);
-      pointer_reset(database_multiple_documents_fields.value[count][count2]);
-    }
-  }  
-
   // check if more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT are new block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -1878,7 +1886,7 @@ int update_block_verifiers_list(void)
   } 
 
   // reset the database_multiple_documents_fields struct
-  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  for (count = 0; count < total_delegates; count++)
   {
     for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
     {
@@ -2657,7 +2665,14 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   if (check_reserve_proofs(data2,public_address,reserve_proof,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is invalid");
-  }  
+  } 
+
+  // check if the reserve proof is greater than or equal to the minimum reserve proof amount
+  sscanf(data2,"%zu", &count);
+  if (count < MINIMUM_AMOUNT_RESERVE_PROOF)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is not greater than or equal to the minimum amount");
+  }
 
   // remove any reserve proofs that were created by the public address
   if (settings == 1)

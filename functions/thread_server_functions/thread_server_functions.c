@@ -627,6 +627,7 @@ void* check_maximum_delegates_timer_thread()
   struct tm* current_UTC_date_and_time;
   size_t count;
   size_t count2;
+  size_t total_delegates;
   struct database_multiple_documents_fields database_multiple_documents_fields;
 
   // define macros
@@ -634,49 +635,51 @@ void* check_maximum_delegates_timer_thread()
   
   memset(message,0,sizeof(message));
 
-  // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
-    {
-      // allocate more for the about and the block_producer_block_heights
-      if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
-      {
-        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-        database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
-      }
-      else if (count2 == 4)
-      {
-        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-        database_multiple_documents_fields.value[count][count2] = (char*)calloc(1025,sizeof(char));
-      }
-      else
-      {
-        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-        database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-      }
-      
-      if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
-      {
-        memcpy(error_message.function[error_message.total],"check_maximum_delegates_timer_thread",36);
-        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-        error_message.total++;
-        print_error_message;  
-        exit(0);
-      }
-    } 
-  } 
-  database_multiple_documents_fields.document_count = 0;
-  database_multiple_documents_fields.database_fields_count = 0;
-
-
   for (;;)
   {    
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time->tm_hour == 0 && current_UTC_date_and_time->tm_min == 10)
     {
+      // get the total document count for the delegates database
+      total_delegates = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
+
+      // initialize the database_multiple_documents_fields struct 
+      for (count = 0; count < total_delegates; count++)
+      {
+        for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
+        {
+          // allocate more for the about and the block_producer_block_heights
+          if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
+          {
+            database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+            database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
+          }
+          else if (count2 == 4)
+          {
+            database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+            database_multiple_documents_fields.value[count][count2] = (char*)calloc(1025,sizeof(char));
+          }
+          else
+          {
+            database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
+            database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+          }
+      
+          if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
+          {
+            memcpy(error_message.function[error_message.total],"check_maximum_delegates_timer_thread",36);
+            memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+            error_message.total++;
+            print_error_message;  
+            exit(0);
+          }
+        } 
+      } 
+      database_multiple_documents_fields.document_count = 0;
+      database_multiple_documents_fields.database_fields_count = 0;
+
       // get all of the delegates
-      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,MAXIMUM_AMOUNT_OF_DELEGATES,0,"",0) == 0)
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,total_delegates,0,"",0) == 0)
       {
         memcpy(error_message.function[error_message.total],"check_maximum_delegates_timer_thread",36);
         memcpy(error_message.data[error_message.total],"Could not get the top 150 delegates to check their online status. This means the delegates database might be unsynced, and you might have to sync the database.",159);
@@ -698,19 +701,17 @@ void* check_maximum_delegates_timer_thread()
          }
       }
 
-      // reset the database_multiple_documents_fields
-      for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+      // reset the database_multiple_documents_fields struct
+      for (count = 0; count < total_delegates; count++)
       {
         for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
         {
-          memset(database_multiple_documents_fields.item[count][count2],0,strlen(database_multiple_documents_fields.item[count][count2]));
-          memset(database_multiple_documents_fields.value[count][count2],0,strlen(database_multiple_documents_fields.value[count][count2]));
+          pointer_reset(database_multiple_documents_fields.item[count][count2]);
+          pointer_reset(database_multiple_documents_fields.value[count][count2]);
         }
       }
-      database_multiple_documents_fields.document_count = 0;
-      database_multiple_documents_fields.database_fields_count = 0;
     }
-    usleep(200000);
+    sleep(10);
   }
   pthread_exit((void *)(intptr_t)1);
 
@@ -1325,15 +1326,16 @@ void* payment_timer_thread()
           }                   
         }
       }
+      memset(data,0,sizeof(data));  
+      print_start_message(current_date_and_time,current_UTC_date_and_time,"Delegates payments",data);      
+      memcpy(data,"Amount of payments: ",20);
+      snprintf(data+strlen(data),sizeof(data)-1,"%lld",amount_of_payments);
+      memcpy(data,"\nTotal amount: ",15);
+      snprintf(data+strlen(data),sizeof(data)-1,"%lld",total_amount);
+      memcpy(data,"\n",1);
+      color_print(data,"green");
     }
-    memset(data,0,sizeof(data));  
-    print_start_message(current_date_and_time,current_UTC_date_and_time,"Delegates payments",data);      
-    memcpy(data,"Amount of payments: ",20);
-    snprintf(data+strlen(data),sizeof(data)-1,"%lld",amount_of_payments);
-    memcpy(data,"\nTotal amount: ",15);
-    snprintf(data+strlen(data),sizeof(data)-1,"%lld",total_amount);
-    memcpy(data,"\n",1);
-    color_print(data,"green");
+    sleep(10);
   }
   pthread_exit((void *)(intptr_t)1);
 

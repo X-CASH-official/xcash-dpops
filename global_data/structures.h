@@ -189,8 +189,8 @@ struct blockchain_data {
 };
 
 struct error_message {
-    char function[DATABASE_ARRAY_COUNT][BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The error function
-    char data[DATABASE_ARRAY_COUNT][BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The error message
+    char function[TOTAL_DELEGATES_DATABASE_FIELDS][BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The error function
+    char data[TOTAL_DELEGATES_DATABASE_FIELDS][BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The error message
     int total; // the amount of error messages
 };
 
@@ -205,15 +205,15 @@ struct invalid_reserve_proofs {
 // database struct
 struct database_document_fields {
     size_t count; // The amount of items in the database_document_fields struct
-    char* item[MAXIMUM_AMOUNT_OF_DELEGATES]; // The item
-    char* value[MAXIMUM_AMOUNT_OF_DELEGATES]; // The value
+    char* item[TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The item
+    char* value[TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The value
 };
 
 struct database_multiple_documents_fields {
     size_t document_count; // The amount of documents in the database_multiple_documents_fields
     size_t database_fields_count; // The amount of items in each document
-    char* item[MAXIMUM_AMOUNT_OF_DELEGATES][DATABASE_ARRAY_COUNT]; // The item
-    char* value[MAXIMUM_AMOUNT_OF_DELEGATES][DATABASE_ARRAY_COUNT]; // The value
+    char* item[MAXIMUM_AMOUNT_OF_DELEGATES][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The item
+    char* value[MAXIMUM_AMOUNT_OF_DELEGATES][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The value
 };
 
   struct delegates {

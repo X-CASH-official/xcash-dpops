@@ -268,7 +268,7 @@ int main(int parameters_count, char* parameters[])
   }
 
   // initialize the error_message struct
-  for (count = 0; count < DATABASE_ARRAY_COUNT; count++)
+  for (count = 0; count < TOTAL_DELEGATES_DATABASE_FIELDS; count++)
   {
     memset(error_message.function[count],0,sizeof(error_message.function[count]));
     memset(error_message.data[count],0,sizeof(error_message.data[count]));

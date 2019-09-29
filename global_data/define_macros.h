@@ -56,10 +56,11 @@ Using define statements instead of constants for increased efficiency
 #define GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" // The place holder bytes for a block verifier that does not create a block verifier signature
 
 // proof of stake
-#define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid
-#define MAXIMUM_AMOUNT_OF_DELEGATES 10000 // The maximum amount of delegates that can be registered
+#define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
+#define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof
 
 // Network
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
@@ -99,11 +100,10 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_CONNECTION "mongodb://localhost:27017" // The database connection string
 #define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
 #define DATABASE_NAME_DELEGATES "XCASH_PROOF_OF_STAKE_DELEGATES" // The name of the database for the delegates
-#define DATABASE_ARRAY_COUNT 150 // The maximum amount of parsed item and value from the database
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
 #define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The total delegates database fields
 #define TOTAL_RESERVE_PROOFS_DATABASE_FIELDS 4 // The total delegates database fields
-#define TOTAL_DELEGATES_DATABASE_FIELDS 18 // The total delegates database fields
+#define TOTAL_DELEGATES_DATABASE_FIELDS 17 // The total delegates database fields
 #define TOTAL_STATISTICS_DATABASE_FIELDS 7 // The total statistics database fields
 
 // network data nodes
