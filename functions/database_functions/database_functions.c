@@ -1360,11 +1360,13 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   mongoc_collection_t* collection = NULL;
   mongoc_cursor_t* document_settings = NULL;
   bson_t* document = NULL;  
+  bson_t* document_options = NULL;
   char* message;
 
   // define macros
   #define database_reset_all \
   bson_destroy(document); \
+  bson_destroy(document_options); \
   mongoc_cursor_destroy(document_settings); \
   mongoc_collection_destroy(collection); \
   if (THREAD_SETTINGS == 1) \
@@ -1396,9 +1398,23 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     return 0;
   }
 
+  // sort the documents
+  if (strstr(COLLECTION,"reserve_proofs") != NULL)
+  {
+    document_options = BCON_NEW("sort", "{", "total", BCON_INT32(-1), "}");
+  }
+  else if (strstr(COLLECTION,"reserve_bytes") != NULL)
+  {
+    document_options = BCON_NEW("sort", "{", "block_height", BCON_INT32(-1), "}");
+  }
+  else if (strstr(COLLECTION,"delegates") != NULL)
+  {
+    document_options = BCON_NEW("sort", "{", "total_vote_count", BCON_INT32(-1), "}");
+  }
+
   memset(database_data,0,strlen(database_data));
 
-  document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+  document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);
   while (mongoc_cursor_next(document_settings, &current_document))
   { 
     // get the current document  
