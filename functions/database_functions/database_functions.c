@@ -1460,15 +1460,14 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   size_t count;
   size_t count2;
   size_t count3;
-  size_t counter = TOTAL_RESERVE_PROOFS_DATABASES;
+  size_t counter = TOTAL_RESERVE_PROOFS_DATABASES; 
 
   memset(data2,0,sizeof(data2));
 
   if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
   {
-    // get how many reserve bytes database
-    sscanf(current_block_height,"%zu", &counter);
-    counter = ((counter - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+    // get the current reserve bytes database
+    get_current_reserve_bytes_database(counter);
   }
 
   char database_data_hash[counter][DATA_HASH_LENGTH];
