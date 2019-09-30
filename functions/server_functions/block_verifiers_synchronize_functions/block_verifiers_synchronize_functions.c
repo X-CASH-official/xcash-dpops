@@ -1994,27 +1994,21 @@ int sync_check_reserve_proofs_database(int settings)
 Name: sync_reserve_proofs_database
 Description: Syncs the reserve proofs database
 Paramters:
-  RESERVE_PROOFS_DATABASE - The RESERVE_PROOFS_DATABASE data from a random network data node
-  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int SETTINGS)
+int sync_reserve_proofs_database(int settings)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
+  char database_data[BUFFER_SIZE];
+  char block_verifiers_ip_address[BUFFER_SIZE];
   size_t count = 0;
   size_t count2;
-  size_t counter;
-  int settings;
-
-  // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL;
   
   #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message,settings) \
   if (settings == 0) \
@@ -2022,14 +2016,14 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
     error_message.total++; \
-    pointer_reset_all; \
+    pointer_reset(data); \
     return 0; \
   } \
   else \
   { \
     memset(data,0,strlen(data)); \
     memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE)); \
+    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
     goto start; \
@@ -2038,6 +2032,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
   memset(data,0,strlen(data));
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
+  memset(database_data,0,sizeof(database_data));
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
@@ -2053,58 +2048,91 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
   start:
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
-       select a random network data node to sync from if
-       there was a lot of connection_timeouts, to where a majority vote could not be calculated,
-       there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
+       select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
     */
-    if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT && SETTINGS == 1)
+
+    memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
+    
+    if (settings == 1)
     {
-      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
-      if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+      do
       {
-        goto start;
-      }
+        count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
+      } while (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
+      memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(block_verifiers_ip_address)));
     }
-    else if (SETTINGS == 1)
+    else if (settings == 2)
     {
-      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
-      for (counter = 0, settings = 0; counter < NETWORK_DATA_NODES_AMOUNT; counter++)
+      do
       {
-        if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[counter],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0 && strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) != 0)
-        {
-          settings = 1;
-        }
-      }
-      if (settings != 1)    
-      {
-        goto start;
-      }
+        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
+      } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
     }
-    else if (SETTINGS == 2)
+
+
+
+  // get the database data hash for the reserve proofs database
+  fprintf(stderr,"Getting the database data from %s\n",block_verifiers_ip_address);
+  if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs",0) == 0)
+  {
+    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
+  }
+
+  // create the message
+  memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_proofs_data_hash\": \"",139);
+  memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
+  memcpy(data3+strlen(data3),"\",\r\n ",5);
+
+  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  {
+    memcpy(data3+strlen(data3),"\"reserve_proofs_data_hash_",26);
+    snprintf(data3+strlen(data3),sizeof(data3)-1,"%zu",count);
+    memcpy(data3+strlen(data3),"\": \"",4);
+    // get the database data hash for the reserve proofs database
+    memset(data,0,strlen(data));
+    memset(data2,0,strlen(data2));  
+    memcpy(data2,"reserve_proofs_",15);  
+    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
+    if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
     {
-      count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT-1);
-      if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
-      {
-        goto start;
-      }
+      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
     }
+    memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
+    memcpy(data3+strlen(data3),"\",\r\n ",5);
+  }
+  memcpy(data3+strlen(data3),"}",1);
+
+  // sign_data
+  if (sign_data(data3,0) == 0)
+  { 
+    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data",0);
+  }
+
+  // connect to the block verifier and get the database data
+  if (send_and_receive_data_socket(database_data,block_verifiers_ip_address,SEND_DATA_PORT,data3,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(database_data,0,0) == 0)
+  {
+    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
+  }
+
+
 
   for (count2 = 1; count2 <= TOTAL_RESERVE_PROOFS_DATABASES; count2++)
   {
     memset(data,0,strlen(data));
-    memcpy(data,"Connecting to block verifier ",29);
-    memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
-    memcpy(data+strlen(data)," to sync reserve_proofs_",24);
+    memcpy(data,"Checking if reserve_proofs_",27);
     snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
+    memcpy(data+strlen(data)," is synced",10);
     fprintf(stderr,"%s\n",data);
 
-    // parse the RESERVE_PROOFS_DATABASE
+    // parse the database_data
     memset(data,0,strlen(data));
     memset(data2,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
     memcpy(data2,"reserve_proofs_database_",24);
     snprintf(data2+24,sizeof(data2)-25,"%zu",count2);
 
-    if (parse_json_data(RESERVE_PROOFS_DATABASE,data2,data,MAXIMUM_BUFFER_SIZE) == 0)
+    if (parse_json_data(database_data,data2,data,MAXIMUM_BUFFER_SIZE) == 0)
     {
       SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
     }
@@ -2116,7 +2144,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
       memcpy(data,"reserve_proofs_",15);
       snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
       memcpy(data+strlen(data)," is not synced, downloading it from ",36);
-      memcpy(data+strlen(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],36);
+      memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE));
       color_print(data,"red");
 
       // create the message
@@ -2132,7 +2160,7 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
       }
      
       memset(data,0,strlen(data));
-      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,data2,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+      if (send_and_receive_data_socket(data,block_verifiers_ip_address,SEND_DATA_PORT,data2,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
       {
         SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
       }
@@ -2178,10 +2206,9 @@ int sync_reserve_proofs_database(const char* RESERVE_PROOFS_DATABASE, const int 
     }
   }
 
-  pointer_reset_all;
+  pointer_reset(data);
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef SYNC_RESERVE_PROOFS_DATABASE_ERROR   
 }
 
