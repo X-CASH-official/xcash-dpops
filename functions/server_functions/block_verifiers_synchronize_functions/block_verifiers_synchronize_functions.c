@@ -1843,18 +1843,17 @@ int get_synced_block_verifiers(void)
 Name: sync_check_reserve_proofs_database
 Description: Checks if the block verifier needs to sync the reserve proofs database
 Paramters:
-  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_check_reserve_proofs_database(const int SETTINGS)
+int sync_check_reserve_proofs_database(int settings)
 {
   // Variables
-  char message[BUFFER_SIZE];
-  char reserve_proofs_database[BUFFER_SIZE]; 
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE]; 
+  char message[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
   size_t count;
@@ -1867,9 +1866,19 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
   pointer_reset(data); \
   return 0;
 
-  memset(message,0,sizeof(message));
-  memset(reserve_proofs_database,0,sizeof(reserve_proofs_database));
   memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    pointer_reset(data);
+    memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message;  
+    exit(0);
+  }
 
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the reserve proofs database is synced",data2);
 
@@ -1916,7 +1925,7 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
 
   fprintf(stderr,"Sending all block verifiers a message to check if the reserve proofs database is synced\n"); 
 
-  if (SETTINGS == 1)
+  if (settings == 1)
   {
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -1929,10 +1938,6 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
       }
       else
       {
-        if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE) == 0)
-        {
-          memcpy(reserve_proofs_database,data,strnlen(data,BUFFER_SIZE));
-        } 
         parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2));
         memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
         if (memcmp(data2,"true",4) == 0)
@@ -1946,52 +1951,31 @@ int sync_check_reserve_proofs_database(const int SETTINGS)
       }   
     }
 
-    if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT || synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
+    // get the vote settings of the block verifiers
+
+    // check if a consensus could not be reached and sync from a network data node
+    if (synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      color_print("The reserve proofs database is not synced","red");
-      if (sync_reserve_proofs_database(reserve_proofs_database, SETTINGS) == 0)
+      color_print("A Consensus could not be reached for trying to sync the reserve proofs database, syncing from a random network data node","red");
+      settings = 2;
+    }
+    else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      color_print("The reserve proofs database is not synced, syncing from a random block verifier","red");
+
+      // get the data
+      if (sync_reserve_proofs_database(settings) == 0)
       {
         SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
       }
     }
   }
-  else if (SETTINGS == 2)
+  if (settings == 2)
   {
-    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    fprintf(stderr,"Syncing from a random network data node\n");
+    if (sync_reserve_proofs_database(settings) == 0)
     {
-      memset(data,0,strlen(data));
-      memset(data2,0,sizeof(data2));
-      if (send_and_receive_data_socket(data,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
-      {
-        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-        synced_block_verifiers.vote_settings_connection_timeout++;
-      }
-      else
-      {
-        if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE) == 0)
-        {
-          memcpy(reserve_proofs_database,data,strnlen(data,BUFFER_SIZE));
-        } 
-        parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2));
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-        if (memcmp(data2,"true",4) == 0)
-        {
-          synced_block_verifiers.vote_settings_true++;
-        }
-        else if (memcmp(data2,"false",5) == 0)
-        {
-          synced_block_verifiers.vote_settings_false++;
-        }
-      }   
-    }
-
-    if (synced_block_verifiers.vote_settings_false > 0 || synced_block_verifiers.vote_settings_connection_timeout > 0)
-    {
-      color_print("The reserve proofs database is not synced","red");
-      if (sync_reserve_proofs_database(reserve_proofs_database, SETTINGS) == 0)
-      {
-        SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
-      }
+      SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
   }
 
