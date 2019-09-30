@@ -129,6 +129,29 @@ color_print(TEST_OUTLINE,"blue");
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_current_reserve_bytes_database
+Description: gets the current reserve bytes database
+Parameters:
+  count - count
+Return: Writes the correct code
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define get_current_reserve_bytes_database(count) \
+sscanf(current_block_height,"%zu", &count); \
+if (count-1 == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) \
+{ \
+  count = 1; \
+} \
+else \
+{ \
+  count = (((count - 1) - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1; \
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_current_UTC_time
 Description: Gets the current UTC time
 Parameters:
