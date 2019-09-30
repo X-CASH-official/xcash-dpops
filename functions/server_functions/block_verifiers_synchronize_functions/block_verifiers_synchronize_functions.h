@@ -30,6 +30,6 @@ int sync_check_reserve_bytes_database(int settings);
 int sync_reserve_bytes_database(int settings);
 int sync_check_delegates_database(int settings);
 int sync_delegates_database(int settings);
-int sync_check_statistics_database(const int SETTINGS);
-int sync_statistics_database(const int SETTINGS);
+int sync_check_statistics_database(int settings);
+int sync_statistics_database(int settings);
 #endif
