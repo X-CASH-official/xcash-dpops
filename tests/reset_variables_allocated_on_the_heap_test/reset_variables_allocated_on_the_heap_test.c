@@ -2024,7 +2024,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for get_database_data_hash: %zu / 1000",count);
       fprintf(stderr,"\r");
-      get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION,0);
+      get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    

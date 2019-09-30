@@ -2667,12 +2667,12 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is invalid");
   }
 
-  /*// check if the reserve proof is greater than or equal to the minimum reserve proof amount
+  // check if the reserve proof is greater than or equal to the minimum reserve proof amount
   sscanf(data2,"%zu", &count);
   if (count < MINIMUM_AMOUNT_RESERVE_PROOF)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is not greater than or equal to the minimum amount");
-  }*/
+  }
 
   // remove any reserve proofs that were created by the public address
   if (settings == 1)
@@ -2751,22 +2751,16 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
   }
 
-  fprintf(stderr,"previous_total:%s,vote_amount:%s\n\n",message2,data2);
-
   sscanf(message2,"%zu", &count);
   sscanf(data2,"%zu", &count2);
   count+= count2;
   memset(message2,0,sizeof(message2));
   snprintf(message2,sizeof(message2)-1,"%zu",count);  
 
-  fprintf(stderr,"data:%s\n",message2);
-
   memset(message,0,sizeof(message));
   memcpy(message,"{\"total_vote_count\":\"",21);
   memcpy(message+strlen(message),message2,strnlen(message2,sizeof(message)));
   memcpy(message+strlen(message),"\"}",2);
-
-  fprintf(stderr,"data:%s,update:%s\n\n",data3,message);
 
   // add the total of the reserve proof to the total_vote_count of the delegate
   if (update_document_from_collection(DATABASE_NAME,"delegates",data3,message,0) == 0)

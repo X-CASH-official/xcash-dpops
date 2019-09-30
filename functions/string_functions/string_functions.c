@@ -90,10 +90,6 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     }
     else
     {
-      string_replace(result,RESULT_TOTAL_LENGTH, "{ \"$numberInt\" : \"", "");
-      string_replace(result,RESULT_TOTAL_LENGTH, "{ \"$numberDouble\" : \"", "");
-      string_replace(result,RESULT_TOTAL_LENGTH, "{ \"$numberLong\" : \"", "");
-      string_replace(result,RESULT_TOTAL_LENGTH, ".0\" }", "");
       string_replace(result,RESULT_TOTAL_LENGTH,"\"{\"","{\"");
     }
   }

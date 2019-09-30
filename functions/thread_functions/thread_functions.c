@@ -402,7 +402,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* get_database_data_hash_thread(void* parameters)
 {
   struct get_database_data_hash_thread_parameters* data = parameters;
-  int settings = get_database_data_hash(data->data_hash, data->DATABASE, data->COLLECTION, 1);
+  int settings = get_database_data_hash(data->data_hash, data->DATABASE, data->COLLECTION);
   pthread_exit((void *)(intptr_t)settings);
 }
 

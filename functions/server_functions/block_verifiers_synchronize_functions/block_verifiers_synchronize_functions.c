@@ -300,7 +300,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memset(message,0,sizeof(message));
 
   // get the database data hash for the reserve bytes database
-  if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -508,7 +508,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
 
   // get the database data hash for the reserve proofs database
   memset(data2,0,strlen(data2));
-  if (get_database_data_hash(data2,DATABASE_NAME,"reserve_proofs",0) == 0)
+  if (get_database_data_hash(data2,DATABASE_NAME,"reserve_proofs") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
@@ -540,7 +540,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
       memset(data2,0,sizeof(data2));  
       memcpy(data2,"reserve_proofs_",15);  
       snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-      if (get_database_data_hash(reserve_proofs_database,DATABASE_NAME,data2,0) == 0)
+      if (get_database_data_hash(reserve_proofs_database,DATABASE_NAME,data2) == 0)
       {
         SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
       }
@@ -619,7 +619,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
 
   // get the database data hash for the reserve proofs database
   memset(data2,0,sizeof(data2));
-  if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
+  if (get_database_data_hash(data2,DATABASE_NAME,data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
@@ -799,7 +799,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   // get the database data hash for the reserve bytes database
   memset(data2,0,sizeof(data2));
-  if (get_database_data_hash(data2,DATABASE_NAME,"reserve_bytes",0) == 0)
+  if (get_database_data_hash(data2,DATABASE_NAME,"reserve_bytes") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -880,7 +880,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   // get the database data hash for the reserve bytes database
   memset(data2,0,sizeof(data2));
-  if (get_database_data_hash(data2,DATABASE_NAME,data,0) == 0)
+  if (get_database_data_hash(data2,DATABASE_NAME,data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -1055,7 +1055,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   // get the database data hash for the delegates database
   memset(data2,0,strlen(data2));
-  if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -1225,7 +1225,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
 
   // get the database data hash for the statistics database
   memset(data2,0,sizeof(data2));
-  if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -1417,7 +1417,7 @@ int sync_all_block_verifiers_list(void)
     do
     {
       count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-    } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+    } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
   
     // get the current time
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
@@ -1775,7 +1775,7 @@ int get_synced_block_verifiers(void)
   do
   {
     count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-  } while (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0);
+  } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
   
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
@@ -1888,7 +1888,7 @@ int sync_check_reserve_proofs_database(int settings)
   }
 
   // get the database data hash for the reserve proofs database
-  if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs",0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
   {
     SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
@@ -1908,7 +1908,7 @@ int sync_check_reserve_proofs_database(int settings)
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_proofs_",15);  
     snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-    if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
+    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
     }
@@ -2073,8 +2073,8 @@ int sync_reserve_proofs_database(int settings)
 
 
   // get the database data hash for the reserve proofs database
-  fprintf(stderr,"Getting the database data from %s\n",block_verifiers_ip_address);
-  if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs",0) == 0)
+  fprintf(stderr,"Getting the database data from %s\n\n",block_verifiers_ip_address);
+  if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
   {
     SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
   }
@@ -2094,7 +2094,7 @@ int sync_reserve_proofs_database(int settings)
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_proofs_",15);  
     snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-    if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
+    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
     {
       SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
     }
@@ -2252,7 +2252,7 @@ int sync_check_reserve_bytes_database(const int SETTINGS)
   }
 
   // get the database data hash for the reserve bytes database
-  if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes",0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
   {
     SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -2446,15 +2446,15 @@ int sync_reserve_bytes_database(const int SETTINGS)
     */
     if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT && SETTINGS == 1)
     {
-      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
-      if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
+      if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
       {
         goto start;
       }
     }
     else if (SETTINGS == 1)
     {
-      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
+      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
       for (counter = 0, settings = 0; counter < NETWORK_DATA_NODES_AMOUNT; counter++)
       {
         if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[counter],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0 && strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) != 0)
@@ -2469,7 +2469,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
     }
     else if (SETTINGS == 2)
     {
-      count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT-1);
+      count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
       if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
       {
         goto start;
@@ -2488,7 +2488,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
     memset(data2,0,sizeof(data2));
     memcpy(data2+strlen(data2),"reserve_bytes_",14);
     snprintf(data2+strlen(data2),sizeof(data2)-1,"%zu",count2);
-    if (get_database_data_hash(data,DATABASE_NAME,data2,0) == 0)
+    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
     {
       SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database",0);
     }
@@ -2606,7 +2606,7 @@ int sync_reserve_bytes_database(const int SETTINGS)
 
     // get the database data hash for the reserve bytes database
     memset(data,0,strlen(data));
-    if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes",0) == 0)
+    if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
     {
       SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database",0);
     }
@@ -2706,7 +2706,7 @@ int sync_check_delegates_database(const int SETTINGS)
   }
 
   // get the database data hash for the reserve proofs database
-  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
     SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database");
   }
@@ -2872,15 +2872,15 @@ int sync_delegates_database(const int SETTINGS)
   */
   if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT && SETTINGS == 1)
   {
-    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
-    if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
+    if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       goto start;
     }
   }
   else if (SETTINGS == 1)
   {
-    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
+    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
     for (count2 = 0, settings = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
     {
       if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count2],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0 && strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) != 0)
@@ -2895,7 +2895,7 @@ int sync_delegates_database(const int SETTINGS)
   }
   else if (SETTINGS == 2)
   {
-    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT-1);
+    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
     if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       goto start;
@@ -2909,7 +2909,7 @@ int sync_delegates_database(const int SETTINGS)
   color_print(data,"green");
 
   // get the database data hash
-  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database",0);
   }
@@ -3001,7 +3001,7 @@ int sync_check_statistics_database(const int SETTINGS)
   }
 
   // get the database data hash for the reserve proofs database
-  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
     SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the delegates database");
   }
@@ -3167,15 +3167,15 @@ int sync_statistics_database(const int SETTINGS)
   */
   if (synced_block_verifiers.vote_settings_connection_timeout < BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT && SETTINGS == 1)
   {
-    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
-    if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
+    if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       goto start;
     }
   }
   else if (SETTINGS == 1)
   {
-    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT-1);
+    count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
     for (count2 = 0, settings = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
     {
       if (strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count2],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0 && strncmp(synced_block_verifiers.synced_block_verifiers_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) != 0)
@@ -3190,7 +3190,7 @@ int sync_statistics_database(const int SETTINGS)
   }
   else if (SETTINGS == 2)
   {
-    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT-1);
+    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
     if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
     {
       goto start;
@@ -3204,7 +3204,7 @@ int sync_statistics_database(const int SETTINGS)
   color_print(data,"green");
 
   // get the database data hash
-  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database",0);
   }

@@ -67,7 +67,6 @@ int main(int parameters_count, char* parameters[])
   memset(data,0,sizeof(data));
 
   // initialize the global variables
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
   memset(current_block_height,0,sizeof(current_block_height));
   memset(current_round_part,0,sizeof(current_round_part));
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
@@ -490,97 +489,28 @@ int main(int parameters_count, char* parameters[])
     goto disable_synchronizing_databases_and_starting_timers;
   }
 
-  start:
 
-  // get the block verifiers IP address
-  memset(data,0,sizeof(data));
-  memcpy(data,"{\"public_address\":\"",19);
-  memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(data+117,"\"}",2);
-  if (read_document_field_from_collection(DATABASE_NAME,"delegates",data,"IP_address",block_verifiers_IP_address,0) == 0)
-  {
-    MAIN_ERROR("Could not get the block verifiers IP address");
-  }
-
-  // check if the block verifier has any of the databases
-  if (strncmp(block_verifiers_IP_address,"",1) == 0)
-  {
-    // check if all of the databases are synced
-    color_print("\nCould not find your IP address in the database. This is because your database is out of sync, or you have not registered as a delegate.\nIf this process loops a few times, then make sure you have registered by visting the delegates website.","red");
-    
-    // sync the databases and then recheck if the block verifier is a network data node
-    if (sync_all_block_verifiers_list() == 0)
-    {
-      MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
-    }
-    /*if (check_if_databases_are_synced() == 0)
-    {
-      MAIN_ERROR("Could not check if the databases are synced");
-    }*/
-    goto start;
-  }
 
   // check if the block verifier is a network data node
-  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
   {
-    if (strncmp(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
-    {
-      network_data_node_settings = 1;
-    }
+    network_data_node_settings = 1;
+  }      
+ 
+  // sync the block verifiers list
+  if (sync_all_block_verifiers_list() == 0)
+  {
+    MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
   }
 
-  // check if all of the network data nodes are offline
-  if (network_data_node_settings == 1)
+  // check if the database is synced, unless this is the main network data node
+  if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0)
   {
-    for (count = 0, count2 = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-    {
-      if (strncmp(network_data_nodes_list.network_data_nodes_IP_address[count],block_verifiers_IP_address,BUFFER_SIZE) != 0)
-      {
-        if (get_delegate_online_status(network_data_nodes_list.network_data_nodes_IP_address[count]) == 0)
-        {
-          count2++;
-        }
-      }      
-    }
-  }
-
-  // check if all of the network data nodes are offline
-  if (network_data_node_settings == 1)
-  {
-    for (count = 0, count2 = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-    {
-      if (get_delegate_online_status(network_data_nodes_list.network_data_nodes_IP_address[count]) == 0)
-      {
-        count2++;
-      }
-    }
-    // sync the previous, current and next block verifiers list
-    if (sync_all_block_verifiers_list() == 0)
-    {
-      MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
-    }
-    if (count2 != NETWORK_DATA_NODES_AMOUNT)
-    {
-      // check if all of the databases are synced
-      /*if (check_if_databases_are_synced() == 0)
-      {
-        MAIN_ERROR("Could not check if the databases are synced");
-      }*/
-    }
-  }
-  else
-  {
-    // sync the previous, current and next block verifiers list
-    if (sync_all_block_verifiers_list() == 0)
-    {
-      MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
-    }
-
-    /*// check if all of the databases are synced
-    if (check_if_databases_are_synced() == 0)
+    // check if all of the databases are synced from a network data node, since their is no way to tell if the previous round could not reach consensus
+    if (check_if_databases_are_synced(2) == 0)
     {
       MAIN_ERROR("Could not check if the databases are synced");
-    }*/
+    }
   }
 
   // check the block verifiers current time, if it is not a network data node
