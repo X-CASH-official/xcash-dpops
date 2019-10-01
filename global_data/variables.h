@@ -21,6 +21,7 @@ struct tm* current_UTC_date_and_time;
 
 // network data nodes
 int network_data_node_settings; // 1 if a network data node, 0 if not a network data node 
+char verify_block_file[1000]; // The verify block file
 char xcash_wallet_public_address[XCASH_WALLET_LENGTH+1]; // Holds your wallets public address
 struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round
@@ -43,7 +44,7 @@ int epoll_fd;
 struct epoll_event events_copy;
 int server_socket;
 
-char current_block_height[BUFFER_SIZE]; // The current block height
+char current_block_height[1000]; // The current block height
 int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
 int current_block_verifier_settings; // 1 if the delegate is a block verifier, 0 if not

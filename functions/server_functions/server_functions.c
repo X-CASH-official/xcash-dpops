@@ -480,7 +480,7 @@ int start_current_round_start_blocks(void)
   }
 
   // create the verify_block file for the X-CASH Daemon
-  if (get_path(data3,0) == 0 || write_file(VRF_data.reserve_bytes_data_hash,data3) == 0)
+  if (write_file(VRF_data.reserve_bytes_data_hash,verify_block_file) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the verify_block file");
   }
@@ -877,7 +877,7 @@ int data_network_node_create_block(void)
     memset(data3,0,sizeof(data3));
 
     // create the verify_block file for the X-CASH Daemon
-    if (get_path(data3,0) == 0 || write_file(VRF_data.reserve_bytes_data_hash,data3) == 0)
+    if (write_file(VRF_data.reserve_bytes_data_hash,verify_block_file) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the verify_block file");
     }
@@ -1074,10 +1074,10 @@ int start_part_4_of_round(void)
   main_network_data_node_create_block = 0;
   pthread_rwlock_unlock(&rwlock);
 
-  /*// wait for all block verifiers to sync the database
+  // wait for all block verifiers to sync the database
   color_print("Waiting for all block verifiers to sync the databases","blue");
   fprintf(stderr,"\n");
-  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);*/
+  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);
 
   start:
 
@@ -1153,15 +1153,15 @@ int start_part_4_of_round(void)
     {
       if (strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]) == VRF_SECRET_KEY_LENGTH && strlen(VRF_data.block_verifiers_vrf_public_key_data[count]) == VRF_PUBLIC_KEY_LENGTH && strlen(VRF_data.block_verifiers_random_data[count]) == RANDOM_STRING_LENGTH)
       {
-        memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_SECRET_KEY_LENGTH);
-        memcpy(VRF_data.block_verifiers_vrf_secret_key[count],VRF_data.block_verifiers_vrf_secret_key[count],crypto_vrf_SECRETKEYBYTES);
-        memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],VRF_data.block_verifiers_vrf_public_key_data[count],VRF_PUBLIC_KEY_LENGTH);
-        memcpy(VRF_data.block_verifiers_vrf_public_key[count],VRF_data.block_verifiers_vrf_public_key[count],crypto_vrf_PUBLICKEYBYTES);
-        memcpy(VRF_data.block_verifiers_random_data[count],VRF_data.block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
         count2++;
       }
       else
       {
+        memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]));
+        memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen((char*)VRF_data.block_verifiers_vrf_secret_key[count]));
+        memset(VRF_data.block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[count]));
+        memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen((char*)VRF_data.block_verifiers_vrf_public_key[count]));
+        memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count]));
         memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
         memcpy(VRF_data.block_verifiers_vrf_secret_key[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY)-1);
         memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
@@ -1374,7 +1374,7 @@ int start_part_4_of_round(void)
 
       memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
       memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA)-1);
-
+            
       for (counter = 0, count2 = 0; counter < RANDOM_STRING_LENGTH; counter++, count2 += 2)
       {
         snprintf(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count]+count2,RANDOM_STRING_LENGTH,"%02x",VRF_data.block_verifiers_random_data[count][counter] & 0xFF);
@@ -1473,21 +1473,9 @@ int start_part_4_of_round(void)
     }
 
     // verify the block
-    memset(data3,0,sizeof(data3));
-    snprintf(data3,sizeof(data3)-1,"%zu",count);
-    if (count+1 != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    if (verify_network_block_data(1,1,1,"0",data2) == 0)
     {
-      if (verify_network_block_data(1,1,1,"0",data2) == 0)
-      {
-        START_PART_4_OF_ROUND_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
-      }
-    }
-    else
-    {
-      if (verify_network_block_data(0,1,1,"0",data2) == 0)
-      {
-        START_PART_4_OF_ROUND_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
-      }
+      START_PART_4_OF_ROUND_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
     }
 
     // convert the blockchain_data to a network_block_string
@@ -1587,7 +1575,7 @@ int start_part_4_of_round(void)
     memset(data3,0,sizeof(data3));
 
     // create the verify_block file for the X-CASH Daemon
-    if (get_path(data3,0) == 0 || write_file(VRF_data.reserve_bytes_data_hash,data3) == 0)
+    if (write_file(VRF_data.reserve_bytes_data_hash,verify_block_file) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not create the verify_block file");
     }
@@ -3298,7 +3286,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   memset(data3,0,sizeof(data3));
 
   // create the verify_block file for the X-CASH Daemon
-  if (get_path(data3,0) == 0 || write_file(data2,data3) == 0)
+  if (write_file(data2,verify_block_file) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not create the verify_block file");
   }

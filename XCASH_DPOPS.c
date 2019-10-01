@@ -70,6 +70,7 @@ int main(int parameters_count, char* parameters[])
   memset(current_block_height,0,sizeof(current_block_height));
   memset(current_round_part,0,sizeof(current_round_part));
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
+  memset(verify_block_file,0,sizeof(verify_block_file));
   current_block_verifier_settings = 0;
   database_settings = 1;
 
@@ -350,8 +351,20 @@ int main(int parameters_count, char* parameters[])
   memcpy(current_round_part,"1",1);
   memcpy(current_round_part_backup_node,"0",1);
 
+  // get the path of the xcashd
+  if (get_path(verify_block_file,0) == 1)
+  {  
+    // print the verify_block_file
+    memcpy(data,"Successfully received the verify block file:",44);
+    memcpy(data+44,verify_block_file,strnlen(verify_block_file,sizeof(data)));
+    color_print(data,"green");
+  }
+  else
+  {
+    MAIN_ERROR("Could not get the verify block file");
+  }
+
   // get the wallets public address
-  fprintf(stderr,"Getting the public address\n");
   if (get_public_address(0) == 1)
   {  
     // print the public address
@@ -492,8 +505,6 @@ int main(int parameters_count, char* parameters[])
   {
     goto disable_synchronizing_databases_and_starting_timers;
   }
-
-
 
   // check if the block verifier is a network data node
   if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)

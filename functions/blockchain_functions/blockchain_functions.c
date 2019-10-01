@@ -1717,7 +1717,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
 
   // block_validation_node_signature
   if (BLOCK_VALIDATION_SIGNATURES_SETTINGS == 1)
-  {  
+  {
     // get the next block verifiers public addresses from the previous network blocks reserve bytes
     message_copy1 = strstr(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_SIGN_DATA_STRING);
     count2 = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1));
