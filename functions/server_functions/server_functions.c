@@ -163,7 +163,14 @@ int start_new_round(void)
       RESTART_XCASH_DAEMON(1);
     }
   }  
-  pthread_rwlock_unlock(&rwlock);*/
+  pthread_rwlock_unlock(&rwlock);
+
+  if (count == BLOCK_VERIFIERS_AMOUNT)
+  {
+    START_NEW_ROUND_ERROR("Your delegate is not a block verifier. Your delegate will now sit out for the remainder of the round");
+  }*/
+
+
 
   // check if the current block height - 1 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
   sscanf(current_block_height,"%zu", &count);
@@ -493,9 +500,9 @@ int start_current_round_start_blocks(void)
   }
 
   // send the database data to all block verifiers
+  sleep(BLOCK_VERIFIERS_SETTINGS);
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    sleep(BLOCK_VERIFIERS_SETTINGS);
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {    
       memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
@@ -742,9 +749,9 @@ int data_network_node_create_block(void)
     }
 
     // send the network block string to all block verifiers and add the block verifier signature to the blockchain data struct
+    sleep(BLOCK_VERIFIERS_SETTINGS);
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      sleep(BLOCK_VERIFIERS_SETTINGS);
+    {      
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
       {  
         memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
@@ -3815,7 +3822,7 @@ int create_server(const int MESSAGE_SETTINGS)
   addr.sin_port = htons(SEND_DATA_PORT);
  
   // connect to 0.0.0.0
-  if (bind(server_socket, (struct sockaddr *) &addr, sizeof(addr)) != 0)
+  if (bind(server_socket, (struct sockaddr *) &addr, sizeof(struct sockaddr_in)) != 0)
   {    
     memcpy(error_message.function[error_message.total],"create_server",13);
     memcpy(error_message.data[error_message.total],"Error connecting to port ",25);
@@ -3825,9 +3832,10 @@ int create_server(const int MESSAGE_SETTINGS)
     exit(0);
   } 
 
-  // set the socket to non blocking, to avoid the server stopping when a client diconnects
-  settings = fcntl(server_socket, F_GETFL);
-  fcntl(server_socket, F_SETFL, settings | O_NONBLOCK);
+  // set the socket to non blocking
+  settings = fcntl(server_socket, F_GETFL, 0);
+  settings |= O_NONBLOCK;
+  fcntl(server_socket, F_SETFL, settings);
 
   // set the maximum simultaneous connections
   if (listen(server_socket, MAXIMUM_CONNECTIONS) != 0)
@@ -3850,7 +3858,7 @@ int create_server(const int MESSAGE_SETTINGS)
   }
 
   /* create the epoll_event struct
-  EPOLLIN = signal when the file secriptor is ready to read
+  EPOLLIN = signal when the file descriptor is ready to read
   EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
   */  
   events_copy.events = EPOLLIN | EPOLLET;
@@ -3869,7 +3877,7 @@ int create_server(const int MESSAGE_SETTINGS)
     }
   }
 
-  // run the socket_receive_data_thread on the mian thread
+  // run the socket_receive_data_thread on the main thread
   socket_receive_data_thread(NULL);
 
   return 1;
@@ -3894,33 +3902,28 @@ int new_socket_thread(void)
   int client_socket;
   struct sockaddr_in addr;
   socklen_t addrlen = sizeof(struct sockaddr_in);
-  struct epoll_event events;
+  int settings;  
 
-  start:
+  while ((client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen)) != -1)
+  {
+    // set the socket to non blocking
+    settings = fcntl(client_socket, F_GETFL, 0);
+    settings |= O_NONBLOCK;
+    fcntl(client_socket, F_SETFL, settings);
 
-  client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen);
-  if (client_socket < 0 && errno == EWOULDBLOCK)
-  {
-    usleep(200000);
-    goto start;
-  }
-  else if (client_socket < 0 && errno != EWOULDBLOCK)
-  {
-    return 0;
-  }
-  
-  /* create the epoll_event struct
-  EPOLLIN = signal when the file secriptor is ready to read
-  EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
-  EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
-  */
-  events.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
-  events.data.fd = client_socket;
+    /* create the epoll_event struct
+    EPOLLIN = signal when the file descriptor is ready to read
+    EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
+    EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
+    */
+    events_copy.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
+    events_copy.data.fd = client_socket;
 
-  if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events) < 0)
-  {
-    close(client_socket);
-    return 0;
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events_copy) < 0)
+    {    
+      close(client_socket);
+      return 0;
+    }
   }
   return 1;
 }

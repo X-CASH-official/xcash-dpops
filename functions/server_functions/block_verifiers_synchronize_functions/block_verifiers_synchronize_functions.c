@@ -1928,46 +1928,46 @@ int sync_check_reserve_proofs_database(int settings)
     SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the synced block verifiers");
   }
 
-  // get the database data hash for the reserve proofs database
-  if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
+  if (settings == 1)
   {
-    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
-  }
-
-  // create the message
-  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_proofs_data_hash\": \"",139);
-  memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
-  memcpy(message+strlen(message),"\",\r\n ",5);
-
-  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
-  {
-    memcpy(message+strlen(message),"\"reserve_proofs_data_hash_",26);
-    snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
-    memcpy(message+strlen(message),"\": \"",4);
-    // get the database data hash for the reserve proofs database
-    memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));  
-    memcpy(data2,"reserve_proofs_",15);  
-    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+     // get the database data hash for the reserve proofs database
+    if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
     }
+
+    // create the message
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_proofs_data_hash\": \"",139);
     memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
     memcpy(message+strlen(message),"\",\r\n ",5);
-  }
-  memcpy(message+strlen(message),"}",1);
 
-  // sign_data
-  if (sign_data(message,0) == 0)
-  { 
-    SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
-  }
+    for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+    {
+      memcpy(message+strlen(message),"\"reserve_proofs_data_hash_",26);
+      snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
+      memcpy(message+strlen(message),"\": \"",4);
+      // get the database data hash for the reserve proofs database
+      memset(data,0,strlen(data));
+      memset(data2,0,strlen(data2));  
+      memcpy(data2,"reserve_proofs_",15);  
+      snprintf(data2+15,sizeof(data2)-16,"%zu",count);
+      if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+      {
+        SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
+      }
+      memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+      memcpy(message+strlen(message),"\",\r\n ",5);
+    }
+    memcpy(message+strlen(message),"}",1);
 
-  fprintf(stderr,"Sending all block verifiers a message to check if the reserve proofs database is synced\n"); 
+    // sign_data
+    if (sign_data(message,0) == 0)
+    { 
+      SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
+    }
 
-  if (settings == 1)
-  {
+    fprintf(stderr,"Sending all block verifiers a message to check if the reserve proofs database is synced\n"); 
+    
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       memset(data,0,strlen(data));
@@ -2311,49 +2311,51 @@ int sync_check_reserve_bytes_database(int settings)
     SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the synced block verifiers");
   }
 
-  // get the current reserve bytes database
-  get_current_reserve_bytes_database(current_reserve_bytes_database);
-
-  // get the database data hash for the reserve bytes database
-  if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
-  {
-    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
-  }
-
-  // create the message
-  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_data_hash\": \"",137);
-  memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
-  memcpy(message+strlen(message),"\",\r\n ",5);
-
-  for (count = 1; count <= current_reserve_bytes_database; count++)
-  {
-    memcpy(message+strlen(message),"\"reserve_bytes_data_hash_",25);
-    snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
-    memcpy(message+strlen(message),"\": \"",4);
-    // get the database data hash for the reserve bytes database
-    memset(data,0,strlen(data));
-    memset(data2,0,strlen(data2));  
-    memcpy(data2,"reserve_bytes_",14);  
-    snprintf(data2+14,sizeof(data2)-15,"%zu",count);
-    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
-    {
-      SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
-    }
-    memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
-    memcpy(message+strlen(message),"\",\r\n ",5);
-  }
-  memcpy(message+strlen(message),"}",1);
-
-  // sign_data
-  if (sign_data(message,0) == 0)
-  { 
-    SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
-  }
-
-  fprintf(stderr,"Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
+  
 
   if (settings == 1)
   {
+    // get the current reserve bytes database
+    get_current_reserve_bytes_database(current_reserve_bytes_database);
+
+    // get the database data hash for the reserve bytes database
+    if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
+    {
+      SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
+    }
+
+    // create the message
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_data_hash\": \"",137);
+    memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n ",5);
+
+    for (count = 1; count <= current_reserve_bytes_database; count++)
+    {
+      memcpy(message+strlen(message),"\"reserve_bytes_data_hash_",25);
+      snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
+      memcpy(message+strlen(message),"\": \"",4);
+      // get the database data hash for the reserve bytes database
+      memset(data,0,strlen(data));
+      memset(data2,0,strlen(data2));  
+      memcpy(data2,"reserve_bytes_",14);  
+      snprintf(data2+14,sizeof(data2)-15,"%zu",count);
+      if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+      {
+        SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
+      }
+      memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+      memcpy(message+strlen(message),"\",\r\n ",5);
+    }
+    memcpy(message+strlen(message),"}",1);
+
+    // sign_data
+    if (sign_data(message,0) == 0)
+    { 
+      SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
+    }
+
+    fprintf(stderr,"Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
+
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       memset(data,0,strlen(data));

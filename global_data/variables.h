@@ -21,7 +21,6 @@ struct tm* current_UTC_date_and_time;
 
 // network data nodes
 int network_data_node_settings; // 1 if a network data node, 0 if not a network data node 
-
 char xcash_wallet_public_address[XCASH_WALLET_LENGTH+1]; // Holds your wallets public address
 struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round
@@ -39,7 +38,7 @@ char current_round_part_backup_node[2]; // The current main node in the current 
 pthread_rwlock_t rwlock;
 pthread_rwlock_t rwlock_reserve_proofs;
 
-pthread_t server_threads[1000];
+pthread_t server_threads[100];
 int epoll_fd;
 struct epoll_event events_copy;
 int server_socket;

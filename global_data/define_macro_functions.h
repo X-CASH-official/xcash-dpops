@@ -224,7 +224,7 @@ do \
 { \
   usleep(200000); \
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
-} while (current_UTC_date_and_time->tm_min % BLOCK_TIME != minutes && current_UTC_date_and_time->tm_sec != seconds);
+} while (current_UTC_date_and_time->tm_min % BLOCK_TIME != minutes || current_UTC_date_and_time->tm_sec != seconds);
 
 
 

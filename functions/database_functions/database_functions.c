@@ -1462,6 +1462,13 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   size_t count3;
   size_t counter = TOTAL_RESERVE_PROOFS_DATABASES; 
 
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(string); \
+  string = NULL; \
+
   memset(data2,0,sizeof(data2));
 
   if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
@@ -1561,8 +1568,10 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
     }
   }
-  pointer_reset(data);
+  pointer_reset_all;
   return 1;
+
+  #undef pointer_reset_all
 }
 
 

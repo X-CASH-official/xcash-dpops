@@ -50,7 +50,7 @@ Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* current_block_height_timer_thread()
+void* current_block_height_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -64,7 +64,10 @@ void* current_block_height_timer_thread()
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,2);
+  // unused parameters
+  (void)parameters;
+
+  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,0);
   get_current_block_height(current_block_height,0);
   if (start_new_round() == 0)
   {
@@ -156,7 +159,7 @@ Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* check_reserve_proofs_timer_thread()
+void* check_reserve_proofs_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -175,6 +178,9 @@ void* check_reserve_proofs_timer_thread()
 
   // threads
   pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
+
+  // unused parameters
+  (void)parameters;
 
   // define macros
   #define CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR(message) \
@@ -489,7 +495,7 @@ Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* check_delegates_online_status_timer_thread()
+void* check_delegates_online_status_timer_thread(void* parameters)
 {
   // Variables
   char message[BUFFER_SIZE];
@@ -499,6 +505,9 @@ void* check_delegates_online_status_timer_thread()
   size_t count;
   size_t count2;
   struct database_multiple_documents_fields database_multiple_documents_fields;
+
+  // unused parameters
+  (void)parameters;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -619,7 +628,7 @@ Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* check_maximum_delegates_timer_thread()
+void* check_maximum_delegates_timer_thread(void* parameters)
 {
   // Variables
   char message[BUFFER_SIZE];
@@ -629,6 +638,9 @@ void* check_maximum_delegates_timer_thread()
   size_t count2;
   size_t total_delegates;
   struct database_multiple_documents_fields database_multiple_documents_fields;
+
+  // unused parameters
+  (void)parameters;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -1051,12 +1063,15 @@ Description: Checks if the block verifier has found a block
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* block_height_timer_thread()
+void* block_height_timer_thread(void* parameters)
 {
   // Variables
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
   long long int block_reward_number;
+
+  // unused parameters
+  (void)parameters;
 
   // define macros
   #define BLOCK_HEIGHT_TIMER_THREAD_ERROR(message) \
@@ -1102,7 +1117,7 @@ Description: Sends all of the delegates payments at UTC 00:00
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* payment_timer_thread()
+void* payment_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -1124,6 +1139,9 @@ void* payment_timer_thread()
   long long int total_amount;
   struct database_multiple_documents_fields database_data;
   int document_count = 0;
+
+  // unused parameters
+  (void)parameters;
 
   // define macros
   #define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4
@@ -1734,7 +1752,7 @@ Description: socket receive data thread
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* socket_receive_data_thread()
+void* socket_receive_data_thread(void* parameters)
 {
   // Constants
   const int CONNECTIONS_PER_THREAD = MAXIMUM_CONNECTIONS / total_threads;
@@ -1743,6 +1761,9 @@ void* socket_receive_data_thread()
   struct epoll_event* events = calloc(CONNECTIONS_PER_THREAD, sizeof(struct epoll_event));
   int count;
   int count2;
+
+  // unused parameters
+  (void)parameters;
 
   // define macros
   #define SOCKET_RECEIVE_DATA_THREAD_ERROR(message) \
@@ -1761,24 +1782,26 @@ void* socket_receive_data_thread()
   */ 
  for (;;)
  { 
-  while ((count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, -1)) > 0)
-  {
-    for (count2 = 0; count2 < count; count2++)
-    {
-      if (events[count2].data.fd == server_socket)
-      {
-        // a file descriptor is ready for a new socket connection
-        new_socket_thread();
-      }
-      else
-      {
-        // a file descriptor is ready for a current socket connection
-       socket_thread(events[count2].data.fd);
-       epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[count2].data.fd, &events_copy);
+   count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, -1);
+   for (count2 = 0; count2 < count; count2++)
+   {    
+     if (events[count2].events & EPOLLERR || events[count2].events & EPOLLHUP || !(events[count2].events & EPOLLIN))
+     {  
        close(events[count2].data.fd);
-      }
-    }
-  }
+     }
+     else if (events[count2].data.fd == server_socket)
+     {
+       // a file descriptor is ready for a new socket connection
+       new_socket_thread();
+     }
+     else
+     {
+       // a file descriptor is ready for a current socket connection
+      socket_thread(events[count2].data.fd);
+      epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[count2].data.fd, &events_copy);
+      close(events[count2].data.fd);
+     }
+   } 
 }
 pointer_reset(events);
 pthread_exit((void *)(intptr_t)1);

@@ -142,8 +142,11 @@ Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* create_server_on_separate_thread()
+void* create_server_on_separate_thread(void* parameters)
 {
+  // unused parameter
+  (void)parameters;
+  
   create_server(0);
   pthread_exit((void *)(intptr_t)1);
 }

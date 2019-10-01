@@ -66,7 +66,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
 #define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
 #define SEND_DATA_PORT 18283 // The port that is used by all nodes to send and receive data
-#define MAXIMUM_CONNECTIONS 1000 // The maximum connections a node can have at one time
+#define MAXIMUM_CONNECTIONS 100 // The maximum connections a node can have at one time
 #define BLOCK_VERIFIERS_SETTINGS 2 // The time in seconds to wait to send data to the block verifiers
 #define TOTAL_CONNECTION_TIME_SETTINGS 10 // The total time a client is given to connect to the server and send data
 #define SOCKET_CONNECTION_TIMEOUT_SETTINGS 10000 // The time in milliseconds, to wait before a connection is cancelled
@@ -119,7 +119,7 @@ Using define statements instead of constants for increased efficiency
 "Parameters\n" \
 "--parameters - Show a list of all valid parameters\n\n" \
 "--test - Run the test to make sure the program is compatible with your system\n\n" \
-"--total_threads \"total_threads\" - The total threads to use.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
+"--total_threads \"total_threads\" - The total threads to use, the maximum is 100 total threads.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
 "--delegates_website - Run the delegates website\n\n" \
 "--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
 "The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \

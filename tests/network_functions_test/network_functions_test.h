@@ -8,7 +8,7 @@ Function prototypes
 */
 
 void network_daemon_test(void);
-void* create_server_on_separate_thread();
+void* create_server_on_separate_thread(void* parameters);
 void general_network_test(void);
 void network_security_test(void);
 void network_wallet_test(void);
