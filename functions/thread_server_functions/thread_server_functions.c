@@ -246,7 +246,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       }
 
       // organize the invalid reserve proofs struct so the data hash is the same
-      qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),organize_invalid_reserve_proofs);
+      qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),organize_invalid_reserve_proofs_settings);
 
       // get the data hash of the invalid_reserve_proofs struct
       memset(message,0,strlen(message));

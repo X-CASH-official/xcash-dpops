@@ -587,7 +587,9 @@ int main(int parameters_count, char* parameters[])
       }
     }
   }
- 
+
+  //get_delegates_online_status();
+  
   // print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads");
 
   /*// start the current block height timer thread

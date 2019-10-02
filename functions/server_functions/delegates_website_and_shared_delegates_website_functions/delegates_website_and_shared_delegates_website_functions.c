@@ -472,28 +472,24 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET, const char* DATA)
 {
   // Variables
-  char data2[BUFFER_SIZE];
-  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));  
+  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE]; 
   size_t count = 0;
   size_t count2 = 0;
-  size_t counter = 0;
   struct database_document_fields database_data;
-  struct database_multiple_documents_fields database_multiple_documents_fields;
+  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   int document_count = 0;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
   #define DATABASE_FIELDS ""
 
-  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(settings) \
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
-  if (settings == 0) \
-  { \
-    pointer_reset_database_array; \
-  } \
+  pointer_reset_database_array; \
   return 0;
   
   #define pointer_reset_database_array \
@@ -502,13 +498,25 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     pointer_reset(database_data.item[count]); \
     pointer_reset(database_data.value[count]); \
   } \
-  for (count = 0; (int)count < document_count; count++) \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
   { \
-    for (counter = 0; counter < TOTAL_DELEGATES_DATABASE_FIELDS+1; counter++) \
-    { \
-      pointer_reset(database_multiple_documents_fields.item[count][counter]); \
-      pointer_reset(database_multiple_documents_fields.value[count][counter]); \
-    } \
+    pointer_reset(delegates[count].public_address); \
+    pointer_reset(delegates[count].total_vote_count); \
+    pointer_reset(delegates[count].IP_address); \
+    pointer_reset(delegates[count].delegate_name); \
+    pointer_reset(delegates[count].about); \
+    pointer_reset(delegates[count].website); \
+    pointer_reset(delegates[count].team); \
+    pointer_reset(delegates[count].pool_mode); \
+    pointer_reset(delegates[count].fee_structure); \
+    pointer_reset(delegates[count].server_settings); \
+    pointer_reset(delegates[count].block_verifier_score); \
+    pointer_reset(delegates[count].online_status); \
+    pointer_reset(delegates[count].block_verifier_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_percentage); \
+    pointer_reset(delegates[count].block_producer_total_rounds); \
+    pointer_reset(delegates[count].block_producer_block_heights); \
   }
 
   // check if the memory needed was allocated on the heap successfully
@@ -518,40 +526,6 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     exit(0);
   }
 
-  memset(data2,0,sizeof(data2));
-
-  // get the parameter1
-  memcpy(data2,&DATA[39],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-39);
-
-  // error check
-  if (strncmp(data2,"",BUFFER_SIZE) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
-  } 
-
-  const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
-
-  // check if the data is a public address or a delegate name
-  memcpy(message,"{\"",2);
-  if (memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) == 0 && DATA_LENGTH == XCASH_WALLET_LENGTH)
-  {
-    memcpy(message+2,"public_address\":\"",17);
-    memcpy(message+19,data2,DATA_LENGTH);
-    memcpy(message+19+DATA_LENGTH,"\"}",2);
-  }
-  else
-  {
-    memcpy(message+2,"delegate_name\":\"",16);
-    memcpy(message+18,data2,DATA_LENGTH);
-    memcpy(message+18+DATA_LENGTH,"\"}",2);
-  }
-
-  // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,message,0) <= 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
-  }
-  
   // initialize the database_document_fields struct 
   for (count = 0; count < TOTAL_DELEGATES_DATABASE_FIELDS+1; count++)
   {
@@ -568,70 +542,8 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   }
   database_data.count = 0;
 
-  // get how many documents are in the database
-  document_count = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
-  if (document_count <= 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(1);
-  }
-  else if (document_count > BLOCK_VERIFIERS_AMOUNT)
-  {
-    document_count = BLOCK_VERIFIERS_AMOUNT;
-  }
-
-  // initialize the database_multiple_documents_fields struct 
-  for (count = 0; (int)count < document_count; count++)
-  {
-    for (count2 = 0; (int)count2 < TOTAL_DELEGATES_DATABASE_FIELDS+1; count2++)
-    {
-       // allocate more for the about and the block_producer_block_heights
-       if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
-       {
-         database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-         database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
-       }
-       else if (count2 == 4)
-       {
-         database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-         database_multiple_documents_fields.value[count][count2] = (char*)calloc(1025,sizeof(char));
-       }
-       else
-       {
-         database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-         database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-       }
-
-       if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
-       {
-         memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-         error_message.total++;
-         print_error_message;  
-         exit(0);
-       }
-     }      
-   } 
-  database_multiple_documents_fields.document_count = 0;
-  database_multiple_documents_fields.database_fields_count = 0;
-  
-  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,&database_data,0) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
-  }
-
-  // get all of the delegates  
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
-  {
-    memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-    memcpy(error_message.data[error_message.total],"Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round",163);
-    error_message.total++;
-    return 0;
-  }
-
-  struct delegates delegates[database_multiple_documents_fields.document_count];
-
   // initialize the delegates struct
-  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
     delegates[count].public_address = (char*)calloc(100,sizeof(char));
     delegates[count].total_vote_count = (char*)calloc(100,sizeof(char));
@@ -661,90 +573,90 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     }
   }
 
-  // convert the database_multiple_documents_fields to an array of structs
-  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  memset(data2,0,sizeof(data2));
+
+  // get the parameter1
+  memcpy(data2,&DATA[39],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-39);
+
+  // error check
+  if (strncmp(data2,"",BUFFER_SIZE) == 0)
   {
-    memcpy(delegates[count].public_address,database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],100));
-    memcpy(delegates[count].total_vote_count,database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],100));
-    memcpy(delegates[count].IP_address,database_multiple_documents_fields.value[count][2],strnlen(database_multiple_documents_fields.value[count][2],100));
-    memcpy(delegates[count].delegate_name,database_multiple_documents_fields.value[count][3],strnlen(database_multiple_documents_fields.value[count][3],100));
-    memcpy(delegates[count].about,database_multiple_documents_fields.value[count][4],strnlen(database_multiple_documents_fields.value[count][4],100));
-    memcpy(delegates[count].website,database_multiple_documents_fields.value[count][5],strnlen(database_multiple_documents_fields.value[count][5],100));
-    memcpy(delegates[count].team,database_multiple_documents_fields.value[count][6],strnlen(database_multiple_documents_fields.value[count][6],100));
-    memcpy(delegates[count].pool_mode,database_multiple_documents_fields.value[count][7],strnlen(database_multiple_documents_fields.value[count][7],100));
-    memcpy(delegates[count].fee_structure,database_multiple_documents_fields.value[count][8],strnlen(database_multiple_documents_fields.value[count][8],100));
-    memcpy(delegates[count].server_settings,database_multiple_documents_fields.value[count][9],strnlen(database_multiple_documents_fields.value[count][9],100));
-    memcpy(delegates[count].block_verifier_score,database_multiple_documents_fields.value[count][10],strnlen(database_multiple_documents_fields.value[count][10],100));
-    memcpy(delegates[count].online_status,database_multiple_documents_fields.value[count][11],strnlen(database_multiple_documents_fields.value[count][11],100));
-    memcpy(delegates[count].block_verifier_total_rounds,database_multiple_documents_fields.value[count][12],strnlen(database_multiple_documents_fields.value[count][12],100));
-    memcpy(delegates[count].block_verifier_online_total_rounds,database_multiple_documents_fields.value[count][13],strnlen(database_multiple_documents_fields.value[count][13],100));
-    memcpy(delegates[count].block_verifier_online_percentage,database_multiple_documents_fields.value[count][14],strnlen(database_multiple_documents_fields.value[count][14],100));
-    memcpy(delegates[count].block_producer_total_rounds,database_multiple_documents_fields.value[count][15],strnlen(database_multiple_documents_fields.value[count][15],100));
-    memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],100));
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR;
+  } 
+
+  const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
+
+  // check if the data is a public address or a delegate name
+  memcpy(message,"{\"",2);
+  if (memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) == 0 && DATA_LENGTH == XCASH_WALLET_LENGTH)
+  {
+    memcpy(message+2,"public_address\":\"",17);
+    memcpy(message+19,data2,DATA_LENGTH);
+    memcpy(message+19+DATA_LENGTH,"\"}",2);
   }
-  
-  // organize the delegates by total_vote_count
-  qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates);
+  else
+  {
+    memcpy(message+2,"delegate_name\":\"",16);
+    memcpy(message+18,data2,DATA_LENGTH);
+    memcpy(message+18+DATA_LENGTH,"\"}",2);
+  }
+
+  // check if there is any data in the database that matches the message
+  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,message,0) <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR;
+  }
+
+  // get the delegates information
+  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,&database_data,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR;
+  }
+
+  // organize the delegates
+  document_count = organize_delegates(delegates);
+  if (document_count == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR;
+  }
 
   // get the delegates rank
-  for (count = 0, counter = 0; count < database_multiple_documents_fields.document_count; count++)
+  for (count = 0, count2 = 0; (int)count < document_count; count++)
   {
     if (strncmp(delegates[count].public_address,data2,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].delegate_name,data2,BUFFER_SIZE) == 0)
     {
+      count2++;
       break;
     }
-    counter++;
+    count2++;
   }
-  counter++;
 
   memset(data2,0,sizeof(data2));
-  snprintf(data2, sizeof(data2), "%zu", counter);
+  snprintf(data2, sizeof(data2), "%zu", count2);
   memcpy(database_data.item[TOTAL_DELEGATES_DATABASE_FIELDS],"current_delegate_rank",21);
   memcpy(database_data.value[TOTAL_DELEGATES_DATABASE_FIELDS],data2,strnlen(data2,BUFFER_SIZE));
-  database_data.count++;
-
-  // reset the delegates struct
-  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
-  {
-    pointer_reset(delegates[count].public_address);
-    pointer_reset(delegates[count].total_vote_count);
-    pointer_reset(delegates[count].IP_address);
-    pointer_reset(delegates[count].delegate_name);
-    pointer_reset(delegates[count].about);
-    pointer_reset(delegates[count].website);
-    pointer_reset(delegates[count].team);
-    pointer_reset(delegates[count].pool_mode);
-    pointer_reset(delegates[count].fee_structure);
-    pointer_reset(delegates[count].server_settings);
-    pointer_reset(delegates[count].block_verifier_score);
-    pointer_reset(delegates[count].online_status);
-    pointer_reset(delegates[count].block_verifier_total_rounds);
-    pointer_reset(delegates[count].block_verifier_online_total_rounds);
-    pointer_reset(delegates[count].block_verifier_online_percentage);
-    pointer_reset(delegates[count].block_producer_total_rounds);
-    pointer_reset(delegates[count].block_producer_block_heights);
-  }
+  database_data.count++;  
 
   memset(message,0,strlen(message)); 
 
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_document_array(&database_data,message,DATABASE_FIELDS) == 0)
   {    
-    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR;
   }
 
   if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR;
   }
   
-  pointer_reset_database_array;
   pointer_reset(message);
+  pointer_reset_database_array;
   return 1;
 
   #undef DATABASE_COLLECTION
   #undef DATABASE_FIELDS
-  #undef GET_DELEGATES_STATISTICS_ERROR
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR
   #undef pointer_reset_database_array
 }
 
@@ -864,7 +776,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
 
   if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(0);
   }
   
   pointer_reset_database_array;
@@ -873,7 +785,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
 
   #undef DATABASE_COLLECTION
   #undef DATABASE_FIELDS
-  #undef GET_DELEGATES_INFORMATION_ERROR
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR
   #undef pointer_reset_database_array
 }
 
@@ -937,7 +849,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   // error check
   if (strncmp(data2,"",BUFFER_SIZE) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(1);
+    SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(1);
   } 
 
   const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
