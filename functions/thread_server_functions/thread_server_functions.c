@@ -27,6 +27,7 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
+#include "organize_functions.h"
 #include "server_functions.h"
 #include "string_functions.h"
 #include "thread_server_functions.h"
@@ -139,20 +140,6 @@ void* current_block_height_timer_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: sort_invalid_reserve_proofs
-Description: sort invalid reserve proofs
------------------------------------------------------------------------------------------------------------
-*/
-
-int sort_invalid_reserve_proofs(const void* STRING1, const void* STRING2)
-{
-  return (strcmp((char*)STRING1, (char*)STRING2));
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: check_reserve_proofs_timer_thread
 Description: Randomly selects a reserve proof from the database and will check if it is valid
 Return: NULL
@@ -258,8 +245,8 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         memcpy(reserve_proofs[count],invalid_reserve_proofs.reserve_proof[count],strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF));
       }
 
-      // sort the invalid reserve proofs struct so the data hash is the same
-      qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),sort_invalid_reserve_proofs);
+      // organize the invalid reserve proofs struct so the data hash is the same
+      qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),organize_invalid_reserve_proofs);
 
       // get the data hash of the invalid_reserve_proofs struct
       memset(message,0,strlen(message));

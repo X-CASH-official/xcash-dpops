@@ -28,6 +28,7 @@
 #include "server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
 #include "delegates_website_and_shared_delegates_website_functions.h"
+#include "organize_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
 #include "thread_server_functions.h"
@@ -1714,8 +1715,8 @@ int sync_all_block_verifiers_list(void)
      memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],100));
    }
   
-   // sort the delegates by total_vote_count
-   qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),sort_delegates);
+   // organize the delegates by total_vote_count
+   qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates);
 
    // copy the database_multiple_documents_fields to the next, current and previous block verifiers list
    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)

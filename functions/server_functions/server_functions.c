@@ -26,6 +26,7 @@
 #include "server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
 #include "delegates_website_and_shared_delegates_website_functions.h"
+#include "organize_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
 #include "thread_server_functions.h"
@@ -119,13 +120,16 @@ int start_new_round(void)
   memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
   print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
 
-  // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
-  settings = update_block_verifiers_list();
-  if (settings == 0)
-  {
-    START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
-  }
- 
+  // get the delegates online status
+
+
+
+
+
+
+
+
+
   /*// check if all of the databases are synced
   if (check_if_databases_are_synced(settings) == 0)
   {
@@ -170,6 +174,12 @@ int start_new_round(void)
   }*/
 
 
+  // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
+  settings = update_block_verifiers_list();
+  if (settings == 0)
+  {
+    START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
+  }
 
   // check if the current block height - 1 is a X-CASH proof of stake block since this will check to see if these are the first three blocks on the network
   sscanf(current_block_height,"%zu", &count);
@@ -1660,29 +1670,6 @@ int start_part_4_of_round(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: sort_delegates
-Description: sort delegates
------------------------------------------------------------------------------------------------------------
-*/
-
-int sort_delegates(const void* DELEGATES1, const void* DELEGATES2)
-{
-  // Variables
-  size_t count;
-  size_t count2;
-  struct delegates* delegates1 = (struct delegates*)DELEGATES1;
-  struct delegates* delegates2 = (struct delegates*)DELEGATES2;
-  
-  sscanf(delegates1->total_vote_count, "%zu", &count);
-  sscanf(delegates2->total_vote_count, "%zu", &count2);
-
-  return count2 - count;
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: update_block_verifiers_list
 Description: Updates the block verifiers list struct
 Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to sync from a random network data node
@@ -1843,8 +1830,8 @@ int update_block_verifiers_list(void)
     memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],100));
   }
   
-  // sort the delegates by total_vote_count
-  qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),sort_delegates);
+  // organize the delegates by total_vote_count
+  qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates);
 
   // copy the database_multiple_documents_fields to the next_block_verifiers_list
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)

@@ -28,6 +28,7 @@
 #include "server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
 #include "delegates_website_and_shared_delegates_website_functions.h"
+#include "organize_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
 #include "thread_server_functions.h"
@@ -682,8 +683,8 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],100));
   }
   
-  // sort the delegates by total_vote_count
-  qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),sort_delegates);
+  // organize the delegates by total_vote_count
+  qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates);
 
   // get the delegates rank
   for (count = 0, counter = 0; count < database_multiple_documents_fields.document_count; count++)
