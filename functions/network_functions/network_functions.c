@@ -68,10 +68,8 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
+  int settings;
   socklen_t socket_option_settings = sizeof(int);
-
-  // define macros
-  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
 
   // check if the memory needed was allocated on the heap successfully
   if (message == NULL)
@@ -187,18 +185,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     return 0;
   }
 
-  // get a random IP address to connect to from the host if they have multiple IP addresses
-  count = 0;
-  while(HOST_NAME->h_addr_list[count] != NULL)
-  {  
-    count++;
-  }
-
-  if (count > 0)
-  {
-    count = rand() % count;
-  }
-
   // convert the port to a string  
   snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
 
@@ -212,7 +198,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   use htons to convert the port from host byte order to network byte order short
   */
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(PORT);
 
   /* set the first poll structure to our socket
@@ -224,26 +210,24 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
-    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
-    {   
-      if (socket_settings != 0)
-      {        
-        if (MESSAGE_SETTINGS == 1)
-        {
-          memset(str,0,sizeof(str));
-          memcpy(str,"Error connecting to ",20);
-          memcpy(str+20,HOST,HOST_LENGTH);
-          memcpy(str+20+HOST_LENGTH," on port ",9);
-          memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-          memcpy(error_message.function[error_message.total],"send_http_request",17);
-          memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-          error_message.total++; 
-        }
-        pointer_reset(message);
-        close(SOCKET);
-        return 0;
-      } 
-    }
+    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    {        
+      if (MESSAGE_SETTINGS == 1)
+      {
+        memset(str,0,sizeof(str));
+        memcpy(str,"Error connecting to ",20);
+        memcpy(str+20,HOST,HOST_LENGTH);
+        memcpy(str+20+HOST_LENGTH," on port ",9);
+        memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+        memcpy(error_message.function[error_message.total],"send_http_request",17);
+        memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+        error_message.total++; 
+      }
+      pointer_reset(message);
+      close(SOCKET);
+      return 0;
+    } 
   }
 
   // get the current socket settings
@@ -391,8 +375,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   pointer_reset(message);
   close(SOCKET);
   return 1;
-
-  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
 }
 
 
@@ -422,15 +404,12 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
   char message[BUFFER_SIZE]; 
-  size_t count;
   int receive_data_result;
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
+  int settings;
   socklen_t socket_option_settings = sizeof(int);
-
-  // define macros
-  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
 
   memset(str,0,sizeof(str));
 
@@ -491,18 +470,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     close(SOCKET);
     return 0;
   }
-
-  // get a random IP address to connect to from the host if they have multiple IP addresses
-  count = 0;
-  while(HOST_NAME->h_addr_list[count] != NULL)
-  {  
-    count++;
-  }
-
-  if (count > 0)
-  {
-    count = rand() % count;
-  }
     
   // convert the port to a string  
   snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT); 
@@ -515,7 +482,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   */
   memset(&serv_addr,0,sizeof(struct sockaddr_in));
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(PORT);
 
   /* set the first poll structure to our socket
@@ -527,24 +494,22 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
-    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
-    {   
-      if (socket_settings != 0)
-      {        
-        if (MESSAGE_SETTINGS == 1)
-        {
-          memcpy(str,"Error connecting to ",20);
-          memcpy(str+20,HOST,HOST_LENGTH);
-          memcpy(str+20+HOST_LENGTH," on port ",9);
-          memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-          memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-          memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-          error_message.total++;
-        }
-        close(SOCKET);
-        return 0;
-      } 
-    }
+    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    {        
+      if (MESSAGE_SETTINGS == 1)
+      {
+        memcpy(str,"Error connecting to ",20);
+        memcpy(str+20,HOST,HOST_LENGTH);
+        memcpy(str+20+HOST_LENGTH," on port ",9);
+        memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+        memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+        memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+        error_message.total++;
+      }
+      close(SOCKET);
+      return 0;
+    }    
   }
 
   // get the current socket settings
@@ -653,8 +618,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   
   close(SOCKET);
   return 1;
-
-  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
 }
 
 
@@ -675,7 +638,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
 { 
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
-  size_t count;
   const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   
   // Variables  
@@ -685,6 +647,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
+  int settings;
   socklen_t socket_option_settings = sizeof(int);
 
   // define macros
@@ -734,18 +697,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memcpy(str+26,HOST,HOST_LENGTH);
     SEND_DATA_SOCKET_ERROR(str);
   }
-
-  // get a random IP address to connect to from the host if they have multiple IP addresses
-  count = 0;
-  while(HOST_NAME->h_addr_list[count] != NULL)
-  {  
-    count++;
-  }
-
-  if (count > 0)
-  {
-    count = rand() % count;
-  }
     
   // convert the port to a string  
   snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT); 
@@ -758,7 +709,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   */
   memset(&serv_addr,0,sizeof(struct sockaddr_in));
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(PORT);
 
   /* set the first poll structure to our socket
@@ -769,17 +720,15 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
 
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
-  {    
-    if (poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
-    {   
-      if (socket_settings != 0)
-      {  
-        memcpy(str,"Error connecting to ",20);
-        memcpy(str+20,HOST,HOST_LENGTH);
-        memcpy(str+20+HOST_LENGTH," on port ",9);
-        memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-        SEND_DATA_SOCKET_ERROR(str);
-      } 
+  {  
+    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    {
+      memcpy(str,"Error connecting to ",20);
+      memcpy(str+20,HOST,HOST_LENGTH);
+      memcpy(str+20+HOST_LENGTH," on port ",9);
+      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+      SEND_DATA_SOCKET_ERROR(str);
     }
   }
 
@@ -1015,19 +964,14 @@ Return: 1 if the IP address is online, 0 if the IP address is offline
 
 int get_delegate_online_status(const char* HOST)
 {
-  // Constants
-  size_t count;
-
   // Variables
   char str[BUFFER_SIZE];
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
+  int settings;
   socklen_t socket_option_settings = sizeof(int);
-
-  // define macros
-  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
-
+  
   memset(str,0,sizeof(str));
 
   /* Create the socket  
@@ -1053,18 +997,6 @@ int get_delegate_online_status(const char* HOST)
     close(SOCKET);    
     return 0;
   } 
-
-  // get a random IP address to connect to from the host if they have multiple IP addresses
-  count = 0;
-  while(HOST_NAME->h_addr_list[count] != NULL)
-  {  
-    count++;
-  }
-
-  if (count > 0)
-  {
-    count = rand() % count;
-  } 
   
   /* setup the connection
   AF_INET = IPV4
@@ -1072,7 +1004,7 @@ int get_delegate_online_status(const char* HOST)
   */
   memset(&serv_addr,0,sizeof(struct sockaddr_in));
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[count])));
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
   serv_addr.sin_port = htons(SEND_DATA_PORT);
 
   /* set the first poll structure to our socket
@@ -1084,14 +1016,12 @@ int get_delegate_online_status(const char* HOST)
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
-    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,1000) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
-    {   
-      if (socket_settings == 0)
-      {        
-        close(SOCKET);
-        return 1;
-      } 
-    }
+    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    {       
+      close(SOCKET);
+      return 1;
+    }    
   }
 
   // check for the XCASH daemon port
@@ -1100,18 +1030,14 @@ int get_delegate_online_status(const char* HOST)
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
-    if (poll(&socket_file_descriptors,SOCKET_FILE_DESCRIPTORS_LENGTH,1000) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
-    {   
-      if (socket_settings == 0)
-      {        
-        close(SOCKET);
-        return 1;
-      } 
-    }
+    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    {       
+      close(SOCKET);
+      return 1;
+    }    
   }
 
   close(SOCKET);
   return 0;
-
-  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
 }

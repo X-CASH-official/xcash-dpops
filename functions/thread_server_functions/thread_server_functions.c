@@ -1392,6 +1392,7 @@ void* send_data_socket_thread(void* parameters)
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
+  int settings;
   socklen_t socket_option_settings = sizeof(int);
 
   // define macros
@@ -1457,12 +1458,10 @@ void* send_data_socket_thread(void* parameters)
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
-    if (poll(&socket_file_descriptors,1,TOTAL_CONNECTION_TIME_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
-    {   
-      if (socket_settings != 0)
-      {  
-        SEND_DATA_SOCKET_ERROR;
-      } 
+    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    { 
+      SEND_DATA_SOCKET_ERROR;
     }
   }
 
@@ -1554,6 +1553,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
+  int settings;
   socklen_t socket_option_settings = sizeof(int);
 
   // define macros
@@ -1620,12 +1620,10 @@ void* send_and_receive_data_socket_thread(void* parameters)
   // connect to the socket
   if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
   {    
-    if (poll(&socket_file_descriptors,1,TOTAL_CONNECTION_TIME_SETTINGS) == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0)
-    {   
-      if (socket_settings != 0)
-      {  
-        SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
-      } 
+    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    {
+      SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
     }
   }
 

@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
-#include <errno.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -4000,7 +3999,7 @@ int socket_thread(int client_socket)
     return 0;
   }
 
-  const struct hostent* HOST_NAME = gethostbyaddr((const void *)&ip_address_data, sizeof(ip_address_data), AF_INET);
+  const struct hostent* HOST_NAME = gethostbyaddr((const void *)&ip_address_data, sizeof(struct in_addr), AF_INET);
   if (HOST_NAME != NULL)
   {
     memset(client_address,0,sizeof(client_address));
