@@ -212,7 +212,7 @@ Create a systemd PID folder
 Create a mongod pid file and a xcashd pid file
 ```
 touch ~/Installed-Programs/systemdpid/mongod.pid
-touch ~/Installed-Programs/systemdpid/xcash_daemon.id
+touch ~/Installed-Programs/systemdpid/xcash_daemon.pid
 ```
 
 
