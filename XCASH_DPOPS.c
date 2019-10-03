@@ -4,6 +4,7 @@
 #include <time.h> 
 #include <pthread.h>
 #include <sys/sysinfo.h>
+#include <sys/resource.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -40,10 +41,10 @@ int main(int parameters_count, char* parameters[])
   char data2[BUFFER_SIZE];
   long int current_time;
   size_t count = 0;
-  size_t count2 = 0; 
+  size_t count2 = 0;
 
   // threads
-  pthread_t thread_id[5];
+  pthread_t thread_id[4];
   
   // define macros
   #define MESSAGE "{\"username\":\"XCASH\"}"
@@ -587,9 +588,27 @@ int main(int parameters_count, char* parameters[])
       }
     }
   }
-
-  //get_delegates_online_status();
   
+  // start the server
+  if (create_server(1) == 0)
+  {
+    MAIN_ERROR("Could not start the server");
+  }
+
+  /*// wait for enough block verifiers to start the block verification process
+  for (;;)
+  {
+    usleep(200000);
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 0)
+    {
+      if (get_delegates_online_status() >= BLOCK_VERIFIERS_VALID_AMOUNT)
+      {
+        break;
+      }
+    }
+  }*/
+
   // print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads");
 
   /*// start the current block height timer thread
@@ -607,14 +626,6 @@ int main(int parameters_count, char* parameters[])
   }
 
   color_print("Started the check reserve proofs timer thread","green");*/
-
-  /*// start the check_delegates_online_status_timer_thread
-  if (pthread_create(&thread_id[2], NULL, &check_delegates_online_status_timer_thread, NULL) != 0 && pthread_detach(thread_id[2]) != 0)
-  {
-    MAIN_ERROR("Could not start the check_delegates_online_status_timer_thread");
-  }
-
-  color_print("Started the check delegates online status timer thread","green");*/
 
   /*// start the block height timer thread
   if (shared_delegates_website == 1)
@@ -635,12 +646,36 @@ int main(int parameters_count, char* parameters[])
     color_print("Started the payment_timer_thread","green");
    }*/
 
-   disable_synchronizing_databases_and_starting_timers:
-  
+   for (;;)
+   {
+     sleep(10);
+   }
+
+  disable_synchronizing_databases_and_starting_timers:
+
   // start the server
   if (create_server(1) == 0)
   {
     MAIN_ERROR("Could not start the server");
+  }
+
+  /*// wait for enough block verifiers to start the block verification process
+  for (;;)
+  {
+    usleep(200000);
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 0)
+    {
+      if (get_delegates_online_status() >= BLOCK_VERIFIERS_VALID_AMOUNT)
+      {
+        break;
+      }
+    }
+  }*/  
+
+  for (;;)
+  {
+    sleep(10);
   }
 
   database_reset;

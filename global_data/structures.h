@@ -250,6 +250,11 @@ struct database_multiple_documents_fields {
     int COUNT; // The block verifier that received the message
 };
 
+struct get_delegate_online_status_thread_parameters {
+    char HOST[BUFFER_SIZE]; // The IP address to send the message to
+    int online_status; // 1 if the delegate is online, 0 if the delegate is offline
+};
+
  struct socket_thread_parameters {
     int client_socket;  // The client socket
     char client_address[BUFFER_SIZE];  // The client address

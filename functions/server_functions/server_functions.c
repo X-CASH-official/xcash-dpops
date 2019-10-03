@@ -121,14 +121,7 @@ int start_new_round(void)
   print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
 
   // get the delegates online status
-
-
-
-
-
-
-
-
+  get_delegates_online_status();
 
   /*// check if all of the databases are synced
   if (check_if_databases_are_synced(settings) == 0)
@@ -3775,9 +3768,6 @@ int create_server(const int MESSAGE_SETTINGS)
       SERVER_ERROR("Error creating the server");
     }
   }
-
-  // run the socket_receive_data_thread on the main thread
-  socket_receive_data_thread(NULL);
 
   return 1;
 

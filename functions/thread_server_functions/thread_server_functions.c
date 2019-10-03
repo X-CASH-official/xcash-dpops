@@ -476,139 +476,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: check_delegates_online_status_timer_thread
-Description: Checks the top 150 delegates every round to update their online status
-Return: NULL
------------------------------------------------------------------------------------------------------------
-*/
-
-void* check_delegates_online_status_timer_thread(void* parameters)
-{
-  // Variables
-  char message[BUFFER_SIZE];
-  char data[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
-  size_t count;
-  size_t count2;
-  struct database_multiple_documents_fields database_multiple_documents_fields;
-
-  // unused parameters
-  (void)parameters;
-
-  // define macros
-  #define DATABASE_COLLECTION "delegates"
-  
-  memset(message,0,sizeof(message));
-  memset(data,0,sizeof(data));
-
-  // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
-    {
-      // allocate more for the about and the block_producer_block_heights
-      if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
-      {
-        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-        database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
-      }
-      else if (count2 == 4)
-      {
-        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-        database_multiple_documents_fields.value[count][count2] = (char*)calloc(1025,sizeof(char));
-      }
-      else
-      {
-        database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-        database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-      }
-      
-      if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
-      {
-        memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
-        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-        error_message.total++;
-        print_error_message;  
-        exit(0);
-      }
-    } 
-  } 
-  database_multiple_documents_fields.document_count = 0;
-  database_multiple_documents_fields.database_fields_count = 0;
-
-
-  for (;;)
-  {    
-    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 1 && current_UTC_date_and_time->tm_sec == 0)
-    {
-      // get all of the delegates
-      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,MAXIMUM_AMOUNT_OF_DELEGATES,0,"",0) == 0)
-      {
-        memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
-        memcpy(error_message.data[error_message.total],"Could not get the top 150 delegates to check their online status. This means the delegates database might be unsynced, and you might have to sync the database.",159);
-        error_message.total++;
-        print_error_message;
-      }     
-
-      // check the online status of the top 150 delegates
-      for (count = 0; count < database_multiple_documents_fields.document_count; count++)
-      {
-         // create the message
-         memset(message,0,sizeof(message));
-         memcpy(message,"{\"public_address\":\"",19);
-         memcpy(message+19,database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);
-         memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
-
-         if (get_delegate_online_status(database_multiple_documents_fields.value[count][2]) == 1)
-         {
-           memset(data,0,sizeof(data));
-           memcpy(data,"{\"online_status\":\"true\"}",24);
-         }
-         else
-         {
-           memset(data,0,sizeof(data));
-           memcpy(data,"{\"online_status\":\"false\"}",25);
-         }   
-         pthread_rwlock_rdlock(&rwlock);
-         while(database_settings != 1)
-         {
-           sleep(1);
-         }
-         pthread_rwlock_unlock(&rwlock);
-         if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
-         {
-           memcpy(error_message.function[error_message.total],"check_delegates_online_status_timer_thread",42);
-           memcpy(error_message.data[error_message.total],"Could not update a delegates online status. This means the delegates database might be unsynced, and you might have to sync the database",136);
-           error_message.total++;
-           print_error_message;
-         }     
-       }
-
-      // reset the database_multiple_documents_fields
-      for (count = 0; count < database_multiple_documents_fields.document_count; count++)
-      {
-        for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
-        {
-          memset(database_multiple_documents_fields.item[count][count2],0,strlen(database_multiple_documents_fields.item[count][count2]));
-          memset(database_multiple_documents_fields.value[count][count2],0,strlen(database_multiple_documents_fields.value[count][count2]));
-        }
-      }
-      database_multiple_documents_fields.document_count = 0;
-      database_multiple_documents_fields.database_fields_count = 0;
-    }
-    usleep(200000);
-  }
-  pthread_exit((void *)(intptr_t)1);
-
-  #undef DATABASE_COLLECTION
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: check_maximum_delegates_timer_thread
 Description: Checks the top 150 delegates every round to update their online status
 Return: NULL
@@ -1790,4 +1657,113 @@ void* socket_receive_data_thread(void* parameters)
 }
 pointer_reset(events);
 pthread_exit((void *)(intptr_t)1);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_delegate_online_status
+Description: Sends data to a socket
+Parameters:
+  HOST - The IP address to connect to
+Return: 1 if the IP address is online, 0 if the IP address is offline
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* get_delegate_online_status(void* parameters)
+{
+  // Constants
+  const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
+  
+  // Variables 
+  struct get_delegate_online_status_thread_parameters* data2 = (struct get_delegate_online_status_thread_parameters*)parameters;
+  char data[BUFFER_SIZE];
+  struct sockaddr_in serv_addr;
+  struct pollfd socket_file_descriptors;
+  int socket_settings;
+  int settings;
+  socklen_t socket_option_settings = sizeof(int);
+
+  // define macros
+  #define GET_DELEGATE_ONLINE_STATUS_ERROR \
+  close(SOCKET); \
+  data2->online_status = 0; \
+  pthread_exit((void *)(intptr_t)0);
+
+  memset(data,0,sizeof(data));
+  
+  /* Create the socket  
+  AF_INET = IPV4 support
+  SOCK_STREAM = TCP protocol
+  SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
+  */
+  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+  if (SOCKET == -1)
+  { 
+    GET_DELEGATE_ONLINE_STATUS_ERROR;
+  }
+
+  /* Set the socket options for sending and receiving data
+  SOL_SOCKET = socket level
+  SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
+  */
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  {   
+    GET_DELEGATE_ONLINE_STATUS_ERROR;
+  } 
+
+  // convert the hostname if used, to an IP address
+  memcpy(data,data2->HOST,strnlen(data2->HOST,sizeof(data)));
+  string_replace(data,sizeof(data),"http://","");
+  string_replace(data,sizeof(data),"https://","");
+  string_replace(data,sizeof(data),"www.","");
+  const struct hostent* HOST_NAME = gethostbyname(data); 
+  if (HOST_NAME == NULL)
+  {    
+    GET_DELEGATE_ONLINE_STATUS_ERROR;
+  }
+   
+  
+  /* setup the connection
+  AF_INET = IPV4
+  use htons to convert the port from host byte order to network byte order short
+  */
+  memset(&serv_addr,0,sizeof(struct sockaddr_in));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
+  serv_addr.sin_port = htons(SEND_DATA_PORT);
+
+  /* set the first poll structure to our socket
+  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
+  */
+  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.events = POLLOUT;
+
+  // connect to the socket
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
+  {  
+    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    {
+      GET_DELEGATE_ONLINE_STATUS_ERROR;
+    }
+  }
+
+  // check for the XCASH daemon port
+  serv_addr.sin_port = htons(XCASH_DAEMON_PORT);
+
+  // connect to the socket
+  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
+  {    
+    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    {       
+      GET_DELEGATE_ONLINE_STATUS_ERROR;
+    }    
+  }
+    
+  close(SOCKET);
+  data2->online_status = 1;
+  pthread_exit((void *)(intptr_t)1);
 }

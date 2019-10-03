@@ -4,6 +4,7 @@
 #include <netdb.h> 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/epoll.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -21,6 +22,7 @@
 #include "network_security_functions.h"
 #include "organize_functions.h"
 #include "string_functions.h"
+#include "thread_server_functions.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -953,86 +955,37 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
 
 
 
-
-
-
-
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: get_delegates_online_status
 Description: Get all of the delegates online status
 Parameters:
-Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to sync from a random network data node
+Return: 0 if an error has occured, otherwise the amount of online delegates
 -----------------------------------------------------------------------------------------------------------
 */
 
 int get_delegates_online_status()
 {
   // Variables
-  char str[BUFFER_SIZE];
-  struct sockaddr_in serv_addr;
-  int socket_settings;
-  int settings;
-  socklen_t socket_option_settings = sizeof(int);
-  struct database_multiple_documents_fields database_multiple_documents_fields;
-  size_t count;
-  size_t count2;
-  size_t total_delegates;
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
+  struct get_delegate_online_status_thread_parameters get_delegate_online_status_thread_parameters[MAXIMUM_AMOUNT_OF_DELEGATES];
+  int count;
+  int total_delegates;
+  int total_delegates_online = 0;
+
+  // threads
+  pthread_t thread_id[MAXIMUM_AMOUNT_OF_DELEGATES];
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
   
-  // get the total document count for the delegates database
-  total_delegates = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
-
-  // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < total_delegates; count++)
-  {
-    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
-    {
-       // allocate more for the about and the block_producer_block_heights
-       if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
-       {
-         database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-         database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
-       }
-       else if (count2 == 4)
-       {
-         database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-         database_multiple_documents_fields.value[count][count2] = (char*)calloc(1025,sizeof(char));
-       }
-       else
-       {
-         database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-         database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-       }
-
-       if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
-       {
-         memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-         error_message.total++;
-         print_error_message;  
-         exit(0);
-       }
-     }      
-   } 
-  database_multiple_documents_fields.document_count = 0;
-  database_multiple_documents_fields.database_fields_count = 0;
-
-  // get all of the delegates  
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,total_delegates,0,"",0) == 0)
-  {
-    memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-    memcpy(error_message.data[error_message.total],"Could not get the top 100 delegates for the next round. This means that you will not be able to particpate in the next round",163);
-    error_message.total++;
-    return 0;
-  }
-
-  struct delegates delegates[database_multiple_documents_fields.document_count];
-
   // initialize the delegates struct
-  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
     delegates[count].public_address = (char*)calloc(100,sizeof(char));
     delegates[count].total_vote_count = (char*)calloc(100,sizeof(char));
@@ -1062,126 +1015,57 @@ int get_delegates_online_status()
     }
   }
 
-  // convert the database_multiple_documents_fields to an array of structs
-  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  // organize the delegates
+  total_delegates = organize_delegates(delegates);
+
+  // update the delegates online_status
+  for (count = 0; count < total_delegates; count++)
   {
-    memcpy(delegates[count].public_address,database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],100));
-    memcpy(delegates[count].total_vote_count,database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],100));
-    memcpy(delegates[count].IP_address,database_multiple_documents_fields.value[count][2],strnlen(database_multiple_documents_fields.value[count][2],100));
-    memcpy(delegates[count].delegate_name,database_multiple_documents_fields.value[count][3],strnlen(database_multiple_documents_fields.value[count][3],100));
-    memcpy(delegates[count].about,database_multiple_documents_fields.value[count][4],strnlen(database_multiple_documents_fields.value[count][4],100));
-    memcpy(delegates[count].website,database_multiple_documents_fields.value[count][5],strnlen(database_multiple_documents_fields.value[count][5],100));
-    memcpy(delegates[count].team,database_multiple_documents_fields.value[count][6],strnlen(database_multiple_documents_fields.value[count][6],100));
-    memcpy(delegates[count].pool_mode,database_multiple_documents_fields.value[count][7],strnlen(database_multiple_documents_fields.value[count][7],100));
-    memcpy(delegates[count].fee_structure,database_multiple_documents_fields.value[count][8],strnlen(database_multiple_documents_fields.value[count][8],100));
-    memcpy(delegates[count].server_settings,database_multiple_documents_fields.value[count][9],strnlen(database_multiple_documents_fields.value[count][9],100));
-    memcpy(delegates[count].block_verifier_score,database_multiple_documents_fields.value[count][10],strnlen(database_multiple_documents_fields.value[count][10],100));
-    memcpy(delegates[count].online_status,database_multiple_documents_fields.value[count][11],strnlen(database_multiple_documents_fields.value[count][11],100));
-    memcpy(delegates[count].block_verifier_total_rounds,database_multiple_documents_fields.value[count][12],strnlen(database_multiple_documents_fields.value[count][12],100));
-    memcpy(delegates[count].block_verifier_online_total_rounds,database_multiple_documents_fields.value[count][13],strnlen(database_multiple_documents_fields.value[count][13],100));
-    memcpy(delegates[count].block_verifier_online_percentage,database_multiple_documents_fields.value[count][14],strnlen(database_multiple_documents_fields.value[count][14],100));
-    memcpy(delegates[count].block_producer_total_rounds,database_multiple_documents_fields.value[count][15],strnlen(database_multiple_documents_fields.value[count][15],100));
-    memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],100));
+    if (memcmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {    
+      memset(get_delegate_online_status_thread_parameters[count].HOST,0,sizeof(get_delegate_online_status_thread_parameters[count].HOST));
+      memcpy(get_delegate_online_status_thread_parameters[count].HOST,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(get_delegate_online_status_thread_parameters[count].HOST)));
+      get_delegate_online_status_thread_parameters[count].online_status = 0;
+      pthread_create(&thread_id[count], NULL, &get_delegate_online_status,&get_delegate_online_status_thread_parameters[count]);
+      pthread_detach(thread_id[count]);
+    }
+    else
+    {
+      get_delegate_online_status_thread_parameters[count].online_status = 1;
+    }
   }
-  
-  // organize the delegates by total_vote_count
-  qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates_settings);
 
-  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  sleep(SOCKET_DATA_TIMEOUT_SETTINGS+1);
+
+  for (count = 0; count < total_delegates; count++)
   {
-    color_print(delegates[count].public_address,"yellow");
+    // create the message
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"{\"public_address\":\"",19);
+    memcpy(data2+19,delegates[count].public_address,XCASH_WALLET_LENGTH);
+    memcpy(data2+117,"\"}",2);
+
+    if (get_delegate_online_status_thread_parameters[count].online_status == 1)
+    {
+      memset(data,0,sizeof(data));
+      memcpy(data,"{\"online_status\":\"true\"}",24);
+      total_delegates_online++;
+    }
+    else
+    {
+      memset(data,0,sizeof(data));
+      memcpy(data,"{\"online_status\":\"false\"}",25);
+    } 
+
+    pthread_rwlock_rdlock(&rwlock);
+    while(database_settings != 1)
+    {
+      sleep(1);
+    }
+    pthread_rwlock_unlock(&rwlock);
+    update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,data,0);
   }
-  return 0;
-}
+  return total_delegates_online;
 
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: get_delegate_online_status
-Description: Sends data to a socket
-Parameters:
-  HOST - The IP address to connect to
-Return: 1 if the IP address is online, 0 if the IP address is offline
------------------------------------------------------------------------------------------------------------
-*/
-
-int get_delegate_online_status(const char* HOST)
-{
-  // Variables
-  char str[BUFFER_SIZE];
-  struct sockaddr_in serv_addr;
-  struct pollfd socket_file_descriptors;
-  int socket_settings;
-  int settings;
-  socklen_t socket_option_settings = sizeof(int);
-  
-  memset(str,0,sizeof(str));
-
-  /* Create the socket  
-  AF_INET = IPV4 support
-  SOCK_STREAM = TCP protocol
-  SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings
-  */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-  if (SOCKET == -1)
-  {     
-    return 0;
-  }
-
-  // convert the hostname if used, to an IP address
-  memset(str,0,sizeof(str));
-  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
-  const struct hostent* HOST_NAME = gethostbyname(str); 
-  if (HOST_NAME == NULL)
-  {
-    close(SOCKET);    
-    return 0;
-  } 
-  
-  /* setup the connection
-  AF_INET = IPV4
-  use htons to convert the port from host byte order to network byte order short
-  */
-  memset(&serv_addr,0,sizeof(struct sockaddr_in));
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
-  serv_addr.sin_port = htons(SEND_DATA_PORT);
-
-  /* set the first poll structure to our socket
-  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
-  */
-  socket_file_descriptors.fd = SOCKET;
-  socket_file_descriptors.events = POLLOUT;
-
-  // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
-  {    
-    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
-    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    {       
-      close(SOCKET);
-      return 1;
-    }    
-  }
-
-  // check for the XCASH daemon port
-  serv_addr.sin_port = htons(XCASH_DAEMON_PORT);
-
-  // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
-  {    
-    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
-    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    {       
-      close(SOCKET);
-      return 1;
-    }    
-  }
-
-  close(SOCKET);
-  return 0;
+  #undef DATABASE_COLLECTION
 }
