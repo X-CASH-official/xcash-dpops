@@ -56,8 +56,8 @@ Using define statements instead of constants for increased efficiency
 #define GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" // The place holder bytes for a block verifier that does not create a block verifier signature
 
 // proof of stake
-#define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof
@@ -66,7 +66,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
 #define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
 #define SEND_DATA_PORT 18283 // The port that is used by all nodes to send and receive data
-#define MAXIMUM_CONNECTIONS 100 // The maximum connections a node can have at one time
+#define MAXIMUM_CONNECTIONS 1000 // The maximum connections a node can have at one time
 #define BLOCK_VERIFIERS_SETTINGS 2 // The time in seconds to wait to send data to the block verifiers
 #define TOTAL_CONNECTION_TIME_SETTINGS 10 // The total time a client is given to connect to the server and send data
 #define SOCKET_CONNECTION_TIMEOUT_SETTINGS 10000 // The time in milliseconds, to wait before a connection is cancelled
