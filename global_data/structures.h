@@ -216,7 +216,7 @@ struct database_multiple_documents_fields {
     char* value[MAXIMUM_AMOUNT_OF_DELEGATES][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The value
 };
 
-  struct delegates {
+struct delegates {
     char* public_address;
     char* total_vote_count;
     char* IP_address;
@@ -234,24 +234,24 @@ struct database_multiple_documents_fields {
     char* block_verifier_online_percentage;
     char* block_producer_total_rounds;
     char* block_producer_block_heights;
-  };
+};
 
 
 
  // Thread functions
  struct send_data_socket_thread_parameters {
-    char HOST[BUFFER_SIZE]; // The IP address to send the message to
-    char DATA[BUFFER_SIZE]; // The message
+    char HOST[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The IP address to send the message to
+    char* DATA; // The message
 };
 
  struct send_and_receive_data_socket_thread_parameters {
-    char HOST[BUFFER_SIZE]; // The IP address to send the message to
-    char DATA[BUFFER_SIZE]; // The message
+    char HOST[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The IP address to send the message to
+    char* DATA; // The message
     int COUNT; // The block verifier that received the message
 };
 
 struct get_delegate_online_status_thread_parameters {
-    char HOST[BUFFER_SIZE]; // The IP address to send the message to
+    char HOST[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The IP address to send the message to
     int online_status; // 1 if the delegate is online, 0 if the delegate is offline
 };
 
@@ -366,28 +366,5 @@ struct get_database_data_hash_thread_parameters {
 struct update_delegates_online_status_thread_parameters {
     const char* DATABASE; // The database name
     const char* COLLECTION; // The collection name
-};
-
-
-
- // Server thread functions
- struct total_connection_time_thread_parameters {
-    pid_t process_id; // Holds the forked process ID that the client is connected to
-    char* client_address; // Holds the IP address of the client
-    char* port; // Holds the port number of the client 
-    int data_received; // 1 if the server has received data from the client, otherwise 0
-    int message_settings; // 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
-};
-
- struct mainnode_timeout_thread_parameters {
-    pid_t process_id; // Holds the forked process ID that the client is connected to
-    int data_received; // 1 if the node has received data from the main node, otherwise 0
-    char* main_node; // The main node (VRF_PUBLIC_AND_PRIVATE_KEY, VRF_RANDOM_DATA, BLOCK_PRODUCER)
-    char* current_round_part; // The current round part (1-4).
-    char* current_round_part_backup_node; // The current main node in the current round part (0-5)
-};
-
-struct node_to_node_timeout_thread_parameters {
-    pid_t process_id; // Holds the forked process ID that the client is connected to
 };
 #endif

@@ -184,7 +184,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
     { \
       memset(send_data_socket_thread_parameters[count].HOST,0,sizeof(send_data_socket_thread_parameters[count].HOST)); \
-      memset(send_data_socket_thread_parameters[count].DATA,0,sizeof(send_data_socket_thread_parameters[count].DATA)); \
+      memset(send_data_socket_thread_parameters[count].DATA,0,strlen(send_data_socket_thread_parameters[count].DATA)); \
       memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE)); \
       memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
       pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
@@ -1610,7 +1610,7 @@ void* socket_receive_data_thread(void* parameters)
   const int CONNECTIONS_PER_THREAD = MAXIMUM_CONNECTIONS / total_threads;
   
   // Variables
-  struct epoll_event* events = calloc(CONNECTIONS_PER_THREAD, sizeof(struct epoll_event));
+  struct epoll_event events[CONNECTIONS_PER_THREAD];
   int count;
   int count2;
 
@@ -1655,7 +1655,6 @@ void* socket_receive_data_thread(void* parameters)
      }
    } 
 }
-pointer_reset(events);
 pthread_exit((void *)(intptr_t)1);
 }
 

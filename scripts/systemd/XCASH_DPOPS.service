@@ -3,8 +3,7 @@ Description=XCASH DPOPS
  
 [Service]
 Type=simple
-LimitNOFILE=infinity
-LimitSTACK=infinity
+LimitNOFILE=64000
 User=root
 WorkingDirectory=/root/Installed-Programs/XCASH_DPOPS/
 ExecStart=/root/Installed-Programs/XCASH_DPOPS/XCASH_DPOPS

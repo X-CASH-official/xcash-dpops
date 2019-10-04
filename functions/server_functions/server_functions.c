@@ -508,9 +508,9 @@ int start_current_round_start_blocks(void)
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {    
       memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
-      memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA));
+      memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
       memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
-      memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA)));
+      memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,BUFFER_SIZE));
       send_and_receive_data_socket_thread_parameters[count].COUNT = count;
       pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
       pthread_detach(thread_id[count]);
@@ -757,9 +757,9 @@ int data_network_node_create_block(void)
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
       {  
         memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
-        memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA));
+        memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
         memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
-        memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA)));
+        memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,BUFFER_SIZE));
         send_and_receive_data_socket_thread_parameters[count].COUNT = count;
         pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
         pthread_detach(thread_id[count]);
@@ -905,9 +905,9 @@ int data_network_node_create_block(void)
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
       {    
         memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
-        memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA));
+        memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
         memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
-        memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,sizeof(send_and_receive_data_socket_thread_parameters[count].DATA)));
+        memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,BUFFER_SIZE));
         send_and_receive_data_socket_thread_parameters[count].COUNT = count;
         pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
         pthread_detach(thread_id[count]);
@@ -996,9 +996,9 @@ int start_part_4_of_round(void)
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
     { \
       memset(send_data_socket_thread_parameters[count].HOST,0,sizeof(send_data_socket_thread_parameters[count].HOST)); \
-      memset(send_data_socket_thread_parameters[count].DATA,0,sizeof(send_data_socket_thread_parameters[count].DATA)); \
+      memset(send_data_socket_thread_parameters[count].DATA,0,strlen(send_data_socket_thread_parameters[count].DATA)); \
       memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_data_socket_thread_parameters[count].HOST))); \
-      memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,sizeof(send_data_socket_thread_parameters[count].DATA))); \
+      memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
       pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
       pthread_detach(thread_id[count]); \
     } \
