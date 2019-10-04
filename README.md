@@ -629,7 +629,7 @@ Import the XCASH_DPOPS_Blockchain and save the blockchain in the `XCASH_DPOPS_Bl
 /root/Installed-Programs/XCASH_DPOPS_Test/X-CASH/build/release/bin/xcash-blockchain-import --input-file /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain --data-dir /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test
 ```
 
-Create test blockchain from mainnet blockchain. Copy the .X-CASH folder at ~/X.CASH to the XCASH_DPOPS_Test folder  
+Create test blockchain from mainnet blockchain. Skip this step if you already imported the blockchain. Copy the .X-CASH folder at ~/X.CASH to the XCASH_DPOPS_Test folder  
 `cp -a ~/.X-CASH /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test`
 
 Remove all of the blocks up to 440875  
