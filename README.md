@@ -517,9 +517,9 @@ Make sure to stop the XCASH Wallet service if it is running
 Open the wallet file in the `xcash-wallet-cli`
 
 Once the wallet is fully synchronized run the following:  
-`vote delegates_public_address`
+`vote delegates_public_address | delegates_name`
 
-Replace delegates_public_address with the delegates public address
+Replace delegates_public_address | delegates_name with the delegates public address or delegates name
 
 
 
@@ -587,14 +587,11 @@ cp -a ~/Installed-Programs/X-CASH ~/Installed-Programs/XCASH_DPOPS_Test/X-CASH
 cp -a ~/Installed-Programs/XCASH_DPOPS ~/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS
 ```
 
-Navigate to each folder and change the branch to the `test` branch, and build the binaries  
+Navigate to the X-CASH folder and change the branch to `xcash_proof_of_stake` and then rebuild the binary  
 ```
 cd ~/Installed-Programs/XCASH_DPOPS_Test/X-CASH
-git checkout test
-make clean ; make release
-cd ~/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS
-git checkout test
-make clean ; make release
+git checkout xcash_proof_of_stake
+make clean ; make release -j `nproc`
 ```
 
 Create a wallet file for the wallet you are going to register. **Make sure this is an empty wallet.** This should be a different wallet then the wallet you plan to register for the official DPOPS, to keep your wallets privacy until the official DPOPS  
@@ -611,13 +608,7 @@ cd ~/Installed-Programs
 mkdir XCASH_DPOPS_Blockchain_Test
 ```
 
-Download the XCASH test blockchain from our blockchain download server
-```
-cd ~/Installed-Programs/XCASH_DPOPS_Test/
-wget http://147.135.68.247:8000/XCASH_DPOPS_Blockchain_Test
-```
-
-After the XCASH_DPOPS_Blockchain has downloaded, stop all of the systemd services  
+Stop all of the systemd services  
 ```
 systemctl stop MongoDB
 systemctl stop XCASH_Daemon
@@ -625,10 +616,24 @@ systemctl stop XCASH_Wallet
 systemctl stop XCASH_DPOPS
 ```
 
+If you already have the mainnet blockchain synchronized, skip this step and follow the "Create test blockchain from mainnet blockchain"
+
+Download the XCASH test blockchain from our blockchain download server. 
+```
+cd ~/Installed-Programs/XCASH_DPOPS_Test/
+wget http://147.135.68.247:8000/XCASH_DPOPS_Blockchain_Test
+```
+
 Import the XCASH_DPOPS_Blockchain and save the blockchain in the `XCASH_DPOPS_Blockchain_Test` folder  
 ```
 /root/Installed-Programs/XCASH_DPOPS_Test/X-CASH/build/release/bin/xcash-blockchain-import --input-file /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain --data-dir /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test
 ```
+
+Create test blockchain from mainnet blockchain. Copy the .X-CASH folder at ~/X.CASH to the XCASH_DPOPS_Test folder  
+`cp -a ~/.X-CASH /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test`
+
+Remove all of the blocks up to 440875  
+`/root/Installed-Programs/XCASH_DPOPS_Test/X-CASH/build/release/bin/xcash-blockchain-import --pop-blocks NUMBER_OF_BLOCKS_TO_REMOVE	`
 
 After the blockchain has been imported configure the `XCASH_Daemon`, `XCASH_Daemon_Block_Verifier`, `XCASH_Wallet` and `XCASH_DPOPS` systemd service files for the XCASH_DPOPS test. You should just have to add `/XCASH_DPOPS_Test` to every full path in the systemd service files.
 
@@ -642,6 +647,13 @@ systemctl start XCASH_Daemon
 systemctl start XCASH_Wallet
 systemctl start XCASH_DPOPS
 ```
+
+Check the block height of the XCASH_DPOPS_Blockchain_Test  
+```
+curl -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json'
+```
+
+The block height should be 440875
 
 Check if your wallet has a any XCASH_DPOS_TEST XCASH in it  
 ```
