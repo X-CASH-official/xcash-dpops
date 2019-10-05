@@ -44,13 +44,30 @@ int organize_delegates_settings(const void* DELEGATES1, const void* DELEGATES2)
   // Variables
   size_t count;
   size_t count2;
+  long long int settings;
   struct delegates* delegates1 = (struct delegates*)DELEGATES1;
   struct delegates* delegates2 = (struct delegates*)DELEGATES2;
   
-  sscanf(delegates1->total_vote_count, "%zu", &count);
-  sscanf(delegates2->total_vote_count, "%zu", &count2);
+  settings = strcmp(delegates2->online_status,delegates1->online_status);
 
-  return count2 - count;
+  if (settings == 0)
+  {
+    sscanf(delegates1->total_vote_count, "%zu", &count);
+    sscanf(delegates2->total_vote_count, "%zu", &count2);
+    if (count2 == count)
+    {
+      settings = 0;
+    }
+    else if (count2 - count < 0)
+    {
+      return -1;
+    }
+    else if (count2 - count > 0)
+    {
+      return 1;
+    }
+  }
+  return settings;
 }
 
 
