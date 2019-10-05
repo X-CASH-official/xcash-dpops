@@ -282,15 +282,18 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   const size_t DATA_LENGTH = strnlen(DATA,BUFFER_SIZE);
 
   // Variables
+  char* block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
+  char* data3;
+  char* message_copy1;
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
   size_t count2;
   size_t count3;
   size_t counter;
   size_t number;
-  char* block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3;
-  char* message_copy1;
 
   // define macros
   #define pointer_reset_all \
@@ -320,7 +323,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
     memcpy(error_message.function[error_message.total],"network_block_string_to_blockchain_data",39);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }  
 
@@ -1260,6 +1263,9 @@ int add_data_hash_to_network_block_string(char* network_block_string, char *netw
   // Variables
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count;
   size_t count2;
 
@@ -1284,7 +1290,7 @@ int add_data_hash_to_network_block_string(char* network_block_string, char *netw
     memcpy(error_message.function[error_message.total],"insert_data_hash_into_network_block_string",42);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   } 
 
@@ -1343,11 +1349,6 @@ Return: 0 if an error has occured or it is not verified, 1 if successfull
 int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const int TRANSACTIONS_SETTINGS, const char* BLOCK_HEIGHT, const char* PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES)
 {
   // Variables
-  size_t count;
-  int counter;
-  size_t count2;
-  size_t count3;
-  size_t number;
   char* previous_block_hash = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1355,7 +1356,15 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   char* network_block_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* previous_network_block_reserve_bytes_block_verifiers_public_addresses_data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* previous_network_block_reserve_bytes_block_verifiers_public_addresses[BLOCK_VERIFIERS_AMOUNT];
+  char buffer[1024];
   char* message_copy1;
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
+  size_t count;
+  int counter;
+  size_t count2;
+  size_t count3;
+  size_t number;
 
   // define macros
   #define pointer_reset_all \
@@ -1413,7 +1422,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     memcpy(error_message.function[error_message.total],"verify_network_block_data",25);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }   
 
@@ -1428,7 +1437,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       memcpy(error_message.function[error_message.total],"verify_network_block_data",25);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
       exit(0);
     }
   }

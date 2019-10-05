@@ -255,9 +255,12 @@ Return: The number of occurences of the substring in the string, otherwise 0 if 
 size_t string_count(const char* DATA, const char* STRING)
 {  
   // Variables
+  char buffer[1024];
   char* datacopy1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   // since were going to be changing where datacopy1 is referencing, we need to create a copy to pointer_reset
   char* datacopy2 = datacopy1; 
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count = 0;
 
   // check if the memory needed was allocated on the heap successfully
@@ -266,7 +269,7 @@ size_t string_count(const char* DATA, const char* STRING)
     memcpy(error_message.function[error_message.total],"string_count",12);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 
@@ -302,9 +305,12 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
   if (strstr(data,STR1) != NULL)
   { 
     // Variables
+    char buffer[1024];
     char* datacopy = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
     char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
     char* string;
+    time_t current_date_and_time;
+    struct tm* current_UTC_date_and_time;
     size_t data_length;
     size_t str2_length;
     size_t start;
@@ -333,7 +339,7 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
       memcpy(error_message.function[error_message.total],"string_replace",14);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
       exit(0);
     } 
 
@@ -419,9 +425,12 @@ Return: 0 if an error has occured, 1 if successfull
 int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM)
 {  
   // Variables
+  char buffer[1024];
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   // since were going to be changing where data is referencing, we need to create a copy to pointer_reset
   char* datacopy = data; 
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   int count;
 
   // check if the memory needed was allocated on the heap successfully
@@ -430,7 +439,7 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
     memcpy(error_message.function[error_message.total],"parse_reserve_bytes_data",15);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 

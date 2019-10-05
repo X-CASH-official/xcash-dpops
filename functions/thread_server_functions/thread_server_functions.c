@@ -92,7 +92,7 @@ void* current_block_height_timer_thread(void* parameters)
         block_verifier_settings = start_new_round();
         if (block_verifier_settings == 0)
         {
-          print_error_message;
+          print_error_message(current_date_and_time,current_UTC_date_and_time,data);
         }
         else if (block_verifier_settings == 1)
         {
@@ -118,7 +118,7 @@ void* current_block_height_timer_thread(void* parameters)
           block_verifier_settings = start_new_round();
           if (block_verifier_settings == 0)
           {
-            print_error_message;
+            print_error_message(current_date_and_time,current_UTC_date_and_time,data);
           }
           else if (block_verifier_settings == 1)
           {
@@ -174,7 +174,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
-  print_error_message; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   continue;
 
   #define SEND_DATA_SOCKET_THREAD(message) \
@@ -207,7 +207,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
       exit(0);
     }
   } 
@@ -224,7 +224,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
       exit(0);
     }
   } 
@@ -476,118 +476,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: check_maximum_delegates_timer_thread
-Description: Checks the top 150 delegates every round to update their online status
-Return: NULL
------------------------------------------------------------------------------------------------------------
-*/
-
-void* check_maximum_delegates_timer_thread(void* parameters)
-{
-  // Variables
-  char message[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
-  size_t count;
-  size_t count2;
-  size_t total_delegates;
-  struct database_multiple_documents_fields database_multiple_documents_fields;
-
-  // unused parameters
-  (void)parameters;
-
-  // define macros
-  #define DATABASE_COLLECTION "delegates"
-  
-  memset(message,0,sizeof(message));
-
-  for (;;)
-  {    
-    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time->tm_hour == 0 && current_UTC_date_and_time->tm_min == 10)
-    {
-      // get the total document count for the delegates database
-      total_delegates = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
-
-      // initialize the database_multiple_documents_fields struct 
-      for (count = 0; count < total_delegates; count++)
-      {
-        for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
-        {
-          // allocate more for the about and the block_producer_block_heights
-          if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
-          {
-            database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-            database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
-          }
-          else if (count2 == 4)
-          {
-            database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-            database_multiple_documents_fields.value[count][count2] = (char*)calloc(1025,sizeof(char));
-          }
-          else
-          {
-            database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-            database_multiple_documents_fields.value[count][count2] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
-          }
-      
-          if (database_multiple_documents_fields.item[count][count2] == NULL || database_multiple_documents_fields.value[count][count2] == NULL)
-          {
-            memcpy(error_message.function[error_message.total],"check_maximum_delegates_timer_thread",36);
-            memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-            error_message.total++;
-            print_error_message;  
-            exit(0);
-          }
-        } 
-      } 
-      database_multiple_documents_fields.document_count = 0;
-      database_multiple_documents_fields.database_fields_count = 0;
-
-      // get all of the delegates
-      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,total_delegates,0,"",0) == 0)
-      {
-        memcpy(error_message.function[error_message.total],"check_maximum_delegates_timer_thread",36);
-        memcpy(error_message.data[error_message.total],"Could not get the top 150 delegates to check their online status. This means the delegates database might be unsynced, and you might have to sync the database.",159);
-        error_message.total++;
-        print_error_message;
-      } 
-
-      // check if any of them have a total_vote_count of 0  
-      for (count = 0; count < database_multiple_documents_fields.document_count; count++)
-      {
-         if (memcmp(database_multiple_documents_fields.value[count][TOTAL_DELEGATES_DATABASE_FIELDS-1],"0",1) == 0)
-         {
-           // delete the delegate from the database
-           memset(message,0,sizeof(message));
-           memcpy(message,"{\"public_address\":\"",19);
-           memcpy(message+19,database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);
-           memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
-           delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,0);
-         }
-      }
-
-      // reset the database_multiple_documents_fields struct
-      for (count = 0; count < total_delegates; count++)
-      {
-        for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS; count2++)
-        {
-          pointer_reset(database_multiple_documents_fields.item[count][count2]);
-          pointer_reset(database_multiple_documents_fields.value[count][count2]);
-        }
-      }
-    }
-    sleep(10);
-  }
-  pthread_exit((void *)(intptr_t)1);
-
-  #undef DATABASE_COLLECTION
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: add_block_to_blocks_found
 Description: Adds the block to the blocks_found database
 Return: 0 if an error has occured, else the block reward
@@ -694,6 +582,7 @@ long long int add_block_to_blocks_found(void)
   }
 
   memset(data2,0,sizeof(data2));
+  
   // get the block height of the previous block
   sscanf(current_block_height, "%lld", &number);
   number--;
@@ -920,6 +809,7 @@ Description: Checks if the block verifier has found a block
 void* block_height_timer_thread(void* parameters)
 {
   // Variables
+  char data[1024];
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
   long long int block_reward_number;
@@ -932,7 +822,7 @@ void* block_height_timer_thread(void* parameters)
   memcpy(error_message.function[error_message.total],"block_height_timer_thread",25); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
-  print_error_message; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   continue;
 
   for (;;)

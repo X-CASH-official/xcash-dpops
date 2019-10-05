@@ -230,7 +230,7 @@ int start_new_round(void)
 
     if (calculate_main_nodes_roles() == 0)
     {
-      print_error_message;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);
       
       pthread_rwlock_wrlock(&rwlock);
       // set the main_network_data_node_create_block so the main network data node can create the block
@@ -243,7 +243,7 @@ int start_new_round(void)
     }
     if (start_part_4_of_round() == 0)
     {
-      print_error_message;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);
       color_print("Your block verifier will wait until the next round","red");
       fprintf(stderr,"\n");
     }
@@ -1672,6 +1672,9 @@ Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to 
 int update_block_verifiers_list(void)
 {
   // Variables 
+  char data[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   size_t count;
   size_t count2;
@@ -1750,7 +1753,7 @@ int update_block_verifiers_list(void)
       memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
       exit(0);
     }
   }
@@ -3720,7 +3723,7 @@ int create_server(const int MESSAGE_SETTINGS)
     memcpy(error_message.data[error_message.total],"Error connecting to port ",25);
     memcpy(error_message.data[error_message.total]+25,buffer,strnlen(buffer,BUFFER_SIZE));
     error_message.total++;
-    print_error_message;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);
     exit(0);
   } 
 
@@ -3837,6 +3840,8 @@ int socket_thread(int client_socket)
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   char client_address[BUFFER_SIZE]; 
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   int receive_data_result; 
   struct in_addr ip_address_data;
   struct sockaddr_in addr;
@@ -4078,7 +4083,7 @@ int socket_thread(int client_socket)
  }
  if (error_message.total != 0)
  {
-   print_error_message;
+   print_error_message(current_date_and_time,current_UTC_date_and_time,data2);
  }
 pointer_reset(buffer);
 return 1;

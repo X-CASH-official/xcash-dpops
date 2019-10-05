@@ -39,6 +39,8 @@ int main(int parameters_count, char* parameters[])
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   long int current_time;
   size_t count = 0;
   size_t count2 = 0;
@@ -61,7 +63,7 @@ int main(int parameters_count, char* parameters[])
   memcpy(error_message.function[error_message.total],"main",4); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  print_error_message; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   database_reset; \
   exit(0);
 
@@ -154,7 +156,7 @@ int main(int parameters_count, char* parameters[])
     memcpy(error_message.function[error_message.total],"main",4);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
     exit(0);
   }
 
@@ -173,7 +175,7 @@ int main(int parameters_count, char* parameters[])
       memcpy(error_message.function[error_message.total],"main",4);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
       exit(0);
     }
   }
@@ -225,7 +227,7 @@ int main(int parameters_count, char* parameters[])
     memcpy(error_message.function[error_message.total],"main",4);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
     exit(0);
   }
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -247,7 +249,7 @@ int main(int parameters_count, char* parameters[])
       memcpy(error_message.function[error_message.total],"main",4);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
       exit(0);
     }
   }
@@ -263,7 +265,7 @@ int main(int parameters_count, char* parameters[])
       memcpy(error_message.function[error_message.total],"main",4);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
       exit(0);
     }
   }
@@ -304,7 +306,7 @@ int main(int parameters_count, char* parameters[])
     memcpy(error_message.function[error_message.total],"main",4);
     memcpy(error_message.data[error_message.total],"Could not create a connection for the database",48);
     error_message.total++;
-    print_error_message; 
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
     mongoc_cleanup();
     exit(0);
   }
@@ -318,7 +320,7 @@ int main(int parameters_count, char* parameters[])
     memcpy(error_message.function[error_message.total],"main",4);
     memcpy(error_message.data[error_message.total],"Could not create a pool of connections for the database",55);
     error_message.total++;
-    print_error_message;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);
     mongoc_client_destroy(database_client);
     mongoc_cleanup();
     exit(0);
@@ -329,7 +331,7 @@ int main(int parameters_count, char* parameters[])
     memcpy(error_message.function[error_message.total],"main",4);
     memcpy(error_message.data[error_message.total],"Could not create a thread pool for the database",47);
     error_message.total++;
-    print_error_message; 
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
     mongoc_client_destroy(database_client);
     mongoc_uri_destroy(uri_thread_pool);
     mongoc_cleanup();
@@ -551,7 +553,7 @@ int main(int parameters_count, char* parameters[])
         memcpy(error_message.data[error_message.total],"Could not receive data from ",28);
         memcpy(error_message.data[error_message.total]+28,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
         error_message.total++;
-        print_error_message; 
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
         database_reset;
         exit(0);
       }
@@ -562,7 +564,7 @@ int main(int parameters_count, char* parameters[])
         memcpy(error_message.data[error_message.total],"Could not verify the data from ",31);
         memcpy(error_message.data[error_message.total]+31,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
         error_message.total++;
-        print_error_message; 
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
         database_reset;
         exit(0);
      }
@@ -575,7 +577,7 @@ int main(int parameters_count, char* parameters[])
         memcpy(error_message.data[error_message.total],"Could not receive data from ",28);
         memcpy(error_message.data[error_message.total]+28,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
         error_message.total++;
-        print_error_message; 
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
         database_reset;
         exit(0);
       }

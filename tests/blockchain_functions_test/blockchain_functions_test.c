@@ -168,7 +168,6 @@ int blockchain_functions_test(void)
   else
   {
     color_print("FAILED! Test for verifying the blockchain_data struct","red");
-    print_error_message;
   }
 
   // run the blockchain_data_to_network_block_string test and verify the network_block_string

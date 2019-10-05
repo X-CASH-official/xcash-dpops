@@ -65,6 +65,8 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   char* post_request_data;
   char str[BUFFER_SIZE]; 
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count; 
   size_t counter = 0; 
   size_t receive_data_result; 
@@ -80,7 +82,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     memcpy(error_message.function[error_message.total],"send_http_request",17);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer2);  
     exit(0);
   }
 
@@ -969,6 +971,8 @@ int get_delegates_online_status()
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   struct get_delegate_online_status_thread_parameters get_delegate_online_status_thread_parameters[MAXIMUM_AMOUNT_OF_DELEGATES];
   int count;
@@ -1010,7 +1014,7 @@ int get_delegates_online_status()
       memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
       exit(0);
     }
   }

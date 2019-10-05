@@ -42,6 +42,8 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char data[BUFFER_SIZE];
   char string[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
 
   // define macros
   #define SIGN_DATA_ERROR(settings) \
@@ -57,7 +59,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     memcpy(error_message.function[error_message.total],"sign_data",9);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);
     exit(0);
   } 
 
@@ -179,6 +181,8 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char data[BUFFER_SIZE];
   char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t message_length;
   size_t count;
   size_t count2;
@@ -189,7 +193,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memcpy(error_message.function[error_message.total],"verify_data",11); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  print_error_message; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   pointer_reset_all; \
   return 0;
 
@@ -213,7 +217,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     memcpy(error_message.function[error_message.total],"verify_data",11);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
     exit(0);
   } 
 

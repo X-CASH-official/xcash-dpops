@@ -81,7 +81,7 @@ int organize_delegates(struct delegates* delegates)
   memcpy(error_message.function[error_message.total],"organize_delegates",18); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  print_error_message; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -116,7 +116,7 @@ int organize_delegates(struct delegates* delegates)
          memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
          memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
          error_message.total++;
-         print_error_message;  
+         print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
          exit(0);
        }
      }      

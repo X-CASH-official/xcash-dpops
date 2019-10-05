@@ -205,6 +205,7 @@ Return: 0 if an error has occured, 1 if successfull
 int insert_multiple_documents_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const size_t DATA_TOTAL_LENGTH, const int THREAD_SETTINGS)
 {
   // Variables
+  char buffer[1024];
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
@@ -244,7 +245,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     memcpy(error_message.function[error_message.total],"insert_multiple_documents_into_collection_json",46);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 
@@ -425,6 +426,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   bson_error_t error;
   bson_t* document = NULL; 
   char* message;
+  char buffer[1024];
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   char* settings = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message_copy1;
@@ -461,7 +463,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   } 
 
@@ -662,6 +664,7 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   bson_t* document = NULL; 
   char* message;
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
   int count = 0;
 
   // define macros
@@ -680,7 +683,7 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     memcpy(error_message.function[error_message.total],"read_document_all_fields_from_collection",40);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   } 
 
@@ -780,6 +783,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   bson_t* document_options = NULL;
   char* message;
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
   size_t count = 1;
   size_t counter = 0;
 
@@ -800,7 +804,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     memcpy(error_message.function[error_message.total],"read_multiple_documents_all_fields_from_collection",50);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 
@@ -903,6 +907,7 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   bson_t* update = NULL;
   bson_t* update_settings = NULL;
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
 
   // define macros
   #define database_reset_all \
@@ -920,7 +925,7 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
     memcpy(error_message.function[error_message.total],"update_document_from_collection",31);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   } 
 
@@ -1001,6 +1006,7 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   bson_t* update = NULL;
   bson_t* update_settings = NULL;
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
 
   // define macros
   #define database_reset_all \
@@ -1018,7 +1024,7 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
     memcpy(error_message.function[error_message.total],"update_all_documents_from_collection",36);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   } 
 

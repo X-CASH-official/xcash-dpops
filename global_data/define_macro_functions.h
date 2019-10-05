@@ -82,12 +82,14 @@ Description: Prints all of the functions and error messages
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define print_error_message \
+#define print_error_message(current_date_and_time,current_UTC_date_and_time,buffer) \
 fprintf(stderr,"\n\n"); \
 color_print(TEST_OUTLINE,"red"); \
 fprintf(stderr,"\033[1;31m%s: Error\033[0m\n",error_message.function[0]); \
 get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
-fprintf(stderr,"\033[1;31m%s\033[0m",asctime(current_UTC_date_and_time)); \
+memset(buffer,0,sizeof(buffer)); \
+strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time); \
+fprintf(stderr,"\033[1;31m%s\033[0m",buffer); \
 color_print(TEST_OUTLINE,"red"); \
 fprintf(stderr,"\033[1;31mFunction Calls:\033[0m\n"); \
 for (error_message_count = 0; error_message_count < error_message.total; error_message_count++) \
@@ -99,6 +101,7 @@ for (error_message_count = 0; error_message_count < TOTAL_DELEGATES_DATABASE_FIE
   memset(error_message.function[error_message_count],0,sizeof(error_message.function[error_message_count])); \
   memset(error_message.data[error_message_count],0,sizeof(error_message.data[error_message_count])); \
 } \
+memset(buffer,0,sizeof(buffer)); \
 error_message.total = 0;
 
 

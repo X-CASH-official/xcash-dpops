@@ -155,6 +155,9 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
 {
     // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count = 0;
   size_t count2 = 0;
   size_t counter = 0;
@@ -229,7 +232,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
       memcpy(error_message.function[error_message.total],"server_receive_data_socket_delegates_website_get_statistics",59);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
       exit(0);
     }
   }
@@ -247,7 +250,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
         memcpy(error_message.function[error_message.total],"server_receive_data_socket_delegates_website_get_statistics",59);
         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
         error_message.total++;
-        print_error_message;  
+        print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
         exit(0);
       }
     }
@@ -363,6 +366,9 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
 {
   // Variables
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   struct database_multiple_documents_fields database_data;
   int document_count = 0;
   size_t count = 0;
@@ -423,7 +429,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
         memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates",40);
         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
         error_message.total++;
-        print_error_message;  
+        print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
         exit(0);
       }
     }
@@ -473,7 +479,10 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
 {
   // Variables
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
   char data2[BUFFER_SIZE]; 
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count = 0;
   size_t count2 = 0;
   struct database_document_fields database_data;
@@ -536,7 +545,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
       memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_statistics",51);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
       exit(0);
     }
   }
@@ -568,7 +577,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
       memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
       exit(0);
     }
   }
@@ -678,6 +687,9 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   // Variables
   char data2[BUFFER_SIZE];
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));  
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   int count = 0;
   struct database_document_fields database_data;
 
@@ -755,7 +767,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
       memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_information",52);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
       exit(0);
     }
   }
@@ -807,6 +819,9 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   // Variables
   char data2[BUFFER_SIZE];
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));  
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   int count = 0;
   int counter = 0;
   struct database_multiple_documents_fields database_data;
@@ -906,7 +921,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
         memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_voters_list",52);
         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
         error_message.total++;
-        print_error_message;  
+        print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
         exit(0);
       }
     }
@@ -1054,6 +1069,8 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   // Variables
   char data[BUFFER_SIZE];
   char message[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   int count = 0;
   int counter = 0;
   int total_blocks_found;
@@ -1107,7 +1124,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
         memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66);
         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
         error_message.total++;
-        print_error_message;  
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
         exit(0);
       }
     }
@@ -1191,7 +1208,10 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
 {
   // Variables
-  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));  
+  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
+  char buffer[1024]; 
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   int count = 0;
   int counter = 0;
   struct database_multiple_documents_fields database_data;
@@ -1238,7 +1258,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
         memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_blocks_found",43);
         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
         error_message.total++;
-        print_error_message;  
+        print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
         exit(0);
       }
     }
@@ -1288,6 +1308,8 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   // Variables
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE]; 
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   int count = 0;
   struct database_document_fields database_data;
 
@@ -1347,7 +1369,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
       memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_information",57);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
       error_message.total++;
-      print_error_message;  
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
       exit(0);
     }
   }
@@ -1398,6 +1420,8 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   // Variables
   char data2[BUFFER_SIZE];
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));  
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   int count = 0;
   int counter = 0;
   struct database_multiple_documents_fields database_data;
@@ -1472,7 +1496,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
         memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_payment_information",65);
         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
         error_message.total++;
-        print_error_message;  
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
         exit(0);
       }
     }

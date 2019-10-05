@@ -681,6 +681,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
 
   // define macros
   #define pointer_reset_all \
@@ -710,7 +713,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
     memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update",106);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 
@@ -983,6 +986,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
 
   // define macros
   #define pointer_reset_all \
@@ -1012,7 +1018,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
     memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update",105);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 
@@ -1157,6 +1163,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -1187,7 +1196,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
     memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update",101);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 
@@ -1326,6 +1335,9 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
 
   // define macros
   #define DATABASE_COLLECTION "statistics"
@@ -1356,7 +1368,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
     memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",102);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 
@@ -1638,7 +1650,7 @@ int sync_all_block_verifiers_list(void)
         memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
         memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
         error_message.total++;
-        print_error_message;  
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
         exit(0);
       }
     }
@@ -1839,7 +1851,7 @@ int sync_check_reserve_proofs_database(int settings)
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
     exit(0);
   }
 
@@ -1970,6 +1982,8 @@ int sync_reserve_proofs_database(int settings)
   char data3[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count = 0;
   size_t count2;
   
@@ -2005,7 +2019,7 @@ int sync_reserve_proofs_database(int settings)
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
     exit(0);
   }
 
@@ -2222,7 +2236,7 @@ int sync_check_reserve_bytes_database(int settings)
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
     exit(0);
   }
 
@@ -2358,6 +2372,8 @@ int sync_reserve_bytes_database(int settings)
   char data3[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count = 0;
   size_t count2;
   size_t current_reserve_bytes_database;
@@ -2394,7 +2410,7 @@ int sync_reserve_bytes_database(int settings)
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
     exit(0);
   }
 
@@ -2614,7 +2630,7 @@ int sync_check_delegates_database(int settings)
     memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
     exit(0);
   }
 
@@ -2727,6 +2743,8 @@ int sync_delegates_database(int settings)
   char data3[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count = 0;
   
   // define macros
@@ -2762,7 +2780,7 @@ int sync_delegates_database(int settings)
     memcpy(error_message.function[error_message.total],"sync_delegates_database",23);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
     exit(0);
   }
 
@@ -2886,7 +2904,7 @@ int sync_check_statistics_database(int settings)
     memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
     exit(0);
   }
 
@@ -2999,6 +3017,8 @@ int sync_statistics_database(int settings)
   char data3[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
   size_t count = 0;
   
   // define macros
@@ -3034,7 +3054,7 @@ int sync_statistics_database(int settings)
     memcpy(error_message.function[error_message.total],"sync_statistics_database",24);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message;  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);
     exit(0);
   }
 
