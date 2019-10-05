@@ -2623,7 +2623,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_proofs_",15);
     snprintf(data3+15,sizeof(data3)-16,"%zu",count);
-    if (count_documents_in_collection(DATABASE_NAME,data3,data,0) < MAXIMUM_INVALID_RESERERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
+    if (count_documents_in_collection(DATABASE_NAME,data3,data,0) < MAXIMUM_INVALID_RESERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
     {
       if (insert_document_into_collection_json(DATABASE_NAME,data3,data,0) == 1)
       {        
@@ -2700,7 +2700,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   // Variables
   char block_verifiers_public_address[XCASH_WALLET_LENGTH+1];
   char public_address[XCASH_WALLET_LENGTH+1];
-  char reserve_proof[MAXIMUM_INVALID_RESERERVE_PROOFS];  
+  char reserve_proof[MAXIMUM_INVALID_RESERVE_PROOFS];  
   char data3[BUFFER_SIZE];
   size_t count3;
   int settings;
@@ -3685,7 +3685,7 @@ int create_server(const int MESSAGE_SETTINGS)
   server_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (server_socket == -1)
   {
-    SERVER_ERROR("Error creating socket");
+    SERVER_ERROR("Error creating the socket");
   }
 
   /* Set the socket options
@@ -3746,7 +3746,6 @@ int create_server(const int MESSAGE_SETTINGS)
 
   // create the epoll file descriptor
   epoll_fd = epoll_create1(0);
-
   if (epoll_fd < 0)
   {
     SERVER_ERROR("Error creating the server");

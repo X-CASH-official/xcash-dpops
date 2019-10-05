@@ -195,10 +195,10 @@ struct error_message {
 };
 
 struct invalid_reserve_proofs {  
-    char* block_verifier_public_address[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The block verifiers public address that added the reserve proof
-    char* public_address[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The public address that created the reserve proof
-    char* reserve_proof[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The reserve proof
-    size_t reserve_proof_amount[MAXIMUM_INVALID_RESERERVE_PROOFS]; // The reserve proof amount
+    char* block_verifier_public_address[MAXIMUM_INVALID_RESERVE_PROOFS]; // The block verifiers public address that added the reserve proof
+    char* public_address[MAXIMUM_INVALID_RESERVE_PROOFS]; // The public address that created the reserve proof
+    char* reserve_proof[MAXIMUM_INVALID_RESERVE_PROOFS]; // The reserve proof
+    size_t reserve_proof_amount[MAXIMUM_INVALID_RESERVE_PROOFS]; // The reserve proof amount
     int count; // The amount of reserve proofs in the invalid_reserve_proofs struct
 };
 
@@ -236,7 +236,11 @@ struct delegates {
     char* block_producer_block_heights;
 };
 
-
+struct delegates_online_status {
+    char* public_address;
+    int socket;
+    int settings;
+};
 
  // Thread functions
  struct send_data_socket_thread_parameters {
@@ -248,11 +252,6 @@ struct delegates {
     char HOST[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The IP address to send the message to
     char* DATA; // The message
     int COUNT; // The block verifier that received the message
-};
-
-struct get_delegate_online_status_thread_parameters {
-    char HOST[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The IP address to send the message to
-    int online_status; // 1 if the delegate is online, 0 if the delegate is offline
 };
 
  struct socket_thread_parameters {

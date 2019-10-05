@@ -155,7 +155,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
   char* message = (char*)calloc(524288000,sizeof(char)); // 500 MB
-  char* reserve_proofs[MAXIMUM_INVALID_RESERERVE_PROOFS];
+  char* reserve_proofs[MAXIMUM_INVALID_RESERVE_PROOFS];
   int count;
   int count2;
   size_t block_verifiers_total_vote_count;
@@ -215,7 +215,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   database_multiple_documents_fields.database_fields_count = 0;
 
   // initialize the reserve_proofs array 
-  for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
+  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
   {
     reserve_proofs[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
 
@@ -240,7 +240,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
 
       // copy all of the reserve proofs to the reserve_proofs array
-      for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
+      for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
       {
         memcpy(reserve_proofs[count],invalid_reserve_proofs.reserve_proof[count],strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF));
       }
@@ -255,7 +255,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       memset(data3,0,sizeof(data3));
       if (invalid_reserve_proofs.count > 0)
       {
-        for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
+        for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
         {
           if (memcmp(reserve_proofs[count],"",1) != 0)
           {
@@ -293,7 +293,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       if (sign_data(data2,0) == 0)
       { 
         // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
-        for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
+        for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
         {
           memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
           memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));
@@ -313,7 +313,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
       {
         // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
-        for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
+        for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
         {
           memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
           memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));
@@ -399,7 +399,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       }
       
       // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
-      for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
+      for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
       {
         memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count]));
         memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count]));
@@ -1546,113 +1546,4 @@ void* socket_receive_data_thread(void* parameters)
    } 
 }
 pthread_exit((void *)(intptr_t)1);
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: get_delegate_online_status
-Description: Sends data to a socket
-Parameters:
-  HOST - The IP address to connect to
-Return: 1 if the IP address is online, 0 if the IP address is offline
------------------------------------------------------------------------------------------------------------
-*/
-
-void* get_delegate_online_status(void* parameters)
-{
-  // Constants
-  const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
-  
-  // Variables 
-  struct get_delegate_online_status_thread_parameters* data2 = (struct get_delegate_online_status_thread_parameters*)parameters;
-  char data[BUFFER_SIZE];
-  struct sockaddr_in serv_addr;
-  struct pollfd socket_file_descriptors;
-  int socket_settings;
-  int settings;
-  socklen_t socket_option_settings = sizeof(int);
-
-  // define macros
-  #define GET_DELEGATE_ONLINE_STATUS_ERROR \
-  close(SOCKET); \
-  data2->online_status = 0; \
-  pthread_exit((void *)(intptr_t)0);
-
-  memset(data,0,sizeof(data));
-  
-  /* Create the socket  
-  AF_INET = IPV4 support
-  SOCK_STREAM = TCP protocol
-  SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
-  */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-  if (SOCKET == -1)
-  { 
-    GET_DELEGATE_ONLINE_STATUS_ERROR;
-  }
-
-  /* Set the socket options for sending and receiving data
-  SOL_SOCKET = socket level
-  SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
-  */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
-  {   
-    GET_DELEGATE_ONLINE_STATUS_ERROR;
-  } 
-
-  // convert the hostname if used, to an IP address
-  memcpy(data,data2->HOST,strnlen(data2->HOST,sizeof(data)));
-  string_replace(data,sizeof(data),"http://","");
-  string_replace(data,sizeof(data),"https://","");
-  string_replace(data,sizeof(data),"www.","");
-  const struct hostent* HOST_NAME = gethostbyname(data); 
-  if (HOST_NAME == NULL)
-  {    
-    GET_DELEGATE_ONLINE_STATUS_ERROR;
-  }
-   
-  
-  /* setup the connection
-  AF_INET = IPV4
-  use htons to convert the port from host byte order to network byte order short
-  */
-  memset(&serv_addr,0,sizeof(struct sockaddr_in));
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
-  serv_addr.sin_port = htons(SEND_DATA_PORT);
-
-  /* set the first poll structure to our socket
-  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
-  */
-  socket_file_descriptors.fd = SOCKET;
-  socket_file_descriptors.events = POLLOUT;
-
-  // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
-  {  
-    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
-    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    {
-      GET_DELEGATE_ONLINE_STATUS_ERROR;
-    }
-  }
-
-  // check for the XCASH daemon port
-  serv_addr.sin_port = htons(XCASH_DAEMON_PORT);
-
-  // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
-  {    
-    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
-    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    {       
-      GET_DELEGATE_ONLINE_STATUS_ERROR;
-    }    
-  }
-    
-  close(SOCKET);
-  data2->online_status = 1;
-  pthread_exit((void *)(intptr_t)1);
 }

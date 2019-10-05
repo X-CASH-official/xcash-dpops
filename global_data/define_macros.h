@@ -56,8 +56,8 @@ Using define statements instead of constants for increased efficiency
 #define GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" // The place holder bytes for a block verifier that does not create a block verifier signature
 
 // proof of stake
-#define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof
@@ -87,7 +87,7 @@ Using define statements instead of constants for increased efficiency
 #define BITS_IN_BYTE 8 // 8 bits in 1 byte
 #define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address
 #define BLOCK_VERIFIERS_NAME_TOTAL_LENGTH 100 // The maximum length of the block verifiers name
-#define MAXIMUM_INVALID_RESERERVE_PROOFS 50000 // The maximum invalid reserve proofs for the delegates
+#define MAXIMUM_INVALID_RESERVE_PROOFS 50000 // The maximum invalid reserve proofs for the delegates
 
 // VRF
 #define VRF_PUBLIC_KEY_LENGTH 64

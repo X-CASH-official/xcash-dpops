@@ -279,7 +279,7 @@ int main(int parameters_count, char* parameters[])
   error_message.total = 0;
 
   // initialize the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
-  for (count = 0; count < MAXIMUM_INVALID_RESERERVE_PROOFS; count++)
+  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
   {
     invalid_reserve_proofs.block_verifier_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
     invalid_reserve_proofs.public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -497,10 +497,6 @@ int main(int parameters_count, char* parameters[])
     if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count+1 != (size_t)parameters_count)
     {
       sscanf(parameters[count+1], "%d", &total_threads);
-      if (total_threads > 100)
-      {
-        total_threads = 100;
-      }
     }    
   }
 
