@@ -282,11 +282,36 @@ int start_current_round_start_blocks(void)
 
   // define macros
   #define DATABASE_COLLECTION "reserve_bytes_1"
+
+  #define pointer_reset_all \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    free(send_and_receive_data_socket_thread_parameters[count].DATA); \
+    send_and_receive_data_socket_thread_parameters[count].DATA = NULL; \
+  }
+
   #define START_CURRENT_ROUND_START_BLOCKS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  pointer_reset_all; \
   return 0;
+
+  // initialize the send_and_receive_data_socket_thread_parameters struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+      exit(0);
+    }
+  }
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -537,7 +562,8 @@ int start_current_round_start_blocks(void)
   }
   
   return 1;
-  
+
+  #undef pointer_reset_all  
   #undef DATABASE_COLLECTION
   #undef START_CURRENT_ROUND_START_BLOCKS_ERROR
 }
@@ -568,11 +594,35 @@ int data_network_node_create_block(void)
   pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
 
   // define macros
+  #define pointer_reset_all \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    free(send_and_receive_data_socket_thread_parameters[count].DATA); \
+    send_and_receive_data_socket_thread_parameters[count].DATA = NULL; \
+  }
+
   #define DATA_NETWORK_NODE_CREATE_BLOCK_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  pointer_reset_all; \
   return 0;
+
+  // initialize the send_and_receive_data_socket_thread_parameters struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"data_network_node_create_block",30);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+      exit(0);
+    }
+  }
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -948,7 +998,8 @@ int data_network_node_create_block(void)
   }
   
   return 1;
-  
+
+  #undef pointer_reset_all  
   #undef DATA_NETWORK_NODE_CREATE_BLOCK_ERROR
   #undef SEND_DATA_SOCKET_THREAD
 }
@@ -983,10 +1034,18 @@ int start_part_4_of_round(void)
   pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
 
   // define macros
+  #define pointer_reset_all \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    free(send_data_socket_thread_parameters[count].DATA); \
+    send_data_socket_thread_parameters[count].DATA = NULL; \
+  }
+
   #define START_PART_4_OF_ROUND_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_part_4_of_round",21); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  pointer_reset_all; \
   return 0;  
 
   #define SEND_DATA_SOCKET_THREAD(message) \
@@ -1066,6 +1125,22 @@ int start_part_4_of_round(void)
   pthread_rwlock_unlock(&rwlock); \
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,0); \
   goto start;  
+
+  // initialize the send_data_socket_thread_parameters struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    send_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (send_data_socket_thread_parameters[count].DATA == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"start_part_4_of_round",21);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+      exit(0);
+    }
+  }
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1569,10 +1644,10 @@ int start_part_4_of_round(void)
     memcpy(data3,"reserve_bytes_",14);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
-    if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+    /*if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not add the new block to the database");
-    }
+    }*/
 
     memset(data3,0,sizeof(data3));
 
@@ -1588,7 +1663,7 @@ int start_part_4_of_round(void)
     fprintf(stderr,"\n");
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
-    // have the block producer submit the block to the network
+    /*// have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       if (submit_block_template(data,0) == 0)
@@ -1651,9 +1726,10 @@ int start_part_4_of_round(void)
           sleep(BLOCK_VERIFIERS_SETTINGS);
         } 
       }   
-    }
+    }*/
     return 1;
 
+    #undef pointer_reset_all
     #undef START_PART_4_OF_ROUND_ERROR
     #undef SEND_DATA_SOCKET_THREAD
     #undef RESTART_ROUND

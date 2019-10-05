@@ -354,7 +354,7 @@ int main(int parameters_count, char* parameters[])
   memcpy(current_round_part,"1",1);
   memcpy(current_round_part_backup_node,"0",1);
 
-   /*// get the path of the xcashd
+   // get the path of the xcashd
    if (get_path(verify_block_file,0) == 1)
     {  
        // print the verify_block_file
@@ -365,7 +365,7 @@ int main(int parameters_count, char* parameters[])
     else
     {
       MAIN_ERROR("Could not get the verify block file");
-    }*/
+    }
 
   // get the wallets public address
   if (get_public_address(0) == 1)
@@ -609,13 +609,13 @@ int main(int parameters_count, char* parameters[])
 
   // print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads");
 
-  /*// start the current block height timer thread
+  // start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
   {
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
   
-  color_print("Started the current block height timer thread","green");*/
+  color_print("Started the current block height timer thread","green");
 
   /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)

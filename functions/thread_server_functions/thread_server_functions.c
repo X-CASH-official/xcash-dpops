@@ -72,7 +72,7 @@ void* current_block_height_timer_thread(void* parameters)
   get_current_block_height(current_block_height,0);
   if (start_new_round() == 0)
   {
-    print_error_message;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);
   }
   else
   {

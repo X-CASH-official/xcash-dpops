@@ -42,8 +42,8 @@ Description: organize delegates
 int organize_delegates_settings(const void* DELEGATES1, const void* DELEGATES2)
 {
   // Variables
-  size_t count;
-  size_t count2;
+  long long int count;
+  long long int count2;
   long long int settings;
   struct delegates* delegates1 = (struct delegates*)DELEGATES1;
   struct delegates* delegates2 = (struct delegates*)DELEGATES2;
@@ -52,8 +52,8 @@ int organize_delegates_settings(const void* DELEGATES1, const void* DELEGATES2)
 
   if (settings == 0)
   {
-    sscanf(delegates1->total_vote_count, "%zu", &count);
-    sscanf(delegates2->total_vote_count, "%zu", &count2);
+    sscanf(delegates1->total_vote_count, "%lld", &count);
+    sscanf(delegates2->total_vote_count, "%lld", &count2);
     if (count2 == count)
     {
       settings = 0;
