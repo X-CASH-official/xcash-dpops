@@ -24,6 +24,7 @@
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
 #include "server_functions.h"
+#include "block_verifiers_synchronize_server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
 #include "delegates_website_and_shared_delegates_website_functions.h"
 #include "organize_functions.h"
