@@ -1027,45 +1027,14 @@ int start_part_4_of_round(void)
   size_t count = 0;
   size_t count2;
   size_t counter;
-  struct send_data_socket_thread_parameters send_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   int block_producer_backup_settings[BLOCK_PRODUCERS_BACKUP_AMOUNT] = {0,0,0,0,0};
 
-  // threads
-  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
-
   // define macros
-  #define pointer_reset_all \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    free(send_data_socket_thread_parameters[count].DATA); \
-    send_data_socket_thread_parameters[count].DATA = NULL; \
-  }
-
   #define START_PART_4_OF_ROUND_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_part_4_of_round",21); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset_all; \
-  return 0;  
-
-  #define SEND_DATA_SOCKET_THREAD(message) \
-  sleep(BLOCK_VERIFIERS_SETTINGS); \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
-    { \
-      memset(send_data_socket_thread_parameters[count].HOST,0,sizeof(send_data_socket_thread_parameters[count].HOST)); \
-      memset(send_data_socket_thread_parameters[count].DATA,0,strlen(send_data_socket_thread_parameters[count].DATA)); \
-      memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_data_socket_thread_parameters[count].HOST))); \
-      memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
-      pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
-      pthread_detach(thread_id[count]); \
-    } \
-    if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT) \
-    { \
-       usleep(500000); \
-    } \
-  }
+  return 0; 
 
   #define RESTART_ROUND(message) \
   fprintf(stderr,"\n"); \
@@ -1124,23 +1093,7 @@ int start_part_4_of_round(void)
   } \
   pthread_rwlock_unlock(&rwlock); \
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,0); \
-  goto start;  
-
-  // initialize the send_data_socket_thread_parameters struct
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    send_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (send_data_socket_thread_parameters[count].DATA == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"start_part_4_of_round",21);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
-    }
-  }
+  goto start; 
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1220,7 +1173,10 @@ int start_part_4_of_round(void)
     }
 
     // send the message to all block verifiers
-    SEND_DATA_SOCKET_THREAD(data3);
+    if (block_verifiers_send_data_socket((const char*)data3) == 0)
+    {
+      START_PART_4_OF_ROUND_ERROR("Could not send data to the block verifiers");
+    }
 
     // wait for the block verifiers to process the votes
     sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,10);
@@ -1363,7 +1319,10 @@ int start_part_4_of_round(void)
       }
 
       // send the message to all block verifiers
-      SEND_DATA_SOCKET_THREAD(data);
+      if (block_verifiers_send_data_socket((const char*)data) == 0)
+      {
+        START_PART_4_OF_ROUND_ERROR("Could not send data to the block verifiers");
+      }
     }
     
     // wait for the block verifiers to process the votes
@@ -1496,7 +1455,10 @@ int start_part_4_of_round(void)
     }
 
     // send the message to all block verifiers
-    SEND_DATA_SOCKET_THREAD(data3);
+    if (block_verifiers_send_data_socket((const char*)data3) == 0)
+    {
+      START_PART_4_OF_ROUND_ERROR("Could not send data to the block verifiers");
+    }
 
     // wait for the block verifiers to process the votes
     sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,40);
@@ -1599,7 +1561,10 @@ int start_part_4_of_round(void)
     sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,45);
 
     // send the message to all block verifiers
-    SEND_DATA_SOCKET_THREAD(data3);
+    if (block_verifiers_send_data_socket((const char*)data3) == 0)
+    {
+      START_PART_4_OF_ROUND_ERROR("Could not send data to the block verifiers");
+    }
 
     // wait for the block verifiers to process the votes
     sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,55);
@@ -1728,10 +1693,8 @@ int start_part_4_of_round(void)
       }   
     }*/
     return 1;
-
-    #undef pointer_reset_all
+    
     #undef START_PART_4_OF_ROUND_ERROR
-    #undef SEND_DATA_SOCKET_THREAD
     #undef RESTART_ROUND
 }
 

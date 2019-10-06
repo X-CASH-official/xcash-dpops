@@ -216,6 +216,12 @@ struct database_multiple_documents_fields {
     char* value[MAXIMUM_AMOUNT_OF_DELEGATES][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The value
 };
 
+struct block_verifiers_send_data_socket {
+    char IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
+    int socket;
+    int settings;
+};
+
 struct delegates {
     char* public_address;
     char* total_vote_count;
@@ -243,11 +249,6 @@ struct delegates_online_status {
 };
 
  // Thread functions
- struct send_data_socket_thread_parameters {
-    char HOST[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The IP address to send the message to
-    char* DATA; // The message
-};
-
  struct send_and_receive_data_socket_thread_parameters {
     char HOST[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The IP address to send the message to
     char* DATA; // The message

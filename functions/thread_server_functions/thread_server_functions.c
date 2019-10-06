@@ -160,12 +160,8 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   int count2;
   size_t block_verifiers_total_vote_count;
   size_t block_verifiers_score;
-  struct send_data_socket_thread_parameters send_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   struct database_multiple_documents_fields database_multiple_documents_fields;
-
-  // threads
-  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
-
+  
   // unused parameters
   (void)parameters;
 
@@ -176,25 +172,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   continue;
-
-  #define SEND_DATA_SOCKET_THREAD(message) \
-  sleep(BLOCK_VERIFIERS_SETTINGS); \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
-    { \
-      memset(send_data_socket_thread_parameters[count].HOST,0,sizeof(send_data_socket_thread_parameters[count].HOST)); \
-      memset(send_data_socket_thread_parameters[count].DATA,0,strlen(send_data_socket_thread_parameters[count].DATA)); \
-      memcpy(send_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BUFFER_SIZE)); \
-      memcpy(send_data_socket_thread_parameters[count].DATA,message,strnlen(message,BUFFER_SIZE)); \
-      pthread_create(&thread_id[count], NULL, &send_data_socket_thread,&send_data_socket_thread_parameters[count]); \
-      pthread_detach(thread_id[count]); \
-    } \
-    if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT) \
-    { \
-       usleep(500000); \
-    } \
-  }
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count++)
@@ -304,7 +281,10 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       }
 
       // send the message to all block verifiers
-      SEND_DATA_SOCKET_THREAD(data2);
+      if (block_verifiers_send_data_socket((const char*)data2) == 0)
+      {
+        CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR("Could not send data to the block verifiers");
+      }
 
       // wait for the block verifiers to process the votes
       sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,40);
@@ -464,12 +444,17 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         }
 
         // send the message to all block verifiers
-        SEND_DATA_SOCKET_THREAD(data);
+        if (block_verifiers_send_data_socket((const char*)data) == 0)
+        {
+          CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR("Could not send data to the block verifiers");
+        }
       }
     }      
   }
   pointer_reset(message);
   pthread_exit((void *)(intptr_t)1);
+
+  #undef CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR
 }
 
 
@@ -1110,164 +1095,6 @@ void* payment_timer_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: send_data_socket_thread
-Description: Send a message through a socket on a separate thread
-Parameters:
-  parameters - A pointer to the send_data_socket_thread_parameters struct
-  struct send_data_socket_thread_parameters
-    HOST - The host to send the message to  
-    DATA - The message
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-void* send_data_socket_thread(void* parameters)
-{   
-  // Variables  
-  struct send_data_socket_thread_parameters* data = (struct send_data_socket_thread_parameters*)parameters;
-  size_t HOST_LENGTH = strnlen(data->HOST,BUFFER_SIZE);
-  struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
-  char buffer2[BUFFER_SIZE];
-  char str[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
-  struct sockaddr_in serv_addr;
-  struct pollfd socket_file_descriptors;
-  int socket_settings;
-  int settings;
-  socklen_t socket_option_settings = sizeof(int);
-
-  // define macros
-  #define SEND_DATA_SOCKET_ERROR \
-  close(SOCKET); \
-  pthread_exit((void *)(intptr_t)0); 
-
-  memset(buffer2,0,sizeof(buffer2));
-  memset(str,0,sizeof(str));
-  memset(message,0,sizeof(message));
-  memset(data2,0,sizeof(data2));
-
-  /* Create the socket  
-  AF_INET = IPV4 support
-  SOCK_STREAM = TCP protocol
-  SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
-  */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-  if (SOCKET == -1)
-  { 
-    SEND_DATA_SOCKET_ERROR;
-  }
-
-  /* Set the socket options for sending and receiving data
-  SOL_SOCKET = socket level
-  SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
-  */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
-  { 
-    SEND_DATA_SOCKET_ERROR;
-  } 
-
-  // convert the hostname if used, to an IP address
-  memset(str,0,sizeof(str));
-  memcpy(str,data->HOST,strnlen(data->HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.",""); 
-  const struct hostent* HOST_NAME = gethostbyname(str); 
-  if (HOST_NAME == NULL)
-  {
-    SEND_DATA_SOCKET_ERROR;
-  }
-    
-  // convert the port to a string  
-  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT);
-  
-  /* setup the connection
-  AF_INET = IPV4
-  use htons to convert the port from host byte order to network byte order short
-  */
-  memset(&serv_addr,0,sizeof(struct sockaddr_in));
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
-  serv_addr.sin_port = htons(SEND_DATA_PORT);
-
-  /* set the first poll structure to our socket
-  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
-  */
-  socket_file_descriptors.fd = SOCKET;
-  socket_file_descriptors.events = POLLOUT;
-
-  // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
-  {    
-    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
-    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    { 
-      SEND_DATA_SOCKET_ERROR;
-    }
-  }
-
-  // get the current socket settings
-  socket_settings = fcntl(SOCKET, F_GETFL, NULL);
-  if (socket_settings == -1)
-  {
-    SEND_DATA_SOCKET_ERROR;
-  }
-
-  // set the socket to blocking mode
-  socket_settings &= (~O_NONBLOCK);
-  if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
-  {
-    SEND_DATA_SOCKET_ERROR;
-  }
-
-  // get the current time
-  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-
-  // send the message   
-  memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
-  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING));
-  memcpy(str,"Sending ",8);
-  memcpy(str+8,&message[25],strlen(message) - strlen(strstr(message,"\",\r\n")) - 25);
-  memcpy(str+strlen(str),"\n",1);
-  memcpy(str+strlen(str),data->HOST,HOST_LENGTH);
-  memcpy(str+strlen(str)," on port ",9);
-  memcpy(str+strlen(str),buffer2,strnlen(buffer2,BUFFER_SIZE));
-  memcpy(str+strlen(str),"\n",1);
-  memset(data2,0,sizeof(data2));
-  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
-  memcpy(str+strlen(str),data2,strnlen(data2,sizeof(str)));
-  color_print(str,"green");
-  memset(str,0,sizeof(str));
-
-  const int TOTAL = strnlen(message,BUFFER_SIZE);
-  int sent = 0;
-  int bytes = 0;
-  do {
-    bytes = write(SOCKET,message+sent,TOTAL-sent);
-    if (bytes < 0)
-    { 
-      SEND_DATA_SOCKET_ERROR;
-    }
-    else if (bytes == 0)  
-    {
-      break;
-    }
-    sent+=bytes;
-    } while (sent < TOTAL);
-    close(SOCKET);
-    
-  pthread_exit((void *)(intptr_t)1);
-
-  #undef SEND_DATA_SOCKET_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: send_and_receive_data_socket_thread
 Description: Send a message through a socket and receives the message on a separate thread
 Parameters:
@@ -1390,7 +1217,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
 
   // send the message   
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
-  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING));
+  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
   memcpy(str,"Sending ",8);
   memcpy(str+8,&message[25],strlen(message) - strlen(strstr(message,"\",\r\n")) - 25);
   memcpy(str+strlen(str),"\n",1);

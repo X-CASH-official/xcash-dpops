@@ -520,11 +520,11 @@ int main(int parameters_count, char* parameters[])
   // check if the database is synced, unless this is the main network data node
   if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0)
   {
-    /*// check if all of the databases are synced from a network data node, since their is no way to tell if the previous round could not reach consensus
+    // check if all of the databases are synced from a network data node, since their is no way to tell if the previous round could not reach consensus
     if (check_if_databases_are_synced(2) == 0)
     {
       MAIN_ERROR("Could not check if the databases are synced");
-    }*/
+    }
   }
 
   // check the block verifiers current time, if it is not a network data node
@@ -607,7 +607,7 @@ int main(int parameters_count, char* parameters[])
     }
   }*/
 
-  // print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads");
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
 
   // start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)

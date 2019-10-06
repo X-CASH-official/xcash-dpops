@@ -12,5 +12,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
 int send_data_socket(const char* HOST, const int PORT, const char* DATA);
 int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, const int MESSAGE_SETTINGS, const char* MESSAGE_DATA_SETTINGS);
 int receive_data(const int SOCKET, char *message, const char* STRING, const int RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS, const int RECEIVE_DATA_SOCKET_TIMEOUT);
+int block_verifiers_send_data_socket(const char* MESSAGE);
 int get_delegates_online_status();
 #endif
