@@ -20,6 +20,7 @@
 #include "structures.h"
 #include "variables.h"
 
+#include "block_verifiers_functions.h"
 #include "database_functions.h"
 #include "define_macro_functions.h"
 #include "file_functions.h"
