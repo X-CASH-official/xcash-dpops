@@ -1609,10 +1609,10 @@ int start_part_4_of_round(void)
     memcpy(data3,"reserve_bytes_",14);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
-    /*if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+    if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
     {
       START_PART_4_OF_ROUND_ERROR("Could not add the new block to the database");
-    }*/
+    }
 
     memset(data3,0,sizeof(data3));
 
@@ -1628,7 +1628,7 @@ int start_part_4_of_round(void)
     fprintf(stderr,"\n");
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
-    /*// have the block producer submit the block to the network
+    // have the block producer submit the block to the network
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       if (submit_block_template(data,0) == 0)
@@ -1691,7 +1691,7 @@ int start_part_4_of_round(void)
           sleep(BLOCK_VERIFIERS_SETTINGS);
         } 
       }   
-    }*/
+    }
     return 1;
     
     #undef START_PART_4_OF_ROUND_ERROR
