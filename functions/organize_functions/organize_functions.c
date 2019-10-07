@@ -94,11 +94,22 @@ int organize_delegates(struct delegates* delegates)
   // define macros
   #define DATABASE_COLLECTION "delegates"
 
+  #define pointer_reset_database_array \
+  for (count = 0; (int)count < document_count; count++)
+  { \
+    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS+1; count2++) \
+    { \
+      pointer_reset(database_multiple_documents_fields.item[count][count2]); \
+      pointer_reset(database_multiple_documents_fields.value[count][count2]); \
+    } \
+  }
+
   #define ORGANIZE_DELEGATES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"organize_delegates",18); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  pointer_reset_database_array; \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -167,23 +178,16 @@ int organize_delegates(struct delegates* delegates)
     memcpy(delegates[count].block_verifier_online_percentage,database_multiple_documents_fields.value[count][14],strnlen(database_multiple_documents_fields.value[count][14],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].block_producer_total_rounds,database_multiple_documents_fields.value[count][15],strnlen(database_multiple_documents_fields.value[count][15],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],50000));
-  }
-
-  // reset the database_multiple_documents_fields struct 
-  for (count = 0; (int)count < document_count; count++)
-  {
-    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS+1; count2++)
-    {
-      pointer_reset(database_multiple_documents_fields.item[count][count2]);
-      pointer_reset(database_multiple_documents_fields.value[count][count2]);
-    }
-  }
+  }  
   
   // organize the delegates by total_vote_count
   qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates_settings);
 
+  pointer_reset_database_array;
+
   return database_multiple_documents_fields.document_count;
 
   #undef DATABASE_COLLECTION
+  #undef pointer_reset_database_array
   #undef ORGANIZE_DELEGATES_ERROR
 }

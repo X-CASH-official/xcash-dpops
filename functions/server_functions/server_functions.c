@@ -484,7 +484,7 @@ int socket_thread(int client_socket)
    server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
  }  
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time->tm_sec >= 45 && current_UTC_date_and_time->tm_sec < 55) || (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec >= 30 && current_UTC_date_and_time->tm_sec < 40)))
- {   
+ { 
    server_receive_data_socket_node_to_node((const char*)buffer);
  }
  else if (strstr(buffer,"GET /") != NULL)

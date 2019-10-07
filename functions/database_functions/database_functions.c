@@ -1480,7 +1480,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
   {
     // get the current reserve bytes database
-    get_current_reserve_bytes_database(counter);
+    get_reserve_bytes_database(counter,0);
   }
 
   char database_data_hash[counter][DATA_HASH_LENGTH];

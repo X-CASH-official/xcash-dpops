@@ -67,7 +67,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   memset(random_data,0,sizeof(random_data));
   memset(data,0,sizeof(data));
   memset(string,0,sizeof(string));
-
+  
   // create the random data
   if (random_string(random_data,RANDOM_STRING_LENGTH) == 0)
   {

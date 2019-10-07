@@ -744,7 +744,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // get the current reserve bytes database
-  get_current_reserve_bytes_database(current_reserve_bytes_database);
+  get_reserve_bytes_database(current_reserve_bytes_database,0);
 
   // get the database data hash for the reserve bytes database
   memset(data2,0,strlen(data2));

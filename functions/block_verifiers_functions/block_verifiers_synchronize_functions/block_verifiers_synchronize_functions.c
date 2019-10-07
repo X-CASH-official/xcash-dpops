@@ -128,6 +128,28 @@ int sync_all_block_verifiers_list(void)
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
+  #define pointer_reset_database_array \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
+  { \
+    pointer_reset(delegates[count].public_address); \
+    pointer_reset(delegates[count].total_vote_count); \
+    pointer_reset(delegates[count].IP_address); \
+    pointer_reset(delegates[count].delegate_name); \
+    pointer_reset(delegates[count].about); \
+    pointer_reset(delegates[count].website); \
+    pointer_reset(delegates[count].team); \
+    pointer_reset(delegates[count].pool_mode); \
+    pointer_reset(delegates[count].fee_structure); \
+    pointer_reset(delegates[count].server_settings); \
+    pointer_reset(delegates[count].block_verifier_score); \
+    pointer_reset(delegates[count].online_status); \
+    pointer_reset(delegates[count].block_verifier_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_percentage); \
+    pointer_reset(delegates[count].block_producer_total_rounds); \
+    pointer_reset(delegates[count].block_producer_block_heights); \
+  }
+
   #define SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sync_all_block_verifiers_list",29); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -353,6 +375,7 @@ int sync_all_block_verifiers_list(void)
    // organize the delegates
    if (organize_delegates(delegates) < BLOCK_VERIFIERS_AMOUNT)
    {
+     pointer_reset_database_array;
      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
    }
 
@@ -370,32 +393,13 @@ int sync_all_block_verifiers_list(void)
        memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
     }
 
-    // reset the delegates struct
-    for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-    {
-      pointer_reset(delegates[count].public_address);
-      pointer_reset(delegates[count].total_vote_count);
-      pointer_reset(delegates[count].IP_address);
-      pointer_reset(delegates[count].delegate_name);
-      pointer_reset(delegates[count].about);
-      pointer_reset(delegates[count].website);
-      pointer_reset(delegates[count].team);
-      pointer_reset(delegates[count].pool_mode);
-      pointer_reset(delegates[count].fee_structure);
-      pointer_reset(delegates[count].server_settings);
-      pointer_reset(delegates[count].block_verifier_score);
-      pointer_reset(delegates[count].online_status);
-      pointer_reset(delegates[count].block_verifier_total_rounds);
-      pointer_reset(delegates[count].block_verifier_online_total_rounds);
-      pointer_reset(delegates[count].block_verifier_online_percentage);
-      pointer_reset(delegates[count].block_producer_total_rounds);
-      pointer_reset(delegates[count].block_producer_block_heights);
-    }
+    pointer_reset_database_array;
     color_print("The previous, current and next block verifiers have been loaded from the database","green");
   }
   return 1;
 
   #undef DATABASE_COLLECTION  
+  #undef pointer_reset_database_array
   #undef SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR  
 }
 
@@ -947,7 +951,7 @@ int sync_check_reserve_bytes_database(int settings)
   if (settings == 1)
   {
     // get the current reserve bytes database
-    get_current_reserve_bytes_database(current_reserve_bytes_database);
+    get_reserve_bytes_database(current_reserve_bytes_database,0);
 
     // get the database data hash for the reserve bytes database
     if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
@@ -1137,7 +1141,7 @@ int sync_reserve_bytes_database(int settings)
 
 
   // get the current reserve bytes database
-  get_current_reserve_bytes_database(current_reserve_bytes_database);
+  get_reserve_bytes_database(current_reserve_bytes_database,0);
   
   // get the database data hash for the reserve bytes database
   fprintf(stderr,"Getting the database data from %s\n\n",block_verifiers_ip_address);

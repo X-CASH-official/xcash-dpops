@@ -806,15 +806,42 @@ int get_delegates_online_status(void)
   int count;
   int count2;
   int number;
-  int total_delegates = 4;
+  int total_delegates = 0;
   int total_delegates_online = 0;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
+  #define pointer_reset_database_array \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
+  { \
+    pointer_reset(delegates[count].public_address); \
+    pointer_reset(delegates[count].total_vote_count); \
+    pointer_reset(delegates[count].IP_address); \
+    pointer_reset(delegates[count].delegate_name); \
+    pointer_reset(delegates[count].about); \
+    pointer_reset(delegates[count].website); \
+    pointer_reset(delegates[count].team); \
+    pointer_reset(delegates[count].pool_mode); \
+    pointer_reset(delegates[count].fee_structure); \
+    pointer_reset(delegates[count].server_settings); \
+    pointer_reset(delegates[count].block_verifier_score); \
+    pointer_reset(delegates[count].online_status); \
+    pointer_reset(delegates[count].block_verifier_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_percentage); \
+    pointer_reset(delegates[count].block_producer_total_rounds); \
+    pointer_reset(delegates[count].block_producer_block_heights); \
+  } \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
+  { \
+    pointer_reset(delegates_online_status[count].public_address); \
+  }
+
   #define GET_DELEGATES_ONLINE_STATUS_ERROR(message) \
   memcpy(error_message.function[error_message.total],"get_delegates_online_status",27); \
   memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
   error_message.total++; \
+  pointer_reset_database_array; \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -961,6 +988,8 @@ int get_delegates_online_status(void)
   // Update the delegates online status
   for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
+    if (memcmp(delegates_online_status[count].public_address,"",1) != 0)
+    {
     // create the message
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\"public_address\":\"",19);
@@ -985,16 +1014,19 @@ int get_delegates_online_status(void)
     }
     pthread_rwlock_unlock(&rwlock);
     update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,data,0);  
+    }
   }
 
   // remove the sockets from the epoll file descriptor and close all of the sockets
-  for (count = 0; count < total_delegates; count++)
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, delegates_online_status[count].socket, &events[count]);
     close(delegates_online_status[count].socket);
   }
+  pointer_reset_database_array;
   return total_delegates_online;
 
   #undef DATABASE_COLLECTION
+  #undef pointer_reset_database_array
   #undef GET_DELEGATES_ONLINE_STATUS_ERROR
 }

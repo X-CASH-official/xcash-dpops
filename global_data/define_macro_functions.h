@@ -133,15 +133,19 @@ color_print(TEST_OUTLINE,"blue");
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: get_current_reserve_bytes_database
-Description: gets the current reserve bytes database
+Description: gets the reserve bytes database
 Parameters:
   count - count
 Return: Writes the correct code
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define get_current_reserve_bytes_database(count) \
+#define get_reserve_bytes_database(count,settings) \
 sscanf(current_block_height,"%zu", &count); \
+if (settings == 1) \
+{ \
+  count--; \
+} \
 if (count-1 == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) \
 { \
   count = 1; \
