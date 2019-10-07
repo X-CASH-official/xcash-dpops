@@ -21,6 +21,7 @@
 #include "variables.h"
 
 #include "block_verifiers_functions.h"
+#include "block_verifiers_thread_server_functions.h"
 #include "database_functions.h"
 #include "define_macro_functions.h"
 #include "file_functions.h"
@@ -31,7 +32,6 @@
 #include "organize_functions.h"
 #include "server_functions.h"
 #include "string_functions.h"
-#include "thread_server_functions.h"
 #include "convert.h"
 #include "vrf.h"
 #include "crypto_vrf.h"
@@ -677,67 +677,4 @@ void* send_and_receive_data_socket_thread(void* parameters)
   pthread_exit((void *)(intptr_t)1);
   
   #undef SEND_AND_RECEIVE_DATA_SOCKET_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: socket_receive_data_thread
-Description: socket receive data thread
------------------------------------------------------------------------------------------------------------
-*/
-
-void* socket_receive_data_thread(void* parameters)
-{
-  // Constants
-  const int CONNECTIONS_PER_THREAD = MAXIMUM_CONNECTIONS / total_threads;
-  
-  // Variables
-  struct epoll_event events[CONNECTIONS_PER_THREAD];
-  int count;
-  int count2;
-
-  // unused parameters
-  (void)parameters;
-
-  // define macros
-  #define SOCKET_RECEIVE_DATA_THREAD_ERROR(message) \
-  memcpy(error_message.function[error_message.total],"socket_receive_data_thread",26); \
-  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
-  error_message.total++; \
-  pthread_exit((void *)(intptr_t)1);
-
-  if (events == NULL)
-  {
-    SOCKET_RECEIVE_DATA_THREAD_ERROR("Could not allocate the memory needed on the heap");
-  }
-
-  /* get the events that have a ready signal
-  set the timeout settings to -1 to wait until any file descriptor is ready
-  */ 
- for (;;)
- { 
-   count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, -1);
-   for (count2 = 0; count2 < count; count2++)
-   {    
-     if (events[count2].events & EPOLLERR || events[count2].events & EPOLLHUP || !(events[count2].events & EPOLLIN))
-     {  
-       close(events[count2].data.fd);
-     }
-     else if (events[count2].data.fd == server_socket)
-     {
-       // a file descriptor is ready for a new socket connection
-       new_socket_thread();
-     }
-     else
-     {
-       // a file descriptor is ready for a current socket connection
-      socket_thread(events[count2].data.fd);
-      epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[count2].data.fd, &events_copy);
-      close(events[count2].data.fd);
-     }
-   } 
-}
-pthread_exit((void *)(intptr_t)1);
 }

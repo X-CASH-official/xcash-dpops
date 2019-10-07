@@ -22,17 +22,17 @@
 #include "block_verifiers_synchronize_functions.h"
 #include "database_functions.h"
 #include "delegate_server_functions.h"
-#include "delegates_website_and_shared_delegates_website_functions.h"
+#include "delegates_website_functions.h"
 #include "file_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
 #include "server_functions.h"
+#include "shared_delegates_website_functions.h"
 #include "organize_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
-#include "thread_server_functions.h"
 #include "convert.h"
 #include "vrf.h"
 #include "crypto_vrf.h"
@@ -497,4 +497,164 @@ int socket_thread(int client_socket)
  }
 pointer_reset(buffer);
 return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: socket_receive_data_thread
+Description: socket receive data thread
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* socket_receive_data_thread(void* parameters)
+{
+  // Constants
+  const int CONNECTIONS_PER_THREAD = MAXIMUM_CONNECTIONS / total_threads;
+  
+  // Variables
+  struct epoll_event events[CONNECTIONS_PER_THREAD];
+  int count;
+  int count2;
+
+  // unused parameters
+  (void)parameters;
+
+  // define macros
+  #define SOCKET_RECEIVE_DATA_THREAD_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"socket_receive_data_thread",26); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  error_message.total++; \
+  pthread_exit((void *)(intptr_t)1);
+
+  if (events == NULL)
+  {
+    SOCKET_RECEIVE_DATA_THREAD_ERROR("Could not allocate the memory needed on the heap");
+  }
+
+  /* get the events that have a ready signal
+  set the timeout settings to -1 to wait until any file descriptor is ready
+  */ 
+ for (;;)
+ { 
+   count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, -1);
+   for (count2 = 0; count2 < count; count2++)
+   {    
+     if (events[count2].events & EPOLLERR || events[count2].events & EPOLLHUP || !(events[count2].events & EPOLLIN))
+     {  
+       close(events[count2].data.fd);
+     }
+     else if (events[count2].data.fd == server_socket)
+     {
+       // a file descriptor is ready for a new socket connection
+       new_socket_thread();
+     }
+     else
+     {
+       // a file descriptor is ready for a current socket connection
+      socket_thread(events[count2].data.fd);
+      epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[count2].data.fd, &events_copy);
+      close(events[count2].data.fd);
+     }
+   } 
+}
+pthread_exit((void *)(intptr_t)1);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_files
+Description: gets the files
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  unsigned char* data = (unsigned char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(unsigned char));
+  char data2[BUFFER_SIZE];
+  long file_size;
+  int settings = 0;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR \
+  memcpy(data,"{\"Error\":\"Could not get the file\"}",34); \
+  send_data(CLIENT_SOCKET,data,strlen((const char*)data),400,"application/json"); \
+  pointer_reset(data); \
+  return 0;
+
+  memset(data2,0,sizeof(data2));
+
+  // get the file
+  if (shared_delegates_website == 1)
+  {
+    memcpy(data2,"shared_delegates_website/",25);
+  }
+  if (delegates_website == 1)
+  {
+    memcpy(data2,"delegates_website/",18);
+  }
+  memcpy(data2+strlen(data2),&MESSAGE[(strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5],(strlen(MESSAGE) - strlen(strstr(MESSAGE," HTTP/"))) - ((strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5));
+  file_size = read_file(data,data2);
+  if (file_size == 0)
+  {
+    if (shared_delegates_website == 1)
+    {
+      file_size = read_file(data,"shared_delegates_website/index.html");
+    }
+    if (delegates_website == 1)
+    {
+      file_size = read_file(data,"delegates_website/index.html");
+    }    
+    settings = 1;
+    if (file_size == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
+    }
+  }
+
+  memset(data2,0,sizeof(data2));
+
+  if (strstr(MESSAGE,".html") != NULL || settings == 1)
+  {
+    memcpy(data2,"text/html",9);
+  }
+  else if (strstr(MESSAGE,".js") != NULL)
+  {
+    memcpy(data2,"application/javascript",22);
+  }
+  else if (strstr(MESSAGE,".css") != NULL)
+  {
+    memcpy(data2,"text/css",8);
+  }
+  else if (strstr(MESSAGE,".png") != NULL)
+  {
+    memcpy(data2,"image/png",9);
+  }
+  else if (strstr(MESSAGE,".jpg") != NULL || strstr(MESSAGE,".jpeg") != NULL)
+  {
+    memcpy(data2,"image/jpeg",10);
+  }
+  else
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
+  }
+  
+
+  if (send_data(CLIENT_SOCKET,(unsigned char*)data,(const long)file_size,200,data2) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
+  }
+
+  pointer_reset(data);
+  return 1;
+
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR
 }

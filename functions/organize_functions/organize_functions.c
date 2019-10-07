@@ -112,7 +112,7 @@ int organize_delegates(struct delegates* delegates)
     for (count2 = 0; (int)count2 < TOTAL_DELEGATES_DATABASE_FIELDS+1; count2++)
     {
        // allocate more for the about and the block_producer_block_heights
-       if (count2+1 != TOTAL_DELEGATES_DATABASE_FIELDS)
+       if (count2+1 == TOTAL_DELEGATES_DATABASE_FIELDS)
        {
          database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
          database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
@@ -150,23 +150,23 @@ int organize_delegates(struct delegates* delegates)
   // convert the database_multiple_documents_fields to an array of structs
   for (count = 0; count < database_multiple_documents_fields.document_count; count++)
   {
-    memcpy(delegates[count].public_address,database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],100));
-    memcpy(delegates[count].total_vote_count,database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],100));
-    memcpy(delegates[count].IP_address,database_multiple_documents_fields.value[count][2],strnlen(database_multiple_documents_fields.value[count][2],100));
-    memcpy(delegates[count].delegate_name,database_multiple_documents_fields.value[count][3],strnlen(database_multiple_documents_fields.value[count][3],100));
-    memcpy(delegates[count].about,database_multiple_documents_fields.value[count][4],strnlen(database_multiple_documents_fields.value[count][4],100));
-    memcpy(delegates[count].website,database_multiple_documents_fields.value[count][5],strnlen(database_multiple_documents_fields.value[count][5],100));
-    memcpy(delegates[count].team,database_multiple_documents_fields.value[count][6],strnlen(database_multiple_documents_fields.value[count][6],100));
-    memcpy(delegates[count].pool_mode,database_multiple_documents_fields.value[count][7],strnlen(database_multiple_documents_fields.value[count][7],100));
-    memcpy(delegates[count].fee_structure,database_multiple_documents_fields.value[count][8],strnlen(database_multiple_documents_fields.value[count][8],100));
-    memcpy(delegates[count].server_settings,database_multiple_documents_fields.value[count][9],strnlen(database_multiple_documents_fields.value[count][9],100));
-    memcpy(delegates[count].block_verifier_score,database_multiple_documents_fields.value[count][10],strnlen(database_multiple_documents_fields.value[count][10],100));
-    memcpy(delegates[count].online_status,database_multiple_documents_fields.value[count][11],strnlen(database_multiple_documents_fields.value[count][11],100));
-    memcpy(delegates[count].block_verifier_total_rounds,database_multiple_documents_fields.value[count][12],strnlen(database_multiple_documents_fields.value[count][12],100));
-    memcpy(delegates[count].block_verifier_online_total_rounds,database_multiple_documents_fields.value[count][13],strnlen(database_multiple_documents_fields.value[count][13],100));
-    memcpy(delegates[count].block_verifier_online_percentage,database_multiple_documents_fields.value[count][14],strnlen(database_multiple_documents_fields.value[count][14],100));
-    memcpy(delegates[count].block_producer_total_rounds,database_multiple_documents_fields.value[count][15],strnlen(database_multiple_documents_fields.value[count][15],100));
-    memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],100));
+    memcpy(delegates[count].public_address,database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].total_vote_count,database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].IP_address,database_multiple_documents_fields.value[count][2],strnlen(database_multiple_documents_fields.value[count][2],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].delegate_name,database_multiple_documents_fields.value[count][3],strnlen(database_multiple_documents_fields.value[count][3],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].about,database_multiple_documents_fields.value[count][4],strnlen(database_multiple_documents_fields.value[count][4],1025));
+    memcpy(delegates[count].website,database_multiple_documents_fields.value[count][5],strnlen(database_multiple_documents_fields.value[count][5],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].team,database_multiple_documents_fields.value[count][6],strnlen(database_multiple_documents_fields.value[count][6],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].pool_mode,database_multiple_documents_fields.value[count][7],strnlen(database_multiple_documents_fields.value[count][7],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].fee_structure,database_multiple_documents_fields.value[count][8],strnlen(database_multiple_documents_fields.value[count][8],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].server_settings,database_multiple_documents_fields.value[count][9],strnlen(database_multiple_documents_fields.value[count][9],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].block_verifier_score,database_multiple_documents_fields.value[count][10],strnlen(database_multiple_documents_fields.value[count][10],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].online_status,database_multiple_documents_fields.value[count][11],strnlen(database_multiple_documents_fields.value[count][11],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].block_verifier_total_rounds,database_multiple_documents_fields.value[count][12],strnlen(database_multiple_documents_fields.value[count][12],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].block_verifier_online_total_rounds,database_multiple_documents_fields.value[count][13],strnlen(database_multiple_documents_fields.value[count][13],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].block_verifier_online_percentage,database_multiple_documents_fields.value[count][14],strnlen(database_multiple_documents_fields.value[count][14],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].block_producer_total_rounds,database_multiple_documents_fields.value[count][15],strnlen(database_multiple_documents_fields.value[count][15],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],50000));
   }
 
   // reset the database_multiple_documents_fields struct 
