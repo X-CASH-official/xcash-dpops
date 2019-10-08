@@ -167,11 +167,23 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   (void)parameters;
 
   // define macros
+  #define pointer_reset_database_array \
+  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count++) \
+  { \
+    pointer_reset(database_multiple_documents_fields.item[0][count]); \
+    pointer_reset(database_multiple_documents_fields.value[0][count]); \
+  } \
+  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++) \
+  { \
+    pointer_reset(reserve_proofs[count]); \
+  }
+
   #define CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR(message) \
   memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  pointer_reset_database_array; \
   continue;
 
   // initialize the database_multiple_documents_fields struct 
@@ -453,8 +465,10 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     }      
   }
   pointer_reset(message);
+  pointer_reset_database_array;
   pthread_exit((void *)(intptr_t)1);
 
+  #undef pointer_reset_database_array
   #undef CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR
 }
 

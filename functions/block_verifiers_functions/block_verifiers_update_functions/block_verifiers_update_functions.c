@@ -63,10 +63,33 @@ int update_block_verifiers_list(void)
   int settings = 0;
 
   // define macros
+  #define pointer_reset_database_array \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
+  { \
+    pointer_reset(delegates[count].public_address); \
+    pointer_reset(delegates[count].total_vote_count); \
+    pointer_reset(delegates[count].IP_address); \
+    pointer_reset(delegates[count].delegate_name); \
+    pointer_reset(delegates[count].about); \
+    pointer_reset(delegates[count].website); \
+    pointer_reset(delegates[count].team); \
+    pointer_reset(delegates[count].pool_mode); \
+    pointer_reset(delegates[count].fee_structure); \
+    pointer_reset(delegates[count].server_settings); \
+    pointer_reset(delegates[count].block_verifier_score); \
+    pointer_reset(delegates[count].online_status); \
+    pointer_reset(delegates[count].block_verifier_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_percentage); \
+    pointer_reset(delegates[count].block_producer_total_rounds); \
+    pointer_reset(delegates[count].block_producer_block_heights); \
+  }
+
   #define UPDATE_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  pointer_reset_database_array; \
   return 0;
 
   // reset the previous_block_verifiers_list struct
@@ -178,31 +201,10 @@ int update_block_verifiers_list(void)
   {
     settings = 2;
   } 
-
-  // reset the delegates struct
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    pointer_reset(delegates[count].public_address);
-    pointer_reset(delegates[count].total_vote_count);
-    pointer_reset(delegates[count].IP_address);
-    pointer_reset(delegates[count].delegate_name);
-    pointer_reset(delegates[count].about);
-    pointer_reset(delegates[count].website);
-    pointer_reset(delegates[count].team);
-    pointer_reset(delegates[count].pool_mode);
-    pointer_reset(delegates[count].fee_structure);
-    pointer_reset(delegates[count].server_settings);
-    pointer_reset(delegates[count].block_verifier_score);
-    pointer_reset(delegates[count].online_status);
-    pointer_reset(delegates[count].block_verifier_total_rounds);
-    pointer_reset(delegates[count].block_verifier_online_total_rounds);
-    pointer_reset(delegates[count].block_verifier_online_percentage);
-    pointer_reset(delegates[count].block_producer_total_rounds);
-    pointer_reset(delegates[count].block_producer_block_heights);
-  }
-
+  pointer_reset_database_array;
   return settings;
 
+  #undef pointer_reset_database_array
   #undef UPDATE_BLOCK_VERIFIERS_LIST_ERROR
 }
 
