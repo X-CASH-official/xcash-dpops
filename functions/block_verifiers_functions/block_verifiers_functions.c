@@ -1803,7 +1803,8 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     }
   }
 
-  sleep(BLOCK_VERIFIERS_SETTINGS+1);
+  // wait for all of the sockets to connect
+  sleep(TOTAL_CONNECTION_TIME_SETTINGS);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd, events, BLOCK_VERIFIERS_AMOUNT, 1);
@@ -1853,10 +1854,9 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
       memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
       color_print(data2,"green");
-
-      sent = 0;
-      bytes = 0;
-      do {
+      
+      for (sent = 0, bytes = 0; sent < total; sent+= bytes)
+      {
         bytes = write(block_verifiers_send_data_socket[count].socket,data+sent,total-sent);
         if (bytes < 0)
         { 
@@ -1866,9 +1866,16 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
         {
           break;
         }
-        sent+=bytes;
-        } while (sent < total);
-    }
+      }
+    }    
+  }
+
+  // wait for all of the data to be sent to the connected sockets
+  sleep(BLOCK_VERIFIERS_SETTINGS);
+
+  // remove all of the sockets from the epoll file descriptor and close all of the sockets
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
     close(block_verifiers_send_data_socket[count].socket);
   }

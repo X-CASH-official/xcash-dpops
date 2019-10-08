@@ -502,6 +502,8 @@ void* send_and_receive_data_socket_thread(void* parameters)
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
   int count = 0;
+  int sent;
+  int bytes;
   struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
@@ -613,20 +615,19 @@ void* send_and_receive_data_socket_thread(void* parameters)
   memset(str,0,sizeof(str));
  
   const int TOTAL = strnlen(message,BUFFER_SIZE);
-  int sent = 0;
-  int bytes = 0;
-  do {
+
+  for (sent = 0, bytes = 0; sent < TOTAL; sent+= bytes)
+  {
     bytes = write(SOCKET,message+sent,TOTAL-sent);
     if (bytes < 0)
     { 
-      SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+      continue;
     }
     else if (bytes == 0)  
     {
       break;
     }
-    sent+=bytes;
-    } while (sent < TOTAL);
+  }
 
   // receive the data
   memset(message,0,sizeof(message));

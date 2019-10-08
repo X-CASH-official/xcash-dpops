@@ -853,22 +853,20 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   {
     total = strlen((const char*)data);
   }
-       
-  sent = 0;
-  bytes = 0;
-  do {
+
+  for (sent = 0, bytes = 0; sent < total; sent+= bytes)
+  {
     bytes = write(SOCKET,data+sent,total-sent);
     if (bytes < 0)
-    {             
+    { 
       return 0;
     }
     else if (bytes == 0)  
     {
       break;
     }
-    sent+=bytes;
-    } while (sent < total);
-    return 1;
+  }
+  return 1;
 }
 
 
