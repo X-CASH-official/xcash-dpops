@@ -14,11 +14,11 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_PREMINE_TOTAL_SUPPLY 40000000000 // The total supply of the premine
 #define XCASH_PREMINE_CIRCULATING_SUPPLY 7000000000 // The circulating supply of the premine
 #define XCASH_WALLET_DECIMAL_PLACES_AMOUNT 1000000
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 440875 // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
-#define MAXIMUM_TRANSACATIONS_PER_BLOCK 1000000 // The maximum amount of transaction per block
+#define MAXIMUM_TRANSACATIONS_PER_BLOCK 10000 // The maximum amount of transaction per block
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a XCASH_DPOPS_signature for the signed data
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a XCASH_DPOPS_signature for the signed datas
 
@@ -56,6 +56,7 @@ Using define statements instead of constants for increased efficiency
 #define GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" // The place holder bytes for a block verifier that does not create a block verifier signature
 
 // proof of stake
+#define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
 #define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered

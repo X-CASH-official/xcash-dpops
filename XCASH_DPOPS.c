@@ -230,7 +230,7 @@ int main(int parameters_count, char* parameters[])
     print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
     exit(0);
   }
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
     blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
@@ -354,18 +354,18 @@ int main(int parameters_count, char* parameters[])
   memcpy(current_round_part,"1",1);
   memcpy(current_round_part_backup_node,"0",1);
 
-   // get the path of the xcashd
-   if (get_path(verify_block_file,0) == 1)
-    {  
-       // print the verify_block_file
-      memcpy(data,"Successfully received the verify block file:",44);
-      memcpy(data+44,verify_block_file,strnlen(verify_block_file,sizeof(data)));
-      color_print(data,"green");
-    }
-    else
-    {
-      MAIN_ERROR("Could not get the verify block file");
-    }
+  // get the path of the xcashd
+  if (get_path(verify_block_file,0) == 1)
+  {  
+    // print the verify_block_file
+    memcpy(data,"Successfully received the verify block file:",44);
+    memcpy(data+44,verify_block_file,strnlen(verify_block_file,sizeof(data)));
+    color_print(data,"green");
+  }
+  else
+  {
+    MAIN_ERROR("Could not get the verify block file");
+  }
 
   // get the wallets public address
   if (get_public_address(0) == 1)

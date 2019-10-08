@@ -117,22 +117,22 @@ struct blockchain_reserve_bytes {
     char* vrf_data_round_part_4; // The VRF data for round part 3  
     char* vrf_data; // The VRF data for all of the round parts
     size_t vrf_data_length; // The length of the VRF data for all of the round parts
-    char* block_verifiers_vrf_secret_key_data[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key text that all of the block verifiers create
-    unsigned char* block_verifiers_vrf_secret_key[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key that all of the block verifiers create
+    char* block_verifiers_vrf_secret_key_data[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The VRF secret key text that all of the block verifiers create
+    unsigned char* block_verifiers_vrf_secret_key[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The VRF secret key that all of the block verifiers create
     size_t block_verifiers_vrf_secret_key_data_length; // The amount of characters of the block_verifiers_vrf_secret_key_data
-    char* block_verifiers_vrf_public_key_data[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key text that all of the block verifiers create
-    unsigned char* block_verifiers_vrf_public_key[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key that all of the block verifiers create
+    char* block_verifiers_vrf_public_key_data[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The VRF public key text that all of the block verifiers create
+    unsigned char* block_verifiers_vrf_public_key[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The VRF public key that all of the block verifiers create
     size_t block_verifiers_vrf_public_key_data_length; // The amount of characters of the block_verifiers_vrf_public_key_data
-    char* block_verifiers_random_data[BLOCK_VERIFIERS_AMOUNT]; // The random data that all of the block verifiers create
-    char* block_verifiers_random_data_text[BLOCK_VERIFIERS_AMOUNT]; // The random data text that all of the block verifiers create
+    char* block_verifiers_random_data[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The random data that all of the block verifiers create
+    char* block_verifiers_random_data_text[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The random data text that all of the block verifiers create
     size_t block_verifiers_random_data_length; // The amount of characters of the block_verifiers_random_data
-    char* next_block_verifiers_public_address_data[BLOCK_VERIFIERS_AMOUNT]; // The next_block_verifiers_public_address
-    char* next_block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT]; // The next_block_verifiers_public_address_data text
+    char* next_block_verifiers_public_address_data[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The next_block_verifiers_public_address
+    char* next_block_verifiers_public_address[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The next_block_verifiers_public_address_data text
     size_t next_block_verifiers_public_address_data_length; // The amount of characters of the next_block_verifiers_public_address_data
     char* previous_block_hash_data; // The previous_block_hash
     size_t previous_block_hash_data_length; // The amount of characters of the previous_block_hash_data
-    char* block_validation_node_signature_data[BLOCK_VERIFIERS_AMOUNT]; // The block_validation_node_signature
-    char* block_validation_node_signature[BLOCK_VERIFIERS_AMOUNT]; // The block_validation_node_signature_data text
+    char* block_validation_node_signature_data[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The block_validation_node_signature
+    char* block_validation_node_signature[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The block_validation_node_signature_data text
     size_t block_validation_node_signature_data_length; // The amount of characters of the block_validation_node_signature_data
 };
 

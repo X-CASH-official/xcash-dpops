@@ -616,23 +616,10 @@ systemctl stop XCASH_Wallet
 systemctl stop XCASH_DPOPS
 ```
 
-If you already have the mainnet blockchain synchronized, skip this step and follow the "Create test blockchain from mainnet blockchain"
-
-Download the XCASH test blockchain from our blockchain download server. 
-```
-cd ~/Installed-Programs/XCASH_DPOPS_Test/
-wget http://147.135.68.247:8000/XCASH_DPOPS_Blockchain_Test
-```
-
-Import the XCASH_DPOPS_Blockchain and save the blockchain in the `XCASH_DPOPS_Blockchain_Test` folder  
-```
-/root/Installed-Programs/XCASH_DPOPS_Test/X-CASH/build/release/bin/xcash-blockchain-import --input-file /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain --data-dir /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test
-```
-
-Create test blockchain from mainnet blockchain. Skip this step if you already imported the blockchain. Copy the .X-CASH folder at ~/X.CASH to the XCASH_DPOPS_Test folder  
+Create test blockchain from mainnet blockchain. Copy the .X-CASH folder at ~/X.CASH to the XCASH_DPOPS_Test folder  
 `cp -a ~/.X-CASH /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test`
 
-Remove all of the blocks up to 440875  
+Remove all of the blocks up to 449850 
 `/root/Installed-Programs/XCASH_DPOPS_Test/X-CASH/build/release/bin/xcash-blockchain-import --pop-blocks NUMBER_OF_BLOCKS_TO_REMOVE	`
 
 After the blockchain has been imported configure the `XCASH_Daemon`, `XCASH_Daemon_Block_Verifier`, `XCASH_Wallet` and `XCASH_DPOPS` systemd service files for the XCASH_DPOPS test. You should just have to add `/XCASH_DPOPS_Test` to every full path in the systemd service files.

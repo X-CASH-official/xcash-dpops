@@ -39,7 +39,6 @@ void test(void)
 
   // write the test message
   fprintf(stderr,"Starting Test\n\n");
-
   // initialize the variables
   string2_test = (char*)calloc(BUFFER_SIZE,sizeof(char));
   result_test = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
@@ -62,7 +61,6 @@ void test(void)
     }
     return;
   } 
-
   // run the tests
   XCASH_DPOPS_total_passed_test += blockchain_functions_test();
   XCASH_DPOPS_total_passed_test += database_test(); 

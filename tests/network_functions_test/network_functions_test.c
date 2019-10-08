@@ -104,14 +104,14 @@ void network_daemon_test(void)
   count--;
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   sprintf(data_test,"%zu",count);
-  if (get_block_settings(data_test,0) == 1)
+  if (get_block_settings(data_test,0) != 0)
   {   
-    color_print("PASSED! Test for getting the getting the block settings","green");
+    color_print("PASSED! Test for getting the block settings","green");
     count_test++;
   }
   else
   {
-    color_print("FAILED! Test for getting the getting the block settings","red");
+    color_print("FAILED! Test for getting the block settings","red");
   }  
 
   // test the get_previous_block_hash function
