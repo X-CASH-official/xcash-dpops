@@ -14,6 +14,7 @@
 #include "variables.h"
 
 #include "block_verifiers_thread_server_functions.h"
+#include "block_verifiers_update_functions.h"
 #include "database_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
