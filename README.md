@@ -111,14 +111,14 @@ It is recommended if you are going to run a XCASH DPOPS node, to not keep all of
 
 --test - Run the test to make sure the program is compatible with your system
 
---total_threads "total_threads" - The total threads to use.
-If this parameter is not specified, the default is the number of threads the CPU has.
+--total_threads "total_threads" - The total threads to use. 
+  If this parameter is not specified, the default is the number of threads the CPU has.
 
 --delegates_website - Run the delegates website
 
 --shared_delegates_website --fee "fee" --minimum_amount "minimum_amount" - Run the shared delegates website, with a fee of "fee" and a minimum amount of "minimum_amount"
-The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)
-The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)
+  The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)
+  The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)
 
 --synchronize_database - Synchronize the database from a network data node.
 
