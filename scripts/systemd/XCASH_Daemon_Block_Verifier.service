@@ -5,7 +5,7 @@ Description=XCASH Daemon Block Verifier systemd file
 Type=forking
 User=root
 PIDFile=/root/Installed-Programs/systemdpid/xcash_daemon.pid
-ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcashd --block_verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --detach --pidfile /root/Installed-Programs/systemdpid/xcash_daemon.pid
+ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcashd --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --detach --pidfile /root/Installed-Programs/systemdpid/xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
