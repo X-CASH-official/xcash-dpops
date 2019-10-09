@@ -517,7 +517,7 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
   }
 
-  /*// check if the database is synced, unless this is the main network data node
+  // check if the database is synced, unless this is the main network data node
   if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0)
   {
     // check if all of the databases are synced from a network data node, since their is no way to tell if the previous round could not reach consensus
@@ -525,7 +525,7 @@ int main(int parameters_count, char* parameters[])
     {
       MAIN_ERROR("Could not check if the databases are synced");
     }
-  }*/
+  }
 
   // check the block verifiers current time, if it is not a network data node
   if (network_data_node_settings != 1)
@@ -593,10 +593,10 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not start the server");
   }
 
-  /*// wait for enough block verifiers to start the block verification process
+  // wait for enough block verifiers to start the block verification process
   for (;;)
   {
-    usleep(200000);
+    sleep(60);
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 0)
     {
@@ -605,7 +605,7 @@ int main(int parameters_count, char* parameters[])
         break;
       }
     }
-  }*/
+  }
 
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
 
@@ -660,7 +660,7 @@ int main(int parameters_count, char* parameters[])
   /*// wait for enough block verifiers to start the block verification process
   for (;;)
   {
-    usleep(200000);
+    sleep(60);
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 0)
     {
