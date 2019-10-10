@@ -4,7 +4,7 @@ Description=XCASH Wallet RPC
 [Service]
 Type=simple
 User=root
-ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/Installed-Programs/X-CASH/build/release/bin/WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/Installed-Programs/xcash_wallets/WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
 Restart=always
  
 [Install]
