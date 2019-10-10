@@ -135,6 +135,14 @@ The minimum for a public_address to receive a payment (10000 etc. The minimum am
 
 ### Installation Path
 It is recommend to install the XCASH_DPOPS folder, MongoDB and MongoDB C Driver in the home directory (`/home/$USER/`) or root directory (`/root/`) in a `Installed-Programs` folder
+
+Create the `Installed-Programs` folder  
+`mkdir /root/Installed-Programs`
+
+Create a `xcash_wallets` folder  
+`mkdir /root/Installed-Programs/xcash_wallets`
+
+
  
 ### Install System Packages
 Make sure the systems packages list is up to date  
@@ -163,6 +171,9 @@ sudo mkdir -p /data/db
 sudo chmod 770 /data/db
 sudo chown $USER /data/db
 ```
+
+Then add MongoDB to your path  
+`echo -e '\nexport PATH=MongoDB_folder:$PATH' >> ~/.profile && source ~/.profile
  
  
  
@@ -326,7 +337,7 @@ Description=XCASH Wallet
 [Service]
 Type=simple
 User=root
-ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/Installed-Programs/X-CASH/build/release/bin/WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/Installed-Programs/xcash_wallets/WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
 Restart=always
  
 [Install]
