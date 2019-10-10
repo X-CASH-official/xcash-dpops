@@ -624,15 +624,15 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
 
   if (strstr(MESSAGE,".html") != NULL || settings == 1)
   {
-    memcpy(data2,"text/html",9);
+    memcpy(data2,"text/html; charset=utf-8",24);
   }
   else if (strstr(MESSAGE,".js") != NULL)
   {
-    memcpy(data2,"application/javascript",22);
+    memcpy(data2,"application/javascript; charset=utf-8",37);
   }
   else if (strstr(MESSAGE,".css") != NULL)
   {
-    memcpy(data2,"text/css",8);
+    memcpy(data2,"text/css; charset=utf-8",23);
   }
   else if (strstr(MESSAGE,".png") != NULL)
   {
@@ -642,13 +642,16 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   {
     memcpy(data2,"image/jpeg",10);
   }
+  else if (strstr(MESSAGE,".ico") != NULL)
+  {
+    memcpy(data2,"image/x-icon",12);
+  }
   else
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
-  }
-  
+  } 
 
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,(const long)file_size,200,data2) == 0)
+  if (send_data(CLIENT_SOCKET,data,(const long)file_size,200,data2) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
   }

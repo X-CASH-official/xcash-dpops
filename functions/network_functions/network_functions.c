@@ -865,6 +865,10 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     {
       break;
     }
+    if (MESSAGE_SETTINGS > 1)
+    {
+      usleep(500000);
+    }    
   }
   return 1;
 }
