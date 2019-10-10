@@ -135,6 +135,14 @@ The minimum for a public_address to receive a payment (10000 etc. The minimum am
 
 ### Installation Path
 It is recommend to install the XCASH_DPOPS folder, MongoDB and MongoDB C Driver in the home directory (`/home/$USER/`) or root directory (`/root/`) in a `Installed-Programs` folder
+
+Create the `Installed-Programs` folder  
+`mkdir /root/Installed-Programs`
+
+Create a `xcash_wallets` folder  
+`mkdir /root/Installed-Programs/xcash_wallets`
+
+
  
 ### Install System Packages
 Make sure the systems packages list is up to date  
