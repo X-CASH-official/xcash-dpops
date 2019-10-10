@@ -130,12 +130,6 @@ int create_json_data_from_database_document_array(struct database_document_field
   size_t item_length;
   size_t value_length;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    return 0;
-  }
-
   memcpy(result,"{",1); 
   for (count = 0; count < database_data->count; count++)
   {
@@ -195,12 +189,6 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
   size_t item_length;
   size_t value_length; 
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    return 0;
-  }
-
   memcpy(result,"[",1); 
   
   for (count = 0; count < database_data->document_count; count++)
@@ -238,6 +226,8 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
   memcpy(result+data_count-1,"]",1);
   return 1;
 }
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------
