@@ -239,6 +239,140 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
   return 1;
 }
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: create_json_data_from_database_multiple_documents_array
+Description: Counts the occurences of a string
+Parameters:
+  delegates - A delegates struct
+  result - Where the result is stored
+  document_fields - The document fields to not include in the json data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int create_json_data_from_delegates_array(struct delegates* delegates, char *result, const char* DOCUMENT_FIELDS)
+{
+  // Variables
+  size_t count = 0;
+  
+  memset(result,0,strlen(result));
+  memcpy(result,"[",1); 
+  
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  {
+    if (memcmp(delegates[count].public_address,"",1) != 0)
+    {
+      memcpy(result+strlen(result),"{",1);
+      if (strstr(DOCUMENT_FIELDS,"public_address|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"public_address\":\"",18);
+        memcpy(result+strlen(result),delegates[count].public_address,strlen(delegates[count].public_address));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"total_vote_count|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"total_vote_count\":\"",20);
+        memcpy(result+strlen(result),delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"IP_address|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"IP_address\":\"",14);
+        memcpy(result+strlen(result),delegates[count].IP_address,strlen(delegates[count].IP_address));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"delegate_name|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"delegate_name\":\"",17);
+        memcpy(result+strlen(result),delegates[count].delegate_name,strlen(delegates[count].delegate_name));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"about|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"about\":\"",9);
+        memcpy(result+strlen(result),delegates[count].about,strlen(delegates[count].about));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"website|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"website\":\"",11);
+        memcpy(result+strlen(result),delegates[count].website,strlen(delegates[count].website));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"team|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"team\":\"",8);
+        memcpy(result+strlen(result),delegates[count].team,strlen(delegates[count].team));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"pool_mode|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"pool_mode\":\"",13);
+        memcpy(result+strlen(result),delegates[count].pool_mode,strlen(delegates[count].pool_mode));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"fee_structure|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"fee_structure\":\"",17);
+        memcpy(result+strlen(result),delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"server_settings|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"server_settings\":\"",19);
+        memcpy(result+strlen(result),delegates[count].server_settings,strlen(delegates[count].server_settings));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"block_verifier_score|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"block_verifier_score\":\"",24);
+        memcpy(result+strlen(result),delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"online_status|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"online_status\":\"",17);
+        memcpy(result+strlen(result),delegates[count].online_status,strlen(delegates[count].online_status));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"block_verifier_total_rounds|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"block_verifier_total_rounds\":\"",31);
+        memcpy(result+strlen(result),delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"block_verifier_online_total_rounds|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"block_verifier_online_total_rounds\":\"",38);
+        memcpy(result+strlen(result),delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"block_verifier_online_percentage|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"block_verifier_online_percentage\":\"",36);
+        memcpy(result+strlen(result),delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"block_producer_total_rounds|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"block_producer_total_rounds\":\"",31);
+        memcpy(result+strlen(result),delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"block_producer_block_heights|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"block_producer_block_heights\":\"",32);
+        memcpy(result+strlen(result),delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      memcpy(result+strlen(result)-1,"},",2);
+    }
+  }
+  memcpy(result+strlen(result)-1,"]",1);
+  return 1;
+}
+
 
 
 /*
