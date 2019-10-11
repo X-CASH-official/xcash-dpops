@@ -30,7 +30,6 @@
 #include "network_wallet_functions.h"
 #include "server_functions.h"
 #include "shared_delegates_website_functions.h"
-#include "organize_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
 #include "convert.h"

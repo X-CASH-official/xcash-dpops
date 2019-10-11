@@ -13,6 +13,8 @@
 #include "structures.h"
 #include "variables.h"
 
+#include "shared_delegate_website_thread_server_functions.h"
+
 #include "block_verifiers_thread_server_functions.h"
 #include "block_verifiers_update_functions.h"
 #include "database_functions.h"
@@ -501,6 +503,8 @@ int main(int parameters_count, char* parameters[])
     }    
   }
 
+  calculate_block_reward_for_each_delegate(98723114952);
+
   if (count2 == 1)
   {
     goto disable_synchronizing_databases_and_starting_timers;
@@ -518,7 +522,7 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
   }
 
-  // check if the database is synced, unless this is the main network data node
+  /*// check if the database is synced, unless this is the main network data node
   if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0)
   {
     // check if all of the databases are synced from a network data node, since their is no way to tell if the previous round could not reach consensus
@@ -526,7 +530,7 @@ int main(int parameters_count, char* parameters[])
     {
       MAIN_ERROR("Could not check if the databases are synced");
     }
-  }
+  }*/
 
   // check the block verifiers current time, if it is not a network data node
   if (network_data_node_settings != 1)
@@ -594,7 +598,7 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not start the server");
   }
 
-  // wait for enough block verifiers to start the block verification process
+  /*// wait for enough block verifiers to start the block verification process
   for (;;)
   {
     sleep(60);
@@ -606,17 +610,17 @@ int main(int parameters_count, char* parameters[])
         break;
       }
     }
-  }
+  }*/
 
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
 
-  // start the current block height timer thread
+  /*// start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
   {
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
   
-  color_print("Started the current block height timer thread","green");
+  color_print("Started the current block height timer thread","green");*/
 
   /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
