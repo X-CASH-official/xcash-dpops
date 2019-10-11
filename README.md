@@ -220,6 +220,9 @@ Reload systemd
 Create a systemd PID folder  
 `mkdir ~/Installed-Programs/systemdpid/`
 
+Create a logs folder  
+`mkdir ~/Installed-Programs/logs/`
+
 Create a mongod pid file and a xcashd pid file
 ```
 touch ~/Installed-Programs/systemdpid/mongod.pid
@@ -275,7 +278,7 @@ Description=XCASH Daemon systemd file
 Type=forking
 User=root
 PIDFile=/root/Installed-Programs/systemdpid/xcash_daemon.pid
-ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --detach --pidfile /root/Installed-Programs/systemdpid/xcash_daemon.pid
+ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/Installed-Programs/logs/XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile /root/Installed-Programs/systemdpid/xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -307,7 +310,7 @@ Description=XCASH Daemon Block Verifier systemd file
 Type=forking
 User=root
 PIDFile=/root/Installed-Programs/systemdpid/xcash_daemon.pid
-ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcashd --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --detach --pidfile /root/Installed-Programs/systemdpid/xcash_daemon.pid
+ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcashd --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/Installed-Programs/logs/XCASH_Daemon_Block_Verifier_log.txt --max-log-file-size 0 --detach --pidfile /root/Installed-Programs/systemdpid/xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -483,6 +486,9 @@ To view only the last 100 lines of the log file, you can run
 
 To view live logging of XCASH DPOPS, you can run  
 `journalctl --unit=XCASH_DPOPS --follow -n 100 --output cat`
+
+To view logs for the XCASH_Daemon systemd service file or XCASH_Daemon_Block_Verifier systemd service file  
+`tail -n 100 /root/Installed-Programs/logs/XCASH_Daemon_log.txt` or `tail -n 100 /root/Installed-Programs/logs/XCASH_Daemon_Block_Verifier_log.txt`
  
  
  
