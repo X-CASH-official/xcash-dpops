@@ -799,6 +799,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   long long int total;
   long long int sent;
   long long int bytes;
+  int socket_settings;
 
   if (MESSAGE_SETTINGS == 1)
   {
@@ -854,21 +855,28 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     total = strlen((const char*)data);
   }
 
+  // if loading a file, set the socket to blocking mode
+  if (MESSAGE_SETTINGS > 1)
+  {
+    socket_settings = fcntl(SOCKET, F_GETFL, NULL);
+    socket_settings &= (~O_NONBLOCK);
+    if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
+    {
+      return 0;
+    }
+  } 
+
   for (sent = 0, bytes = 0; sent < total; sent+= bytes)
   {
     bytes = write(SOCKET,data+sent,total-sent);
     if (bytes < 0)
-    { 
+    {      
       return 0;
     }
     else if (bytes == 0)  
     {
       break;
-    }
-    if (MESSAGE_SETTINGS > 1)
-    {
-      usleep(500000);
-    }    
+    }       
   }
   return 1;
 }
