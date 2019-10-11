@@ -779,6 +779,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
+  bson_error_t error;
   bson_t* document = NULL;  
   bson_t* document_options = NULL;
   char* message;
@@ -825,8 +826,16 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
-  
-  document = bson_new();
+
+  if (memcmp(DATA,"",1) == 0)
+  {
+    document = bson_new();
+  }
+  else
+  {
+    document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
+  }
+
   if (!document)
   {
     pointer_reset(data);
@@ -848,17 +857,13 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
       memset(data,0,strnlen(data,BUFFER_SIZE));
       memcpy(data,message,strnlen(message,BUFFER_SIZE));
       bson_free(message); 
+      string_replace(data,BUFFER_SIZE," }, ",", ");
 
-      if ((strncmp(DATA,"",BUFFER_SIZE) == 0) || (strncmp(DATA,"",BUFFER_SIZE) != 0 && strstr(data,DATA) != NULL))
-      {
-        string_replace(data,BUFFER_SIZE," }, ",", ");
-
-        // parse the json data      
-        database_multiple_documents_parse_json_data(data,result,counter);
-        counter++;
-        result->document_count++;
-      }
-     
+      // parse the json data      
+      database_multiple_documents_parse_json_data(data,result,counter);
+      counter++;
+      result->document_count++;
+      
       // check if that is the total amount of documents to read
       if (counter == DOCUMENT_COUNT_TOTAL)
       {
