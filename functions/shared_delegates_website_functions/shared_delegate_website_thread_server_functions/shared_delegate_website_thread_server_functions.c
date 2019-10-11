@@ -195,6 +195,119 @@ long long int add_block_to_blocks_found(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_delegates_total_voters
+Description: Gets the delegates total voters
+Parameters:
+  block_reward - The block reward
+Return: 0 if an error has occured, otherwise the total votes from all of the voters for the delegate
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_delegates_total_voters(struct voters* voters)
+{
+  // Variables
+  char data[1024];
+  char data2[1024];
+  int count;
+  int count2;
+  int counter;
+  int total_votes;
+  long long int number;
+  struct database_multiple_documents_fields database_data;
+
+  #define pointer_reset_database_array \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++) \
+  { \
+    for (count2 = 0; count2 < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count2++) \
+    { \
+      pointer_reset(database_data.item[count][count2]); \
+      pointer_reset(database_data.value[count][count2]); \
+    } \
+  } 
+
+  #define GET_DELEGATES_TOTAL_VOTERS_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"get_delegates_total_voters",26); \
+  memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
+  error_message.total++; \
+  pointer_reset_database_array; \
+  return 0;
+
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+  {
+    for (count2 = 0; count2 < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count2++)
+    {
+      database_data.item[count][count2] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+      database_data.value[count][count2] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+
+      if (database_data.item[count][count2] == NULL || database_data.value[count][count2] == NULL)
+      {
+        memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+        exit(0);
+      }
+    }
+  }
+  database_data.document_count = 0;
+  database_data.database_fields_count = 0;
+
+
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"public_address_voted_for\":\"",29);
+  memcpy(data+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+127,"\"}",2);
+
+  // get the count of how many public addresses voted for the delegate
+  for (total_votes = 0, counter = 1; counter <= TOTAL_RESERVE_PROOFS_DATABASES; counter++)
+  { 
+    memset(data2,0,strlen(data2));
+    memcpy(data2,"reserve_proofs_",15);
+    snprintf(data2+15,sizeof(data2)-16,"%d",counter);
+    count2 = count_documents_in_collection(DATABASE_NAME,data2,data,0);
+
+    if (count2 > 0)
+    {
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data2,data,&database_data,1,count2,0,"",0) == 0)
+      {
+        GET_DELEGATES_TOTAL_VOTERS_ERROR("Could not read the reserve proofs database.\nCould not calculate the block reward for each delegate");
+      }
+
+      // copy the data to the voters struct
+      for (count = 0; count < count2; count++)
+      {
+        memcpy(voters[count].public_address,database_data.value[count][0],XCASH_WALLET_LENGTH);
+        memcpy(voters[count].total_vote_count,database_data.value[count][2],strnlen(database_data.value[count][2],100));
+        sscanf(voters[count].total_vote_count, "%lld", &number);
+        voters[count].total_votes = number;
+        total_votes += number;
+      }
+
+      // reset the database_multiple_documents_fields struct
+      for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+      {
+        for (count2 = 0; count2 < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count2++)
+        {
+          memset(database_data.item[count][count2],0,strlen(database_data.item[count][count2]));
+          memset(database_data.value[count][count2],0,strlen(database_data.item[count][count2]));
+        }
+      }
+      database_data.document_count = 0;
+      database_data.database_fields_count = 0;
+    }
+  }
+  pointer_reset_database_array;
+  return total_votes;
+
+  #undef pointer_reset_database_array
+  #undef GET_DELEGATES_TOTAL_VOTERS_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: calculate_block_reward_for_each_delegate
 Description: Calculates the block reward for each delegate
 Parameters:
