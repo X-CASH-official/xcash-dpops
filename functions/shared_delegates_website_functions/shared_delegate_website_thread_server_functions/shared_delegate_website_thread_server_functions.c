@@ -128,35 +128,41 @@ long long int add_block_to_blocks_found(void)
   number--;
   sprintf(block_height,"%lld",number);
 
-  // get the block count
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_data,1,document_count,1,"total_vote_count_number",0) == 0)
+  // get the lat block height of the last block found to calculate the average
+  if (document_count > 0)
   {
-    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not read the blocks_found database.\nCould not check if the block verifier found the last block.");
-  }
-
-  // loop through all blocks found, and find the last block height
-  for (block_reward_number = 0, count = 0; count < document_count; count++)
-  {
-    for (count2 = 0; count2 < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; count2++)
+    // get the block count
+    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_data,1,document_count,1,"total_vote_count_number",0) == 0)
     {
-      if (memcmp(database_data.item[count][count2],"block_height",12) == 0)
+      ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not read the blocks_found database.\nCould not check if the block verifier found the last block.");
+    }
+
+    // loop through all blocks found, and find the last block height
+    for (count = 0; count < document_count; count++)
+    {
+      for (count2 = 0; count2 < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; count2++)
       {
-        sscanf(database_data.value[count][count2], "%lld", &number);
-        if (number > block_height_number)
+        if (memcmp(database_data.item[count][count2],"block_height",12) == 0)
         {
-          block_height_number = number;
+          sscanf(database_data.value[count][count2], "%lld", &number);
+          if (number > block_height_number)
+          {
+            block_height_number = number;
+          }
         }
       }
     }
-  }
-
-  memset(data2,0,sizeof(data2));
-  
-  // get the block height of the previous block
-  sscanf(current_block_height, "%lld", &number);
-  number--;
-  number -= block_height_number;
-  sprintf(data2,"%lld",block_height_number);
+    // get the block height of the previous block
+    sscanf(current_block_height, "%lld", &number);
+    number--;
+    number -= block_height_number;
+    sprintf(data2,"%lld",number);
+  }  
+  else
+  {
+    // set it to the default average
+    memcpy(data2,"100",3);
+  } 
 
   // add the blocks data
   memset(data,0,sizeof(data));

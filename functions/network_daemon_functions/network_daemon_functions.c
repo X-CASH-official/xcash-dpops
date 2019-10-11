@@ -526,7 +526,6 @@ int check_found_block(void)
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  char* message;
   char result[BUFFER_SIZE];
   size_t block_height;
   size_t count;
@@ -569,7 +568,7 @@ int check_found_block(void)
   {
     snprintf(data+count2,(XCASH_WALLET_LENGTH*2)-1,"%02x",xcash_wallet_public_address[count] & 0xFF);
   }
-  
+
   // check if the block verifier was the block producer for the previous block
   if (string_count(result,data) == 2)
   {
