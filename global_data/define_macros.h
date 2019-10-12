@@ -76,6 +76,7 @@ Using define statements instead of constants for increased efficiency
 #define SOCKET_CONNECTION_TIMEOUT_SETTINGS 5000 // The time in milliseconds, to wait before a connection is cancelled
 #define SOCKET_DATA_TIMEOUT_SETTINGS 5 // The time in between read calls where there is no data
 #define RECEIVE_DATA_TIMEOUT_SETTINGS 5 // The maximum amount of time to wait for the total data, once data has been read
+#define SEND_PAYMENT_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 
@@ -105,10 +106,15 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
 #define DATABASE_NAME_DELEGATES "XCASH_PROOF_OF_STAKE_DELEGATES" // The name of the database for the delegates
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
-#define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The total delegates database fields
-#define TOTAL_RESERVE_PROOFS_DATABASE_FIELDS 4 // The total delegates database fields
+#define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The reserve bytes database fields
+#define TOTAL_RESERVE_PROOFS_DATABASE_FIELDS 4 // The reserve proofs database fields
 #define TOTAL_DELEGATES_DATABASE_FIELDS 17 // The total delegates database fields
 #define TOTAL_STATISTICS_DATABASE_FIELDS 7 // The total statistics database fields
+#define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4 // The total public addresses database fields
+#define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5 // The total blocks found database fields
+
+// Shared delegates settings
+#define VOTER_INACTIVITY_COUNT "30" // the number of days to wait to remove an inactive delegates information from the database
 
 // network data nodes
 #define NETWORK_DATA_NODES_AMOUNT 2 // The amount of network data nodes

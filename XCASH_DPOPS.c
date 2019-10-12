@@ -503,8 +503,6 @@ int main(int parameters_count, char* parameters[])
     }    
   }
 
-  calculate_block_reward_for_each_delegate(98723114952);
-
   if (count2 == 1)
   {
     goto disable_synchronizing_databases_and_starting_timers;

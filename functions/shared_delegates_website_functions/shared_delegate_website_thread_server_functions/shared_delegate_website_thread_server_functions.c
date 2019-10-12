@@ -69,7 +69,6 @@ long long int add_block_to_blocks_found(void)
   int document_count = 0;
 
   // define macros
-  #define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5
   #define DATABASE_COLLECTION "blocks_found"
 
   #define ADD_BLOCK_TO_BLOCKS_FOUND_ERROR(message) \
@@ -185,7 +184,6 @@ long long int add_block_to_blocks_found(void)
   pointer_reset_database_array;
   return block_reward_number;
 
-  #undef TOTAL_BLOCKS_FOUND_DATABASE_FIELDS
   #undef DATABASE_COLLECTION
   #undef ADD_BLOCK_TO_BLOCKS_FOUND_ERROR
   #undef pointer_reset_database_array
@@ -322,13 +320,9 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
-  char current_delegates_public_address[XCASH_WALLET_LENGTH+1];
-  char current_delegates_total_votes[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
   int count;
-  int count2;
-  int public_address_count;
   long long int number;
   long long int total_votes;
   int total_voters;
@@ -530,9 +524,6 @@ void* payment_timer_thread(void* parameters)
   (void)parameters;
 
   // define macros
-  #define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4
-  #define INACTIVITY_COUNT "30" // the number of days to wait to remove an inactive delegates information from the database
-
   #define PAYMENT_TIMER_THREAD_ERROR(message) \
   memcpy(error_message.function[error_message.total],"payment_timer_thread",20); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
@@ -621,7 +612,7 @@ void* payment_timer_thread(void* parameters)
           memset(data3,0,sizeof(data3));
           memset(payment_tx_hash,0,sizeof(payment_tx_hash));
           memset(payment_tx_key,0,sizeof(payment_tx_key));
-
+          
           if (send_payment(public_address, current_total, payment_tx_hash, payment_tx_key) == 0)
           {
             PAYMENT_TIMER_THREAD_ERROR("Could not send a payment.\nCould not send payments.");
@@ -694,7 +685,7 @@ void* payment_timer_thread(void* parameters)
           PAYMENT_TIMER_THREAD_ERROR("Could not read the inactivity_count from the database.\nCould not send payments.");
         }
 
-        if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,INACTIVITY_COUNT,BUFFER_SIZE) == 0)
+        if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) == 0)
         {
           // convert the total_xcash to a number
           sscanf(data3, "%lld", &number);
@@ -721,7 +712,7 @@ void* payment_timer_thread(void* parameters)
             PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity_count for the database.\nCould not send payments.");
           }
         }
-        else if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,INACTIVITY_COUNT,BUFFER_SIZE) == 0)
+        else if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) == 0)
         {
           // remove the document from the database
           if (delete_document_from_collection(DATABASE_NAME,"public_addresses",data,0) == 0)
@@ -741,9 +732,9 @@ void* payment_timer_thread(void* parameters)
     }
     sleep(10);
   }
+  pointer_reset_database_array;
   pthread_exit((void *)(intptr_t)1);
-
-  #undef TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS
-  #undef INACTIVITY_COUNT
+  
   #undef BLOCK_HEIGHT_TIMER_THREAD_ERROR
+  #undef pointer_reset_database_array
 }
