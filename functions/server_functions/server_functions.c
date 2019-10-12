@@ -207,10 +207,10 @@ int new_socket_thread(void)
 
   while ((client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen)) != -1)
   {
-    // set the socket to non blocking
+    /*// set the socket to non blocking
     settings = fcntl(client_socket, F_GETFL, 0);
     settings |= O_NONBLOCK;
-    fcntl(client_socket, F_SETFL, settings);
+    fcntl(client_socket, F_SETFL, settings);*/
 
     /* create the epoll_event struct
     EPOLLIN = signal when the file descriptor is ready to read

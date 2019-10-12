@@ -80,6 +80,14 @@ void* current_block_height_timer_thread(void* parameters)
     fprintf(stderr,"\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
   }*/
 
+  // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
+  do
+  {
+    get_current_block_height(current_block_height,0);
+    sscanf(current_block_height,"%zu", &count);
+    sleep(1);
+  } while (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT);
+
   for (;;)
   {
     // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
@@ -88,8 +96,7 @@ void* current_block_height_timer_thread(void* parameters)
     if ((settings == 0 && current_UTC_date_and_time->tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time->tm_sec == 0) || (settings == 1 && current_UTC_date_and_time->tm_min % BLOCK_TIME == 0))
     {
       if (settings == 0)
-      {
-        get_current_block_height(current_block_height,0);
+      {        
         block_verifier_settings = start_new_round();
         if (block_verifier_settings == 0)
         {
