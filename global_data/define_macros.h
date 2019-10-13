@@ -14,16 +14,10 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_PREMINE_TOTAL_SUPPLY 40000000000 // The total supply of the premine
 #define XCASH_PREMINE_CIRCULATING_SUPPLY 7000000000 // The circulating supply of the premine
 #define XCASH_WALLET_DECIMAL_PLACES_AMOUNT 1000000
-<<<<<<< HEAD
-#define EMMISION_FACTOR 524288 // The emmision factor (2^19)
-#define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake
-=======
 #define XCASH_EMMISION_FACTOR 524288 // The emmision factor (2^19)
 #define XCASH_DPOPS_EMMISION_FACTOR 262144 // The XCASH_DPOPS emmision factor (2^18)
 #define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 440875 // The start block height for X-CASH proof of stake
->>>>>>> develop
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction

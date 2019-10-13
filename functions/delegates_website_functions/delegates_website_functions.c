@@ -216,9 +216,6 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   generated_supply = FIRST_BLOCK_MINING_REWARD + XCASH_PREMINE_TOTAL_SUPPLY;
   for (counter = 2; counter < block_height; counter++)
   { 
-<<<<<<< HEAD
-    generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / EMMISION_FACTOR;
-=======
     if (counter < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {
       generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_EMMISION_FACTOR;
@@ -227,7 +224,6 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
     {
       generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_DPOPS_EMMISION_FACTOR;
     }
->>>>>>> develop
   }  
 
   number = ((size_t)((((double)count2) / ((generated_supply - (XCASH_PREMINE_TOTAL_SUPPLY - XCASH_PREMINE_CIRCULATING_SUPPLY)) * XCASH_WALLET_DECIMAL_PLACES_AMOUNT)) * 100) | 0);

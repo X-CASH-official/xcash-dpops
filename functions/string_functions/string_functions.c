@@ -232,11 +232,7 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: create_json_data_from_database_multiple_documents_array
-<<<<<<< HEAD
-Description: Counts the occurences of a string
-=======
 Description: Create json data from a delegates struct
->>>>>>> develop
 Parameters:
   delegates - A delegates struct
   result - Where the result is stored
@@ -371,8 +367,6 @@ int create_json_data_from_delegates_array(struct delegates* delegates, char *res
 
 /*
 -----------------------------------------------------------------------------------------------------------
-<<<<<<< HEAD
-=======
 Name: create_json_data_from_votes_array
 Description: Create json data from a votes struct
 Parameters:
@@ -431,7 +425,6 @@ int create_json_data_from_votes_array(struct votes* votes, char *result, const c
 
 /*
 -----------------------------------------------------------------------------------------------------------
->>>>>>> develop
 Name: string_count
 Description: Counts the occurences of a substring in a string
 Parameters:

@@ -503,6 +503,8 @@ int main(int parameters_count, char* parameters[])
     }    
   }
 
+  delegates_website = 1;
+
   if (count2 == 1)
   {
     goto disable_synchronizing_databases_and_starting_timers;
@@ -588,7 +590,7 @@ int main(int parameters_count, char* parameters[])
         MAIN_ERROR("Invalid current time");
       }
     }
-  }
+  }  
   
   // start the server
   if (create_server(1) == 0)
@@ -610,9 +612,9 @@ int main(int parameters_count, char* parameters[])
     }
   }*/
 
-  print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
+  /*print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
 
-  /*// start the current block height timer thread
+  // start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
   {
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
