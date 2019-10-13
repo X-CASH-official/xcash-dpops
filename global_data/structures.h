@@ -248,6 +248,13 @@ struct voters {
     long long int total_votes;
 };
 
+struct votes {
+    char* public_address_created_reserve_proof;
+    char* public_address_voted_for;
+    char* total;
+    char* reserve_proof;
+};
+
 struct delegates_online_status {
     char* public_address;
     int socket;

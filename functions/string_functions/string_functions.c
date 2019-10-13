@@ -108,7 +108,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: create_json_data_from_database_document_array
-Description: Counts the occurences of a string
+Description: Create json data from a database_document struct
 Parameters:
   database_data - A database_document_fields struct
   struct database_document_fields
@@ -165,7 +165,7 @@ int create_json_data_from_database_document_array(struct database_document_field
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: create_json_data_from_database_multiple_documents_array
-Description: Counts the occurences of a string
+Description: Create json data from a database_multiple_documents struct
 Parameters:
   database_data - A database_document_fields struct
   struct database_multiple_documents_fields
@@ -232,7 +232,7 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: create_json_data_from_database_multiple_documents_array
-Description: Counts the occurences of a string
+Description: Create json data from a delegates struct
 Parameters:
   delegates - A delegates struct
   result - Where the result is stored

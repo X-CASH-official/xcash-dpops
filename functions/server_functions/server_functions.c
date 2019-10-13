@@ -203,7 +203,7 @@ int new_socket_thread(void)
   int client_socket;
   struct sockaddr_in addr;
   socklen_t addrlen = sizeof(struct sockaddr_in);
-  int settings;  
+  // int settings;  
 
   while ((client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen)) != -1)
   {
