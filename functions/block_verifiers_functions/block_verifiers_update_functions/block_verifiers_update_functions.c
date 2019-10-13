@@ -280,6 +280,8 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
   char message[BUFFER_SIZE];
   size_t count;
   size_t number;
+  size_t block_verifier_total_rounds;
+  size_t block_verifier_online_total_rounds;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -308,11 +310,11 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_total_rounds from the database");
     }
-    sscanf(data, "%zu", &number);
-    number++;
+    sscanf(data, "%zu", &block_verifier_total_rounds);
+    block_verifier_total_rounds++;
     memset(data,0,sizeof(data));
     memcpy(data,"{\"block_verifier_total_rounds\":\"",32);
-    snprintf(data+32,sizeof(data)-33,"%zu",number); 
+    snprintf(data+32,sizeof(data)-33,"%zu",block_verifier_total_rounds); 
     memcpy(data+strlen(data),"\"}",2);
     pthread_rwlock_rdlock(&rwlock);
     while(database_settings != 1)
@@ -331,11 +333,11 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_online_total_rounds from the database");
     }
-    sscanf(data, "%zu", &number);
-    number++;
+    sscanf(data, "%zu", &block_verifier_online_total_rounds);
+    block_verifier_online_total_rounds++;
     memset(data,0,sizeof(data));
     memcpy(data,"{\"block_verifier_online_total_rounds\":\"",39);
-    snprintf(data+39,sizeof(data)-40,"%zu",number); 
+    snprintf(data+39,sizeof(data)-40,"%zu",block_verifier_online_total_rounds); 
     memcpy(data+strlen(data),"\"}",2);
     pthread_rwlock_rdlock(&rwlock);
     while(database_settings != 1)
@@ -347,6 +349,25 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
     }
+
+    // calculate the block_verifier_online_percentage
+    number = ((size_t)((((double)block_verifier_online_total_rounds) / ((double)block_verifier_total_rounds)) * 100) | 0);
+
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"block_verifier_online_percentage\":\"",37);
+    snprintf(data+37,sizeof(data)-38,"%zu",number); 
+    memcpy(data+strlen(data),"\"}",2);
+    pthread_rwlock_rdlock(&rwlock);
+    while(database_settings != 1)
+    {
+      sleep(1);
+    }
+    pthread_rwlock_unlock(&rwlock);
+    if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,0) == 0)
+    {
+      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
+    }
+
     
     // add one to the block_producer_total_rounds and the current block height to the block_producer_block_heights if the public address is the block producer
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))

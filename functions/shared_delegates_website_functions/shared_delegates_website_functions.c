@@ -60,36 +60,66 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
-  int count = 0;
-  int counter = 0;
+  size_t count;
+  size_t count2;
+  size_t counter;
+  size_t number;
   int total_blocks_found;
   int total_payments;
+  int total_voters;
   int total_votes;
+  int current_delegate_rank;
   long long int block_reward_number;
-  long long int total_xcash = 0;
+  long long int total_xcash_from_found_blocks;
+  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   struct database_multiple_documents_fields database_multiple_documents_fields;
-  int document_count = 0;  
+  struct database_multiple_documents_fields database_multiple_documents_fields2;
+  int document_count;  
+  int delegates_count;
 
   // define macros
-  #define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5
-
-  #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings) \
+  #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
-  if (settings == 0) \
-  { \
-    pointer_reset_database_array; \
-  } \
+  pointer_reset_database_array; \
   return 0;
 
   #define pointer_reset_database_array \
-  for (count = 0; count < document_count; count++) \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
+  { \
+    pointer_reset(delegates[count].public_address); \
+    pointer_reset(delegates[count].total_vote_count); \
+    pointer_reset(delegates[count].IP_address); \
+    pointer_reset(delegates[count].delegate_name); \
+    pointer_reset(delegates[count].about); \
+    pointer_reset(delegates[count].website); \
+    pointer_reset(delegates[count].team); \
+    pointer_reset(delegates[count].pool_mode); \
+    pointer_reset(delegates[count].fee_structure); \
+    pointer_reset(delegates[count].server_settings); \
+    pointer_reset(delegates[count].block_verifier_score); \
+    pointer_reset(delegates[count].online_status); \
+    pointer_reset(delegates[count].block_verifier_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_total_rounds); \
+    pointer_reset(delegates[count].block_verifier_online_percentage); \
+    pointer_reset(delegates[count].block_producer_total_rounds); \
+    pointer_reset(delegates[count].block_producer_block_heights); \
+  } \
+  for (count = 0; (int)count < document_count; count++) \
   { \
     for (counter = 0; counter < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; counter++) \
     { \
       pointer_reset(database_multiple_documents_fields.item[count][counter]); \
       pointer_reset(database_multiple_documents_fields.value[count][counter]); \
+    } \
+  } \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++) \
+  { \
+    for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++) \
+    { \
+      pointer_reset(database_multiple_documents_fields2.item[count][counter]); \
+      pointer_reset(database_multiple_documents_fields2.value[count][counter]); \
     } \
   }
 
@@ -100,8 +130,39 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"blocks_found",0);
   total_blocks_found = document_count;
 
+  // initialize the delegates struct
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  {
+    delegates[count].public_address = (char*)calloc(100,sizeof(char));
+    delegates[count].total_vote_count = (char*)calloc(100,sizeof(char));
+    delegates[count].IP_address = (char*)calloc(100,sizeof(char));
+    delegates[count].delegate_name = (char*)calloc(100,sizeof(char));
+    delegates[count].about = (char*)calloc(1025,sizeof(char));
+    delegates[count].website = (char*)calloc(100,sizeof(char));
+    delegates[count].team = (char*)calloc(100,sizeof(char));
+    delegates[count].pool_mode = (char*)calloc(100,sizeof(char));
+    delegates[count].fee_structure = (char*)calloc(100,sizeof(char));
+    delegates[count].server_settings = (char*)calloc(100,sizeof(char));
+    delegates[count].block_verifier_score = (char*)calloc(100,sizeof(char));
+    delegates[count].online_status = (char*)calloc(100,sizeof(char));
+    delegates[count].block_verifier_total_rounds = (char*)calloc(100,sizeof(char));
+    delegates[count].block_verifier_online_total_rounds = (char*)calloc(100,sizeof(char));
+    delegates[count].block_verifier_online_percentage = (char*)calloc(100,sizeof(char));
+    delegates[count].block_producer_total_rounds = (char*)calloc(100,sizeof(char));
+    delegates[count].block_producer_block_heights = (char*)calloc(50000,sizeof(char));
+
+    if (delegates[count].public_address == NULL || delegates[count].total_vote_count == NULL || delegates[count].IP_address == NULL || delegates[count].delegate_name == NULL || delegates[count].about == NULL || delegates[count].website == NULL || delegates[count].team == NULL || delegates[count].pool_mode == NULL || delegates[count].fee_structure == NULL || delegates[count].server_settings == NULL || delegates[count].block_verifier_score == NULL || delegates[count].online_status == NULL || delegates[count].block_verifier_total_rounds == NULL || delegates[count].block_verifier_online_total_rounds == NULL || delegates[count].block_verifier_online_percentage == NULL || delegates[count].block_producer_total_rounds == NULL || delegates[count].block_producer_block_heights == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+      exit(0);
+    }
+  }
+
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; count < document_count; count++)
+  for (count = 0; (int)count < document_count; count++)
   {
     for (counter = 0; counter < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; counter++)
     {
@@ -121,48 +182,120 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
+    for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++)
+    {
+      database_multiple_documents_fields2.item[count][counter] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+      database_multiple_documents_fields2.value[count][counter] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+
+      if (database_multiple_documents_fields2.item[count][counter] == NULL || database_multiple_documents_fields2.value[count][counter] == NULL)
+      {
+        memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+        exit(0);
+      }
+    }
+  }
+  database_multiple_documents_fields2.document_count = 0;
+  database_multiple_documents_fields2.database_fields_count = 0;
+
+  // organize the delegates
+  delegates_count = organize_delegates(delegates);
+
+  // get the current_delegate_rank
+  for (count = 0; (int)count < delegates_count; count++)
+  {
+    if (memcmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      current_delegate_rank = count+1;
+      break;
+    }
   }
 
-  // get the total xcash
-  for (count = 0; count < document_count; count++)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR;
+  }
+
+  // get the total xcash from found blocks
+  for (total_xcash_from_found_blocks = 0, count = 0; (int)count < document_count; count++)
   {
     sscanf(database_multiple_documents_fields.value[count][3], "%lld", &block_reward_number);
-    total_xcash += block_reward_number;
+    total_xcash_from_found_blocks += block_reward_number;
   }
 
   // add the total payments to the database_document_fields struct 
   total_payments = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses_payments",0); 
 
-  // get the total vote count
+  // get the total voters and total votes
   memcpy(message,"{\"public_address_voted_for\":\"",29);
   memcpy(message+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+127,"\"}",2);
 
   // check how many reserve proofs are for the public address
-  for (total_votes = 0, count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  for (total_voters = 0, total_votes = 0, count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   { 
     memset(data,0,strlen(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",count);
+    snprintf(data+15,sizeof(data)-16,"%zu",count);
 
-    total_votes += count_documents_in_collection(DATABASE_NAME_DELEGATES,data,message,0);
+    counter = count_documents_in_collection(DATABASE_NAME,data,message,0);
+    total_voters += counter;
+
+    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,message,&database_multiple_documents_fields2,1,counter,0,"",0) == 1)
+    {
+      for (count2 = 0; count2 < counter; count2++)
+      {
+        sscanf(database_multiple_documents_fields2.value[count2][2], "%zu", &number);
+        total_votes += number;
+      }
+    }
+
+    // reset the database_multiple_documents_fields struct
+    for (count2 = 0; count2 < counter; count2++)
+    {
+      for (number = 0; number < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; number++)
+      {
+        memset(database_multiple_documents_fields2.item[count2][number],0,strlen(database_multiple_documents_fields2.item[count2][number]));
+        memset(database_multiple_documents_fields2.value[count2][number],0,strlen(database_multiple_documents_fields2.value[count2][number]));
+      }
+    }
   }
 
+  // get the block_verifier_online_percentage
+  memset(data,0,sizeof(data));
+  memset(message,0,sizeof(message));
+  memcpy(message,"{\"public_address\":\"",19);
+  memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+117,"\"}",2);
+
+  if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifier_online_percentage",data,0) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR;
+  }
+  
   memset(message,0,sizeof(message));
 
   memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\",\"current_delegate_rank\":\"",27);
+  snprintf(message+strlen(message),sizeof(message),"%d",current_delegate_rank);
+  memcpy(message+strlen(message),"\",\"total_votes\":\"",17);
+  snprintf(message+strlen(message),sizeof(message),"%d",total_votes);
+  memcpy(message+strlen(message),"\",\"online_percentage\":\"",23);
+  memcpy(message+strlen(message),data,strnlen(data,sizeof(message)));
   memcpy(message+strlen(message),"\",\"total_blocks_found\":\"",24);
   snprintf(message+strlen(message),sizeof(message),"%d",total_blocks_found);
-  memcpy(message+strlen(message),"\",\"total_xcash\":\"",17);
-  snprintf(message+strlen(message),sizeof(message),"%lld",total_xcash);
+  memcpy(message+strlen(message),"\",\"total_xcash_from_blocks_found\":\"",35);
+  snprintf(message+strlen(message),sizeof(message),"%lld",total_xcash_from_found_blocks);
   memcpy(message+strlen(message),"\",\"total_payments\":\"",20);
   snprintf(message+strlen(message),sizeof(message),"%d",total_payments);
-  memcpy(message+strlen(message),"\",\"total_vote_count\":\"",22);
-  snprintf(message+strlen(message),sizeof(message),"%d",total_votes);
+  memcpy(message+strlen(message),"\",\"total_voters\":\"",18);
+  snprintf(message+strlen(message),sizeof(message),"%d",total_voters);
   memcpy(message+strlen(message),"\",\"fee\":\"",9);
   snprintf(message+strlen(message),sizeof(message),"%lf",fee);
   memcpy(message+strlen(message),"\",\"minimum_amount\":\"",20);
@@ -171,13 +304,12 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR;
   }
 
   pointer_reset_database_array; 
   return 1;
 
-  #undef TOTAL_BLOCKS_FOUND_DATABASE_FIELDS
   #undef SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR
   #undef pointer_reset_database_array
 }

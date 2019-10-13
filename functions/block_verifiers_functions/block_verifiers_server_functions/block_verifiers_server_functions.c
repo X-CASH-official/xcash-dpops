@@ -108,12 +108,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   memset(reserve_proof,0,sizeof(reserve_proof));
   memset(data3,0,sizeof(data3));
 
-  // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
-  {
-    return 1;
-  }
-
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0)
   {   

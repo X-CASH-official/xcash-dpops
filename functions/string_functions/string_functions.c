@@ -108,7 +108,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: create_json_data_from_database_document_array
-Description: Counts the occurences of a string
+Description: Create json data from a database_document struct
 Parameters:
   database_data - A database_document_fields struct
   struct database_document_fields
@@ -165,7 +165,7 @@ int create_json_data_from_database_document_array(struct database_document_field
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: create_json_data_from_database_multiple_documents_array
-Description: Counts the occurences of a string
+Description: Create json data from a database_multiple_documents struct
 Parameters:
   database_data - A database_document_fields struct
   struct database_multiple_documents_fields
@@ -232,7 +232,11 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: create_json_data_from_database_multiple_documents_array
+<<<<<<< HEAD
 Description: Counts the occurences of a string
+=======
+Description: Create json data from a delegates struct
+>>>>>>> develop
 Parameters:
   delegates - A delegates struct
   result - Where the result is stored
@@ -367,6 +371,67 @@ int create_json_data_from_delegates_array(struct delegates* delegates, char *res
 
 /*
 -----------------------------------------------------------------------------------------------------------
+<<<<<<< HEAD
+=======
+Name: create_json_data_from_votes_array
+Description: Create json data from a votes struct
+Parameters:
+  votes - A votes struct
+  result - Where the result is stored
+  document_fields - The document fields to not include in the json data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int create_json_data_from_votes_array(struct votes* votes, char *result, const char* DOCUMENT_FIELDS)
+{
+  // Variables
+  size_t count = 0;
+  
+  memset(result,0,strlen(result));
+  memcpy(result,"[",1); 
+  
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  {
+    if (memcmp(votes[count].public_address_created_reserve_proof,"",1) != 0)
+    {
+      memcpy(result+strlen(result),"{",1);
+      if (strstr(DOCUMENT_FIELDS,"public_address_created_reserve_proof|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"public_address_created_reserve_proof\":\"",40);
+        memcpy(result+strlen(result),votes[count].public_address_created_reserve_proof,strlen(votes[count].public_address_created_reserve_proof));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"public_address_voted_for|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"public_address_voted_for\":\"",28);
+        memcpy(result+strlen(result),votes[count].public_address_voted_for,strlen(votes[count].public_address_voted_for));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"total|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"total\":\"",9);
+        memcpy(result+strlen(result),votes[count].total,strlen(votes[count].total));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      if (strstr(DOCUMENT_FIELDS,"reserve_proof|") == NULL)
+      {
+        memcpy(result+strlen(result),"\"reserve_proof\":\"",17);
+        memcpy(result+strlen(result),votes[count].reserve_proof,strlen(votes[count].reserve_proof));
+        memcpy(result+strlen(result),"\",",2);
+      }
+      memcpy(result+strlen(result)-1,"},",2);
+    }
+  }
+  memcpy(result+strlen(result)-1,"]",1);
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+>>>>>>> develop
 Name: string_count
 Description: Counts the occurences of a substring in a string
 Parameters:

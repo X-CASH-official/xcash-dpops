@@ -14,9 +14,16 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_PREMINE_TOTAL_SUPPLY 40000000000 // The total supply of the premine
 #define XCASH_PREMINE_CIRCULATING_SUPPLY 7000000000 // The circulating supply of the premine
 #define XCASH_WALLET_DECIMAL_PLACES_AMOUNT 1000000
+<<<<<<< HEAD
 #define EMMISION_FACTOR 524288 // The emmision factor (2^19)
 #define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake
+=======
+#define XCASH_EMMISION_FACTOR 524288 // The emmision factor (2^19)
+#define XCASH_DPOPS_EMMISION_FACTOR 262144 // The XCASH_DPOPS emmision factor (2^18)
+#define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 440875 // The start block height for X-CASH proof of stake
+>>>>>>> develop
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
@@ -62,6 +69,7 @@ Using define statements instead of constants for increased efficiency
 #define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
+#define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 1000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof
 
@@ -75,6 +83,7 @@ Using define statements instead of constants for increased efficiency
 #define SOCKET_CONNECTION_TIMEOUT_SETTINGS 5000 // The time in milliseconds, to wait before a connection is cancelled
 #define SOCKET_DATA_TIMEOUT_SETTINGS 5 // The time in between read calls where there is no data
 #define RECEIVE_DATA_TIMEOUT_SETTINGS 5 // The maximum amount of time to wait for the total data, once data has been read
+#define SEND_PAYMENT_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 
@@ -104,10 +113,15 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
 #define DATABASE_NAME_DELEGATES "XCASH_PROOF_OF_STAKE_DELEGATES" // The name of the database for the delegates
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
-#define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The total delegates database fields
-#define TOTAL_RESERVE_PROOFS_DATABASE_FIELDS 4 // The total delegates database fields
+#define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The reserve bytes database fields
+#define TOTAL_RESERVE_PROOFS_DATABASE_FIELDS 4 // The reserve proofs database fields
 #define TOTAL_DELEGATES_DATABASE_FIELDS 17 // The total delegates database fields
 #define TOTAL_STATISTICS_DATABASE_FIELDS 7 // The total statistics database fields
+#define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4 // The total public addresses database fields
+#define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5 // The total blocks found database fields
+
+// Shared delegates settings
+#define VOTER_INACTIVITY_COUNT "30" // the number of days to wait to remove an inactive delegates information from the database
 
 // network data nodes
 #define NETWORK_DATA_NODES_AMOUNT 2 // The amount of network data nodes

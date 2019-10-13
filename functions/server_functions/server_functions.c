@@ -30,7 +30,6 @@
 #include "network_wallet_functions.h"
 #include "server_functions.h"
 #include "shared_delegates_website_functions.h"
-#include "organize_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
 #include "convert.h"
@@ -204,14 +203,14 @@ int new_socket_thread(void)
   int client_socket;
   struct sockaddr_in addr;
   socklen_t addrlen = sizeof(struct sockaddr_in);
-  int settings;  
+  // int settings;  
 
   while ((client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen)) != -1)
   {
-    // set the socket to non blocking
+    /*// set the socket to non blocking
     settings = fcntl(client_socket, F_GETFL, 0);
     settings |= O_NONBLOCK;
-    fcntl(client_socket, F_SETFL, settings);
+    fcntl(client_socket, F_SETFL, settings);*/
 
     /* create the epoll_event struct
     EPOLLIN = signal when the file descriptor is ready to read

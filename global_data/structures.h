@@ -212,8 +212,8 @@ struct database_document_fields {
 struct database_multiple_documents_fields {
     size_t document_count; // The amount of documents in the database_multiple_documents_fields
     size_t database_fields_count; // The amount of items in each document
-    char* item[MAXIMUM_AMOUNT_OF_DELEGATES][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The item
-    char* value[MAXIMUM_AMOUNT_OF_DELEGATES][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The value
+    char* item[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The item
+    char* value[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The value
 };
 
 struct block_verifiers_send_data_socket {
@@ -240,6 +240,19 @@ struct delegates {
     char* block_verifier_online_percentage;
     char* block_producer_total_rounds;
     char* block_producer_block_heights;
+};
+
+struct voters {
+    char* public_address;
+    char* total_vote_count;
+    long long int total_votes;
+};
+
+struct votes {
+    char* public_address_created_reserve_proof;
+    char* public_address_voted_for;
+    char* total;
+    char* reserve_proof;
 };
 
 struct delegates_online_status {

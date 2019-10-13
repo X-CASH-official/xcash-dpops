@@ -27,7 +27,6 @@
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
 #include "server_functions.h"
-#include "organize_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
 #include "convert.h"
@@ -137,6 +136,12 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
 
   memcpy(delegates_public_address,data,XCASH_WALLET_LENGTH);
+
+  // check if the delegate has the maximum amount of voters
+  if (get_delegates_total_voters_count(delegates_public_address) >= MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The delegate has reached the maximum amount of voters");
+  }
 
   // check if the data is valid
   if (strlen(delegates_public_address) != XCASH_WALLET_LENGTH || memcmp(delegates_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(reserve_proof) > BUFFER_SIZE_RESERVE_PROOF)

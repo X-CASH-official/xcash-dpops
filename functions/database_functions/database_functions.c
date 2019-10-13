@@ -779,6 +779,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
+  bson_error_t error;
   bson_t* document = NULL;  
   bson_t* document_options = NULL;
   char* message;
@@ -825,8 +826,16 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
-  
-  document = bson_new();
+
+  if (memcmp(DATA,"",1) == 0)
+  {
+    document = bson_new();
+  }
+  else
+  {
+    document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
+  }
+
   if (!document)
   {
     pointer_reset(data);
@@ -848,17 +857,13 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
       memset(data,0,strnlen(data,BUFFER_SIZE));
       memcpy(data,message,strnlen(message,BUFFER_SIZE));
       bson_free(message); 
+      string_replace(data,BUFFER_SIZE," }, ",", ");
 
-      if ((strncmp(DATA,"",BUFFER_SIZE) == 0) || (strncmp(DATA,"",BUFFER_SIZE) != 0 && strstr(data,DATA) != NULL))
-      {
-        string_replace(data,BUFFER_SIZE," }, ",", ");
-
-        // parse the json data      
-        database_multiple_documents_parse_json_data(data,result,counter);
-        counter++;
-        result->document_count++;
-      }
-     
+      // parse the json data      
+      database_multiple_documents_parse_json_data(data,result,counter);
+      counter++;
+      result->document_count++;
+      
       // check if that is the total amount of documents to read
       if (counter == DOCUMENT_COUNT_TOTAL)
       {
@@ -1339,6 +1344,42 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
   return count;
 
   #undef database_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_delegates_total_voters_count
+Description: Counts all the delegates voters
+Parameters:
+  DELEGATES_PUBLIC_ADDRESS - The delegates public address
+Return: 0 if an error has occured, otherwise the amount of voters for the delegate
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_delegates_total_voters_count(const char* DELEGATES_PUBLIC_ADDRESS)
+{
+  // Variables
+  char data[1024];
+  char data2[1024];
+  int public_address_count;
+  int count;
+
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"public_address_voted_for\":\"",29);
+  memcpy(data+29,DELEGATES_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(data+127,"\"}",2);
+
+  // get the count of how many public addresses voted for the delegate
+  for (public_address_count = 0, count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  { 
+    memset(data2,0,strlen(data2));
+    memcpy(data2,"reserve_proofs_",15);
+    snprintf(data2+15,sizeof(data2)-16,"%d",count);
+    public_address_count += count_documents_in_collection(DATABASE_NAME,data2,data,0);
+  }
+  return public_address_count;
 }
 
 

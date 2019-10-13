@@ -23,6 +23,7 @@ int delete_document_from_collection(const char* DATABASE, const char* COLLECTION
 int delete_collection_from_database(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
 int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS);
 int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
+int get_delegates_total_voters_count(const char* DELEGATES_PUBLIC_ADDRESS);
 int get_database_data(char *database_data, const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
 int get_database_data_hash(char *data_hash, const char* DATABASE, const char* COLLECTION);
 #endif

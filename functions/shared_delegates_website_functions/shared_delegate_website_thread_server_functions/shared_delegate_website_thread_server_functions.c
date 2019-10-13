@@ -69,7 +69,6 @@ long long int add_block_to_blocks_found(void)
   int document_count = 0;
 
   // define macros
-  #define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5
   #define DATABASE_COLLECTION "blocks_found"
 
   #define ADD_BLOCK_TO_BLOCKS_FOUND_ERROR(message) \
@@ -128,35 +127,41 @@ long long int add_block_to_blocks_found(void)
   number--;
   sprintf(block_height,"%lld",number);
 
-  // get the block count
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_data,1,document_count,1,"total_vote_count_number",0) == 0)
+  // get the lat block height of the last block found to calculate the average
+  if (document_count > 0)
   {
-    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not read the blocks_found database.\nCould not check if the block verifier found the last block.");
-  }
-
-  // loop through all blocks found, and find the last block height
-  for (block_reward_number = 0, count = 0; count < document_count; count++)
-  {
-    for (count2 = 0; count2 < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; count2++)
+    // get the block count
+    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_data,1,document_count,1,"total_vote_count_number",0) == 0)
     {
-      if (memcmp(database_data.item[count][count2],"block_height",12) == 0)
+      ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not read the blocks_found database.\nCould not check if the block verifier found the last block.");
+    }
+
+    // loop through all blocks found, and find the last block height
+    for (count = 0; count < document_count; count++)
+    {
+      for (count2 = 0; count2 < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; count2++)
       {
-        sscanf(database_data.value[count][count2], "%lld", &number);
-        if (number > block_height_number)
+        if (memcmp(database_data.item[count][count2],"block_height",12) == 0)
         {
-          block_height_number = number;
+          sscanf(database_data.value[count][count2], "%lld", &number);
+          if (number > block_height_number)
+          {
+            block_height_number = number;
+          }
         }
       }
     }
-  }
-
-  memset(data2,0,sizeof(data2));
-  
-  // get the block height of the previous block
-  sscanf(current_block_height, "%lld", &number);
-  number--;
-  number -= block_height_number;
-  sprintf(data2,"%lld",block_height_number);
+    // get the block height of the previous block
+    sscanf(current_block_height, "%lld", &number);
+    number--;
+    number -= block_height_number;
+    sprintf(data2,"%lld",number);
+  }  
+  else
+  {
+    // set it to the default average
+    memcpy(data2,"100",3);
+  } 
 
   // add the blocks data
   memset(data,0,sizeof(data));
@@ -179,10 +184,122 @@ long long int add_block_to_blocks_found(void)
   pointer_reset_database_array;
   return block_reward_number;
 
-  #undef TOTAL_BLOCKS_FOUND_DATABASE_FIELDS
   #undef DATABASE_COLLECTION
   #undef ADD_BLOCK_TO_BLOCKS_FOUND_ERROR
   #undef pointer_reset_database_array
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_delegates_total_voters
+Description: Gets the delegates total voters
+Parameters:
+  block_reward - The block reward
+Return: 0 if an error has occured, otherwise the total votes from all of the voters for the delegate
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_delegates_total_voters(struct voters* voters)
+{
+  // Variables
+  char data[1024];
+  char data2[1024];
+  int count;
+  int count2;
+  int counter;
+  int total_votes;
+  long long int number;
+  struct database_multiple_documents_fields database_data;
+
+  #define pointer_reset_database_array \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++) \
+  { \
+    for (count2 = 0; count2 < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count2++) \
+    { \
+      pointer_reset(database_data.item[count][count2]); \
+      pointer_reset(database_data.value[count][count2]); \
+    } \
+  } 
+
+  #define GET_DELEGATES_TOTAL_VOTERS_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"get_delegates_total_voters",26); \
+  memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
+  error_message.total++; \
+  pointer_reset_database_array; \
+  return 0;
+
+  // initialize the database_multiple_documents_fields struct 
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+  {
+    for (count2 = 0; count2 < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count2++)
+    {
+      database_data.item[count][count2] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+      database_data.value[count][count2] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+
+      if (database_data.item[count][count2] == NULL || database_data.value[count][count2] == NULL)
+      {
+        memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+        exit(0);
+      }
+    }
+  }
+  database_data.document_count = 0;
+  database_data.database_fields_count = 0;
+
+
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"public_address_voted_for\":\"",29);
+  memcpy(data+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+127,"\"}",2);
+
+  // get the count of how many public addresses voted for the delegate
+  for (total_votes = 0, counter = 1; counter <= TOTAL_RESERVE_PROOFS_DATABASES; counter++)
+  { 
+    memset(data2,0,strlen(data2));
+    memcpy(data2,"reserve_proofs_",15);
+    snprintf(data2+15,sizeof(data2)-16,"%d",counter);
+    count2 = count_documents_in_collection(DATABASE_NAME,data2,data,0);
+
+    if (count2 > 0)
+    {
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data2,data,&database_data,1,count2,0,"",0) == 0)
+      {
+        GET_DELEGATES_TOTAL_VOTERS_ERROR("Could not read the reserve proofs database.\nCould not calculate the block reward for each delegate");
+      }
+
+      // copy the data to the voters struct
+      for (count = 0; count < count2; count++)
+      {
+        memcpy(voters[count].public_address,database_data.value[count][0],XCASH_WALLET_LENGTH);
+        memcpy(voters[count].total_vote_count,database_data.value[count][2],strnlen(database_data.value[count][2],100));
+        sscanf(voters[count].total_vote_count, "%lld", &number);
+        voters[count].total_votes = number;
+        total_votes += number;
+      }
+
+      // reset the database_multiple_documents_fields struct
+      for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+      {
+        for (count2 = 0; count2 < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count2++)
+        {
+          memset(database_data.item[count][count2],0,strlen(database_data.item[count][count2]));
+          memset(database_data.value[count][count2],0,strlen(database_data.item[count][count2]));
+        }
+      }
+      database_data.document_count = 0;
+      database_data.database_fields_count = 0;
+    }
+  }
+  pointer_reset_database_array;
+  return total_votes;
+
+  #undef pointer_reset_database_array
+  #undef GET_DELEGATES_TOTAL_VOTERS_ERROR
 }
 
 
@@ -203,15 +320,14 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
-  char current_delegates_public_address[XCASH_WALLET_LENGTH+1];
-  char current_delegates_total_votes[BUFFER_SIZE];
-  size_t count;
-  size_t counter;
-  int public_address_count;
+  time_t current_date_and_time;
+  struct tm* current_UTC_date_and_time;
+  int count;
   long long int number;
   long long int total_votes;
+  int total_voters;
   long long int current_delegates_block_reward;
-  struct database_multiple_documents_fields database_data;
+  struct voters voters[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE];
 
   // define macros
   #define CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR(message) \
@@ -222,13 +338,27 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   return 0;
 
   #define pointer_reset_database_array \
-  for (count = 0; (int)count < public_address_count; count++) \
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++) \
   { \
-    for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++) \
-    { \
-      pointer_reset(database_data.item[count][counter]); \
-      pointer_reset(database_data.value[count][counter]); \
-    } \
+    pointer_reset(voters[count].public_address); \
+    pointer_reset(voters[count].total_vote_count); \
+  }
+
+  // initialize the delegates struct
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+  {
+    voters[count].public_address = (char*)calloc(100,sizeof(char));
+    voters[count].total_vote_count = (char*)calloc(100,sizeof(char));
+    voters[count].total_votes = 0;
+
+    if (voters[count].public_address == NULL || voters[count].total_vote_count == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+      exit(0);
+    }
   }
 
   memset(data,0,sizeof(data));
@@ -241,88 +371,25 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   memcpy(data+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(data+127,"\"}",2); 
 
-  // get the count of how many public addresses voted for the delegate
-  for (public_address_count = 0, count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
-  { 
-    memset(data2,0,strlen(data2));
-    memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-    public_address_count += count_documents_in_collection(DATABASE_NAME,data2,data,0);
-  }
-
-  // error check
-  if (public_address_count == 0)
+  // check if the delegate has the maximum amount of voters
+  total_voters = get_delegates_total_voters_count(xcash_wallet_public_address);
+  if (total_voters < 1)
   {
-    CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("Could not find the block verifiers public address in the reserve proofs database.\nCould not calculate the block reward for each delegate");
+    CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("The delegate does not have enough voters to distribute the block rewards with yet");
   }
+  
+  // get the total votes for the delegate
+  total_votes = get_delegates_total_voters(voters);
 
-  // initialize the database_multiple_documents_fields struct 
-  for (count = 0; (int)count < public_address_count; count++)
+  // calculate the block reward for all of the voters
+  for (count = 0; count < total_voters; count++)
   {
-    for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++)
-    {
-      database_data.item[count][counter] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
-      database_data.value[count][counter] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
-    }
-  }
-  database_data.document_count = 0;
-  database_data.database_fields_count = 0;
-
-  // get the count of how many public addresses voted for the delegate
-  for (counter = 0, count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
-  { 
-    memset(data2,0,strlen(data2));
-    memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-    counter = count_documents_in_collection(DATABASE_NAME,data2,data,0);
-    if (counter > 0)
-    {
-      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data2,data,&database_data,1,counter,0,"",0) == 0)
-      {
-        CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("Could not read the reserve proofs database.\nCould not calculate the block reward for each delegate");
-      }
-    }
-  }
-
-  // get the total votes
-  for (total_votes = 0, count = 0; count < database_data.document_count; count++)
-  {
-    for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++)
-    {
-      if (memcmp(database_data.item[count][counter],"total",5) == 0)
-      {
-        sscanf(database_data.value[count][counter], "%lld", &number);
-        total_votes += number;
-      }      
-    }
-  }
-
-  // calculate the block reward for all of the public_addresses and the fee
-  for (count = 0; count < database_data.document_count; count++)
-  {
-    // get the current delegates public address and total votes
-    for (counter = 0; counter < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; counter++)
-    {      
-      if (memcmp(database_data.item[count][counter],"public_address_created_reserve_proof",36) == 0)
-      {
-        memset(current_delegates_public_address,0,sizeof(current_delegates_public_address));
-        memcpy(current_delegates_public_address,database_data.item[count][counter],strnlen(database_data.item[count][counter],sizeof(current_delegates_public_address)));
-      }
-      else if (memcmp(database_data.item[count][counter],"total",5) == 0)
-      {
-        memset(current_delegates_total_votes,0,sizeof(current_delegates_total_votes));
-        memcpy(current_delegates_total_votes,database_data.item[count][counter],strnlen(database_data.item[count][counter],sizeof(current_delegates_total_votes)));
-      }
-    }
-
-    // get the votes
-    sscanf(current_delegates_total_votes, "%lld", &number);
-    current_delegates_block_reward = (long long int)((((double)number / (double)total_votes) * (double)block_reward) * (100 - fee)) | 0;
+    current_delegates_block_reward = (long long int)((((double)voters[count].total_votes / (double)total_votes) * (double)block_reward) * ((100 - fee)/100)) | 0;
     
     // create the message
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\"public_address\":\"",19);
-    memcpy(data2+19,current_delegates_public_address,XCASH_WALLET_LENGTH);
+    memcpy(data2+19,voters[count].public_address,XCASH_WALLET_LENGTH);
     memcpy(data2+117,"\"}",2);
     memset(data,0,sizeof(data));
 
@@ -331,7 +398,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
     {
       memset(data3,0,sizeof(data3));
       memcpy(data3,"{\"public_address\":\"",19);
-      memcpy(data3+19,current_delegates_public_address,XCASH_WALLET_LENGTH);
+      memcpy(data3+19,voters[count].public_address,XCASH_WALLET_LENGTH);
       memcpy(data3+strlen(data3),"\",\"current_total\":\"0\",\"total\":\"0\",\"inactivity_count\":\"0\"}",57);
 
       if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses",data3,0) == 0)
@@ -350,9 +417,9 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
     memset(data,0,sizeof(data));
     memset(data3,0,sizeof(data3));
     sprintf(data3,"%lld",number);
-    memcpy(data2,"{\"current_total\":\"",18);
-    memcpy(data2+18,data3,strnlen(data3,sizeof(data2)));
-    memcpy(data2+strlen(data2),"\"}",2);
+    memcpy(data,"{\"current_total\":\"",18);
+    memcpy(data+18,data3,strnlen(data3,sizeof(data)));
+    memcpy(data+strlen(data),"\"}",2);
     
     if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data2,data,0) == 0)
     {
@@ -457,9 +524,6 @@ void* payment_timer_thread(void* parameters)
   (void)parameters;
 
   // define macros
-  #define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4
-  #define INACTIVITY_COUNT "30" // the number of days to wait to remove an inactive delegates information from the database
-
   #define PAYMENT_TIMER_THREAD_ERROR(message) \
   memcpy(error_message.function[error_message.total],"payment_timer_thread",20); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
@@ -548,7 +612,7 @@ void* payment_timer_thread(void* parameters)
           memset(data3,0,sizeof(data3));
           memset(payment_tx_hash,0,sizeof(payment_tx_hash));
           memset(payment_tx_key,0,sizeof(payment_tx_key));
-
+          
           if (send_payment(public_address, current_total, payment_tx_hash, payment_tx_key) == 0)
           {
             PAYMENT_TIMER_THREAD_ERROR("Could not send a payment.\nCould not send payments.");
@@ -621,7 +685,7 @@ void* payment_timer_thread(void* parameters)
           PAYMENT_TIMER_THREAD_ERROR("Could not read the inactivity_count from the database.\nCould not send payments.");
         }
 
-        if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,INACTIVITY_COUNT,BUFFER_SIZE) == 0)
+        if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) == 0)
         {
           // convert the total_xcash to a number
           sscanf(data3, "%lld", &number);
@@ -648,7 +712,7 @@ void* payment_timer_thread(void* parameters)
             PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity_count for the database.\nCould not send payments.");
           }
         }
-        else if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,INACTIVITY_COUNT,BUFFER_SIZE) == 0)
+        else if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) == 0)
         {
           // remove the document from the database
           if (delete_document_from_collection(DATABASE_NAME,"public_addresses",data,0) == 0)
@@ -668,9 +732,9 @@ void* payment_timer_thread(void* parameters)
     }
     sleep(10);
   }
+  pointer_reset_database_array;
   pthread_exit((void *)(intptr_t)1);
-
-  #undef TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS
-  #undef INACTIVITY_COUNT
+  
   #undef BLOCK_HEIGHT_TIMER_THREAD_ERROR
+  #undef pointer_reset_database_array
 }

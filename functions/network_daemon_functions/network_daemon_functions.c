@@ -526,11 +526,10 @@ int check_found_block(void)
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  char* message;
   char result[BUFFER_SIZE];
   size_t block_height;
   size_t count;
-  size_t counter;
+  size_t count2;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -561,19 +560,17 @@ int check_found_block(void)
     return 0;
   }
 
-  // convert the public_address to a string
   memset(data2,0,sizeof(data2));
   memset(data,0,sizeof(data));
-  for (count = 0, counter = 0; count < XCASH_WALLET_LENGTH*2; counter++, count += 2)
+
+  // convert the public_address to a string
+  for (count = 0, count2 = 0; count < XCASH_WALLET_LENGTH; count++, count2 += 2)
   {
-    memset(data2,0,sizeof(data2));
-    memcpy(data2,&xcash_wallet_public_address[count],2);
-    data[counter] = (int)strtol(data2, NULL, 16);
+    snprintf(data+count2,(XCASH_WALLET_LENGTH*2)-1,"%02x",xcash_wallet_public_address[count] & 0xFF);
   }
 
   // check if the block verifier was the block producer for the previous block
-  message = strstr(result,data);
-  if (message != NULL && strstr(message,data) != NULL)
+  if (string_count(result,data) == 2)
   {
     return 2;
   }
