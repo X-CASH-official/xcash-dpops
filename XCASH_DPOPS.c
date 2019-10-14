@@ -53,9 +53,7 @@ int main(int parameters_count, char* parameters[])
   
   // define macros
   #define MESSAGE "{\"username\":\"XCASH\"}"
-  #define DATABASE_COLLECTION_DELEGATES_DATA_1 "{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
-  #define DATABASE_COLLECTION_DELEGATES_DATA_2 "{\"public_address\":\"XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.202\",\"delegate_name\":\"delegate_name_2\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
-  #define DATABASE_COLLECTION_STATISTICS_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"delegate_name_1\",\"most_total_rounds\":\"0\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_1\",\"best_block_verifier_online_percentage\":\"0\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_1\",\"most_block_producer_total_rounds\":\"0\"}"
+  
   #define database_reset \
   mongoc_client_destroy(database_client); \
   mongoc_client_pool_destroy(database_client_thread_pool); \
@@ -127,11 +125,8 @@ int main(int parameters_count, char* parameters[])
     memset(network_data_nodes_list.network_data_nodes_IP_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_IP_address[count]));
   }
 
-  // add the network_data_nodes
-  memcpy(network_data_nodes_list.network_data_nodes_public_address[0],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
-  memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],NETWORK_DATA_NODE_1_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_1_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
-  memcpy(network_data_nodes_list.network_data_nodes_public_address[1],NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
-  memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],NETWORK_DATA_NODE_2_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_2_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+  // initialize the network data nodes
+  INITIALIZE_NETWORK_DATA_NODES;
 
   // set the network_data_node_settings
   network_data_node_settings = 0;
@@ -345,10 +340,7 @@ int main(int parameters_count, char* parameters[])
   memset(data,0,sizeof(data));
   if (read_document_field_from_collection(DATABASE_NAME,"statistics",MESSAGE,"username",data,0) == 0)
   {
-    // create the database collections with the default database data
-    insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,0);  
-    insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2,0); 
-    insert_document_into_collection_json(DATABASE_NAME,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);  
+    INITIALIZE_DATABASE_DATA;
   }
 
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
@@ -503,18 +495,13 @@ int main(int parameters_count, char* parameters[])
     }    
   }
 
-  delegates_website = 1;
-
   if (count2 == 1)
   {
     goto disable_synchronizing_databases_and_starting_timers;
   }
 
   // check if the block verifier is a network data node
-  if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
-  {
-    network_data_node_settings = 1;
-  }      
+  CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;     
  
   // sync the block verifiers list
   if (sync_all_block_verifiers_list() == 0)
@@ -522,7 +509,7 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
   }
 
-  /*// check if the database is synced, unless this is the main network data node
+  // check if the database is synced, unless this is the main network data node
   if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0)
   {
     // check if all of the databases are synced from a network data node, since their is no way to tell if the previous round could not reach consensus
@@ -530,7 +517,7 @@ int main(int parameters_count, char* parameters[])
     {
       MAIN_ERROR("Could not check if the databases are synced");
     }
-  }*/
+  }
 
   // check the block verifiers current time, if it is not a network data node
   if (network_data_node_settings != 1)

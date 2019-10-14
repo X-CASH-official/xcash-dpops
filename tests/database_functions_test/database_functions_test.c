@@ -42,8 +42,8 @@ int database_test(void)
   #define DATABASE_COLLECTION "XCASH_PROOF_OF_STAKE_TEST_DATA"
   #define MESSAGE "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"}"
   #define MESSAGE_SETTINGS "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_DATA\"}"
-  #define DATABASE_COLLECTION_STATISTICS_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
-  #define DATABASE_COLLECTION_DELEGATES_DATA "{\"public_address\":\"XCA\",\"total_vote_count\":\"XCA\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"XCA\",\"about\":\"XCA\",\"website\":\"XCA\",\"team\":\"XCA\",\"pool_mode\":\"XCA\",\"fee_structure\":\"XCA\",\"server_settings\":\"XCA\",\"block_verifier_score\":\"XCA\",\"online_status\":\"XCA\",\"block_verifier_total_rounds\":\"XCA\",\"block_verifier_online_total_rounds\":\"XCA\",\"block_verifier_online_percentage\":\"XCA\",\"block_producer_total_rounds\":\"XCA\",\"block_producer_block_heights\":\"XCA\"}"
+  #define DATABASE_COLLECTION_STATISTICS_TEST_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
+  #define DATABASE_COLLECTION_DELEGATES_TEST_DATA "{\"public_address\":\"XCA\",\"total_vote_count\":\"XCA\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"XCA\",\"about\":\"XCA\",\"website\":\"XCA\",\"team\":\"XCA\",\"pool_mode\":\"XCA\",\"fee_structure\":\"XCA\",\"server_settings\":\"XCA\",\"block_verifier_score\":\"XCA\",\"online_status\":\"XCA\",\"block_verifier_total_rounds\":\"XCA\",\"block_verifier_online_total_rounds\":\"XCA\",\"block_verifier_online_percentage\":\"XCA\",\"block_producer_total_rounds\":\"XCA\",\"block_producer_block_heights\":\"XCA\"}"
   #define DATA_HASH "1e3c10c2d5396ac7dcce22ad7488db8c6d9ba6ec07660283f5e2198cba6507c8a136536e8c4ee16f43cf04a19fa84b5575b34e3186426b2b6db3101e9e25abd9FAILED"
 
   // Variables
@@ -247,7 +247,7 @@ int database_test(void)
    // read a document in the collection and parse all fields
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   struct database_document_fields database_data;
 
   // initialize the database_document_fields struct 
@@ -296,7 +296,7 @@ int database_test(void)
   // read a document in the collection and parse all fields on a separate thread
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   
   // initialize the database_document_fields struct 
   for (count = 0; count < 7; count++)
@@ -347,8 +347,8 @@ int database_test(void)
   // read multiple documents in the collection and parse all fields
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   struct database_multiple_documents_fields database_multiple_documents_fields;
 
   // initialize the database_multiple_documents_fields struct 
@@ -402,8 +402,8 @@ int database_test(void)
   // read multiple documents in the collection using the sort document option and parse all fields
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
 
   // reset the database_multiple_documents_fields struct 
   for (count = 0; count < 2; count++)
@@ -459,8 +459,8 @@ int database_test(void)
   // read multiple documents in the collection and parse all fields on a separate thread
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 2; count++)
@@ -641,12 +641,12 @@ int database_test(void)
     }  
   }
 
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0);
 
   // get the database data hash
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   if (get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
@@ -662,8 +662,8 @@ int database_test(void)
 
   // get the database data hash on a separate thread
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   struct get_database_data_hash_thread_parameters get_database_data_hash_thread_parameters = {data_test,DATABASE_NAME,DATABASE_COLLECTION};
   pthread_create(&thread_id, NULL, &get_database_data_hash_thread,(void *)&get_database_data_hash_thread_parameters);
@@ -682,9 +682,9 @@ int database_test(void)
   // insert multiple documents into the collection using json data
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  memcpy(data_test,DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+  memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
   memcpy(data_test+strlen(data_test),",",1);
-  memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+  memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
   if (insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data_test,BUFFER_SIZE,0) == 1 && get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for inserting multiple documents into a collection using json data","green");
@@ -698,9 +698,9 @@ int database_test(void)
   // insert multiple documents into the collection using json data on a separate thread
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  memcpy(data_test,DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+  memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
   memcpy(data_test+strlen(data_test),",",1);
-  memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+  memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
   struct insert_multiple_documents_into_collection_json_thread_parameters insert_multiple_documents_into_collection_json_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,data_test,BUFFER_SIZE};
   pthread_create(&thread_id, NULL, &insert_multiple_documents_into_collection_json_thread,(void *)&insert_multiple_documents_into_collection_json_thread_parameters);
   if (thread_settings(thread_id) == 1 && get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
@@ -766,5 +766,5 @@ int database_test(void)
   #undef DATABASE_COLLECTION
   #undef MESSAGE
   #undef MESSAGE_SETTINGS
-  #undef DATABASE_COLLECTION_STATISTICS_DATA
+  #undef DATABASE_COLLECTION_STATISTICS_TEST_DATA
 }

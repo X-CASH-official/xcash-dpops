@@ -25,7 +25,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a XCASH_DPOPS_signature for the signed data
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a XCASH_DPOPS_signature for the signed datas
 
-// network block string 
+// Network block string 
 #define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "00000000" // The network block nonce used when the block producer creates the block
 #define CONSENSUS_NODE_NETWORK_BLOCK_NONCE "11111111" // The network block nonce used when the consensus node creates the block
 #define NETWORK_VERSION "0d0d" // The network version
@@ -58,10 +58,10 @@ Using define statements instead of constants for increased efficiency
 #define GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" // The place holder bytes for a block verifier that does not create a block verifier signature, for the block verifier signature data
 #define GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" // The place holder bytes for a block verifier that does not create a block verifier signature
 
-// proof of stake
+// XCASH DPOPS
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 4 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_AMOUNT 26 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 18 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 1000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
@@ -81,7 +81,7 @@ Using define statements instead of constants for increased efficiency
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 
-// lengths
+// Lengths
 #define BUFFER_SIZE 164000
 #define BUFFER_SIZE_RESERVE_PROOF 10000
 #define BUFFER_SIZE_NETWORK_BLOCK_DATA 500
@@ -117,12 +117,81 @@ Using define statements instead of constants for increased efficiency
 // Shared delegates settings
 #define VOTER_INACTIVITY_COUNT "30" // the number of days to wait to remove an inactive delegates information from the database
 
-// network data nodes
+// Network data nodes
+#define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
+#define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12"
+#define NETWORK_DATA_NODE_1_IP_ADDRESS "delegates.xcash.foundation"
+#define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS "XCA1dNsv9cGc5kPMrgpdTkGttM17uR2JvCpmraGschxYSEt3MK4NRmmgyc13CTYWBGDNefdem5MFsG384DuUpGKc3ShZa4R56e"
+#define NETWORK_DATA_NODE_2_IP_ADDRESS "europe1.xcash.foundation"
+#define NETWORK_DATA_NODE_3_PUBLIC_ADDRESS "XCA1rU5hFV98QvysF3ByeZSPkt9wPyUxkSErBZADJjsHPMKnmCxKFH2H6aLy3oFbYaGkkYGCJcLF1ERWT5uQweEu8yZodwCtHc"
+#define NETWORK_DATA_NODE_3_IP_ADDRESS "europe2.xcash.foundation"
+#define NETWORK_DATA_NODE_4_PUBLIC_ADDRESS "XCA1kk9q8H7JNe9aWXLYRpG2oqFQxLD7vTy8s3pPZprBVnLRQNAurnabEHsQCSAUyxC8nForSa2C39qAhtFt4f845ZSz2Xz5Mr"
+#define NETWORK_DATA_NODE_4_IP_ADDRESS "europe3.xcash.foundation"
+#define NETWORK_DATA_NODE_5_PUBLIC_ADDRESS "XCA1diBcGjRhBEdDkphu5oUTTvDHiSGjmZ7unCwBFgdpMiCQoF1BpMWP2E96iFWoWoD41npDcRUo51ih45We29Hd5XZsikzt71"
+#define NETWORK_DATA_NODE_5_IP_ADDRESS "asia1.xcash.foundation"
+
+#define DATABASE_COLLECTION_DELEGATES_DATA_1 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"0\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System: Ubuntu 18.04, CPU: 32 threads (Intel 2xE5 - 2660 - 2.2GHz, RAM: 256GB DDR3, Hard drive: 2x240 GB SSD + 4x2TB SATA, Bandwidth Transfer: Unlimited, Bandwidth Speed: 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_2 "{\"public_address\":\"XCA1dNsv9cGc5kPMrgpdTkGttM17uR2JvCpmraGschxYSEt3MK4NRmmgyc13CTYWBGDNefdem5MFsG384DuUpGKc3ShZa4R56e\",\"total_vote_count\":\"0\",\"IP_address\":\"europe1.xcash.foundation\",\"delegate_name\":\"europe1_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System: Ubuntu 18.04, CPU: 8 threads (Intel D-1521 - 2.40GHz, RAM: 32GB DDR3, Hard drive: 2x HDD SATA 2 TB\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_3 "{\"public_address\":\"XCA1rU5hFV98QvysF3ByeZSPkt9wPyUxkSErBZADJjsHPMKnmCxKFH2H6aLy3oFbYaGkkYGCJcLF1ERWT5uQweEu8yZodwCtHc\",\"total_vote_count\":\"0\",\"IP_address\":\"europe2.xcash.foundation\",\"delegate_name\":\"europe2_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System: Ubuntu 18.04, CPU: 8 threads (Intel i7-6700 - 3.40GHz, RAM: 64GB DDR4, Hard drive: 2x NVMe SSD 512GB, Bandwidth Transfer: Unlimited, Bandwidth Speed: 1 Gbps upload and 1 Gbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_4 "{\"public_address\":\"XCA1kk9q8H7JNe9aWXLYRpG2oqFQxLD7vTy8s3pPZprBVnLRQNAurnabEHsQCSAUyxC8nForSa2C39qAhtFt4f845ZSz2Xz5Mr\",\"total_vote_count\":\"0\",\"IP_address\":\"europe3.xcash.foundation\",\"delegate_name\":\"europe3_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System: Ubuntu 18.04, CPU: 8 threads (Intel i7-6700 - 3.40GHz, RAM: 64GB DDR4, Hard drive: 2x NVMe SSD 512GB, Bandwidth Transfer: Unlimited, Bandwidth Speed: 1 Gbps upload and 1 Gbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_5 "{\"public_address\":\"XCA1diBcGjRhBEdDkphu5oUTTvDHiSGjmZ7unCwBFgdpMiCQoF1BpMWP2E96iFWoWoD41npDcRUo51ih45We29Hd5XZsikzt71\",\"total_vote_count\":\"0\",\"IP_address\":\"asia1.xcash.foundation\",\"delegate_name\":\"asia1_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System: Ubuntu 18.04, CPU: 8 threads (Intel E3-1245 v5 - 3.50GHz, RAM: 32GB DDR3, Hard drive: 2x HDD SATA 2 TB\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_6 "{\"public_address\":\"XCA1kkdrRQ9SC7wfJ3F329giei31r13wKEKiD1ZMYf6nBiU8KE6a6LDJTZobfJ58o8A3vtGrAkzfHDd815kac7F17iPhK9zYGG\",\"total_vote_count\":\"0\",\"IP_address\":\"officialdelegate.xcash.foundation\",\"delegate_name\":\"officialdelegate_xcash_foundation\",\"about\":\"Official X-Network Shared Delegate\",\"website\":\"officialdelegate.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"true\",\"fee_structure\":\"1\",\"server_settings\":\"Operating System: Ubuntu 18.04, CPU: 8 threads (Intel E3-1246 v3 - 3.50GHz, RAM: 32GB DDR3, Hard drive: 2x HDD SATA 2 TB, Bandwidth Transfer: Unlimited, Bandwidth Speed: 1 Gbps upload and 1 Gbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_STATISTICS_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"delegates_xcash_foundation\",\"most_total_rounds\":\"0\",\"best_block_verifier_online_percentage_delegate_name\":\"delegates_xcash_foundation\",\"best_block_verifier_online_percentage\":\"0\",\"most_block_producer_total_rounds_delegate_name\":\"delegates_xcash_foundation\",\"most_block_producer_total_rounds\":\"0\"}"
+
+#define INITIALIZE_DATABASE_DATA \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_3,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_4,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_5,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_6,0); \
+insert_document_into_collection_json(DATABASE_NAME,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+
+#define INITIALIZE_NETWORK_DATA_NODES \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[0],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],NETWORK_DATA_NODE_1_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_1_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[1],NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],NETWORK_DATA_NODE_2_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_2_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[2],NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[2],NETWORK_DATA_NODE_3_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_3_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[3],NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[3],NETWORK_DATA_NODE_4_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_4_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[4],NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],NETWORK_DATA_NODE_5_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_5_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+
+#define CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE \
+if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0) \
+{ \
+  network_data_node_settings = 1; \
+}
+
+/*// Network data nodes test
 #define NETWORK_DATA_NODES_AMOUNT 2 // The amount of network data nodes
-#define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP" // The first network data nodes public address
-#define NETWORK_DATA_NODE_1_IP_ADDRESS "192.168.1.201" // The first network data nodes IP address
-#define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS "XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B" // The second network data nodes public address
-#define NETWORK_DATA_NODE_2_IP_ADDRESS "192.168.1.202" // The second network data nodes IP address
+#define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
+#define NETWORK_DATA_NODE_1_IP_ADDRESS "192.168.1.201"
+#define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS "XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B"
+#define NETWORK_DATA_NODE_2_IP_ADDRESS "192.168.1.202"
+
+#define DATABASE_COLLECTION_DELEGATES_DATA_1 "{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_2 "{\"public_address\":\"XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B\",\"total_vote_count\":\"0\",\"IP_address\":\"192.168.1.202\",\"delegate_name\":\"delegate_name_2\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_STATISTICS_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"delegate_name_1\",\"most_total_rounds\":\"0\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_1\",\"best_block_verifier_online_percentage\":\"0\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_1\",\"most_block_producer_total_rounds\":\"0\"}"
+
+#define INITIALIZE_DATABASE_DATA \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2,0); \
+insert_document_into_collection_json(DATABASE_NAME,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+
+#define INITIALIZE_NETWORK_DATA_NODES \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[0],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],NETWORK_DATA_NODE_1_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_1_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[1],NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],NETWORK_DATA_NODE_2_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_2_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+
+#define CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE \
+if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0) \
+{ \
+  network_data_node_settings = 1; \
+}*/
 
 // Test
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"

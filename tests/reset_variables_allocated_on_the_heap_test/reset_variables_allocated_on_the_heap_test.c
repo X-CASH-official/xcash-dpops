@@ -136,8 +136,8 @@ int reset_variables_allocated_on_the_heap_test(void)
   #define DATABASE_COLLECTION "XCASH_PROOF_OF_STAKE_TEST_DATA"
   #define MESSAGE "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"}"
   #define MESSAGE_SETTINGS "{\"message_settings\": \"XCASH_PROOF_OF_STAKE_DATA\"}"
-  #define DATABASE_COLLECTION_STATISTICS_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
-  #define DATABASE_COLLECTION_DELEGATES_DATA "{\"public_address\":\"XCA\",\"password\":\"XCA\",\"salt\":\"XCA\",\"session\":\"XCA\",\"total_vote_count\":\"XCA\",\"current_vote_count\":\"XCA\",\"delegate_number\":\"XCA\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"XCA\",\"about\":\"XCA\",\"website\":\"XCA\",\"team\":\"XCA\",\"pool_mode\":\"XCA\",\"fee_structure\":\"XCA\",\"server_settings\":\"XCA\",\"block_producer_eligibility\":\"XCA\",\"online_status\":\"XCA\",\"block_verifier_total_rounds\":\"XCA\",\"block_verifier_online_total_rounds\":\"XCA\",\"block_verifier_online_percentage\":\"XCA\",\"block_producer_total_rounds\":\"XCA\",\"block_producer_block_heights\":\"XCA\"}"
+  #define DATABASE_COLLECTION_STATISTICS_TEST_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
+  #define DATABASE_COLLECTION_DELEGATES_TEST_DATA "{\"public_address\":\"XCA\",\"password\":\"XCA\",\"salt\":\"XCA\",\"session\":\"XCA\",\"total_vote_count\":\"XCA\",\"current_vote_count\":\"XCA\",\"delegate_number\":\"XCA\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"XCA\",\"about\":\"XCA\",\"website\":\"XCA\",\"team\":\"XCA\",\"pool_mode\":\"XCA\",\"fee_structure\":\"XCA\",\"server_settings\":\"XCA\",\"block_producer_eligibility\":\"XCA\",\"online_status\":\"XCA\",\"block_verifier_total_rounds\":\"XCA\",\"block_verifier_online_total_rounds\":\"XCA\",\"block_verifier_online_percentage\":\"XCA\",\"block_producer_total_rounds\":\"XCA\",\"block_producer_block_heights\":\"XCA\"}"
  
   if (process_id_file == NULL)
   {
@@ -1576,7 +1576,7 @@ int reset_variables_allocated_on_the_heap_test(void)
 
 
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);  
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);  
   
   // read_document_all_fields_from_collection 
   // read the current system memory usage
@@ -1667,8 +1667,8 @@ int reset_variables_allocated_on_the_heap_test(void)
 
 
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   
   // read_multiple_documents_all_fields_from_collection 
   // read the current system memory usage
@@ -2079,9 +2079,9 @@ int reset_variables_allocated_on_the_heap_test(void)
   if (settings2 == 1)
   {
     delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);    
-    memcpy(data_test,DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+    memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
     memcpy(data_test+strlen(data_test),",",1);
-    memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_DATA,BUFFER_SIZE));
+    memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
     previous_system_memory_usage = get_program_memory_usage(process_id_file);
     RESET_ERROR_MESSAGES;
     for (count = 0; count <= 1000; count++)
@@ -2137,7 +2137,7 @@ int reset_variables_allocated_on_the_heap_test(void)
 
 
   delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0);
   
 
   // get_block_template 
@@ -3785,6 +3785,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   #undef DATABASE_COLLECTION
   #undef MESSAGE
   #undef MESSAGE_SETTINGS
-  #undef DATABASE_COLLECTION_STATISTICS_DATA
-  #undef DATABASE_COLLECTION_DELEGATES_DATA
+  #undef DATABASE_COLLECTION_STATISTICS_TEST_DATA
+  #undef DATABASE_COLLECTION_DELEGATES_TEST_DATA
 }
