@@ -718,6 +718,8 @@ Install vscode
 Install X11 dependencies  
 `sudo apt install libx11-xcb1 libasound2 x11-apps libice6 libsm6 libxaw7 libxft2 libxmu6 libxpm4 libxt6 x11-apps xbitmaps libxtst6`
 
+After running vscode, [install the C++/C extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
+
 ### Run vscode on the Server and Forward the GUI to a Dekstop
 
 Add `-XC -c aes128-gcm@openssh.com` to the front of any ssh command that you would normally use to connect to the server.
