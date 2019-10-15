@@ -207,7 +207,7 @@ After cloning the repository, navigate to the folder
 `cd ~/Installed-Programs/XCASH_DPOPS`
  
 Then use the make file to build the binary file  
-`make clean ; make release`
+``make clean ; make release -j `nproc` ``
  
  
  
@@ -503,7 +503,7 @@ To run the X-CASH Proof of stake test, make sure to have already started the XCA
 
 Navigate to the folder that contains the binary  
 Rebuild the binary in debug mode  
-`make clean ; make debug`
+``make clean ; make debug -j `nproc` ``
 
 Then run the binary  
 `./XCASH_DPOPS --test`
