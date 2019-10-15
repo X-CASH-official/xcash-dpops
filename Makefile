@@ -1,15 +1,62 @@
+# The name of the compiler
 CPP=gcc
-CFLAGS= -Ifunctions/blockchain_functions/ -Ifunctions/block_verifiers_functions/ -Ifunctions/block_verifiers_functions/block_verifiers_server_functions/ -Ifunctions/block_verifiers_functions/block_verifiers_synchronize_functions/ -Ifunctions/block_verifiers_functions/block_verifiers_synchronize_functions/block_verifiers_synchronize_server_functions/ -Ifunctions/block_verifiers_functions/block_verifiers_thread_server_functions/ -Ifunctions/block_verifiers_functions/block_verifiers_update_functions/ -Ifunctions/database_functions/ -Ifunctions/file_functions/ -Ifunctions/network_daemon_functions/ -Ifunctions/network_functions/ -Ifunctions/network_security_functions/ -Ifunctions/network_wallet_functions/ -Ifunctions/organize_functions/ -Ifunctions/server_functions/ -Ifunctions/server_functions/delegate_server_functions/ -Ifunctions/delegates_website_functions/ -Ifunctions/shared_delegates_website_functions/ -Ifunctions/shared_delegates_website_functions/shared_delegate_website_thread_server_functions/ -Ifunctions/string_functions/ -Ifunctions/thread_functions/ -Ifunctions/VRF_functions/ -Iglobal_data -Itests -Itests/analysing_code_test/ -Itests/blockchain_functions_test/ -Itests/database_functions_test/ -Itests/file_functions_test/ -Itests/global_data/ -Itests/network_functions_test/ -Itests/reset_variables_allocated_on_the_heap_test/ -Itests/string_functions_test/ -Itests/VRF_functions_test/ -I/usr/local/include/libbson-1.0 -I/usr/local/include/libmongoc-1.0
 
-LDFLAGS= -lmongoc-1.0 -lbson-1.0 -lpthread
+# The binary name
+TARGET_BINARY ?= XCASH_DPOPS
 
-all: release
+BUILD_DIR ?= ./build
+SRC_DIRS ?= ./src
 
-debug:
-	gcc -g -fno-stack-protector -O3 -Wall -Wextra -o XCASH_DPOPS XCASH_DPOPS.c functions/VRF_functions/sha512EL.c functions/VRF_functions/ed25519_ref10.c functions/VRF_functions/crypto_verify.c functions/VRF_functions/crypto_vrf.c functions/VRF_functions/randombytes.c functions/VRF_functions/verify.c functions/VRF_functions/keypair.c functions/VRF_functions/prove.c functions/VRF_functions/convert.c functions/VRF_functions/VRF_functions.c functions/blockchain_functions/blockchain_functions.c functions/block_verifiers_functions/block_verifiers_functions.c functions/block_verifiers_functions/block_verifiers_server_functions/block_verifiers_server_functions.c functions/block_verifiers_functions/block_verifiers_synchronize_functions/block_verifiers_synchronize_functions.c functions/block_verifiers_functions/block_verifiers_synchronize_functions/block_verifiers_synchronize_server_functions/block_verifiers_synchronize_server_functions.c functions/block_verifiers_functions/block_verifiers_thread_server_functions/block_verifiers_thread_server_functions.c functions/block_verifiers_functions/block_verifiers_update_functions/block_verifiers_update_functions.c functions/database_functions/database_functions.c functions/delegates_website_functions/delegates_website_functions.c functions/file_functions/file_functions.c functions/network_daemon_functions/network_daemon_functions.c functions/network_functions/network_functions.c functions/network_security_functions/network_security_functions.c functions/network_wallet_functions/network_wallet_functions.c functions/organize_functions/organize_functions.c functions/server_functions/server_functions.c functions/server_functions/delegate_server_functions/delegate_server_functions.c functions/shared_delegates_website_functions/shared_delegates_website_functions.c functions/shared_delegates_website_functions/shared_delegate_website_thread_server_functions/shared_delegate_website_thread_server_functions.c functions/string_functions/string_functions.c functions/thread_functions/thread_functions.c tests/analysing_code_test/analysing_code_test.c tests/blockchain_functions_test/blockchain_functions_test.c tests/database_functions_test/database_functions_test.c tests/file_functions_test/file_functions_test.c tests/network_functions_test/network_functions_test.c tests/reset_variables_allocated_on_the_heap_test/reset_variables_allocated_on_the_heap_test.c tests/string_functions_test/string_functions_test.c tests/VRF_functions_test/VRF_functions_test.c tests/XCASH_DPOPS_test.c $(CFLAGS) $(LDFLAGS)
+# List all source files
+SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
 
-release:
-	gcc -O3 -Wall -Wextra -o XCASH_DPOPS XCASH_DPOPS.c functions/VRF_functions/sha512EL.c functions/VRF_functions/ed25519_ref10.c functions/VRF_functions/crypto_verify.c functions/VRF_functions/crypto_vrf.c functions/VRF_functions/randombytes.c functions/VRF_functions/verify.c functions/VRF_functions/keypair.c functions/VRF_functions/prove.c functions/VRF_functions/convert.c functions/VRF_functions/VRF_functions.c functions/blockchain_functions/blockchain_functions.c functions/block_verifiers_functions/block_verifiers_functions.c functions/block_verifiers_functions/block_verifiers_server_functions/block_verifiers_server_functions.c functions/block_verifiers_functions/block_verifiers_synchronize_functions/block_verifiers_synchronize_functions.c functions/block_verifiers_functions/block_verifiers_synchronize_functions/block_verifiers_synchronize_server_functions/block_verifiers_synchronize_server_functions.c functions/block_verifiers_functions/block_verifiers_thread_server_functions/block_verifiers_thread_server_functions.c functions/block_verifiers_functions/block_verifiers_update_functions/block_verifiers_update_functions.c functions/database_functions/database_functions.c functions/delegates_website_functions/delegates_website_functions.c functions/file_functions/file_functions.c functions/network_daemon_functions/network_daemon_functions.c functions/network_functions/network_functions.c functions/network_security_functions/network_security_functions.c functions/network_wallet_functions/network_wallet_functions.c functions/organize_functions/organize_functions.c functions/server_functions/server_functions.c functions/server_functions/delegate_server_functions/delegate_server_functions.c functions/shared_delegates_website_functions/shared_delegates_website_functions.c functions/shared_delegates_website_functions/shared_delegate_website_thread_server_functions/shared_delegate_website_thread_server_functions.c functions/string_functions/string_functions.c functions/thread_functions/thread_functions.c tests/analysing_code_test/analysing_code_test.c tests/blockchain_functions_test/blockchain_functions_test.c tests/database_functions_test/database_functions_test.c tests/file_functions_test/file_functions_test.c tests/network_functions_test/network_functions_test.c tests/reset_variables_allocated_on_the_heap_test/reset_variables_allocated_on_the_heap_test.c tests/string_functions_test/string_functions_test.c tests/VRF_functions_test/VRF_functions_test.c tests/XCASH_DPOPS_test.c $(CFLAGS) $(LDFLAGS)
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+DEPS := $(OBJS:.o=.d)
+
+#List all directories that contain source files
+INC_DIRS := $(shell find $(SRC_DIRS) -type d)
+
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
+
+# MongoDB include directories
+MongoDB_INC_DIRS := -I/usr/local/include/libbson-1.0 -I/usr/local/include/libmongoc-1.0 -MMD -MP
+
+CFLAGS ?= $(INC_FLAGS) $(MongoDB_INC_DIRS) -MMD -MP
+
+LDFLAGS ?= -lmongoc-1.0 -lbson-1.0 -lpthread
+
+# Set the debug and release flags
+debug: COMPILERFLAGS=-g -fno-stack-protector -Wall -Wextra -Wstrict-prototypes -Wcast-qual
+release: COMPILERFLAGS=-O3 -Wall -Wextra -Wstrict-prototypes -Wcast-qual
+
+debug: $(BUILD_DIR)/$(TARGET_BINARY)
+release: $(BUILD_DIR)/$(TARGET_BINARY)
+
+$(BUILD_DIR)/$(TARGET_BINARY): $(OBJS)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+
+# assembly
+$(BUILD_DIR)/%.s.o: %.s
+	$(MKDIR_P) $(dir $@)
+	$(AS) $(ASFLAGS) -c $< -o $@
+
+# c source
+$(BUILD_DIR)/%.c.o: %.c
+	$(MKDIR_P) $(dir $@)
+	$(CC) $(COMPILERFLAGS) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -c $< -o $@
+
+# c++ source
+$(BUILD_DIR)/%.cpp.o: %.cpp
+	$(MKDIR_P) $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+
+.PHONY: clean
 
 clean:
-	rm XCASH_DPOPS
+	$(RM) -r $(BUILD_DIR)
+
+
+-include $(DEPS)
+
+MKDIR_P ?= mkdir -p

@@ -594,11 +594,11 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   // get the file
   if (shared_delegates_website == 1)
   {
-    memcpy(data2,"shared_delegates_website/",25);
+    memcpy(data2,"../shared_delegates_website/",28);
   }
   if (delegates_website == 1)
   {
-    memcpy(data2,"delegates_website/",18);
+    memcpy(data2,"../delegates_website/",21);
   }
   memcpy(data2+strlen(data2),&MESSAGE[(strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5],(strlen(MESSAGE) - strlen(strstr(MESSAGE," HTTP/"))) - ((strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5));
   file_size = read_file(data,data2);
@@ -606,11 +606,11 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   {
     if (shared_delegates_website == 1)
     {
-      file_size = read_file(data,"shared_delegates_website/index.html");
+      file_size = read_file(data,"../shared_delegates_website/index.html");
     }
     if (delegates_website == 1)
     {
-      file_size = read_file(data,"delegates_website/index.html");
+      file_size = read_file(data,"../delegates_website/index.html");
     }    
     settings = 1;
     if (file_size == 0)
