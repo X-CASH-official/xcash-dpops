@@ -60,7 +60,11 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 
 ### Appendix
 [How to Setup a Domain Name Instead of an IP Address](#how-to-setup-a-domain-name-instead-of-an-ip-address)  
-[How to Setup the Test](#how-to-setup-the-test)
+[How to Setup the Test](#how-to-setup-the-test)  
+[How to Debug the Code on a Server](#how-to-debug-the-code-on-a-server)
+*  [Install GDB and vscode](#install-gdb-and-vscode)
+*  [Run vscode on the Server and Forward the GUI to a Dekstop](#run-vscode-on-the-server-and-forward-the-gui-to-a-desktop)
+*  [Change vscode Keyboard Shortcuts](#change-vscode-keyboard-shortcuts)
 
  
 ## System Requirements
@@ -366,8 +370,8 @@ Description=XCASH DPOPS
 Type=simple
 LimitNOFILE=64000
 User=root
-WorkingDirectory=/root/Installed-Programs/XCASH_DPOPS/
-ExecStart=/root/Installed-Programs/XCASH_DPOPS/XCASH_DPOPS
+WorkingDirectory=/root/Installed-Programs/XCASH_DPOPS/build/
+ExecStart=/root/Installed-Programs/XCASH_DPOPS/build/XCASH_DPOPS
 Restart=always
  
 [Install]
@@ -679,3 +683,67 @@ curl -X POST http://localhost:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","meth
 
 Open the log files for XCASH_DPOPS  
 `journalctl --unit=XCASH_DPOPS --follow -n 100 --output cat`
+
+
+## How to Debug the Code on a Server
+If your looking to participate in the bug bounty, having the ability to debug the code while it is running on the server will be essential. In this part, we will explain how to use visual studio code and gdb to visually debug the program on your desktop.
+
+**Note this works best on a Linux host machine, although there are ways to get it to work with MacOS and Windows**
+
+#### Note It is strongly recommended to run this on a Linux host inside of a virtual machine. This is due to the fact that X11 forwarding can allow someone on the server to run X11 programs on your machine, or to collect data on your currently running programs.
+
+
+### Install GDB and vscode
+Install gdb on the server  
+`sudo apt install gdb`
+
+Install vscode on the server  
+Go to [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) and download the binary for your OS.
+
+Upload the binary to your server using secure copy  
+`scp FILE root@server:/root/Installed-Programs`
+
+Install vscode  
+```
+cd /root/Installed-Programs
+dpkg -i ./code*
+```
+
+Installation will fail, so now install the dependencies  
+`sudo apt-get -f install`
+
+Install vscode  
+`dpkg -i ./code*`
+
+Install X11 dependencies  
+`sudo apt install libx11-xcb1 libasound2 x11-apps libice6 libsm6 libxaw7 libxft2 libxmu6 libxpm4 libxt6 x11-apps xbitmaps libxtst6`
+
+### Run vscode on the Server and Forward the GUI to a Dekstop
+
+Add `-XC -c aes128-gcm@openssh.com` to the front of any ssh command that you would normally use to connect to the server.
+
+Optionally try `-X -c aes128-gcm@openssh.com` to run without compression. On fast Internet connections no compression might be faster.
+
+Once connected type `code` to start vscode. If root you might have to run `code --user-data-dir PATH_TO_FOLDER` to get it to run. Make sure its an empty folder only used for vscode
+
+It might take 10-30 seconds for the vscode window to appear on your dekstop.
+
+You can now use vscode on your dekstop but it will have the file system of the server. It will be a little laggy though, so its probably not good for writing new functions, but for quick file edits (since you have the files panel) and for debugging it should work fine.
+
+### Change vscode Keyboard Shortcuts
+Optionally change the vscode keyboard shortcuts to the following
+
+Open the keyboard shortcuts  
+`File=>Prederences=>Keyboard Shortcuts
+
+At the search bar at the top type `saveall`. For the `File: Save All` edit it to `Control+S` and ignore the warning about there already being that keyboard shortcut
+
+At the search bar at the top type `start debugging`. For the `Debug: Start Debugging` edit it to `Control+Shift+D` and ignore the warning about there already being that keyboard shortcut
+
+This will now allow you to save all files with `Control+S`
+
+To rebuild, and start the debugger use `Control+Shift+D`
+
+If the keyboard shortcuts are not changed, then to rebuild and start the debugger it is `F5` and `Control+Shift+D` to switch to the debugger panel
+
+The vscode files have already been written for you and are included in the `.vscode` directory

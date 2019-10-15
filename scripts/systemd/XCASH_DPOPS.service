@@ -5,8 +5,8 @@ Description=XCASH DPOPS
 Type=simple
 LimitNOFILE=64000
 User=root
-WorkingDirectory=/root/Installed-Programs/XCASH_DPOPS/
-ExecStart=/root/Installed-Programs/XCASH_DPOPS/XCASH_DPOPS
+WorkingDirectory=/root/Installed-Programs/XCASH_DPOPS/build
+ExecStart=/root/Installed-Programs/XCASH_DPOPS/build/XCASH_DPOPS
 Restart=always
  
 [Install]
