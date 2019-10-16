@@ -41,9 +41,14 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   memset(result,0,strlen(result));
   memset(str,0,sizeof(str));
 
+  memcpy(str,"\"",1);
+  memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
+  memcpy(str+strlen(str),"\"",1);
+
   // check if the field is in the data
-  if (strstr(DATA,FIELD_NAME) != NULL)
+  if (strstr(DATA,str) != NULL)
   { 
+    memset(str,0,sizeof(str));
     // modify the field to add the field syntax
     memcpy(str,"\"",1);
     memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
