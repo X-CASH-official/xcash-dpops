@@ -54,7 +54,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, const char* MESSAGE)
+int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, char* MESSAGE)
 {
   // verify the message
   if (verify_data(MESSAGE,0,1) == 0)

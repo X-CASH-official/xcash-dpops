@@ -340,7 +340,7 @@ int socket_thread(int client_socket)
  // check if a certain type of message has been received 
  if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)
  {
-   server_received_data_XCASH_DPOPS_test_data(client_socket,(const char*)buffer);
+   server_received_data_XCASH_DPOPS_test_data(client_socket,buffer);
  }
  else if (strstr(buffer,"GET /delegateswebsitegetstatistics HTTP/") != NULL && delegates_website == 1)
  {

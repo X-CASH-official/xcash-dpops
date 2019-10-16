@@ -30,7 +30,7 @@ Return: 0 if an error has occured, 1 if successfull
 */
 
 int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, const size_t RESULT_TOTAL_LENGTH)
-{int x;
+{
   // Variables
   char str[BUFFER_SIZE];
   char* str1;

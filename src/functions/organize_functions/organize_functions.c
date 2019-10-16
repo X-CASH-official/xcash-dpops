@@ -28,7 +28,7 @@ Description: organize invalid reserve proofs
 
 int organize_invalid_reserve_proofs_settings(const void* STRING1, const void* STRING2)
 {
-  return (strcmp((char*)STRING1, (char*)STRING2));
+  return (strcmp((const char*)STRING1, (const char*)STRING2));
 }
 
 
@@ -46,8 +46,8 @@ int organize_delegates_settings(const void* DELEGATES1, const void* DELEGATES2)
   long long int count;
   long long int count2;
   long long int settings;
-  struct delegates* delegates1 = (struct delegates*)DELEGATES1;
-  struct delegates* delegates2 = (struct delegates*)DELEGATES2;
+  const struct delegates* delegates1 = (const struct delegates*)DELEGATES1;
+  const struct delegates* delegates2 = (const struct delegates*)DELEGATES2;
   
   settings = strcmp(delegates2->online_status,delegates1->online_status);
 
