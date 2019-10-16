@@ -580,8 +580,14 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid data");
   }
 
-  // error check
+  // check if the item is valid
   if (memcmp(item,"IP_address",10) != 0 && memcmp(item,"about",5) != 0 && memcmp(item,"website",7) != 0 && memcmp(item,"team",4) != 0 && memcmp(item,"pool_mode",9) != 0 && memcmp(item,"fee_structure",13) != 0 && memcmp(item,"server_settings",15) != 0)
+  {    
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update");
+  }
+
+  // check if the value is valid
+  if ((memcmp(item,"IP_address",10) == 0 && strlen(value) > 255) || (memcmp(item,"about",10) == 0 && strlen(value) > 1024) || (memcmp(item,"website",10) == 0 && strlen(value) > 255) || (memcmp(item,"team",10) == 0 && strlen(value) > 255) || (memcmp(item,"team",10) == 0 && memcmp(value,"true",4) != 0 && memcmp(value,"false",5) != 0) || (memcmp(item,"fee_structure",10) == 0 && strlen(value) > 10) || (memcmp(item,"server_settings",10) == 0 && strlen(value) > 1024))
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update");
   }
