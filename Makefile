@@ -1,3 +1,16 @@
+# Color print variables
+COLOR_PRINT_RED ?= "\033[1;31m"
+COLOR_PRINT_GREEN ?= "\033[1;32m"
+END_COLOR_PRINT ?= "\033[0m"
+
+# List the current file count and how many files total it is building
+ifndef PRINT_CURRENT_FILE
+TOTAL_FILES := $(shell $(MAKE) $(MAKECMDGOALS) --no-print-directory -nrRf $(firstword $(MAKEFILE_LIST)) PRINT_CURRENT_FILE="COUNTTHIS" | grep -c "COUNTTHIS")
+N := x
+CURRENT_FILE = $(words $N)$(eval N := x $N)
+PRINT_CURRENT_FILE = echo -ne $(COLOR_PRINT_GREEN)"\r Currently Building File" $(CURRENT_FILE) "Out Of" $(TOTAL_FILES)":"$(END_COLOR_PRINT)
+endif
+
 # The binary name
 TARGET_BINARY ?= XCASH_DPOPS
 
@@ -44,16 +57,19 @@ release: COMPILERFLAGS += -O3
 # Build all of the assembly objects files
 $(BUILD_DIR)/%.s.o: %.s
 	mkdir -p $(dir $@)
+	@$(PRINT_CURRENT_FILE) $@
 	$(AS) $(ASFLAGS) -c $< -o $@
 
 # Build all of the C objects files
 $(BUILD_DIR)/%.c.o: %.c
-	mkdir -p $(dir $@)
-	$(CC) $(COMPILERFLAGS) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	@mkdir -p $(dir $@)
+	@$(PRINT_CURRENT_FILE) $@
+	@$(CC) $(COMPILERFLAGS) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 # Build all of the C++ objects files
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	mkdir -p $(dir $@)
+	@$(PRINT_CURRENT_FILE) $@
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 # Set the debug and release rules to phony, since they just change the compiler flags variable and dont create any files. Set the clean rule to phony since we want it to run the command everytime we run it
@@ -65,8 +81,10 @@ release: $(BUILD_DIR)/$(TARGET_BINARY)
 
 # Link all of the objects files
 $(BUILD_DIR)/$(TARGET_BINARY): $(OBJS)
-	$(CC) $(OBJS) -o $@ $(LDFLAGS)
+	@$(CC) $(OBJS) -o $@ $(LDFLAGS)
+	@echo "\n" $(COLOR_PRINT_GREEN)$(TARGET_BINARY) "Has Been Built Successfully"$(END_COLOR_PRINT)
 
 # Remove the build directory
 clean:
-	$(RM) -r $(BUILD_DIR)
+	@$(RM) -r $(BUILD_DIR)
+	@echo $(COLOR_PRINT_RED) "Removed" $(BUILD_DIR)$(END_COLOR_PRINT)
