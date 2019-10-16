@@ -22,6 +22,8 @@
 #include "block_verifiers_synchronize_functions.h"
 #include "block_verifiers_thread_server_functions.h"
 #include "database_functions.h"
+#include "insert_database_functions.h"
+#include "delete_database_functions.h"
 #include "file_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"

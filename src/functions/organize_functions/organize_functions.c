@@ -9,7 +9,8 @@
 #include "structures.h"
 #include "variables.h"
 
-#include "database_functions.h"
+#include "read_database_functions.h"
+#include "count_database_functions.h"
 #include "organize_functions.h"
 
 /*

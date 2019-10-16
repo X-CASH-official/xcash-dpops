@@ -26,7 +26,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a XCASH_DPOPS_signature for the signed datas
 
 // Network block string 
-#define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "00000000" // The network block nonce used when the block producer creates the block
+#define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "10000000" // The network block nonce used when the block producer creates the block
 #define CONSENSUS_NODE_NETWORK_BLOCK_NONCE "11111111" // The network block nonce used when the consensus node creates the block
 #define NETWORK_VERSION "0d0d" // The network version
 #define TIMESTAMP_LENGTH 10 // The length of the timestamp

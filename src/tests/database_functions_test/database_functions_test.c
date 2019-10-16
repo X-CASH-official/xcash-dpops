@@ -9,6 +9,11 @@
 #include "structures.h"
 
 #include "database_functions.h"
+#include "insert_database_functions.h"
+#include "read_database_functions.h"
+#include "update_database_functions.h"
+#include "delete_database_functions.h"
+#include "count_database_functions.h"
 #include "thread_functions.h"
 
 #include "variables_test.h"

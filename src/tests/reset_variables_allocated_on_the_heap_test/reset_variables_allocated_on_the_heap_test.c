@@ -12,6 +12,11 @@
 #include "variables.h"
 
 #include "database_functions.h"
+#include "insert_database_functions.h"
+#include "read_database_functions.h"
+#include "update_database_functions.h"
+#include "delete_database_functions.h"
+#include "count_database_functions.h"
 #include "file_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"

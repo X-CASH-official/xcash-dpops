@@ -20,7 +20,8 @@
 
 #include "blockchain_functions.h"
 #include "block_verifiers_synchronize_functions.h"
-#include "database_functions.h"
+#include "read_database_functions.h"
+#include "count_database_functions.h"
 #include "delegates_website_functions.h"
 #include "file_functions.h"
 #include "network_daemon_functions.h"
