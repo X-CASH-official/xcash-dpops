@@ -65,33 +65,11 @@ int update_block_verifiers_list(void)
   int settings = 0;
 
   // define macros
-  #define pointer_reset_database_array \
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
-  { \
-    pointer_reset(delegates[count].public_address); \
-    pointer_reset(delegates[count].total_vote_count); \
-    pointer_reset(delegates[count].IP_address); \
-    pointer_reset(delegates[count].delegate_name); \
-    pointer_reset(delegates[count].about); \
-    pointer_reset(delegates[count].website); \
-    pointer_reset(delegates[count].team); \
-    pointer_reset(delegates[count].pool_mode); \
-    pointer_reset(delegates[count].fee_structure); \
-    pointer_reset(delegates[count].server_settings); \
-    pointer_reset(delegates[count].block_verifier_score); \
-    pointer_reset(delegates[count].online_status); \
-    pointer_reset(delegates[count].block_verifier_total_rounds); \
-    pointer_reset(delegates[count].block_verifier_online_total_rounds); \
-    pointer_reset(delegates[count].block_verifier_online_percentage); \
-    pointer_reset(delegates[count].block_producer_total_rounds); \
-    pointer_reset(delegates[count].block_producer_block_heights); \
-  }
-
   #define UPDATE_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset_database_array; \
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   return 0;
 
   // reset the previous_block_verifiers_list struct
@@ -175,10 +153,9 @@ int update_block_verifiers_list(void)
   {
     settings = 2;
   } 
-  pointer_reset_database_array;
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   return settings;
-
-  #undef pointer_reset_database_array
+  
   #undef UPDATE_BLOCK_VERIFIERS_LIST_ERROR
 }
 
@@ -808,88 +785,22 @@ int get_delegates_online_status(void)
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define pointer_reset_database_array \
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
-  { \
-    pointer_reset(delegates[count].public_address); \
-    pointer_reset(delegates[count].total_vote_count); \
-    pointer_reset(delegates[count].IP_address); \
-    pointer_reset(delegates[count].delegate_name); \
-    pointer_reset(delegates[count].about); \
-    pointer_reset(delegates[count].website); \
-    pointer_reset(delegates[count].team); \
-    pointer_reset(delegates[count].pool_mode); \
-    pointer_reset(delegates[count].fee_structure); \
-    pointer_reset(delegates[count].server_settings); \
-    pointer_reset(delegates[count].block_verifier_score); \
-    pointer_reset(delegates[count].online_status); \
-    pointer_reset(delegates[count].block_verifier_total_rounds); \
-    pointer_reset(delegates[count].block_verifier_online_total_rounds); \
-    pointer_reset(delegates[count].block_verifier_online_percentage); \
-    pointer_reset(delegates[count].block_producer_total_rounds); \
-    pointer_reset(delegates[count].block_producer_block_heights); \
-  } \
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
-  { \
-    pointer_reset(delegates_online_status[count].public_address); \
-  }
-
   #define GET_DELEGATES_ONLINE_STATUS_ERROR(message) \
   memcpy(error_message.function[error_message.total],"get_delegates_online_status",27); \
   memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
   error_message.total++; \
-  pointer_reset_database_array; \
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
+  POINTER_RESET_DELEGATES_ONLINE_STATUS_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   return 0;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   
   // initialize the delegates struct
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    delegates[count].public_address = (char*)calloc(100,sizeof(char));
-    delegates[count].total_vote_count = (char*)calloc(100,sizeof(char));
-    delegates[count].IP_address = (char*)calloc(100,sizeof(char));
-    delegates[count].delegate_name = (char*)calloc(100,sizeof(char));
-    delegates[count].about = (char*)calloc(1025,sizeof(char));
-    delegates[count].website = (char*)calloc(100,sizeof(char));
-    delegates[count].team = (char*)calloc(100,sizeof(char));
-    delegates[count].pool_mode = (char*)calloc(100,sizeof(char));
-    delegates[count].fee_structure = (char*)calloc(100,sizeof(char));
-    delegates[count].server_settings = (char*)calloc(100,sizeof(char));
-    delegates[count].block_verifier_score = (char*)calloc(100,sizeof(char));
-    delegates[count].online_status = (char*)calloc(100,sizeof(char));
-    delegates[count].block_verifier_total_rounds = (char*)calloc(100,sizeof(char));
-    delegates[count].block_verifier_online_total_rounds = (char*)calloc(100,sizeof(char));
-    delegates[count].block_verifier_online_percentage = (char*)calloc(100,sizeof(char));
-    delegates[count].block_producer_total_rounds = (char*)calloc(100,sizeof(char));
-    delegates[count].block_producer_block_heights = (char*)calloc(50000,sizeof(char));
-
-    if (delegates[count].public_address == NULL || delegates[count].total_vote_count == NULL || delegates[count].IP_address == NULL || delegates[count].delegate_name == NULL || delegates[count].about == NULL || delegates[count].website == NULL || delegates[count].team == NULL || delegates[count].pool_mode == NULL || delegates[count].fee_structure == NULL || delegates[count].server_settings == NULL || delegates[count].block_verifier_score == NULL || delegates[count].online_status == NULL || delegates[count].block_verifier_total_rounds == NULL || delegates[count].block_verifier_online_total_rounds == NULL || delegates[count].block_verifier_online_percentage == NULL || delegates[count].block_producer_total_rounds == NULL || delegates[count].block_producer_block_heights == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
-    }
-  }
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"get_delegates_online_status",data);
 
   // initialize the delegates_online_status struct
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    delegates_online_status[count].public_address = (char*)calloc(100,sizeof(char));
-    delegates_online_status[count].settings = 0;
-
-    if (delegates_online_status[count].public_address == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
-    }
-  }
+  INITIALIZE_DELEGATES_ONLINE_STATUS_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"get_delegates_online_status",data);
 
   // organize the delegates
   total_delegates = organize_delegates(delegates);
@@ -1020,10 +931,10 @@ int get_delegates_online_status(void)
     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, delegates_online_status[count].socket, &events[count]);
     close(delegates_online_status[count].socket);
   }
-  pointer_reset_database_array;
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+  POINTER_RESET_DELEGATES_ONLINE_STATUS_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   return total_delegates_online;
 
   #undef DATABASE_COLLECTION
-  #undef pointer_reset_database_array
   #undef GET_DELEGATES_ONLINE_STATUS_ERROR
 }

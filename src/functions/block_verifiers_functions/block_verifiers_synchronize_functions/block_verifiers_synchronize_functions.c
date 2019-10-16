@@ -131,26 +131,16 @@ int sync_all_block_verifiers_list(void)
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define pointer_reset_database_array \
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
+  #define PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA(settings,block_verifiers_data) \
+  memset(data2,0,sizeof(data2)); \
+  if (parse_json_data(data3,settings,data2,sizeof(data2)) == 0) \
   { \
-    pointer_reset(delegates[count].public_address); \
-    pointer_reset(delegates[count].total_vote_count); \
-    pointer_reset(delegates[count].IP_address); \
-    pointer_reset(delegates[count].delegate_name); \
-    pointer_reset(delegates[count].about); \
-    pointer_reset(delegates[count].website); \
-    pointer_reset(delegates[count].team); \
-    pointer_reset(delegates[count].pool_mode); \
-    pointer_reset(delegates[count].fee_structure); \
-    pointer_reset(delegates[count].server_settings); \
-    pointer_reset(delegates[count].block_verifier_score); \
-    pointer_reset(delegates[count].online_status); \
-    pointer_reset(delegates[count].block_verifier_total_rounds); \
-    pointer_reset(delegates[count].block_verifier_online_total_rounds); \
-    pointer_reset(delegates[count].block_verifier_online_percentage); \
-    pointer_reset(delegates[count].block_producer_total_rounds); \
-    pointer_reset(delegates[count].block_producer_block_heights); \
+    SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message"); \
+  } \
+  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    memcpy(block_verifiers_data[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2); \
+    count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1; \
   }
 
   #define SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR(settings) \
@@ -216,126 +206,16 @@ int sync_all_block_verifiers_list(void)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not verify data");
     }
- 
-    // parse the message
-    memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"previous_block_verifiers_name_list",data2,sizeof(data2)) == 0)
-    {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
-    } 
-
-    // parse the previous_block_verifiers_name_list
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(previous_block_verifiers_list.block_verifiers_name[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
-      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
-    }
-
-    memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"previous_block_verifiers_public_address_list",data2,sizeof(data2)) == 0)
-    {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
-    } 
-
-    // parse the previous_block_verifiers_public_address_list
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
-      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
-    }
-
-    memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"previous_block_verifiers_IP_address_list",data2,sizeof(data2)) == 0)
-    {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
-    } 
-
-    // parse the previous_block_verifiers_IP_address_list
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
-      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
-    }
-
-    // parse the message
-    memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"current_block_verifiers_name_list",data2,sizeof(data2)) == 0)
-    {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
-    } 
-
-    // parse the current_block_verifiers_name_list
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(current_block_verifiers_list.block_verifiers_name[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
-      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
-    }
-
-    memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"current_block_verifiers_public_address_list",data2,sizeof(data2)) == 0)
-    {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
-    } 
-
-    // parse the current_block_verifiers_public_address_list
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(current_block_verifiers_list.block_verifiers_public_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
-      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
-    }
-
-    memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"current_block_verifiers_IP_address_list",data2,sizeof(data2)) == 0)
-    {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
-    } 
-
-    // parse the current_block_verifiers_IP_address_list
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
-      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
-    }
-
-    // parse the message
-    memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"next_block_verifiers_name_list",data2,sizeof(data2)) == 0)
-    {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
-    } 
-
-    // parse the next_block_verifiers_name_list
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(next_block_verifiers_list.block_verifiers_name[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
-      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
-    }
-
-    memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"next_block_verifiers_public_address_list",data2,sizeof(data2)) == 0)
-    {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
-    } 
-
-    // parse the next_block_verifiers_public_address_list
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(next_block_verifiers_list.block_verifiers_public_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
-      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
-    }
-
-    memset(data2,0,sizeof(data2));
-    if (parse_json_data(data3,"next_block_verifiers_IP_address_list",data2,sizeof(data2)) == 0)
-    {
-      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message");
-    } 
-
-    // parse the next_block_verifiers_IP_address_list
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2);
-      count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1;
-    }
+    
+    PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_name_list",previous_block_verifiers_list.block_verifiers_name);
+    PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_public_address_list",previous_block_verifiers_list.block_verifiers_public_address);
+    PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_IP_address_list",previous_block_verifiers_list.block_verifiers_IP_address);
+    PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_name_list",current_block_verifiers_list.block_verifiers_name);
+    PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_public_address_list",current_block_verifiers_list.block_verifiers_public_address);
+    PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_IP_address_list",current_block_verifiers_list.block_verifiers_IP_address);
+    PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_name_list",next_block_verifiers_list.block_verifiers_name);
+    PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_public_address_list",next_block_verifiers_list.block_verifiers_public_address);
+    PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_IP_address_list",next_block_verifiers_list.block_verifiers_IP_address);
 
     color_print("The previous, current and next block verifiers have been synced from a network data node","green");
   }
@@ -350,7 +230,7 @@ int sync_all_block_verifiers_list(void)
    // organize the delegates
    if (organize_delegates(delegates) < BLOCK_VERIFIERS_AMOUNT)
    {
-     pointer_reset_database_array;
+     POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
    }
 
@@ -368,13 +248,13 @@ int sync_all_block_verifiers_list(void)
        memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
     }
 
-    pointer_reset_database_array;
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
     color_print("The previous, current and next block verifiers have been loaded from the database","green");
   }
   return 1;
 
   #undef DATABASE_COLLECTION  
-  #undef pointer_reset_database_array
+  #undef PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA
   #undef SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR  
 }
 

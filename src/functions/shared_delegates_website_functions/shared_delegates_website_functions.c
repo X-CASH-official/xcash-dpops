@@ -309,7 +309,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   struct tm* current_UTC_date_and_time;
   int count = 0;
   int counter = 0;
-  struct database_multiple_documents_fields database_data;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count = 0;
 
   // define macros
@@ -323,50 +323,22 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   pointer_reset(message); \
   if (settings == 0) \
   { \
-    pointer_reset_database_array; \
+    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
   } \
   return 0;
-
-  #define pointer_reset_database_array \
-  for (count = 0; count < document_count; count++) \
-  { \
-    for (counter = 0; counter < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; counter++) \
-    { \
-      pointer_reset(database_data.item[count][counter]); \
-      pointer_reset(database_data.value[count][counter]); \
-    } \
-  }
 
   // get the total blocks found
   document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,0);
 
-  // initialize the database_data struct 
-  for (count = 0; count < document_count; count++)
-  {
-    for (counter = 0; counter < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; counter++)
-    {
-      database_data.item[count][counter] = (char*)calloc(100,sizeof(char));
-      database_data.value[count][counter] = (char*)calloc(100,sizeof(char));
+  // initialize the database_multiple_documents_fields struct
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_get_blocks_found",buffer);
 
-      if (database_data.item[count][counter] == NULL || database_data.value[count][counter] == NULL)
-      {
-        memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_blocks_found",43);
-        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-        error_message.total++;
-        print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-        exit(0);
-      }
-    }
-  }
-  database_data.document_count = 0;
-  database_data.database_fields_count = 0;
-
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_data,1,document_count,0,"",0) == 0)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
   }
   
-  if (create_json_data_from_database_multiple_documents_array(&database_data,message,"") == 0)
+  if (create_json_data_from_database_multiple_documents_array(&database_multiple_documents_fields,message,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
   } 
@@ -377,12 +349,11 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   }
   
   pointer_reset(message);
-  pointer_reset_database_array; 
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS);
   return 1;
 
   #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR
-  #undef pointer_reset_database_array
 }
 
 
@@ -418,16 +389,9 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   if (settings == 0) \
   { \
-    pointer_reset_database_array; \
+    POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count); \
   } \
   return 0;
-  
-  #define pointer_reset_database_array \
-  for (count = 0; count < TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS; count++) \
-  { \
-    pointer_reset(database_data.item[count]); \
-    pointer_reset(database_data.value[count]); \
-  }
 
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
@@ -452,24 +416,10 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1);
   }
-  
-  // initialize the database_document_fields struct 
-  for (count = 0; count < TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS; count++)
-  {
-    database_data.item[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-    database_data.value[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
 
-    if (database_data.item[count] == NULL || database_data.value[count] == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_information",57);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-      exit(0);
-    }
-  }
-  database_data.count = 0;
-  
+  // initialize the database_document_fields struct 
+  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_information",data2);
+   
   if (read_document_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,message,&database_data,0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
@@ -488,13 +438,12 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
   }
   
-  pointer_reset_database_array;
+  POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
   return 1;
 
   #undef DATABASE_COLLECTION
   #undef TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS
   #undef SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR
-  #undef pointer_reset_database_array
 }
 
 
@@ -519,7 +468,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   struct tm* current_UTC_date_and_time;
   int count = 0;
   int counter = 0;
-  struct database_multiple_documents_fields database_data;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count = 0;
 
   // define macros
@@ -533,19 +482,9 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   pointer_reset(message); \
   if (settings == 0) \
   { \
-    pointer_reset_database_array; \
+    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS); \
   } \
   return 0;
-  
-  #define pointer_reset_database_array \
-  for (count = 0; count < document_count; count++) \
-  { \
-    for (counter = 0; counter < TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS; counter++) \
-    { \
-      pointer_reset(database_data.item[count][counter]); \
-      pointer_reset(database_data.value[count][counter]); \
-    } \
-  }
 
   // check if the memory needed was allocated on the heap successfully
   if (message == NULL)
@@ -578,28 +517,10 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1);
   }
   
-  // initialize the database_data struct 
-  for (count = 0; count < document_count; count++)
-  {
-    for (counter = 0; counter < TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS; counter++)
-    {
-      database_data.item[count][counter] = (char*)calloc(100,sizeof(char));
-      database_data.value[count][counter] = (char*)calloc(100,sizeof(char));
-
-      if (database_data.item[count][counter] == NULL || database_data.value[count][counter] == NULL)
-      {
-        memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_payment_information",65);
-        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-        error_message.total++;
-        print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-        exit(0);
-      }
-    }
-  }
-  database_data.document_count = 0;
-  database_data.database_fields_count = 0;
+  // initialize the database_multiple_documents_fields struct
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_payment_information",data2);
   
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_data,1,document_count,0,"",0) == 0)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0);
   }
@@ -607,7 +528,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   memset(message,0,strlen(message));
 
   // create a json string out of the database array of item and value
-  if (create_json_data_from_database_multiple_documents_array(&database_data,message,"") == 0)
+  if (create_json_data_from_database_multiple_documents_array(&database_multiple_documents_fields,message,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0);
   }
@@ -617,12 +538,11 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0);
   }
   
-  pointer_reset_database_array;
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS);
   pointer_reset(message);
   return 1;
 
   #undef DATABASE_COLLECTION
   #undef TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS
   #undef SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR
-  #undef pointer_reset_database_array
 }
