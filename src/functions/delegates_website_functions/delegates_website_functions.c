@@ -17,6 +17,7 @@
 #include "define_macros.h"
 #include "structures.h"
 #include "variables.h"
+#include "initialize_and_reset_structs_define_macros.h"
 
 #include "blockchain_functions.h"
 #include "block_verifiers_synchronize_functions.h"
@@ -118,35 +119,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   }
 
   // initialize the delegates struct
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    delegates[count].public_address = (char*)calloc(100,sizeof(char));
-    delegates[count].total_vote_count = (char*)calloc(100,sizeof(char));
-    delegates[count].IP_address = (char*)calloc(100,sizeof(char));
-    delegates[count].delegate_name = (char*)calloc(100,sizeof(char));
-    delegates[count].about = (char*)calloc(1025,sizeof(char));
-    delegates[count].website = (char*)calloc(100,sizeof(char));
-    delegates[count].team = (char*)calloc(100,sizeof(char));
-    delegates[count].pool_mode = (char*)calloc(100,sizeof(char));
-    delegates[count].fee_structure = (char*)calloc(100,sizeof(char));
-    delegates[count].server_settings = (char*)calloc(100,sizeof(char));
-    delegates[count].block_verifier_score = (char*)calloc(100,sizeof(char));
-    delegates[count].online_status = (char*)calloc(100,sizeof(char));
-    delegates[count].block_verifier_total_rounds = (char*)calloc(100,sizeof(char));
-    delegates[count].block_verifier_online_total_rounds = (char*)calloc(100,sizeof(char));
-    delegates[count].block_verifier_online_percentage = (char*)calloc(100,sizeof(char));
-    delegates[count].block_producer_total_rounds = (char*)calloc(100,sizeof(char));
-    delegates[count].block_producer_block_heights = (char*)calloc(50000,sizeof(char));
-
-    if (delegates[count].public_address == NULL || delegates[count].total_vote_count == NULL || delegates[count].IP_address == NULL || delegates[count].delegate_name == NULL || delegates[count].about == NULL || delegates[count].website == NULL || delegates[count].team == NULL || delegates[count].pool_mode == NULL || delegates[count].fee_structure == NULL || delegates[count].server_settings == NULL || delegates[count].block_verifier_score == NULL || delegates[count].online_status == NULL || delegates[count].block_verifier_total_rounds == NULL || delegates[count].block_verifier_online_total_rounds == NULL || delegates[count].block_verifier_online_percentage == NULL || delegates[count].block_producer_total_rounds == NULL || delegates[count].block_producer_block_heights == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-      exit(0);
-    }
-  }
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_delegates_website_get_statistics",buffer);
 
   // initialize the database_document_fields struct 
   for (count = 0; count < TOTAL_STATISTICS_DATABASE_FIELDS+4; count++)
