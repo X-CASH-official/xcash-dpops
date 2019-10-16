@@ -555,9 +555,6 @@ int database_document_parse_json_data(const char* DATA, struct database_document
   char* data3;
   size_t count = 0;
 
-  // get the parameter count
-  result->count = string_count(DATA,":") - 2;
-
   // get the first item  
   data2 = strstr(DATA,",") + 3;
   data3 = strstr(data2,"\"");
@@ -605,9 +602,6 @@ int database_multiple_documents_parse_json_data(const char* DATA, struct databas
   char* data2;
   char* data3;
   size_t count = 0;
-
-  // get the parameter count
-  result->database_fields_count = string_count(DATA,":") - 2;
 
   // get the first item  
   data2 = strstr(DATA,",") + 3;
@@ -686,6 +680,32 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   } 
+
+  // set the database_fields_count
+  if (strstr(COLLECTION,"reserve_bytes") != NULL)
+  {
+    result->count = TOTAL_RESERVE_BYTES_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"reserve_proofs") != NULL)
+  {
+    result->count = TOTAL_RESERVE_PROOFS_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"delegates") != NULL)
+  {
+    result->count = TOTAL_DELEGATES_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"statistics") != NULL)
+  {
+    result->count = TOTAL_STATISTICS_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"public_addresses") != NULL)
+  {
+    result->count = TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"blocks_found") != NULL)
+  {
+    result->count = TOTAL_BLOCKS_FOUND_DATABASE_FIELDS;
+  }  
 
    // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -808,6 +828,32 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
+
+  // set the database_fields_count
+  if (strstr(COLLECTION,"reserve_bytes") != NULL)
+  {
+    result->database_fields_count = TOTAL_RESERVE_BYTES_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"reserve_proofs") != NULL)
+  {
+    result->database_fields_count = TOTAL_RESERVE_PROOFS_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"delegates") != NULL)
+  {
+    result->database_fields_count = TOTAL_DELEGATES_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"statistics") != NULL)
+  {
+    result->database_fields_count = TOTAL_STATISTICS_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"public_addresses") != NULL)
+  {
+    result->database_fields_count = TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"blocks_found") != NULL)
+  {
+    result->database_fields_count = TOTAL_BLOCKS_FOUND_DATABASE_FIELDS;
+  }  
 
    // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
