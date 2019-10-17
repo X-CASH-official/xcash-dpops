@@ -136,25 +136,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_shared_delegates_website_get_statistics",data);
 
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; (int)count < document_count; count++)
-  {
-    for (counter = 0; counter < TOTAL_BLOCKS_FOUND_DATABASE_FIELDS; counter++)
-    {
-      database_multiple_documents_fields.item[count][counter] = (char*)calloc(100,sizeof(char));
-      database_multiple_documents_fields.value[count][counter] = (char*)calloc(100,sizeof(char));
-
-      if (database_multiple_documents_fields.item[count][counter] == NULL || database_multiple_documents_fields.value[count][counter] == NULL)
-      {
-        memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66);
-        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-        error_message.total++;
-        print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-        exit(0);
-      }
-    }
-  }
-  database_multiple_documents_fields.document_count = 0;
-  database_multiple_documents_fields.database_fields_count = 0;
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_shared_delegates_website_get_statistics",data);
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)

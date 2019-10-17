@@ -62,6 +62,32 @@ for (count = 0; (int)count < maximum_amount; count++) \
 
 
 
+// voters struct
+#define INITIALIZE_VOTERS_STRUCT(count,maximum_count,function_name,buffer) \
+for (count = 0; count < maximum_count; count++) \
+{ \
+  voters[count].public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
+  voters[count].total_vote_count = (char*)calloc(100,sizeof(char)); \
+  voters[count].total_votes = 0; \
+  if (voters[count].public_address == NULL || voters[count].total_vote_count == NULL) \
+  { \
+    memcpy(error_message.function[error_message.total],function_name,sizeof(function_name)-1); \
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48); \
+    error_message.total++; \
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer); \
+    exit(0); \
+  } \
+}
+
+#define POINTER_RESET_VOTERS_STRUCT(count,maximum_amount) \
+for (count = 0; count < maximum_amount; count++) \
+{ \
+  pointer_reset(voters[count].public_address); \
+  pointer_reset(voters[count].total_vote_count); \
+} \
+
+
+
 // votes struct
 #define INITIALIZE_VOTES_STRUCT(count,maximum_amount,function_name,buffer) \
 for (count = 0; (int)count < maximum_amount; count++) \
@@ -142,8 +168,8 @@ for (count = 0; (int)count < (int)database_data.count; count++) \
 
 
 // database_multiple_documents_fields struct
-#define INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,document_count,maximum_amount,function_name,buffer) \
-for (count = 0; (int)count < document_count; count++) \
+#define INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,total_document_count,maximum_amount,function_name,buffer) \
+for (count = 0; (int)count < total_document_count; count++) \
 { \
   for (count2 = 0; count2 < maximum_amount; count2++) \
   { \

@@ -8,6 +8,7 @@
 #include "define_macros.h"
 #include "structures.h"
 #include "variables.h"
+#include "initialize_and_reset_structs_define_macros.h"
 
 #include "read_database_functions.h"
 #include "count_database_functions.h"
@@ -110,7 +111,7 @@ int organize_delegates(struct delegates* delegates)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  pointer_reset_database_array; \
+  RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -184,11 +185,10 @@ int organize_delegates(struct delegates* delegates)
   // organize the delegates by total_vote_count
   qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates_settings);
 
-  pointer_reset_database_array;
+  RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS);
 
   return database_multiple_documents_fields.document_count;
 
   #undef DATABASE_COLLECTION
-  #undef pointer_reset_database_array
   #undef ORGANIZE_DELEGATES_ERROR
 }
