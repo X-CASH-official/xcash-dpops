@@ -93,6 +93,11 @@ long long int add_block_to_blocks_found(void)
 
   document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,0);
 
+  if (document_count <= 0)
+  {
+    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("The database is empty");
+  }
+
   // initialize the database_data struct 
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"add_block_to_blocks_found",data);
 
@@ -478,6 +483,10 @@ void* payment_timer_thread(void* parameters)
       total_amount = 0;
 
       document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses",0);
+      if (document_count <= 0)
+      {
+        PAYMENT_TIMER_THREAD_ERROR("The database is empty");
+      }
 
       // initialize the database_multiple_documents_fields struct 
       INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"payment_timer_thread",data);

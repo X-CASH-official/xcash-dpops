@@ -83,8 +83,8 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
-  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset_database_array; \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   return 0;
 
   #define pointer_reset_database_array \
@@ -130,6 +130,10 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   // get the total blocks found
   document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"blocks_found",0);
+  if (document_count <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR;
+  }
   total_blocks_found = document_count;
 
   // initialize the delegates struct
@@ -311,6 +315,11 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
 
   // get the total blocks found
   document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,0);
+
+  if (document_count <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR("The database is empty");
+  }
 
   // initialize the database_multiple_documents_fields struct
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_get_blocks_found",buffer);

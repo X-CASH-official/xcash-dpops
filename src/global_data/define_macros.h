@@ -117,7 +117,7 @@ Using define statements instead of constants for increased efficiency
 // Shared delegates settings
 #define VOTER_INACTIVITY_COUNT "30" // the number of days to wait to remove an inactive delegates information from the database
 
-// Network data nodes
+/*// Network data nodes
 #define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12"
 #define NETWORK_DATA_NODE_1_IP_ADDRESS "delegates.xcash.foundation"
@@ -163,9 +163,9 @@ memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],NETWORK_DATA_NOD
 if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0) \
 { \
   network_data_node_settings = 1; \
-}
+}*/
 
-/*// Network data nodes test
+// Network data nodes test
 #define NETWORK_DATA_NODES_AMOUNT 2 // The amount of network data nodes
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
 #define NETWORK_DATA_NODE_1_IP_ADDRESS "192.168.1.201"
@@ -191,7 +191,7 @@ memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],NETWORK_DATA_NOD
 if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0) \
 { \
   network_data_node_settings = 1; \
-}*/
+}
 
 // Test
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"

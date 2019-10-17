@@ -95,17 +95,6 @@ int organize_delegates(struct delegates* delegates)
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-
-  #define pointer_reset_database_array \
-  for (count = 0; (int)count < document_count; count++)
-  { \
-    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS+1; count2++) \
-    { \
-      pointer_reset(database_multiple_documents_fields.item[count][count2]); \
-      pointer_reset(database_multiple_documents_fields.value[count][count2]); \
-    } \
-  }
-
   #define ORGANIZE_DELEGATES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"organize_delegates",18); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
