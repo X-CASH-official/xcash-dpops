@@ -66,13 +66,13 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
-  size_t count; 
-  size_t counter = 0; 
+  int count; 
+  int counter = 0; 
   size_t receive_data_result; 
-  struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  int settings;
+  struct addrinfo serv_addr;
+  struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
 
   // check if the memory needed was allocated on the heap successfully
@@ -107,7 +107,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   counter += HOST_LENGTH;
   memcpy(message+counter,"\r\n",2);
   counter += 2;
-  for (count = 0; count < HTTP_HEADERS_LENGTH; count++)
+  for (count = 0; count < (int)HTTP_HEADERS_LENGTH; count++)
   {
     memcpy(message+counter,HTTP_HEADERS[count],strnlen(HTTP_HEADERS[count],BUFFER_SIZE));
     counter += strnlen(HTTP_HEADERS[count],BUFFER_SIZE);
@@ -131,12 +131,65 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   }  
   memset(&response, 0, sizeof(response));
 
+  // convert the port to a string  
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
+
+  // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
+  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+
+  // set up the addrinfo
+  memset(&serv_addr, 0, sizeof(serv_addr));
+  if (string_count(HOST,".") == 3)
+  {
+    /* the host is an IP address
+    AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+    AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    */
+    serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
+    serv_addr.ai_family = AF_INET;
+    serv_addr.ai_socktype = SOCK_STREAM;
+  }
+  else
+  {
+    /* the host is a domain name
+    AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    */
+    serv_addr.ai_flags = AI_NUMERICSERV;
+    serv_addr.ai_family = AF_INET;
+    serv_addr.ai_socktype = SOCK_STREAM;
+  }
+  
+  // convert the hostname if used, to an IP address
+  memset(str,0,sizeof(str));
+  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
+  if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
+  {
+    if (MESSAGE_SETTINGS == 1)
+    {       
+      memset(str,0,sizeof(str));
+      memcpy(str,"Error invalid hostname of ",26);
+      memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      error_message.total++;  
+    }
+    pointer_reset(message);
+    return 0;
+  }
+
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
   SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+  const int SOCKET = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
   if (SOCKET == -1)
   { 
     if (MESSAGE_SETTINGS == 1)
@@ -166,45 +219,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     return 0;
   }  
 
-  // convert the hostname if used, to an IP address
-  memset(str,0,sizeof(str));
-  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
-  const struct hostent* HOST_NAME = gethostbyname(str); 
-  if (HOST_NAME == NULL)
-  {
-    if (MESSAGE_SETTINGS == 1)
-    {       
-      memset(str,0,sizeof(str));
-      memcpy(str,"Error invalid hostname of ",26);
-      memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-      error_message.total++;  
-    }
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
-  }
-
-  // convert the port to a string  
-  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
-
-  // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
-  
-  memset(&serv_addr,0,sizeof(struct sockaddr_in));
-  /* setup the connection
-  AF_INET = IPV4
-  INADDR_ANY = connect to 0.0.0.0
-  use htons to convert the port from host byte order to network byte order short
-  */
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
-  serv_addr.sin_port = htons(PORT);
-
   /* set the first poll structure to our socket
   POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
   */
@@ -212,10 +226,10 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
+  if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
-    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
-    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     {        
       if (MESSAGE_SETTINGS == 1)
       {
@@ -409,29 +423,80 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   char str[BUFFER_SIZE];
   char message[BUFFER_SIZE]; 
   int receive_data_result;
-  struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  int settings;
+  int count;
+  struct addrinfo serv_addr;
+  struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
 
   memset(str,0,sizeof(str));
+
+  // convert the port to a string  
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
+
+  // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
+  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+
+  // set up the addrinfo
+  memset(&serv_addr, 0, sizeof(serv_addr));
+  if (string_count(HOST,".") == 3)
+  {
+    /* the host is an IP address
+    AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+    AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    */
+    serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
+    serv_addr.ai_family = AF_INET;
+    serv_addr.ai_socktype = SOCK_STREAM;
+  }
+  else
+  {
+    /* the host is a domain name
+    AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    */
+    serv_addr.ai_flags = AI_NUMERICSERV;
+    serv_addr.ai_family = AF_INET;
+    serv_addr.ai_socktype = SOCK_STREAM;
+  }
+  
+  // convert the hostname if used, to an IP address
+  memset(str,0,sizeof(str));
+  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
+  if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
+  {
+    if (MESSAGE_SETTINGS == 1)
+    {       
+      memset(str,0,sizeof(str));
+      memcpy(str,"Error invalid hostname of ",26);
+      memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      error_message.total++;  
+    }
+    return 0;
+  }
 
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
   SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+  const int SOCKET = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
   if (SOCKET == -1)
   { 
     if (MESSAGE_SETTINGS == 1)
     {
-      memcpy(str,"Error creating socket for sending data to ",42);
-      memcpy(str+42,HOST,HOST_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-      error_message.total++; 
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
+      error_message.total++;
     }
     return 0;
   }
@@ -444,50 +509,13 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   {
     if (MESSAGE_SETTINGS == 1)
     {
-      memcpy(str,"Error setting socket timeout for sending data to ",49);
-      memcpy(str+49,HOST,HOST_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-      error_message.total++;
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
+      error_message.total++;       
     }
     close(SOCKET);
     return 0;
-  } 
-
-  // convert the hostname if used, to an IP address
-  memset(str,0,sizeof(str));
-  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
-  const struct hostent* HOST_NAME = gethostbyname(str); 
-  if (HOST_NAME == NULL)
-  {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(str,"Error invalid hostname of ",26);
-      memcpy(str+26,HOST,HOST_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-      error_message.total++;
-    }
-    close(SOCKET);
-    return 0;
-  }
-    
-  // convert the port to a string  
-  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT); 
-   
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
-  
-  /* setup the connection
-  AF_INET = IPV4
-  use htons to convert the port from host byte order to network byte order short
-  */
-  memset(&serv_addr,0,sizeof(struct sockaddr_in));
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
-  serv_addr.sin_port = htons(PORT);
+  }  
 
   /* set the first poll structure to our socket
   POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
@@ -496,24 +524,25 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
+  if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
-    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
-    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     {        
       if (MESSAGE_SETTINGS == 1)
       {
+        memset(str,0,sizeof(str));
         memcpy(str,"Error connecting to ",20);
         memcpy(str+20,HOST,HOST_LENGTH);
         memcpy(str+20+HOST_LENGTH," on port ",9);
         memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-        memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
+        memcpy(error_message.function[error_message.total],"send_http_request",17);
         memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-        error_message.total++;
-      }
+        error_message.total++; 
+      }      
       close(SOCKET);
       return 0;
-    }    
+    } 
   }
 
   // get the current socket settings
@@ -648,10 +677,11 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
   char message[BUFFER_SIZE];
-  struct sockaddr_in serv_addr;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  int settings;
+  int count;
+  struct addrinfo serv_addr;
+  struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
 
   // define macros
@@ -664,17 +694,67 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
 
   memset(str,0,sizeof(str));
   
+  // convert the port to a string  
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
+
+  // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
+  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+
+  // set up the addrinfo
+  memset(&serv_addr, 0, sizeof(serv_addr));
+  if (string_count(HOST,".") == 3)
+  {
+    /* the host is an IP address
+    AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+    AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    */
+    serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
+    serv_addr.ai_family = AF_INET;
+    serv_addr.ai_socktype = SOCK_STREAM;
+  }
+  else
+  {
+    /* the host is a domain name
+    AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    */
+    serv_addr.ai_flags = AI_NUMERICSERV;
+    serv_addr.ai_family = AF_INET;
+    serv_addr.ai_socktype = SOCK_STREAM;
+  }
+  
+  // convert the hostname if used, to an IP address
+  memset(str,0,sizeof(str));
+  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
+  if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
+  {     
+    memset(str,0,sizeof(str));
+    memcpy(str,"Error invalid hostname of ",26);
+    memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
+    memcpy(error_message.function[error_message.total],"send_http_request",17);
+    memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+    error_message.total++;  
+    return 0;
+  }
+
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
   SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+  const int SOCKET = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
   if (SOCKET == -1)
   { 
-    memcpy(str,"Error creating socket for sending data to ",42);
-    memcpy(str+42,HOST,HOST_LENGTH);
-    SEND_DATA_SOCKET_ERROR(str);
+    memcpy(error_message.function[error_message.total],"send_http_request",17);
+    memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
+    error_message.total++;
+    return 0;
   }
 
   /* Set the socket options for sending and receiving data
@@ -682,39 +762,13 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
   if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
-  {   
-    memcpy(str,"Error setting socket timeout for sending data to ",49);
-    memcpy(str+49,HOST,HOST_LENGTH);
-    SEND_DATA_SOCKET_ERROR(str);
-  } 
-
-  // convert the hostname if used, to an IP address
-  memset(str,0,sizeof(str));
-  memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
-  const struct hostent* HOST_NAME = gethostbyname(str); 
-  if (HOST_NAME == NULL)
-  {    
-    memcpy(str,"Error invalid hostname of ",26);
-    memcpy(str+26,HOST,HOST_LENGTH);
-    SEND_DATA_SOCKET_ERROR(str);
-  }
-    
-  // convert the port to a string  
-  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT); 
-   
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
-  
-  /* setup the connection
-  AF_INET = IPV4
-  use htons to convert the port from host byte order to network byte order short
-  */
-  memset(&serv_addr,0,sizeof(struct sockaddr_in));
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
-  serv_addr.sin_port = htons(PORT);
+  {
+    memcpy(error_message.function[error_message.total],"send_http_request",17);
+    memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
+    error_message.total++;       
+    close(SOCKET);
+    return 0;
+  }  
 
   /* set the first poll structure to our socket
   POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
@@ -723,17 +777,22 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
-  {  
-    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
-    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    {
+  if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
+  {    
+    count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    {        
+      memset(str,0,sizeof(str));
       memcpy(str,"Error connecting to ",20);
       memcpy(str+20,HOST,HOST_LENGTH);
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      SEND_DATA_SOCKET_ERROR(str);
-    }
+      memcpy(error_message.function[error_message.total],"send_http_request",17);
+      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      error_message.total++; 
+      close(SOCKET);
+      return 0;
+    } 
   }
 
   // get the current socket settings

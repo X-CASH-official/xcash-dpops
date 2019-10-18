@@ -1887,7 +1887,8 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   int epoll_fd;
   struct epoll_event events[BLOCK_VERIFIERS_AMOUNT];
   struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
-  struct sockaddr_in serv_addr;
+  struct addrinfo serv_addr;
+  struct addrinfo* settings = NULL;
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[BLOCK_VERIFIERS_AMOUNT];
   int socket_settings;
   int total;
@@ -1929,12 +1930,53 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {   
+      // convert the port to a string
+      memset(data2,0,sizeof(data2));  
+      snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
+
+      // set up the addrinfo
+      memset(&serv_addr, 0, sizeof(serv_addr));
+      if (string_count(block_verifiers_send_data_socket[count].IP_address,".") == 3)
+      {
+        /* the host is an IP address
+        AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+        AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
+        AF_INET = IPV4 support
+        SOCK_STREAM = TCP protocol
+        */
+        serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
+        serv_addr.ai_family = AF_INET;
+        serv_addr.ai_socktype = SOCK_STREAM;
+      }
+      else
+      {
+        /* the host is a domain name
+        AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+        AF_INET = IPV4 support
+        SOCK_STREAM = TCP protocol
+        */
+        serv_addr.ai_flags = AI_NUMERICSERV;
+        serv_addr.ai_family = AF_INET;
+        serv_addr.ai_socktype = SOCK_STREAM;
+      }
+  
+      // convert the hostname if used, to an IP address
+      memset(data3,0,sizeof(data3));
+      memcpy(data3,block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data3)));
+      string_replace(data3,sizeof(data3),"http://","");
+      string_replace(data3,sizeof(data3),"https://","");
+      string_replace(data3,sizeof(data3),"www.","");
+      if (getaddrinfo(data3, data2, &serv_addr, &settings) != 0)
+      { 
+        continue;
+      }
+
       /* Create the socket  
       AF_INET = IPV4 support
       SOCK_STREAM = TCP protocol
       SOCK_NONBLOCK = Non blocking socket, so it will be able to use a custom timeout
       */
-      block_verifiers_send_data_socket[count].socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+      block_verifiers_send_data_socket[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
       if (block_verifiers_send_data_socket[count].socket == -1)
       {
         continue;
@@ -1949,28 +1991,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
         continue;
       } 
 
-      // convert the hostname if used, to an IP address
-      memset(data2,0,sizeof(data2));
-      memcpy(data2,block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
-      string_replace(data2,sizeof(data2),"http://","");
-      string_replace(data2,sizeof(data2),"https://","");
-      string_replace(data2,sizeof(data2),"www.","");
-      const struct hostent* HOST_NAME = gethostbyname(data2); 
-      if (HOST_NAME == NULL)
-      {       
-        close(block_verifiers_send_data_socket[count].socket);
-        continue;
-      }
-
-      /* setup the connection
-      AF_INET = IPV4
-      use htons to convert the port from host byte order to network byte order short
-      */
-      memset(&serv_addr,0,sizeof(struct sockaddr_in));
-      serv_addr.sin_family = AF_INET;
-      serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
-      serv_addr.sin_port = htons(SEND_DATA_PORT);
-
       /* create the epoll_event struct
       EPOLLIN = signal when the file descriptor is ready to read
       EPOLLOUT = signal when the file descriptor is ready to write
@@ -1982,7 +2002,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       epoll_ctl(epoll_fd, EPOLL_CTL_ADD, block_verifiers_send_data_socket[count].socket, &events[count]);
 
       // connect to the delegate
-      connect(block_verifiers_send_data_socket[count].socket,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in));
+      connect(block_verifiers_send_data_socket[count].socket,settings->ai_addr, settings->ai_addrlen);
     }
   }
 
@@ -2030,6 +2050,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       memcpy(data2+strlen(data2),"\n",1);
       memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
       memcpy(data2+strlen(data2)," on port ",9);
+      memset(data3,0,sizeof(data3));
       snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
       memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
       memcpy(data2+strlen(data2),"\n",1);

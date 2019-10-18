@@ -531,16 +531,12 @@ void* send_and_receive_data_socket_thread(void* parameters)
   int count = 0;
   int sent;
   int bytes;
-  struct sockaddr_in serv_addr;
+  int client_socket;
+  struct addrinfo serv_addr;
+  struct addrinfo* settings = NULL;
   struct pollfd socket_file_descriptors;
   int socket_settings;
-  int settings;
   socklen_t socket_option_settings = sizeof(int);
-
-  // define macros
-  #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR \
-  close(SOCKET); \
-  pthread_exit((void *)(intptr_t)0); 
 
   memset(buffer,0,sizeof(buffer));
   memset(buffer2,0,sizeof(buffer2));
@@ -548,84 +544,104 @@ void* send_and_receive_data_socket_thread(void* parameters)
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
 
+  // convert the port to a string  
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
+
+  // set up the addrinfo
+  memset(&serv_addr, 0, sizeof(serv_addr));
+  if (string_count(data->HOST,".") == 3)
+  {
+    /* the host is an IP address
+    AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+    AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    */
+    serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
+    serv_addr.ai_family = AF_INET;
+    serv_addr.ai_socktype = SOCK_STREAM;
+  }
+  else
+  {
+    /* the host is a domain name
+    AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    */
+    serv_addr.ai_flags = AI_NUMERICSERV;
+    serv_addr.ai_family = AF_INET;
+    serv_addr.ai_socktype = SOCK_STREAM;
+  }
+  
+  // convert the hostname if used, to an IP address
+  memset(str,0,sizeof(str));
+  memcpy(str,data->HOST,strnlen(data->HOST,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
+  if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
+  {     
+    pthread_exit((void *)(intptr_t)0);
+  }
+
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
   SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-  if (SOCKET == -1)
+  client_socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
+  if (client_socket == -1)
   { 
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+    pthread_exit((void *)(intptr_t)0);
   }
 
   /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   { 
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+    close(client_socket);
+    pthread_exit((void *)(intptr_t)0);
   } 
-
-  // convert the hostname if used, to an IP address
-  memset(str,0,sizeof(str));
-  memcpy(str,data->HOST,strnlen(data->HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.",""); 
-  const struct hostent* HOST_NAME = gethostbyname(str); 
-  if (HOST_NAME == NULL)
-  {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
-  }
-    
-  // convert the port to a string  
-  snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
-  
-  /* setup the connection
-  AF_INET = IPV4
-  use htons to convert the port from host byte order to network byte order short
-  */
-  memset(&serv_addr,0,sizeof(struct sockaddr_in));
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
-  serv_addr.sin_port = htons(SEND_DATA_PORT);
 
   /* set the first poll structure to our socket
   POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
   */
-  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.fd = client_socket;
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in)) != 0)
+  if (connect(client_socket,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
-    settings = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
-    if ((settings != 1) || (settings == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    if ((count != 1) || (count == 1 && getsockopt(client_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     {
-      SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+      close(client_socket);
+      pthread_exit((void *)(intptr_t)0);
     }
   }
 
   // get the current socket settings
-  socket_settings = fcntl(SOCKET, F_GETFL, NULL);
+  socket_settings = fcntl(client_socket, F_GETFL, NULL);
   if (socket_settings == -1)
   {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+    close(client_socket);
+    pthread_exit((void *)(intptr_t)0);
   }
 
   // set the socket to blocking mode
   socket_settings &= (~O_NONBLOCK);
-  if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
+  if (fcntl(client_socket, F_SETFL, socket_settings) == -1)
   {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+    close(client_socket);
+    pthread_exit((void *)(intptr_t)0);
   }
 
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
-  // send the message   
+  // send the message  
   memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
   memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
   memcpy(str,"Sending ",8);
@@ -645,7 +661,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
 
   for (sent = 0, bytes = 0; sent < TOTAL; sent+= bytes)
   {
-    bytes = write(SOCKET,message+sent,TOTAL-sent);
+    bytes = write(client_socket,message+sent,TOTAL-sent);
     if (bytes < 0)
     { 
       continue;
@@ -662,12 +678,13 @@ void* send_and_receive_data_socket_thread(void* parameters)
   { 
     memset(&buffer, 0, sizeof(buffer));
     // check the size of the data that were about to receive. If it is over BUFFER_SIZE then dont accept it, since it will cause a buffer overflow
-    if (((int)recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) - (int)strnlen(message,sizeof(buffer)) && (int)strnlen(message,sizeof(buffer)) > 0) || ((int)recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) && (int)strnlen(message,sizeof(buffer)) == 0))
+    if (((int)recvfrom(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) - (int)strnlen(message,sizeof(buffer)) && (int)strnlen(message,sizeof(buffer)) > 0) || ((int)recvfrom(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) && (int)strnlen(message,sizeof(buffer)) == 0))
     {
-      SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+      close(client_socket);
+      pthread_exit((void *)(intptr_t)0);
     }    
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
-    recvfrom(SOCKET, buffer, BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
+    recvfrom(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
     if (buffer[0] != '\0' && strstr(buffer,SOCKET_END_STRING) == NULL)
     {
       // there is data, but this is not the final data
@@ -691,7 +708,8 @@ void* send_and_receive_data_socket_thread(void* parameters)
     count++;
     if (count > (RECEIVE_DATA_TIMEOUT_SETTINGS * 5))
     {
-      SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+      close(client_socket);
+      pthread_exit((void *)(intptr_t)0);
     }
     usleep(200000);   
   }
@@ -699,7 +717,8 @@ void* send_and_receive_data_socket_thread(void* parameters)
   // verify the data
   if (verify_data(data2,0,1) == 0)
   {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR;
+    close(client_socket);
+    pthread_exit((void *)(intptr_t)0);
   }
 
   // parse the message
@@ -717,6 +736,4 @@ void* send_and_receive_data_socket_thread(void* parameters)
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
   }
   pthread_exit((void *)(intptr_t)1);
-  
-  #undef SEND_AND_RECEIVE_DATA_SOCKET_ERROR
 }

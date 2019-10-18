@@ -776,7 +776,8 @@ int get_delegates_online_status(void)
   struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES];
   int epoll_fd;
   struct epoll_event events[MAXIMUM_AMOUNT_OF_DELEGATES];
-  struct sockaddr_in serv_addr;
+  struct addrinfo serv_addr;
+  struct addrinfo* settings = NULL;
   int count;
   int count2;
   int number;
@@ -824,38 +825,56 @@ int get_delegates_online_status(void)
       continue;
     }
 
-    /* Create the socket  
-    AF_INET = IPV4 support
-    SOCK_STREAM = TCP protocol
-    SOCK_NONBLOCK = Non blocking socket, so it will be able to use a custom timeout
-    */
-    delegates_online_status[count].socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-    if (delegates_online_status[count].socket == -1)
-    {
-      continue;
-    }
+    // convert the port to a string  
+    snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
 
+    // set up the addrinfo
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    if (string_count(delegates[count].IP_address,".") == 3)
+    {
+      /* the host is an IP address
+      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+      AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
+      AF_INET = IPV4 support
+      SOCK_STREAM = TCP protocol
+      */
+      serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
+      serv_addr.ai_family = AF_INET;
+      serv_addr.ai_socktype = SOCK_STREAM;
+    }
+    else
+    {
+      /* the host is a domain name
+      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+      AF_INET = IPV4 support
+      SOCK_STREAM = TCP protocol
+      */
+      serv_addr.ai_flags = AI_NUMERICSERV;
+      serv_addr.ai_family = AF_INET;
+      serv_addr.ai_socktype = SOCK_STREAM;
+    }
+  
     // convert the hostname if used, to an IP address
     memset(data,0,sizeof(data));
     memcpy(data,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(data)));
     string_replace(data,sizeof(data),"http://","");
     string_replace(data,sizeof(data),"https://","");
     string_replace(data,sizeof(data),"www.","");
-    const struct hostent* HOST_NAME = gethostbyname(data); 
-    if (HOST_NAME == NULL)
-    {       
-      close(delegates_online_status[count].socket);
+    if (getaddrinfo(data, data2, &serv_addr, &settings) != 0)
+    {  
       continue;
     }
 
-    /* setup the connection
-    AF_INET = IPV4
-    use htons to convert the port from host byte order to network byte order short
+    /* Create the socket  
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
     */
-    memset(&serv_addr,0,sizeof(struct sockaddr_in));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr*)HOST_NAME->h_addr_list[0])));
-    serv_addr.sin_port = htons(SEND_DATA_PORT);
+    delegates_online_status[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
+    if (delegates_online_status[count].socket == -1)
+    {
+      continue;
+    }
 
     /* create the epoll_event struct
     EPOLLIN = signal when the file descriptor is ready to read
@@ -868,7 +887,7 @@ int get_delegates_online_status(void)
     epoll_ctl(epoll_fd, EPOLL_CTL_ADD, delegates_online_status[count].socket, &events[count]);
 
     // connect to the delegate
-    connect(delegates_online_status[count].socket,(struct sockaddr *)&serv_addr,sizeof(struct sockaddr_in));
+    connect(delegates_online_status[count].socket,settings->ai_addr, settings->ai_addrlen);
   }
 
   sleep(TOTAL_CONNECTION_TIME_SETTINGS+1);
