@@ -77,11 +77,14 @@ long long int add_block_to_blocks_found(void)
   // define macros
   #define DATABASE_COLLECTION "blocks_found"
 
-  #define ADD_BLOCK_TO_BLOCKS_FOUND_ERROR(message) \
+  #define ADD_BLOCK_TO_BLOCKS_FOUND_ERROR(message,settings) \
   memcpy(error_message.function[error_message.total],"add_block_to_blocks_found",25); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
-  RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
+  if (settings == 0) \
+  { \
+    RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -95,7 +98,7 @@ long long int add_block_to_blocks_found(void)
 
   if (document_count <= 0)
   {
-    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("The database is empty");
+    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("The database is empty",1);
   }
 
   // initialize the database_data struct 
@@ -104,7 +107,7 @@ long long int add_block_to_blocks_found(void)
   // get the block information of the previous block
   if (get_previous_block_information(block_hash,block_reward,block_date_and_time) == 0)
   {
-    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not get the previous block information.\nCould not check if the block verifier found the last block.");
+    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not get the previous block information.\nCould not check if the block verifier found the last block.",0);
   }
 
   // convert the block_reward to a number
@@ -121,7 +124,7 @@ long long int add_block_to_blocks_found(void)
     // get the block count
     if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,1,"total_vote_count_number",0) == 0)
     {
-      ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not read the blocks_found database.\nCould not check if the block verifier found the last block.");
+      ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not read the blocks_found database.\nCould not check if the block verifier found the last block.",0);
     }
 
     // loop through all blocks found, and find the last block height
@@ -167,7 +170,7 @@ long long int add_block_to_blocks_found(void)
 
   if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,data,0) == 0)
   {
-    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not add the block to the blocks_found database.\nCould not check if the block verifier found the last block.");
+    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not add the block to the blocks_found database.\nCould not check if the block verifier found the last block.",0);
   }
   RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS);
   return block_reward_number;
@@ -459,11 +462,14 @@ void* payment_timer_thread(void* parameters)
   (void)parameters;
 
   // define macros
-  #define PAYMENT_TIMER_THREAD_ERROR(message) \
+  #define PAYMENT_TIMER_THREAD_ERROR(message,settings) \
   memcpy(error_message.function[error_message.total],"payment_timer_thread",20); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
-  RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS); \
+  if (settings == 0) \
+  { \
+    RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS); \
+  } \
   continue;
 
   for (;;)
@@ -485,7 +491,7 @@ void* payment_timer_thread(void* parameters)
       document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses",0);
       if (document_count <= 0)
       {
-        PAYMENT_TIMER_THREAD_ERROR("The database is empty");
+        PAYMENT_TIMER_THREAD_ERROR("The database is empty",1);
       }
 
       // initialize the database_multiple_documents_fields struct 
@@ -493,7 +499,7 @@ void* payment_timer_thread(void* parameters)
 
       if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"public_addresses","",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
       {
-        PAYMENT_TIMER_THREAD_ERROR("Could not read the public addresses database.\nCould not send any payments to the delegates");
+        PAYMENT_TIMER_THREAD_ERROR("Could not read the public addresses database.\nCould not send any payments to the delegates",0);
       }
 
       // loop through each delegate
@@ -536,7 +542,7 @@ void* payment_timer_thread(void* parameters)
           
           if (send_payment(public_address, current_total, payment_tx_hash, payment_tx_key) == 0)
           {
-            PAYMENT_TIMER_THREAD_ERROR("Could not send a payment.\nCould not send payments.");
+            PAYMENT_TIMER_THREAD_ERROR("Could not send a payment.\nCould not send payments.",0);
           }
 
           // create the message
@@ -548,7 +554,7 @@ void* payment_timer_thread(void* parameters)
           memcpy(data2,"{\"current_total\":\"0\"}",21);
           if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,0) == 0)
           {
-            PAYMENT_TIMER_THREAD_ERROR("Could not reset the current_total for a payment in the database.\nCould not send payments.");
+            PAYMENT_TIMER_THREAD_ERROR("Could not reset the current_total for a payment in the database.\nCould not send payments.",0);
           } 
 
           // add the current total to the total in the public_addresses collection
@@ -562,7 +568,7 @@ void* payment_timer_thread(void* parameters)
 
           if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,0) == 0)
           {
-            PAYMENT_TIMER_THREAD_ERROR("Could not add the current_total to the total for a payment in the database.\nCould not send payments.");
+            PAYMENT_TIMER_THREAD_ERROR("Could not add the current_total to the total for a payment in the database.\nCould not send payments.",0);
           } 
 
           // get the current date and time
@@ -585,7 +591,7 @@ void* payment_timer_thread(void* parameters)
 
           if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses_payments",data2,0) == 0)
           {
-            PAYMENT_TIMER_THREAD_ERROR("Could not add the payment to the database.\nCould not send payments.");
+            PAYMENT_TIMER_THREAD_ERROR("Could not add the payment to the database.\nCould not send payments.",0);
           }
           amount_of_payments++;
           total_amount += number; 
@@ -603,7 +609,7 @@ void* payment_timer_thread(void* parameters)
                  
         if (read_document_field_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,"inactivity_count",data3,0) == 0)
         {
-          PAYMENT_TIMER_THREAD_ERROR("Could not read the inactivity_count from the database.\nCould not send payments.");
+          PAYMENT_TIMER_THREAD_ERROR("Could not read the inactivity_count from the database.\nCould not send payments.",0);
         }
 
         if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) == 0)
@@ -621,7 +627,7 @@ void* payment_timer_thread(void* parameters)
 
           if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,0) == 0)
           {
-            PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity_count for the database.\nCould not send payments.");
+            PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity_count for the database.\nCould not send payments.",0);
           }
         }
         else if (strncmp(current_total,"0",BUFFER_SIZE) != 0)
@@ -630,7 +636,7 @@ void* payment_timer_thread(void* parameters)
           memcpy(data2,"{\"inactivity_count\":\"0\"}",24);
           if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,0) == 0)
           {
-            PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity_count for the database.\nCould not send payments.");
+            PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity_count for the database.\nCould not send payments.",0);
           }
         }
         else if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) == 0)
@@ -638,7 +644,7 @@ void* payment_timer_thread(void* parameters)
           // remove the document from the database
           if (delete_document_from_collection(DATABASE_NAME,"public_addresses",data,0) == 0)
           {
-            PAYMENT_TIMER_THREAD_ERROR("Could not remove a document from the database.\nCould not send payments.");
+            PAYMENT_TIMER_THREAD_ERROR("Could not remove a document from the database.\nCould not send payments.",0);
           }                   
         }
       }

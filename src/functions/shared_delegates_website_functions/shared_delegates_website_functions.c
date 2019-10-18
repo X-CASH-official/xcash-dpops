@@ -80,10 +80,13 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   int delegates_count;
 
   // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR \
+  #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
-  pointer_reset_database_array; \
+  if (settings == 0) \
+  { \
+    pointer_reset_database_array; \
+  } \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   return 0;
 
@@ -132,7 +135,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"blocks_found",0);
   if (document_count <= 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR;
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(1);
   }
   total_blocks_found = document_count;
 
@@ -178,7 +181,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR;
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
   }
 
   // get the total xcash from found blocks
@@ -235,7 +238,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifier_online_percentage",data,0) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR;
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
   }
   
   memset(message,0,sizeof(message));
@@ -264,7 +267,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR;
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
   }
 
   pointer_reset_database_array; 
@@ -318,7 +321,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
 
   if (document_count <= 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR("The database is empty");
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1);
   }
 
   // initialize the database_multiple_documents_fields struct
