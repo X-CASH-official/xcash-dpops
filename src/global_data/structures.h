@@ -189,8 +189,8 @@ struct blockchain_data {
 };
 
 struct error_message {
-    char function[TOTAL_DELEGATES_DATABASE_FIELDS][BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The error function
-    char data[TOTAL_DELEGATES_DATABASE_FIELDS][BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The error message
+    char* function[TOTAL_ERROR_MESSAGES]; // The error function
+    char* data[TOTAL_ERROR_MESSAGES]; // The error message
     int total; // the amount of error messages
 };
 

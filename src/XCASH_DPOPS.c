@@ -83,6 +83,14 @@ int main(int parameters_count, char* parameters[])
 
   pthread_rwlock_init(&rwlock,NULL);
 
+  // initialize the error_message struct
+  for (count = 0; count < TOTAL_ERROR_MESSAGES; count++)
+  {
+    error_message.function[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+    error_message.data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+  }
+  error_message.total = 0;
+
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     // initialize the previous, current and next block_verifiers_list struct 
@@ -270,14 +278,6 @@ int main(int parameters_count, char* parameters[])
       exit(0);
     }
   }
-
-  // initialize the error_message struct
-  for (count = 0; count < TOTAL_DELEGATES_DATABASE_FIELDS; count++)
-  {
-    memset(error_message.function[count],0,sizeof(error_message.function[count]));
-    memset(error_message.data[count],0,sizeof(error_message.data[count]));
-  }
-  error_message.total = 0;
 
   // initialize the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
   for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)

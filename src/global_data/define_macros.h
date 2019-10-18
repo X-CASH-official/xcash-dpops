@@ -93,6 +93,7 @@ Using define statements instead of constants for increased efficiency
 #define DATA_HASH_LENGTH 128 // The length of the SHA2-512 hash
 #define BITS_IN_BYTE 8 // 8 bits in 1 byte
 #define BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH 100 // The maximum length of the block verifiers IP address
+#define TOTAL_ERROR_MESSAGES 100 // The total amount of error messages
 #define BLOCK_VERIFIERS_NAME_TOTAL_LENGTH 100 // The maximum length of the block verifiers name
 #define MAXIMUM_INVALID_RESERVE_PROOFS 50000 // The maximum invalid reserve proofs for the delegates
 
