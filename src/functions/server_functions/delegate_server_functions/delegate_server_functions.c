@@ -401,11 +401,11 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memset(data,0,sizeof(data));
   memcpy(data,"{\"public_address\":\"",19);
   memcpy(data+strlen(data),delegate_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\",\"total_vote_count\":\"0\",\"IP_address\":\"",39);
+  memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
   memcpy(data+strlen(data),"\",\"delegate_name\":\"",19);
   memcpy(data+strlen(data),delegate_name,strnlen(delegate_name,sizeof(data)));
-  memcpy(data+strlen(data),"\",\"IP_address\":\"",16);
-  memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
-  memcpy(data+strlen(data),"\"}",2);
+  memcpy(data+strlen(data),"\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}",328);
 
   // add the delegate to the database
   pthread_rwlock_rdlock(&rwlock);
