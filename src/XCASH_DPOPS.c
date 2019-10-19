@@ -91,7 +91,7 @@ int main(int parameters_count, char* parameters[])
   }
   error_message.total = 0;
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     // initialize the previous, current and next block_verifiers_list struct 
     memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
@@ -169,7 +169,7 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     VRF_data.block_verifiers_vrf_secret_key_data[count] = (char*)calloc(VRF_SECRET_KEY_LENGTH+1,sizeof(char));
     VRF_data.block_verifiers_vrf_secret_key[count] = (unsigned char*)calloc(crypto_vrf_SECRETKEYBYTES+1,sizeof(char));

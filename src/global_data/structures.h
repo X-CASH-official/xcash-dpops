@@ -13,27 +13,27 @@ Global Structures
 */
 
 struct previous_block_verifiers_list {
-    char block_verifiers_name[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_NAME_TOTAL_LENGTH]; // The block verifiers name
-    char block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
-    char block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
+    char block_verifiers_name[BLOCK_VERIFIERS_TOTAL_AMOUNT][BLOCK_VERIFIERS_NAME_TOTAL_LENGTH]; // The block verifiers name
+    char block_verifiers_public_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
+    char block_verifiers_IP_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
 };
 
 struct current_block_verifiers_list {
-    char block_verifiers_name[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_NAME_TOTAL_LENGTH]; // The block verifiers name
-    char block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
-    char block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
+    char block_verifiers_name[BLOCK_VERIFIERS_TOTAL_AMOUNT][BLOCK_VERIFIERS_NAME_TOTAL_LENGTH]; // The block verifiers name
+    char block_verifiers_public_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
+    char block_verifiers_IP_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
 };
 
 struct next_block_verifiers_list {
-    char block_verifiers_name[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_NAME_TOTAL_LENGTH]; // The block verifiers name
-    char block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
-    char block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
+    char block_verifiers_name[BLOCK_VERIFIERS_TOTAL_AMOUNT][BLOCK_VERIFIERS_NAME_TOTAL_LENGTH]; // The block verifiers name
+    char block_verifiers_public_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
+    char block_verifiers_IP_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
 };
 
 struct synced_block_verifiers {
-    char synced_block_verifiers_public_address[BLOCK_VERIFIERS_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
-    char synced_block_verifiers_IP_address[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
-    char vote_settings[BLOCK_VERIFIERS_AMOUNT][BUFFER_SIZE]; // The block verifiers vote
+    char synced_block_verifiers_public_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
+    char synced_block_verifiers_IP_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
+    char vote_settings[BLOCK_VERIFIERS_TOTAL_AMOUNT][BUFFER_SIZE]; // The block verifiers vote
     int vote_settings_true; // The amount of block verifiers that voted true    
     int vote_settings_false; // The amount of block verifiers that voted false
     int vote_settings_connection_timeout; // The amount of block verifiers that had a connection timeout
@@ -76,12 +76,12 @@ struct VRF_data {
     unsigned char* vrf_proof_round_part_4; // The VRF proof for round part 4
     char* vrf_beta_string_data_round_part_4; // The VRF beta string (output string) text for round part 4
     unsigned char* vrf_beta_string_round_part_4; // The VRF beta string (output string) for round part 4
-    char* block_verifiers_vrf_secret_key_data[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key text that all of the block verifiers create
-    unsigned char* block_verifiers_vrf_secret_key[BLOCK_VERIFIERS_AMOUNT]; // The VRF secret key that all of the block verifiers create
-    char* block_verifiers_vrf_public_key_data[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key text that all of the block verifiers create
-    unsigned char* block_verifiers_vrf_public_key[BLOCK_VERIFIERS_AMOUNT]; // The VRF public key that all of the block verifiers create
-    char* block_verifiers_random_data[BLOCK_VERIFIERS_AMOUNT]; // The random data that all of the block verifiers create
-    char* block_blob_signature[BLOCK_VERIFIERS_AMOUNT]; // The signed block data text
+    char* block_verifiers_vrf_secret_key_data[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The VRF secret key text that all of the block verifiers create
+    unsigned char* block_verifiers_vrf_secret_key[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The VRF secret key that all of the block verifiers create
+    char* block_verifiers_vrf_public_key_data[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The VRF public key text that all of the block verifiers create
+    unsigned char* block_verifiers_vrf_public_key[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The VRF public key that all of the block verifiers create
+    char* block_verifiers_random_data[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The random data that all of the block verifiers create
+    char* block_blob_signature[BLOCK_VERIFIERS_TOTAL_AMOUNT]; // The signed block data text
     char* block_blob; // The block_blob that the block producer creates to send to the consensus node
     char* reserve_bytes_data_hash; // The reserve bytes data hash
 };
