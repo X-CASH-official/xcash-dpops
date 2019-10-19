@@ -151,6 +151,7 @@ int sync_all_block_verifiers_list(void)
 
   memset(message,0,sizeof(message));
   memset(data2,0,sizeof(data2));
+  memset(data3,0,strlen(data3));
 
   // reset the previous current and next block verifiers list
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -175,6 +176,9 @@ int sync_all_block_verifiers_list(void)
 
     start:
     fprintf(stderr,"Connecting to a random network data node to get a list of previous, current and next block verifiers\n");
+    
+    memset(data2,0,sizeof(data2));
+    memset(data3,0,strlen(data3));
 
     // send the message to a random network data node
     do
@@ -183,21 +187,23 @@ int sync_all_block_verifiers_list(void)
     } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
   
     // get the current time
-    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);   
     
     memcpy(data3,"Connecting to network data node ",32);
     memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
     memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
-    memcpy(data3+strlen(data3),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
+    strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
+    memcpy(data3+strlen(data3),data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
     fprintf(stderr,"%s\n",data3);
+    memset(data2,0,sizeof(data2));
     memset(data3,0,strlen(data3));
 
     if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
     {
+      memset(data2,0,sizeof(data2));
       memcpy(data2,"Could not receive data from network data node ",46);
       memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
       color_print(data2,"red");
-      memset(data2,0,sizeof(data2));
       fprintf(stderr,"Connecting to a different network data node\n\n");
       goto start;
     }
@@ -221,7 +227,6 @@ int sync_all_block_verifiers_list(void)
   }
   else
   {
-    memset(data2,0,sizeof(data2));
     print_start_message(current_date_and_time,current_UTC_date_and_time,"Loading the previous, current and next block verifiers from the database",data2);
 
     // initialize the delegates struct
@@ -251,6 +256,7 @@ int sync_all_block_verifiers_list(void)
     POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
     color_print("The previous, current and next block verifiers have been loaded from the database","green");
   }
+  pointer_reset(data3);
   return 1;
 
   #undef DATABASE_COLLECTION  
@@ -308,14 +314,15 @@ int get_synced_block_verifiers(void)
   
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-
-  memset(data,0,sizeof(data));
+  
   memcpy(data,"Connecting to network data node ",32);
   memcpy(data+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
   memcpy(data+strlen(data)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
-  memcpy(data+strlen(data),asctime(current_UTC_date_and_time),strlen(asctime(current_UTC_date_and_time)));
+  strftime(data2,MAXIMUM_BUFFER_SIZE,"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
+  memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
   fprintf(stderr,"%s\n",data);
   memset(data,0,sizeof(data));
+  memset(data2,0,strlen(data2));
 
   if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,GET_SYNCED_BLOCK_VERIFIERS_DATA,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
   {
@@ -359,6 +366,7 @@ int get_synced_block_verifiers(void)
     memcpy(synced_block_verifiers.synced_block_verifiers_IP_address[count],&data[count2],strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) - count2);
     count2 = strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) + 1;
   }
+  pointer_reset(data2);
   return 1;
 
   #undef GET_SYNCED_BLOCK_VERIFIERS_DATA
@@ -561,11 +569,6 @@ int sync_reserve_proofs_database(int settings)
     goto start; \
   } 
 
-  memset(data,0,strlen(data));
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
-  memset(database_data,0,sizeof(database_data));
-
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
@@ -578,6 +581,12 @@ int sync_reserve_proofs_database(int settings)
   }
 
   start:
+
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(database_data,0,sizeof(database_data));
+  memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
@@ -779,7 +788,7 @@ int sync_check_reserve_bytes_database(int settings)
   error_message.total++; \
   pointer_reset(data); \
   return 0;
-
+  
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
 
@@ -952,11 +961,6 @@ int sync_reserve_bytes_database(int settings)
     goto start; \
   } 
 
-  memset(data,0,strlen(data));
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
-  memset(database_data,0,sizeof(database_data));
-
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
@@ -969,6 +973,12 @@ int sync_reserve_bytes_database(int settings)
   }
 
   start:
+
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(database_data,0,sizeof(database_data));
+  memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
@@ -1322,11 +1332,6 @@ int sync_delegates_database(int settings)
     goto start; \
   } 
 
-  memset(data,0,strlen(data));
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
-  memset(database_data,0,sizeof(database_data));
-
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
@@ -1339,6 +1344,12 @@ int sync_delegates_database(int settings)
   }
 
   start:
+
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(database_data,0,sizeof(database_data));
+  memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
@@ -1596,11 +1607,6 @@ int sync_statistics_database(int settings)
     goto start; \
   } 
 
-  memset(data,0,strlen(data));
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
-  memset(database_data,0,sizeof(database_data));
-
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
@@ -1613,6 +1619,12 @@ int sync_statistics_database(int settings)
   }
 
   start:
+
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(database_data,0,sizeof(database_data));
+  memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
