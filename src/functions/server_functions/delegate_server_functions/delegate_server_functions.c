@@ -90,6 +90,9 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
   if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec > 25 && current_UTC_date_and_time->tm_sec < 50)
   {

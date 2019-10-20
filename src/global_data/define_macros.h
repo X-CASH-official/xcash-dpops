@@ -66,7 +66,7 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 1000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
-#define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof
+#define MINIMUM_AMOUNT_RESERVE_PROOF 1000000 // The minimum amount to create a reserve proof
 
 // Network
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
