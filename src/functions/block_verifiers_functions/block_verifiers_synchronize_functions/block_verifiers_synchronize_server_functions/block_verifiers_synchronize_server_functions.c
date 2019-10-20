@@ -162,8 +162,10 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   // Variables
   char data[BUFFER_SIZE];
   size_t count2;
+  szie_t total_delegates;
 
   // define macros
+  #define DATABASE_COLLECTION "delegates"
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",86); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -172,15 +174,26 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   
   memset(data,0,sizeof(data));
 
+  // get the total delegates
+  total_delegates = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
+  if (total_delegates == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
+  }
+  else if (total_delegates > BLOCK_VERIFIERS_TOTAL_AMOUNT)
+  {
+    total_delegates = BLOCK_VERIFIERS_TOTAL_AMOUNT;
+  }
+
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"",129);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+  for (count2 = 0; count2 < total_delegates; count2++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH);
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_IP_address_list\": \"",41);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+  for (count2 = 0; count2 < total_delegates; count2++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
@@ -200,6 +213,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   }
   return 1;
 
+  #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR
 }
 
