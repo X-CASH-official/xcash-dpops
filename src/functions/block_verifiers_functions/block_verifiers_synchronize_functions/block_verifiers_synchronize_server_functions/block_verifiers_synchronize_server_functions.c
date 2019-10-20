@@ -162,7 +162,6 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   // Variables
   char data[BUFFER_SIZE];
   size_t count2;
-  size_t total_delegates;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -176,13 +175,13 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
 
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"",129);
-  for (count2 = 0; count2 < total_delegates; count2++)
+  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH);
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_IP_address_list\": \"",41);
-  for (count2 = 0; count2 < total_delegates; count2++)
+  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
