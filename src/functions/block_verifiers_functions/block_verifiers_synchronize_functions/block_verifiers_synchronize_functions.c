@@ -233,10 +233,15 @@ int sync_all_block_verifiers_list(void)
     INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"sync_all_block_verifiers_list",data2);
 
    // organize the delegates
-   if (organize_delegates(delegates) < BLOCK_VERIFIERS_AMOUNT)
+   count2 = organize_delegates(delegates);
+   if (count2 == 0)
    {
      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+   }
+   else if (count2 > BLOCK_VERIFIERS_TOTAL_AMOUNT)
+   {
+     count2 = BLOCK_VERIFIERS_TOTAL_AMOUNT;
    }
 
     // copy the database_multiple_documents_fields to the next, current and previous block verifiers list
