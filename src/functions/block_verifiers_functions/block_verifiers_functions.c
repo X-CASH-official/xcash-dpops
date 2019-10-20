@@ -2033,6 +2033,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
+    start:
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
       // set the socket to blocking mode
@@ -2061,10 +2062,11 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       
       for (sent = 0, bytes = 0; sent < total; sent+= bytes)
       {
-        bytes = write(block_verifiers_send_data_socket[count].socket,data+sent,total-sent);
+        bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL);
         if (bytes < 0)
         { 
-          continue;
+          count++;
+          goto start;
         }
         else if (bytes == 0)  
         {

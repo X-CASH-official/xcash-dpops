@@ -164,7 +164,6 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   size_t count2;
 
   // define macros
-  #define DATABASE_COLLECTION "delegates"
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",86); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -201,7 +200,6 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   }
   return 1;
 
-  #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR
 }
 

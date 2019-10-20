@@ -232,20 +232,20 @@ int sync_all_block_verifiers_list(void)
     // initialize the delegates struct
     INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"sync_all_block_verifiers_list",data2);
 
-   // organize the delegates
-   count2 = organize_delegates(delegates);
-   if (count2 == 0)
-   {
-     POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
-     SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
-   }
-   else if (count2 > BLOCK_VERIFIERS_TOTAL_AMOUNT)
-   {
-     count2 = BLOCK_VERIFIERS_TOTAL_AMOUNT;
-   }
+    // organize the delegates
+    count2 = organize_delegates(delegates);
+    if (count2 == 0)
+    {
+      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+    }
+    else if (count2 > BLOCK_VERIFIERS_TOTAL_AMOUNT)
+    {
+      count2 = BLOCK_VERIFIERS_TOTAL_AMOUNT;
+    }
 
     // copy the database_multiple_documents_fields to the next, current and previous block verifiers list
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0; count < count2; count++)
     {
        memcpy(previous_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
        memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));

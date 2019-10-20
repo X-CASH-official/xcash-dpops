@@ -661,10 +661,11 @@ void* send_and_receive_data_socket_thread(void* parameters)
 
   for (sent = 0, bytes = 0; sent < TOTAL; sent+= bytes)
   {
-    bytes = write(client_socket,message+sent,TOTAL-sent);
+    bytes = send(client_socket,message+sent,TOTAL-sent,MSG_NOSIGNAL);
     if (bytes < 0)
     { 
-      continue;
+      close(client_socket);
+      pthread_exit((void *)(intptr_t)0);
     }
     else if (bytes == 0)  
     {

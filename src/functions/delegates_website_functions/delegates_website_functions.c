@@ -525,7 +525,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
 {
   // Variables
   char data2[BUFFER_SIZE];
-  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));  
+  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;

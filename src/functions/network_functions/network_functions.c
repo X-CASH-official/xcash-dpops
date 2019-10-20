@@ -927,7 +927,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
 
   for (sent = 0, bytes = 0; sent < total; sent+= bytes)
   {
-    bytes = write(SOCKET,data+sent,total-sent);
+    bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL);
     if (bytes < 0)
     {      
       return 0;
