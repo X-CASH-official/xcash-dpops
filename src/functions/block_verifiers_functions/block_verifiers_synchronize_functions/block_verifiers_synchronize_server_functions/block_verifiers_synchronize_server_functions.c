@@ -162,7 +162,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   // Variables
   char data[BUFFER_SIZE];
   size_t count2;
-  szie_t total_delegates;
+  size_t total_delegates;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
