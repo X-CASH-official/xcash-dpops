@@ -456,9 +456,9 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     // get a random document from the collection
     if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,"",&database_multiple_documents_fields,count,1,0,"",0) == 1)
     {
-      // check if the reserve proof is valid
+      // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
       memset(data,0,sizeof(data));
-      if (check_reserve_proofs(data,database_multiple_documents_fields.value[0][0],database_multiple_documents_fields.value[0][3],0) == 0)
+      if (check_reserve_proofs(data,database_multiple_documents_fields.value[0][0],database_multiple_documents_fields.value[0][3],0) == 0 || memcmp(data,database_multiple_documents_fields.value[0][2],strlen(data)) != 0)
       {
         // add the reserve proof to the invalid_reserve_proofs struct
         pthread_rwlock_wrlock(&rwlock);
