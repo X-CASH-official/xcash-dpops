@@ -70,63 +70,29 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   error_message.total++; \
   return 0;
 
+  #define COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA(settings,block_verifiers_data) \
+  memcpy(data+strlen(data),"\",\r\n \"",6); \
+  memcpy(data+strlen(data),settings,sizeof(settings)-1); \
+  memcpy(data+strlen(data),"\": \"",4); \
+  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++) \
+  { \
+    memcpy(data+strlen(data),block_verifiers_data[count2],strnlen(block_verifiers_data[count2],sizeof(data))); \
+    memcpy(data+strlen(data),"|",1); \
+  }
+
   memset(data,0,sizeof(data));
 
   // create the message
-  memcpy(data,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\",\r\n \"previous_block_verifiers_name_list\": \"",142);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-  {
-    memcpy(data+strlen(data),previous_block_verifiers_list.block_verifiers_name[count2],strnlen(previous_block_verifiers_list.block_verifiers_name[count2],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
-  }
-  memcpy(data+strlen(data),"\",\r\n \"previous_block_verifiers_public_address_list\": \"",54);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-  {
-    memcpy(data+strlen(data),previous_block_verifiers_list.block_verifiers_public_address[count2],strnlen(previous_block_verifiers_list.block_verifiers_public_address[count2],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
-  }
-  memcpy(data+strlen(data),"\",\r\n \"previous_block_verifiers_IP_address_list\": \"",50);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-  {
-    memcpy(data+strlen(data),previous_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(previous_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
-  }
-  memcpy(data+strlen(data),"\",\r\n \"current_block_verifiers_name_list\": \"",43);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-  {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_name[count2],strnlen(current_block_verifiers_list.block_verifiers_name[count2],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
-  }
-  memcpy(data+strlen(data),"\",\r\n \"current_block_verifiers_public_address_list\": \"",54);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-  {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
-  }
-  memcpy(data+strlen(data),"\",\r\n \"current_block_verifiers_IP_address_list\": \"",50);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-  {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
-  }
-  memcpy(data+strlen(data),"\",\r\n \"next_block_verifiers_name_list\": \"",43);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-  {
-    memcpy(data+strlen(data),next_block_verifiers_list.block_verifiers_name[count2],strnlen(next_block_verifiers_list.block_verifiers_name[count2],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
-  }
-  memcpy(data+strlen(data),"\",\r\n \"next_block_verifiers_public_address_list\": \"",54);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-  {
-    memcpy(data+strlen(data),next_block_verifiers_list.block_verifiers_public_address[count2],strnlen(next_block_verifiers_list.block_verifiers_public_address[count2],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
-  }
-  memcpy(data+strlen(data),"\",\r\n \"next_block_verifiers_IP_address_list\": \"",50);
-  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
-  {
-    memcpy(data+strlen(data),next_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(next_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
-  }
+  memcpy(data,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",98);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_name_list",previous_block_verifiers_list.block_verifiers_name);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_public_address_list",previous_block_verifiers_list.block_verifiers_public_address);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_IP_address_list",previous_block_verifiers_list.block_verifiers_IP_address);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_name_list",current_block_verifiers_list.block_verifiers_name);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_public_address_list",current_block_verifiers_list.block_verifiers_public_address);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_IP_address_list",current_block_verifiers_list.block_verifiers_IP_address);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_name_list",next_block_verifiers_list.block_verifiers_name);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_public_address_list",next_block_verifiers_list.block_verifiers_public_address);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_IP_address_list",next_block_verifiers_list.block_verifiers_IP_address);
   memcpy(data+strlen(data),"\",\r\n}",5);
   
   // sign_data
@@ -143,6 +109,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   return 1;
 
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR
+  #undef COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA
 }
 
 

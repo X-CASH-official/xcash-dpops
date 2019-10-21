@@ -584,6 +584,15 @@ int calculate_main_nodes_roles(void)
   error_message.total++; \
   return 0;
 
+  #define CALCULATE_BLOCK_PRODUCER_DATA(block_producer_settings,current_block_verifiers_settings) \
+  memset(block_producer_settings,0,sizeof(block_producer_settings)); \
+  memcpy(block_producer_settings,current_block_verifiers_settings[count2],strnlen(current_block_verifiers_settings[count2],sizeof(block_producer_settings)));
+
+  #define CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_settings,network_data_nodes_list_settings) \
+  count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT); \
+  memset(main_nodes_settings,0,sizeof(main_nodes_settings)); \
+  memcpy(main_nodes_settings,network_data_nodes_list_settings[count2],strnlen(network_data_nodes_list_settings[count2],sizeof(main_nodes_settings)));
+
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
@@ -641,118 +650,90 @@ int calculate_main_nodes_roles(void)
       if (main_nodes_count == 0)
       {
         // calculate the block_producer
-        memset(main_nodes_list.block_producer_public_address,0,sizeof(main_nodes_list.block_producer_public_address));
-        memset(main_nodes_list.block_producer_IP_address,0,sizeof(main_nodes_list.block_producer_IP_address));
-        memcpy(main_nodes_list.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_public_address)));
-        memcpy(main_nodes_list.block_producer_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_IP_address)));
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address);
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_IP_address,current_block_verifiers_list.block_verifiers_IP_address);
       }
       if (main_nodes_count == 1)
       {
         // calculate the block_producer_backup_block_verifier_1
-        memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address)));
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address);
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,current_block_verifiers_list.block_verifiers_IP_address);
       }
       if (main_nodes_count == 2)
       {
         // calculate the block_producer_backup_block_verifier_2
-        memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address)));
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address);
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,current_block_verifiers_list.block_verifiers_IP_address);
       }
       if (main_nodes_count == 3)
       {
         // calculate the block_producer_backup_block_verifier_3
-        memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address)));
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address);
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,current_block_verifiers_list.block_verifiers_IP_address);
       }
       if (main_nodes_count == 4)
       {
         // calculate the block_producer_backup_block_verifier_4
-        memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address)));
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address);
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,current_block_verifiers_list.block_verifiers_IP_address);
       }
       if (main_nodes_count == 5)
       {
         // calculate the block_producer_backup_block_verifier_5
-        memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address[count2],strnlen(current_block_verifiers_list.block_verifiers_public_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,current_block_verifiers_list.block_verifiers_IP_address[count2],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count2],sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address)));
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address);
+        CALCULATE_BLOCK_PRODUCER_DATA(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,current_block_verifiers_list.block_verifiers_IP_address);
       }    
       // add the number to the number array
       number[count3] = count2;
       count3++;
       main_nodes_count++;
-      if (main_nodes_count == 6)
+      if (main_nodes_count == BLOCK_PRODUCERS_BACKUP_AMOUNT+1)
       {
         break;
       }
     }
-    if (((count + 2) == VRF_BETA_LENGTH) && (main_nodes_count != 6))
+    if (((count + 2) == VRF_BETA_LENGTH) && (main_nodes_count != BLOCK_PRODUCERS_BACKUP_AMOUNT+1))
     {
       color_print("The main nodes calculation process has run out of bytes to read.\nA random network data node will be the block producer","yellow");
 
       // select a random network data node
       if (strncmp(main_nodes_list.block_producer_public_address,"",1) == 0)
       {
-        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_public_address,0,sizeof(main_nodes_list.block_producer_public_address));
-        memset(main_nodes_list.block_producer_IP_address,0,sizeof(main_nodes_list.block_producer_IP_address));
-        memcpy(main_nodes_list.block_producer_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_public_address)));
-        memcpy(main_nodes_list.block_producer_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_IP_address)));
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_public_address,network_data_nodes_list.network_data_nodes_public_address);
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_IP_address,network_data_nodes_list.network_data_nodes_IP_address);
       } 
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,"",1) == 0)
       {
-        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_1_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_1_IP_address)));
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_1_public_address,network_data_nodes_list.network_data_nodes_public_address);
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,network_data_nodes_list.network_data_nodes_IP_address);
       } 
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,"",1) == 0)
       {
-        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_2_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_2_IP_address)));
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_2_public_address,network_data_nodes_list.network_data_nodes_public_address);
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,network_data_nodes_list.network_data_nodes_IP_address);
       } 
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,"",1) == 0)
       {
-        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_3_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_3_IP_address)));
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_3_public_address,network_data_nodes_list.network_data_nodes_public_address);
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,network_data_nodes_list.network_data_nodes_IP_address);
       } 
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,"",1) == 0)
       {
-        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_4_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_4_IP_address)));
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_4_public_address,network_data_nodes_list.network_data_nodes_public_address);
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,network_data_nodes_list.network_data_nodes_IP_address);
       }   
       if (strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,"",1) == 0)
       {
-        count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-        memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address));
-        memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_5_public_address,network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address)));
-        memcpy(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(main_nodes_list.block_producer_backup_block_verifier_5_IP_address)));
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_5_public_address,network_data_nodes_list.network_data_nodes_public_address);
+        CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,network_data_nodes_list.network_data_nodes_IP_address);
       } 
     }
   }
   return 1;
 
   #undef CALCULATE_MAIN_NODES_ROLES
+  #undef CALCULATE_BLOCK_PRODUCER_DATA
+  #undef CALCULATE_MAIN_NODES_LIST_DATA
 }
 
 
