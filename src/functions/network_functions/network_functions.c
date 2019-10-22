@@ -421,7 +421,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   // Variables 
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
-  char message[BUFFER_SIZE]; 
+  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
   int receive_data_result;
   struct pollfd socket_file_descriptors;
   int socket_settings;
@@ -436,7 +436,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
 
   // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+  const size_t BUFFER2_LENGTH = strnlen(buffer2,364000);
 
   // set up the addrinfo
   memset(&serv_addr, 0, sizeof(serv_addr));
@@ -595,8 +595,8 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   {
     fprintf(stderr,"Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
   }
-  memset(message,0,sizeof(message));
-  memcpy(message,DATA,strnlen(DATA,sizeof(message)));
+  memset(message,0,strlen(message));
+  memcpy(message,DATA,strnlen(DATA,MAXIMUM_BUFFER_SIZE));
   if (send_data(SOCKET,(unsigned char*)message,0,1,"") == 0)
   {
     if (MESSAGE_SETTINGS == 1)
@@ -614,7 +614,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   }
     
   // get the result
-  memset(result,0,strnlen(result,BUFFER_SIZE));
+  memset(result,0,strnlen(result,364000));
   receive_data_result = receive_data(SOCKET,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS);
   if (receive_data_result < 2)
   {

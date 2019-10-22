@@ -197,7 +197,7 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     {
       memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),",{",2);
     }
-    memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
+    memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),&message[51],strnlen(message,364000) - 51);    
     bson_free(message);
   }
   
@@ -224,9 +224,9 @@ Return: 0 if an error has occured, 1 if successfull
 int get_database_data_hash(char *data_hash, const char* DATABASE, const char* COLLECTION)
 {
   // Variables
-  unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* string = (unsigned char*)calloc(364000,sizeof(char));
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
-  char data2[BUFFER_SIZE];
+  char data2[364000];
   size_t count;
   size_t count2;
   size_t count3;
@@ -241,7 +241,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
   memset(data2,0,sizeof(data2));
 
-  if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
+  if (strncmp(COLLECTION,"reserve_bytes",364000) == 0)
   {
     // get the current reserve bytes database
     get_reserve_bytes_database(counter,0);
@@ -253,7 +253,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     memset(database_data_hash[count],0,sizeof(database_data_hash[count]));
   }
 
-  if (strncmp(COLLECTION,"reserve_proofs",BUFFER_SIZE) == 0)
+  if (strncmp(COLLECTION,"reserve_proofs",364000) == 0)
   {
     // get the data hash of the reserve proofs database
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
@@ -261,7 +261,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data,0,strlen(data));
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
-      snprintf(data2+15,BUFFER_SIZE-16,"%zu",count);
+      snprintf(data2+15,364000-16,"%zu",count);
       get_database_data(data,DATABASE,data2,0);
 
       // get the data hash of the collection  
@@ -269,7 +269,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
       {
-        snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
+        snprintf(database_data_hash[count-1]+count2,364000,"%02x",string[count3] & 0xFF);
       }
     }
 
@@ -285,10 +285,10 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
     for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
     {
-      snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
+      snprintf(data_hash+count2,364000,"%02x",string[count3] & 0xFF);
     }
   }
-  else if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
+  else if (strncmp(COLLECTION,"reserve_bytes",364000) == 0)
   {
     // get the data hash of the reserve proofs database
     for (count = 1; count <= counter; count++)
@@ -296,7 +296,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data,0,strlen(data));
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);  
-      snprintf(data2+14,BUFFER_SIZE-15,"%zu",count);
+      snprintf(data2+14,364000-15,"%zu",count);
       get_database_data(data,DATABASE,data2,0);
 
       // get the data hash of the collection  
@@ -304,7 +304,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
       {
-        snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
+        snprintf(database_data_hash[count-1]+count2,364000,"%02x",string[count3] & 0xFF);
       }
     }
 
@@ -320,7 +320,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
     for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
     {
-      snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
+      snprintf(data_hash+count2,364000,"%02x",string[count3] & 0xFF);
     }
   }
   else
@@ -335,7 +335,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
     for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
     {
-      snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
+      snprintf(data_hash+count2,364000,"%02x",string[count3] & 0xFF);
     }
   }
   pointer_reset_all;

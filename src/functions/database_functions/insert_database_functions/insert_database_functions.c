@@ -218,7 +218,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     if ((count2+1) != count)
     {
       memset(data3,0,strlen(data3));
-      memcpy(data3,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE) - strnlen(strstr(data2,"},{"),BUFFER_SIZE)+1);
+      memcpy(data3,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE) - strnlen(strstr(data2,"},{"),MAXIMUM_BUFFER_SIZE)+1);
       data2 = strstr(data2,"},{") + 2;     
     }
     else
