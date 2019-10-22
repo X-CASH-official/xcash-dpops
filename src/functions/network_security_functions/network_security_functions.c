@@ -39,23 +39,37 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   // Variables
   char previous_block_hash[BUFFER_SIZE];
   char random_data[RANDOM_STRING_LENGTH+1];
-  char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char data[BUFFER_SIZE];
-  char string[BUFFER_SIZE];
+  char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
+  char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
 
   // define macros
+  #define pointer_reset_all \
+  free(result); \
+  result = NULL; \
+  free(string); \
+  string = NULL;
+
   #define SIGN_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"sign_data",9); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(result); \
+  pointer_reset_all; \
   return 0;
 
   // check if the memory needed was allocated on the heap successfully
-  if (result == NULL)
+  if (result == NULL || string == NULL)
   {    
+    if (result != NULL)
+    {
+      pointer_reset(result);
+    }
+    if (string != NULL)
+    {
+      pointer_reset(string);
+    }
     memcpy(error_message.function[error_message.total],"sign_data",9);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -66,7 +80,6 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   memset(previous_block_hash,0,sizeof(previous_block_hash));
   memset(random_data,0,sizeof(random_data));
   memset(data,0,sizeof(data));
-  memset(string,0,sizeof(string));
   
   // create the random data
   if (random_string(random_data,RANDOM_STRING_LENGTH) == 0)
@@ -144,11 +157,11 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   memcpy(message+strlen(message),"\",\r\n}",5);
   pthread_rwlock_unlock(&rwlock);
 
-  pointer_reset(result);
+  pointer_reset_all;
   return 1;
-  
+
+  #undef pointer_reset_all  
   #undef SIGN_DATA_ERROR
-  #undef pointer_reset_all
 }
 
 

@@ -443,7 +443,7 @@ size_t string_count(const char* DATA, const char* STRING)
 {  
   // Variables
   char buffer[1024];
-  char* datacopy1 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
+  char* datacopy1 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
   // since were going to be changing where datacopy1 is referencing, we need to create a copy to pointer_reset
   char* datacopy2 = datacopy1; 
   time_t current_date_and_time;
@@ -461,7 +461,7 @@ size_t string_count(const char* DATA, const char* STRING)
   }
 
   // get the occurences of the string 
-  memcpy(datacopy1,DATA,strnlen(DATA,BUFFER_SIZE));
+  memcpy(datacopy1,DATA,strnlen(DATA,MAXIMUM_BUFFER_SIZE));
   while((datacopy1 = strstr(datacopy1, STRING)) != NULL)
   {
     count++;
@@ -613,7 +613,7 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
 {  
   // Variables
   char buffer[1024];
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   // since were going to be changing where data is referencing, we need to create a copy to pointer_reset
   char* datacopy = data; 
   time_t current_date_and_time;
@@ -630,11 +630,12 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
     exit(0);
   }
 
-  memcpy(data,RESERVE_BYTES,strnlen(RESERVE_BYTES,BUFFER_SIZE));
+  memcpy(data,RESERVE_BYTES,strnlen(RESERVE_BYTES,MAXIMUM_BUFFER_SIZE));
 
   // error check
   if (ITEM > (int)string_count(RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_STRING))
   {
+    pointer_reset(datacopy);
     return 0;
   }
 
@@ -643,7 +644,7 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
     data = strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING) + strlen(BLOCKCHAIN_DATA_SEGMENT_STRING);
   }  
   memset(result,0,strlen(result));
-  memcpy(result,data,strnlen(data,BUFFER_SIZE) - strnlen(strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING),BUFFER_SIZE));
+  memcpy(result,data,strnlen(data,MAXIMUM_BUFFER_SIZE) - strnlen(strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING),MAXIMUM_BUFFER_SIZE));
 
   pointer_reset(datacopy);
   return 1;

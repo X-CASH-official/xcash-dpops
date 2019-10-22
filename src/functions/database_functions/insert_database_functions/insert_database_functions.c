@@ -141,25 +141,12 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
 
 
 
-/*
------------------------------------------------------------------------------------------------------------
-Name: insert_multiple_documents_into_collection_json
-Description: Inserts a document into the collection in the database from json data
-Parameters:
-  DATABASE - The database name
-  COLLECTION - The collection name
-  DATA - The json data to insert into the collection
-  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
 int insert_multiple_documents_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const size_t DATA_TOTAL_LENGTH, const int THREAD_SETTINGS)
 {
   // Variables
   char buffer[1024];
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
   char* datacopy = data2; 
   mongoc_client_t* database_client_thread = NULL;
@@ -231,13 +218,13 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     if ((count2+1) != count)
     {
       memset(data3,0,strlen(data3));
-      memcpy(data3,data2,strnlen(data2,BUFFER_SIZE) - strnlen(strstr(data2,"},{"),BUFFER_SIZE)+1);
+      memcpy(data3,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE) - strnlen(strstr(data2,"},{"),BUFFER_SIZE)+1);
       data2 = strstr(data2,"},{") + 2;     
     }
     else
     {
       memset(data3,0,strlen(data3));
-      memcpy(data3,data2,strnlen(data2,BUFFER_SIZE));
+      memcpy(data3,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
     }
 
     document = bson_new_from_json((const uint8_t *)data3, -1, &error);
