@@ -947,13 +947,19 @@ int sync_reserve_bytes_database(int settings)
   size_t current_reserve_bytes_database;
   
   // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data3); \
+  data3 = NULL; \
+
   #define SYNC_RESERVE_BYTES_DATABASE_ERROR(message,settings) \
   if (settings == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
     error_message.total++; \
-    pointer_reset(data); \
+    pointer_reset_all; \
     return 0; \
   } \
   else \
@@ -1158,9 +1164,10 @@ int sync_reserve_bytes_database(int settings)
     }
   }
 
-  pointer_reset(data);
+  pointer_reset_all;
   return 1;
-  
+
+  #undef pointer_reset_all  
   #undef SYNC_RESERVE_BYTES_DATABASE_ERROR   
 }
 

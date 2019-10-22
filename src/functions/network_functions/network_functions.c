@@ -430,13 +430,23 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
 
+  // check if the memory needed was allocated on the heap successfully
+  if (message == NULL)
+  {
+    memcpy(error_message.function[error_message.total],"send_http_request",17);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer2);  
+    exit(0);
+  }
+
   memset(str,0,sizeof(str));
 
   // convert the port to a string  
   snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
 
   // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,364000);
+  const size_t BUFFER2_LENGTH = strnlen(buffer2,sizeof(buffer2));
 
   // set up the addrinfo
   memset(&serv_addr, 0, sizeof(serv_addr));
@@ -481,6 +491,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    pointer_reset(message);
     return 0;
   }
 
@@ -498,6 +509,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
       error_message.total++;
     }
+    pointer_reset(message);
     return 0;
   }
 
@@ -513,6 +525,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
       error_message.total++;       
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }  
@@ -539,7 +552,8 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
         memcpy(error_message.function[error_message.total],"send_http_request",17);
         memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
         error_message.total++; 
-      }      
+      }   
+      pointer_reset(message);   
       close(SOCKET);
       return 0;
     } 
@@ -559,6 +573,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
@@ -577,6 +592,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++; 
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
@@ -609,12 +625,13 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
     
   // get the result
-  memset(result,0,strnlen(result,364000));
+  memset(result,0,strlen(result));
   receive_data_result = receive_data(SOCKET,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS);
   if (receive_data_result < 2)
   {
@@ -636,6 +653,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
+    pointer_reset(message);
     close(SOCKET);
     return 0;
   }
@@ -649,6 +667,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     color_print(str,"green");
   }
   
+  pointer_reset(message);
   close(SOCKET);
   return 1;
 }

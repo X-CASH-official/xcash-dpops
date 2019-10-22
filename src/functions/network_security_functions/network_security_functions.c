@@ -37,9 +37,9 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char previous_block_hash[364000];
+  char previous_block_hash[BUFFER_SIZE];
   char random_data[RANDOM_STRING_LENGTH+1];
-  char data[364000];
+  char data[BUFFER_SIZE];
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   time_t current_date_and_time;
@@ -96,7 +96,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   pthread_rwlock_rdlock(&rwlock);
   // create the message
   size_t message_length = strlen(message)-1;
-  const size_t previous_block_hash_LENGTH = strnlen(previous_block_hash,364000);
+  const size_t previous_block_hash_LENGTH = strnlen(previous_block_hash,BUFFER_SIZE);
   memcpy(result,message,message_length);
   memcpy(result+message_length," \"public_address\": \"",20);
   memcpy(result+message_length+20,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
@@ -135,7 +135,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   }
 
   // check if the returned data is valid
-  if (strnlen(result,364000) != XCASH_SIGN_DATA_LENGTH && strncmp(result,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
+  if (strnlen(result,BUFFER_SIZE) != XCASH_SIGN_DATA_LENGTH && strncmp(result,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
   {
     SIGN_DATA_ERROR("Could not create the message");
   }
@@ -184,15 +184,15 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
   
   // Variables
-  char message_settings[364000];
-  char public_address[364000];
-  char previous_block_hash[364000];
-  char message_previous_block_hash[364000];
-  char message_current_round_part[364000];
-  char message_current_round_part_backup_node[364000];
-  char XCASH_DPOPS_signature[364000];
+  char message_settings[BUFFER_SIZE];
+  char public_address[BUFFER_SIZE];
+  char previous_block_hash[BUFFER_SIZE];
+  char message_previous_block_hash[BUFFER_SIZE];
+  char message_current_round_part[BUFFER_SIZE];
+  char message_current_round_part_backup_node[BUFFER_SIZE];
+  char XCASH_DPOPS_signature[BUFFER_SIZE];
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
-  char data[364000];
+  char data[BUFFER_SIZE];
   char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
@@ -366,7 +366,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   }  
 
   // check that the block verifier that sent the data is the correct main node
-  if (strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",sizeof(message_settings)) == 0 && strncmp(public_address,main_nodes_list.block_producer_public_address,364000) != 0)
+  if (strncmp(message_settings,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND",sizeof(message_settings)) == 0 && strncmp(public_address,main_nodes_list.block_producer_public_address,BUFFER_SIZE) != 0)
   {
     VERIFY_DATA_ERROR("Invalid MAIN_NODES_TO_NODES_PART_4_OF_ROUND message");
   }
@@ -398,7 +398,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     {
       VERIFY_DATA_ERROR("Could not get the previous block hash");
     }
-    if (strncmp(previous_block_hash,message_previous_block_hash,364000) != 0)
+    if (strncmp(previous_block_hash,message_previous_block_hash,BUFFER_SIZE) != 0)
     {
       VERIFY_DATA_ERROR("Invalid previous block hash");
     }
@@ -455,7 +455,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memcpy(string+90+message_length+XCASH_WALLET_LENGTH,XCASH_DPOPS_signature,XCASH_SIGN_DATA_LENGTH);
   memcpy(string+90+message_length+XCASH_WALLET_LENGTH+XCASH_SIGN_DATA_LENGTH,"\"}}",3);
 
-  memset(result,0,strnlen(result,364000));
+  memset(result,0,strnlen(result,BUFFER_SIZE));
 
   if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",HTTP_SETTINGS) <= 0)
   {
@@ -468,7 +468,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   }
 
   // check if the returned data is valid
-  if (strncmp(data,"true",364000) != 0)
+  if (strncmp(data,"true",BUFFER_SIZE) != 0)
   {
      VERIFY_DATA_ERROR("Invalid message4");
   }
