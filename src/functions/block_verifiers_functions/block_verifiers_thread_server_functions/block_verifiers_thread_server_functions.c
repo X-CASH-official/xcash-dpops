@@ -171,9 +171,11 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   char* reserve_proofs[MAXIMUM_INVALID_RESERVE_PROOFS];
   int count;
   int count2;
+  int counter;
   size_t block_verifiers_total_vote_count;
   size_t block_verifiers_score;
   struct database_multiple_documents_fields database_multiple_documents_fields;
+  int settings;
   
   // unused parameters
   (void)parameters;
@@ -245,7 +247,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   for (;;)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec == 25)
+    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec == 25 && invalid_reserve_proofs.count > 0)
     {
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
       sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
@@ -303,7 +305,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       // sign_data
       if (sign_data(data2,0) == 0)
       { 
-        // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
         RESET_INVALID_RESERVE_PROOFS;
         continue;
       }
@@ -312,7 +313,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       if (block_verifiers_send_data_socket((const char*)data2) == 0)
       {
         RESET_INVALID_RESERVE_PROOFS;
-        CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR("Could not send data to the block verifiers");
+        continue;
       }
 
       // wait for the block verifiers to process the votes
@@ -321,7 +322,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       // process the vote results
       if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
       {
-        // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
         RESET_INVALID_RESERVE_PROOFS;
         continue;
       }
@@ -378,22 +378,23 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       {
         // create the message
         memset(data,0,sizeof(data));
-        memcpy(data,"{\"public_address\":\"",18);
-        memcpy(data+18,invalid_reserve_proofs.block_verifier_public_address[count2],strnlen(invalid_reserve_proofs.block_verifier_public_address[count2],sizeof(data)));
+        memcpy(data,"{\"public_address\":\"",19);
+        memcpy(data+19,invalid_reserve_proofs.block_verifier_public_address[count2],strnlen(invalid_reserve_proofs.block_verifier_public_address[count2],sizeof(data)));
         memcpy(data+strlen(data),"\"}",2);
 
         // get the block verifiers score
         memset(data2,0,sizeof(data2));
-        if (read_document_field_from_collection(DATABASE_NAME,"delegates",data,"block_verifiers_score",data2,0) == 0)
+        if (read_document_field_from_collection(DATABASE_NAME,"delegates",data,"block_verifier_score",data2,0) == 0)
         {
-          CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync the database");
+          RESET_INVALID_RESERVE_PROOFS;
+          continue;
         }
         sscanf(data2, "%zu", &block_verifiers_score);
         block_verifiers_score++;
 
         memset(data2,0,sizeof(data2));
-        memcpy(data2,"{\"block_verifiers_score\":\"",26);
-        snprintf(data2+26,sizeof(data2)-27,"%zu",block_verifiers_score);
+        memcpy(data2,"{\"block_verifier_score\":\"",25);
+        snprintf(data2+25,sizeof(data2)-26,"%zu",block_verifiers_score);
         memcpy(data2+strlen(data2),"\"}",2);
 
         pthread_rwlock_rdlock(&rwlock_reserve_proofs);
@@ -404,7 +405,8 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         pthread_rwlock_unlock(&rwlock_reserve_proofs);
         if (update_document_from_collection(DATABASE_NAME,"delegates",data,data2,0) == 0)
         {
-          CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR("Could not update a block verifiers score. This means the delegates database might be unsynced, and you might have to sync the database");
+          RESET_INVALID_RESERVE_PROOFS;
+          continue;
         }
       }
 
@@ -456,10 +458,21 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     // get a random document from the collection
     if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,"",&database_multiple_documents_fields,count,1,0,"",0) == 1)
     {
+      // check if the reserve proof is unique 
+      for (counter = 0, settings = 0; counter <= invalid_reserve_proofs.count; counter++)
+      {
+        if (strncmp(invalid_reserve_proofs.reserve_proof[counter],database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF) == 0)
+        {
+          settings = 1;
+        }
+      }
+
       // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
       memset(data,0,sizeof(data));
-      if (check_reserve_proofs(data,database_multiple_documents_fields.value[0][0],database_multiple_documents_fields.value[0][3],0) == 0 || memcmp(data,database_multiple_documents_fields.value[0][2],strlen(data)) != 0)
-      {
+      if (settings == 0 && (check_reserve_proofs(data,database_multiple_documents_fields.value[0][0],database_multiple_documents_fields.value[0][3],0) == 0 || memcmp(data,database_multiple_documents_fields.value[0][2],strlen(data)) != 0))
+      {         
+        color_print("Found an invalid reserve proof","yellow");
+
         // add the reserve proof to the invalid_reserve_proofs struct
         pthread_rwlock_wrlock(&rwlock);
         memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],xcash_wallet_public_address,XCASH_WALLET_LENGTH);
@@ -489,7 +502,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
           CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR("Could not send data to the block verifiers");
         }
       }
-    }      
+    }
   }
   pointer_reset(message);
   pointer_reset_database_array;

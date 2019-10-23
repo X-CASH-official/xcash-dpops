@@ -92,7 +92,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   // Variables
   char block_verifiers_public_address[XCASH_WALLET_LENGTH+1];
   char public_address[XCASH_WALLET_LENGTH+1];
-  char reserve_proof[MAXIMUM_INVALID_RESERVE_PROOFS];  
+  char reserve_proof[BUFFER_SIZE_RESERVE_PROOF];  
   char data3[BUFFER_SIZE];
   size_t count3;
   int settings;
