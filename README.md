@@ -62,7 +62,7 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 [How to Setup a Domain Name Instead of an IP Address](#how-to-setup-a-domain-name-instead-of-an-ip-address)  
 [How to Setup the Test](#how-to-setup-the-test)  
 [How to Debug the Code on a Server](#how-to-debug-the-code-on-a-server)
-*  [Allow X11 Forwarding on the server](allow-x11-forwarding-on-the-server)  
+*  [Allow X11 Forwarding on the server](#allow-x11-forwarding-on-the-server)  
 *  [Install GDB and vscode](#install-gdb-and-vscode)
 *  [Run vscode on the Server and Forward the GUI to a Dekstop](#run-vscode-on-the-server-and-forward-the-gui-to-a-desktop)
 *  [Change vscode Keyboard Shortcuts](#change-vscode-keyboard-shortcuts)
