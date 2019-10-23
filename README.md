@@ -139,13 +139,13 @@ The minimum for a public_address to receive a payment (10000 etc. The minimum am
 ## Installation Process
 
 ### Installation Path
-It is recommend to install the XCASH_DPOPS folder, MongoDB and MongoDB C Driver in the home directory (`/home/$USER/`) or root directory (`/root/`) in a `Installed-Programs` folder
+It is recommend to install the XCASH_DPOPS folder, MongoDB and MongoDB C Driver in the home directory (`/home/$USER/`) or root directory (`/root/`) in a `x-network` folder
 
-Create the `Installed-Programs` folder  
-`mkdir /root/Installed-Programs`
+Create the `x-network` folder  
+`mkdir /root/x-network`
 
 Create a `xcash_wallets` folder  
-`mkdir /root/Installed-Programs/xcash_wallets`
+`mkdir /root/x-network/xcash_wallets`
 
 
  
@@ -194,7 +194,7 @@ After you have built the MongoDB C driver from source, you will need to run
  
 ### Cloning the Repository
 ```
-cd ~/Installed-Programs 
+cd ~/x-network 
 git clone https://github.com/X-CASH-official/XCASH_DPOPS.git
 ```
  
@@ -205,7 +205,7 @@ git clone https://github.com/X-CASH-official/XCASH_DPOPS.git
 XCASH_DPOPS uses a Make file.
  
 After cloning the repository, navigate to the folder  
-`cd ~/Installed-Programs/XCASH_DPOPS`
+`cd ~/x-network/XCASH_DPOPS`
  
 Then use the make file to build the binary file  
 ``make clean ; make release -j `nproc` ``
@@ -217,21 +217,21 @@ Then use the make file to build the binary file
 Edit the below systemd files to your paths
 
 Copy all of the service files in the systemd folder to `/lib/systemd/system/`  
-`cp -a ~/Installed-Programs/XCASH_DPOPS/scripts/systemd/* /lib/systemd/system/`
+`cp -a ~/x-network/XCASH_DPOPS/scripts/systemd/* /lib/systemd/system/`
 
 Reload systemd  
 `systemctl daemon-reload`
 
 Create a systemd PID folder  
-`mkdir ~/Installed-Programs/systemdpid/`
+`mkdir ~/x-network/systemdpid/`
 
 Create a logs folder  
-`mkdir ~/Installed-Programs/logs/`
+`mkdir ~/x-network/logs/`
 
 Create a mongod pid file and a xcashd pid file
 ```
-touch ~/Installed-Programs/systemdpid/mongod.pid
-touch ~/Installed-Programs/systemdpid/xcash_daemon.pid
+touch ~/x-network/systemdpid/mongod.pid
+touch ~/x-network/systemdpid/xcash_daemon.pid
 ```
 
 
@@ -247,8 +247,8 @@ Type=forking
 User=root
 Type=oneshot
 RemainAfterExit=yes
-PIDFile=/root/Installed-Programs/systemdpid/mongod.pid
-ExecStart=/root/Installed-Programs/mongodb-linux-x86_64-ubuntu1804-4.2.0/bin/mongod --fork --syslog
+PIDFile=/root/x-network/systemdpid/mongod.pid
+ExecStart=/root/x-network/mongodb-linux-x86_64-ubuntu1804-4.2.0/bin/mongod --fork --syslog
 
 LimitFSIZE=infinity
 LimitCPU=infinity
@@ -282,8 +282,8 @@ Description=XCASH Daemon systemd file
 [Service]
 Type=forking
 User=root
-PIDFile=/root/Installed-Programs/systemdpid/xcash_daemon.pid
-ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/Installed-Programs/logs/XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile /root/Installed-Programs/systemdpid/xcash_daemon.pid
+PIDFile=/root/x-network/systemdpid/xcash_daemon.pid
+ExecStart=/root/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile /root/x-network/systemdpid/xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -314,8 +314,8 @@ Description=XCASH Daemon Block Verifier systemd file
 [Service]
 Type=forking
 User=root
-PIDFile=/root/Installed-Programs/systemdpid/xcash_daemon.pid
-ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcashd --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/Installed-Programs/logs/XCASH_Daemon_Block_Verifier_log.txt --max-log-file-size 0 --detach --pidfile /root/Installed-Programs/systemdpid/xcash_daemon.pid
+PIDFile=/root/x-network/systemdpid/xcash_daemon.pid
+ExecStart=/root/x-network/X-CASH/build/release/bin/xcashd --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_Block_Verifier_log.txt --max-log-file-size 0 --detach --pidfile /root/x-network/systemdpid/xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -345,7 +345,7 @@ Description=XCASH Wallet
 [Service]
 Type=simple
 User=root
-ExecStart=/root/Installed-Programs/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/Installed-Programs/xcash_wallets/WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+ExecStart=/root/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
 Restart=always
  
 [Install]
@@ -371,8 +371,8 @@ Description=XCASH DPOPS
 Type=simple
 LimitNOFILE=64000
 User=root
-WorkingDirectory=/root/Installed-Programs/XCASH_DPOPS/build/
-ExecStart=/root/Installed-Programs/XCASH_DPOPS/build/XCASH_DPOPS
+WorkingDirectory=/root/x-network/XCASH_DPOPS/build/
+ExecStart=/root/x-network/XCASH_DPOPS/build/XCASH_DPOPS
 Restart=always
  
 [Install]
@@ -404,7 +404,7 @@ Description=firewall
 Type=oneshot
 RemainAfterExit=yes
 User=root
-ExecStart=/root/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+ExecStart=/root/x-network/XCASH_DPOPS/scripts/firewall/firewall_script.sh
  
 [Install]
 WantedBy=multi-user.target
@@ -426,7 +426,7 @@ We will need to setup a firewall for our DPOPS node. The goal of settings up the
 The firewall is configured for a solo node setup. To configure the firewall for a shared delegates website or delegates website:
  
 Open the firewall script  
-`nano ~/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh`
+`nano ~/x-network/XCASH_DPOPS/scripts/firewall/firewall_script.sh`
  
 Uncomment these 3 lines (by removing the `#`) if running a shared delegates website or delegates website  
 `# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP`
@@ -439,8 +439,8 @@ If you want to run the shared delegates website or delegates website using HTTPS
  
 Now we need to run the firewall script and activate it  
 ```
-chmod +x ~/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh
-~/Installed-Programs/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+chmod +x ~/x-network/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+~/x-network/XCASH_DPOPS/scripts/firewall/firewall_script.sh
 iptables-save > /etc/network/iptables.up.rules
 iptables-apply -t 60
 ```
@@ -493,7 +493,7 @@ To view live logging of XCASH DPOPS, you can run
 `journalctl --unit=XCASH_DPOPS --follow -n 100 --output cat`
 
 To view logs for the XCASH_Daemon systemd service file or XCASH_Daemon_Block_Verifier systemd service file  
-`tail -n 100 /root/Installed-Programs/logs/XCASH_Daemon_log.txt` or `tail -n 100 /root/Installed-Programs/logs/XCASH_Daemon_Block_Verifier_log.txt`
+`tail -n 100 /root/x-network/logs/XCASH_Daemon_log.txt` or `tail -n 100 /root/x-network/logs/XCASH_Daemon_Block_Verifier_log.txt`
  
  
  
@@ -599,34 +599,34 @@ At this point you can now register the domain name (**without the www.**) to the
 
 
 ## How to Setup the Test
-Create a `XCASH_DPOPS_Test` folder in the `Installed-Programs` folder
+Create a `XCASH_DPOPS_Test` folder in the `x-network` folder
 
 Make sure you have installed the packages to [build XCASH from source](https://github.com/X-CASH-official/X-CASH#compiling-x-cash-from-source)
 
-Copy the X-CASH and XCASH_DPOPS folders from the `Installed-Programs` folder to the `XCASH_DPOPS_Test` folder  
+Copy the X-CASH and XCASH_DPOPS folders from the `x-network` folder to the `XCASH_DPOPS_Test` folder  
 ```
-cp -a ~/Installed-Programs/X-CASH ~/Installed-Programs/XCASH_DPOPS_Test/X-CASH 
-cp -a ~/Installed-Programs/XCASH_DPOPS ~/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS
+cp -a ~/x-network/X-CASH ~/x-network/XCASH_DPOPS_Test/X-CASH 
+cp -a ~/x-network/XCASH_DPOPS ~/x-network/XCASH_DPOPS_Test/XCASH_DPOPS
 ```
 
 Navigate to the X-CASH folder and change the branch to `xcash_proof_of_stake` and then rebuild the binary  
 ```
-cd ~/Installed-Programs/XCASH_DPOPS_Test/X-CASH
+cd ~/x-network/XCASH_DPOPS_Test/X-CASH
 git checkout xcash_proof_of_stake
 make clean ; make release -j `nproc`
 ```
 
 Create a wallet file for the wallet you are going to register. **Make sure this is an empty wallet.** This should be a different wallet then the wallet you plan to register for the official DPOPS, to keep your wallets privacy until the official DPOPS  
 ```
-cd ~/Installed-Programs/XCASH_DPOPS_Test/X-CASH/build/release/bin
+cd ~/x-network/XCASH_DPOPS_Test/X-CASH/build/release/bin
 ./xcash-wallet-cli
 ```
 
 Register your wallet with the XCASH team to get **XCASH_DPOPS_TEST XCASH** sent to the wallet
 
-Create a `XCASH_DPOPS_Blockchain_Test` folder in the `Installed-Programs`
+Create a `XCASH_DPOPS_Blockchain_Test` folder in the `x-network`
 ```
-cd ~/Installed-Programs
+cd ~/x-network
 mkdir XCASH_DPOPS_Blockchain_Test
 ```
 
@@ -639,10 +639,10 @@ systemctl stop XCASH_DPOPS
 ```
 
 Create test blockchain from mainnet blockchain. Copy the .X-CASH folder at ~/X.CASH to the XCASH_DPOPS_Test folder  
-`cp -a ~/.X-CASH /root/Installed-Programs/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test`
+`cp -a ~/.X-CASH /root/x-network/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test`
 
 Remove all of the blocks up to 449850 
-`/root/Installed-Programs/XCASH_DPOPS_Test/X-CASH/build/release/bin/xcash-blockchain-import --pop-blocks NUMBER_OF_BLOCKS_TO_REMOVE	`
+`/root/x-network/XCASH_DPOPS_Test/X-CASH/build/release/bin/xcash-blockchain-import --pop-blocks NUMBER_OF_BLOCKS_TO_REMOVE	`
 
 After the blockchain has been imported configure the `XCASH_Daemon`, `XCASH_Daemon_Block_Verifier`, `XCASH_Wallet` and `XCASH_DPOPS` systemd service files for the XCASH_DPOPS test. You should just have to add `/XCASH_DPOPS_Test` to every full path in the systemd service files.
 
@@ -714,11 +714,11 @@ Install vscode on the server
 Go to [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) and download the binary for your OS.
 
 Upload the binary to your server using secure copy  
-`scp FILE root@server:/root/Installed-Programs`
+`scp FILE root@server:/root/x-network`
 
 Install vscode  
 ```
-cd /root/Installed-Programs
+cd /root/x-network
 dpkg -i ./code*
 ```
 
