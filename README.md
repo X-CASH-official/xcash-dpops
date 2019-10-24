@@ -31,7 +31,9 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 ## Table of Contents  
 [System Requirements](#system-requirements)  
 [Dependencies](#dependencies)  
-[Recommendations For the XCASH Wallet](#recommendations-for-the-xcash-wallet)  
+[Recommendations For the XCASH Wallet](#recommendations-for-the-xcash-wallet) 
+[XCASH_DPOPS Parameters](#xcash_dpops-parameters) 
+[Manual vs Autoinstall](#manual-vs-autoinstall) 
 [Installation Process](#installation-process)  
 * [Installation Path](#installation-path)  
 * [Install System Packages](#install-system-packages) 
@@ -60,6 +62,11 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 
 ### Appendix
 [How to Setup a Domain Name Instead of an IP Address](#how-to-setup-a-domain-name-instead-of-an-ip-address)  
+[Auto Installation Process](#auto-installation-process)  
+*  [Install](#install)  
+*  [Update](#update)  
+*  [Remove](#remove)  
+ 
 [How to Setup the Test](#how-to-setup-the-test)  
 [How to Debug the Code on a Server](#how-to-debug-the-code-on-a-server)
 *  [Allow X11 Forwarding on the server](#allow-x11-forwarding-on-the-server)  
@@ -133,6 +140,10 @@ The minimum for a public_address to receive a payment (10000 etc. The minimum am
 
 --test_data_remove - Remove test data from the databases
 ```
+
+
+## Manual VS Autoinstall
+XCASH_DPOPS does provide a [autoinstall script](https://github.com/X-CASH-official/XCASH_DPOPS/blob/master/scripts/autoinstallerd/autoinstaller.sh) to make the installation process easier. The script can also be run in an update mode to update any needed x-network repositories or newer third party dependencies. To learn more about the auto installation process you can read the [auto installation process](#auto-installation-process) in the appendix section
 
 
 
@@ -595,6 +606,18 @@ Now you need to setup the reverse DNS as well. Go to the hosting dashboard of th
 
 At this point you can now register the domain name (**without the www.**) to the XCASH DPOPS system.
 
+
+
+## Auto Installation Process
+The XCASH DPOPS auto installer can be run to first setup the system, and then later in an update mode to update any needed x-network repositories or newer third party dependencies. It can also be run in a remove mode that will uninstall everything.
+
+### Install
+
+
+### Update
+
+
+### Remove
 
 
 
