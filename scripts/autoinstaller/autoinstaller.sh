@@ -423,7 +423,7 @@ User=${USER}
 Type=oneshot
 RemainAfterExit=yes
 PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/mongod.pid
-ExecStart=${MONGODB_DIR}bin/mongod --fork --syslog
+ExecStart=${MONGODB_DIR}bin/mongod --fork --syslog --dbpath ${MONGODB_INSTALLATION_DIR}
 
 LimitFSIZE=infinity
 LimitCPU=infinity
