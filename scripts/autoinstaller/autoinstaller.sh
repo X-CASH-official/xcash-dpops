@@ -163,6 +163,32 @@ function update_global_variables()
   LOGFILE=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_INSTALL.log
 }
 
+function get_shared_delegate_installation_settings()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate (YES): ${END_COLOR_PRINT}"
+  read data
+  SHARED_DELEGATE=$([ "$data" == "" ] && echo "$SHARED_DELEGATE" || echo "NO")
+  echo -ne "\r"
+  echo
+  if [ "$SHARED_DELEGATE" == "YES" ]; then    
+    while
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
+      read DPOPS_FEE
+      echo -ne "\r"
+      echo
+      [[ ! $DPOPS_FEE =~ $regex_DPOPS_FEE ]]
+    do true; done
+    
+    while
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount, minimum is 10K, maximum is 10M (ex: 10000 in whole numbers and not atomic units etc): ${END_COLOR_PRINT}"
+      read DPOPS_MINIMUM_AMOUNT
+      echo -ne "\r"
+      echo
+      [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
+    do true; done
+  fi
+}
+
 function update_systemd_service_files()
 {
 # Files
@@ -420,7 +446,7 @@ Description=XCASH Daemon systemd file
 Type=forking
 User=${USER}
 PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash_daemon.pid
-ExecStart=${XCASH_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
+ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -436,7 +462,7 @@ Description=XCASH Daemon Block Verifier systemd file
 Type=forking
 User=${USER}
 PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash_daemon.pid
-ExecStart=${XCASH_DIR}build/release/bin/xcashd --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_Block_Verifier_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
+ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_Block_Verifier_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -469,7 +495,7 @@ Type=simple
 LimitNOFILE=64000
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --shared_delegates_website
+ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --shared_delegates_website --fee ${DPOPS_FEE} --minimum_amount ${DPOPS_MINIMUM_AMOUNT}
 Restart=always
  
 [Install]
@@ -490,32 +516,6 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 )"
-}
-
-function get_shared_delegate_installation_settings()
-{
-  echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate (YES): ${END_COLOR_PRINT}"
-  read data
-  SHARED_DELEGATE=$([ "$data" == "" ] && echo "$SHARED_DELEGATE" || echo "NO")
-  echo -ne "\r"
-  echo
-  if [ "$SHARED_DELEGATE" == "YES" ]; then    
-    while
-      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
-      read DPOPS_FEE
-      echo -ne "\r"
-      echo
-      [[ ! $DPOPS_FEE =~ $regex_DPOPS_FEE ]]
-    do true; done
-    
-    while
-      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount, minimum is 10K, maximum is 10M (ex: 10000 in whole numbers and not atomic units etc): ${END_COLOR_PRINT}"
-      read DPOPS_MINIMUM_AMOUNT
-      echo -ne "\r"
-      echo
-      [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
-    do true; done
-  fi
 }
 
 function get_wallet_settings()
@@ -722,6 +722,23 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
     echo
     if [ "$data" == "YES" ]; then
       SHARED_DELEGATE="YES"
+
+      while
+        echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
+        read DPOPS_FEE
+        echo -ne "\r"
+        echo
+        [[ ! $DPOPS_FEE =~ $regex_DPOPS_FEE ]]
+      do true; done
+    
+      while
+        echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount, minimum is 10K, maximum is 10M (ex: 10000 in whole numbers and not atomic units etc): ${END_COLOR_PRINT}"
+        read DPOPS_MINIMUM_AMOUNT
+        echo -ne "\r"
+        echo
+        [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
+      do true; done     
+
       install_shared_delegates_website
       update_systemd_service_files
       sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
