@@ -143,7 +143,11 @@ The minimum for a public_address to receive a payment (10000 etc. The minimum am
 
 
 ## Manual VS Autoinstall
-XCASH_DPOPS does provide a [autoinstall script](https://github.com/X-CASH-official/XCASH_DPOPS/blob/master/scripts/autoinstallerd/autoinstaller.sh) to make the installation process easier. The script can also be run in an update mode to update any needed x-network repositories or newer third party dependencies. To learn more about the auto installation process you can read the [auto installation process](#auto-installation-process) in the appendix section
+XCASH_DPOPS does provide a [autoinstall script](https://github.com/X-CASH-official/XCASH_DPOPS/blob/master/scripts/autoinstallerd/autoinstaller.sh) to make the installation process easier. The script can also be run in an update mode to update any needed x-network repositories or newer third party dependencies. 
+
+The recommended installation type is to read over how to manually install XCASH_DPOPS, but to use the autoinstaller to install XCASH_DPOPS, since the autoinstaller does allow for custom settings.
+
+To learn more about the auto installation process you can read the [auto installation process](#auto-installation-process) in the appendix section
 
 
 
@@ -157,6 +161,10 @@ Create the `x-network` folder
 
 Create a `xcash_wallets` folder  
 `mkdir /root/x-network/xcash_wallets`
+
+Create a `logs` folder  
+`mkdir /root/x-network/logs`
+
 
 
  
@@ -612,12 +620,55 @@ At this point you can now register the domain name (**without the www.**) to the
 The XCASH DPOPS auto installer can be run to first setup the system, and then later in an update mode to update any needed x-network repositories or newer third party dependencies. It can also be run in a remove mode that will uninstall everything.
 
 ### Install
+To Install, run the autoinstaller script, and choose Install at the menu.  
+`scripts/autoinstaller/autoinstaller.sh`
+
+You can then press enter for the default settings, or input custom settings. The autoinstaller will then install everything automatically for you.
+
+The autoinstaller has the following customizable options:
+```
+Installation Directory
+MongoDB Installation Directory
+X-CASH Blockchain Installation Directory
+Shared Delegate or Solo Delegate
+Shared Delegate Fee
+Shared Delegate Minimum Payment Amount
+Create a New Wallet or Import an Existing Wallet
+Generate a New Password or Use an Existing Password:
+```
 
 
 ### Update
 
+It is recommend to run the autoinstaller in update mode. The autoinstaller will update you automatically to the latest versions of:  
+```
+System Packages that are related X-CASH or XCASH_DPOPS
+X-CASH
+XCASH_DPOPS
+XCASH_DPOPS_shared_delegates_website
+MongoDB
+Mongo C Driver
+NodeJS
+NPM
+```
+
 
 ### Remove
+
+The autoinstaller can also remove XCASH_DPOPS. It will remove the following items:
+```
+System Packages that are related X-CASH or XCASH_DPOPS
+X-CASH
+XCASH_DPOPS
+XCASH_DPOPS_shared_delegates_website
+MongoDB
+Mongo C Driver
+NodeJS
+NPM
+```
+
+
+
 
 
 

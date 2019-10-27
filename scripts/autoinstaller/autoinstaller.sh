@@ -1,544 +1,274 @@
 #!/bin/bash
 
-#########################################################
-ROOT_DIR=/var/x-network
-WALLET_PASSWD=`uuidgen`
-DAEMON_USER=xcash
+# Set the script to exit if any command fails
+set -e
+
+# Color print variables
+COLOR_PRINT_RED="\033[1;31m"
+COLOR_PRINT_GREEN="\033[1;32m"
+COLOR_PRINT_YELLOW="\033[1;33m"
+END_COLOR_PRINT="\033[0m"
+
+# Configuration settings
+INSTALLATION_TYPE_SETTINGS=1 # 1 = Install, 2 = Update, 3 = Uninstall
+INSTALLATION_TYPE="Installation"
+XCASH_DPOPS_INSTALLATION_DIR="$HOME/x-network/"
+XCASH_BLOCKCHAIN_INSTALLATION_DIR="$HOME/.X-CASH/"
+MONGODB_INSTALLATION_DIR="/data/db/"
+SHARED_DELEGATE="YES"
+WALLET_SETTINGS="YES"
+WALLET_SEED=""
+WALLET_PASSWORD=`< /dev/urandom tr -dc 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' | head -c${1:-32};echo;`
 DPOPS_FEE=0
-DPOPS_MINIMUM_AMOUNT=1000
-LOGFILE=/var/log/x-cash-dpops-install.log
-#########################################################
+DPOPS_MINIMUM_AMOUNT=0
+
+# Latest versions
+MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.1"
+MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.15.1"
+NODEJS_LATEST_VERSION="node-v13.0.1-linux-x64"
+
+# Settings
+XCASH_URL="https://github.com/X-CASH-official/X-CASH.git"
+XCASH_DIR=""
+XCASH_WALLET_DIR=""
+XCASH_SYSTEMPID_DIR=""
+XCASH_LOGS_DIR=""
+XCASH_DPOPS_URL="https://github.com/X-CASH-official/XCASH_DPOPS.git"
+XCASH_DPOPS_DIR=""
+XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=""
+SHARED_DELEGATES_WEBSITE_URL="https://github.com/X-CASH-official/XCASH_DPOPS_shared_delegates_website.git"
+SHARED_DELEGATES_WEBSITE_DIR=""
+NODEJS_URL="https://nodejs.org/dist/v13.0.1/${NODEJS_LATEST_VERSION}.tar.xz"
+NODEJS_DIR=""
+NODEJS_CURRENT_VERSION=""
+MONGODB_URL="http://downloads.mongodb.org/linux/${MONGODB_LATEST_VERSION}.tgz"
+MONGODB_DIR=""
+MONGODB_CURRENT_VERSION=""
+MONGOC_DRIVER_URL="https://github.com/mongodb/mongo-c-driver/releases/download/${MONGOC_DRIVER_LATEST_VERSION:15}/${MONGOC_DRIVER_LATEST_VERSION}.tar.gz"
+MONGOC_DRIVER_DIR=""
+MONGOC_DRIVER_CURRENT_VERSION=""
+LOGFILE=""
+XCASH_DPOPS_PACKAGES="build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libpcsclite-dev git"
+GIT_PULL_ALREADY_UPDATED_MESSAGE="Already up to date."
+CURRENT_XCASH_WALLET_INFORMATION=""
+
+# Files
+FIREWALL=""
+FIREWALL_SHARED_DELEGATES=""
+SYSTEMD_SERVICE_FILE_FIREWALL=""
+SYSTEMD_SERVICE_FILE_MONGODB=""
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON=""
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER=""
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS=""
+SYSTEMD_SERVICE_FILE_XCASH_WALLET=""
+
+# System settings
+CPU_THREADS=`nproc`
+RAM=`awk '/MemTotal/ { printf "%d \n", $2/1024/1024 }' /proc/meminfo`
+RAM_CPU_RATIO=$((RAM / CPU_THREADS))
+RAM_CPU_RATIO_ALL_CPU_THREADS=4
+
+# Regex
+regex_XCASH_DPOPS_INSTALLATION_DIR="(^\/(.*?)\/$)|(^$)" # anything that starts with / and ends with / and does not contain a space
+regex_MNEMONIC_SEED="^\b([a-z]+\s+){24}\b([a-z]+)$" # 25 words exactly
+regex_DPOPS_FEE="\b(^[1-9]{1}[0-9]{0,1}.?[0-9]{0,6}$)\b$" # between 1 and 99 with up to 6 decimal places
+regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 10000000-1
 
 
-red=`tput setaf 1`
-green=`tput setaf 2`
-reset=`tput sgr0`
 
-reset 
-echo
-echo -e "${green}############################################################${reset}"
-echo -e "${green}####### Welcome to X-Cash DPoPS auto-install script  #######${reset}"
-echo -e "${green}############################################################${reset}"
-echo
-echo -e "${green}Installation will start in 10 sec, press Ctrl + C to cancel!${reset}"
-sleep 10
-echo -e "${green}Root directory:       $ROOT_DIR ${reset}"
-echo -e "${green}Wallet password:      $WALLET_PASSWD ${reset}"
-echo -e "${green}Daemon user:          $DAEMON_USER ${reset}"
-echo -e "${green}DPoPS fee:            $DPOPS_FEE ${reset}"
-echo -e "${green}DPoPS minimum amount: $DPOPS_MINIMUM_AMOUNT ${reset}"
-echo -e "${green}Progress log file:    $LOGFILE ${reset}"
-echo
-> $LOGFILE
-
-function check_user(){ 
-    echo -ne "${green}Checking if running user is root..........................${reset}"
-    if [ "$EUID" -ne 0 ]; then
-        echo -e "${red}FAIL${reset}"
-        echo
-        echo -e "${red}############################################################${reset}"
-        echo -e "${red}#######   !!!  PLEASE RUN THIS SCRIPT AS ROOT  !!!   #######${reset}"
-        echo -e "${red}############################################################${reset}"
-        echo
-        exit
+# Functions
+function get_installation_settings()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  read data
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation") || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update") || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall")
+  echo -ne "\r"
+  echo
+  # Check if XCASH_DPOPS is already installed, if the user choose to install
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
+    echo -ne "${COLOR_PRINT_YELLOW}Checking if XCASH_DPOPS is already installed${END_COLOR_PRINT}"
+    data=`sudo find / -type d -name "XCASH_DPOPS" | wc -l`
+    if [ "$data" -ne "0" ]; then
+      echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is already installed. You can either update or uninstall${END_COLOR_PRINT}"
+      exit 1
     fi
-
-    echo -e "${green}OK${reset}"
-}       
-
-
-function check_ubuntu(){
-    echo -ne "${green}Checking Ubuntu version...................................${reset}"
-    
-    command -v lsb_release > /dev/null 2>&1 ||
-    {
-        echo -e "${red}FAIL${reset}"
-        echo 
-        echo -e "${red}############################################################${reset}"
-        echo -e "${red}#######   !!! CANNOT CHECK YOUR UBUNTU VERSION !!!   #######${reset}"
-        echo -e "${red}############################################################${reset}"
-        echo
-        exit
-    }
-
-    UBUNTU_VERSION=`lsb_release -r | awk {'print $2'} | sed s"|\.||g"`
-    if [ "$UBUNTU_VERSION" == "1804" ] || [ "$UBUNTU_VERSION" == "1604" ]; then
-        echo -e "${green}OK${reset}"
-    else
-        echo -e "${red}FAIL${reset}"
-        echo 
-        echo -e "${red}############################################################${reset}"
-        echo -e "${red}####### !!  YOUR UBUNTU VERSION IS NOT SUPPORTED !!  #######${reset}"
-        echo -e "${red}############################################################${reset}"
-        echo
-        exit
-    fi
-}
-
-function error_and_stop(){
-    echo 
-    echo -e "${red}############################################################${reset}"
-    echo -e "${red}#######     !!! INSTALLATION PROCESS STOPPED !!!     #######${reset}"
-    echo -e "${red}############################################################${reset}"
+    echo -ne "\r                                                    "
     echo
-    exit
-}
+  fi
 
-function system_update() {
-    i=0
-    tput sc
-    while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
-        case $(($i % 4)) in
-            0 ) j="-" ;;
-            1 ) j="\\" ;;
-            2 ) j="|" ;;
-            3 ) j="/" ;;
-        esac
-        tput rc
-        echo && echo -en "\r${red}[$j] Waiting for other package manager to finish...${reset}" 
-        sleep 0.25
-        ((i=i+1))
-    done
-    echo && echo -ne "${green}Upgrading all installed packages, this can take a while...${reset}"
-    apt update -y >> $LOGFILE 2>&1 && apt upgrade -y > $LOGFILE 2>&1
-    echo -e "${green}OK${reset}"
-}
-
-function install_dependencies() {
-    echo -ne "${green}Installing Node.js repository.............................${reset}"
-    curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - >> $LOGFILE 2>&1
-    echo -e "${green}OK${reset}"
-
-    echo -ne "${green}Installing all needed packets, this can take a while......${reset}"
-    apt install -y \
-        nodejs \
-        unzip \
-        build-essential \
-        cmake \
-        pkg-config \
-        libssl-dev \
-        git \
-        gcc \
-        g++ \
-        make \
-        libboost-all-dev \
-        libzmq3-dev \
-        libunbound-dev \
-        libsodium-dev \
-        libminiupnpc-dev \
-        libunwind8-dev \
-        liblzma-dev \
-        libreadline6-dev \
-        libldns-dev \
-        libexpat1-dev \
-        libgtest-dev \
-        doxygen \
-        graphviz \
-        libpcsclite-dev >> $LOGFILE 2>&1
-    echo -e "${green}OK${reset}"
-
-}
-
-function create_user(){
-    echo -ne "${green}Creating daemon user..................................${reset}"
-
-    getent passwd $DAEMON_USER > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        echo -e "${red}EXISTS${reset}"
-    else
-        useradd -M $DAEMON_USER
-        echo -e "${green}....OK${reset}"
+  # Check if XCASH_DPOPS is not installed, if the user choose to update or uninstall
+  if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ]; then
+    data=`sudo find / -type d -name "XCASH_DPOPS" | wc -l`
+    if [ "$data" -eq "0" ]; then
+      echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is not installed. Please install XCASH_DPOPS before running update or uninstall${END_COLOR_PRINT}"
+      exit 1
     fi
+    echo -ne "\r                                                     "
+    echo
+  fi
 }
 
-function create_dirs(){
-    echo -ne "${green}Creating root dirs........................................${reset}"
-    [ -d $ROOT_DIR ] || mkdir -p $ROOT_DIR
-
-    [ -d $ROOT_DIR/build ] || mkdir -p $ROOT_DIR/build
-    [ -d $ROOT_DIR/pids ] || mkdir -p $ROOT_DIR/pids
-    [ -d $ROOT_DIR/logs ] || mkdir -p $ROOT_DIR/logs
-
-    [ -d $ROOT_DIR/xcash ] || mkdir -p $ROOT_DIR/xcash
-    [ -d $ROOT_DIR/xcash/bin ] || mkdir -p $ROOT_DIR/xcash/bin
-    [ -d $ROOT_DIR/xcash/wallet ] || mkdir -p $ROOT_DIR/xcash/wallet
-    [ -d $ROOT_DIR/xcash/blockchain ] || mkdir -p $ROOT_DIR/xcash/blockchain
-    [ -d $ROOT_DIR/xcash/shared-ringdb ] || mkdir -p $ROOT_DIR/xcash/shared-ringdb
-
-    [ -d $ROOT_DIR/mongodb ] || mkdir -p $ROOT_DIR/mongodb
-    [ -d $ROOT_DIR/mongodb/bin ] || mkdir -p $ROOT_DIR/mongodb/bin
-    [ -d $ROOT_DIR/mongodb/db ] || mkdir -p $ROOT_DIR/mongodb/db
-
-    [ -d $ROOT_DIR/dpops ] || mkdir -p $ROOT_DIR/dpops
-    [ -d $ROOT_DIR/dpops/shared_delegates_website ] || mkdir -p $ROOT_DIR/dpops/shared_delegates_website
-    [ -d $ROOT_DIR/dpops/scripts ] || mkdir -p $ROOT_DIR/dpops/scripts
-
-    chown -R $DAEMON_USER.$DAEMON_USER $ROOT_DIR &&
-    echo -e "${green}OK${reset}"
-
+function get_xcash_dpops_installation_directory()
+{
+  while
+    echo -ne "${COLOR_PRINT_YELLOW}Installation Directory, must be in the form of /directory/ ($HOME/x-network/): ${END_COLOR_PRINT}"
+    read data    
+    echo -ne "\r"
+    echo
+    [[ ! $data =~ $regex_XCASH_DPOPS_INSTALLATION_DIR ]]
+  do true; done
+  
+  XCASH_DPOPS_INSTALLATION_DIR=$([ "$data" == "" ] && echo "$XCASH_DPOPS_INSTALLATION_DIR" || echo "$data")
 }
 
-install_mongodb(){
-    echo -ne "${green}Downloading and installing MongoDB........................${reset}"
+function get_xcash_blockchain_xcash_dpops_installation_directory()
+{
+  while
+    echo -ne "${COLOR_PRINT_YELLOW}X-CASH Blockchain Installation Directory, must be in the form of /directory/ ($HOME/.X-CASH/): ${END_COLOR_PRINT}"
+    read data
+    echo -ne "\r"
+    echo
+    [[ ! $data =~ $regex_XCASH_DPOPS_INSTALLATION_DIR ]]
+  do true; done
 
-    MONGODB_SO_VERSION=`lsb_release -r | awk {'print $2'} | sed s"|\.||g"`
-    systemctl list-units --full -all | grep -Fq "MongoDB.service"
-    if [ $? -eq 0 ]; then
-        systemctl stop MongoDB >> $LOGFILE 2>&1 &&
-        systemctl disable MongoDB >> $LOGFILE 2>&1 &&
-        rm -rf /etc/systemd/system/MongoDB.service >> $LOGFILE 2>&1 &&
-        systemctl daemon-reload >> $LOGFILE 2>&1
-    fi
-
-    if [ "$(ls -A $ROOT_DIR/mongodb/db/)" ]; then
-        rm -rf $ROOT_DIR/mongodb/db/*
-    fi
-
-    if [ "$(ls -A $ROOT_DIR/mongodb/bin/)" ]; then
-        rm -rf $ROOT_DIR/mongodb/bin/*
-    fi
-
-    cd $ROOT_DIR/build &&
-    [ -f mongodb-linux-x86_64-ubuntu$MONGODB_SO_VERSION-4.2.0.tgz ] && rm -rf mongodb-linux-x86_64-ubuntu$MONGODB_SO_VERSION-4.2.0.tgz 
-    wget -q https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu$MONGODB_SO_VERSION-4.2.0.tgz &&
-
-    [ -d mongodb-linux-x86_64-ubuntu$MONGODB_SO_VERSION-4.2.0 ] && rm -rf mongodb-linux-x86_64-ubuntu$MONGODB_SO_VERSION-4.2.0
-    tar zxf mongodb-linux-x86_64-ubuntu$MONGODB_SO_VERSION-4.2.0.tgz && rm -rf mongodb-linux-x86_64-ubuntu$MONGODB_SO_VERSION-4.2.0.tgz &&
-    mv mongodb-linux-x86_64-ubuntu$MONGODB_SO_VERSION-4.2.0/bin/* $ROOT_DIR/mongodb/bin/ && rm -rf mongodb-linux-x86_64-ubuntu$MONGODB_SO_VERSION-4.2.0
-
-    chown -R $DAEMON_USER.$DAEMON_USER $ROOT_DIR &&
-    echo -e "${green}OK${reset}"
-
+  XCASH_BLOCKCHAIN_INSTALLATION_DIR=$([ "$data" == "" ] && echo "$XCASH_BLOCKCHAIN_INSTALLATION_DIR" || echo "$data")
 }
 
-function create_mongodb_unit_file(){
-echo -ne "${green}Creating systemd unit file for MongoDB....................${reset}"
-cat <<EOF>/etc/systemd/system/MongoDB.service
-[Unit]
-Description=X-Cash Database Daemon
-After=network.target
+function get_mongodb_installation_directory()
+{
+  while
+    echo -ne "${COLOR_PRINT_YELLOW}MongoDB Installation Directory, must be in the form of /directory/ (/data/db/): ${END_COLOR_PRINT}"
+    read data
+    echo -ne "\r"
+    echo
+    [[ ! $data =~ $regex_XCASH_DPOPS_INSTALLATION_DIR ]]
+  do true; done
 
-[Service]
-Type=simple
-User=$DAEMON_USER
-PIDFile=$ROOT_DIR/pids/MongoDB.pid
-ExecStart=$ROOT_DIR/mongodb/bin/mongod --dbpath=$ROOT_DIR/mongodb/db/ --pidfilepath=$ROOT_DIR/pids/MongoDB.pid
-KillMode=process
-Restart=always
+  MONGODB_INSTALLATION_DIR=$([ "$data" == "" ] && echo "$MONGODB_INSTALLATION_DIR" || echo "$data")
+}
 
-LimitFSIZE=infinity
-LimitCPU=infinity
-LimitAS=infinity
-LimitNOFILE=64000
-LimitNPROC=64000
-LimitMEMLOCK=infinity
-TasksMax=infinity
-TasksAccounting=false
+function update_global_variables()
+{
+  XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}X-CASH/
+  XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/
+  XCASH_SYSTEMPID_DIR=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/
+  XCASH_LOGS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}logs/
+  XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS/
+  XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_INSTALLATION_DIR}shared_delegates_website/
+  SHARED_DELEGATES_WEBSITE_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_shared_delegates_website/
+  NODEJS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}node-v13.0.1-linux-x64/
+  MONGODB_DIR=${XCASH_DPOPS_INSTALLATION_DIR}mongodb-linux-x86_64-ubuntu1804-4.2.1/
+  LOGFILE=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_INSTALL.log
+}
 
-[Install]
-WantedBy=multi-user.target
+function update_systemd_service_files()
+{
+# Files
+FIREWALL="$(cat << EOF
+#!/bin/sh
+# iptables script for server
+# if you changed any default ports change them in the firewall as well
+ 
+# ACCEPT all packets at the top so each packet runs through the firewall rules, then DROP all INPUT and FORWARD if they dont use any of the firewall settings
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+# remove all existing IP tables
+iptables -t nat -F
+iptables -t mangle -F
+iptables -t mangle -X
+iptables -t mangle -F
+iptables -t raw -F
+iptables -t raw -X
+iptables -F
+iptables -X
+ 
+# ip table prerouting data (this is where you want to block ddos attacks)
+# Drop all invalid packets
+iptables -t mangle -A PREROUTING -m conntrack --ctstate INVALID -j DROP
+# Prevent syn flood
+iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+iptables -t mangle -A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,FIN FIN -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+ 
+# filter data for INPUT, FORWARD, and OUTPUT
+# Accept any packets coming or going on localhost
+iptables -I INPUT -i lo -j ACCEPT
+# keep already established connections running
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+ 
+# block ip spoofing. these are the ranges of local IP address.
+iptables -A INPUT -s 45.76.169.83 -j DROP
+iptables -A INPUT -s 10.0.0.0/8 -j DROP
+iptables -A INPUT -s 169.254.0.0/16 -j DROP
+iptables -A INPUT -s 172.16.0.0/12 -j DROP
+iptables -A INPUT -s 127.0.0.0/8 -j DROP
+iptables -A INPUT -s 192.168.0.0/24 -j DROP
+iptables -A INPUT -s 224.0.0.0/4 -j DROP
+iptables -A INPUT -d 224.0.0.0/4 -j DROP
+iptables -A INPUT -s 240.0.0.0/5 -j DROP
+iptables -A INPUT -d 240.0.0.0/5 -j DROP
+iptables -A INPUT -s 0.0.0.0/8 -j DROP
+iptables -A INPUT -d 0.0.0.0/8 -j DROP
+iptables -A INPUT -d 239.255.255.0/24 -j DROP
+iptables -A INPUT -d 255.255.255.255 -j DROP
+ 
+# block all traffic from ip address (iptables -A INPUT -s ipaddress -j DROP)
+#unblock them using iptables -D INPUT -s ipaddress -j DROP
+ 
+# Block different attacks
+# block one computer from opening too many connections (100 simultaneous connections) if this gives trouble with post remove this or increase the limit
+# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
+iptables -t filter -I INPUT -p tcp --syn --dport 18283 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
+# block port scans
+# this will lock the IP out for 1 day
+iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -m recent --name portscan --remove
+iptables -A FORWARD -m recent --name portscan --remove
+iptables -A INPUT   -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP 
+iptables -A FORWARD -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP
+ 
+# Accept specific packets
+# Accept ICMP
+iptables -A INPUT -p icmp -j ACCEPT
+ 
+# Accept HTTP
+# iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+ 
+# Accept XCASH
+iptables -A INPUT -p tcp --dport 18280 -j ACCEPT
+iptables -A INPUT -p tcp --dport 18281 -j ACCEPT
+iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
+ 
+# Allow ssh (allow 10 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
+iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --set --name DEFAULT --rsource
+iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
+iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+ 
+# Redirect HTTP to port 18283
+# iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283
+ 
+# DROP all INPUT and FORWARD packets if they have reached this point
+iptables -A INPUT -j DROP
+iptables -A FORWARD -j DROP
 EOF
-    
-systemctl daemon-reload >> $LOGFILE 2>&1 &&
-systemctl enable MongoDB >> $LOGFILE 2>&1 &&
-systemctl start MongoDB >> $LOGFILE 2>&1
-echo -e "${green}OK${reset}"
-
-echo -ne "${green}Checking if MongoDB service is running....................${reset}"
-    systemctl is-active --quiet MongoDB
-    if [ $? -eq 0 ]; then
-        echo -e "${green}OK${reset}"
-    else
-        error_and_stop
-    fi
-}
-
-
-function install_xcash(){
-    echo -ne "${green}Downloading and installing X-Cash Daemon..................${reset}"
-
-    systemctl list-units --full -all | grep -Fq "XCASH_Daemon.service"
-    if [ $? -eq 0 ]; then
-        systemctl stop XCASH_Daemon >> $LOGFILE 2>&1 &&
-        systemctl stop XCASH_Daemon_Block_Verifier >> $LOGFILE 2>&1
-        systemctl disable XCASH_Daemon >> $LOGFILE 2>&1 &&
-        rm -rf /etc/systemd/system/XCASH_Daemon.service >> $LOGFILE 2>&1 &&
-        rm -rf /etc/systemd/system/XCASH_Daemon_Block_Verifier.service >> $LOGFILE 2>&1 &&
-        systemctl daemon-reload >> $LOGFILE 2>&1
-    fi
-
-    if [ "$(ls -A $ROOT_DIR/xcash/bin/)" ]; then
-        rm -rf $ROOT_DIR/xcash/bin/*
-    fi
-
-    cd $ROOT_DIR/build &&
-    [ -d X-CASH ] && rm -rf X-CASH
-    git clone https://github.com/X-CASH-official/X-CASH >> $LOGFILE 2>&1 && cd X-CASH &&
-    make -j$(nproc) >> $LOGFILE 2>&1 &&
-    mv build/release/bin/* $ROOT_DIR/xcash/bin/ &&
-    cd $ROOT_DIR/build &&
-    rm -rf X-CASH &&
-
-    chown -R $DAEMON_USER.$DAEMON_USER $ROOT_DIR &&
-    echo -e "${green}OK${reset}"    
-
-}
-
-function create_xcash_unit_file(){
-echo -ne "${green}Creating systemd unit file for XCASH_Daemon...............${reset}"
-cat <<EOF>/etc/systemd/system/XCASH_Daemon.service
-[Unit]
-Description=X-Cash Daemon
-After=network.target
-
-[Service]
-Type=forking
-User=$DAEMON_USER
-LimitNOFILE=infinity
-LimitNPROC=infinity
-LimitCORE=infinity
-PIDFile=$ROOT_DIR/pids/XCASH_Daemon.pid
-ExecStart=$ROOT_DIR/xcash/bin/xcashd --data-dir $ROOT_DIR/xcash/blockchain --log-file $ROOT_DIR/logs/blockchain.log --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --detach --pidfile $ROOT_DIR/pids/XCASH_Daemon.pid
-RuntimeMaxSec=15d
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-cat <<EOF>/etc/systemd/system/XCASH_Daemon_Block_Verifier.service
-[Unit]
-Description=X-Cash Block Verifier Daemon
-After=network.target
-
-[Service]
-Type=forking
-User=$DAEMON_USER
-LimitNOFILE=infinity
-LimitNPROC=infinity
-LimitCORE=infinity
-PIDFile=$ROOT_DIR/pids/XCASH_Daemon.pid
-ExecStart=$ROOT_DIR/xcash/bin/xcashd --data-dir $ROOT_DIR/xcash/blockchain --log-file $ROOT_DIR/logs/blockchain.log --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --detach --pidfile $ROOT_DIR/pids/XCASH_Daemon.pid
-RuntimeMaxSec=15d
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload >> $LOGFILE 2>&1 &&
-systemctl enable XCASH_Daemon >> $LOGFILE 2>&1 &&
-systemctl start XCASH_Daemon >> $LOGFILE 2>&1
-echo -e "${green}OK${reset}"
-
-echo -ne "${green}Checking if XCASH_Daemon service is running...............${reset}"
-    systemctl is-active --quiet XCASH_Daemon
-    if [ $? -eq 0 ]; then
-        echo -e "${green}OK${reset}"
-    else
-        error_and_stop
-        exit
-    fi
-}
-
-function create_node_wallet(){
-echo -ne "${green}Creating node's wallet....................................${reset}"
-
-systemctl list-units --full -all | grep -Fq "XCASH_Wallet.service"
-if [ $? -eq 0 ]; then
-    systemctl stop XCASH_Wallet >> $LOGFILE 2>&1
-fi
-
-if [ "$(ls -A $ROOT_DIR/xcash/wallet/)" ]; then
-    rm -rf $ROOT_DIR/xcash/wallet/*
-fi
-
-cat <<EOF>/etc/systemd/system/x-cash-temporal-rpc-wallet.service
-[Unit]
-Description=X-Cash RPC Wallet Daemon
-After=network.target
-
-[Service]
-Type=simple
-User=$DAEMON_USER
-LimitNOFILE=infinity
-LimitNPROC=infinity
-LimitCORE=infinity
-ExecStart=$ROOT_DIR/xcash/bin/xcash-wallet-rpc --log-file /dev/null --shared-ringdb-dir $ROOT_DIR/xcash/shared-ringdb --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon --wallet-dir $ROOT_DIR/xcash/wallet/
-ExecStop=/bin/kill -9
-KillMode=process
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload >> $LOGFILE 2>&1 &&
-systemctl start x-cash-temporal-rpc-wallet >> $LOGFILE 2>&1 && sleep 5
-
-systemctl is-active --quiet x-cash-temporal-rpc-wallet
-if [ $? -eq 0 ]; then
-    curl -s -X POST http://127.0.0.1:18285/json_rpc -d "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"create_wallet\",\"params\":{\"filename\":\"node-wallet\",\"password\":\"$WALLET_PASSWD\",\"language\":\"English\"}}" -H 'Content-Type: application/json' >> $LOGFILE 2>&1
-    systemctl stop x-cash-temporal-rpc-wallet >> $LOGFILE 2>&1
-    rm -rf /etc/systemd/system/x-cash-temporal-rpc-wallet.service
-    systemctl daemon-reload >> $LOGFILE 2>&1
-else
-    error_and_stop
-fi
-
-echo -e "${green}OK${reset}"
-
-}
-
-function create_xcash_rpc_unit_file(){
-echo -ne "${green}Creating systemd unit file for XCASH_Wallet...............${reset}"
-cat <<EOF>/etc/systemd/system/XCASH_Wallet.service
-[Unit]
-Description=X-Cash RPC Wallet Daemon
-After=network.target XCASH_Daemon.service
-
-[Service]
-Type=simple
-User=$DAEMON_USER
-LimitNOFILE=infinity
-LimitNPROC=infinity
-LimitCORE=infinity
-ExecStart=$ROOT_DIR/xcash/bin/xcash-wallet-rpc --wallet-file $ROOT_DIR/xcash/wallet/node-wallet --password $WALLET_PASSWD --log-file $ROOT_DIR/logs/rpc.log --shared-ringdb-dir $ROOT_DIR/xcash/shared-ringdb --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload >> $LOGFILE 2>&1
-systemctl enable XCASH_Wallet >> $LOGFILE 2>&1
-
-systemctl start XCASH_Wallet >> $LOGFILE 2>&1
-systemctl is-active --quiet XCASH_Wallet
-if [ $? -eq 0 ]; then
-    echo -e "${green}OK${reset}"
-else
-    error_and_stop
-fi
-
-}
-
-function install_mongo_c_driver(){
-    echo -ne "${green}Downloading and installing Mongo C Driver.................${reset}"
-
-    cd $ROOT_DIR/build &&
-    [ -f mongo-c-driver-1.15.1.tar.gz ] && rm -rf mongo-c-driver-1.15.1.tar.gz
-    wget -q https://github.com/mongodb/mongo-c-driver/releases/download/1.15.1/mongo-c-driver-1.15.1.tar.gz &&
-
-    [ -d mongo-c-driver-1.15.1/ ] && rm -rf mongo-c-driver-1.15.1/
-    tar zxf mongo-c-driver-1.15.1.tar.gz && rm -rf mongo-c-driver-1.15.1.tar.gz &&
-    cd mongo-c-driver-1.15.1/ && mkdir cmake-build && cd cmake-build &&
-    cmake -j -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. > $LOGFILE 2>&1 &&
-    make -j$(nproc) > $LOGFILE 2>&1 &&
-    make install > $LOGFILE 2>&1 &&
-    cd $ROOT_DIR/build &&
-    rm -rf mongo-c-driver-1.15.1/
-    ldconfig
-
-    chown -R $DAEMON_USER.$DAEMON_USER $ROOT_DIR &&
-    echo -e "${green}OK${reset}"    
-
-}
-
-function install_dpops(){
-    echo -ne "${green}Downloading and installing DPOPS..........................${reset}"
-
-    systemctl list-units --full -all | grep -Fq "XCASH_DPOPS.service"
-    if [ $? -eq 0 ]; then
-        systemctl stop XCASH_DPOPS >> $LOGFILE 2>&1 &&
-        systemctl disable XCASH_DPOPS >> $LOGFILE 2>&1 &&
-        rm -rf /etc/systemd/system/XCASH_DPOPS.service >> $LOGFILE 2>&1 &&
-        systemctl daemon-reload >> $LOGFILE 2>&1
-    fi
-
-    cd $ROOT_DIR/build &&
-    [ -f $ROOT_DIR/dpops/XCASH_DPOPS ] && rm -rf $ROOT_DIR/dpops/XCASH_DPOPS
-    [ -d XCASH_DPOPS ] && rm -rf XCASH_DPOPS
-    git clone https://github.com/X-CASH-official/XCASH_DPOPS >> $LOGFILE 2>&1 && cd XCASH_DPOPS &&
-    make -j$(nproc) >> $LOGFILE 2>&1 &&
-    mv build/XCASH_DPOPS $ROOT_DIR/dpops/ &&
-    cd $ROOT_DIR/build &&
-    rm -rf XCASH_DPOPS &&
-
-    chown -R $DAEMON_USER.$DAEMON_USER $ROOT_DIR &&
-    echo -e "${green}OK${reset}"    
-
-
-}
-
-function create_dpops_unit_file(){
-echo -ne "${green}Creating systemd unit file for XCASH_DPOPS................${reset}"
-
-cat <<EOF>/etc/systemd/system/XCASH_DPOPS.service
-[Unit]
-Description=X-Cash DPoPS Shared Delegates
-After=network.target XCASH_Wallet.service MongoDB.service
-
-[Service]
-Type=simple
-LimitNOFILE=64000
-User=$DAEMON_USER
-WorkingDirectory=$ROOT_DIR/dpops/
-ExecStart=$ROOT_DIR/dpops/XCASH_DPOPS --shared_delegates_website --fee $DPOPS_FEE --minimum_amount $DPOPS_MINIMUM_AMOUNT
-KillMode=process
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload >> $LOGFILE 2>&1
-systemctl enable XCASH_DPOPS >> $LOGFILE 2>&1
-
-systemctl start XCASH_DPOPS >> $LOGFILE 2>&1
-systemctl is-active --quiet XCASH_DPOPS
-if [ $? -eq 0 ]; then
-    echo -e "${green}OK${reset}"
-else
-    error_and_stop
-fi
-
-}
-
-function install_dpops_shared_delegates_website(){
-    echo -ne "${green}Downloading and installing DPOPS Delegates Website........${reset}"
-
-    if [ "$(ls -A $ROOT_DIR/dpops/shared_delegates_website)" ]; then
-        rm -rf $ROOT_DIR/dpops/shared_delegates_website/*
-    fi
-
-    cd $ROOT_DIR/build &&
-    [ -d  XCASH_DPOPS_shared_delegates_website ] && rm -rf XCASH_DPOPS_shared_delegates_website
-    git clone https://github.com/X-CASH-official/XCASH_DPOPS_shared_delegates_website >> $LOGFILE 2>&1 &&
-    cd XCASH_DPOPS_shared_delegates_website &&
-    export NG_CLI_ANALYTICS=false
-    npm config set user 0 >> $LOGFILE 2>&1
-    npm config set unsafe-perm true >> $LOGFILE 2>&1
-    npm -g install npm >> $LOGFILE 2>&1
-    npm -g install @angular/cli@latest >> $LOGFILE 2>&1
-    npm -g install uglify-js >> $LOGFILE 2>&1
-    npm update >> $LOGFILE 2>&1
-    npm audit fix >> $LOGFILE 2>&1
-    ng build --prod --aot >> $LOGFILE 2>&1 &&
-    cd dist/ &&
-    for f in *.js; do uglifyjs $f --compress --mangle --output "{$f}min" >> $LOGFILE 2>&1; rm -rf $f; mv "{$f}min" $f; done
-    mv * $ROOT_DIR/dpops/shared_delegates_website
-    cd $ROOT_DIR
-
-    chown -R $DAEMON_USER.$DAEMON_USER $ROOT_DIR &&
-    echo -e "${green}OK${reset}"    
-
-}
-
-function install_firewall(){
-echo -ne "${green}Installing firewall rules script for DPOPS................${reset}"
-
-cat <<EOF>$ROOT_DIR/dpops/scripts/firewall_script.sh
+)"
+FIREWALL_SHARED_DELEGATES="$(cat << EOF
 #!/bin/sh
 # iptables script for server
 # if you changed any default ports change them in the firewall as well
@@ -640,135 +370,1154 @@ iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283
 iptables -A INPUT -j DROP
 iptables -A FORWARD -j DROP
 EOF
-
-chown -R $DAEMON_USER.$DAEMON_USER $ROOT_DIR &&
-chmod +x $ROOT_DIR/dpops/scripts/firewall_script.sh
-echo -e "${green}OK${reset}"    
-
-}
-
-function create_firewall_unit_file(){
-echo -ne "${green}Creating systemd unit file for XCASH_firewall.............${reset}"
-
-cat <<EOF>/etc/systemd/system/XCASH_firewall.service
+)"
+SYSTEMD_SERVICE_FILE_FIREWALL="$(cat << EOF
 [Unit]
-Description=X-Cash Firewall
-
+Description=firewall
+ 
 [Service]
 Type=oneshot
-User=root
-ExecStart=$ROOT_DIR/dpops/scripts/firewall_script.sh
+RemainAfterExit=yes
+User=${USER}
+ExecStart=${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
+ 
+[Install]
+WantedBy=multi-user.target
+EOF
+)"
+SYSTEMD_SERVICE_FILE_MONGODB="$(cat << EOF
+[Unit]
+Description=MongoDB Database Server
+After=network.target
+
+[Service]
+Type=forking
+User=${USER}
+Type=oneshot
+RemainAfterExit=yes
+PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/mongod.pid
+ExecStart=${MONGODB_DIR}bin/mongod --fork --syslog
+
+LimitFSIZE=infinity
+LimitCPU=infinity
+LimitAS=infinity
+LimitNOFILE=64000
+LimitNPROC=64000
+LimitMEMLOCK=infinity
+TasksMax=infinity
+TasksAccounting=false
 
 [Install]
 WantedBy=multi-user.target
 EOF
-
-systemctl daemon-reload >> $LOGFILE 2>&1
-systemctl enable XCASH_firewall >> $LOGFILE 2>&1
-
-systemctl start XCASH_firewall >> $LOGFILE 2>&1
-if [ $? -eq 0 ]; then
-    echo -e "${green}OK${reset}"
-else
-    error_and_stop
-fi
-
-}
-
-function generate_info_scripts(){
-echo -ne "${green}Creating x-cash-wallet-info script........................${reset}"
-#!/bin/bash
-
-cat <<\EOF>/usr/local/bin/x-cash-wallet-info
-#!/bin/bash
-
-if lsof -Pi :18285 -sTCP:LISTEN -t >/dev/null ; then
-    PUBLIC_ADDRESS=`curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json' | grep \"address\" | head -1 | sed s"|    \"address\": ||g" | sed s"|\"||g" | sed s"|,||g"`
-    SPEND_KEY=`curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"spend_key"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g"`
-    VIEW_KEY=`curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"view_key"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g"`
-    MNEMONIC_SEED=`curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"mnemonic"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g"`
-
-    echo "Public Address: $PUBLIC_ADDRESS"
-    echo "Mnemonic Seed:  $MNEMONIC_SEED"
-    echo "Spend Key:      $SPEND_KEY"
-    echo "View Key:       $VIEW_KEY"
-else
-    echo "RPC Wallet is not running or it is in sync state...."
-    echo "Check the XCASH_Wallet service status, if running try later"
-fi    
+)"
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON="$(cat << EOF
+[Unit]
+Description=XCASH Daemon systemd file
+ 
+[Service]
+Type=forking
+User=${USER}
+PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash_daemon.pid
+ExecStart=${XCASH_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
+RuntimeMaxSec=15d
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
 EOF
-
-chmod +x /usr/local/bin/x-cash-wallet-info
-echo -e "${green}OK${reset}"    
-
+)"
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER="$(cat << EOF
+[Unit]
+Description=XCASH Daemon Block Verifier systemd file
+ 
+[Service]
+Type=forking
+User=${USER}
+PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash_daemon.pid
+ExecStart=${XCASH_DIR}build/release/bin/xcashd --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_Block_Verifier_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
+RuntimeMaxSec=15d
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
+EOF
+)"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS="$(cat << EOF
+[Unit]
+Description=XCASH DPOPS
+ 
+[Service]
+Type=simple
+LimitNOFILE=64000
+User=${USER}
+WorkingDirectory=${XCASH_DPOPS_DIR}build
+ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
+EOF
+)"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET="$(cat << EOF
+[Unit]
+Description=XCASH Wallet RPC
+ 
+[Service]
+Type=simple
+User=${USER}
+ExecStart=${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
+EOF
+)"
 }
 
-function print_info(){
-    echo
-    echo -e "${green}############################################################${reset}"
-    echo -e "${green}#######   !!!   SCRIPT FINISHED INSTALLATION   !!!   #######${reset}"
-    echo -e "${green}############################################################${reset}"
-    echo
-
-    echo -e "${green}You can check the service status with the following commands${reset}"
-    echo -e "${green}  - systemctl status MongoDB${reset}"
-    echo -e "${green}  - systemctl status XCASH_Daemon${reset}"
-    echo -e "${green}  - systemctl status XCASH_Daemon_Block_Verifier${reset}"
-    echo -e "${green}  - systemctl status XCASH_Wallet${reset}"
-    echo -e "${green}  - systemctl status XCASH_DPOPS${reset}"
-    echo
-    echo -e "${green}You can get your wallet info executing \"x-cash-wallet-info\"${reset}"
-    echo
-    echo -e "${green}  * Wait for the XCASH_Daemon to finish the blockchain sync before start XCASH_DPOPS${reset}"
-    echo -e "${green}  * You can find all logs at $ROOT_DIR/logs${reset}"
-    echo -e "${green}  * The XCASH_Daemon_Block_Verifier will start on need, you don't need to run it manually${reset}"
-
+function get_shared_delegate_installation_settings()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate (YES): ${END_COLOR_PRINT}"
+  read data
+  SHARED_DELEGATE=$([ "$data" == "" ] && echo "$SHARED_DELEGATE" || echo "NO")
+  echo -ne "\r"
+  echo
+  if [ "$SHARED_DELEGATE" == "YES" ]; then    
+    while
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
+      read DPOPS_FEE
+      echo -ne "\r"
+      echo
+      [[ ! $DPOPS_FEE =~ $regex_DPOPS_FEE ]]
+    do true; done
+    
+    while
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount, minimum is 10K, maximum is 10M (ex: 10000 in whole numbers and not atomic units etc): ${END_COLOR_PRINT}"
+      read DPOPS_MINIMUM_AMOUNT
+      echo -ne "\r"
+      echo
+      [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
+    do true; done
+  fi
 }
 
-function clean_build_dir(){
-    echo -ne "${green}Cleaning build directory..................................${reset}"
-    rm -rf $ROOT_DIR/build/*
-    echo -e "${green}OK${reset}"
-
+function get_wallet_settings()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Create a New Wallet to Collect Block Rewards (YES): ${END_COLOR_PRINT}"
+  read data
+  echo -ne "\r"
+  echo
+  WALLET_SETTINGS=$([ "$data" == "" ] && echo "$WALLET_SETTINGS" || echo "NO")
+  if [ "$WALLET_SETTINGS" == "NO" ]; then
+    while
+      echo -ne "${COLOR_PRINT_YELLOW}Please Enter the Existing Wallets Mnemonic Seed: ${END_COLOR_PRINT}"
+      read WALLET_SEED
+      echo -ne "\r"
+      echo
+      [[ ! $WALLET_SEED =~ $regex_MNEMONIC_SEED ]]
+    do true; done
+  fi
 }
 
-# Base stuff
-check_user
-check_ubuntu
-system_update
-install_dependencies
-create_user
-create_dirs
+function get_password_settings()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Generate a New Password (YES): ${END_COLOR_PRINT}"
+  read data
+  echo -ne "\r"
+  echo
+  WALLET_PASSWORD=$([ "$data" == "" ] && echo "$WALLET_PASSWORD" || echo "NO")
+  if [ "$WALLET_PASSWORD" == "NO" ]; then
+  echo -ne "${COLOR_PRINT_YELLOW}Please Enter the Custom Password: ${END_COLOR_PRINT}"
+  read WALLET_PASSWORD
+  echo -ne "\r"
+  echo
+  fi
+}
 
-# Install and create unit file for MongoDB.service
-install_mongodb
-create_mongodb_unit_file
+function get_password()
+{
+  # ask for the root password if not root so it wont ask again when installing
+  if [ "$EUID" -ne 0 ]; then
+    sudo echo
+  fi
+}  
 
-# Install and create unit file for XCASH_Daemon.service
-install_xcash
-create_xcash_unit_file
+function print_installation_settings()
+{
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                    Installation Settings${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo -e "${COLOR_PRINT_GREEN}Installation Type: ${INSTALLATION_TYPE}${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Installation Directory: ${XCASH_DPOPS_INSTALLATION_DIR} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}X-CASH Blockchain Installation Directory: ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}MongoDB Installation Directory: ${MONGODB_INSTALLATION_DIR} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Shared Delegate: ${SHARED_DELEGATE} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Create New Wallet: ${WALLET_SETTINGS} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Wallet Password: ${WALLET_PASSWORD} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}User: ${USER} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}DPOPS Fee: ${DPOPS_FEE} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}DPOPS Minimum Payment Amount: ${DPOPS_MINIMUM_AMOUNT} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Installation Log File: ${LOGFILE} ${END_COLOR_PRINT}"
+  echo
+  echo -e "${COLOR_PRINT_GREEN}If ${INSTALLATION_TYPE} fails please open ${LOGFILE} to find out where it left off${END_COLOR_PRINT}"
 
-# Install and create unit file for XCASH_Wallet.service
-create_node_wallet
-create_xcash_rpc_unit_file
+  seconds=10
+  while [ "$seconds" -ne 0 ]
+  do
+    echo -ne "${COLOR_PRINT_GREEN}${INSTALLATION_TYPE} will start in ${seconds} seconds, press Ctrl + C to cancel!${END_COLOR_PRINT}"
+    seconds=$((seconds-1))
+    sleep 1
+    echo -ne "\r"
+  done 
+  echo -ne "${COLOR_PRINT_GREEN}${INSTALLATION_TYPE} will start in 0 seconds, press Ctrl + C to cancel!${END_COLOR_PRINT}"
+  echo
+  echo
+}
 
-# Install and create unit file for XCASH_DPOPS.service
-install_mongo_c_driver
-install_dpops
-create_dpops_unit_file
+function installation_settings()
+{
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}         Welcome to X-Cash DPoPS auto-install script  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo -e "${COLOR_PRINT_YELLOW}Installation configuration (Press ENTER for default)${END_COLOR_PRINT}"
+  echo
+  get_password
+  get_installation_settings
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then 
+    get_xcash_dpops_installation_directory
+    get_xcash_blockchain_xcash_dpops_installation_directory
+    get_mongodb_installation_directory
+    update_global_variables
+    get_shared_delegate_installation_settings
+    get_wallet_settings
+    get_password_settings
+    update_systemd_service_files
+    print_installation_settings
+  fi
+}
 
-# Install and configure DPOPS Delegates Website
-install_dpops_shared_delegates_website
 
-# Install and create unit file for XCASH_firewall.service
-install_firewall
-create_firewall_unit_file
 
-# Generate informational scripts
-generate_info_scripts
 
-# Clean build dir
-clean_build_dir
 
-# Print info
-print_info
+
+
+
+
+
+function get_current_xcash_wallet_data()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
+
+  screen -dmS XCASH_RPC_Wallet ${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address delegates.xcash.foundation:18281 --trusted-daemon
+  sleep 10s
+  
+   while
+    data=`curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json'` 
+    sleep 10s
+    [[ "$data" == "" ]]
+  do true; done
+
+  PUBLIC_ADDRESS=`curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json' | grep \"address\" | head -1 | sed s"|    \"address\": ||g" | sed s"|\"||g" | sed s"|,||g"`
+  SPEND_KEY=`curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"spend_key"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g"`
+  VIEW_KEY=`curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"view_key"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g"`
+  MNEMONIC_SEED=`curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"mnemonic"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g"`
+  CURRENT_XCASH_WALLET_INFORMATION="${COLOR_PRINT_GREEN}############################################################\n                 X-CASH Wallet Data  \n############################################################${END_COLOR_PRINT}\n\n${COLOR_PRINT_YELLOW}Public Address: $PUBLIC_ADDRESS\nMnemonic Seed: $MNEMONIC_SEED\nSpend Key: $SPEND_KEY\nView Key: $VIEW_KEY\nWallet Password: $WALLET_PASSWORD${END_COLOR_PRINT}"
+
+  curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"stop_wallet"}' -H 'Content-Type: application/json' >> ${LOGFILE} 2>&1
+  sleep 10s
+  
+  echo -ne "\r${COLOR_PRINT_GREEN}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
+  echo
+}
+
+function start_systemd_service_files()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Starting Systemd Service Files${END_COLOR_PRINT}"
+  systemctl start MongoDB >> ${LOGFILE} 2>&1
+  systemctl start XCASH_Daemon >> ${LOGFILE} 2>&1
+  sleep 10s
+  systemctl start XCASH_Wallet >> ${LOGFILE} 2>&1
+  sleep 10s
+  systemctl start XCASH_DPOPS >> ${LOGFILE} 2>&1
+  echo -ne "\r${COLOR_PRINT_GREEN}Starting Systemd Service Files${END_COLOR_PRINT}"
+  echo
+}
+
+function stop_systemd_service_files()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Stoping Systemd Service Files${END_COLOR_PRINT}"
+  systemctl stop MongoDB XCASH_Daemon XCASH_Wallet XCASH_DPOPS >> ${LOGFILE} 2>&1
+  echo -ne "\r${COLOR_PRINT_GREEN}Stoping Systemd Service Files${END_COLOR_PRINT}"
+  echo
+}
+
+
+
+
+
+
+
+
+
+
+function check_if_solo_node()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Checking If Solo Node${END_COLOR_PRINT}"
+  data=`sudo find / -type d -name "XCASH_DPOPS_shared_delegates_website" | wc -l`
+  if [ "$data" -eq 1 ]; then
+    SHARED_DELEGATE="YES"
+  else
+    SHARED_DELEGATE="NO"
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Checking If Solo Node${END_COLOR_PRINT}"
+  echo
+}
+
+function check_ubuntu_version()
+{   
+    command -v lsb_release > /dev/null 2>&1 ||
+    {
+        echo -e "${COLOR_PRINT_RED}FAIL${END_COLOR_PRINT}"
+        echo 
+        echo -e "${COLOR_PRINT_RED}############################################################${END_COLOR_PRINT}"
+        echo -e "${COLOR_PRINT_RED}           !!! CANNOT CHECK YOUR UBUNTU VERSION !!!${END_COLOR_PRINT}"
+        echo -e "${COLOR_PRINT_RED}############################################################${END_COLOR_PRINT}"
+        echo
+        exit
+    }
+
+    UBUNTU_VERSION=`lsb_release -r | awk {'print $2'} | sed s"|\.||g"`
+    if [ ! "$UBUNTU_VERSION" == "1804" ]; then
+      echo -e "${COLOR_PRINT_RED}FAIL${END_COLOR_PRINT}"
+      echo 
+      echo -e "${COLOR_PRINT_RED}############################################################${END_COLOR_PRINT}"
+      echo -e "${COLOR_PRINT_RED}          !!!  YOUR UBUNTU VERSION IS NOT SUPPORTED !!!${END_COLOR_PRINT}"
+      echo -e "${COLOR_PRINT_RED}############################################################${END_COLOR_PRINT}"
+      echo
+      exit
+    fi
+}
+
+function update_packages_list()
+{
+    i=0
+    while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
+        case $(($i % 4)) in
+            0 ) j="-" ;;
+            1 ) j="\\" ;;
+            2 ) j="|" ;;
+            3 ) j="/" ;;
+        esac
+        echo && echo -en "\r${COLOR_PRINT_RED}[$j] Waiting for other package manager to finish...${END_COLOR_PRINT}" 
+        sleep 0.25
+        ((i=i+1))
+    done
+    echo -ne "${COLOR_PRINT_YELLOW}Updating Packages List${END_COLOR_PRINT}"
+    apt update -y >> ${LOGFILE} 2>&1
+    echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages List${END_COLOR_PRINT}"
+    echo
+}
+
+function install_packages()
+{
+    i=0
+    while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
+        case $(($i % 4)) in
+            0 ) j="-" ;;
+            1 ) j="\\" ;;
+            2 ) j="|" ;;
+            3 ) j="/" ;;
+        esac
+        echo && echo -en "\r${COLOR_PRINT_RED}[$j] Waiting for other package manager to finish...${END_COLOR_PRINT}" 
+        sleep 0.25
+        ((i=i+1))
+    done
+    echo -ne "${COLOR_PRINT_YELLOW}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
+    apt install ${XCASH_DPOPS_PACKAGES} -y >> ${LOGFILE} 2>&1
+    build_libgtest
+    echo -ne "\r${COLOR_PRINT_GREEN}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
+    echo
+}
+
+function build_libgtest()
+{
+  cd /usr/src/gtest >> ${LOGFILE} 2>&1
+  sudo cmake . >> ${LOGFILE} 2>&1
+  sudo make >> ${LOGFILE} 2>&1
+  sudo mv libg* /usr/lib/ >> ${LOGFILE} 2>&1
+}
+
+
+
+
+
+
+
+
+
+
+function download_xcash()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Downloading X-CASH${END_COLOR_PRINT}"
+  cd ${XCASH_DPOPS_INSTALLATION_DIR}
+  git clone ${XCASH_URL} >> ${LOGFILE} 2>&1
+  echo -ne "\r${COLOR_PRINT_GREEN}Downloading X-CASH${END_COLOR_PRINT}"
+  echo
+}
+
+function build_xcash()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
+  cd ${XCASH_DIR}
+  if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
+    make release -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
+  else
+    make release -j $((CPU_THREADS / 2)) >> ${LOGFILE} 2>&1
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
+  echo
+}
+
+function install_xcash()
+{
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                   Installing X-CASH${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  download_xcash
+  build_xcash
+}
+
+
+
+
+
+
+
+
+
+
+function create_directories()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Creating Directories${END_COLOR_PRINT}"
+  if [ ! -d "$XCASH_DPOPS_INSTALLATION_DIR" ]; then
+    mkdir -p ${XCASH_DPOPS_INSTALLATION_DIR}
+  fi 
+  if [ ! -d "$XCASH_BLOCKCHAIN_INSTALLATION_DIR" ]; then
+    mkdir -p ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
+  fi 
+  if [ ! -d "$MONGODB_INSTALLATION_DIR" ]; then
+    mkdir -p ${MONGODB_INSTALLATION_DIR}
+    sudo chmod 770 ${MONGODB_INSTALLATION_DIR}
+    sudo chown $USER ${MONGODB_INSTALLATION_DIR}
+  fi 
+  if [ ! -d "$XCASH_WALLET_DIR" ]; then
+    mkdir -p ${XCASH_WALLET_DIR}
+  fi
+  if [ ! -d "$XCASH_SYSTEMPID_DIR" ]; then
+    mkdir -p ${XCASH_SYSTEMPID_DIR}
+  fi
+  if [ ! -d "$XCASH_LOGS_DIR" ]; then
+    mkdir -p ${XCASH_LOGS_DIR}
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Creating Directories${END_COLOR_PRINT}"
+  echo
+}
+
+function create_files()
+{
+  touch ${XCASH_SYSTEMPID_DIR}mongod.pid ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid ${LOGFILE}
+}
+
+function create_systemd_service_files()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Creating Systemd Service Files${END_COLOR_PRINT}"
+  echo "$SYSTEMD_SERVICE_FILE_FIREWALL" > /lib/systemd/system/firewall.service
+  echo "$SYSTEMD_SERVICE_FILE_MONGODB" > /lib/systemd/system/MongoDB.service
+  echo "$SYSTEMD_SERVICE_FILE_XCASH_DAEMON" > /lib/systemd/system/XCASH_Daemon.service
+  echo "$SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER" > /lib/systemd/system/XCASH_Daemon_Block_Verifier.service
+  echo "$SYSTEMD_SERVICE_FILE_XCASH_DPOPS" > /lib/systemd/system/XCASH_DPOPS.service
+  echo "$SYSTEMD_SERVICE_FILE_XCASH_WALLET" > /lib/systemd/system/XCASH_Wallet.service
+  systemctl daemon-reload
+  echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
+  echo
+}
+
+function install_mongodb()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing MongoDB${END_COLOR_PRINT}"
+  cd ${XCASH_DPOPS_INSTALLATION_DIR}
+  wget -q ${MONGODB_URL}
+  tar -xf mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
+  rm mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
+  echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.profile 
+  echo -ne '$PATH' >> ~/.profile
+  source ~/.profile
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing MongoDB${END_COLOR_PRINT}"
+  echo
+}
+
+function install_mongoc_driver()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing MongoC Driver${END_COLOR_PRINT}"
+  cd ${XCASH_DPOPS_INSTALLATION_DIR}
+  wget -q ${MONGOC_DRIVER_URL}
+  tar -xf mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
+  rm mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
+  cd mongo-c-driver-*
+  mkdir cmake-build >> ${LOGFILE} 2>&1
+  cd cmake-build >> ${LOGFILE} 2>&1
+  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> ${LOGFILE} 2>&1
+  make -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
+  sudo make install >> ${LOGFILE} 2>&1
+  sudo ldconfig
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing MongoC Driver${END_COLOR_PRINT}"
+  echo
+}
+
+function download_xcash_dpops()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
+  cd ${XCASH_DPOPS_INSTALLATION_DIR}
+  git clone ${XCASH_DPOPS_URL} >> ${LOGFILE} 2>&1
+  echo -ne "\r${COLOR_PRINT_GREEN}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
+  echo
+}
+
+function build_xcash_dpops()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Building XCASH_DPOPS${END_COLOR_PRINT}"
+  cd ${XCASH_DPOPS_DIR}
+  if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
+    make release -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
+  else
+    make release -j $((CPU_THREADS / 2)) >> ${LOGFILE} 2>&1
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Building XCASH_DPOPS${END_COLOR_PRINT}"
+  echo
+}
+
+function install_firewall()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
+  rm ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
+  if [ "$SHARED_DELEGATE" == "YES" ]; then
+    echo "$FIREWALL_SHARED_DELEGATES" > ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
+  else
+    echo "$FIREWALL" > ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
+  fi
+  chmod +x ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
+  sudo ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
+  systemctl enable firewall >> ${LOGFILE} 2>&1
+  systemctl start firewall >> ${LOGFILE} 2>&1
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
+  echo
+}
+
+function install_xcash_dpops()
+{
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                Installing XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  create_systemd_service_files
+  install_mongodb
+  install_mongoc_driver
+  download_xcash_dpops
+  build_xcash_dpops
+  install_firewall
+  echo
+  echo
+}
+
+function sync_xcash_wallet()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}      Syncing X-CASH Wallet (This Might Take A While)${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  screen -dmS XCASH_RPC_Wallet ${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address delegates.xcash.foundation:18281 --trusted-daemon
+  
+   while
+    data=`curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json'` 
+    sleep 10s
+    [[ "$data" == "" ]]
+  do true; done
+
+  curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"stop_wallet"}' -H 'Content-Type: application/json' >> ${LOGFILE} 2>&1
+  sleep 10s
+}
+
+function create_xcash_wallet()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}      Creating X-CASH Wallet (This Might Take A While)  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo "exit" | ${XCASH_DIR}build/release/bin/xcash-wallet-cli --generate-new-wallet ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --mnemonic-language English --restore-height 0 --daemon-address delegates.xcash.foundation:18281 >> ${LOGFILE} 2>&1
+  echo
+  echo
+}
+
+function import_xcash_wallet()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                   Importing X-CASH Wallet ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | ${XCASH_DIR}build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --mnemonic-language English --restore-height 0 --daemon-address delegates.xcash.foundation:18281 >> ${LOGFILE} 2>&1
+  echo
+  echo
+}
+
+
+
+
+
+
+
+
+
+
+function install_nodejs()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing Node.js${END_COLOR_PRINT}"
+  cd ${XCASH_DPOPS_INSTALLATION_DIR}
+  wget -q ${NODEJS_URL}
+  tar -xf node*.tar.xz >> ${LOGFILE} 2>&1
+  rm node*.tar.xz >> ${LOGFILE} 2>&1
+  echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.profile 
+  echo -ne '$PATH' >> ~/.profile
+  source ~/.profile
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing Node.js${END_COLOR_PRINT}"
+  echo
+}
+
+function configure_npm()
+{
+  if [ "$EUID" -eq 0 ]; then
+    echo -ne "${COLOR_PRINT_YELLOW}Configuring NPM For Root User${END_COLOR_PRINT}"
+    npm config set user 0 >> ${LOGFILE} 2>&1
+    npm config set unsafe-perm true >> ${LOGFILE} 2>&1
+    echo -ne "\r${COLOR_PRINT_GREEN}Configuring NPM For Root User${END_COLOR_PRINT}"
+    echo
+  fi
+}
+
+function update_npm()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Updating NPM${END_COLOR_PRINT}"
+  npm install -g npm >> ${LOGFILE} 2>&1
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating NPM${END_COLOR_PRINT}"
+  echo
+}
+
+function install_npm_global_packages()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing Global NPM Packages${END_COLOR_PRINT}"
+  npm install -g @angular/cli@latest uglify-js >> ${LOGFILE} 2>&1
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing Global NPM Packages${END_COLOR_PRINT}"
+  echo
+}
+
+function download_shared_delegate_website()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Downloading Shared Delegates Website${END_COLOR_PRINT}"
+  cd ${XCASH_DPOPS_INSTALLATION_DIR}
+  git clone ${SHARED_DELEGATES_WEBSITE_URL} >> ${LOGFILE} 2>&1
+  echo -ne "\r${COLOR_PRINT_GREEN}Downloading Shared Delegates Website${END_COLOR_PRINT}"
+  echo
+}
+
+function install_shared_delegates_website_npm_packages()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Updating node_modules${END_COLOR_PRINT}"
+  cd ${SHARED_DELEGATES_WEBSITE_DIR}
+  npm update >> ${LOGFILE} 2>&1
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating node_modules${END_COLOR_PRINT}"
+  echo
+}
+
+function build_shared_delegates_website()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Building shared delegates website${END_COLOR_PRINT}"
+  cd ${SHARED_DELEGATES_WEBSITE_DIR}
+  ng build --prod --aot >> ${LOGFILE} 2>&1
+  cd dist
+  for f in *.js; do uglifyjs $f --compress --mangle --output "{$f}min"; rm $f; mv "{$f}min" $f; done
+  if [ -d "$XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR" ]; then
+    rm -r ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}
+  fi 
+  cd ../
+  cp -a dist ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR} 
+  echo -ne "\r${COLOR_PRINT_GREEN}Building shared delegates website${END_COLOR_PRINT}"
+  echo
+}
+
+function install_shared_delegates_website()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}            Installing Shared Delegate Website${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  install_nodejs
+  configure_npm
+  update_npm
+  install_npm_global_packages
+  download_shared_delegate_website
+  install_shared_delegates_website_npm_packages
+  build_shared_delegates_website
+  echo
+  echo
+}
+
+
+
+
+
+
+
+
+
+
+function get_installation_directory()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Getting Installation Directories${END_COLOR_PRINT}"
+  XCASH_DPOPS_INSTALLATION_DIR=`sudo find / -type d -name "XCASH_DPOPS" -exec dirname {} \;`/
+  WALLET_PASSWORD=`cat /lib/systemd/system/XCASH_Wallet.service | awk '/password/ {print $5}'`
+  XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}X-CASH/
+  XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/
+  XCASH_SYSTEMPID_DIR=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/
+  XCASH_LOGS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}logs/
+  XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS/
+  XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_INSTALLATION_DIR}shared_delegates_website/
+  SHARED_DELEGATES_WEBSITE_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_shared_delegates_website/
+  NODEJS_DIR=`sudo find / -type d -name "node-*-linux-x64"`/
+  MONGODB_DIR=`sudo find / -type d -name "mongodb-linux-x86_64-ubuntu1804-*"`/
+  MONGOC_DRIVER_DIR=`sudo find / -type d -name "mongo-c-driver-*"`/
+  LOGFILE=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_INSTALL.log
+  echo -ne "\r${COLOR_PRINT_GREEN}Getting Installation Directories${END_COLOR_PRINT}"
+  echo
+}
+
+function get_dependencies_current_version()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Getting Dependencies Current Versions${END_COLOR_PRINT}"
+  NODEJS_CURRENT_VERSION=`sudo find / -type d -name "node-*-linux-x64" -exec basename {} \;`
+  MONGODB_CURRENT_VERSION=`sudo find / -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -exec basename {} \;`
+  MONGOC_DRIVER_CURRENT_VERSION=`sudo find / -type d -name "mongo-c-driver-*" -exec basename {} \;`
+  echo -ne "\r${COLOR_PRINT_GREEN}Getting Dependencies Current Versions${END_COLOR_PRINT}"
+  echo
+}
+
+function update_packages()
+{
+    i=0
+    while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
+        case $(($i % 4)) in
+            0 ) j="-" ;;
+            1 ) j="\\" ;;
+            2 ) j="|" ;;
+            3 ) j="/" ;;
+        esac
+        echo && echo -en "\r${COLOR_PRINT_RED}[$j] Waiting for other package manager to finish...${END_COLOR_PRINT}" 
+        sleep 0.25
+        ((i=i+1))
+    done
+    echo -ne "${COLOR_PRINT_YELLOW}Updating Packages${END_COLOR_PRINT}"
+    apt install --only-upgrade ${XCASH_DPOPS_PACKAGES} -y >> ${LOGFILE} 2>&1
+    echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages${END_COLOR_PRINT}"
+    echo
+}
+
+function update_xcash()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
+  cd ${XCASH_DIR}
+  data=`git pull`
+  if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
+    if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
+      make release -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
+    else
+      make release -j $((CPU_THREADS / 2)) >> ${LOGFILE} 2>&1
+    fi 
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
+  echo
+}
+
+function update_xcash_dpops()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  cd ${XCASH_DPOPS_DIR}
+  data=`git pull`
+  if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
+    if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
+      make release -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
+    else
+      make release -j $((CPU_THREADS / 2)) >> ${LOGFILE} 2>&1
+    fi 
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  echo
+}
+
+function update_shared_delegates_website()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegates Website${END_COLOR_PRINT}"
+  cd ${SHARED_DELEGATES_WEBSITE_DIR}
+  data=`git pull`
+  if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
+    npm update >> ${LOGFILE} 2>&1
+    ng build --prod --aot >> ${LOGFILE} 2>&1
+    cd dist
+    for f in *.js; do uglifyjs $f --compress --mangle --output "{$f}min"; rm $f; mv "{$f}min" $f; done
+    if [ -d "$XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR" ]; then
+      rm -r ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}
+    fi 
+    cd ../
+    cp -a dist ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegates Website${END_COLOR_PRINT}"
+  echo
+}
+
+function update_mongodb()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Updating MongoDB${END_COLOR_PRINT}"
+  rm -r ${MONGODB_DIR}  
+  cd ${XCASH_DPOPS_INSTALLATION_DIR}
+  wget -q ${MONGODB_URL}
+  tar -xf mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
+  rm mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
+  MONGODB_DIR=`sudo find / -type d -name "mongodb-linux-x86_64-ubuntu1804-*"`/
+  update_systemd_service_files
+  echo "${SYSTEMD_SERVICE_FILE_MONGODB}"
+  echo
+  echo
+  echo "${MONGODB_DIR}"
+  echo "$SYSTEMD_SERVICE_FILE_MONGODB" > /lib/systemd/system/MongoDB.service
+  systemctl daemon-reload
+  sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.profile
+  sed '/^[[:space:]]*$/d' -i ~/.profile
+  echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.profile 
+  echo -ne '$PATH' >> ~/.profile
+  source ~/.profile
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating MongoDB${END_COLOR_PRINT}"
+  echo
+}
+
+function update_mongoc_driver()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Updating Mongo C Driver${END_COLOR_PRINT}"
+  rm -r ${MONGOC_DRIVER_DIR}
+  cd ${XCASH_DPOPS_INSTALLATION_DIR}
+  wget -q ${MONGOC_DRIVER_URL}
+  tar -xf mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
+  rm mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
+  cd mongo-c-driver-*
+  mkdir cmake-build >> ${LOGFILE} 2>&1
+  cd cmake-build >> ${LOGFILE} 2>&1
+  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> ${LOGFILE} 2>&1
+  make -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
+  sudo make install >> ${LOGFILE} 2>&1
+  sudo ldconfig
+  MONGOC_DRIVER_DIR=`sudo find / -type d -name "mongo-c-driver-*"`/
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating Mongo C Driver${END_COLOR_PRINT}"
+  echo
+}
+
+function update_nodejs()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Updating NodeJS${END_COLOR_PRINT}"
+  rm -r ${NODEJS_DIR}  
+  cd ${XCASH_DPOPS_INSTALLATION_DIR}
+  wget -q ${NODEJS_URL}
+  tar -xf node*.tar.xz >> ${LOGFILE} 2>&1
+  rm node*.tar.xz >> ${LOGFILE} 2>&1
+  NODEJS_DIR=`sudo find / -type d -name "node-*-linux-x64"`/
+  sed '/node-v/d' -i ~/.profile
+  sed '/^[[:space:]]*$/d' -i ~/.profile
+  echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.profile 
+  echo -ne '$PATH' >> ~/.profile
+  source ~/.profile
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating NodeJS${END_COLOR_PRINT}"
+  echo
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function uninstall_packages()
+{
+    i=0
+    while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
+        case $(($i % 4)) in
+            0 ) j="-" ;;
+            1 ) j="\\" ;;
+            2 ) j="|" ;;
+            3 ) j="/" ;;
+        esac
+        echo && echo -en "\r${COLOR_PRINT_RED}[$j] Waiting for other package manager to finish...${END_COLOR_PRINT}" 
+        sleep 0.25
+        ((i=i+1))
+    done
+    echo -ne "${COLOR_PRINT_YELLOW}Uninstalling Packages${END_COLOR_PRINT}"
+    apt --purge remove ${XCASH_DPOPS_PACKAGES} -y >> ${LOGFILE} 2>&1
+    echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling Packages${END_COLOR_PRINT}"
+    echo
+}
+
+function uninstall_systemd_service_files()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Uninstall Systemd Service Files${END_COLOR_PRINT}"
+  rm /lib/systemd/system/firewall.service /lib/systemd/system/MongoDB.service /lib/systemd/system/XCASH_Daemon.service /lib/systemd/system/XCASH_Daemon_Block_Verifier.service /lib/systemd/system/XCASH_DPOPS.service /lib/systemd/system/XCASH_Wallet.service
+  systemctl daemon-reload
+  echo -ne "\r${COLOR_PRINT_GREEN}Uninstall Systemd Service Files${END_COLOR_PRINT}"
+  echo
+}
+
+
+
+
+
+
+
+
+
+
+
+function install()
+{
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Starting Installation${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  # Create directories
+  create_directories
+
+  # Create files
+  create_files
+
+  # Update the package list
+  update_packages_list
+ 
+  # Install packages
+  install_packages
+
+  # Install X-CASH
+  install_xcash
+
+  # Install XCASH_DPOPS
+  install_xcash_dpops
+
+  # Install shared delegates website
+  if [ "$SHARED_DELEGATE" == "YES" ]; then
+    install_shared_delegates_website
+  fi
+
+  # Create or import the wallet
+  if [ "$WALLET_SETTINGS" == "YES" ]; then
+    create_xcash_wallet
+  else
+    import_xcash_wallet
+  fi
+
+  # Sync the wallet
+  sync_xcash_wallet
+
+  # Get the current xcash wallet data
+  get_current_xcash_wallet_data
+
+  # Start the systemd service files
+  start_systemd_service_files
+
+  # Display X-CASH current wallet data  
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Installation Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+  echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
+}
+
+function update()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+
+  # Get the installation directory
+  get_installation_directory
+
+  # Get the current version of the dependencies
+  get_dependencies_current_version
+
+  # Check if solo node
+  check_if_solo_node
+
+  # Stop the systemd service files
+  stop_systemd_service_files
+
+  # Update the package list
+  update_packages_list
+
+  # Update all system packages that are XCASH_DPOPS dependencies
+  update_packages
+
+  # Update all repositories
+  update_xcash
+  update_xcash_dpops
+  if [ "$SHARED_DELEGATE" == "YES" ]; then
+    update_shared_delegates_website
+  fi
+
+  # Update all dependencies
+  if [ ! "$MONGODB_CURRENT_VERSION" == "$MONGODB_LATEST_VERSION" ]; then
+    update_mongodb
+  else
+    echo -e "${COLOR_PRINT_GREEN}MongoDB is already up to date${END_COLOR_PRINT}"
+  fi
+  if [ ! "$MONGOC_DRIVER_CURRENT_VERSION" == "$MONGOC_DRIVER_LATEST_VERSION" ]; then
+    update_mongoc_driver
+  else
+    echo -e "${COLOR_PRINT_GREEN}Mongo C Driver is already up to date${END_COLOR_PRINT}"
+  fi
+  if [ "$SHARED_DELEGATE" == "YES" ]; then
+    if [ ! "$NODEJS_CURRENT_VERSION" == "$NODEJS_LATEST_VERSION" ]; then
+      update_nodejs
+    else
+      echo -e "${COLOR_PRINT_GREEN}NodeJS is already up to date${END_COLOR_PRINT}"
+    fi
+    update_npm
+  fi
+
+  # Start the systemd service files
+  start_systemd_service_files
+
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Update Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+}
+
+function uninstall()
+{
+  echo -ne "${COLOR_PRINT_RED}Please Confirm You Want To Uninstall By Typing \"Uninstall\":${END_COLOR_PRINT}"
+  read data
+  if [ ! "$data" == "Uninstall" ]; then
+    exit
+  fi
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                Uninstalling XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+
+  # Get the installation directory
+  get_installation_directory
+
+  # Restart the X-CASH Daemon and stop the X-CASH Wallet RPC
+  echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
+  systemctl restart XCASH_Daemon
+  sleep 10s
+  systemctl stop XCASH_Wallet
+  sleep 10s
+  echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
+  echo
+
+  # Get the current xcash wallet data
+  get_current_xcash_wallet_data
+
+  # Stop the systemd service files
+  stop_systemd_service_files
+
+  # Uninstall packages
+  uninstall_packages
+
+  # Uninstall Systemd Service Files
+  uninstall_systemd_service_files
+
+  # Uninstall the Mongo C Driver  
+  echo -ne "${COLOR_PRINT_YELLOW}Uninstalling Mongo C Driver${END_COLOR_PRINT}"
+  sudo /usr/local/share/mongo-c-driver/uninstall.sh  >> ${LOGFILE} 2>&1
+  sudo ldconfig
+  echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling Mongo C Driver${END_COLOR_PRINT}"
+  echo
+
+  # Uninstall the installation folder
+  echo -ne "${COLOR_PRINT_YELLOW}Uninstalling XCASH_DPOPS Installation Directory${END_COLOR_PRINT}"
+  rm -r ${XCASH_DPOPS_INSTALLATION_DIR}
+  echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling XCASH_DPOPS Installation Directory${END_COLOR_PRINT}"
+  echo
+
+  # Update profile
+  echo -ne "${COLOR_PRINT_YELLOW}Updating Profile${END_COLOR_PRINT}"
+  sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.profile
+  sed '/node-v/d' -i ~/.profile
+  sed '/^[[:space:]]*$/d' -i ~/.profile
+  source ~/.profile
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating Profile${END_COLOR_PRINT}"
+  echo
+
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Uninstall Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  
+  # Display X-CASH current wallet data  
+  echo
+  echo
+  echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
+}
+
+
+
+  
+
+
+
+
+
+
+# Check for a compatible OS
+check_ubuntu_version
+
+# Get the installation settings
+installation_settings
+
+if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
+  install
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ]; then
+  update
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ]; then
+  uninstall
+fi
