@@ -38,7 +38,7 @@ XCASH_DPOPS_DIR=""
 XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=""
 SHARED_DELEGATES_WEBSITE_URL="https://github.com/X-CASH-official/XCASH_DPOPS_shared_delegates_website.git"
 SHARED_DELEGATES_WEBSITE_DIR=""
-NODEJS_URL="https://nodejs.org/dist/v13.0.1/${NODEJS_LATEST_VERSION}.tar.xz"
+NODEJS_URL="https://nodejs.org/dist/${NODEJS_LATEST_VERSION:5:7}/${NODEJS_LATEST_VERSION}.tar.xz"
 NODEJS_DIR=""
 NODEJS_CURRENT_VERSION=""
 MONGODB_URL="http://downloads.mongodb.org/linux/${MONGODB_LATEST_VERSION}.tgz"
@@ -59,7 +59,8 @@ SYSTEMD_SERVICE_FILE_FIREWALL=""
 SYSTEMD_SERVICE_FILE_MONGODB=""
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON=""
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER=""
-SYSTEMD_SERVICE_FILE_XCASH_DPOPS=""
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE=""
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE=""
 SYSTEMD_SERVICE_FILE_XCASH_WALLET=""
 
 # System settings
@@ -378,7 +379,7 @@ Description=firewall
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-User=${USER}
+User=root
 ExecStart=${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
  
 [Install]
@@ -443,7 +444,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 )"
-SYSTEMD_SERVICE_FILE_XCASH_DPOPS="$(cat << EOF
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="$(cat << EOF
 [Unit]
 Description=XCASH DPOPS
  
@@ -453,6 +454,22 @@ LimitNOFILE=64000
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
 ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target
+EOF
+)"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="$(cat << EOF
+[Unit]
+Description=XCASH DPOPS
+ 
+[Service]
+Type=simple
+LimitNOFILE=64000
+User=${USER}
+WorkingDirectory=${XCASH_DPOPS_DIR}build
+ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --shared_delegates_website
 Restart=always
  
 [Install]
@@ -638,12 +655,12 @@ function get_current_xcash_wallet_data()
 function start_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Starting Systemd Service Files${END_COLOR_PRINT}"
-  systemctl start MongoDB >> ${LOGFILE} 2>&1
-  systemctl start XCASH_Daemon >> ${LOGFILE} 2>&1
+  sudo systemctl start MongoDB >> ${LOGFILE} 2>&1
+  sudo systemctl start XCASH_Daemon >> ${LOGFILE} 2>&1
   sleep 10s
-  systemctl start XCASH_Wallet >> ${LOGFILE} 2>&1
+  sudo systemctl start XCASH_Wallet >> ${LOGFILE} 2>&1
   sleep 10s
-  systemctl start XCASH_DPOPS >> ${LOGFILE} 2>&1
+  sudo sudo systemctl start XCASH_DPOPS >> ${LOGFILE} 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
@@ -651,7 +668,7 @@ function start_systemd_service_files()
 function stop_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Stoping Systemd Service Files${END_COLOR_PRINT}"
-  systemctl stop MongoDB XCASH_Daemon XCASH_Wallet XCASH_DPOPS >> ${LOGFILE} 2>&1
+  sudo systemctl stop MongoDB XCASH_Daemon XCASH_Wallet XCASH_DPOPS >> ${LOGFILE} 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Stoping Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
@@ -676,6 +693,43 @@ function check_if_solo_node()
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Checking If Solo Node${END_COLOR_PRINT}"
   echo
+}
+
+function check_if_upgrade_solo_delegate_and_shared_delegate()
+{
+  if [ "$SHARED_DELEGATE" == "YES" ]; then
+    echo -ne "The current delegate setting is shared delegate. If you would like to change the settings to a solo delegate type \"YES\" otherwise press enter:"
+    read data
+    echo -ne "\r"
+    echo
+    if [ "$data" == "YES" ]; then
+      SHARED_DELEGATE="NO"
+      uninstall_shared_delegates_website
+      update_systemd_service_files
+      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+      sudo systemctl daemon-reload
+      sudo sed '/node-v/d' -i ~/.profile
+      sudo sed '/PATH=\/bin:/d' -i ~/.profile
+      sudo sed '/^[[:space:]]*$/d' -i ~/.profile
+      source ~/.profile
+      get_installation_directory
+      get_dependencies_current_version
+    fi
+  else
+    echo -ne "The current delegate setting is solo delegate. If you would like to change the settings to a shared delegate type \"YES\" otherwise press enter:"
+    read data
+    echo -ne "\r"
+    echo
+    if [ "$data" == "YES" ]; then
+      SHARED_DELEGATE="YES"
+      install_shared_delegates_website
+      update_systemd_service_files
+      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+      sudo systemctl daemon-reload
+      get_installation_directory
+      get_dependencies_current_version
+    fi
+  fi
 }
 
 function check_ubuntu_version()
@@ -718,7 +772,7 @@ function update_packages_list()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Updating Packages List${END_COLOR_PRINT}"
-    apt update -y >> ${LOGFILE} 2>&1
+    sudo apt update -y >> ${LOGFILE} 2>&1
     echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages List${END_COLOR_PRINT}"
     echo
 }
@@ -738,7 +792,7 @@ function install_packages()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
-    apt install ${XCASH_DPOPS_PACKAGES} -y >> ${LOGFILE} 2>&1
+    sudo apt install ${XCASH_DPOPS_PACKAGES} -y >> ${LOGFILE} 2>&1
     build_libgtest
     echo -ne "\r${COLOR_PRINT_GREEN}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
     echo
@@ -813,7 +867,7 @@ function create_directories()
     mkdir -p ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   fi 
   if [ ! -d "$MONGODB_INSTALLATION_DIR" ]; then
-    mkdir -p ${MONGODB_INSTALLATION_DIR}
+    sudo mkdir -p ${MONGODB_INSTALLATION_DIR}
     sudo chmod 770 ${MONGODB_INSTALLATION_DIR}
     sudo chown $USER ${MONGODB_INSTALLATION_DIR}
   fi 
@@ -838,13 +892,17 @@ function create_files()
 function create_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Systemd Service Files${END_COLOR_PRINT}"
-  echo "$SYSTEMD_SERVICE_FILE_FIREWALL" > /lib/systemd/system/firewall.service
-  echo "$SYSTEMD_SERVICE_FILE_MONGODB" > /lib/systemd/system/MongoDB.service
-  echo "$SYSTEMD_SERVICE_FILE_XCASH_DAEMON" > /lib/systemd/system/XCASH_Daemon.service
-  echo "$SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER" > /lib/systemd/system/XCASH_Daemon_Block_Verifier.service
-  echo "$SYSTEMD_SERVICE_FILE_XCASH_DPOPS" > /lib/systemd/system/XCASH_DPOPS.service
-  echo "$SYSTEMD_SERVICE_FILE_XCASH_WALLET" > /lib/systemd/system/XCASH_Wallet.service
-  systemctl daemon-reload
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/XCASH_Daemon.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER}' > /lib/systemd/system/XCASH_Daemon_Block_Verifier.service"
+  if [ ! "$SHARED_DELEGATE" == "YES" ]; then
+    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+  else
+    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+  fi
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET}' > /lib/systemd/system/XCASH_Wallet.service"
+  sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
@@ -855,9 +913,9 @@ function install_mongodb()
   cd ${XCASH_DPOPS_INSTALLATION_DIR}
   wget -q ${MONGODB_URL}
   tar -xf mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
-  rm mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
-  echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.profile 
-  echo -ne '$PATH' >> ~/.profile
+  sudo rm mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
+  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.profile 
+  sudo echo -ne '$PATH' >> ~/.profile
   source ~/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Installing MongoDB${END_COLOR_PRINT}"
   echo
@@ -869,12 +927,12 @@ function install_mongoc_driver()
   cd ${XCASH_DPOPS_INSTALLATION_DIR}
   wget -q ${MONGOC_DRIVER_URL}
   tar -xf mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
-  rm mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
+  sudo rm mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
   cd mongo-c-driver-*
   mkdir cmake-build >> ${LOGFILE} 2>&1
   cd cmake-build >> ${LOGFILE} 2>&1
-  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> ${LOGFILE} 2>&1
-  make -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
+  sudo cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> ${LOGFILE} 2>&1
+  sudo make -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
   sudo make install >> ${LOGFILE} 2>&1
   sudo ldconfig
   echo -ne "\r${COLOR_PRINT_GREEN}Installing MongoC Driver${END_COLOR_PRINT}"
@@ -906,16 +964,16 @@ function build_xcash_dpops()
 function install_firewall()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
-  rm ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
+  sudo rm ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
   if [ "$SHARED_DELEGATE" == "YES" ]; then
     echo "$FIREWALL_SHARED_DELEGATES" > ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
   else
     echo "$FIREWALL" > ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
   fi
-  chmod +x ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
+  sudo chmod +x ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
   sudo ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
-  systemctl enable firewall >> ${LOGFILE} 2>&1
-  systemctl start firewall >> ${LOGFILE} 2>&1
+  sudo systemctl enable firewall >> ${LOGFILE} 2>&1
+  sudo systemctl start firewall >> ${LOGFILE} 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
   echo
 }
@@ -990,9 +1048,9 @@ function install_nodejs()
   cd ${XCASH_DPOPS_INSTALLATION_DIR}
   wget -q ${NODEJS_URL}
   tar -xf node*.tar.xz >> ${LOGFILE} 2>&1
-  rm node*.tar.xz >> ${LOGFILE} 2>&1
-  echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.profile 
-  echo -ne '$PATH' >> ~/.profile
+  sudo rm node*.tar.xz >> ${LOGFILE} 2>&1
+  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.profile 
+  sudo echo -ne '$PATH' >> ~/.profile
   source ~/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Installing Node.js${END_COLOR_PRINT}"
   echo
@@ -1051,7 +1109,7 @@ function build_shared_delegates_website()
   cd dist
   for f in *.js; do uglifyjs $f --compress --mangle --output "{$f}min"; rm $f; mv "{$f}min" $f; done
   if [ -d "$XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR" ]; then
-    rm -r ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}
+    sudo rm -r ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}
   fi 
   cd ../
   cp -a dist ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR} 
@@ -1071,6 +1129,7 @@ function install_shared_delegates_website()
   download_shared_delegate_website
   install_shared_delegates_website_npm_packages
   build_shared_delegates_website
+  source ~/.profile
   echo
   echo
 }
@@ -1129,7 +1188,7 @@ function update_packages()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Updating Packages${END_COLOR_PRINT}"
-    apt install --only-upgrade ${XCASH_DPOPS_PACKAGES} -y >> ${LOGFILE} 2>&1
+    sudo apt install --only-upgrade ${XCASH_DPOPS_PACKAGES} -y >> ${LOGFILE} 2>&1
     echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages${END_COLOR_PRINT}"
     echo
 }
@@ -1177,10 +1236,10 @@ function update_shared_delegates_website()
     cd dist
     for f in *.js; do uglifyjs $f --compress --mangle --output "{$f}min"; rm $f; mv "{$f}min" $f; done
     if [ -d "$XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR" ]; then
-      rm -r ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}
+      sudo rm -r ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}
     fi 
     cd ../
-    cp -a dist ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}
+    cp -a dist ${XCASH_DPOPS_INSTALLATION_DIR}shared_delegates_website
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegates Website${END_COLOR_PRINT}"
   echo
@@ -1189,23 +1248,23 @@ function update_shared_delegates_website()
 function update_mongodb()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating MongoDB${END_COLOR_PRINT}"
-  rm -r ${MONGODB_DIR}  
+  sudo rm -r ${MONGODB_DIR}  
   cd ${XCASH_DPOPS_INSTALLATION_DIR}
   wget -q ${MONGODB_URL}
   tar -xf mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
-  rm mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
+  sudo rm mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
   MONGODB_DIR=`sudo find / -type d -name "mongodb-linux-x86_64-ubuntu1804-*"`/
   update_systemd_service_files
   echo "${SYSTEMD_SERVICE_FILE_MONGODB}"
   echo
   echo
   echo "${MONGODB_DIR}"
-  echo "$SYSTEMD_SERVICE_FILE_MONGODB" > /lib/systemd/system/MongoDB.service
-  systemctl daemon-reload
-  sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.profile
-  sed '/^[[:space:]]*$/d' -i ~/.profile
-  echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.profile 
-  echo -ne '$PATH' >> ~/.profile
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
+  sudo systemctl daemon-reload
+  sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.profile
+  sudo sed '/^[[:space:]]*$/d' -i ~/.profile
+  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.profile 
+  sudo echo -ne '$PATH' >> ~/.profile
   source ~/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating MongoDB${END_COLOR_PRINT}"
   echo
@@ -1214,16 +1273,16 @@ function update_mongodb()
 function update_mongoc_driver()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating Mongo C Driver${END_COLOR_PRINT}"
-  rm -r ${MONGOC_DRIVER_DIR}
+  sudo rm -r ${MONGOC_DRIVER_DIR}
   cd ${XCASH_DPOPS_INSTALLATION_DIR}
   wget -q ${MONGOC_DRIVER_URL}
   tar -xf mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
-  rm mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
+  sudo rm mongo-c-driver-*.tar.gz >> ${LOGFILE} 2>&1
   cd mongo-c-driver-*
   mkdir cmake-build >> ${LOGFILE} 2>&1
   cd cmake-build >> ${LOGFILE} 2>&1
-  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> ${LOGFILE} 2>&1
-  make -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
+  csudo make -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> ${LOGFILE} 2>&1
+  sudo make -j ${CPU_THREADS} >> ${LOGFILE} 2>&1
   sudo make install >> ${LOGFILE} 2>&1
   sudo ldconfig
   MONGOC_DRIVER_DIR=`sudo find / -type d -name "mongo-c-driver-*"`/
@@ -1234,16 +1293,17 @@ function update_mongoc_driver()
 function update_nodejs()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating NodeJS${END_COLOR_PRINT}"
-  rm -r ${NODEJS_DIR}  
+  sudo rm -r ${NODEJS_DIR}  
   cd ${XCASH_DPOPS_INSTALLATION_DIR}
   wget -q ${NODEJS_URL}
   tar -xf node*.tar.xz >> ${LOGFILE} 2>&1
-  rm node*.tar.xz >> ${LOGFILE} 2>&1
+  sudo rm node*.tar.xz >> ${LOGFILE} 2>&1
   NODEJS_DIR=`sudo find / -type d -name "node-*-linux-x64"`/
-  sed '/node-v/d' -i ~/.profile
-  sed '/^[[:space:]]*$/d' -i ~/.profile
-  echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.profile 
-  echo -ne '$PATH' >> ~/.profile
+  sudo sed '/node-v/d' -i ~/.profile
+  sudo sed '/PATH=\/bin:/d' -i ~/.profile
+  sudo sed '/^[[:space:]]*$/d' -i ~/.profile
+  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.profile 
+  sudo echo -ne '$PATH' >> ~/.profile
   source ~/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NodeJS${END_COLOR_PRINT}"
   echo
@@ -1284,7 +1344,7 @@ function uninstall_packages()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Uninstalling Packages${END_COLOR_PRINT}"
-    apt --purge remove ${XCASH_DPOPS_PACKAGES} -y >> ${LOGFILE} 2>&1
+    sudo apt --purge remove ${XCASH_DPOPS_PACKAGES} -y >> ${LOGFILE} 2>&1
     echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling Packages${END_COLOR_PRINT}"
     echo
 }
@@ -1292,9 +1352,27 @@ function uninstall_packages()
 function uninstall_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Uninstall Systemd Service Files${END_COLOR_PRINT}"
-  rm /lib/systemd/system/firewall.service /lib/systemd/system/MongoDB.service /lib/systemd/system/XCASH_Daemon.service /lib/systemd/system/XCASH_Daemon_Block_Verifier.service /lib/systemd/system/XCASH_DPOPS.service /lib/systemd/system/XCASH_Wallet.service
-  systemctl daemon-reload
+  sudo rm /lib/systemd/system/firewall.service /lib/systemd/system/MongoDB.service /lib/systemd/system/XCASH_Daemon.service /lib/systemd/system/XCASH_Daemon_Block_Verifier.service /lib/systemd/system/XCASH_DPOPS.service /lib/systemd/system/XCASH_Wallet.service
+  sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstall Systemd Service Files${END_COLOR_PRINT}"
+  echo
+}
+
+function uninstall_shared_delegates_website()
+{
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}            Uninstalling Shared Delegate Website${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  sudo rm -r ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR} ${SHARED_DELEGATES_WEBSITE_DIR} ${NODEJS_DIR} >> ${LOGFILE} 2>&1
+
+  sudo sed '/node-v/d' -i ~/.profile
+  sudo sed '/PATH=\/bin:/d' -i ~/.profile
+  sudo sed '/^[[:space:]]*$/d' -i ~/.profile
+  source ~/.profile
+  echo
   echo
 }
 
@@ -1385,6 +1463,9 @@ function update()
   # Stop the systemd service files
   stop_systemd_service_files
 
+  # Check if upgrade from a solo delegate to a shared delegate or a shared delegate to a solo delegate
+  check_if_upgrade_solo_delegate_and_shared_delegate
+
   # Update the package list
   update_packages_list
 
@@ -1402,18 +1483,18 @@ function update()
   if [ ! "$MONGODB_CURRENT_VERSION" == "$MONGODB_LATEST_VERSION" ]; then
     update_mongodb
   else
-    echo -e "${COLOR_PRINT_GREEN}MongoDB is already up to date${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}MongoDB Is Already Up To Date${END_COLOR_PRINT}"
   fi
   if [ ! "$MONGOC_DRIVER_CURRENT_VERSION" == "$MONGOC_DRIVER_LATEST_VERSION" ]; then
     update_mongoc_driver
   else
-    echo -e "${COLOR_PRINT_GREEN}Mongo C Driver is already up to date${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}Mongo C Driver Is Already Up To Date${END_COLOR_PRINT}"
   fi
   if [ "$SHARED_DELEGATE" == "YES" ]; then
     if [ ! "$NODEJS_CURRENT_VERSION" == "$NODEJS_LATEST_VERSION" ]; then
       update_nodejs
     else
-      echo -e "${COLOR_PRINT_GREEN}NodeJS is already up to date${END_COLOR_PRINT}"
+      echo -e "${COLOR_PRINT_GREEN}NodeJS Is Already Up To Date${END_COLOR_PRINT}"
     fi
     update_npm
   fi
@@ -1446,9 +1527,9 @@ function uninstall()
 
   # Restart the X-CASH Daemon and stop the X-CASH Wallet RPC
   echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
-  systemctl restart XCASH_Daemon
+  sudo systemctl restart XCASH_Daemon
   sleep 10s
-  systemctl stop XCASH_Wallet
+  sudo systemctl stop XCASH_Wallet
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   echo
@@ -1474,15 +1555,16 @@ function uninstall()
 
   # Uninstall the installation folder
   echo -ne "${COLOR_PRINT_YELLOW}Uninstalling XCASH_DPOPS Installation Directory${END_COLOR_PRINT}"
-  rm -r ${XCASH_DPOPS_INSTALLATION_DIR}
+  sudo rm -r ${XCASH_DPOPS_INSTALLATION_DIR}
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling XCASH_DPOPS Installation Directory${END_COLOR_PRINT}"
   echo
 
   # Update profile
   echo -ne "${COLOR_PRINT_YELLOW}Updating Profile${END_COLOR_PRINT}"
-  sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.profile
-  sed '/node-v/d' -i ~/.profile
-  sed '/^[[:space:]]*$/d' -i ~/.profile
+  sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.profile
+  sudo sed '/node-v/d' -i ~/.profile
+  sudo sed '/PATH=\/bin:/d' -i ~/.profile
+  sudo sed '/^[[:space:]]*$/d' -i ~/.profile
   source ~/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Profile${END_COLOR_PRINT}"
   echo
