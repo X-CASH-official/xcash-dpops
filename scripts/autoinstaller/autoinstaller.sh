@@ -1087,7 +1087,7 @@ function configure_npm()
 function update_npm()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating NPM${END_COLOR_PRINT}"
-  npm install -g npm >> ${LOGFILE} 2>&1
+  sudo npm install -g npm >> ${LOGFILE} 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NPM${END_COLOR_PRINT}"
   echo
 }
@@ -1095,7 +1095,7 @@ function update_npm()
 function install_npm_global_packages()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing Global NPM Packages${END_COLOR_PRINT}"
-  npm install -g @angular/cli@latest uglify-js >> ${LOGFILE} 2>&1
+  sudo npm install -g @angular/cli@latest uglify-js >> ${LOGFILE} 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Installing Global NPM Packages${END_COLOR_PRINT}"
   echo
 }
