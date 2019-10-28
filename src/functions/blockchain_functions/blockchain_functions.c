@@ -1582,7 +1582,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
 
   // blockchain_reserve_bytes
   // block_producer_delegates_name
-  if (blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data_length < 10 || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data_length > 40)
+  if (blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data_length < MINIMUM_BUFFER_SIZE_DELEGATES_NAME*2 || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data_length > MAXIMUM_BUFFER_SIZE_DELEGATES_NAME*2)
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_producer_delegates_name");
   }
@@ -1600,7 +1600,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // block_producer_backup_nodes_names
-  if (blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data_length < 58 || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data_length > 208 || string_count(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data,"2c") != 4)
+  if (blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data_length < MINIMUM_BUFFER_SIZE_DELEGATES_BACKUP_NAMES*2 || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data_length > MAXIMUM_BUFFER_SIZE_DELEGATES_BACKUP_NAMES*2 || string_count(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data,"2c") != 4)
   {  
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_producer_backup_nodes_names");
   }
