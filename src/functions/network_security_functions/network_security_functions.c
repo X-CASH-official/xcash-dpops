@@ -95,20 +95,18 @@ int sign_data(char *message, const int HTTP_SETTINGS)
 
   pthread_rwlock_rdlock(&rwlock);
   // create the message
-  size_t message_length = strlen(message)-1;
-  const size_t previous_block_hash_LENGTH = strnlen(previous_block_hash,BUFFER_SIZE);
-  memcpy(result,message,message_length);
-  memcpy(result+message_length," \"public_address\": \"",20);
-  memcpy(result+message_length+20,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(result+message_length+20+XCASH_WALLET_LENGTH,"\",\r\n \"previous_block_hash\": \"",29);
-  memcpy(result+message_length+49+XCASH_WALLET_LENGTH,previous_block_hash,previous_block_hash_LENGTH);  
-  memcpy(result+message_length+49+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,"\",\r\n \"current_round_part\": \"",28);
-  memcpy(result+message_length+77+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,current_round_part,1);
-  memcpy(result+message_length+78+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,"\",\r\n \"current_round_part_backup_node\": \"",40);
-  memcpy(result+message_length+118+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,current_round_part_backup_node,1);
-  memcpy(result+message_length+119+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,"\",\r\n \"data\": \"",14);
-  memcpy(result+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH,random_data,RANDOM_STRING_LENGTH);
-  memcpy(result+message_length+133+XCASH_WALLET_LENGTH+previous_block_hash_LENGTH+RANDOM_STRING_LENGTH,"\",\r\n}",5);
+  memcpy(result,message,strlen(message)-1);
+  memcpy(result+strlen(result),"\"public_address\": \"",19);
+  memcpy(result+strlen(result),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(result+strlen(result),"\",\r\n \"previous_block_hash\": \"",29);
+  memcpy(result+strlen(result),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
+  memcpy(result+strlen(result),"\",\r\n \"current_round_part\": \"",28);
+  memcpy(result+strlen(result),current_round_part,1);
+  memcpy(result+strlen(result),"\",\r\n \"current_round_part_backup_node\": \"",40);
+  memcpy(result+strlen(result),current_round_part_backup_node,1);
+  memcpy(result+strlen(result),"\",\r\n \"data\": \"",14);
+  memcpy(result+strlen(result),random_data,RANDOM_STRING_LENGTH);
+  memcpy(result+strlen(result),"\",\r\n}",5);
   pthread_rwlock_unlock(&rwlock);
 
   // format the message
@@ -118,11 +116,10 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   }
 
   // sign_data
-  const size_t RESULT_LENGTH = strlen(result);
   memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
-  memcpy(string+60,result,RESULT_LENGTH);
-  memcpy(string+60+RESULT_LENGTH,"\"}}",3);
-  memset(result,0,RESULT_LENGTH);
+  memcpy(string+60,result,strnlen(result,MAXIMUM_BUFFER_SIZE));
+  memcpy(string+strlen(string),"\"}}",3);
+  memset(result,0,strlen(result));
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
   {  
@@ -142,10 +139,10 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   
   pthread_rwlock_rdlock(&rwlock);
   // create the message  
-  memcpy(message+strlen(message)-1," \"public_address\": \"",20);
+  memcpy(message+strlen(message)-1,"\"public_address\": \"",19);
   memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
-  memcpy(message+strlen(message),previous_block_hash,previous_block_hash_LENGTH);  
+  memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
   memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
   memcpy(message+strlen(message),current_round_part,1);
   memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);

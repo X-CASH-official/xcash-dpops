@@ -512,7 +512,7 @@ int sync_check_reserve_proofs_database(int settings)
       }
     }
   }
-  if (settings == 2)
+  else if (settings == 2)
   {
     fprintf(stderr,"Syncing from a random network data node\n");
     if (sync_reserve_proofs_database(settings) == 0)
@@ -546,7 +546,7 @@ int sync_reserve_proofs_database(int settings)
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -555,13 +555,19 @@ int sync_reserve_proofs_database(int settings)
   size_t count2;
   
   // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data3); \
+  data3 = NULL; \
+
   #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message,settings) \
   if (settings == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
     error_message.total++; \
-    pointer_reset(data); \
+    pointer_reset_all; \
     return 0; \
   } \
   else \
@@ -574,10 +580,17 @@ int sync_reserve_proofs_database(int settings)
     goto start; \
   } 
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
+   // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data3 == NULL)
   {
-    pointer_reset(data);
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }  
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }  
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -589,15 +602,13 @@ int sync_reserve_proofs_database(int settings)
 
   memset(data,0,strlen(data));
   memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
+  memset(data3,0,strlen(data3));
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
     */
-
-    memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
     
     if (settings == 1)
     {
@@ -633,7 +644,7 @@ int sync_reserve_proofs_database(int settings)
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memcpy(data3+strlen(data3),"\"reserve_proofs_data_hash_",26);
-    snprintf(data3+strlen(data3),sizeof(data3)-1,"%zu",count);
+    snprintf(data3+strlen(data3),MAXIMUM_BUFFER_SIZE-1,"%zu",count);
     memcpy(data3+strlen(data3),"\": \"",4);
     // get the database data hash for the reserve proofs database
     memset(data,0,strlen(data));
@@ -679,7 +690,7 @@ int sync_reserve_proofs_database(int settings)
     // parse the database_data
     memset(data,0,strlen(data));
     memset(data2,0,sizeof(data2));
-    memset(data3,0,sizeof(data3));
+    memset(data3,0,strlen(data3));
     memcpy(data2,"reserve_proofs_database_",24);
     snprintf(data2+24,sizeof(data2)-25,"%zu",count2);
 
@@ -722,8 +733,8 @@ int sync_reserve_proofs_database(int settings)
       }
 
       // parse the message
-      memset(data3,0,sizeof(data3));
-      if (parse_json_data(data,"reserve_proofs_database",data3,sizeof(data3)) == 0 || memcmp(data3,"",1) == 0)
+      memset(data3,0,strlen(data3));
+      if (parse_json_data(data,"reserve_proofs_database",data3,MAXIMUM_BUFFER_SIZE) == 0 || memcmp(data3,"",1) == 0)
       {
         SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
       }
@@ -757,9 +768,10 @@ int sync_reserve_proofs_database(int settings)
     }
   }
 
-  pointer_reset(data);
+  pointer_reset_all;
   return 1;
-  
+
+  #undef pointer_reset_all  
   #undef SYNC_RESERVE_PROOFS_DATABASE_ERROR   
 }
 
@@ -903,7 +915,7 @@ int sync_check_reserve_bytes_database(int settings)
       }
     }
   }
-  if (settings == 2)
+  else if (settings == 2)
   {
     fprintf(stderr,"Syncing from a random network data node\n");
     if (sync_reserve_bytes_database(settings) == 0)
@@ -994,14 +1006,13 @@ int sync_reserve_bytes_database(int settings)
 
   memset(data,0,strlen(data));
   memset(data2,0,sizeof(data2));
+  memset(data3,0,strlen(data3));
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
     */
-
-    memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
     
     if (settings == 1)
     {
@@ -1287,7 +1298,7 @@ int sync_check_delegates_database(int settings)
       }
     }
   }
-  if (settings == 2)
+  else if (settings == 2)
   {
     fprintf(stderr,"Syncing from a random network data node\n");
     if (sync_delegates_database(settings) == 0)
@@ -1322,7 +1333,6 @@ int sync_delegates_database(int settings)
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -1365,15 +1375,12 @@ int sync_delegates_database(int settings)
 
   memset(data,0,strlen(data));
   memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
     */
-
-    memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
     
     if (settings == 1)
     {
@@ -1562,7 +1569,7 @@ int sync_check_statistics_database(int settings)
       }
     }
   }
-  if (settings == 2)
+  else if (settings == 2)
   {
     fprintf(stderr,"Syncing from a random network data node\n");
     if (sync_statistics_database(settings) == 0)
@@ -1597,7 +1604,6 @@ int sync_statistics_database(int settings)
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -1640,15 +1646,12 @@ int sync_statistics_database(int settings)
 
   memset(data,0,strlen(data));
   memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
     */
-
-    memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
     
     if (settings == 1)
     {
