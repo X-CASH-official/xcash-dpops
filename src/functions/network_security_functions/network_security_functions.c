@@ -383,7 +383,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     }
     if (settings == 0)
     {
-      VERIFY_DATA_ERROR("Invalid message1");
+      VERIFY_DATA_ERROR("Invalid message");
     }
     memset(data,0,sizeof(data));
   }
@@ -427,7 +427,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       memcpy(result+message_length,"}",1);  
       if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
       {
-        VERIFY_DATA_ERROR("Invalid message2");
+        VERIFY_DATA_ERROR("Invalid message");
       }   
     }
   }
@@ -438,7 +438,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     memcpy(result+message_length,"}",1);
     if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
     {
-      VERIFY_DATA_ERROR("Invalid message3");
+      VERIFY_DATA_ERROR("Invalid message");
     } 
   } 
     
@@ -467,7 +467,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   // check if the returned data is valid
   if (strncmp(data,"true",BUFFER_SIZE) != 0)
   {
-     VERIFY_DATA_ERROR("Invalid message4");
+     VERIFY_DATA_ERROR("Invalid message");
   }
  
   pointer_reset_all;
