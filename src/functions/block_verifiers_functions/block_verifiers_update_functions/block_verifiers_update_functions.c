@@ -754,9 +754,9 @@ int get_delegates_online_status(void)
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
-  struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES];
+  struct delegates_online_status* delegates_online_status = calloc(MAXIMUM_AMOUNT_OF_DELEGATES, sizeof(struct delegates_online_status));
   int epoll_fd;
-  struct epoll_event events[MAXIMUM_AMOUNT_OF_DELEGATES];
+  struct epoll_event* events = calloc(MAXIMUM_AMOUNT_OF_DELEGATES, sizeof(struct epoll_event));
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
   int count;
@@ -773,6 +773,8 @@ int get_delegates_online_status(void)
   error_message.total++; \
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   POINTER_RESET_DELEGATES_ONLINE_STATUS_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
+  pointer_reset(delegates_online_status); \
+  pointer_reset(events); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -933,6 +935,8 @@ int get_delegates_online_status(void)
   }
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   POINTER_RESET_DELEGATES_ONLINE_STATUS_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+  pointer_reset(delegates_online_status);
+  pointer_reset(events);
   return total_delegates_online;
 
   #undef DATABASE_COLLECTION

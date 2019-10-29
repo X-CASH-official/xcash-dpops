@@ -513,7 +513,7 @@ void* socket_receive_data_thread(void* parameters)
   const int CONNECTIONS_PER_THREAD = MAXIMUM_CONNECTIONS / total_threads;
   
   // Variables
-  struct epoll_event events[CONNECTIONS_PER_THREAD];
+  struct epoll_event* events = calloc(CONNECTIONS_PER_THREAD,sizeof(struct epoll_event));
   int count;
   int count2;
 
@@ -558,6 +558,7 @@ void* socket_receive_data_thread(void* parameters)
      }
    } 
 }
+pointer_reset(events);
 pthread_exit((void *)(intptr_t)1);
 }
 

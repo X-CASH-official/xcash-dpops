@@ -1885,7 +1885,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
   int epoll_fd;
-  struct epoll_event events[BLOCK_VERIFIERS_AMOUNT];
+  struct epoll_event* events = calloc(BLOCK_VERIFIERS_AMOUNT,sizeof(struct epoll_event));
   struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
@@ -2085,6 +2085,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     epoll_ctl(epoll_fd, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
     close(block_verifiers_send_data_socket[count].socket);
   }
+  pointer_reset(events);
   return 1;
   
   #undef BLOCK_VERIFIERS_SEND_DATA_SOCKET
