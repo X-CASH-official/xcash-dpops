@@ -836,7 +836,7 @@ function download_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Downloading X-CASH${END_COLOR_PRINT}"
   cd ${XCASH_DPOPS_INSTALLATION_DIR}
-  git clone ${XCASH_URL} >> ${LOGFILE} 2>&1
+  git clone ${XCASH_URL} --branch xcash_proof_of_stake >> ${LOGFILE} 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Downloading X-CASH${END_COLOR_PRINT}"
   echo
 }
