@@ -609,7 +609,7 @@ Return: 0 if the string is not valid, 1 if the string is valid
 
 int check_for_invalid_strings(const char* MESSAGE)
 {
-  if (strstr(MESSAGE,"\"" == NULL) && strstr(MESSAGE,"," == NULL) && strstr(MESSAGE,":" == NULL))
+  if (strstr(MESSAGE,"\"") == NULL && strstr(MESSAGE,",") == NULL && strstr(MESSAGE,":") == NULL)
   {
     return 1;
   }
