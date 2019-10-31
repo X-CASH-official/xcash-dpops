@@ -74,6 +74,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   int settings = 0;
 
   // define macros
+  #define FIELD_NAME_AMOUNT 5
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_add_reserve_proof",68); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -101,13 +102,13 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != FIELD_NAME_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not verify the message");
   }
 
   // parse the message
-  for (count = 0, count2 = 0; count < 5; count++)
+  for (count = 0, count2 = 0; count < FIELD_NAME_AMOUNT; count++)
   {
     if (count == 1)
     {
@@ -301,6 +302,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   send_data(CLIENT_SOCKET,(unsigned char*)"The vote was successfully added to the database}",0,0,"");
   return 1;
   
+  #undef FIELD_NAME_AMOUNT
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR
 }
 
@@ -329,7 +331,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-
+  #define FIELD_NAME_AMOUNT 5
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_register_delegates",70); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -349,13 +351,13 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != FIELD_NAME_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not verify the message");
   }
 
   // parse the message
-  for (count = 0, count2 = 0; count < 5; count++)
+  for (count = 0, count2 = 0; count < FIELD_NAME_AMOUNT; count++)
   {
     if (count == 1)
     {
@@ -426,6 +428,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   return 1;
 
   #undef DATABASE_COLLECTION
+  #undef FIELD_NAME_AMOUNT
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR
 }
 
@@ -452,6 +455,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
+  #define FIELD_NAME_AMOUNT 3
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_remove_delegates",68); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -463,13 +467,13 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   memset(delegate_public_address,0,sizeof(delegate_public_address));
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != FIELD_NAME_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not verify the message");
   }
 
   // parse the message
-  for (count = 0, count2 = 0; count < 3; count++)
+  for (count = 0, count2 = 0; count < FIELD_NAME_AMOUNT; count++)
   {
     if (count == 1)
     {
@@ -511,6 +515,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   return 1;
 
   #undef DATABASE_COLLECTION
+  #undef FIELD_NAME_AMOUNT
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR
 }
 
@@ -540,6 +545,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
+  #define FIELD_NAME_AMOUNT 5
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_update_delegates",68); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -554,13 +560,13 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   memset(value,0,sizeof(value));
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
+  if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != FIELD_NAME_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not verify the message");
   }
 
   // parse the message
-  for (count = 0, count2 = 0; count < 5; count++)
+  for (count = 0, count2 = 0; count < FIELD_NAME_AMOUNT; count++)
   {
     if (count == 1)
     {
@@ -623,5 +629,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   return 1;
 
   #undef DATABASE_COLLECTION
+  #undef FIELD_NAME_AMOUNT
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR
 }

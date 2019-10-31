@@ -599,6 +599,27 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_for_invalid_strings
+Description: Checks for invalid strings
+Parameters:
+  MESSAGE - The message
+Return: 0 if the string is not valid, 1 if the string is valid
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_for_invalid_strings(const char* MESSAGE)
+{
+  if (strstr(MESSAGE,"\"" == NULL) && strstr(MESSAGE,"," == NULL) && strstr(MESSAGE,":" == NULL))
+  {
+    return 1;
+  }
+  return 0;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: parse_reserve_bytes_data
 Description: Parses the reserve bytes data to read any item in the reserve bytes
 Parameters:
