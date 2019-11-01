@@ -63,7 +63,7 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
     memcpy(error_message.function[error_message.total],"update_document_from_collection",31);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
+    print_error_message(date_and_time,UTC_date_and_time,buffer);  
     exit(0);
   } 
 
@@ -162,7 +162,7 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
     memcpy(error_message.function[error_message.total],"update_all_documents_from_collection",36);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
+    print_error_message(date_and_time,UTC_date_and_time,buffer);  
     exit(0);
   } 
 

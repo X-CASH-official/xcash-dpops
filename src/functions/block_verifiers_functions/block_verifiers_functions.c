@@ -1497,7 +1497,7 @@ int block_verifiers_create_block_and_update_database(void)
   // wait for the block verifiers to process the votes
   color_print("Waiting for the block producer to submit the block to the network","blue");
   fprintf(stderr,"\n");
-  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+  sync_block_verifiers_minutes_and_seconds(date_and_time,UTC_date_and_time,4,50);
 
   // have the block producer submit the block to the network
   if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
@@ -1884,7 +1884,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   char data3[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm* current_UTC_date_and_time;
-  int epoll_fd;
+  int epoll_fd_copy;
   struct epoll_event events[BLOCK_VERIFIERS_AMOUNT];
   struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
   struct addrinfo serv_addr;
@@ -1915,8 +1915,8 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   total = strnlen(data,BUFFER_SIZE);
   
   // create the epoll file descriptor
-  epoll_fd = epoll_create1(0);
-  if (epoll_fd < 0)
+  epoll_fd_copy = epoll_create1(0);
+  if (epoll_fd_copy < 0)
   {
     BLOCK_VERIFIERS_SEND_DATA_SOCKET("Error creating the epoll file descriptor");
   }
@@ -1999,7 +1999,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       events[count].data.fd = block_verifiers_send_data_socket[count].socket;
 
       // add the delegates socket to the epoll file descriptor
-      epoll_ctl(epoll_fd, EPOLL_CTL_ADD, block_verifiers_send_data_socket[count].socket, &events[count]);
+      epoll_ctl(epoll_fd_copy, EPOLL_CTL_ADD, block_verifiers_send_data_socket[count].socket, &events[count]);
 
       // connect to the delegate
       connect(block_verifiers_send_data_socket[count].socket,settings->ai_addr, settings->ai_addrlen);
@@ -2010,7 +2010,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   sleep(TOTAL_CONNECTION_TIME_SETTINGS);
 
   // get the total amount of sockets that are ready
-  number = epoll_wait(epoll_fd, events, BLOCK_VERIFIERS_AMOUNT, 1);
+  number = epoll_wait(epoll_fd_copy, events, BLOCK_VERIFIERS_AMOUNT, 1);
 
   for (count = 0; count < number; count++)
   {
@@ -2082,7 +2082,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
+    epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
     close(block_verifiers_send_data_socket[count].socket);
   }
   return 1;

@@ -279,8 +279,6 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
   int count;
   long long int number;
   long long int total_votes;

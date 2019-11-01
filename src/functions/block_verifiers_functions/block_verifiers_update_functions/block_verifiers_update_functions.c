@@ -57,8 +57,6 @@ int update_block_verifiers_list(void)
 {
   // Variables 
   char data[1024];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   size_t count;
   size_t count2;
@@ -482,7 +480,7 @@ int add_round_statistics(void)
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
 
-    if (total2 != 0)
+    if ((int)total2 != 0)
     {
       if (total3 / total2 > total)
       {
@@ -751,11 +749,9 @@ int get_delegates_online_status(void)
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES];
-  int epoll_fd;
+  int epoll_fd_copy;
   struct epoll_event events[MAXIMUM_AMOUNT_OF_DELEGATES];
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
@@ -788,8 +784,8 @@ int get_delegates_online_status(void)
   total_delegates = organize_delegates(delegates);
   
   // create the epoll file descriptor
-  epoll_fd = epoll_create1(0);
-  if (epoll_fd < 0)
+  epoll_fd_copy = epoll_create1(0);
+  if (epoll_fd_copy < 0)
   {
     GET_DELEGATES_ONLINE_STATUS_ERROR("Error creating the epoll file descriptor");
   }
@@ -865,7 +861,7 @@ int get_delegates_online_status(void)
     events[count].data.fd = delegates_online_status[count].socket;
 
     // add the delegates socket to the epoll file descriptor
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, delegates_online_status[count].socket, &events[count]);
+    epoll_ctl(epoll_fd_copy, EPOLL_CTL_ADD, delegates_online_status[count].socket, &events[count]);
 
     // connect to the delegate
     connect(delegates_online_status[count].socket,settings->ai_addr, settings->ai_addrlen);
@@ -874,7 +870,7 @@ int get_delegates_online_status(void)
   sleep(TOTAL_CONNECTION_TIME_SETTINGS+1);
 
   // get the total amount of sockets that are ready
-  number = epoll_wait(epoll_fd, events, MAXIMUM_AMOUNT_OF_DELEGATES, 1);
+  number = epoll_wait(epoll_fd_copy, events, MAXIMUM_AMOUNT_OF_DELEGATES, 1);
 
   for (count = 0; count < number; count++)
   {
@@ -928,7 +924,7 @@ int get_delegates_online_status(void)
   // remove the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
-    epoll_ctl(epoll_fd, EPOLL_CTL_DEL, delegates_online_status[count].socket, &events[count]);
+    epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, delegates_online_status[count].socket, &events[count]);
     close(delegates_online_status[count].socket);
   }
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);

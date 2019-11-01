@@ -95,7 +95,7 @@ int varint_encode(long long int number, char *result, const size_t RESULT_TOTAL_
 
  for (count = 0, count2 = 0; count < length; count++)
  {
-   if (count % 8 == 0 && count != 0)
+   if (count % BITS_IN_BYTE == 0 && count != 0)
    {
      // reverse the binary bits
      binary_number_copy = 0;       

@@ -436,7 +436,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     memcpy(error_message.function[error_message.total],"send_http_request",17);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer2);  
+    print_error_message(date_and_time,UTC_date_and_time,buffer2);  
     exit(0);
   }
 

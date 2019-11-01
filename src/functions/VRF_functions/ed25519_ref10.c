@@ -1008,7 +1008,7 @@ int
 ge25519_is_canonical(const unsigned char *s)
 {
     unsigned char c;
-    unsigned char d;
+    unsigned char b;
     unsigned int  i;
 
     c = (s[31] & 0x7f) ^ 0x7f;
@@ -1016,9 +1016,9 @@ ge25519_is_canonical(const unsigned char *s)
         c |= s[i] ^ 0xff;
     }
     c = (((unsigned int) c) - 1U) >> 8;
-    d = (0xed - 1U - (unsigned int) s[0]) >> 8;
+    b = (0xed - 1U - (unsigned int) s[0]) >> 8;
 
-    return 1 - (c & d & 1);
+    return 1 - (c & b & 1);
 }
 
 int

@@ -60,8 +60,6 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
   char buffer[1024];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
   size_t count = 0;
   size_t count2 = 0;
   size_t counter = 0;
@@ -209,8 +207,6 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   // Variables
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   size_t count = 0;
 
@@ -279,9 +275,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   // Variables
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
-  char data2[BUFFER_SIZE]; 
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  char data2[BUFFER_SIZE];
   size_t count = 0;
   size_t count2 = 0;
   struct database_document_fields database_data;
@@ -420,8 +414,6 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   char data2[BUFFER_SIZE];
   char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));  
   char buffer[1024];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
   int count = 0;
   struct database_document_fields database_data;
 
@@ -527,8 +519,6 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   char data2[BUFFER_SIZE];
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
-  time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
   int count = 0;
   int count2 = 0;
   int counter = 0;

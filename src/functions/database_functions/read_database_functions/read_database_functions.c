@@ -171,7 +171,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
+    print_error_message(date_and_time,UTC_date_and_time,buffer);  
     exit(0);
   } 
 
@@ -385,7 +385,7 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     memcpy(error_message.function[error_message.total],"read_document_all_fields_from_collection",40);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
+    print_error_message(date_and_time,UTC_date_and_time,buffer);  
     exit(0);
   } 
 
@@ -537,7 +537,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     memcpy(error_message.function[error_message.total],"read_multiple_documents_all_fields_from_collection",50);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
+    print_error_message(date_and_time,UTC_date_and_time,buffer);  
     exit(0);
   }
 
