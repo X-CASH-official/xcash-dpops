@@ -82,7 +82,7 @@ long long int add_block_to_blocks_found(void)
   error_message.total++; \
   if (settings == 0) \
   { \
-    RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
+    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
   } \
   return 0;
 
@@ -171,7 +171,7 @@ long long int add_block_to_blocks_found(void)
   {
     ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not add the block to the blocks_found database.\nCould not check if the block verifier found the last block.",0);
   }
-  RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS);
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS);
   return block_reward_number;
 
   #undef DATABASE_COLLECTION

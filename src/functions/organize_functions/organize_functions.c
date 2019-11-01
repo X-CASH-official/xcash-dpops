@@ -100,7 +100,7 @@ int organize_delegates(struct delegates* delegates)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS); \
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS+1); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -174,7 +174,7 @@ int organize_delegates(struct delegates* delegates)
   // organize the delegates by total_vote_count
   qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates_settings);
 
-  RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS);
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS+1);
 
   return database_multiple_documents_fields.document_count;
 
