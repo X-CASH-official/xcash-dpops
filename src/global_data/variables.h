@@ -16,8 +16,8 @@ Global Variables
 mongoc_client_t* database_client;
 mongoc_client_pool_t* database_client_thread_pool;
 
-time_t current_date_and_time;
-struct tm* current_UTC_date_and_time;
+time_t date_and_time;
+struct tm* UTC_date_and_time;
 
 // network data nodes
 int network_data_node_settings; // 1 if a network data node, 0 if not a network data node 
