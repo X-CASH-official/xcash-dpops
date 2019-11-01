@@ -167,10 +167,10 @@ function get_shared_delegate_installation_settings()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate (YES): ${END_COLOR_PRINT}"
   read data
-  SHARED_DELEGATE=$([ "$data" == "" ] && echo "$SHARED_DELEGATE" || echo "NO")
+  SHARED_DELEGATE=$([ "$data" == "" ] && echo "${SHARED_DELEGATE^^}" || echo "NO")
   echo -ne "\r"
   echo
-  if [ "$SHARED_DELEGATE" == "YES" ]; then    
+  if [ "${SHARED_DELEGATE^^}" == "YES" ]; then    
     while
       echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
       read DPOPS_FEE
@@ -660,7 +660,7 @@ function start_systemd_service_files()
   sleep 10s
   sudo systemctl start XCASH_Wallet >> ${LOGFILE} 2>&1
   sleep 10s
-  sudo sudo systemctl start XCASH_DPOPS >> ${LOGFILE} 2>&1
+  sudo systemctl start XCASH_DPOPS >> ${LOGFILE} 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
@@ -697,12 +697,12 @@ function check_if_solo_node()
 
 function check_if_upgrade_solo_delegate_and_shared_delegate()
 {
-  if [ "$SHARED_DELEGATE" == "YES" ]; then
+  if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     echo -ne "The current delegate setting is shared delegate. If you would like to change the settings to a solo delegate type \"YES\" otherwise press enter:"
     read data
     echo -ne "\r"
     echo
-    if [ "$data" == "YES" ]; then
+    if [ "${data^^}" == "YES" ]; then
       SHARED_DELEGATE="NO"
       uninstall_shared_delegates_website
       update_systemd_service_files
@@ -720,7 +720,7 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
     read data
     echo -ne "\r"
     echo
-    if [ "$data" == "YES" ]; then
+    if [ "${data^^}" == "YES" ]; then
       SHARED_DELEGATE="YES"
 
       while
@@ -913,7 +913,7 @@ function create_systemd_service_files()
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/XCASH_Daemon.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER}' > /lib/systemd/system/XCASH_Daemon_Block_Verifier.service"
-  if [ ! "$SHARED_DELEGATE" == "YES" ]; then
+  if [ ! "${SHARED_DELEGATE^^}" == "YES" ]; then
     sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
   else
     sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
@@ -982,7 +982,7 @@ function install_firewall()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   sudo rm ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
-  if [ "$SHARED_DELEGATE" == "YES" ]; then
+  if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     echo "$FIREWALL_SHARED_DELEGATES" > ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
   else
     echo "$FIREWALL" > ${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
@@ -1178,6 +1178,44 @@ function get_installation_directory()
   LOGFILE=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_INSTALL.log
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Installation Directories${END_COLOR_PRINT}"
   echo
+
+  # check to make sure it found the installed programs
+  if [ "$XCASH_DPOPS_INSTALLATION_DIR" == "/" ]; then
+    echo -e "${COLOR_PRINT_RED}Can not find the installation directory, Please run the auto installer in installation mode${END_COLOR_PRINT}"
+  fi
+  if [ "$XCASH_DIR" == "X-CASH/" ]; then
+    echo -e "${COLOR_PRINT_RED}Can not find X-CASH${END_COLOR_PRINT}"
+    install_xcash
+  fi
+  if [ "$XCASH_DPOPS_DIR" == "XCASH_DPOPS/" ]; then
+    echo -e "${COLOR_PRINT_RED}Can not find XCASH_DPOPS${END_COLOR_PRINT}"
+    download_xcash_dpops
+    build_xcash_dpops
+  fi
+  if [ "$MONGODB_DIR" == "/" ]; then
+    echo -e "${COLOR_PRINT_RED}Can not find MongoDB${END_COLOR_PRINT}"
+    install_mongodb
+  fi
+  if [ "$MONGOC_DRIVER_DIR" == "/" ]; then
+    echo -e "${COLOR_PRINT_RED}Can not find Mongo C Driver${END_COLOR_PRINT}"
+    install_mongoc_driver
+  fi
+  if [ "${SHARED_DELEGATE^^}" == "YES" ] ; then
+    if [ "$SHARED_DELEGATES_WEBSITE_DIR" == "XCASH_DPOPS_shared_delegates_website/" ]; then
+      echo -e "${COLOR_PRINT_RED}Can not find XCASH_DPOPS_shared_delegates_website${END_COLOR_PRINT}"
+      download_shared_delegate_website
+      install_shared_delegates_website_npm_packages
+      build_shared_delegates_website
+    fi
+    if [ "$NODEJS_DIR" == "/" ]; then
+      echo -e "${COLOR_PRINT_RED}Can not find NodeJS${END_COLOR_PRINT}"
+      install_nodejs
+      configure_npm
+      update_npm
+      install_npm_global_packages
+      source ~/.profile
+    fi
+  fi
 }
 
 function get_dependencies_current_version()
@@ -1429,12 +1467,12 @@ function install()
   install_xcash_dpops
 
   # Install shared delegates website
-  if [ "$SHARED_DELEGATE" == "YES" ]; then
+  if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     install_shared_delegates_website
   fi
 
   # Create or import the wallet
-  if [ "$WALLET_SETTINGS" == "YES" ]; then
+  if [ "${WALLET_SETTINGS^^}" == "YES" ]; then
     create_xcash_wallet
   else
     import_xcash_wallet
@@ -1468,14 +1506,14 @@ function update()
   echo
   echo
 
+  # Check if solo node
+  check_if_solo_node
+
   # Get the installation directory
   get_installation_directory
 
   # Get the current version of the dependencies
   get_dependencies_current_version
-
-  # Check if solo node
-  check_if_solo_node
 
   # Stop the systemd service files
   stop_systemd_service_files
@@ -1492,7 +1530,7 @@ function update()
   # Update all repositories
   update_xcash
   update_xcash_dpops
-  if [ "$SHARED_DELEGATE" == "YES" ]; then
+  if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     update_shared_delegates_website
   fi
 
@@ -1507,7 +1545,7 @@ function update()
   else
     echo -e "${COLOR_PRINT_GREEN}Mongo C Driver Is Already Up To Date${END_COLOR_PRINT}"
   fi
-  if [ "$SHARED_DELEGATE" == "YES" ]; then
+  if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     if [ ! "$NODEJS_CURRENT_VERSION" == "$NODEJS_LATEST_VERSION" ]; then
       update_nodejs
     else
