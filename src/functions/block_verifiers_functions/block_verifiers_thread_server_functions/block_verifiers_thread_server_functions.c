@@ -551,6 +551,16 @@ void* send_and_receive_data_socket_thread(void* parameters)
   int socket_settings;
   socklen_t socket_option_settings = sizeof(int);
 
+  // define macros
+  #define SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(message_settings) \
+  if (message_settings == 0) \
+  { \
+    close(client_socket); \
+  } \
+  freeaddrinfo(settings); \
+  pthread_exit((void *)(intptr_t)0);
+
+
   memset(buffer,0,sizeof(buffer));
   memset(buffer2,0,sizeof(buffer2));
   memset(str,0,sizeof(str));
@@ -594,7 +604,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {     
-    pthread_exit((void *)(intptr_t)0);
+    SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(1);
   }
 
   /* Create the socket  
@@ -605,7 +615,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   client_socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
   if (client_socket == -1)
   { 
-    pthread_exit((void *)(intptr_t)0);
+    SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(1);
   }
 
   /* Set the socket options for sending and receiving data
@@ -614,8 +624,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   */
   if (setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   { 
-    close(client_socket);
-    pthread_exit((void *)(intptr_t)0);
+    SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
   } 
 
   /* set the first poll structure to our socket
@@ -630,8 +639,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
     count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
     if ((count != 1) || (count == 1 && getsockopt(client_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     {
-      close(client_socket);
-      pthread_exit((void *)(intptr_t)0);
+      SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
     }
   }
 
@@ -639,16 +647,14 @@ void* send_and_receive_data_socket_thread(void* parameters)
   socket_settings = fcntl(client_socket, F_GETFL, NULL);
   if (socket_settings == -1)
   {
-    close(client_socket);
-    pthread_exit((void *)(intptr_t)0);
+    SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
   }
 
   // set the socket to blocking mode
   socket_settings &= (~O_NONBLOCK);
   if (fcntl(client_socket, F_SETFL, socket_settings) == -1)
   {
-    close(client_socket);
-    pthread_exit((void *)(intptr_t)0);
+    SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
   }
 
   // get the current time
@@ -677,8 +683,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
     bytes = send(client_socket,message+sent,TOTAL-sent,MSG_NOSIGNAL);
     if (bytes < 0)
     { 
-      close(client_socket);
-      pthread_exit((void *)(intptr_t)0);
+      SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
     }
     else if (bytes == 0)  
     {
@@ -694,8 +699,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
     // check the size of the data that were about to receive. If it is over BUFFER_SIZE then dont accept it, since it will cause a buffer overflow
     if (((int)recvfrom(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) - (int)strnlen(message,sizeof(buffer)) && (int)strnlen(message,sizeof(buffer)) > 0) || ((int)recvfrom(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) && (int)strnlen(message,sizeof(buffer)) == 0))
     {
-      close(client_socket);
-      pthread_exit((void *)(intptr_t)0);
+      SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
     }    
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
     recvfrom(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
@@ -722,8 +726,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
     count++;
     if (count > (RECEIVE_DATA_TIMEOUT_SETTINGS * 5))
     {
-      close(client_socket);
-      pthread_exit((void *)(intptr_t)0);
+      SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
     }
     usleep(200000);   
   }
@@ -731,8 +734,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   // verify the data
   if (verify_data(data2,0,1) == 0)
   {
-    close(client_socket);
-    pthread_exit((void *)(intptr_t)0);
+    SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
   }
 
   // parse the message
@@ -749,5 +751,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
     memcpy(VRF_data.block_blob_signature[data->COUNT],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
   }
-  pthread_exit((void *)(intptr_t)1);
+  SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
+
+  #undef CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR
 }

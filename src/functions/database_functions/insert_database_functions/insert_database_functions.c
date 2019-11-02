@@ -188,6 +188,8 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     exit(0);
   }
 
+  memset(buffer,0,sizeof(buffer));
+
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
   {

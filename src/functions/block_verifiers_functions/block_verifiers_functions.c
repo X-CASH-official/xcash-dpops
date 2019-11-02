@@ -2085,6 +2085,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
     close(block_verifiers_send_data_socket[count].socket);
   }
+  freeaddrinfo(settings);
   return 1;
   
   #undef BLOCK_VERIFIERS_SEND_DATA_SOCKET

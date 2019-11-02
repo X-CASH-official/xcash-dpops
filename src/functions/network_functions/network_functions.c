@@ -85,6 +85,8 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     exit(0);
   }
 
+  memset(response,0,sizeof(response));
+  memset(buffer2,0,sizeof(buffer2));
   memset(str,0,sizeof(str));
 
   // create the HTTP request
@@ -180,6 +182,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     return 0;
   }
@@ -198,6 +201,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
       error_message.total++;
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     return 0;
   }
@@ -214,6 +218,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
       error_message.total++;       
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -242,6 +247,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
         memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
         error_message.total++; 
       }
+      freeaddrinfo(settings);
       pointer_reset(message);
       close(SOCKET);
       return 0;
@@ -263,6 +269,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -283,6 +290,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -316,6 +324,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -344,6 +353,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -363,6 +373,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -390,6 +401,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     // the HTTP result does not contain a header
     memcpy(result+strlen(result),message,strnlen(message,BUFFER_SIZE));
   }
+  freeaddrinfo(settings);
   pointer_reset(message);
   close(SOCKET);
   return 1;
@@ -440,6 +452,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     exit(0);
   }
 
+  memset(buffer2,0,sizeof(buffer2));
   memset(str,0,sizeof(str));
 
   // convert the port to a string  
@@ -491,6 +504,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;  
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     return 0;
   }
@@ -509,6 +523,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
       error_message.total++;
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     return 0;
   }
@@ -525,6 +540,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
       error_message.total++;       
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -553,6 +569,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
         memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
         error_message.total++; 
       }   
+      freeaddrinfo(settings);
       pointer_reset(message);   
       close(SOCKET);
       return 0;
@@ -573,6 +590,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -592,6 +610,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++; 
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -625,6 +644,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -653,6 +673,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++;
     }
+    freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
@@ -666,7 +687,8 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     memcpy(str+28+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
     color_print(str,"green");
   }
-  
+
+  freeaddrinfo(settings);
   pointer_reset(message);
   close(SOCKET);
   return 1;
@@ -711,7 +733,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   close(SOCKET); \
   return 0;
 
+  memset(buffer2,0,sizeof(buffer2));
   memset(str,0,sizeof(str));
+  memset(message,0,sizeof(message));
   
   // convert the port to a string  
   snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
@@ -759,6 +783,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memcpy(error_message.function[error_message.total],"send_http_request",17);
     memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
     error_message.total++;  
+    freeaddrinfo(settings);
     return 0;
   }
 
@@ -773,6 +798,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memcpy(error_message.function[error_message.total],"send_http_request",17);
     memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
     error_message.total++;
+    freeaddrinfo(settings);
     return 0;
   }
 
@@ -784,7 +810,8 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   {
     memcpy(error_message.function[error_message.total],"send_http_request",17);
     memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
-    error_message.total++;       
+    error_message.total++;  
+    freeaddrinfo(settings);     
     close(SOCKET);
     return 0;
   }  
@@ -809,6 +836,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
       memcpy(error_message.function[error_message.total],"send_http_request",17);
       memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
       error_message.total++; 
+      freeaddrinfo(settings);
       close(SOCKET);
       return 0;
     } 
@@ -847,7 +875,8 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
     SEND_DATA_SOCKET_ERROR(str);
   }
-    
+
+  freeaddrinfo(settings);    
   close(SOCKET);
   return 1;
 }

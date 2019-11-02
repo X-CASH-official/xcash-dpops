@@ -441,6 +441,7 @@ int get_path(char *result, const int MESSAGE_SETTINGS)
   return 0;
 
   memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_path\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get path",MESSAGE_SETTINGS) <= 0)
   {  
