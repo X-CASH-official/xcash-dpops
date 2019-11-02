@@ -512,7 +512,7 @@ int sync_check_reserve_proofs_database(int settings)
       }
     }
   }
-  else if (settings == 2)
+  if (settings == 2)
   {
     fprintf(stderr,"Syncing from a random network data node\n");
     if (sync_reserve_proofs_database(settings) == 0)
@@ -915,7 +915,7 @@ int sync_check_reserve_bytes_database(int settings)
       }
     }
   }
-  else if (settings == 2)
+  if (settings == 2)
   {
     fprintf(stderr,"Syncing from a random network data node\n");
     if (sync_reserve_bytes_database(settings) == 0)
@@ -1298,7 +1298,7 @@ int sync_check_delegates_database(int settings)
       }
     }
   }
-  else if (settings == 2)
+  if (settings == 2)
   {
     fprintf(stderr,"Syncing from a random network data node\n");
     if (sync_delegates_database(settings) == 0)
@@ -1569,7 +1569,7 @@ int sync_check_statistics_database(int settings)
       }
     }
   }
-  else if (settings == 2)
+  if (settings == 2)
   {
     fprintf(stderr,"Syncing from a random network data node\n");
     if (sync_statistics_database(settings) == 0)
