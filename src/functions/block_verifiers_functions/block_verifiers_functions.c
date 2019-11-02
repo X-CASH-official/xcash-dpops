@@ -1887,8 +1887,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   int epoll_fd_copy;
   struct epoll_event events[BLOCK_VERIFIERS_AMOUNT];
   struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
-  struct addrinfo serv_addr;
-  struct addrinfo* settings = NULL;
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[BLOCK_VERIFIERS_AMOUNT];
   int socket_settings;
   int total;
@@ -1923,6 +1921,10 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
+    // Variables
+    struct addrinfo serv_addr;
+    struct addrinfo* settings = NULL;
+
     // initialize the block_verifiers_send_data_socket struct
     memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
     memcpy(block_verifiers_send_data_socket[count].IP_address,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(block_verifiers_send_data_socket[count].IP_address)));
@@ -1968,6 +1970,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       string_replace(data3,sizeof(data3),"www.","");
       if (getaddrinfo(data3, data2, &serv_addr, &settings) != 0)
       { 
+        freeaddrinfo(settings);
         continue;
       }
 
@@ -1979,6 +1982,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       block_verifiers_send_data_socket[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
       if (block_verifiers_send_data_socket[count].socket == -1)
       {
+        freeaddrinfo(settings);
         continue;
       }
 
@@ -1988,6 +1992,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       */
       if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
       { 
+        freeaddrinfo(settings);
         continue;
       } 
 
@@ -2003,6 +2008,8 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 
       // connect to the delegate
       connect(block_verifiers_send_data_socket[count].socket,settings->ai_addr, settings->ai_addrlen);
+
+      freeaddrinfo(settings);
     }
   }
 
@@ -2085,7 +2092,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
     close(block_verifiers_send_data_socket[count].socket);
   }
-  freeaddrinfo(settings);
   return 1;
   
   #undef BLOCK_VERIFIERS_SEND_DATA_SOCKET

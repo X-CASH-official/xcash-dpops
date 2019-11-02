@@ -753,8 +753,6 @@ int get_delegates_online_status(void)
   struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES];
   int epoll_fd_copy;
   struct epoll_event events[MAXIMUM_AMOUNT_OF_DELEGATES];
-  struct addrinfo serv_addr;
-  struct addrinfo* settings = NULL;
   int count;
   int count2;
   int number;
@@ -793,6 +791,10 @@ int get_delegates_online_status(void)
   // create the delegates_online_status struct for each delegate
   for (count = 0; count < total_delegates; count++)
   {
+    // Variables
+    struct addrinfo serv_addr;
+    struct addrinfo* settings = NULL;
+
     memcpy(delegates_online_status[count].public_address,delegates[count].public_address,XCASH_WALLET_LENGTH);
 
     if (memcmp(delegates_online_status[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
@@ -839,6 +841,7 @@ int get_delegates_online_status(void)
     string_replace(data,sizeof(data),"www.","");
     if (getaddrinfo(data, data2, &serv_addr, &settings) != 0)
     {  
+      freeaddrinfo(settings);
       continue;
     }
 
@@ -850,6 +853,7 @@ int get_delegates_online_status(void)
     delegates_online_status[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
     if (delegates_online_status[count].socket == -1)
     {
+      freeaddrinfo(settings);
       continue;
     }
 
@@ -865,6 +869,8 @@ int get_delegates_online_status(void)
 
     // connect to the delegate
     connect(delegates_online_status[count].socket,settings->ai_addr, settings->ai_addrlen);
+
+    freeaddrinfo(settings);
   }
 
   sleep(TOTAL_CONNECTION_TIME_SETTINGS+1);

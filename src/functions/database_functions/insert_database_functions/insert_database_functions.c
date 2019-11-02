@@ -141,6 +141,20 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
 
 
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: insert_multiple_documents_into_collection_json
+Description: Inserts a document into the collection in the database from json data
+Parameters:
+  DATABASE - The database name
+  COLLECTION - The collection name
+  DATA - The json data to insert into the collection
+  DATA_TOTAL_LENGTH - The maximum length of DATA 
+  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
 int insert_multiple_documents_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const size_t DATA_TOTAL_LENGTH, const int THREAD_SETTINGS)
 {
   // Variables
@@ -152,7 +166,6 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
-  bson_t* document = NULL;
   size_t count;
   size_t count2;
 
@@ -164,7 +177,6 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   data3 = NULL; 
 
   #define database_reset_all \
-  bson_destroy(document); \
   mongoc_collection_destroy(collection); \
   if (THREAD_SETTINGS == 1) \
   { \
@@ -229,10 +241,11 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
       memcpy(data3,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
     }
 
-    document = bson_new_from_json((const uint8_t *)data3, -1, &error);
+    bson_t* document = bson_new_from_json((const uint8_t *)data3, -1, &error);
     if (!document)
     {
       pointer_reset_all;
+      bson_destroy(document);
       database_reset_all;
       return 0;
     }
@@ -240,9 +253,11 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     if (!mongoc_collection_insert_one(collection, document, NULL, NULL, &error))
     {
       pointer_reset_all;
+      bson_destroy(document);
       database_reset_all;
       return 0;
     }
+    bson_destroy(document);
   }
   
   pointer_reset_all;

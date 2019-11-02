@@ -175,7 +175,7 @@ int create_server(const int MESSAGE_SETTINGS)
 
   for (count = 0; (int)count < total_threads-1; count++)
   {
-    if (pthread_create(&server_threads[count], NULL, socket_receive_data_thread, NULL) < 0)
+    if (pthread_create(&server_threads[count], NULL, socket_receive_data_thread, NULL) < 0 || pthread_detach(server_threads[count]) != 0)
     {
       SERVER_ERROR("Error creating the server");
     }

@@ -1715,7 +1715,7 @@ int sync_statistics_database(int settings)
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0);
 
   pointer_reset(data);
   return 1;

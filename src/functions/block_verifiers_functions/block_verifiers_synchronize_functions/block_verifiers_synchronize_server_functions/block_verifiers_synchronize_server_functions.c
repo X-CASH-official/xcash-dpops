@@ -660,6 +660,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
+  pointer_reset_all;
   return 1;
 
   #undef pointer_reset_all
@@ -965,6 +966,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
+  pointer_reset_all;
   return 1;
 
   #undef pointer_reset_all
@@ -1088,6 +1090,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   pointer_reset_all; \
   return 0;
 
+  memset(buffer,0,sizeof(buffer));
+
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
   {
@@ -1137,6 +1141,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
+  pointer_reset_all;
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -1309,6 +1314,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
   }
 
+  pointer_reset_all;
   return 1;
 
   #undef DATABASE_COLLECTION
