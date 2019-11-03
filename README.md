@@ -842,7 +842,9 @@ At this point you can run the test setup. Make sure to run the main server (NETW
 
 Start all of the servers right after 0 seconds of a divisible by 5 minute (0,5,10 etc) this way the block creation process will start at the next divisible by 5 minute and will give your nodes enough time to sync and start up (although this usually only takes a minute)
 
-Also make sure you run xcahd with the `--block-verifier` flag
+Also make sure you run xcashd with the `--block-verifier` flag
+
+If your computer system does not have internet access, make sure to run the xcashd on the NETWORK_DATA_NODE_1 system with `./xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --confirm-external-bind --restricted-rpc --block-verifier` andd run the other systems with `./xcashd --allow-local-ip --add-exclusive-node IP_OF_MAIN_SERVER --block-verifier`
 
 
 
