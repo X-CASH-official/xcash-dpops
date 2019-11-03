@@ -67,7 +67,7 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 *  [Update](#update)  
 *  [Remove](#remove)  
  
-[How to Setup the Test](#how-to-setup-the-test)  
+[How to Setup A Private Test](#how-to-setup-a-private-test)  
 [How to Debug the Code on a Server](#how-to-debug-the-code-on-a-server)
 *  [Allow X11 Forwarding on the server](#allow-x11-forwarding-on-the-server)  
 *  [Install GDB and vscode](#install-gdb-and-vscode)
@@ -672,92 +672,176 @@ NPM
 
 
 
-## How to Setup the Test
-Create a `XCASH_DPOPS_Test` folder in the `x-network` folder
+## How to Setup a Private Test
+This will allow you to run your own private test setup of the DPOPS consensus for debugging purposes.
 
-Make sure you have installed the packages to [build XCASH from source](https://github.com/X-CASH-official/X-CASH#compiling-x-cash-from-source)
+First, you will need at a minimum 4 servers or virtual machines. You can use any amount greater than or equal to 4, but its mandatory to use 4 to properly test the DBFT part of the consensus. It is recommended to use the autoinstaller to setup these 4 machines
 
-Copy the X-CASH and XCASH_DPOPS folders from the `x-network` folder to the `XCASH_DPOPS_Test` folder  
+Once you have the 4 machines setup, you will need a fully synced copy of the blockchain on each server.
+
+Now you need to make the following code adjustments to work with your setup and to make a testnet copy of the official blockchain, this way you can mine blocks on it with your machines.
+
+**X-CASH**
+
+**src/p2p/net_node.h**  
+Remove all seed nodes and add 2 of your servers IP addresses to `const std::vector<std::string> m_seed_nodes_list`
+
+**src/p2p/net_node.inl**  
+Remove all seed nodes and add 2 of your servers IP addresses to  
 ```
-cp -a ~/x-network/X-CASH ~/x-network/XCASH_DPOPS_Test/X-CASH 
-cp -a ~/x-network/XCASH_DPOPS ~/x-network/XCASH_DPOPS_Test/XCASH_DPOPS
-```
-
-Navigate to the X-CASH folder and change the branch to `xcash_proof_of_stake` and then rebuild the binary  
-```
-cd ~/x-network/XCASH_DPOPS_Test/X-CASH
-git checkout xcash_proof_of_stake
-make clean ; make release -j `nproc`
-```
-
-Create a wallet file for the wallet you are going to register. **Make sure this is an empty wallet.** This should be a different wallet then the wallet you plan to register for the official DPOPS, to keep your wallets privacy until the official DPOPS  
-```
-cd ~/x-network/XCASH_DPOPS_Test/X-CASH/build/release/bin
-./xcash-wallet-cli
-```
-
-Register your wallet with the XCASH team to get **XCASH_DPOPS_TEST XCASH** sent to the wallet
-
-Create a `XCASH_DPOPS_Blockchain_Test` folder in the `x-network`
-```
-cd ~/x-network
-mkdir XCASH_DPOPS_Blockchain_Test
-```
-
-Stop all of the systemd services  
-```
-systemctl stop MongoDB
-systemctl stop XCASH_Daemon
-systemctl stop XCASH_Wallet
-systemctl stop XCASH_DPOPS
-```
-
-Create test blockchain from mainnet blockchain. Copy the .X-CASH folder at ~/X.CASH to the XCASH_DPOPS_Test folder  
-`cp -a ~/.X-CASH /root/x-network/XCASH_DPOPS_Test/XCASH_DPOPS_Blockchain_Test`
-
-Remove all of the blocks up to 449850 
-`/root/x-network/XCASH_DPOPS_Test/X-CASH/build/release/bin/xcash-blockchain-import --pop-blocks NUMBER_OF_BLOCKS_TO_REMOVE	`
-
-After the blockchain has been imported configure the `XCASH_Daemon`, `XCASH_Daemon_Block_Verifier`, `XCASH_Wallet` and `XCASH_DPOPS` systemd service files for the XCASH_DPOPS test. You should just have to add `/XCASH_DPOPS_Test` to every full path in the systemd service files.
-
-Reload systemd after you have made any changes to the systemd service files  
-`systemctl daemon-reload`
-
-start all of the systemd services  
-```
-systemctl start MongoDB
-systemctl start XCASH_Daemon
-systemctl start XCASH_Wallet
-systemctl start XCASH_DPOPS
+template<class t_payload_net_handler>
+  std::set<std::string> node_server<t_payload_net_handler>::get_seed_nodes(cryptonote::network_type nettype) const
+  {
+    std::set<std::string> full_addrs;
+    if (nettype == cryptonote::TESTNET)
+    {
+      full_addrs.insert("testnetseed1.x-cash.org:28280");
+      full_addrs.insert("testnetseed2.x-cash.org:28280");
+    }
+    else if (nettype == cryptonote::STAGENET)
+    {
+    }
+    else if (nettype == cryptonote::FAKECHAIN)
+    {
+    }
+    else
+    {
+      full_addrs.insert("delegates.xcash.foundation:18280");
+      full_addrs.insert("europe1.xcash.foundation:18280");
+      full_addrs.insert("europe2.xcash.foundation:18280");
+      full_addrs.insert("europe3.xcash.foundation:18280");
+      full_addrs.insert("asia1.xcash.foundation:18280");
+    }
+    return full_addrs;
+  }
 ```
 
-Check the block height of the XCASH_DPOPS_Blockchain_Test  
+**src/cryptonote_config.h**  
+Change the block height to the current block height of your blockchain
+`#define HF_BLOCK_HEIGHT_PROOF_OF_STAKE 449850 // The first block of the X-CASH proof of stake`
+
+Change these to the total amount of servers you will use and how much percentage for verifying a block you will want
 ```
-curl -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json'
+// XCASH DPOPS
+#define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid.
+#define BLOCK_VERIFIERS_VALID_AMOUNT_PERCENTAGE 0.67 // The amount of block verifiers in a percentage that need to vote true for the part of the round to be valid.
 ```
 
-The block height should be 440875
+Change these define macros to your setup. Change the NETWORK_DATA_NODES_AMOUNT to the amount of seed nodes in the previous step. Remove or add NETWORK_DATA_NODE_PUBLIC_ADDRESS_N depending on how many seed nodes you have, and list there public address and IP address
 
-Check if your wallet has a any XCASH_DPOS_TEST XCASH in it  
 ```
-curl -X POST http://localhost:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_balance"}' -H 'Content-Type: application/json'
+// Network data nodes
+#define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
+#define NETWORK_DATA_NODE_PUBLIC_ADDRESS_1 "XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12"
+#define NETWORK_DATA_NODE_PUBLIC_ADDRESS_2 "XCA1dNsv9cGc5kPMrgpdTkGttM17uR2JvCpmraGschxYSEt3MK4NRmmgyc13CTYWBGDNefdem5MFsG384DuUpGKc3ShZa4R56e"
+#define NETWORK_DATA_NODE_PUBLIC_ADDRESS_3 "XCA1rU5hFV98QvysF3ByeZSPkt9wPyUxkSErBZADJjsHPMKnmCxKFH2H6aLy3oFbYaGkkYGCJcLF1ERWT5uQweEu8yZodwCtHc"
+#define NETWORK_DATA_NODE_PUBLIC_ADDRESS_4 "XCA1kk9q8H7JNe9aWXLYRpG2oqFQxLD7vTy8s3pPZprBVnLRQNAurnabEHsQCSAUyxC8nForSa2C39qAhtFt4f845ZSz2Xz5Mr"
+#define NETWORK_DATA_NODE_PUBLIC_ADDRESS_5 "XCA1diBcGjRhBEdDkphu5oUTTvDHiSGjmZ7unCwBFgdpMiCQoF1BpMWP2E96iFWoWoD41npDcRUo51ih45We29Hd5XZsikzt71"
+#define NETWORK_DATA_NODE_IP_ADDRESS_1 "delegates.xcash.foundation"
+#define NETWORK_DATA_NODE_IP_ADDRESS_2 "europe1.xcash.foundation"
+#define NETWORK_DATA_NODE_IP_ADDRESS_3 "europe2.xcash.foundation"
+#define NETWORK_DATA_NODE_IP_ADDRESS_4 "europe3.xcash.foundation"
+#define NETWORK_DATA_NODE_IP_ADDRESS_5 "asia1.xcash.foundation"
+#define INITIALIZE_NETWORK_DATA_NODES_LIST \
+network_data_nodes_list.network_data_nodes_public_address[0] = NETWORK_DATA_NODE_PUBLIC_ADDRESS_1; \
+network_data_nodes_list.network_data_nodes_IP_address[0] = NETWORK_DATA_NODE_IP_ADDRESS_1; \
+network_data_nodes_list.network_data_nodes_public_address[1] = NETWORK_DATA_NODE_PUBLIC_ADDRESS_2; \
+network_data_nodes_list.network_data_nodes_IP_address[1] = NETWORK_DATA_NODE_IP_ADDRESS_2; \
+network_data_nodes_list.network_data_nodes_public_address[2] = NETWORK_DATA_NODE_PUBLIC_ADDRESS_3; \
+network_data_nodes_list.network_data_nodes_IP_address[2] = NETWORK_DATA_NODE_IP_ADDRESS_3; \
+network_data_nodes_list.network_data_nodes_public_address[3] = NETWORK_DATA_NODE_PUBLIC_ADDRESS_4; \
+network_data_nodes_list.network_data_nodes_IP_address[3] = NETWORK_DATA_NODE_IP_ADDRESS_4; \
+network_data_nodes_list.network_data_nodes_public_address[4] = NETWORK_DATA_NODE_PUBLIC_ADDRESS_5; \
+network_data_nodes_list.network_data_nodes_IP_address[4] = NETWORK_DATA_NODE_IP_ADDRESS_5;
 ```
 
-Register the wallet into the DPOPS system  
-Replace `DELEGATE_NAME` with a delegate name  
-Replace `DELEGATE_IP_ADDRESS` with the servers public IP address, or a domain name
+Under `namespace config` change a few bytes in the `boost::uuids::uuid const NETWORK_ID`
+
+**XCASH_DPOPS**
+
+Change the block height to the current block height of your blockchain
+`#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake`
+
+Change these to the total amount of servers you will use and how much percentage for verifying a block you will want
 ```
-curl -X POST http://localhost:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"delegate_register","params":{"delegate_name":"DELEGATE_NAME","delegate_IP_address":"DELEGATE_IP_ADDRESS"}}' -H 'Content-Type: application/json'
+#define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
+#define BLOCK_VERIFIERS_AMOUNT 100 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 67 // The amount of block verifiers that need to vote true for the part of the round to be valid
 ```
 
-Vote for the wallet  
-Replace `DELEGATES_PUBLIC_ADDRESS` with the wallets public address
+Change these define macros to your setup. Change the NETWORK_DATA_NODES_AMOUNT to the amount of seed nodes in the previous step. Remove or add NETWORK_DATA_NODE_PUBLIC_ADDRESS_N depending on how many seed nodes you have, and list there public address and IP address
+
 ```
-curl -X POST http://localhost:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"vote","params":{"delegate_public_address":"DELEGATES_PUBLIC_ADDRESS"}' -H 'Content-Type: application/json'
+// Network data nodes
+#define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
+#define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12"
+#define NETWORK_DATA_NODE_1_IP_ADDRESS "delegates.xcash.foundation"
+#define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS "XCA1dNsv9cGc5kPMrgpdTkGttM17uR2JvCpmraGschxYSEt3MK4NRmmgyc13CTYWBGDNefdem5MFsG384DuUpGKc3ShZa4R56e"
+#define NETWORK_DATA_NODE_2_IP_ADDRESS "europe1.xcash.foundation"
+#define NETWORK_DATA_NODE_3_PUBLIC_ADDRESS "XCA1rU5hFV98QvysF3ByeZSPkt9wPyUxkSErBZADJjsHPMKnmCxKFH2H6aLy3oFbYaGkkYGCJcLF1ERWT5uQweEu8yZodwCtHc"
+#define NETWORK_DATA_NODE_3_IP_ADDRESS "europe2.xcash.foundation"
+#define NETWORK_DATA_NODE_4_PUBLIC_ADDRESS "XCA1kk9q8H7JNe9aWXLYRpG2oqFQxLD7vTy8s3pPZprBVnLRQNAurnabEHsQCSAUyxC8nForSa2C39qAhtFt4f845ZSz2Xz5Mr"
+#define NETWORK_DATA_NODE_4_IP_ADDRESS "europe3.xcash.foundation"
+#define NETWORK_DATA_NODE_5_PUBLIC_ADDRESS "XCA1diBcGjRhBEdDkphu5oUTTvDHiSGjmZ7unCwBFgdpMiCQoF1BpMWP2E96iFWoWoD41npDcRUo51ih45We29Hd5XZsikzt71"
+#define NETWORK_DATA_NODE_5_IP_ADDRESS "asia1.xcash.foundation"
+
+#define DATABASE_COLLECTION_DELEGATES_DATA_1 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"0\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_2 "{\"public_address\":\"XCA1dNsv9cGc5kPMrgpdTkGttM17uR2JvCpmraGschxYSEt3MK4NRmmgyc13CTYWBGDNefdem5MFsG384DuUpGKc3ShZa4R56e\",\"total_vote_count\":\"0\",\"IP_address\":\"europe1.xcash.foundation\",\"delegate_name\":\"europe1_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 8 threads (Intel D-1521 - 2.40GHz RAM = 32GB DDR3 Hard drive = 2x HDD SATA 2 TB\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_3 "{\"public_address\":\"XCA1rU5hFV98QvysF3ByeZSPkt9wPyUxkSErBZADJjsHPMKnmCxKFH2H6aLy3oFbYaGkkYGCJcLF1ERWT5uQweEu8yZodwCtHc\",\"total_vote_count\":\"0\",\"IP_address\":\"europe2.xcash.foundation\",\"delegate_name\":\"europe2_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 8 threads (Intel i7-6700 - 3.40GHz RAM = 64GB DDR4 Hard drive = 2x NVMe SSD 512GB Bandwidth Transfer = Unlimited Bandwidth Speed = 1 Gbps upload and 1 Gbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_4 "{\"public_address\":\"XCA1kk9q8H7JNe9aWXLYRpG2oqFQxLD7vTy8s3pPZprBVnLRQNAurnabEHsQCSAUyxC8nForSa2C39qAhtFt4f845ZSz2Xz5Mr\",\"total_vote_count\":\"0\",\"IP_address\":\"europe3.xcash.foundation\",\"delegate_name\":\"europe3_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 8 threads (Intel i7-6700 - 3.40GHz RAM = 64GB DDR4 Hard drive = 2x NVMe SSD 512GB Bandwidth Transfer = Unlimited Bandwidth Speed = 1 Gbps upload and 1 Gbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_5 "{\"public_address\":\"XCA1diBcGjRhBEdDkphu5oUTTvDHiSGjmZ7unCwBFgdpMiCQoF1BpMWP2E96iFWoWoD41npDcRUo51ih45We29Hd5XZsikzt71\",\"total_vote_count\":\"0\",\"IP_address\":\"asia1.xcash.foundation\",\"delegate_name\":\"asia1_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 8 threads (Intel E3-1245 v5 - 3.50GHz RAM = 32GB DDR3 Hard drive = 2x HDD SATA 2 TB\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_DELEGATES_DATA_6 "{\"public_address\":\"XCA1kkdrRQ9SC7wfJ3F329giei31r13wKEKiD1ZMYf6nBiU8KE6a6LDJTZobfJ58o8A3vtGrAkzfHDd815kac7F17iPhK9zYGG\",\"total_vote_count\":\"0\",\"IP_address\":\"officialdelegate.xcash.foundation\",\"delegate_name\":\"officialdelegate_xcash_foundation\",\"about\":\"Official X-Network Shared Delegate\",\"website\":\"officialdelegate.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"true\",\"fee_structure\":\"1\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 8 threads (Intel E3-1246 v3 - 3.50GHz RAM = 32GB DDR3 Hard drive = 2x HDD SATA 2 TB Bandwidth Transfer = Unlimited Bandwidth Speed = 1 Gbps upload and 1 Gbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\"}"
+#define DATABASE_COLLECTION_STATISTICS_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"delegates_xcash_foundation\",\"most_total_rounds\":\"0\",\"best_block_verifier_online_percentage_delegate_name\":\"delegates_xcash_foundation\",\"best_block_verifier_online_percentage\":\"0\",\"most_block_producer_total_rounds_delegate_name\":\"delegates_xcash_foundation\",\"most_block_producer_total_rounds\":\"0\"}"
+
+#define INITIALIZE_DATABASE_DATA \
+color_print("Initializing database data","yellow"); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_3,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_4,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_5,0); \
+insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_6,0); \
+insert_document_into_collection_json(DATABASE_NAME,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0); \
+sleep(10);
+
+#define INITIALIZE_NETWORK_DATA_NODES \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[0],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],NETWORK_DATA_NODE_1_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_1_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[1],NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],NETWORK_DATA_NODE_2_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_2_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[2],NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[2],NETWORK_DATA_NODE_3_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_3_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[3],NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[3],NETWORK_DATA_NODE_4_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_4_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[4],NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],NETWORK_DATA_NODE_5_IP_ADDRESS,strnlen(NETWORK_DATA_NODE_5_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+
+#define CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE \
+if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0) \
+{ \
+  network_data_node_settings = 1; \
+}
 ```
 
-Open the log files for XCASH_DPOPS  
-`journalctl --unit=XCASH_DPOPS --follow -n 100 --output cat`
+Now you can disable the reserve proofs checker since there is no penalties in a test setup and this will also allow you to not have to register, or vote for the delegates. Comment out the following lines of code
+
+**src/XCASH_DPOPS.c**
+
+```
+  // start the check_reserve_proofs_timer_thread
+  if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
+  {
+    MAIN_ERROR("Could not start the check_reserve_proofs_timer_thread");
+  }
+
+  color_print("Started the check reserve proofs timer thread","green");
+```
+
+At this point you can run the test setup. Make sure to run the main server (NETWORK_DATA_NODE_1_PUBLIC_ADDRESS) first, then run all of the other network data nodes. Once those are done syncing run all other servers. 
+
+Start all of the servers right after 0 seconds of a divisible by 5 minute (0,5,10 etc) this way the block creation process will start at the next divisible by 5 minute and will give your nodes enough time to sync and start up (although this usually only takes a minute)
+
 
 
 ## How to Debug the Code on a Server
