@@ -340,12 +340,12 @@ static inline int fe25519_isnegative(const fe25519 f)
 static inline int local_is_zero(const unsigned char *n, const size_t nlen)
 {
     size_t                 i;
-    volatile unsigned char d = 0U;
+    volatile unsigned char b = 0U;
 
     for (i = 0U; i < nlen; i++) {
-        d |= n[i];
+        b |= n[i];
     }
-    return 1 & ((d - 1) >> 8);
+    return 1 & ((b - 1) >> 8);
 } 
  
 static inline int fe25519_iszero(const fe25519 f)

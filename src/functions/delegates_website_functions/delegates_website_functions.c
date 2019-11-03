@@ -90,6 +90,8 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
     exit(0);
   }
 
+  memset(buffer,0,sizeof(buffer));
+
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_delegates_website_get_statistics",buffer);
 
@@ -229,6 +231,8 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
     exit(0);
   }
 
+  memset(buffer,0,sizeof(buffer));
+
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates",buffer);
   
@@ -301,6 +305,8 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     color_print("Could not allocate the memory needed on the heap","red");
     exit(0);
   }
+
+  memset(buffer,0,sizeof(buffer));
 
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates_statistics",buffer);
@@ -436,10 +442,11 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
     exit(0);
   }
 
+  memset(buffer,0,sizeof(buffer));
+  memset(data2,0,sizeof(data2));
+
   // initialize the database_document_fields struct 
   INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS,"server_receive_data_socket_get_delegates_information",buffer);
-
-  memset(data2,0,sizeof(data2));
 
   // get the parameter1
   memcpy(data2,&DATA[40],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-40);
@@ -546,6 +553,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     exit(0);
   }
 
+  memset(buffer,0,sizeof(buffer));
   memset(data2,0,sizeof(data2));
 
   // get the parameter1

@@ -571,9 +571,10 @@ int calculate_main_nodes_roles(void)
   int count2;
   int count3;
   int counter;
+  int random_network_data_node;
   int main_nodes_count;
   int number[DATA_HASH_LENGTH/2];
-  int settings = 1;
+  int settings;
 
   // define macros
   #define CALCULATE_MAIN_NODES_ROLES(settings) \
@@ -587,9 +588,9 @@ int calculate_main_nodes_roles(void)
   memcpy(block_producer_settings,current_block_verifiers_settings[count2],strnlen(current_block_verifiers_settings[count2],sizeof(block_producer_settings)));
 
   #define CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_settings,network_data_nodes_list_settings) \
-  count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT); \
+  random_network_data_node = (int)(rand() % NETWORK_DATA_NODES_AMOUNT); \
   memset(main_nodes_settings,0,sizeof(main_nodes_settings)); \
-  memcpy(main_nodes_settings,network_data_nodes_list_settings[count2],strnlen(network_data_nodes_list_settings[count2],sizeof(main_nodes_settings)));
+  memcpy(main_nodes_settings,network_data_nodes_list_settings[random_network_data_node],strnlen(network_data_nodes_list_settings[random_network_data_node],sizeof(main_nodes_settings)));
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));

@@ -783,7 +783,7 @@ ge25519_scalarmult(ge25519_p3 *h, const unsigned char *a, const ge25519_p3 *p)
     ge25519_cached  t;
     int             i;
 
-    ge25519_p3_to_cached(&pi[1 - 1], p);   /* p */
+    ge25519_p3_to_cached(&pi[0], p);   /* p */
 
     ge25519_p3_dbl(&t2, p);
     ge25519_p1p1_to_p3(&p2, &t2);

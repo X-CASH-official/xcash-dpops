@@ -189,7 +189,7 @@ int create_json_data_from_database_multiple_documents_array(struct database_mult
   // Variables
   char data[BUFFER_SIZE];
   size_t count = 0;
-  size_t counter = 0;
+  size_t counter;
   size_t data_count = 1;
   size_t item_length;
   size_t value_length; 

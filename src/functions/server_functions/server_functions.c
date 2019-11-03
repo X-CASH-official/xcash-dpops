@@ -527,11 +527,6 @@ void* socket_receive_data_thread(void* parameters)
   error_message.total++; \
   pthread_exit((void *)(intptr_t)1);
 
-  if (events == NULL)
-  {
-    SOCKET_RECEIVE_DATA_THREAD_ERROR("Could not allocate the memory needed on the heap");
-  }
-
   /* get the events that have a ready signal
   set the timeout settings to -1 to wait until any file descriptor is ready
   */ 

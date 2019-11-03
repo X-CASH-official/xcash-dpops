@@ -129,7 +129,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
   {
     memcpy(message+counter,DATA,DATA_LENGTH);
-    counter += DATA_LENGTH;
   }  
   memset(&response, 0, sizeof(response));
 
@@ -304,13 +303,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     memcpy(str+13+HOST_LENGTH," on port ",9);
     memcpy(str+22+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
     color_print(str,"green"); 
-  }
-    
-  // send the message
-  if (MESSAGE_SETTINGS == 1)
-  {
     fprintf(stderr,"Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
   }
+  
   if (send_data(SOCKET,(unsigned char*)message,0,0,"") == 0)
   {
     if (MESSAGE_SETTINGS == 1)
@@ -623,13 +618,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     memcpy(str+13+HOST_LENGTH," on port ",9);
     memcpy(str+22+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
     color_print(str,"green"); 
-  }
-
-  // send the message 
-  if (MESSAGE_SETTINGS == 1)
-  {
     fprintf(stderr,"Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
   }
+  
   memset(message,0,strlen(message));
   memcpy(message,DATA,strnlen(DATA,MAXIMUM_BUFFER_SIZE));
   if (send_data(SOCKET,(unsigned char*)message,0,1,"") == 0)

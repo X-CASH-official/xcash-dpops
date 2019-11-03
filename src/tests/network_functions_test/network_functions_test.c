@@ -247,10 +247,6 @@ void general_network_test(void)
       color_print("FAILED! Test for creating the server","red");
       color_print("FAILED! Test for sending and receving data using sockets","red");
     }
-  }
-  
-  if (settings == 1)
-  {
     memset(string,0,strlen(string));
     if (send_and_receive_data_socket(string,"127.0.0.1",SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0) <= 0)
     {
@@ -259,6 +255,7 @@ void general_network_test(void)
       settings = 0;
     }
   }
+  
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   
@@ -297,7 +294,6 @@ void general_network_test(void)
     {
       color_print("FAILED! Test for creating the server","red");
       color_print("FAILED! Test for sending and receving data using sockets","red");
-      settings = 0;
     }
   }
 

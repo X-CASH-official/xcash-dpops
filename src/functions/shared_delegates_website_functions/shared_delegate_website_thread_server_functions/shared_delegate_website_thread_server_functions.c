@@ -453,7 +453,7 @@ void* payment_timer_thread(void* parameters)
   long long int updated_total;
   long long int total_amount;
   struct database_multiple_documents_fields database_multiple_documents_fields;
-  int document_count = 0;
+  int document_count;
 
   // unused parameters
   (void)parameters;
@@ -609,7 +609,7 @@ void* payment_timer_thread(void* parameters)
           PAYMENT_TIMER_THREAD_ERROR("Could not read the inactivity_count from the database.\nCould not send payments.",0);
         }
 
-        if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) == 0)
+        if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) != 0)
         {
           // convert the total_xcash to a number
           sscanf(data3, "%lld", &number);

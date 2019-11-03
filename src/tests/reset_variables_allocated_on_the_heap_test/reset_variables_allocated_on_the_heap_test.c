@@ -107,12 +107,12 @@ int reset_variables_allocated_on_the_heap_test(void)
   char* process_id_file = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char** data = (char**)calloc(5 * sizeof(char*),sizeof(char*));
   char** settings = (char**)calloc(5 * sizeof(char*),sizeof(char*));
-  int previous_system_memory_usage = 0;
-  int current_system_memory_usage = 0;
+  int previous_system_memory_usage;
+  int current_system_memory_usage;
   int current_memory_usage = 0;
   size_t count = 0;
   size_t count2 = 0;
-  size_t counter = 0;
+  size_t counter;
   struct database_document_fields database_data;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
@@ -261,8 +261,8 @@ int reset_variables_allocated_on_the_heap_test(void)
   // create the the arrays
   for (count = 0; count < 5; count++)
   {
-    sprintf(data[count],"%ld",count);
-    sprintf(settings[count],"%ld",count);
+    sprintf(data[count],"%zu",count);
+    sprintf(settings[count],"%zu",count);
   }
 
   // write the start test message
@@ -275,8 +275,7 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   // varint_decode  
   // read the current system memory usage
-  if (settings2 == 1)
-  {
+  
     previous_system_memory_usage = get_program_memory_usage(process_id_file);
     for (count = 0; count <= 1000; count++)
     {
@@ -324,11 +323,6 @@ int reset_variables_allocated_on_the_heap_test(void)
         } 
       }    
     }
-  }
-  else
-  {
-    color_print("All other test will not be run","red");
-  }
 
 
 

@@ -65,7 +65,7 @@ int analysing_code_test(void)
   size_t return_count = 0;
   size_t return_count_total = 0;
   size_t string_count = 0;
-  size_t line_count = 1;  
+  size_t line_count; 
 
   // define macros
   #define pointer_reset_all \
@@ -142,7 +142,6 @@ int analysing_code_test(void)
   }  
   memcpy(analysing_code_test_files.data[0],"XCASH_DPOPS_website_server_test.c",strnlen("XCASH_DPOPS_website_server_test.c",BUFFER_SIZE));
   analysing_code_test_files.count = 1;
-  data_count = 0;
 
   // run the test
 
@@ -172,7 +171,6 @@ int analysing_code_test(void)
         define_count = 0;
         undefine_count = 0;
         uninitialized_variable_counter = 0;
-        data_count = 0;
         data_counter = 0;
         return_count = 0;
         return_count_total = 0;
@@ -258,7 +256,7 @@ int analysing_code_test(void)
           {
             return_count++;
           }
-          else if (counter != count)
+          else
           {
             fprintf(stderr,"\033[1;31mreturn statement has not reset all variables allocated on the heap at line %zu \033[0m\n",line_count);
           }

@@ -208,7 +208,7 @@ crypto_hash_sha512_update(crypto_hash_sha512_state *state,
     unsigned long long i;
     unsigned long long r;
 
-    if (inlen <= 0U) {
+    if (inlen == 0U) {
         return 0;
     }
     r = (unsigned long long) ((state->count[1] >> 3) & 0x7f);

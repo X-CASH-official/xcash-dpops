@@ -322,6 +322,8 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1);
   }
 
+  memset(buffer,0,sizeof(buffer));
+
   // initialize the database_multiple_documents_fields struct
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_get_blocks_found",buffer);
 
