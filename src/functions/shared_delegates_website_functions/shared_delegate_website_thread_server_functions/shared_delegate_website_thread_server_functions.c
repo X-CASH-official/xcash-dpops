@@ -80,7 +80,7 @@ long long int add_block_to_blocks_found(void)
   memcpy(error_message.function[error_message.total],"add_block_to_blocks_found",25); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
   } \
@@ -463,7 +463,7 @@ void* payment_timer_thread(void* parameters)
   memcpy(error_message.function[error_message.total],"payment_timer_thread",20); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS); \
   } \

@@ -72,11 +72,11 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
 
   #define COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA(settings,block_verifiers_data) \
   memcpy(data+strlen(data),"\",\r\n \"",6); \
-  memcpy(data+strlen(data),settings,sizeof(settings)-1); \
+  memcpy(data+strlen(data),(settings),sizeof((settings))-1); \
   memcpy(data+strlen(data),"\": \"",4); \
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++) \
   { \
-    memcpy(data+strlen(data),block_verifiers_data[count2],strnlen(block_verifiers_data[count2],sizeof(data))); \
+    memcpy(data+strlen(data),(block_verifiers_data)[count2],strnlen((block_verifiers_data)[count2],sizeof(data))); \
     memcpy(data+strlen(data),"|",1); \
   }
 

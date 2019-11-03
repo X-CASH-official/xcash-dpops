@@ -231,7 +231,6 @@ int blockchain_functions_test(void)
     memset(blockchain_data.transactions[count],0,strnlen(blockchain_data.transactions[count],BUFFER_SIZE_NETWORK_BLOCK_DATA));
   }
   memset(data_test,0,strlen(data_test));
-  count = 0;
 
   // create the block data
   memcpy(blockchain_data.network_version_data,NETWORK_VERSION,sizeof(NETWORK_VERSION)-1);

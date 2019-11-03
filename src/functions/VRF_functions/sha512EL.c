@@ -80,9 +80,9 @@ static const uint64_t Krnd[80] = {
     0x5fcb6fab3ad6faecULL, 0x6c44198c4a475817ULL
 };
 
-#define Ch(x, y, z) ((x & (y ^ z)) ^ z)
-#define Maj(x, y, z) ((x & (y | z)) | (y & z))
-#define SHR(x, n) (x >> n)
+#define Ch(x, y, z) (((x) & ((y) ^ (z))) ^ (z))
+#define Maj(x, y, z) (((x) & ((y) | (z))) | ((y) & (z)))
+#define SHR(x, n) ((x) >> (n))
 #define ROTR(x, n) ROTR64(x, n)
 #define S0(x) (ROTR(x, 28) ^ ROTR(x, 34) ^ ROTR(x, 39))
 #define S1(x) (ROTR(x, 14) ^ ROTR(x, 18) ^ ROTR(x, 41))
@@ -90,18 +90,18 @@ static const uint64_t Krnd[80] = {
 #define s1(x) (ROTR(x, 19) ^ ROTR(x, 61) ^ SHR(x, 6))
 
 #define RND(a, b, c, d, e, f, g, h, k) \
-    h += S1(e) + Ch(e, f, g) + k;      \
-    d += h;                            \
-    h += S0(a) + Maj(a, b, c);
+    h += S1(e) + Ch(e, f, g) + (k);      \
+    (d) += (h);                            \
+    (h) += S0(a) + Maj(a, b, c);
 
 #define RNDr(S, W, i, ii)                                                   \
-    RND(S[(80 - i) % 8], S[(81 - i) % 8], S[(82 - i) % 8], S[(83 - i) % 8], \
-        S[(84 - i) % 8], S[(85 - i) % 8], S[(86 - i) % 8], S[(87 - i) % 8], \
-        W[i + ii] + Krnd[i + ii])
+    RND((S)[(80 - (i)) % 8], (S)[(81 - (i)) % 8], (S)[(82 - (i)) % 8], (S)[(83 - (i)) % 8], \
+        (S)[(84 - (i)) % 8], (S)[(85 - (i)) % 8], (S)[(86 - (i)) % 8], (S)[(87 - (i)) % 8], \
+        (W)[(i) + (ii)] + Krnd[(i) + (ii)])
 
 #define MSCH(W, ii, i) \
-    W[i + ii + 16] =   \
-        s1(W[i + ii + 14]) + W[i + ii + 9] + s0(W[i + ii + 1]) + W[i + ii]
+    (W)[(i) + (ii) + 16] =   \
+        s1((W)[(i) + (ii) + 14]) + (W)[(i) + (ii) + 9] + s0((W)[(i) + (ii) + 1]) + (W)[(i) + (ii)]
 
 static void
 SHA512_Transform(uint64_t *state, const uint8_t block[128], uint64_t W[80],

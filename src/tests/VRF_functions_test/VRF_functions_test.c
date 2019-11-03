@@ -47,7 +47,7 @@ int VRF_functions_test(void)
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
   unsigned char vrf_proof[crypto_vrf_PROOFBYTES];
-  unsigned char* vrf_beta = (unsigned char*)calloc(250,sizeof(char));
+  unsigned char* vrf_beta = (unsigned char*)calloc(250,sizeof(unsigned char));
 
   // define macros
   #define DATA_HASH_TEXT "X-CASH Proof Of Stake"

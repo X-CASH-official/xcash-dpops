@@ -406,7 +406,7 @@ int add_round_statistics(void)
   size_t block_verifier_total_rounds_count2 = 0;
   size_t most_block_producer_total_rounds_count = 0;
   size_t most_block_producer_total_rounds_count2 = 0;
-  double total;
+  double total = 0;
   double total2;
   double total3;
   mongoc_collection_t* collection;
@@ -585,12 +585,12 @@ int calculate_main_nodes_roles(void)
 
   #define CALCULATE_BLOCK_PRODUCER_DATA(block_producer_settings,current_block_verifiers_settings) \
   memset(block_producer_settings,0,sizeof(block_producer_settings)); \
-  memcpy(block_producer_settings,current_block_verifiers_settings[count2],strnlen(current_block_verifiers_settings[count2],sizeof(block_producer_settings)));
+  memcpy(block_producer_settings,(current_block_verifiers_settings)[count2],strnlen((current_block_verifiers_settings)[count2],sizeof(block_producer_settings)));
 
   #define CALCULATE_MAIN_NODES_LIST_DATA(main_nodes_settings,network_data_nodes_list_settings) \
   random_network_data_node = (int)(rand() % NETWORK_DATA_NODES_AMOUNT); \
   memset(main_nodes_settings,0,sizeof(main_nodes_settings)); \
-  memcpy(main_nodes_settings,network_data_nodes_list_settings[random_network_data_node],strnlen(network_data_nodes_list_settings[random_network_data_node],sizeof(main_nodes_settings)));
+  memcpy(main_nodes_settings,(network_data_nodes_list_settings)[random_network_data_node],strnlen((network_data_nodes_list_settings)[random_network_data_node],sizeof(main_nodes_settings)));
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));

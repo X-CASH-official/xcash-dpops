@@ -539,7 +539,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   memcpy(message,"{\"Error\":\"Could not get the delegates voters list\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     POINTER_RESET_VOTES_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE); \
     POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS); \

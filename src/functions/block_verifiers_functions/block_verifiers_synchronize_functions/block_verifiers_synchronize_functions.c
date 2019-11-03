@@ -139,7 +139,7 @@ int sync_all_block_verifiers_list(void)
   } \
   for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
-    memcpy(block_verifiers_data[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2); \
+    memcpy((block_verifiers_data)[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2); \
     count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1; \
   }
 
@@ -562,7 +562,7 @@ int sync_reserve_proofs_database(int settings)
   data3 = NULL; \
 
   #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message,settings) \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
@@ -966,7 +966,7 @@ int sync_reserve_bytes_database(int settings)
   data3 = NULL; \
 
   #define SYNC_RESERVE_BYTES_DATABASE_ERROR(message,settings) \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
@@ -1342,7 +1342,7 @@ int sync_delegates_database(int settings)
   // define macros
   #define DATABASE_COLLECTION "delegates"
   #define SYNC_DELEGATES_DATABASE_ERROR(message,settings) \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_delegates_database",23); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
@@ -1613,7 +1613,7 @@ int sync_statistics_database(int settings)
   // define macros
   #define DATABASE_COLLECTION "statistics"
   #define SYNC_STATISTICS_DATABASE_ERROR(message,settings) \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_statistics_database",24); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \

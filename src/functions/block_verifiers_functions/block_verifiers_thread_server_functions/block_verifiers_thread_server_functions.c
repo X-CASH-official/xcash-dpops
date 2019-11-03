@@ -553,7 +553,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
 
   // define macros
   #define SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(message_settings) \
-  if (message_settings == 0) \
+  if ((message_settings) == 0) \
   { \
     close(client_socket); \
   } \

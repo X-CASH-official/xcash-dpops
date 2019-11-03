@@ -41,7 +41,7 @@ int varint_encode(long long int number, char *result, const size_t RESULT_TOTAL_
   size_t length;
   size_t count = 0;
   size_t count2 = 0;
-  int binary_numbers[BITS_IN_BYTE];
+  int binary_numbers[BITS_IN_BYTE] = {0,0,0,0,0,0,0,0};
   int binary_number_copy;
   long long int number_copy = (long long int)number;  
 
@@ -90,8 +90,6 @@ int varint_encode(long long int number, char *result, const size_t RESULT_TOTAL_
   set the first bit to 1 for all groups of 7 except for the first group of 7
   */
   length = strnlen(data,sizeof(data)) + (strnlen(data,sizeof(data)) / (BITS_IN_BYTE-1));
-  count = 0;
-  count2 = 0;
 
  for (count = 0, count2 = 0; count < length; count++)
  {

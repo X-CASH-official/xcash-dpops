@@ -72,13 +72,13 @@ int start_new_round(void)
   return 0;
 
   #define RESTART_XCASH_DAEMON(settings) \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     system("systemctl stop XCASH_Daemon_Block_Verifier"); \
     sleep(10); \
     system("systemctl start XCASH_Daemon"); \
   } \
-  else if (settings == 1) \
+  else if ((settings) == 1) \
   { \
     system("systemctl stop XCASH_Daemon"); \
     sleep(10); \

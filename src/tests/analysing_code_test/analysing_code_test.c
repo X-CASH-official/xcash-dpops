@@ -164,7 +164,6 @@ int analysing_code_test(void)
         memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
         memcpy(result_test,data_test,strnlen(data_test,BUFFER_SIZE));
         // reset the counters
-        count = 0;
         counter = 0;
         pointer_reset_all_count = 0;
         pointer_reset_all_counter = 0;

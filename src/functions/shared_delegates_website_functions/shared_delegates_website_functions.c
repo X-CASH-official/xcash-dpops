@@ -83,7 +83,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     pointer_reset_database_array; \
   } \
@@ -308,7 +308,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   memcpy(message,"{\"Error\":\"Could not get the delegates blocks found\"}",52); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
   } \
@@ -379,7 +379,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count); \
   } \
@@ -470,7 +470,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
-  if (settings == 0) \
+  if ((settings) == 0) \
   { \
     POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS); \
   } \

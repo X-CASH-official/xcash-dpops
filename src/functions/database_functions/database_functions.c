@@ -224,7 +224,7 @@ Return: 0 if an error has occured, 1 if successfull
 int get_database_data_hash(char *data_hash, const char* DATABASE, const char* COLLECTION)
 {
   // Variables
-  unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(char));
+  unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(unsigned char));
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char data2[BUFFER_SIZE];
   size_t count;
