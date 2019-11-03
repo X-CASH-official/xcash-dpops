@@ -842,6 +842,8 @@ At this point you can run the test setup. Make sure to run the main server (NETW
 
 Start all of the servers right after 0 seconds of a divisible by 5 minute (0,5,10 etc) this way the block creation process will start at the next divisible by 5 minute and will give your nodes enough time to sync and start up (although this usually only takes a minute)
 
+Also make sure you run xcahd with the `--block-verifier` flag
+
 
 
 ## How to Debug the Code on a Server
