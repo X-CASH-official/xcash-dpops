@@ -386,6 +386,12 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not get the current block height");
   }
 
+  // get the previous block hash
+  if (get_previous_block_hash(previous_block_hash,0) == 0)
+  {
+    MAIN_ERROR("Could not get the previous block hash");
+  }
+
   // set the default parameter settings
   total_threads = get_nprocs();
   delegates_website = 0;

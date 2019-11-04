@@ -359,11 +359,9 @@ int start_current_round_start_blocks(void)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_public_key_round_part_4 or vrf_secret_key_round_part_4");
   }
-  if (get_previous_block_hash(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0) == 0)
-  {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not get the previous block hash");
-  }  
 
+  memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data));
+  memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH);
   memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,BLOCK_HASH_LENGTH);
   memcpy(VRF_data.vrf_alpha_string_round_part_4,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BLOCK_HASH_LENGTH);
 
@@ -674,11 +672,9 @@ int data_network_node_create_block(void)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the vrf_public_key_round_part_4 or vrf_secret_key_round_part_4");
     }
-    if (get_previous_block_hash(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0) == 0)
-    {
-      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous block hash");
-    }  
 
+    memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data));
+    memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,BLOCK_HASH_LENGTH);
     memcpy(VRF_data.vrf_alpha_string_round_part_4,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BLOCK_HASH_LENGTH);
 
@@ -1104,10 +1100,7 @@ int block_verifiers_create_VRF_data(void)
 
   // create the VRF alpha string using all of the random data from the block verifiers
   memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_4));
-  if (get_previous_block_hash((char*)VRF_data.vrf_alpha_string_round_part_4,0) == 0)
-  {
-    BLOCK_VERIFIERS_CREATE_VRF_DATA_ERROR("Could not get the previous block hash");
-  }
+  memcpy(VRF_data.vrf_alpha_string_round_part_4,previous_block_hash,BLOCK_HASH_LENGTH);
     
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {

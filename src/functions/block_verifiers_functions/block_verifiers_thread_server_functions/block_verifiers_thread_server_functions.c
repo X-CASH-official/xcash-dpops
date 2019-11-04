@@ -89,6 +89,7 @@ void* current_block_height_timer_thread(void* parameters)
   do
   {
     get_current_block_height(current_block_height,0);
+    get_previous_block_hash(previous_block_hash,0);
     sscanf(current_block_height,"%zu", &count);
     sleep(1);
   } while (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT);
@@ -124,9 +125,10 @@ void* current_block_height_timer_thread(void* parameters)
         get_current_block_height(data,0);
         if (memcmp(data,current_block_height,strlen(current_block_height)) != 0)
         {      
-          // replace the current_block_height variable
+          // replace the current_block_height and the previous block hash
           memset(current_block_height,0,strlen(current_block_height));
           memcpy(current_block_height,data,strnlen(data,BUFFER_SIZE));
+          get_previous_block_hash(previous_block_hash,0);
 
           block_verifier_settings = start_new_round();
           if (block_verifier_settings == 0)

@@ -1338,7 +1338,6 @@ Return: 0 if an error has occured or it is not verified, 1 if successfull
 int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const int TRANSACTIONS_SETTINGS, const char* BLOCK_HEIGHT, const char* PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES, const int BLOCK_VERIFIERS_TOTAL)
 {
   // Variables
-  char* previous_block_hash = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1357,8 +1356,6 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
 
   // define macros
   #define pointer_reset_all \
-  free(previous_block_hash); \
-  previous_block_hash = NULL; \
   free(block_height); \
   block_height = NULL; \
   free(data); \
@@ -1382,12 +1379,8 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   return 0; 
 
   // check if the memory needed was allocated on the heap successfully
-  if (previous_block_hash == NULL || block_height == NULL || data == NULL || data2 == NULL || network_block_string == NULL || previous_network_block_reserve_bytes_block_verifiers_public_addresses_data == NULL)
-  {
-    if (previous_block_hash != NULL)
-    {
-      pointer_reset(previous_block_hash);
-    }
+  if (block_height == NULL || data == NULL || data2 == NULL || network_block_string == NULL || previous_network_block_reserve_bytes_block_verifiers_public_addresses_data == NULL)
+  {   
     if (block_height != NULL)
     {
       pointer_reset(block_height);
@@ -1445,11 +1438,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
 
   // previous_block_hash
   if (PREVIOUS_BLOCK_HASH_SETTINGS == 1)
-  {
-    if (get_previous_block_hash(previous_block_hash,0) == 0)
-    {
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not get the previous block hash");
-    }
+  {    
     if (blockchain_data.previous_block_hash_data_length != BLOCK_HASH_LENGTH || memcmp(blockchain_data.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH) != 0)
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid previous block hash");

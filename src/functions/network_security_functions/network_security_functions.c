@@ -37,7 +37,6 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char previous_block_hash[BUFFER_SIZE];
   char random_data[RANDOM_STRING_LENGTH+1];
   char data[BUFFER_SIZE];
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
@@ -76,8 +75,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     print_error_message(current_date_and_time,current_UTC_date_and_time,data);
     exit(0);
   } 
-
-  memset(previous_block_hash,0,sizeof(previous_block_hash));
+  
   memset(random_data,0,sizeof(random_data));
   memset(data,0,sizeof(data));
   
@@ -86,13 +84,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   {
     SIGN_DATA_ERROR("Could not create the random data");
   }
-
-  // get the previous block hash
-  if (get_previous_block_hash(previous_block_hash,0) == 0)
-  {  
-    SIGN_DATA_ERROR("Could not get the previous block hash");
-  }
-
+  
   pthread_rwlock_rdlock(&rwlock);
   // create the message
   memcpy(result,message,strlen(message)-1);
@@ -183,7 +175,6 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   // Variables
   char message_settings[BUFFER_SIZE];
   char public_address[BUFFER_SIZE];
-  char previous_block_hash[BUFFER_SIZE];
   char message_previous_block_hash[BUFFER_SIZE];
   char message_current_round_part[BUFFER_SIZE];
   char message_current_round_part_backup_node[BUFFER_SIZE];
@@ -233,7 +224,6 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
 
   memset(message_settings,0,sizeof(message_settings));
   memset(public_address,0,sizeof(public_address));
-  memset(previous_block_hash,0,sizeof(previous_block_hash));
   memset(message_previous_block_hash,0,sizeof(message_previous_block_hash));
   memset(message_current_round_part,0,sizeof(message_current_round_part));
   memset(message_current_round_part_backup_node,0,sizeof(message_current_round_part_backup_node));
@@ -390,11 +380,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
 
   // verify if the previous block hash is correct
   if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",sizeof(message_settings)) != 0)
-  {
-    if (get_previous_block_hash(previous_block_hash,0) == 0)
-    {
-      VERIFY_DATA_ERROR("Could not get the previous block hash");
-    }
+  {    
     if (strncmp(previous_block_hash,message_previous_block_hash,BUFFER_SIZE) != 0)
     {
       VERIFY_DATA_ERROR("Invalid previous block hash");
