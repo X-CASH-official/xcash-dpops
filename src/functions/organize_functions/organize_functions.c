@@ -87,7 +87,9 @@ Return: 0 if an error has occured, otherwise the amount of delegates in the stru
 int organize_delegates(struct delegates* delegates)
 {
   // Variables
-  char data[BUFFER_SIZE];  
+  char data[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time; 
   size_t count = 0;
   size_t count2 = 0;
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -99,7 +101,7 @@ int organize_delegates(struct delegates* delegates)
   memcpy(error_message.function[error_message.total],"organize_delegates",18); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  print_error_message(date_and_time,UTC_date_and_time,data); \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS+1); \
   return 0;
 
@@ -135,7 +137,7 @@ int organize_delegates(struct delegates* delegates)
          memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27);
          memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
          error_message.total++;
-         print_error_message(date_and_time,UTC_date_and_time,data);  
+         print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
          exit(0);
        }
      }      

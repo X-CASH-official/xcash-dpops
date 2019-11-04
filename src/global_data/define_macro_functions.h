@@ -88,7 +88,7 @@ color_print(TEST_OUTLINE,"red"); \
 fprintf(stderr,"\033[1;31m%s: Error\033[0m\n",error_message.function[0]); \
 get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 memset(buffer,0,sizeof(buffer)); \
-strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time); \
+strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time); \
 fprintf(stderr,"\033[1;31m%s\033[0m",buffer); \
 color_print(TEST_OUTLINE,"red"); \
 fprintf(stderr,"\033[1;31mFunction Calls:\033[0m\n"); \
@@ -124,7 +124,7 @@ color_print(TEST_OUTLINE,"blue"); \
 fprintf(stderr,"\033[1;34m%s\033[0m\n",string); \
 get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 memset(buffer,0,sizeof(buffer)); \
-strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time); \
+strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time); \
 fprintf(stderr,"\033[1;34m%s\033[0m",buffer); \
 color_print(TEST_OUTLINE,"blue");
 
@@ -169,9 +169,8 @@ Parameters:
 */
 
 #define get_current_UTC_time(current_date_and_time,current_UTC_date_and_time) \
-current_UTC_date_and_time = NULL; \
 time(&current_date_and_time); \
-current_UTC_date_and_time = gmtime(&current_date_and_time);
+gmtime_r(&current_date_and_time,&current_UTC_date_and_time);
 
 
 
@@ -191,7 +190,7 @@ do \
 { \
   usleep(200000); \
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
-} while (current_UTC_date_and_time->tm_min % BLOCK_TIME != minutes); 
+} while (current_UTC_date_and_time.tm_min % BLOCK_TIME != minutes); 
 
 
 
@@ -211,7 +210,7 @@ do \
 { \
   usleep(200000); \
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
-} while (current_UTC_date_and_time->tm_sec != seconds);
+} while (current_UTC_date_and_time.tm_sec != seconds);
 
 
 
@@ -232,7 +231,7 @@ do \
 { \
   usleep(200000); \
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
-} while (current_UTC_date_and_time->tm_min % BLOCK_TIME != minutes || current_UTC_date_and_time->tm_sec != seconds);
+} while (current_UTC_date_and_time.tm_min % BLOCK_TIME != minutes || current_UTC_date_and_time.tm_sec != seconds);
 
 
 

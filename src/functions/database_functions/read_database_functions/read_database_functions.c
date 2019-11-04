@@ -128,17 +128,19 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   const bson_t* current_document;
 
   // Variables
-  mongoc_client_t* database_client_thread = NULL;
-  mongoc_collection_t* collection;
-  mongoc_cursor_t* document_settings = NULL;
-  bson_error_t error;
-  bson_t* document = NULL; 
   char* message;
   char buffer[1024];
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
   char* settings = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char* message_copy1;
   char* message_copy2;
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  mongoc_client_t* database_client_thread = NULL;
+  mongoc_collection_t* collection;
+  mongoc_cursor_t* document_settings = NULL;
+  bson_error_t error;
+  bson_t* document = NULL; 
   int count = 0;
 
   // define macros
@@ -171,7 +173,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(date_and_time,UTC_date_and_time,buffer);  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   } 
 
@@ -359,14 +361,16 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   const bson_t* current_document;
 
   // Variables
+  char* message;
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
   bson_error_t error;
   bson_t* document = NULL; 
-  char* message;
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char buffer[1024];
   int count = 0;
 
   // define macros
@@ -385,7 +389,7 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     memcpy(error_message.function[error_message.total],"read_document_all_fields_from_collection",40);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(date_and_time,UTC_date_and_time,buffer);  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   } 
 
@@ -508,15 +512,17 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   const bson_t* current_document;
 
   // Variables
+  char* message;
+  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
   bson_error_t error;
   bson_t* document = NULL;  
   bson_t* document_options = NULL;
-  char* message;
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char buffer[1024];
   size_t count = 1;
   size_t counter = 0;
 
@@ -537,7 +543,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     memcpy(error_message.function[error_message.total],"read_multiple_documents_all_fields_from_collection",50);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(date_and_time,UTC_date_and_time,buffer);  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 

@@ -57,6 +57,8 @@ int update_block_verifiers_list(void)
 {
   // Variables 
   char data[1024];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   size_t count;
   size_t count2;
@@ -750,6 +752,8 @@ int get_delegates_online_status(void)
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES];
   int epoll_fd_copy;

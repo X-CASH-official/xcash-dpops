@@ -163,6 +163,8 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
   char* datacopy = data2; 
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
@@ -196,7 +198,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     memcpy(error_message.function[error_message.total],"insert_multiple_documents_into_collection_json",46);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(date_and_time,UTC_date_and_time,buffer);  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
   }
 

@@ -33,7 +33,7 @@ for (count = 0; (int)count < maximum_amount; count++) \
     memcpy(error_message.function[error_message.total],function_name,sizeof(function_name)-1); \
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48); \
     error_message.total++; \
-    print_error_message(date_and_time,UTC_date_and_time,buffer); \
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer); \
     exit(0); \
   } \
 }
@@ -74,7 +74,7 @@ for (count = 0; count < maximum_count; count++) \
     memcpy(error_message.function[error_message.total],function_name,sizeof(function_name)-1); \
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48); \
     error_message.total++; \
-    print_error_message(date_and_time,UTC_date_and_time,buffer); \
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer); \
     exit(0); \
   } \
 }
@@ -101,7 +101,7 @@ for (count = 0; (int)count < maximum_amount; count++) \
     memcpy(error_message.function[error_message.total],function_name,sizeof(function_name)-1); \
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48); \
     error_message.total++; \
-    print_error_message(date_and_time,UTC_date_and_time,buffer); \
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer); \
     exit(0); \
   } \
 }
@@ -128,7 +128,7 @@ for (count = 0; (int)count < maximum_amount; count++) \
     memcpy(error_message.function[error_message.total],function_name,sizeof(function_name)-1); \
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48); \
     error_message.total++; \
-    print_error_message(date_and_time,UTC_date_and_time,buffer); \
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer); \
     exit(0); \
   } \
 }
@@ -152,7 +152,7 @@ for (count = 0; (int)count < maximum_amount; count++) \
     memcpy(error_message.function[error_message.total],function_name,sizeof(function_name)-1); \
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48); \
     error_message.total++; \
-    print_error_message(date_and_time,UTC_date_and_time,buffer); \
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer); \
     exit(0); \
   } \
 } \
@@ -180,7 +180,7 @@ for (count = 0; (int)count < total_document_count; count++) \
       memcpy(error_message.function[error_message.total],function_name,sizeof(function_name)-1); \
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48); \
       error_message.total++; \
-      print_error_message(date_and_time,UTC_date_and_time,buffer); \
+      print_error_message(current_date_and_time,current_UTC_date_and_time,buffer); \
       exit(0); \
     } \
   } \

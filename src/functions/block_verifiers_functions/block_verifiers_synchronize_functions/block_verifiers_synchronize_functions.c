@@ -284,6 +284,8 @@ int get_synced_block_verifiers(void)
   // Variables
   char data[BUFFER_SIZE];
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
 
@@ -318,12 +320,12 @@ int get_synced_block_verifiers(void)
   } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
   
   // get the current time
-  get_current_UTC_time(date_and_time,UTC_date_and_time);
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
   
   memcpy(data,"Connecting to network data node ",32);
   memcpy(data+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
   memcpy(data+strlen(data)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
-  strftime(data2,MAXIMUM_BUFFER_SIZE,"%a %d %b %Y %H:%M:%S UTC\n",&UTC_date_and_time);
+  strftime(data2,MAXIMUM_BUFFER_SIZE,"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
   memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
   fprintf(stderr,"%s\n",data);
   memset(data,0,sizeof(data));

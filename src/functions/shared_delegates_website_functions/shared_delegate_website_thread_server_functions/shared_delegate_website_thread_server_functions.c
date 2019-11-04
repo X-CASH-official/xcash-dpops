@@ -65,6 +65,8 @@ long long int add_block_to_blocks_found(void)
   char block_hash[BUFFER_SIZE];  
   char block_reward[BUFFER_SIZE];
   char block_date_and_time[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count;
   int count2;
   long long int number;
@@ -195,6 +197,8 @@ int get_delegates_total_voters(struct voters* voters)
   // Variables
   char data[1024];
   char data2[1024];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count;
   int count2;
   int counter;
@@ -279,6 +283,8 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count;
   long long int number;
   long long int total_votes;
