@@ -724,7 +724,7 @@ int sync_reserve_proofs_database(int settings)
       }
      
       memset(data,0,strlen(data));
-      if (send_and_receive_data_socket(data,block_verifiers_ip_address,SEND_DATA_PORT,data2,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+      if (send_and_receive_data_socket(data,block_verifiers_ip_address,SEND_DATA_PORT,data2,SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS,"",0) == 0)
       {
         SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
       }
@@ -1131,7 +1131,7 @@ int sync_reserve_bytes_database(int settings)
       }
      
       memset(data,0,strlen(data));
-      if (send_and_receive_data_socket(data,block_verifiers_ip_address,SEND_DATA_PORT,data2,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
+      if (send_and_receive_data_socket(data,block_verifiers_ip_address,SEND_DATA_PORT,data2,SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS,"",0) == 0)
       {
         SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
       }

@@ -104,7 +104,7 @@ int send_payment(const char* PUBLIC_ADDRESS, const char* TOTAL, char *tx_hash, c
   memcpy(message+strlen(message),PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
   memcpy(message+strlen(message),"\"}],\"priority\":0,\"ring_size\":21,\"get_tx_keys\": true}}",53);
 
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_PAYMENT_TIMEOUT_SETTINGS,"send payment",0) <= 0)
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS,"send payment",0) <= 0)
   {  
     return 0;
   }
