@@ -82,6 +82,8 @@ int main(int parameters_count, char* parameters[])
   database_settings = 1;
 
   pthread_rwlock_init(&rwlock,NULL);
+  pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
+  pthread_mutex_init(&lock, NULL);
 
   // initialize the error_message struct
   for (count = 0; count < TOTAL_ERROR_MESSAGES; count++)

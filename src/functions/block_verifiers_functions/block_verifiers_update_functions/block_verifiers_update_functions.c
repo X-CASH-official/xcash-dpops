@@ -865,8 +865,9 @@ int get_delegates_online_status(void)
     /* create the epoll_event struct
     EPOLLIN = signal when the file descriptor is ready to read
     EPOLLOUT = signal when the file descriptor is ready to write
+    EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
     */  
-    events[count].events = EPOLLIN | EPOLLOUT;
+    events[count].events = EPOLLIN | EPOLLOUT | EPOLLONESHOT;
     events[count].data.fd = delegates_online_status[count].socket;
 
     // add the delegates socket to the epoll file descriptor
@@ -905,30 +906,30 @@ int get_delegates_online_status(void)
   {
     if (memcmp(delegates_online_status[count].public_address,"",1) != 0)
     {
-    // create the message
-    memset(data2,0,sizeof(data2));
-    memcpy(data2,"{\"public_address\":\"",19);
-    memcpy(data2+19,delegates_online_status[count].public_address,XCASH_WALLET_LENGTH);
-    memcpy(data2+117,"\"}",2);
+      // create the message
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,"{\"public_address\":\"",19);
+      memcpy(data2+19,delegates_online_status[count].public_address,XCASH_WALLET_LENGTH);
+      memcpy(data2+117,"\"}",2);
 
-    if (delegates_online_status[count].settings == 1)
-    {
-      memset(data,0,sizeof(data));
-      memcpy(data,"{\"online_status\":\"true\"}",24);
-    }
-    else
-    {
-      memset(data,0,sizeof(data));
-      memcpy(data,"{\"online_status\":\"false\"}",25);
-    }   
+      if (delegates_online_status[count].settings == 1)
+      {
+        memset(data,0,sizeof(data));
+        memcpy(data,"{\"online_status\":\"true\"}",24);
+      }
+      else
+      {
+        memset(data,0,sizeof(data));
+        memcpy(data,"{\"online_status\":\"false\"}",25);
+      }   
 
-    pthread_rwlock_rdlock(&rwlock);
-    while(database_settings != 1)
-    {
-      sleep(1);
-    }
-    pthread_rwlock_unlock(&rwlock);
-    update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,data,0);  
+      pthread_rwlock_rdlock(&rwlock);
+      while(database_settings != 1)
+      {
+        sleep(1);
+      }
+      pthread_rwlock_unlock(&rwlock);
+      update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,data,0);  
     }
   }
 

@@ -2001,8 +2001,9 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       /* create the epoll_event struct
       EPOLLIN = signal when the file descriptor is ready to read
       EPOLLOUT = signal when the file descriptor is ready to write
+      EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
       */  
-      events[count].events = EPOLLIN | EPOLLOUT;
+      events[count].events = EPOLLIN | EPOLLOUT | EPOLLONESHOT;
       events[count].data.fd = block_verifiers_send_data_socket[count].socket;
 
       // add the delegates socket to the epoll file descriptor
@@ -2073,9 +2074,16 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       {
         bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL);
         if (bytes < 0)
-        { 
+        {           
           count++;
-          goto start;
+          if (count == BLOCK_VERIFIERS_AMOUNT)
+          {
+            break;
+          }
+          else
+          {
+            goto start;
+          }
         }
         else if (bytes == 0)  
         {

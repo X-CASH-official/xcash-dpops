@@ -308,10 +308,12 @@ int socket_thread(int client_socket)
   }
   
   // get the IP address or the reverse DNS name
+  pthread_mutex_lock(&lock);
   if (getnameinfo((struct sockaddr *)&addr, addrlength, client_address, sizeof(client_address), NULL, 0, 0) != 0)
   {
     getnameinfo((struct sockaddr *)&addr, addrlength, client_address, sizeof(client_address), NULL, 0, NI_NUMERICHOST);
   }
+  pthread_mutex_unlock(&lock); 
   
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);

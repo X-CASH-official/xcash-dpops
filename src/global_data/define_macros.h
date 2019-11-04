@@ -12,7 +12,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_WALLET_PREFIX "XCA" // The prefix of a XCA address
 #define XCASH_TOTAL_SUPPLY 100000000000 // The total supply
 #define XCASH_PREMINE_TOTAL_SUPPLY 40000000000 // The total supply of the premine
-#define XCASH_PREMINE_CIRCULATING_SUPPLY 7000000000 // The circulating supply of the premine
+#define XCASH_PREMINE_CIRCULATING_SUPPLY 12823298491 // The circulating supply of the premine
 #define XCASH_WALLET_DECIMAL_PLACES_AMOUNT 1000000
 #define XCASH_EMMISION_FACTOR 524288 // The emmision factor (2^19)
 #define XCASH_DPOPS_EMMISION_FACTOR 262144 // The XCASH_DPOPS emmision factor (2^18)
