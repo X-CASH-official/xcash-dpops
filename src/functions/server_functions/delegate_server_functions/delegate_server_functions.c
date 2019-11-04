@@ -95,7 +95,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   get_current_UTC_time(date_and_time,UTC_date_and_time);
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (UTC_date_and_time->tm_min % BLOCK_TIME == 4 && UTC_date_and_time->tm_sec > 25 && UTC_date_and_time->tm_sec < 50)
+  if (UTC_date_and_time.tm_min % BLOCK_TIME == 4 && UTC_date_and_time.tm_sec > 25 && UTC_date_and_time.tm_sec < 50)
   {
     send_data(CLIENT_SOCKET,(unsigned char*)"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",0,0,"");
     return 0;

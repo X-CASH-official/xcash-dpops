@@ -61,7 +61,7 @@ int check_if_databases_are_synced(const int SETTINGS)
   // Variables
   char data[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
 
   // define macros
@@ -124,7 +124,7 @@ int sync_all_block_verifiers_list(void)
   char message[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
@@ -192,7 +192,7 @@ int sync_all_block_verifiers_list(void)
     memcpy(data3,"Connecting to network data node ",32);
     memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
     memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
-    strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
+    strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
     memcpy(data3+strlen(data3),data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
     fprintf(stderr,"%s\n",data3);
     memset(data2,0,sizeof(data2));
@@ -323,7 +323,7 @@ int get_synced_block_verifiers(void)
   memcpy(data,"Connecting to network data node ",32);
   memcpy(data+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
   memcpy(data+strlen(data)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
-  strftime(data2,MAXIMUM_BUFFER_SIZE,"%a %d %b %Y %H:%M:%S UTC\n",UTC_date_and_time);
+  strftime(data2,MAXIMUM_BUFFER_SIZE,"%a %d %b %Y %H:%M:%S UTC\n",&UTC_date_and_time);
   memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
   fprintf(stderr,"%s\n",data);
   memset(data,0,sizeof(data));
@@ -397,7 +397,7 @@ int sync_check_reserve_proofs_database(int settings)
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
 
   // define macros  
@@ -550,7 +550,7 @@ int sync_reserve_proofs_database(int settings)
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count = 0;
   size_t count2;
   
@@ -794,7 +794,7 @@ int sync_check_reserve_bytes_database(int settings)
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   size_t current_reserve_bytes_database;
 
@@ -953,7 +953,7 @@ int sync_reserve_bytes_database(int settings)
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count = 0;
   size_t count2;
   size_t current_reserve_bytes_database;
@@ -1201,7 +1201,7 @@ int sync_check_delegates_database(int settings)
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
 
   // define macros 
@@ -1336,7 +1336,7 @@ int sync_delegates_database(int settings)
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count = 0;
   
   // define macros
@@ -1472,7 +1472,7 @@ int sync_check_statistics_database(int settings)
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
 
   // define macros 
@@ -1607,7 +1607,7 @@ int sync_statistics_database(int settings)
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count = 0;
   
   // define macros

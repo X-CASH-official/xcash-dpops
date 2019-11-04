@@ -589,7 +589,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
 
   // define macros
   #define pointer_reset_all \
@@ -895,7 +895,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
 
   // define macros
   #define pointer_reset_all \
@@ -1073,7 +1073,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -1248,7 +1248,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
 
   // define macros
   #define DATABASE_COLLECTION "statistics"

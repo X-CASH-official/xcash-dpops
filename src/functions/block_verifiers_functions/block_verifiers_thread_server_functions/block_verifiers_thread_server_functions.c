@@ -63,7 +63,7 @@ void* current_block_height_timer_thread(void* parameters)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   int settings = 0;
   int block_verifier_settings;
@@ -98,7 +98,7 @@ void* current_block_height_timer_thread(void* parameters)
     // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
     usleep(200000);
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if ((settings == 0 && current_UTC_date_and_time->tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time->tm_sec == 0) || (settings == 1 && current_UTC_date_and_time->tm_min % BLOCK_TIME == 0))
+    if ((settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 0) || (settings == 1 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0))
     {
       if (settings == 0)
       {        
@@ -166,7 +166,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   char* message = (char*)calloc(524288000,sizeof(char)); // 500 MB
   char* reserve_proofs[MAXIMUM_INVALID_RESERVE_PROOFS];
   int count;
@@ -247,7 +247,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   for (;;)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec == 25 && invalid_reserve_proofs.count > 0)
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec == 25 && invalid_reserve_proofs.count > 0)
     {
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
       sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
@@ -540,7 +540,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count = 0;
   int sent;
   int bytes;
@@ -671,7 +671,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   memcpy(str+strlen(str),buffer2,strnlen(buffer2,BUFFER_SIZE));
   memcpy(str+strlen(str),"\n",1);
   memset(data2,0,sizeof(data2));
-  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
+  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
   memcpy(str+strlen(str),data2,strnlen(data2,sizeof(str)));
   color_print(str,"green");
   memset(str,0,sizeof(str));

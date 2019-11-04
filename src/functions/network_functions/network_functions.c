@@ -65,7 +65,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   char str[BUFFER_SIZE]; 
   char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count; 
   int counter = 0; 
   size_t receive_data_result; 
@@ -893,7 +893,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   // Variables
   size_t count;
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   long long int total;
   long long int sent;
   long long int bytes;
@@ -918,7 +918,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     // get the current time
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
-    strftime(current_date_and_time_data,sizeof(current_date_and_time_data),"%a, %d %b %Y %H:%M:%S GMT",current_UTC_date_and_time);
+    strftime(current_date_and_time_data,sizeof(current_date_and_time_data),"%a, %d %b %Y %H:%M:%S GMT",&current_UTC_date_and_time);
 
     memcpy(message,"HTTP/1.1 ",9);
     snprintf(message+9,MAXIMUM_BUFFER_SIZE-9,"%d",MESSAGE_SETTINGS);

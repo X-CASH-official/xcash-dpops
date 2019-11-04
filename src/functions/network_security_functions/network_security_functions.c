@@ -43,7 +43,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
 
   // define macros
   #define pointer_reset_all \
@@ -192,7 +192,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   char data[BUFFER_SIZE];
   char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t message_length;
   size_t count;
   size_t count2;

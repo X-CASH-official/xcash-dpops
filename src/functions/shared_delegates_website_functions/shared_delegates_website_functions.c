@@ -61,7 +61,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   char data[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
   size_t counter;

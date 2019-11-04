@@ -60,7 +60,7 @@ int start_new_round(void)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   int settings;
 
@@ -263,7 +263,7 @@ int start_current_round_start_blocks(void)
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   size_t count; 
   size_t count2; 
@@ -575,7 +575,7 @@ int data_network_node_create_block(void)
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   size_t count; 
   size_t count2; 
@@ -1582,7 +1582,7 @@ int block_verifiers_create_block(void)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
 
@@ -1883,7 +1883,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   int epoll_fd_copy;
   struct epoll_event events[BLOCK_VERIFIERS_AMOUNT];
   struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
@@ -2063,7 +2063,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
       memcpy(data2+strlen(data2),"\n",1);
       memset(data3,0,sizeof(data3));
-      strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
+      strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
       memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
       color_print(data2,"green");
       

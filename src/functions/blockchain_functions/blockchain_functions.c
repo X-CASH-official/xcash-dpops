@@ -286,7 +286,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   char* data3;
   char* message_copy1;
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
   size_t count3;
@@ -1254,7 +1254,7 @@ int add_data_hash_to_network_block_string(char* network_block_string, char *netw
   char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
 
@@ -1348,7 +1348,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   char buffer[1024];
   char* message_copy1;
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   int counter;
   size_t count2;

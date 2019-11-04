@@ -63,7 +63,7 @@ int create_server(const int MESSAGE_SETTINGS)
   char buffer[BUFFER_SIZE];
   char data[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   struct sockaddr_in addr; 
   size_t count;
   int settings;
@@ -250,9 +250,8 @@ int socket_thread(int client_socket)
   char message[BUFFER_SIZE];
   char client_address[BUFFER_SIZE]; 
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   int receive_data_result; 
-  struct in_addr ip_address_data;
   struct sockaddr_in addr;
   socklen_t addrlength = sizeof(addr);
   
@@ -302,24 +301,16 @@ int socket_thread(int client_socket)
     return 0;
   }
 
-  if (getpeername(client_socket, (struct sockaddr *) &addr, &addrlength) < 0 || inet_ntop(AF_INET, &addr.sin_addr, client_address, sizeof(client_address)) == NULL)
+  if (getpeername(client_socket, (struct sockaddr *) &addr, &addrlength) != 0)
   {
     pointer_reset(buffer);
     return 0;
   }
   
-  // check if the IP address has a reverse DNS associated with it 
-  if (inet_aton(client_address, &ip_address_data) == 0)
+  // get the IP address or the reverse DNS name
+  if (getnameinfo((struct sockaddr *)&addr, addrlength, client_address, sizeof(client_address), NULL, 0, 0) != 0)
   {
-    pointer_reset(buffer);
-    return 0;
-  }
-
-  const struct hostent* HOST_NAME = gethostbyaddr((const void *)&ip_address_data, sizeof(struct in_addr), AF_INET);
-  if (HOST_NAME != NULL)
-  {
-    memset(client_address,0,sizeof(client_address));
-    memcpy(client_address,HOST_NAME->h_name,strnlen(HOST_NAME->h_name,sizeof(client_address)));
+    getnameinfo((struct sockaddr *)&addr, addrlength, client_address, sizeof(client_address), NULL, 0, NI_NUMERICHOST);
   }
   
   // get the current time
@@ -333,7 +324,7 @@ int socket_thread(int client_socket)
   memcpy(message+strlen(message),buffer2,strnlen(buffer2,sizeof(message)));
   memcpy(message+strlen(message),"\n",1);
   memset(data2,0,sizeof(data2));
-  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",current_UTC_date_and_time);
+  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
   memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
   color_print(message,"green");
 
@@ -470,19 +461,19 @@ int socket_thread(int client_socket)
  {  
    server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time->tm_sec >= 10 && current_UTC_date_and_time->tm_sec < 30)
+ else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time.tm_sec >= 10 && current_UTC_date_and_time.tm_sec < 30)
  {
    server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
  }         
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time->tm_sec < 10)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time.tm_sec < 10)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time->tm_sec >= 30 && current_UTC_date_and_time->tm_sec < 40)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time.tm_sec >= 30 && current_UTC_date_and_time.tm_sec < 40)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time->tm_sec >= 45 && current_UTC_date_and_time->tm_sec < 55) || (current_UTC_date_and_time->tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time->tm_sec >= 30 && current_UTC_date_and_time->tm_sec < 40)))
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time.tm_sec >= 45 && current_UTC_date_and_time.tm_sec < 55) || (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec >= 30 && current_UTC_date_and_time.tm_sec < 40)))
  { 
    server_receive_data_socket_node_to_node((const char*)buffer);
  }

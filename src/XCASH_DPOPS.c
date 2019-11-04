@@ -29,6 +29,12 @@
 #include "block_verifiers_synchronize_functions.h"
 #include "string_functions.h"
 
+
+
+#include <netdb.h> 
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include "XCASH_DPOPS_test.h"
 
 /*
@@ -46,14 +52,14 @@ int main(int parameters_count, char* parameters[])
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   long int current_time;
   size_t count = 0;
   size_t count2 = 0;
 
   // threads
   pthread_t thread_id[4];
-  
+
   // define macros
   #define MESSAGE "{\"username\":\"XCASH\"}"
   

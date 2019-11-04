@@ -382,7 +382,7 @@ void* block_height_timer_thread(void* parameters)
   // Variables
   char data[1024];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   long long int block_reward_number;
 
   // unused parameters
@@ -399,7 +399,7 @@ void* block_height_timer_thread(void* parameters)
   for (;;)
   {   
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time->tm_sec == 10)
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 10)
     {
       // check if you found the previous block in the network
       if (check_found_block() == 2)
@@ -445,7 +445,7 @@ void* payment_timer_thread(void* parameters)
   char payment_tx_hash[BUFFER_SIZE];
   char payment_tx_key[BUFFER_SIZE];
   time_t current_date_and_time;
-  struct tm* current_UTC_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   size_t counter; 
   long long int number;
@@ -473,7 +473,7 @@ void* payment_timer_thread(void* parameters)
   {
     // check if it is UTC 00:00
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time->tm_hour == 0 && current_UTC_date_and_time->tm_min == 0)
+    if (current_UTC_date_and_time.tm_hour == 0 && current_UTC_date_and_time.tm_min == 0)
     {
       color_print("It is UTC 00:00\nSending the daily payments","green");
 
