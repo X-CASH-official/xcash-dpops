@@ -50,9 +50,13 @@ LDFLAGS ?= -lmongoc-1.0 -lbson-1.0 -lpthread
 # Set the compiler flags
 COMPILERFLAGS ?= -Wall -Wextra -Wstrict-prototypes -Wcast-qual -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wstrict-overflow -Wdouble-promotion -fexceptions -pie -fPIE -Wl,dynamicbase -Wl,nxcompat
 
-# Set the debug and release flags
+# Set the compiler and linker flags for the different options
 debug: COMPILERFLAGS += -g -fno-stack-protector
 release: COMPILERFLAGS += -O3
+analyze: COMPILERFLAGS += -g -fsanitize=address -fno-omit-frame-pointer -fsanitize=leak -fsanitize=undefined -fsanitize=shift -fsanitize=bounds -fsanitize=shift-base -fsanitize=integer-divide-by-zero -fsanitize=unreachable -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fsanitize=bounds -fsanitize=bounds-strict -fsanitize=alignment -fsanitize=object-size -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fsanitize=nonnull-attribute -fsanitize=returns-nonnull-attribute -fsanitize=bool -fsanitize=enum -fsanitize=vptr
+analyze: LDFLAGS += -fsanitize=address -fno-omit-frame-pointer -fsanitize=leak -fsanitize=undefined -fsanitize=shift -fsanitize=bounds -fsanitize=shift-base -fsanitize=integer-divide-by-zero -fsanitize=unreachable -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fsanitize=bounds -fsanitize=bounds-strict -fsanitize=alignment -fsanitize=object-size -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fsanitize=nonnull-attribute -fsanitize=returns-nonnull-attribute -fsanitize=bool -fsanitize=enum -fsanitize=vptr
+analyzethreads: COMPILERFLAGS += -g -fsanitize=thread -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=shift -fsanitize=bounds -fsanitize=shift-base -fsanitize=integer-divide-by-zero -fsanitize=unreachable -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fsanitize=bounds -fsanitize=bounds-strict -fsanitize=alignment -fsanitize=object-size -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fsanitize=nonnull-attribute -fsanitize=returns-nonnull-attribute -fsanitize=bool -fsanitize=enum -fsanitize=vptr
+analyzethreads: LDFLAGS += -fsanitize=thread -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=shift -fsanitize=bounds -fsanitize=shift-base -fsanitize=integer-divide-by-zero -fsanitize=unreachable -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fsanitize=bounds -fsanitize=bounds-strict -fsanitize=alignment -fsanitize=object-size -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fsanitize=nonnull-attribute -fsanitize=returns-nonnull-attribute -fsanitize=bool -fsanitize=enum -fsanitize=vptr
 
 # Build all of the assembly objects files
 $(BUILD_DIR)/%.s.o: %.s
@@ -75,9 +79,11 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 # Set the debug and release rules to phony, since they just change the compiler flags variable and dont create any files. Set the clean rule to phony since we want it to run the command everytime we run it
 .PHONY: debug release clean
 
-# Set the debug and release rules to do the same thing, since the only difference is the compiler flags
+# Set the options to do the same thing, since the only difference is the compiler flags
 debug: $(BUILD_DIR)/$(TARGET_BINARY)
 release: $(BUILD_DIR)/$(TARGET_BINARY)
+analyze: $(BUILD_DIR)/$(TARGET_BINARY)
+analyzethreads: $(BUILD_DIR)/$(TARGET_BINARY)
 
 # Link all of the objects files
 $(BUILD_DIR)/$(TARGET_BINARY): $(OBJS)
