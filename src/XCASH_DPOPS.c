@@ -28,6 +28,7 @@
 #include "server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
 #include "string_functions.h"
+#include "VRF_functions.h"
 
 #include "XCASH_DPOPS_test.h"
 
@@ -78,6 +79,8 @@ int main(int parameters_count, char* parameters[])
   memset(current_round_part,0,sizeof(current_round_part));
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
   memset(verify_block_file,0,sizeof(verify_block_file));
+  memset(secret_key,0,sizeof(secret_key));
+  memset(secret_key_data,0,sizeof(secret_key_data));
   current_block_verifier_settings = 0;
   database_settings = 1;
 
@@ -98,21 +101,24 @@ int main(int parameters_count, char* parameters[])
     // initialize the previous, current and next block_verifiers_list struct 
     memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
     memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(previous_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count]));
     memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
 
     memset(current_block_verifiers_list.block_verifiers_name[count],0,sizeof(current_block_verifiers_list.block_verifiers_name[count]));
     memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(current_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]));
     memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count]));
 
     memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
     memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
     memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
 
     // initialize the synced_block_verifiers struct 
     memset(synced_block_verifiers.synced_block_verifiers_public_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_public_address[count]));
+    memset(synced_block_verifiers.synced_block_verifiers_public_key[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_public_key[count]));
     memset(synced_block_verifiers.synced_block_verifiers_IP_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_IP_address[count]));
     memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count]));
-
   }
   synced_block_verifiers.vote_settings_true = 0;
   synced_block_verifiers.vote_settings_false = 0; 
@@ -406,6 +412,12 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
+    if (strncmp(parameters[count],"--generate_key",BUFFER_SIZE) == 0)
+    {
+      generate_key();
+      database_reset;
+      exit(0);
+    }
     if (strncmp(parameters[count],"--synchronize_database_from_network_data_node",BUFFER_SIZE) == 0)
     {
       check_if_databases_are_synced(2);
@@ -504,6 +516,17 @@ int main(int parameters_count, char* parameters[])
     {
       sscanf(parameters[count+1], "%d", &total_threads);
     }    
+  }
+
+  // get the secret key for signing messages
+  memcpy(secret_key,BLOCK_VERIFIERS_SECRET_KEY,sizeof(BLOCK_VERIFIERS_SECRET_KEY)-1);
+  
+  // convert the hexadecimal string to a string
+  for (count = 0, count2 = 0; count < sizeof(BLOCK_VERIFIERS_SECRET_KEY)-1; count2++, count += 2)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,&secret_key[count],2);
+    secret_key_data[count2] = (int)strtol(data2, NULL, 16);
   }
 
   if (count2 == 1)

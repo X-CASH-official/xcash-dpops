@@ -218,7 +218,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define DATABASE_FIELDS "public_address|IP_address|about|website|team|server_settings|block_verifier_online_total_rounds|block_producer_total_rounds|block_producer_block_heights|"
+  #define DATABASE_FIELDS "public_address|IP_address|public_key|about|website|team|server_settings|block_verifier_online_total_rounds|block_producer_total_rounds|block_producer_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
@@ -294,7 +294,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define DATABASE_FIELDS "IP_address|"
+  #define DATABASE_FIELDS "IP_address|public_key|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
@@ -433,7 +433,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define DATABASE_FIELDS "total_vote_count|IP_address|delegate_name|block_verifier_score|online_status|block_verifier_total_rounds|block_verifier_online_total_rounds|block_verifier_online_percentage|block_producer_total_rounds|VRF_node_public_and_secret_key_total_rounds|VRF_node_random_data_total_rounds|VRF_node_next_main_nodes_total_rounds|block_producer_block_heights|VRF_node_public_and_secret_key_block_heights|VRF_node_random_data_block_heights|VRF_node_next_main_nodes_block_heights|"
+  #define DATABASE_FIELDS "total_vote_count|IP_address|delegate_name|public_key|block_verifier_score|online_status|block_verifier_total_rounds|block_verifier_online_total_rounds|block_verifier_online_percentage|block_producer_total_rounds|VRF_node_public_and_secret_key_total_rounds|VRF_node_random_data_total_rounds|VRF_node_next_main_nodes_total_rounds|block_producer_block_heights|VRF_node_public_and_secret_key_block_heights|VRF_node_random_data_block_heights|VRF_node_next_main_nodes_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \

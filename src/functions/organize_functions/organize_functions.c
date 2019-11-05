@@ -116,7 +116,7 @@ int organize_delegates(struct delegates* delegates)
     for (count2 = 0; (int)count2 < TOTAL_DELEGATES_DATABASE_FIELDS+1; count2++)
     {
        // allocate more for the about and the block_producer_block_heights
-       if (count2+1 == TOTAL_DELEGATES_DATABASE_FIELDS)
+       if (count2+2 == TOTAL_DELEGATES_DATABASE_FIELDS)
        {
          database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
          database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
@@ -171,6 +171,7 @@ int organize_delegates(struct delegates* delegates)
     memcpy(delegates[count].block_verifier_online_percentage,database_multiple_documents_fields.value[count][14],strnlen(database_multiple_documents_fields.value[count][14],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].block_producer_total_rounds,database_multiple_documents_fields.value[count][15],strnlen(database_multiple_documents_fields.value[count][15],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],50000));
+    memcpy(delegates[count].public_key,database_multiple_documents_fields.value[count][17],VRF_PUBLIC_KEY_LENGTH);
   }  
   
   // organize the delegates by total_vote_count

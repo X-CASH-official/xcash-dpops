@@ -86,12 +86,15 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   memcpy(data,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",98);
   COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_name_list",previous_block_verifiers_list.block_verifiers_name);
   COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_public_address_list",previous_block_verifiers_list.block_verifiers_public_address);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_public_key_list",previous_block_verifiers_list.block_verifiers_public_key);
   COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_IP_address_list",previous_block_verifiers_list.block_verifiers_IP_address);
   COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_name_list",current_block_verifiers_list.block_verifiers_name);
   COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_public_address_list",current_block_verifiers_list.block_verifiers_public_address);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_public_key_list",current_block_verifiers_list.block_verifiers_public_key);
   COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("current_block_verifiers_IP_address_list",current_block_verifiers_list.block_verifiers_IP_address);
   COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_name_list",next_block_verifiers_list.block_verifiers_name);
   COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_public_address_list",next_block_verifiers_list.block_verifiers_public_address);
+  COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_public_key_list",next_block_verifiers_list.block_verifiers_public_key);
   COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("next_block_verifiers_IP_address_list",next_block_verifiers_list.block_verifiers_IP_address);
   memcpy(data+strlen(data),"\",\r\n}",5);
   
@@ -144,6 +147,12 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH);
+    memcpy(data+strlen(data),"|",1);
+  }
+  memcpy(data+strlen(data),"\",\r\n \"block_verifiers_public_key_list\": \"",41);
+  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+  {
+    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_key[count2],strnlen(current_block_verifiers_list.block_verifiers_public_key[count2],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_IP_address_list\": \"",41);

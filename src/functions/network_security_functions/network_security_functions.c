@@ -39,8 +39,14 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   // Variables
   char random_data[RANDOM_STRING_LENGTH+1];
   char data[BUFFER_SIZE];
+  char proof[VRF_PROOF_LENGTH+1];
+  char beta_string[VRF_BETA_LENGTH+1];
+  unsigned char proof_data[crypto_vrf_PROOFBYTES+1];
+  unsigned char beta_string_data[crypto_vrf_OUTPUTBYTES+1];
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
+  size_t count;
+  size_t count2;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
@@ -76,6 +82,10 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     exit(0);
   } 
   
+  memset(proof,0,sizeof(proof));
+  memset(beta_string,0,sizeof(beta_string));
+  memset(proof_data,0,sizeof(proof_data));
+  memset(beta_string_data,0,sizeof(beta_string_data));  
   memset(random_data,0,sizeof(random_data));
   memset(data,0,sizeof(data));
   
@@ -88,7 +98,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   pthread_rwlock_rdlock(&rwlock);
   // create the message
   memcpy(result,message,strlen(message)-1);
-  memcpy(result+strlen(result),"\"public_address\": \"",19);
+  memcpy(result+strlen(result)," \"public_address\": \"",20);
   memcpy(result+strlen(result),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(result+strlen(result),"\",\r\n \"previous_block_hash\": \"",29);
   memcpy(result+strlen(result),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
@@ -106,45 +116,86 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   {
     SIGN_DATA_ERROR("Could not create the message");
   }
-
-  // sign_data
-  memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
-  memcpy(string+60,result,strnlen(result,MAXIMUM_BUFFER_SIZE));
-  memcpy(string+strlen(string),"\"}}",3);
-  memset(result,0,strlen(result));
-
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
-  {  
-    SIGN_DATA_ERROR("Could not create the message");
-  } 
-
-  if (parse_json_data(data,"signature",result,MAXIMUM_BUFFER_SIZE) == 0)
-  {
-    SIGN_DATA_ERROR("Could not create the message");
-  }
-
-  // check if the returned data is valid
-  if (strnlen(result,BUFFER_SIZE) != XCASH_SIGN_DATA_LENGTH && strncmp(result,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
-  {
-    SIGN_DATA_ERROR("Could not create the message");
-  }
   
-  pthread_rwlock_rdlock(&rwlock);
-  // create the message  
-  memcpy(message+strlen(message)-1,"\"public_address\": \"",19);
-  memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
-  memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
-  memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
-  memcpy(message+strlen(message),current_round_part,1);
-  memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);
-  memcpy(message+strlen(message),current_round_part_backup_node,1);
-  memcpy(message+strlen(message),"\",\r\n \"data\": \"",14);
-  memcpy(message+strlen(message),random_data,RANDOM_STRING_LENGTH);
-  memcpy(message+strlen(message),"\",\r\n \"XCASH_DPOPS_signature\": \"",31);
-  memcpy(message+strlen(message),result,XCASH_SIGN_DATA_LENGTH);
-  memcpy(message+strlen(message),"\",\r\n}",5);
-  pthread_rwlock_unlock(&rwlock);
+  if (strstr(message,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST") == NULL && strstr(message,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") == NULL)
+  {
+    // sign data
+    if (crypto_vrf_prove((unsigned char*)proof_data,(const unsigned char*)secret_key_data,(const unsigned char*)result,(unsigned long long)strlen((const char*)result)) != 0 || crypto_vrf_proof_to_hash((unsigned char*)beta_string_data,(const unsigned char*)proof_data) != 0)
+    {
+      SIGN_DATA_ERROR("Could not create the message");
+    }
+
+    // convert the data to a string
+    for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+    {
+      snprintf(proof+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",proof_data[count2] & 0xFF);
+    }
+    for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
+    {
+      snprintf(beta_string+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",beta_string_data[count2] & 0xFF);
+    } 
+
+     //fprintf(stderr,"message = \n%s\n\nbeta = \n%s\n\n proof = \n%s\n\n",result,proof,beta_string);
+
+    pthread_rwlock_rdlock(&rwlock);
+    // create the message  
+    memcpy(message+strlen(message)-1," \"public_address\": \"",20);
+    memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
+    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
+    memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
+    memcpy(message+strlen(message),current_round_part,1);
+    memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);
+    memcpy(message+strlen(message),current_round_part_backup_node,1);
+    memcpy(message+strlen(message),"\",\r\n \"data\": \"",14);
+    memcpy(message+strlen(message),random_data,RANDOM_STRING_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n \"XCASH_DPOPS_signature\": \"",31);
+    memcpy(message+strlen(message),proof,VRF_PROOF_LENGTH);
+    memcpy(message+strlen(message),beta_string,VRF_BETA_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n}",5);
+    pthread_rwlock_unlock(&rwlock);
+  }
+  else
+  {
+    // sign_data
+    memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
+    memcpy(string+60,result,strnlen(result,MAXIMUM_BUFFER_SIZE));
+    memcpy(string+strlen(string),"\"}}",3);
+    memset(result,0,strlen(result));
+  
+    if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
+    {  
+      SIGN_DATA_ERROR("Could not create the message");
+    } 
+
+    if (parse_json_data(data,"signature",result,MAXIMUM_BUFFER_SIZE) == 0)
+    {
+      SIGN_DATA_ERROR("Could not create the message");
+    }
+
+    // check if the returned data is valid
+    if (strnlen(result,BUFFER_SIZE) != XCASH_SIGN_DATA_LENGTH && strncmp(result,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
+    {
+      SIGN_DATA_ERROR("Could not create the message");
+    }
+  
+    pthread_rwlock_rdlock(&rwlock);
+    // create the message  
+    memcpy(message+strlen(message)-1," \"public_address\": \"",20);
+    memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
+    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
+    memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
+    memcpy(message+strlen(message),current_round_part,1);
+    memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);
+    memcpy(message+strlen(message),current_round_part_backup_node,1);
+    memcpy(message+strlen(message),"\",\r\n \"data\": \"",14);
+    memcpy(message+strlen(message),random_data,RANDOM_STRING_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n \"XCASH_DPOPS_signature\": \"",31);
+    memcpy(message+strlen(message),result,XCASH_SIGN_DATA_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n}",5);
+    pthread_rwlock_unlock(&rwlock);
+  }
 
   pointer_reset_all;
   return 1;
@@ -179,6 +230,12 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   char message_current_round_part[BUFFER_SIZE];
   char message_current_round_part_backup_node[BUFFER_SIZE];
   char XCASH_DPOPS_signature[BUFFER_SIZE];
+  char public_key[VRF_PUBLIC_KEY_LENGTH+1];
+  char proof[VRF_PROOF_LENGTH+1];
+  char beta_string[VRF_BETA_LENGTH+1];
+  unsigned char public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
+  unsigned char proof_data[crypto_vrf_PROOFBYTES+1];
+  unsigned char beta_string_data[crypto_vrf_OUTPUTBYTES+1];
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char data[BUFFER_SIZE];
   char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
@@ -228,6 +285,12 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   memset(message_current_round_part,0,sizeof(message_current_round_part));
   memset(message_current_round_part_backup_node,0,sizeof(message_current_round_part_backup_node));
   memset(XCASH_DPOPS_signature,0,sizeof(XCASH_DPOPS_signature));
+  memset(public_key,0,sizeof(public_key));
+  memset(proof,0,sizeof(proof));
+  memset(beta_string,0,sizeof(beta_string));
+  memset(public_key_data,0,sizeof(public_key_data));
+  memset(proof_data,0,sizeof(proof_data));
+  memset(beta_string_data,0,sizeof(beta_string_data));
   memset(data,0,sizeof(data));
 
   // parse the message
@@ -373,7 +436,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     }
     if (settings == 0)
     {
-      VERIFY_DATA_ERROR("Invalid message");
+      VERIFY_DATA_ERROR("Invalid message1");
     }
     memset(data,0,sizeof(data));
   }
@@ -406,54 +469,121 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       message_length = strlen(MESSAGE) - 94;
       memcpy(result,MESSAGE,message_length);
     }
-    else
+    else if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL)
     {
+      message_length = strlen(MESSAGE) - 320;
+      memcpy(result,MESSAGE,message_length);
+      memcpy(result+message_length,"}",1);  
+      if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
+      {
+        VERIFY_DATA_ERROR("Invalid message2");
+      }   
+    }
+    else
+    {      
       message_length = strlen(MESSAGE) - 125;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
       if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
       {
-        VERIFY_DATA_ERROR("Invalid message");
+        VERIFY_DATA_ERROR("Invalid message3");
       }   
     }
   }
   else
   {
-    message_length = strlen(MESSAGE) - 125;
-    memcpy(result,MESSAGE,message_length);
-    memcpy(result+message_length,"}",1);
-    if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
+    if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL)
     {
-      VERIFY_DATA_ERROR("Invalid message");
-    } 
-  } 
-    
-  // create the message
-  message_length = strlen(result);
-  memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"verify\",\"params\":{\"data\":\"",62);
-  memcpy(string+62,result,message_length);
-  memcpy(string+62+message_length,"\",\"address\":\"",13);
-  memcpy(string+75+message_length,public_address,XCASH_WALLET_LENGTH);
-  memcpy(string+75+message_length+XCASH_WALLET_LENGTH,"\",\"signature\":\"",15);
-  memcpy(string+90+message_length+XCASH_WALLET_LENGTH,XCASH_DPOPS_signature,XCASH_SIGN_DATA_LENGTH);
-  memcpy(string+90+message_length+XCASH_WALLET_LENGTH+XCASH_SIGN_DATA_LENGTH,"\"}}",3);
-
-  memset(result,0,strnlen(result,BUFFER_SIZE));
-
-  if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",HTTP_SETTINGS) <= 0)
-  {
-    VERIFY_DATA_ERROR("Could not verify the data");
-  }
-    
-  if (parse_json_data(result,"good",data,sizeof(data)) == 0)
-  {
-    VERIFY_DATA_ERROR("Could not verify the data");
+      message_length = strlen(MESSAGE) - 320;
+      memcpy(result,MESSAGE,message_length);
+      memcpy(result+message_length,"}",1);  
+      if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
+      {
+        VERIFY_DATA_ERROR("Invalid message4");
+      }   
+    }
+    else
+    {      
+      message_length = strlen(MESSAGE) - 125;
+      memcpy(result,MESSAGE,message_length);
+      memcpy(result+message_length,"}",1);  
+      if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
+      {
+        VERIFY_DATA_ERROR("Invalid message5");
+      }   
+    }
   }
 
-  // check if the returned data is valid
-  if (strncmp(data,"true",BUFFER_SIZE) != 0)
+  if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL)
   {
-     VERIFY_DATA_ERROR("Invalid message");
+    // get the public key, proof and beta string
+    memcpy(proof,XCASH_DPOPS_signature,VRF_PROOF_LENGTH);
+    memcpy(beta_string,&XCASH_DPOPS_signature[VRF_PROOF_LENGTH],VRF_BETA_LENGTH);
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0)
+      {
+        memcpy(public_key,current_block_verifiers_list.block_verifiers_public_key,VRF_PUBLIC_KEY_LENGTH);
+      }
+    }
+
+    // convert the public key, proof and beta string to a string
+    for (count = 0, count2 = 0; count < VRF_PUBLIC_KEY_LENGTH; count2++, count += 2)
+    {
+      memset(data,0,sizeof(data));
+      memcpy(data,&public_key[count],2);
+      public_key_data[count2] = (int)strtol(data, NULL, 16);
+    }
+    for (count = 0, count2 = 0; count < VRF_PROOF_LENGTH; count2++, count += 2)
+    {
+      memset(data,0,sizeof(data));
+      memcpy(data,&proof[count],2);
+      proof_data[count2] = (int)strtol(data, NULL, 16);
+    }
+    for (count = 0, count2 = 0; count < VRF_BETA_LENGTH; count2++, count += 2)
+    {
+      memset(data,0,sizeof(data));
+      memcpy(data,&beta_string[count],2);
+      beta_string_data[count2] = (int)strtol(data, NULL, 16);
+    }
+
+    //fprintf(stderr,"message = \n%s\n\npublic key = \n%s\n\n beta = \n%s\n\n proof = \n%s\n\n",result,public_key,proof,beta_string);
+
+    // verify the message
+    if (crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)result,(unsigned long long)strlen((const char*)result)) != 0)
+    {
+      VERIFY_DATA_ERROR("Invalid message6");
+    }
+  }
+  else
+  {
+    // create the message
+    message_length = strlen(result);
+    memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"verify\",\"params\":{\"data\":\"",62);
+    memcpy(string+62,result,message_length);
+    memcpy(string+62+message_length,"\",\"address\":\"",13);
+    memcpy(string+75+message_length,public_address,XCASH_WALLET_LENGTH);
+    memcpy(string+75+message_length+XCASH_WALLET_LENGTH,"\",\"signature\":\"",15);
+    memcpy(string+90+message_length+XCASH_WALLET_LENGTH,XCASH_DPOPS_signature,XCASH_SIGN_DATA_LENGTH);
+    memcpy(string+90+message_length+XCASH_WALLET_LENGTH+XCASH_SIGN_DATA_LENGTH,"\"}}",3);
+
+    memset(result,0,strnlen(result,BUFFER_SIZE));
+
+    if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",HTTP_SETTINGS) <= 0)
+    {
+      VERIFY_DATA_ERROR("Could not verify the data");
+    }
+    
+    if (parse_json_data(result,"good",data,sizeof(data)) == 0)
+    {
+      VERIFY_DATA_ERROR("Could not verify the data");
+    }
+
+    // check if the returned data is valid
+    if (strncmp(data,"true",BUFFER_SIZE) != 0)
+    {
+       VERIFY_DATA_ERROR("Invalid message7");
+    }
   }
  
   pointer_reset_all;

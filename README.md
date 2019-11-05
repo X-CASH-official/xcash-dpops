@@ -537,17 +537,27 @@ The test will return the number of passed and failed test on the bottom of the c
 
 
 ### How to Register a Delegate
-Make sure to stop the XCASH Wallet service if it is running  
-`systemctl stop XCASH_Wallet`
+Make sure to stop the XCASH Wallet service, and the XCASH_DPOPS service, if it is running  
+`systemctl stop XCASH_Wallet XCASH_DPOPS`
+
+Generate a public and secret key pair for signing and verifying the block verifier messages  
+`/root/x-network/XCASH_DPOPS --generate_key`
+
+Put the secret key in the `BLOCK_VERIFIERS_SECRET_KEY` in `XCASH_DPOPS/src/global_data/define_macros.h`
+
+Rebuild XCASH_DPOPS  
+``make clean ; make debug -j `nproc` ``
 
 Open the wallet file in the `xcash-wallet-cli`
 
 Once the wallet is fully synchronized run the following:  
-`delegate_register delegate_name delegate_IP_address`
+`delegate_register delegate_name delegate_IP_address block_verifier_messages_public_key`
 
-Replace delegate_name with the name that you want to name your delegate
+Replace `delegate_name` with the name that you want to name your delegate
 
-Replace delegate_IP_address with your VPS/dedicated servers IP Address or a domain name (View the setup below)
+Replace `delegate_IP_address` with your VPS/dedicated servers IP Address or a domain name (View the setup below)
+
+Replace `block_verifier_messages_public_key` with public key that you got from the `XCASH_DPOPS --generate_key`
 
 
 
@@ -560,7 +570,7 @@ Open the wallet file in the `xcash-wallet-cli`
 Once the wallet is fully synchronized run the following:  
 `vote delegates_public_address | delegates_name`
 
-Replace delegates_public_address | delegates_name with the delegates public address or delegates name
+Replace `delegates_public_address | delegates_name` with the delegates public address or delegates name
 
 
 
@@ -574,7 +584,7 @@ Open the wallet file in the `xcash-wallet-cli`
 Once the wallet is fully synchronized run the following:  
 `delegate_update item value`
 
-Replace item with the item you want to update. The list of valid items are:  
+Replace `item` with the item you want to update. The list of valid items are:  
 ```
 IP_address
 about
@@ -583,6 +593,7 @@ team
 pool_mode
 fee_structure
 server_settings
+public_key
 ```
 Replace value with the updated information
 

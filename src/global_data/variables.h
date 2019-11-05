@@ -20,6 +20,8 @@ mongoc_client_pool_t* database_client_thread_pool;
 int network_data_node_settings; // 1 if a network data node, 0 if not a network data node 
 char verify_block_file[1000]; // The verify block file
 char xcash_wallet_public_address[XCASH_WALLET_LENGTH+1]; // Holds your wallets public address
+unsigned char secret_key_data[crypto_vrf_SECRETKEYBYTES+1]; // Holds the secret key for signing block verifier messages
+char secret_key[VRF_SECRET_KEY_LENGTH+1]; // Holds the secret key text for signing block verifier messages
 struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round
 struct next_block_verifiers_list next_block_verifiers_list; // The list of block verifiers name, public address and IP address for the next round
