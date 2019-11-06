@@ -537,8 +537,8 @@ The test will return the number of passed and failed test on the bottom of the c
 
 
 ### How to Register a Delegate
-Make sure to stop the XCASH Wallet service, and the XCASH_DPOPS service, if it is running  
-`systemctl stop XCASH_Wallet XCASH_DPOPS`
+Make sure to stop the XCASH_DPOPS service, if it is running  
+`systemctl stop XCASH_DPOPS`
 
 Generate a public and secret key pair for signing and verifying the block verifier messages  
 `/root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --generate_key`
@@ -547,6 +547,9 @@ Put the secret key in the `BLOCK_VERIFIERS_SECRET_KEY` in `XCASH_DPOPS/src/globa
 
 Rebuild XCASH_DPOPS  
 ``make clean ; make debug -j `nproc` ``
+
+Make sure to stop the XCASH Wallet service, if it is running  
+`systemctl stop XCASH_Wallet`
 
 Open the wallet file in the `xcash-wallet-cli`
 
