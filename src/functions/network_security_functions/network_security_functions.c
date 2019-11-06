@@ -319,7 +319,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     {
       if (strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",sizeof(message_settings)) == 0)
       {
-        if (string_count(MESSAGE,"|") == 5)
+        if (string_count(MESSAGE,"|") == VOTE_PARAMETER_AMOUNT)
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
@@ -341,7 +341,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       }
       else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",sizeof(message_settings)) == 0)
       {
-        if (string_count(MESSAGE,"|") == 5)
+        if (string_count(MESSAGE,"|") == REGISTER_PARAMETER_AMOUNT)
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
@@ -363,7 +363,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       }
       else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",sizeof(message_settings)) == 0)
       {
-        if (string_count(MESSAGE,"|") == 3)
+        if (string_count(MESSAGE,"|") == REMOVE_PARAMETER_AMOUNT)
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
@@ -385,7 +385,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       }
       else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",sizeof(message_settings)) == 0)
       {
-        if (string_count(MESSAGE,"|") == 5)
+        if (string_count(MESSAGE,"|") == UPDATE_PARAMETER_AMOUNT)
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
@@ -469,7 +469,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       message_length = strlen(MESSAGE) - 94;
       memcpy(result,MESSAGE,message_length);
     }
-    else if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL)
+    else if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL && strstr(MESSAGE,"|SigV1") == NULL)
     {
       message_length = strlen(MESSAGE) - 320;
       memcpy(result,MESSAGE,message_length);
@@ -492,7 +492,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   }
   else
   {
-    if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL)
+    if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL && strstr(MESSAGE,"|SigV1") == NULL)
     {
       message_length = strlen(MESSAGE) - 320;
       memcpy(result,MESSAGE,message_length);
@@ -514,7 +514,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     }
   }
 
-  if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL)
+  if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL && strstr(MESSAGE,"|SigV1") == NULL)
   {
     // get the public key, proof and beta string
     memcpy(proof,XCASH_DPOPS_signature,VRF_PROOF_LENGTH);
@@ -546,8 +546,6 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       memcpy(data,&beta_string[count],2);
       beta_string_data[count2] = (int)strtol(data, NULL, 16);
     }
-
-    //fprintf(stderr,"message = \n%s\n\npublic key = \n%s\n\n beta = \n%s\n\n proof = \n%s\n\n",result,public_key,proof,beta_string);
 
     // verify the message
     if (crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)result,(unsigned long long)strlen((const char*)result)) != 0)

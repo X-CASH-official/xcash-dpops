@@ -99,6 +99,10 @@ Using define statements instead of constants for increased efficiency
 #define MINIMUM_BUFFER_SIZE_DELEGATES_BACKUP_NAMES 30 // The minimum length of the block verifiers name
 #define TOTAL_ERROR_MESSAGES 100 // The total amount of error messages
 #define MAXIMUM_INVALID_RESERVE_PROOFS 50000 // The maximum invalid reserve proofs for the delegate
+#define VOTE_PARAMETER_AMOUNT 5 // The vote parameter amount
+#define REGISTER_PARAMETER_AMOUNT 6 // The register parameter amount
+#define REMOVE_PARAMETER_AMOUNT 3 // The remove parameter amount
+#define UPDATE_PARAMETER_AMOUNT 5 // The update parameter amount
 
 // VRF
 #define BLOCK_VERIFIERS_SECRET_KEY "c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a" // The secret key used for signing block verifiers messages
