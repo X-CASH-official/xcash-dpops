@@ -541,7 +541,7 @@ Make sure to stop the XCASH Wallet service, and the XCASH_DPOPS service, if it i
 `systemctl stop XCASH_Wallet XCASH_DPOPS`
 
 Generate a public and secret key pair for signing and verifying the block verifier messages  
-`/root/x-network/XCASH_DPOPS --generate_key`
+`/root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --generate_key`
 
 Put the secret key in the `BLOCK_VERIFIERS_SECRET_KEY` in `XCASH_DPOPS/src/global_data/define_macros.h`
 
