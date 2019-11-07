@@ -255,7 +255,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 
   // add the data to the database
   memcpy(data3,data,strlen(data)-2);
-  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data3,0) == 0)
+  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data3,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
   }
@@ -482,7 +482,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     memcpy(data3,"reserve_bytes_",14);
     snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
     memset(data2,0,sizeof(data2));
-    if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,0) == 0)
+    if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,1) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CREATE_NEW_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
     }

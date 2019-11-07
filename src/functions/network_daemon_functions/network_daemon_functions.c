@@ -556,7 +556,7 @@ int check_found_block(void)
 
   // get the reserve byte data
   memset(result,0,sizeof(result));
-  if (read_document_field_from_collection(DATABASE_NAME,data2,data,"reserve_bytes",result,0) == 0)
+  if (read_document_field_from_collection(DATABASE_NAME,data2,data,"reserve_bytes",result,1) == 0)
   {
     return 0;
   }

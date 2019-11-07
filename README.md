@@ -143,7 +143,7 @@ The minimum for a public_address to receive a payment (10000 etc. The minimum am
 
 
 ## Manual VS Autoinstall
-XCASH_DPOPS does provide a [autoinstall script](https://github.com/X-CASH-official/XCASH_DPOPS/blob/master/scripts/autoinstallerd/autoinstaller.sh) to make the installation process easier. The script can also be run in an update mode to update any needed x-network repositories or newer third party dependencies. 
+XCASH_DPOPS does provide a [autoinstall script](https://github.com/X-CASH-official/XCASH_DPOPS/blob/master/scripts/autoinstaller/autoinstaller.sh) to make the installation process easier. The script can also be run in an update mode to update any needed x-network repositories or newer third party dependencies. 
 
 The recommended installation type is to read over how to manually install XCASH_DPOPS, but to use the autoinstaller to install XCASH_DPOPS, since the autoinstaller does allow for custom settings.
 

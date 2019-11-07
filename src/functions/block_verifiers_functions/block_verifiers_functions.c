@@ -489,7 +489,7 @@ int start_current_round_start_blocks(void)
   pthread_rwlock_unlock(&rwlock);
 
   // add the network block string to the database
-  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,0) == 0)
+  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,1) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
   }
@@ -545,7 +545,7 @@ int start_current_round_start_blocks(void)
     memcpy(data2,"{\"block_height\":\"",17);
     memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
     memcpy(data2+strlen(data2),"\"}",2);
-    delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,0);
+    delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,1);
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not submit the block to the network");
   }
   
@@ -846,7 +846,7 @@ int data_network_node_create_block(void)
     memset(data3,0,strlen(data3));
     memcpy(data3,"reserve_bytes_",14);
     snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
-    if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,0) == 0)
+    if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,1) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
     }
@@ -906,7 +906,7 @@ int data_network_node_create_block(void)
     memcpy(data3,"reserve_bytes_",14);
     count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
-    if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+    if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,1) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the new block to the database");
     }
@@ -970,7 +970,7 @@ int data_network_node_create_block(void)
       memcpy(data3,"reserve_bytes_",14);
       count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
       snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
-      delete_document_from_collection(DATABASE_NAME,data3,data2,0);
+      delete_document_from_collection(DATABASE_NAME,data3,data2,1);
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not submit the block to the network");
     }
   }
@@ -1370,7 +1370,7 @@ int block_verifiers_create_vote_results(char* message)
   memcpy(data3,"reserve_bytes_",14);
   get_reserve_bytes_database(count,1);  
   snprintf(data3+14,sizeof(data3)-15,"%zu",count);
-  if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,0) == 0)
+  if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,1) == 0)
   {
     BLOCK_VERIFIERS_CREATE_VOTE_RESULTS_ERROR("Could not get the previous blocks reserve bytes");
   }
@@ -1479,7 +1479,7 @@ int block_verifiers_create_block_and_update_database(void)
   get_reserve_bytes_database(count,0);
   memcpy(data3,"reserve_bytes_",14);
   snprintf(data3+14,sizeof(data3)-15,"%zu",count);
-  if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,0) == 0)
+  if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,1) == 0)
   {
     BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the new block to the database");
   }
@@ -1508,7 +1508,7 @@ int block_verifiers_create_block_and_update_database(void)
       memset(data3,0,sizeof(data3));
       memcpy(data3,"reserve_bytes_",14);
       snprintf(data3+14,sizeof(data3)-15,"%zu",count);
-      delete_document_from_collection(DATABASE_NAME,data3,data2,0);
+      delete_document_from_collection(DATABASE_NAME,data3,data2,1);
       BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not submit the block to the network");
     }
   }
@@ -1539,7 +1539,7 @@ int block_verifiers_create_block_and_update_database(void)
             memset(data3,0,sizeof(data3));
             memcpy(data3,"reserve_bytes_",14);
             snprintf(data3+14,sizeof(data3)-15,"%zu",count);
-            delete_document_from_collection(DATABASE_NAME,data3,data2,0);
+            delete_document_from_collection(DATABASE_NAME,data3,data2,1);
             BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not submit the block to the network");
           }
 

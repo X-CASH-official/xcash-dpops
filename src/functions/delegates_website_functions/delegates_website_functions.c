@@ -109,7 +109,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   // organize the delegates
   document_count = organize_delegates(delegates);
 
-  if (read_document_all_fields_from_collection(DATABASE_NAME,"statistics",DATA,&database_data,0) == 0)
+  if (read_document_all_fields_from_collection(DATABASE_NAME,"statistics",DATA,&database_data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR;
   }
@@ -355,7 +355,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   }
 
   // get the delegates information
-  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,&database_data,0) == 0)
+  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,&database_data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR;
   }
@@ -488,7 +488,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR;
   }
   
-  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,&database_data,0) == 0)
+  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,&database_data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR;
   }
@@ -585,7 +585,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     memcpy(message+18+DATA_LENGTH,"\"}",2);
     memset(data2,0,sizeof(data2));
 
-    if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"public_address",data2,0) == 0)
+    if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"public_address",data2,1) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(1);
     }
@@ -604,7 +604,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
 
-    counter = count_documents_in_collection(DATABASE_NAME,data2,message,0);
+    counter = count_documents_in_collection(DATABASE_NAME,data2,message,1);
     if (counter < 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(1);
@@ -629,10 +629,10 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
 
-    counter = count_documents_in_collection(DATABASE_NAME,data2,message,0);
+    counter = count_documents_in_collection(DATABASE_NAME,data2,message,1);
     if (counter > 0)
     {      
-      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data2,message,&database_multiple_documents_fields,1,counter,0,"",0) == 0)
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data2,message,&database_multiple_documents_fields,1,counter,0,"",1) == 0)
       {
         SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(0);
       }
@@ -736,7 +736,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
 
   memset(data2,0,sizeof(data2));
 
-  if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,0) == 0)
+  if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR;
   }

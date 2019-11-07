@@ -876,12 +876,12 @@ int sync_reserve_proofs_database(int settings)
       snprintf(data2+15,sizeof(data2)-16,"%zu",count2);
 
       // delete the collection from the database
-      delete_collection_from_database(DATABASE_NAME,data2,0);
+      delete_collection_from_database(DATABASE_NAME,data2,1);
 
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,MAXIMUM_BUFFER_SIZE,0);
+      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,MAXIMUM_BUFFER_SIZE,1);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
@@ -1417,12 +1417,12 @@ int sync_reserve_bytes_database(int settings)
       snprintf(data2+14,sizeof(data2)-15,"%zu",count2);
 
       // delete the collection from the database
-      delete_collection_from_database(DATABASE_NAME,data2,0);
+      delete_collection_from_database(DATABASE_NAME,data2,1);
 
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,MAXIMUM_BUFFER_SIZE,0);
+      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,MAXIMUM_BUFFER_SIZE,1);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
@@ -1817,12 +1817,12 @@ int sync_delegates_database(int settings)
   }
 
   // delete the collection from the database
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,1);
 
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE,0);
+  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE,1);
 
   pointer_reset(data);
   return 1;
@@ -2201,12 +2201,12 @@ int sync_statistics_database(int settings)
   }
 
   // delete the collection from the database
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,1);
 
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,0);
+  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,1);
 
   pointer_reset(data);
   return 1;

@@ -108,7 +108,7 @@ int organize_delegates(struct delegates* delegates)
   memset(data,0,sizeof(data));
 
   // get how many documents are in the database
-  document_count = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
+  document_count = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,1);
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; (int)count < document_count; count++)
@@ -146,7 +146,7 @@ int organize_delegates(struct delegates* delegates)
   database_multiple_documents_fields.database_fields_count = 0;
 
   // get all of the delegates  
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
   {
     ORGANIZE_DELEGATES_ERROR("Could not get the delegates from the database");
   }

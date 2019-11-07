@@ -326,7 +326,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   snprintf(data+14,sizeof(data)-15,"%zu",count2);
 
   // get the data hash
-  if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes",message,0) == 0)
+  if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes",message,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not get the previous blocks reserve bytes");
   }
@@ -646,7 +646,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
 
   // get the database data for the reserve proofs database
   memset(data2,0,strlen(data2));
-  if (get_database_data(data2,DATABASE_NAME,data,0) == 0)
+  if (get_database_data(data2,DATABASE_NAME,data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
@@ -952,7 +952,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   // get the database data for the reserve bytes database
   memset(data2,0,strlen(data2));
-  if (get_database_data(data2,DATABASE_NAME,data,0) == 0)
+  if (get_database_data(data2,DATABASE_NAME,data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -1127,7 +1127,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   // get the database data for the reserve bytes database
   memset(data2,0,strlen(data2));
-  if (get_database_data(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (get_database_data(data2,DATABASE_NAME,DATABASE_COLLECTION,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -1300,7 +1300,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
 
   // get the database data for the reserve bytes database
   memset(data2,0,strlen(data2));
-  if (get_database_data(data2,DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (get_database_data(data2,DATABASE_NAME,DATABASE_COLLECTION,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }

@@ -132,7 +132,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memset(message,0,sizeof(message));
 
   // get the total blocks found
-  document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"blocks_found",0);
+  document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"blocks_found",1);
   if (document_count <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(1);
@@ -179,7 +179,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     }
   }
 
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
   }
@@ -192,7 +192,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   }
 
   // add the total payments to the database_document_fields struct 
-  total_payments = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses_payments",0); 
+  total_payments = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses_payments",1); 
 
   // get the total voters and total votes
   memcpy(message,"{\"public_address_voted_for\":\"",29);
@@ -206,10 +206,10 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     memcpy(data,"reserve_proofs_",15);
     snprintf(data+15,sizeof(data)-16,"%zu",count);
 
-    counter = count_documents_in_collection(DATABASE_NAME,data,message,0);
+    counter = count_documents_in_collection(DATABASE_NAME,data,message,1);
     total_voters += counter;
 
-    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,message,&database_multiple_documents_fields2,1,counter,0,"",0) == 1)
+    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,message,&database_multiple_documents_fields2,1,counter,0,"",1) == 1)
     {
       for (count2 = 0; count2 < counter; count2++)
       {
@@ -236,7 +236,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+117,"\"}",2);
 
-  if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifier_online_percentage",data,0) == 0)
+  if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifier_online_percentage",data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
   }
@@ -317,7 +317,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   return 0;
 
   // get the total blocks found
-  document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,0);
+  document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,1);
 
   if (document_count <= 0)
   {
@@ -329,7 +329,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   // initialize the database_multiple_documents_fields struct
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_get_blocks_found",buffer);
 
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
   }
@@ -416,7 +416,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   // initialize the database_document_fields struct 
   INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_information",data2);
    
-  if (read_document_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,message,&database_data,0) == 0)
+  if (read_document_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,message,&database_data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
   }
@@ -507,7 +507,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
   
   // check if there is any data in the database that matches the message
-  document_count = count_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,message,0);
+  document_count = count_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,message,1);
   if (document_count <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1);
@@ -516,7 +516,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   // initialize the database_multiple_documents_fields struct
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_payment_information",data2);
   
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
+  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0);
   }

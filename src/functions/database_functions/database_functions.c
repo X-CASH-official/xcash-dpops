@@ -100,7 +100,7 @@ int get_delegates_total_voters_count(const char* DELEGATES_PUBLIC_ADDRESS)
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
-    public_address_count += count_documents_in_collection(DATABASE_NAME,data2,data,0);
+    public_address_count += count_documents_in_collection(DATABASE_NAME,data2,data,1);
   }
   return public_address_count;
 }
@@ -262,7 +262,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
       snprintf(data2+15,BUFFER_SIZE-16,"%zu",count);
-      get_database_data(data,DATABASE,data2,0);
+      get_database_data(data,DATABASE,data2,1);
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
@@ -297,7 +297,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);  
       snprintf(data2+14,BUFFER_SIZE-15,"%zu",count);
-      get_database_data(data,DATABASE,data2,0);
+      get_database_data(data,DATABASE,data2,1);
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
@@ -328,7 +328,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     // get the data hash of the reserve proofs database
     memset(data,0,strlen(data));
     memset(data_hash,0,strlen(data_hash));
-    get_database_data(data,DATABASE,COLLECTION,0);
+    get_database_data(data,DATABASE,COLLECTION,1);
 
     // get the data hash of the collection  
     memset(string,0,strlen((char*)string));    

@@ -95,7 +95,7 @@ long long int add_block_to_blocks_found(void)
   memset(block_reward,0,sizeof(block_reward));
   memset(block_date_and_time,0,sizeof(block_date_and_time));
 
-  document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,0);
+  document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,1);
 
   if (document_count <= 0)
   {
@@ -123,7 +123,7 @@ long long int add_block_to_blocks_found(void)
   if (document_count > 0)
   {
     // get the block count
-    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,1,"total_vote_count_number",0) == 0)
+    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,1,"total_vote_count_number",1) == 0)
     {
       ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not read the blocks_found database.\nCould not check if the block verifier found the last block.",0);
     }
@@ -169,7 +169,7 @@ long long int add_block_to_blocks_found(void)
   memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
 
-  if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,data,0) == 0)
+  if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,data,1) == 0)
   {
     ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not add the block to the blocks_found database.\nCould not check if the block verifier found the last block.",0);
   }
@@ -227,11 +227,11 @@ int get_delegates_total_voters(struct voters* voters)
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",counter);
-    count2 = count_documents_in_collection(DATABASE_NAME,data2,data,0);
+    count2 = count_documents_in_collection(DATABASE_NAME,data2,data,1);
 
     if (count2 > 0)
     {
-      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data2,data,&database_multiple_documents_fields,1,count2,0,"",0) == 0)
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data2,data,&database_multiple_documents_fields,1,count2,0,"",1) == 0)
       {
         GET_DELEGATES_TOTAL_VOTERS_ERROR("Could not read the reserve proofs database.\nCould not calculate the block reward for each delegate");
       }
@@ -343,13 +343,13 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
       memcpy(data3+19,voters[count].public_address,XCASH_WALLET_LENGTH);
       memcpy(data3+strlen(data3),"\",\"current_total\":\"0\",\"total\":\"0\",\"inactivity_count\":\"0\"}",57);
 
-      if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses",data3,0) == 0)
+      if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses",data3,1) == 0)
       {
         CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("Could not calculate block reward for all of the public address that voted for the delegate.");
       }
     }
     
-    if (read_document_field_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data2,"current_total",data,0) == 0)
+    if (read_document_field_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data2,"current_total",data,1) == 0)
     {
       CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("Could not calculate block reward for all of the public address that voted for the delegate.");
     }
@@ -363,7 +363,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
     memcpy(data+18,data3,strnlen(data3,sizeof(data)));
     memcpy(data+strlen(data),"\"}",2);
     
-    if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data2,data,0) == 0)
+    if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data2,data,1) == 0)
     {
       CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("Could not calculate block reward for all of the public address that voted for the delegate.");
     } 
@@ -491,7 +491,7 @@ void* payment_timer_thread(void* parameters)
       amount_of_payments = 0;
       total_amount = 0;
 
-      document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses",0);
+      document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses",1);
       if (document_count <= 0)
       {
         PAYMENT_TIMER_THREAD_ERROR("The database is empty",1);
@@ -500,7 +500,7 @@ void* payment_timer_thread(void* parameters)
       // initialize the database_multiple_documents_fields struct 
       INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"payment_timer_thread",data);
 
-      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"public_addresses","",&database_multiple_documents_fields,1,document_count,0,"",0) == 0)
+      if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"public_addresses","",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
       {
         PAYMENT_TIMER_THREAD_ERROR("Could not read the public addresses database.\nCould not send any payments to the delegates",0);
       }
@@ -555,7 +555,7 @@ void* payment_timer_thread(void* parameters)
           
           // reset the current total in the public_addresses collection
           memcpy(data2,"{\"current_total\":\"0\"}",21);
-          if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,0) == 0)
+          if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,1) == 0)
           {
             PAYMENT_TIMER_THREAD_ERROR("Could not reset the current_total for a payment in the database.\nCould not send payments.",0);
           } 
@@ -569,7 +569,7 @@ void* payment_timer_thread(void* parameters)
           memcpy(data2+10,data3,strnlen(data3,sizeof(data2)));
           memcpy(data2+strlen(data2),"\"}",2);
 
-          if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,0) == 0)
+          if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,1) == 0)
           {
             PAYMENT_TIMER_THREAD_ERROR("Could not add the current_total to the total for a payment in the database.\nCould not send payments.",0);
           } 
@@ -592,7 +592,7 @@ void* payment_timer_thread(void* parameters)
           memcpy(data2+strlen(data2),payment_tx_key,strnlen(payment_tx_key,sizeof(data2)));
           memcpy(data2+strlen(data2),"\"}",2);
 
-          if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses_payments",data2,0) == 0)
+          if (insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses_payments",data2,1) == 0)
           {
             PAYMENT_TIMER_THREAD_ERROR("Could not add the payment to the database.\nCould not send payments.",0);
           }
@@ -610,7 +610,7 @@ void* payment_timer_thread(void* parameters)
         memset(data2,0,sizeof(data2));
         memset(data3,0,sizeof(data3));
                  
-        if (read_document_field_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,"inactivity_count",data3,0) == 0)
+        if (read_document_field_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,"inactivity_count",data3,1) == 0)
         {
           PAYMENT_TIMER_THREAD_ERROR("Could not read the inactivity_count from the database.\nCould not send payments.",0);
         }
@@ -628,7 +628,7 @@ void* payment_timer_thread(void* parameters)
           memcpy(data2+21,data3,strnlen(data3,sizeof(data2)));
           memcpy(data2+strlen(data2),"\"}",2);
 
-          if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,0) == 0)
+          if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,1) == 0)
           {
             PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity_count for the database.\nCould not send payments.",0);
           }
@@ -637,7 +637,7 @@ void* payment_timer_thread(void* parameters)
         {
           // set the inactivity_count to 0
           memcpy(data2,"{\"inactivity_count\":\"0\"}",24);
-          if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,0) == 0)
+          if (update_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,data2,1) == 0)
           {
             PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity_count for the database.\nCould not send payments.",0);
           }
@@ -645,7 +645,7 @@ void* payment_timer_thread(void* parameters)
         else if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) == 0)
         {
           // remove the document from the database
-          if (delete_document_from_collection(DATABASE_NAME,"public_addresses",data,0) == 0)
+          if (delete_document_from_collection(DATABASE_NAME,"public_addresses",data,1) == 0)
           {
             PAYMENT_TIMER_THREAD_ERROR("Could not remove a document from the database.\nCould not send payments.",0);
           }                   
