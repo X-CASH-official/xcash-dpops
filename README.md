@@ -123,6 +123,8 @@ It is recommended if you are going to run a XCASH DPOPS node, to not keep all of
 
 --test - Run the test to make sure the program is compatible with your system
 
+--generate_key - Generate a public and private key for signing and verifying messages between block verifiers
+
 --total_threads "total_threads" - The total threads to use.
 If this parameter is not specified, the default is the number of threads the CPU has.
 
