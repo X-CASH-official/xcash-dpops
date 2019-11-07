@@ -86,13 +86,14 @@ void* current_block_height_timer_thread(void* parameters)
   }*/
 
   // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
-  do
+  sscanf(current_block_height,"%zu", &count);
+  while (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
     get_current_block_height(current_block_height,0);
     get_previous_block_hash(previous_block_hash,0);
     sscanf(current_block_height,"%zu", &count);
     sleep(1);
-  } while (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT);
+  }
 
   for (;;)
   {

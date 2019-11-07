@@ -345,11 +345,11 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
-            if (count == 3)
+            if (count == 4)
             {
               memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
             }
-            if (count == 4)
+            if (count == 5)
             {
               memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
             }
