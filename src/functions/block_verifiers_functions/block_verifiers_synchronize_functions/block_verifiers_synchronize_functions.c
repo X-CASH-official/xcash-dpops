@@ -521,6 +521,9 @@ int sync_check_reserve_proofs_database(int settings)
     }
   }
 
+  // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
+  sync_check_majority_reserve_proofs_database();
+
   color_print("The reserve proofs database is synced","green");
   
   pointer_reset(data);
@@ -533,10 +536,134 @@ int sync_check_reserve_proofs_database(int settings)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sync_check_majority_reserve_proofs_database
+Description: Checks if the block verifiers reserve proofs database is in the majority and if not syncs the reserve proofs database from the main network data node
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void sync_check_majority_reserve_proofs_database(void)
+{
+  // Variables
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE]; 
+  char message[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  size_t count;
+
+  // define macros  
+  #define SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset(data); \
+  return;
+
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    pointer_reset(data);
+    memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
+    exit(0);
+  }
+  
+  color_print("Checking if the database is in the majority","yellow");
+
+  if (get_synced_block_verifiers() == 0)
+  {
+    SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not get the synced block verifiers");
+  }
+
+ 
+  // get the database data hash for the reserve proofs database
+  if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
+  {
+    SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
+  }
+
+  // create the message
+  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_proofs_data_hash\": \"",139);
+  memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+  memcpy(message+strlen(message),"\",\r\n ",5);
+
+  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  {
+    memcpy(message+strlen(message),"\"reserve_proofs_data_hash_",26);
+    snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
+    memcpy(message+strlen(message),"\": \"",4);
+    // get the database data hash for the reserve proofs database
+    memset(data,0,strlen(data));
+    memset(data2,0,strlen(data2));  
+    memcpy(data2,"reserve_proofs_",15);  
+    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
+    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+    {
+      SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
+    }
+    memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n ",5);
+  }
+  memcpy(message+strlen(message),"}",1);
+
+  // sign_data
+  if (sign_data(message,0) == 0)
+  { 
+    SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
+  }
+    
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(data,0,strlen(data));
+    memset(data2,0,sizeof(data2));
+    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    {
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+      synced_block_verifiers.vote_settings_connection_timeout++;
+    }
+    else
+    {
+      parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2));
+      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+      if (memcmp(data2,"true",4) == 0)
+      {
+        synced_block_verifiers.vote_settings_true++;
+      }
+      else if (memcmp(data2,"false",5) == 0)
+      {
+        synced_block_verifiers.vote_settings_false++;
+      }
+    }   
+  }
+
+  // get the vote settings of the block verifiers
+
+  // check if the block verifiers database is in the majority
+  if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    color_print("The database is not in the majority, syncing from the main network data node","red");
+    sync_reserve_proofs_database(3);    
+  }
+  
+  pointer_reset(data);
+  return;
+  
+  #undef SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: sync_reserve_proofs_database
 Description: Syncs the reserve proofs database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from the main network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -625,6 +752,10 @@ int sync_reserve_proofs_database(int settings)
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
       } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
       memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else if (settings == 3)
+    {     
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[0],strnlen(network_data_nodes_list.network_data_nodes_IP_address[0],sizeof(block_verifiers_ip_address)));
     }
 
 
@@ -924,6 +1055,9 @@ int sync_check_reserve_bytes_database(int settings)
     }
   }
 
+  // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
+  sync_check_majority_reserve_bytes_database();
+
   color_print("The reserve bytes database is synced","green");
   
   pointer_reset(data);
@@ -936,10 +1070,137 @@ int sync_check_reserve_bytes_database(int settings)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sync_check_majority_reserve_bytes_database
+Description: Checks if the block verifiers reserve bytes database is in the majority and if not syncs the reserve bytes database from the main network data node
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void sync_check_majority_reserve_bytes_database(void)
+{
+  // Variables
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE]; 
+  char message[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  size_t count;
+  size_t current_reserve_bytes_database;
+
+  // define macros  
+  #define SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset(data); \
+  return;
+  
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    pointer_reset(data);
+    memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
+    exit(0);
+  }
+
+  color_print("Checking if the database is in the majority","yellow");
+
+  if (get_synced_block_verifiers() == 0)
+  {
+    SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not get the synced block verifiers");
+  }
+
+  // get the current reserve bytes database
+  get_reserve_bytes_database(current_reserve_bytes_database,0);
+
+  // get the database data hash for the reserve bytes database
+  if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
+  {
+    SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
+  }
+
+  // create the message
+  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_data_hash\": \"",137);
+  memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+  memcpy(message+strlen(message),"\",\r\n ",5);
+
+  for (count = 1; count <= current_reserve_bytes_database; count++)
+  {
+    memcpy(message+strlen(message),"\"reserve_bytes_data_hash_",25);
+    snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
+    memcpy(message+strlen(message),"\": \"",4);
+    // get the database data hash for the reserve bytes database
+    memset(data,0,strlen(data));
+    memset(data2,0,strlen(data2));  
+    memcpy(data2,"reserve_bytes_",14);  
+    snprintf(data2+14,sizeof(data2)-15,"%zu",count);
+    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+    {
+      SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
+    }
+    memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n ",5);
+  }
+  memcpy(message+strlen(message),"}",1);
+
+  // sign_data
+  if (sign_data(message,0) == 0)
+  { 
+    SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
+  }
+
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(data,0,strlen(data));
+    memset(data2,0,sizeof(data2));
+    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    {
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+      synced_block_verifiers.vote_settings_connection_timeout++;
+    }
+    else
+    {
+      parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2));
+      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+      if (memcmp(data2,"true",4) == 0)
+      {
+        synced_block_verifiers.vote_settings_true++;
+      }
+      else if (memcmp(data2,"false",5) == 0)
+      {
+        synced_block_verifiers.vote_settings_false++;
+      }
+    }   
+  }
+
+  // get the vote settings of the block verifiers
+
+  // check if the block verifiers database is in the majority
+  if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    color_print("The database is not in the majority, syncing from the main network data node","red");
+    sync_reserve_bytes_database(3);    
+  }
+  
+  pointer_reset(data);
+  return;
+  
+  #undef SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: sync_reserve_bytes_database
 Description: Syncs the reserve bytes database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from the main network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1029,6 +1290,10 @@ int sync_reserve_bytes_database(int settings)
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
       } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
       memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else if (settings == 3)
+    {     
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[0],strnlen(network_data_nodes_list.network_data_nodes_IP_address[0],sizeof(block_verifiers_ip_address)));
     }
 
 
@@ -1307,6 +1572,9 @@ int sync_check_delegates_database(int settings)
     }
   }
 
+  // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
+  sync_check_majority_delegates_database();
+
   color_print("The delegates database is synced","green");
   
   pointer_reset(data);
@@ -1320,10 +1588,116 @@ int sync_check_delegates_database(int settings)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sync_check_majority_delegates_database
+Description: Checks if the block verifiers delegates database is in the majority and if not syncs the delegates database from the main network data node
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void sync_check_majority_delegates_database(void)
+{
+  // Variables
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE]; 
+  char message[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  size_t count;
+
+  // define macros 
+  #define DATABASE_COLLECTION "delegates"
+  #define SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset(data); \
+  return;
+
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    pointer_reset(data);
+    memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
+    exit(0);
+  }
+
+  color_print("Checking if the database is in the majority","yellow");
+
+  if (get_synced_block_verifiers() == 0)
+  {
+    SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR("Could not get the synced block verifiers");
+  }
+
+  // get the database data hash for the reserve proofs database
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
+  {
+    SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database");
+  }
+
+  // create the message
+  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",115);
+  memcpy(message+115,data,DATA_HASH_LENGTH);
+  memcpy(message+243,"\",\r\n}",5);
+
+  // sign_data
+  if (sign_data(message,0) == 0)
+  { 
+    SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR("Could not sign_data");
+  }
+
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(data,0,strlen(data));
+    memset(data2,0,sizeof(data2));
+    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    {
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+      synced_block_verifiers.vote_settings_connection_timeout++;
+    }
+    else
+    {
+      parse_json_data(data,"delegates_database",data2,sizeof(data2));
+      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+      if (memcmp(data2,"true",4) == 0)
+      {
+        synced_block_verifiers.vote_settings_true++;
+      }
+      else if (memcmp(data2,"false",5) == 0)
+      {
+        synced_block_verifiers.vote_settings_false++;
+      }
+    }   
+  }
+
+  // get the vote settings of the block verifiers
+
+  // check if the block verifiers database is in the majority
+  if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    color_print("The database is not in the majority, syncing from the main network data node","red");
+    sync_delegates_database(3);    
+  }
+  
+  pointer_reset(data);
+  return;
+
+  #undef DATABASE_COLLECTION  
+  #undef SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: sync_delegates_database
 Description: Syncs the delegates database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from the main network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1397,6 +1771,10 @@ int sync_delegates_database(int settings)
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
       } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
       memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else if (settings == 3)
+    {     
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[0],strnlen(network_data_nodes_list.network_data_nodes_IP_address[0],sizeof(block_verifiers_ip_address)));
     }
 
 
@@ -1578,6 +1956,9 @@ int sync_check_statistics_database(int settings)
     }
   }
 
+  // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
+  sync_check_majority_statistics_database();
+
   color_print("The statistics database is synced","green");
   
   pointer_reset(data);
@@ -1591,10 +1972,116 @@ int sync_check_statistics_database(int settings)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sync_check_majority_statistics_database
+Description: Checks if the block verifiers statistics database is in the majority and if not syncs the statistics database from the main network data node
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void sync_check_majority_statistics_database(void)
+{
+  // Variables
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE]; 
+  char message[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  size_t count;
+
+  // define macros 
+  #define DATABASE_COLLECTION "statistics"
+  #define SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset(data); \
+  return;
+
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    pointer_reset(data);
+    memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
+    exit(0);
+  }
+
+  color_print("Checking if the database is in the majority","yellow");
+
+  if (get_synced_block_verifiers() == 0)
+  {
+    SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR("Could not get the synced block verifiers");
+  }
+  
+  // get the database data hash for the reserve proofs database
+  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
+  {
+    SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database");
+  }
+
+  // create the message
+  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",116);
+  memcpy(message+116,data,DATA_HASH_LENGTH);
+  memcpy(message+244,"\",\r\n}",5);
+
+  // sign_data
+  if (sign_data(message,0) == 0)
+  { 
+    SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR("Could not sign_data");
+  }
+
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memset(data,0,strlen(data));
+    memset(data2,0,sizeof(data2));
+    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    {
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+      synced_block_verifiers.vote_settings_connection_timeout++;
+    }
+    else
+    {
+      parse_json_data(data,"statistics_database",data2,sizeof(data2));
+      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+      if (memcmp(data2,"true",4) == 0)
+      {
+        synced_block_verifiers.vote_settings_true++;
+      }
+      else if (memcmp(data2,"false",5) == 0)
+      {
+        synced_block_verifiers.vote_settings_false++;
+      }
+    }   
+  }
+
+  // get the vote settings of the block verifiers
+
+  // check if the block verifiers database is in the majority
+  if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    color_print("The database is not in the majority, syncing from the main network data node","red");
+    sync_statistics_database(3);    
+  }
+  
+  pointer_reset(data);
+  return;
+
+  #undef DATABASE_COLLECTION  
+  #undef SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: sync_statistics_database
 Description: Syncs the statistics database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from the main network data node
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1668,6 +2155,10 @@ int sync_statistics_database(int settings)
         count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
       } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
       memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else if (settings == 3)
+    {     
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[0],strnlen(network_data_nodes_list.network_data_nodes_IP_address[0],sizeof(block_verifiers_ip_address)));
     }
 
 
