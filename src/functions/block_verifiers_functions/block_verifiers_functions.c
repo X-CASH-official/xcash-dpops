@@ -342,7 +342,7 @@ int start_current_round_start_blocks(void)
   }
 
   // change the nonce to the CONSENSUS_NODE_NETWORK_BLOCK_NONCE
-  memcpy(blockchain_data.nonce_data,CONSENSUS_NODE_NETWORK_BLOCK_NONCE,8);
+  memcpy(blockchain_data.nonce_data,CONSENSUS_NODE_NETWORK_BLOCK_NONCE,sizeof(CONSENSUS_NODE_NETWORK_BLOCK_NONCE)-1);
 
   // add the delegates data to the network_block_string
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,BUFFER_SIZE));
@@ -431,17 +431,13 @@ int start_current_round_start_blocks(void)
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
   }
-
-  // add the next block verifiers
+  
+  // add the next block verifiers and add 0`s for the block_validation_node_signature
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   { 
     memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
-  }
-
-  // add 0's for the block validation nodes signature, except for the first block validation node signature
-  for (count = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA)-1);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
   }
   
   // convert the blockchain_data to a network_block_string
@@ -589,7 +585,7 @@ int data_network_node_create_block(void)
   }
 
   #define DATA_NETWORK_NODE_CREATE_BLOCK_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
+  memcpy(error_message.function[error_message.total],"data_network_node_create_block",30); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   pointer_reset_all; \
@@ -655,7 +651,7 @@ int data_network_node_create_block(void)
     }
 
     // change the nonce to the CONSENSUS_NODE_NETWORK_BLOCK_NONCE
-    memcpy(blockchain_data.nonce_data,CONSENSUS_NODE_NETWORK_BLOCK_NONCE,8);
+    memcpy(blockchain_data.nonce_data,CONSENSUS_NODE_NETWORK_BLOCK_NONCE,sizeof(CONSENSUS_NODE_NETWORK_BLOCK_NONCE)-1);
 
     // add the delegates data to the network_block_string
     memset(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,BUFFER_SIZE));
@@ -744,10 +740,12 @@ int data_network_node_create_block(void)
       memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
     }
 
-    // add the next block verifiers
+    // add the next block verifiers and add 0`s for the block_validation_node_signature
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     { 
       memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA)-1);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
     }
 
     // convert the blockchain_data to a network_block_string
@@ -854,19 +852,9 @@ int data_network_node_create_block(void)
     // verify the block
     memset(data3,0,sizeof(data3));
     snprintf(data3,sizeof(data3)-1,"%zu",count);
-    if (count+1 != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
-    {    
-      if (verify_network_block_data(1,1,1,data3,data2,BLOCK_VERIFIERS_AMOUNT) == 0)
-      {
-        DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
-      }
-    }
-    else
+    if (verify_network_block_data(1,1,1,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
     {
-      if (verify_network_block_data(0,1,1,data3,data2,BLOCK_VERIFIERS_AMOUNT) == 0)
-      {
-        DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
-      }
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
     }
 
     // convert the blockchain_data to a network_block_string

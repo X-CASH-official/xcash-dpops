@@ -1705,47 +1705,70 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   // block_validation_node_signature
   if (BLOCK_VALIDATION_SIGNATURES_SETTINGS == 1)
   {
-    // get the next block verifiers public addresses from the previous network blocks reserve bytes
-    message_copy1 = strstr(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_SIGN_DATA_STRING);
-    count2 = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1));
-    count = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1) + (((XCASH_WALLET_LENGTH*2)+sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1)*BLOCK_VERIFIERS_TOTAL));
-    memcpy(previous_network_block_reserve_bytes_block_verifiers_public_addresses_data,&PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES[count],count2 - count);
-    
-    for (count = 0, count2 = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++, count2 += ((XCASH_WALLET_LENGTH*2)+sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1))
+    if (blockchain_data.block_height == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {
-      memset(data2,0,strlen(data2));
-      memcpy(data2,&previous_network_block_reserve_bytes_block_verifiers_public_addresses_data[count2],XCASH_WALLET_LENGTH*2);
-      
-      // convert the hexadecimal string to a string
-      for (number = 0, count3 = 0; number < XCASH_WALLET_LENGTH*2; count3++, number += 2)
+      // create a network block string
+      if (blockchain_data_to_network_block_string(network_block_string,BLOCK_VERIFIERS_TOTAL) == 0)
       {
-        memset(data,0,strnlen(data,BUFFER_SIZE));
-        memcpy(data,&data2[number],2);
-        previous_network_block_reserve_bytes_block_verifiers_public_addresses[count][count3] = (int)strtol(data, NULL, 16);
-      }      
-    }
+        VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not convert the blockchain struct to a network block string");
+      }  
 
-    // create a network block string
-    if (blockchain_data_to_network_block_string(network_block_string,BLOCK_VERIFIERS_TOTAL) == 0)
-    {
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not convert the blockchain struct to a network block string");
-    }
+      // replace the main network data nodes block validation signature with the GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA
+      string_replace(network_block_string,BUFFER_SIZE,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[0],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA);
 
-    // replace the block validation signatures with the GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA
-    for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
+      if (data_verify(0,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[0],network_block_string) == 1)
+      {
+        number = BLOCK_VERIFIERS_AMOUNT;
+      }
+      else
+      {
+        number = 0;
+      }
+    }
+    else
     { 
-      string_replace(network_block_string,BUFFER_SIZE,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA);
-    }
-
-    // check if at least 67 of the next block verifiers in the previous block signed the data in the current block
-    for (count = 0, number = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
-    {       
-      if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],"5369675631",10) == 0)
+      // get the next block verifiers public addresses from the previous network blocks reserve bytes
+      message_copy1 = strstr(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_SIGN_DATA_STRING);
+      count2 = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1));
+      count = strlen(PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES) - (strlen(message_copy1) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1) + (((XCASH_WALLET_LENGTH*2)+sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1)*BLOCK_VERIFIERS_TOTAL));
+      memcpy(previous_network_block_reserve_bytes_block_verifiers_public_addresses_data,&PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES[count],count2 - count);
+    
+      for (count = 0, count2 = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++, count2 += ((XCASH_WALLET_LENGTH*2)+sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1))
       {
-        // check the signed data 
-        if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],network_block_string) == 1)
+        memset(data2,0,strlen(data2));
+        memcpy(data2,&previous_network_block_reserve_bytes_block_verifiers_public_addresses_data[count2],XCASH_WALLET_LENGTH*2);
+      
+        // convert the hexadecimal string to a string
+        for (number = 0, count3 = 0; number < XCASH_WALLET_LENGTH*2; count3++, number += 2)
         {
-          number++;
+          memset(data,0,strnlen(data,BUFFER_SIZE));
+          memcpy(data,&data2[number],2);
+          previous_network_block_reserve_bytes_block_verifiers_public_addresses[count][count3] = (int)strtol(data, NULL, 16);
+        }      
+      }
+
+      // create a network block string
+      if (blockchain_data_to_network_block_string(network_block_string,BLOCK_VERIFIERS_TOTAL) == 0)
+      {
+        VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not convert the blockchain struct to a network block string");
+      }
+
+      // replace the block validation signatures with the GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA
+      for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
+      { 
+        string_replace(network_block_string,BUFFER_SIZE,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA);
+      }
+
+      // check if at least 67 of the next block verifiers in the previous block signed the data in the current block
+      for (count = 0, number = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
+      {       
+        if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],"5369675631",10) == 0)
+        {
+          // check the signed data 
+          if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],network_block_string) == 1)
+          {
+            number++;
+          }
         }
       }
     }
