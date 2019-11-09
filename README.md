@@ -325,38 +325,6 @@ Reload systemd after you have made any changes to the systemd service files
 
 
 
-### XCASH Daemon Block Verifier
-This is the systemd file for XCASH Daemon when you are a block verifier  
-**Only run the XCASH Daemon service file, as the XCASH DPOPS program will determine if your a block verifier and start the correct systemd service file**
-```
-[Unit]
-Description=XCASH Daemon Block Verifier systemd file
- 
-[Service]
-Type=forking
-User=root
-PIDFile=/root/x-network/systemdpid/xcash_daemon.pid
-ExecStart=/root/x-network/X-CASH/build/release/bin/xcashd --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_Block_Verifier_log.txt --max-log-file-size 0 --detach --pidfile /root/x-network/systemdpid/xcash_daemon.pid
-RuntimeMaxSec=15d
-Restart=always
- 
-[Install]
-WantedBy=multi-user.target
-```
-
-Make sure to leave the RuntimeMaxSec in the systemd service file, as the XCASH Daemon usually needs to restart after a while to prevent it from not synchronizing
-
-You will need to change the **User** to the user of the system
-
-You will need to change the **PIDFile** to the full path of the `xcash_daemon.pid` file
-
-You will need to change the **ExecStart** to the full path of the `xcashd` file
-
-Reload systemd after you have made any changes to the systemd service files  
-`systemctl daemon-reload`
-
-
-
 ### XCASH Wallet
 This is the systemd file for XCASH Wallet
 ```
@@ -513,8 +481,8 @@ To view only the last 100 lines of the log file, you can run
 To view live logging of XCASH DPOPS, you can run  
 `journalctl --unit=XCASH_DPOPS --follow -n 100 --output cat`
 
-To view logs for the XCASH_Daemon systemd service file or XCASH_Daemon_Block_Verifier systemd service file  
-`tail -n 100 /root/x-network/logs/XCASH_Daemon_log.txt` or `tail -n 100 /root/x-network/logs/XCASH_Daemon_Block_Verifier_log.txt`
+To view logs for the XCASH_Daemon systemd service  
+`tail -n 100 /root/x-network/logs/XCASH_Daemon_log.txt`
  
  
  

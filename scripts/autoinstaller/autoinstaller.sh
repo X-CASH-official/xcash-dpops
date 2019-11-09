@@ -58,7 +58,6 @@ FIREWALL_SHARED_DELEGATES=""
 SYSTEMD_SERVICE_FILE_FIREWALL=""
 SYSTEMD_SERVICE_FILE_MONGODB=""
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON=""
-SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER=""
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE=""
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE=""
 SYSTEMD_SERVICE_FILE_XCASH_WALLET=""
@@ -447,22 +446,6 @@ Type=forking
 User=${USER}
 PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash_daemon.pid
 ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
-RuntimeMaxSec=15d
-Restart=always
- 
-[Install]
-WantedBy=multi-user.target
-EOF
-)"
-SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER="$(cat << EOF
-[Unit]
-Description=XCASH Daemon Block Verifier systemd file
- 
-[Service]
-Type=forking
-User=${USER}
-PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash_daemon.pid
-ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --block-verifier --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_Block_Verifier_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -912,7 +895,6 @@ function create_systemd_service_files()
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/XCASH_Daemon.service"
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON_BLOCK_VERIFIER}' > /lib/systemd/system/XCASH_Daemon_Block_Verifier.service"
   if [ ! "${SHARED_DELEGATE^^}" == "YES" ]; then
     sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
   else

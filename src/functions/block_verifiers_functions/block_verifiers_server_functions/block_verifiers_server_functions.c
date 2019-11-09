@@ -259,15 +259,6 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
   }
-
-  memset(data3,0,sizeof(data3));
-
-  // create the verify_block file for the X-CASH Daemon
-  if (write_file(data2,verify_block_file) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not create the verify_block file");
-  }
-
   return 1;
 
   #undef DATABASE_COLLECTION

@@ -133,43 +133,6 @@ int start_new_round(void)
   }
   */
 
-  /*// check if the block verifier is a current block verifier
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-    {
-      break;
-    }
-  }
-
-  pthread_rwlock_rdlock(&rwlock);
-  if (count == BLOCK_VERIFIERS_AMOUNT)
-  {
-    // check to see if the X-CASH daemon needs to be restarted
-    if (current_block_verifier_settings == 1)
-    {
-      current_block_verifier_settings = 0;
-      RESTART_XCASH_DAEMON(0);
-    }
-    return 1;
-  }
-  else
-  {
-    // check to see if the X-CASH daemon needs to be restarted
-    if (current_block_verifier_settings == 0)
-    {
-      current_block_verifier_settings = 1;
-      RESTART_XCASH_DAEMON(1);
-    }
-  }  
-  pthread_rwlock_unlock(&rwlock);
-
-  if (count == BLOCK_VERIFIERS_AMOUNT)
-  {
-    START_NEW_ROUND_ERROR("Your delegate is not a block verifier. Your delegate will now sit out for the remainder of the round");
-  }*/
-
-
   // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
   settings = update_block_verifiers_list();
   if (settings == 0)
@@ -488,12 +451,6 @@ int start_current_round_start_blocks(void)
   if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,1) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
-  }
-
-  // create the verify_block file for the X-CASH Daemon
-  if (write_file(VRF_data.reserve_bytes_data_hash,verify_block_file) == 0)
-  {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the verify_block file");
   }
 
   // create the message
@@ -900,13 +857,6 @@ int data_network_node_create_block(void)
     }
 
     memset(data3,0,sizeof(data3));
-
-    // create the verify_block file for the X-CASH Daemon
-    if (write_file(VRF_data.reserve_bytes_data_hash,verify_block_file) == 0)
-    {
-      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not create the verify_block file");
-    }
-    sleep(BLOCK_VERIFIERS_SETTINGS);
 
     // create the message
     memset(data3,0,sizeof(data3));
@@ -1470,12 +1420,6 @@ int block_verifiers_create_block_and_update_database(void)
   if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,1) == 0)
   {
     BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the new block to the database");
-  }
-  
-  // create the verify_block file for the X-CASH Daemon
-  if (write_file(VRF_data.reserve_bytes_data_hash,verify_block_file) == 0)
-  {
-    BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not create the verify_block file");
   }
 
   // wait for the block verifiers to process the votes

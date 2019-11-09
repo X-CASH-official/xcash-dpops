@@ -18,7 +18,6 @@ mongoc_client_pool_t* database_client_thread_pool;
 
 // network data nodes
 int network_data_node_settings; // 1 if a network data node, 0 if not a network data node 
-char verify_block_file[1000]; // The verify block file
 char xcash_wallet_public_address[XCASH_WALLET_LENGTH+1]; // Holds your wallets public address
 unsigned char secret_key_data[crypto_vrf_SECRETKEYBYTES+1]; // Holds the secret key for signing block verifier messages
 char secret_key[VRF_SECRET_KEY_LENGTH+1]; // Holds the secret key text for signing block verifier messages
@@ -48,7 +47,6 @@ char current_block_height[100]; // The current block height
 char previous_block_hash[BLOCK_HASH_LENGTH+1]; // The current block height
 int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
-int current_block_verifier_settings; // 1 if the delegate is a block verifier, 0 if not
 int database_settings; // 1 if the database can have documents added to it, 0 if not
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not

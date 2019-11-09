@@ -414,56 +414,6 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: get_path
-Description: Gets the path of the xcash daemon
-Parameters:
-  result - The string where you want the path of the xcash daemon
-  MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int get_path(char *result, const int MESSAGE_SETTINGS)
-{
-  // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-
-  // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-
-  // define macros
-  #define GET_PATH_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"get_path",8); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  return 0;
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_path\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get path",MESSAGE_SETTINGS) <= 0)
-  {  
-    GET_PATH_ERROR("Could not get the path");
-  }
-  
-  if (parse_json_data(data,"path",data2, BUFFER_SIZE) == 0 || string_replace(data2,sizeof(data2),"\\","") == 0)
-  {
-    GET_PATH_ERROR("Could not get the path");
-  }
-
-  memcpy(result,data2,strlen(data2));
-
-  return 1;
-
-  #undef GET_PATH_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: get_previous_block_information
 Description: Gets the information of the previous block of the network
 Parameters:

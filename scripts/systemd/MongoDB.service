@@ -7,8 +7,8 @@ Type=forking
 User=root
 Type=oneshot
 RemainAfterExit=yes
-PIDFile=/root/Installed-Programs/systemdpid/mongod.pid
-ExecStart=/root/Installed-Programs/mongodb-linux-x86_64-ubuntu1804-4.2.0/bin/mongod --fork --syslog
+PIDFile=/root/x-network/systemdpid/mongod.pid
+ExecStart=/root/x-network/mongodb-linux-x86_64-ubuntu1804-4.2.0/bin/mongod --fork --syslog
 
 LimitFSIZE=infinity
 LimitCPU=infinity
