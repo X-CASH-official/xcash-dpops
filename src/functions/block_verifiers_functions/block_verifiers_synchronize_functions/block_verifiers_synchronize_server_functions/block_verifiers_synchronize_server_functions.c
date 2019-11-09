@@ -330,7 +330,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   // create the message
   memcpy(message2,"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES|",43);
   memcpy(message2+43,message,strnlen(message,sizeof(message2)));
-  memcpy(message2+strlen(message2),"|}",2);
+  memcpy(message2+strlen(message2),"}",2);
 
   // send the data
   if (send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"") == 0)
