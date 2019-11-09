@@ -279,11 +279,7 @@ Return: 0 if an error has occured, 1 if successfull
 */
 
 int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const int CLIENT_SOCKET, const char* MESSAGE)
-{
-  // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-
+{  
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
@@ -334,36 +330,6 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   // create the message
   memcpy(message2,"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES|",43);
   memcpy(message2+43,message,strnlen(message,sizeof(message2)));
-  memcpy(message2+strlen(message2),"|",1);
-  
-  // sign_data
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-  memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
-  memcpy(data+60,message2,strnlen(message2,sizeof(data)));
-  memcpy(data+strlen(data),"\"}}",3);
-
-  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",0) <= 0)
-  {  
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not create the message");
-  } 
-
-  memset(data,0,sizeof(data));
-
-  if (parse_json_data(data2,"signature",data,sizeof(data)) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not create the message");
-  }
-
-  // check if the returned data is valid
-  if (strlen(data) != XCASH_SIGN_DATA_LENGTH && strncmp(data,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not create the message");
-  }
-
-  memcpy(message2+strlen(message2),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(message2+strlen(message2),"|",1);
-  memcpy(message2+strlen(message2),data,XCASH_SIGN_DATA_LENGTH);
   memcpy(message2+strlen(message2),"|}",2);
 
   // send the data
