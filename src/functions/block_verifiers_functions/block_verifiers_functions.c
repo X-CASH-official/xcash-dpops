@@ -1500,7 +1500,7 @@ int block_verifiers_create_block_and_update_database(void)
       BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not submit the block to the network");
     }
   }
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS);
 
   if (network_data_node_settings == 1)
   {
@@ -1541,7 +1541,7 @@ int block_verifiers_create_block_and_update_database(void)
             break;
           }
         }
-        sleep(BLOCK_VERIFIERS_SETTINGS);
+        sleep(BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS);
       } 
     }   
   }
