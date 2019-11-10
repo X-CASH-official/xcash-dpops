@@ -566,7 +566,6 @@ void sync_check_majority_reserve_proofs_database(void)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;

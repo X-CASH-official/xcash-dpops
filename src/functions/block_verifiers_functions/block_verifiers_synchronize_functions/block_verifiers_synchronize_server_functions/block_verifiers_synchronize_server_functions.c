@@ -284,59 +284,90 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
-  char message2[BUFFER_SIZE];
+  char* message2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
+  size_t current_block_height_reserve_bytes;
+  size_t reserve_bytes_blocks_amount;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes",68); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  pointer_reset(message2); \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes}",0,0,""); \
   return 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (message2 == NULL)
+  {
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes",68);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
+    exit(0);
+  }
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-  memset(message2,0,sizeof(message2));
   
   if (parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not create the message");
   }
 
-  // create the message
-  memcpy(data2,"{\"block_height\": \"",18);
-  memcpy(data2+18,data,strnlen(data,sizeof(data2)));
-  memcpy(data2+strlen(data2),"\"}",2);
-
-  sscanf(data,"%zu", &count);
-  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
+  // calculate how many blocks to send
+  sscanf(current_block_height,"%zu",&count2);
+  sscanf(data,"%zu",&current_block_height_reserve_bytes);
+  if (current_block_height_reserve_bytes < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not get the current block height");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Invalid block height");
   }
-  count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-  memset(data,0,sizeof(data));
-  memcpy(data,"reserve_bytes_",14);
-  snprintf(data+14,sizeof(data)-15,"%zu",count2);
-
-  // get the data hash
-  if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes",message,1) == 0)
+  reserve_bytes_blocks_amount = count2 - current_block_height_reserve_bytes;
+  if (reserve_bytes_blocks_amount > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not get the previous blocks reserve bytes");
+    reserve_bytes_blocks_amount = BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
   }
 
   // create the message
   memcpy(message2,"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES|",43);
-  memcpy(message2+43,message,strnlen(message,sizeof(message2)));
-  memcpy(message2+strlen(message2),"}",2);
 
+  for (count = 0; count < reserve_bytes_blocks_amount; count++, current_block_height_reserve_bytes++)
+  {
+    // create the message
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
+    memset(message,0,sizeof(message));
+    memcpy(data2,"{\"block_height\": \"",18);
+    snprintf(data2+18,sizeof(data2)-19,"%zu",current_block_height_reserve_bytes);
+    memcpy(data2+strlen(data2),"\"}",2);
+  
+    count2 = ((current_block_height_reserve_bytes - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+    memcpy(data,"reserve_bytes_",14);
+    snprintf(data+14,sizeof(data)-15,"%zu",count2);
+
+    // get the data hash
+    if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes",message,1) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not get the previous blocks reserve bytes");
+    }
+  
+    memcpy(message2+strlen(message2),message,strnlen(message,MAXIMUM_BUFFER_SIZE));
+    memcpy(message2+strlen(message2),"|",1);
+  }
+
+  memcpy(message2+strlen(message2),"}",1);
+  
   // send the data
   if (send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node");
   }
+  pointer_reset(message2);
   return 1;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR
