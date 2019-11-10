@@ -332,6 +332,11 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   {
     reserve_bytes_blocks_amount = BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
   }
+  else if (reserve_bytes_blocks_amount == 0)
+  {
+    // set it to 1 as this will enable syncing after it has already synced
+    reserve_bytes_blocks_amount = 1;
+  }
 
   // create the message
   memcpy(message2,"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES|",43);
