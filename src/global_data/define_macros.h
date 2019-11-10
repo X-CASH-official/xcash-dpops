@@ -106,7 +106,6 @@ Using define statements instead of constants for increased efficiency
 #define UPDATE_PARAMETER_AMOUNT 5 // The update parameter amount
 
 // VRF
-#define BLOCK_VERIFIERS_SECRET_KEY "c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a" // The secret key used for signing block verifiers messages
 #define VRF_PUBLIC_KEY_LENGTH 64
 #define VRF_SECRET_KEY_LENGTH 128
 #define VRF_PROOF_LENGTH 160

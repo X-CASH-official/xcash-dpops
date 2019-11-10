@@ -1,0 +1,5 @@
+#ifndef BLOCK_VERIFIERS_SIGN_AND_VERIFY_MESSAGES_H_   /* Include guard */
+#define BLOCK_VERIFIERS_SIGN_AND_VERIFY_MESSAGES_H_
+
+#define BLOCK_VERIFIERS_SECRET_KEY "c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a" // The secret key used for signing block verifiers messages
+#endif

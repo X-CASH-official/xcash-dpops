@@ -10,6 +10,7 @@
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
+#include "block_verifiers_sign_and_verify_messages.h"
 #include "structures.h"
 #include "variables.h"
 
