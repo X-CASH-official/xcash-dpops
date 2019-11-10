@@ -52,11 +52,12 @@ Name: check_if_databases_are_synced
 Description: Checks if the databases are synced, and if not syncs the databases
 Paramters:
   SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int check_if_databases_are_synced(const int SETTINGS)
+int check_if_databases_are_synced(const int SETTINGS, const int reserve_bytes_start_settings)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -87,7 +88,7 @@ int check_if_databases_are_synced(const int SETTINGS)
   }
 
   // check if your reserve bytes database is synced
-  if (sync_check_reserve_bytes_database(SETTINGS) == 0)
+  if (sync_check_reserve_bytes_database(SETTINGS, reserve_bytes_start_settings) == 0)
   {    
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.");
   }
@@ -914,11 +915,12 @@ Name: sync_check_reserve_bytes_database
 Description: Checks if the block verifier needs to sync the reserve bytes database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_check_reserve_bytes_database(int settings)
+int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_start_settings)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1040,7 +1042,7 @@ int sync_check_reserve_bytes_database(int settings)
       color_print("The reserve bytes database is not synced, syncing from a random block verifier","red");
 
       // get the data
-      if (sync_reserve_bytes_database(settings) == 0)
+      if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings) == 0)
       {
         SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
       }
@@ -1049,14 +1051,14 @@ int sync_check_reserve_bytes_database(int settings)
   if (settings == 2)
   {
     fprintf(stderr,"Syncing from a random network data node\n");
-    if (sync_reserve_bytes_database(settings) == 0)
+    if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings) == 0)
     {
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
     }
   }
 
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
-  sync_check_majority_reserve_bytes_database();
+  sync_check_majority_reserve_bytes_database(reserve_bytes_start_settings);
 
   color_print("The reserve bytes database is synced","green");
   
@@ -1072,10 +1074,12 @@ int sync_check_reserve_bytes_database(int settings)
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_majority_reserve_bytes_database
 Description: Checks if the block verifiers reserve bytes database is in the majority and if not syncs the reserve bytes database from the main network data node
+Paramters:
+  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 -----------------------------------------------------------------------------------------------------------
 */
 
-void sync_check_majority_reserve_bytes_database(void)
+void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_settings)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1184,7 +1188,7 @@ void sync_check_majority_reserve_bytes_database(void)
   if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
     color_print("The database is not in the majority, syncing from the main network data node","red");
-    sync_reserve_bytes_database(3);    
+    sync_reserve_bytes_database(3,reserve_bytes_start_settings);    
   }
   
   pointer_reset(data);
@@ -1201,11 +1205,12 @@ Name: sync_reserve_bytes_database
 Description: Syncs the reserve bytes database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from the main network data node
+  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_bytes_database(int settings)
+int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_settings)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1313,7 +1318,16 @@ int sync_reserve_bytes_database(int settings)
   memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
   memcpy(data3+strlen(data3),"\",\r\n ",5);
 
-  for (count = 1; count <= current_reserve_bytes_database; count++)
+  if (reserve_bytes_start_settings == 0)
+  {
+    count = 1;
+  }
+  else
+  {
+    count = current_reserve_bytes_database;
+  }  
+
+  for (; count <= current_reserve_bytes_database; count++)
   {
     memcpy(data3+strlen(data3),"\"reserve_bytes_data_hash_",25);
     snprintf(data3+strlen(data3),sizeof(data3)-1,"%zu",count);
@@ -1350,8 +1364,16 @@ int sync_reserve_bytes_database(int settings)
   }
 
 
+  if (reserve_bytes_start_settings == 0)
+  {
+    count2 = 1;
+  }
+  else
+  {
+    count2 = current_reserve_bytes_database;
+  }  
 
-  for (count2 = 1; count2 <= current_reserve_bytes_database; count2++)
+  for (; count2 <= current_reserve_bytes_database; count2++)
   {
     memset(data,0,strlen(data));
     memcpy(data,"Checking if reserve_bytes_",26);

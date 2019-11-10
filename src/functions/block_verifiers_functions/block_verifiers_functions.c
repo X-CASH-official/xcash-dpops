@@ -127,7 +127,7 @@ int start_new_round(void)
   get_delegates_online_status();
 
   /*// check if all of the databases are synced
-  if (check_if_databases_are_synced(settings) == 0)
+  if (check_if_databases_are_synced(settings,1) == 0)
   {
     START_NEW_ROUND_ERROR("Could not check if the database is synced. Your block verifier will now sit out for the remainder of the round");
   }

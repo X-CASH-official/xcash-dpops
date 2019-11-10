@@ -405,7 +405,7 @@ int main(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--synchronize_database_from_network_data_node",BUFFER_SIZE) == 0)
     {
-      check_if_databases_are_synced(2);
+      check_if_databases_are_synced(2,0);
       database_reset;
       exit(0);
     }
@@ -532,7 +532,7 @@ int main(int parameters_count, char* parameters[])
   if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0)
   {
     // check if all of the databases are synced from a network data node, since their is no way to tell if the previous round could not reach consensus
-    if (check_if_databases_are_synced(2) == 0)
+    if (check_if_databases_are_synced(2,0) == 0)
     {
       MAIN_ERROR("Could not check if the databases are synced");
     }
