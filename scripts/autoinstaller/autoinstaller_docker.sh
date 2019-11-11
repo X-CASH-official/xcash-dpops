@@ -323,6 +323,30 @@ function get_current_xcash_wallet_data()
   echo
 }
 
+function start_systemd_service_files()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Starting Processes${END_COLOR_PRINT}"
+  screen -dmS MongoDB ${MONGODB_DIR}bin/mongod --dbpath ${MONGODB_INSTALLATION_DIR}
+  screen -dmS XCASH_Daemon ${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
+  sleep 10s
+  screen -dmS XCASH_Wallet ${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+  sleep 10s
+  screen -dmS XCASH_DPOPS ${XCASH_DPOPS_DIR}build/XCASH_DPOPS --shared_delegates_website --fee ${DPOPS_FEE} --minimum_amount ${DPOPS_MINIMUM_AMOUNT}
+  echo -ne "\r${COLOR_PRINT_GREEN}Starting Processes${END_COLOR_PRINT}"
+  echo
+}
+
+function stop_systemd_service_files()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Stoping Processes${END_COLOR_PRINT}"
+  screen -XS "MongoDB" quit
+  screen -XS "XCASH_Daemon" quit
+  screen -XS "XCASH_Wallet" quit
+  screen -XS "XCASH_DPOPS" quit
+  echo -ne "\r${COLOR_PRINT_GREEN}Stoping Processes${END_COLOR_PRINT}"
+  echo
+}
+
 
 
 
@@ -1000,6 +1024,9 @@ function install()
     import_xcash_wallet
   fi
 
+  # Start the processes
+  start_processes
+
   # Display X-CASH current wallet data  
   echo
   echo
@@ -1028,8 +1055,8 @@ function update()
   # Get the current version of the dependencies
   get_dependencies_current_version
 
-  # Stop the systemd service files
-  stop_systemd_service_files
+  # Stop the process
+  stop_processes
 
   # Check if upgrade from a solo delegate to a shared delegate or a shared delegate to a solo delegate
   check_if_upgrade_solo_delegate_and_shared_delegate
@@ -1067,8 +1094,8 @@ function update()
     update_npm
   fi
 
-  # Start the systemd service files
-  start_systemd_service_files
+  # Start the processes
+  start_processes
 
   echo
   echo
@@ -1105,8 +1132,8 @@ function uninstall()
   # Get the current xcash wallet data
   get_current_xcash_wallet_data
 
-  # Stop the systemd service files
-  stop_systemd_service_files
+  # Stop processes
+  stop_processes
 
   # Uninstall packages
   uninstall_packages
