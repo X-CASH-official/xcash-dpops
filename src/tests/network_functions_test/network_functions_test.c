@@ -76,7 +76,7 @@ void network_daemon_test(void)
   memcpy(transactions[1],"871eb7b29c72582572041c597ff092143031bfcef5fa1fa92808dacab2ba226f",64);
   memcpy(transactions[2],"72f97600db9d7522a2a39fc690d25e1cc9a17535064b08f81bd7424a51bba931",64);
   memcpy(transactions[3],"b180489867776c7e39c07ddb0d88609dac6f748dec554e2d96b6a168785bdb44",64);
-  memcpy(transactions[4],"",64);
+  memcpy(transactions[4],"",1);
   if (verify_blockchain_network_transactions(transactions,5,0,0) == 1)
   {   
     color_print("PASSED! Test for verifying transactions","green");

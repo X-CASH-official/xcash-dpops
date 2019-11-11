@@ -35,10 +35,8 @@ static inline int
 crypto_verify_n(const unsigned char *x_, const unsigned char *y_,
                 const int n)
 {
-    const volatile unsigned char *volatile x =
-        (const volatile unsigned char *volatile) x_;
-    const volatile unsigned char *volatile y =
-        (const volatile unsigned char *volatile) y_;
+    const volatile unsigned char *volatile x = x_;
+    const volatile unsigned char *volatile y = y_;
     volatile uint_fast16_t d = 0U;
     int i;
 
