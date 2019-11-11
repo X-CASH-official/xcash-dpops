@@ -323,7 +323,7 @@ function get_current_xcash_wallet_data()
   echo
 }
 
-function start_systemd_service_files()
+function start_processes()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Starting Processes${END_COLOR_PRINT}"
   screen -dmS MongoDB ${MONGODB_DIR}bin/mongod --dbpath ${MONGODB_INSTALLATION_DIR}
@@ -336,7 +336,7 @@ function start_systemd_service_files()
   echo
 }
 
-function stop_systemd_service_files()
+function stop_processes()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Stoping Processes${END_COLOR_PRINT}"
   screen -XS "MongoDB" quit

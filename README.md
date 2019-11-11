@@ -706,12 +706,38 @@ To remove the container run
 Once you have a bash prompt inside of the container, you will need to install some packages before installing XCASH_DPOPS
 ```
 apt update
-apt install sudo nano wget curl
+apt install sudo screen nano wget curl
 ```
 
 Now you can install XCASH_DPOPS using the autoinstaller for docker  
 ```
 curl -s https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller_docker.sh | bash
+```
+
+Note: systemd is not enabled in docker containers, so the script will use screen to run them instead. 
+
+To start the following process using screen (replace the paths with the installed paths):
+```
+screen -dmS MongoDB ${MONGODB_DIR}bin/mongod --dbpath ${MONGODB_INSTALLATION_DIR}
+screen -dmS XCASH_Daemon ${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
+screen -dmS XCASH_Wallet ${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+screen -dmS XCASH_DPOPS ${XCASH_DPOPS_DIR}build/XCASH_DPOPS --shared_delegates_website --fee ${DPOPS_FEE} --minimum_amount ${DPOPS_MINIMUM_AMOUNT}
+```
+
+For example, if you installed everything in the default paths (replace MONGODB_DIR, WALLET_PASSWORD, DPOPS_FEE and DPOPS_MINIMUM_AMOUNT):  
+```
+screen -dmS MongoDB MONGODB_DIR/bin/mongod --dbpath /data/db/
+screen -dmS XCASH_Daemon /root/x-network/X-CASH/build/release/bin/xcashd --data-dir /root/.X-CASH/ --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
+screen -dmS XCASH_Wallet /root/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/XCASH_DPOPS_WALLET --password WALLET_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+screen -dmS XCASH_DPOPS /root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --shared_delegates_website --fee DPOPS_FEE --minimum_amount DPOPS_MINIMUM_AMOUNT
+```
+
+To stop the following process using screen:
+```
+screen -XS "MongoDB" quit
+screen -XS "XCASH_Daemon" quit
+screen -XS "XCASH_Wallet" quit
+screen -XS "XCASH_DPOPS" quit
 ```
 
 
