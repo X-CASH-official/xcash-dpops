@@ -65,7 +65,8 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 [Auto Installation Process](#auto-installation-process)  
 *  [Install](#install)  
 *  [Update](#update)  
-*  [Remove](#remove)  
+*  [Remove](#remove)
+  
 [Docker Installation Process](#docker-installation-process)
  
 [How to Setup A Private Test](#how-to-setup-a-private-test)  
