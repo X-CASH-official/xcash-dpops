@@ -118,7 +118,7 @@ int update_block_verifiers_list(void)
   }
 
   // initialize the delegates struct
-  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data);
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
 
    // organize the delegates
    if (organize_delegates(delegates) < BLOCK_VERIFIERS_AMOUNT)
@@ -784,10 +784,10 @@ int get_delegates_online_status(void)
   memset(data2,0,sizeof(data2));
   
   // initialize the delegates struct
-  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"get_delegates_online_status",data);
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"get_delegates_online_status",data,current_date_and_time,current_UTC_date_and_time);
 
   // initialize the delegates_online_status struct
-  INITIALIZE_DELEGATES_ONLINE_STATUS_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"get_delegates_online_status",data);
+  INITIALIZE_DELEGATES_ONLINE_STATUS_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"get_delegates_online_status",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
   total_delegates = organize_delegates(delegates);

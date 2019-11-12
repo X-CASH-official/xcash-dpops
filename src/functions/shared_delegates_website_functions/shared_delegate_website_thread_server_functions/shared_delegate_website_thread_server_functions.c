@@ -103,7 +103,7 @@ long long int add_block_to_blocks_found(void)
   }
 
   // initialize the database_data struct 
-  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"add_block_to_blocks_found",data);
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"add_block_to_blocks_found",data,current_date_and_time,current_UTC_date_and_time);
 
   // get the block information of the previous block
   if (get_previous_block_information(block_hash,block_reward,block_date_and_time) == 0)
@@ -214,7 +214,7 @@ int get_delegates_total_voters(struct voters* voters)
   return 0;
 
   // initialize the database_multiple_documents_fields struct 
-  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"get_delegates_total_voters",data);
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"get_delegates_total_voters",data,current_date_and_time,current_UTC_date_and_time);
 
   memset(data,0,sizeof(data));
   memcpy(data,"{\"public_address_voted_for\":\"",29);
@@ -301,7 +301,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   return 0;
 
   // initialize the delegates struct
-  INITIALIZE_VOTERS_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,"calculate_block_reward_for_each_delegate",data);
+  INITIALIZE_VOTERS_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,"calculate_block_reward_for_each_delegate",data,current_date_and_time,current_UTC_date_and_time);
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -498,7 +498,7 @@ void* payment_timer_thread(void* parameters)
       }
 
       // initialize the database_multiple_documents_fields struct 
-      INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"payment_timer_thread",data);
+      INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"payment_timer_thread",data,current_date_and_time,current_UTC_date_and_time);
 
       if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"public_addresses","",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
       {

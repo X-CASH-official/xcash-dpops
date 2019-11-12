@@ -140,10 +140,10 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   total_blocks_found = document_count;
 
   // initialize the delegates struct
-  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_shared_delegates_website_get_statistics",data);
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_shared_delegates_website_get_statistics",data,current_date_and_time,current_UTC_date_and_time);
 
   // initialize the database_multiple_documents_fields struct 
-  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_shared_delegates_website_get_statistics",data);
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_shared_delegates_website_get_statistics",data,current_date_and_time,current_UTC_date_and_time);
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
@@ -327,7 +327,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   memset(buffer,0,sizeof(buffer));
 
   // initialize the database_multiple_documents_fields struct
-  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_get_blocks_found",buffer);
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_get_blocks_found",buffer,current_date_and_time,current_UTC_date_and_time);
 
   if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
   {
@@ -414,7 +414,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   }
 
   // initialize the database_document_fields struct 
-  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_information",data2);
+  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_information",data2,current_date_and_time,current_UTC_date_and_time);
    
   if (read_document_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,message,&database_data,1) == 0)
   {
@@ -514,7 +514,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   }
   
   // initialize the database_multiple_documents_fields struct
-  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_payment_information",data2);
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_payment_information",data2,current_date_and_time,current_UTC_date_and_time);
   
   if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
   {

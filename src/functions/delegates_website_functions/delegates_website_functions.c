@@ -95,10 +95,10 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   memset(buffer,0,sizeof(buffer));
 
   // initialize the delegates struct
-  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_delegates_website_get_statistics",buffer);
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_delegates_website_get_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
 
   // initialize the database_document_fields struct 
-  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_STATISTICS_DATABASE_FIELDS+4,"server_receive_data_socket_delegates_website_get_statistics",buffer);
+  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_STATISTICS_DATABASE_FIELDS+4,"server_receive_data_socket_delegates_website_get_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
 
   // check if there is any data in the database that matches the message
   if (count_documents_in_collection(DATABASE_NAME,"statistics",DATA,0) <= 0)
@@ -238,7 +238,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   memset(buffer,0,sizeof(buffer));
 
   // initialize the delegates struct
-  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates",buffer);
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates",buffer,current_date_and_time,current_UTC_date_and_time);
   
   // organize the delegates
   if (organize_delegates(delegates) == 0)
@@ -315,10 +315,10 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   memset(buffer,0,sizeof(buffer));
 
   // initialize the delegates struct
-  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates_statistics",buffer);
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
 
   // initialize the database_document_fields struct 
-  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS+1,"server_receive_data_socket_get_delegates_statistics",buffer);
+  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS+1,"server_receive_data_socket_get_delegates_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
 
   memset(data2,0,sizeof(data2));
 
@@ -454,7 +454,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   memset(data2,0,sizeof(data2));
 
   // initialize the database_document_fields struct 
-  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS,"server_receive_data_socket_get_delegates_information",buffer);
+  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS,"server_receive_data_socket_get_delegates_information",buffer,current_date_and_time,current_UTC_date_and_time);
 
   // get the parameter1
   memcpy(data2,&DATA[40],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-40);
@@ -617,10 +617,10 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   }
 
   // initialize the delegates struct
-  INITIALIZE_VOTES_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,"server_receive_data_socket_get_delegates_voters_list",buffer);
+  INITIALIZE_VOTES_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,"server_receive_data_socket_get_delegates_voters_list",buffer,current_date_and_time,current_UTC_date_and_time);
 
   // initialize the database_multiple_documents_fields struct
-  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"server_receive_data_socket_get_delegates_voters_list",buffer);
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"server_receive_data_socket_get_delegates_voters_list",buffer,current_date_and_time,current_UTC_date_and_time);
 
   // get all of the reserve proofs for the public address
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
