@@ -611,7 +611,7 @@ To Install, run the autoinstaller script, and choose Install at the menu.
 
 Since the XCASH_DPOPS repository will probably not be downloaded yet onto your system, you can run directly from the github by running  
 ```
-curl -s https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller.sh | bash
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller.sh)"
 ```
 
 You can then press enter for the default settings, or input custom settings. The autoinstaller will then install everything automatically for you.
@@ -674,7 +674,7 @@ After this you will need to pull a [ubuntu image from docker](https://hub.docker
 Now list all of the images installed, and save the IMAGE_ID for the ubuntu image you just downloaded  
 `docker images`
 
-Now create a new container from the ubuntu image you just downloaded 
+Now create and start a new container from the ubuntu image you just downloaded 
 ```
 docker run -i -t -p 18280:18280 -p 18281:18281 -p 18283:18283 IMAGE_ID /bin/bash
 ```
@@ -686,10 +686,10 @@ Now list all of the docker containers
 
 Save the CONTAINER_ID of the container you just created  
 
-Start the docker container  
+From this point the docker container has been created. You will need to start the docker container by running  
 `docker start CONTAINER_ID`
 
-From this point the docker container has been created and started. At any time if you want enter the docker container you can run  
+The docker container will remain running until stopped. You can enter and exit a container and it will still run unless stoped. At any time if you want enter the docker container you can run  
 ```
 docker exec -e USER="root" -u root -t -i --privileged CONTAINER_ID /bin/bash
 ```
@@ -700,18 +700,21 @@ To exit the container type
 To stop the container run  
 `docker stop CONTAINER_ID`
 
+To list all running containers run  
+`docker ps -a`
+
 To remove the container run  
 `docker rm container CONTAINER_ID`
 
 Once you have a bash prompt inside of the container, you will need to install some packages before installing XCASH_DPOPS
 ```
 apt update
-apt install sudo screen nano wget curl
+apt install -y sudo screen nano wget curl
 ```
 
 Now you can install XCASH_DPOPS using the autoinstaller for docker  
 ```
-curl -s https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller_docker.sh | bash
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller_docker.sh)"
 ```
 
 Note: systemd is not enabled in docker containers, so the script will use screen to run them instead. 
