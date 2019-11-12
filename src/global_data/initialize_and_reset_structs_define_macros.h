@@ -8,7 +8,7 @@ Using define statements instead of constants for increased efficiency
 */
 
 // delegates struct
-#define INITIALIZE_DELEGATES_STRUCT(count,maximum_amount,function_name,buffer) \
+#define INITIALIZE_DELEGATES_STRUCT(count,maximum_amount,function_name,buffer,current_date_and_time,current_UTC_date_and_time) \
 for (count = 0; (int)count < maximum_amount; count++) \
 { \
   delegates[count].public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
@@ -65,7 +65,7 @@ for (count = 0; (int)count < maximum_amount; count++) \
 
 
 // voters struct
-#define INITIALIZE_VOTERS_STRUCT(count,maximum_count,function_name,buffer) \
+#define INITIALIZE_VOTERS_STRUCT(count,maximum_count,function_name,buffer,current_date_and_time,current_UTC_date_and_time) \
 for (count = 0; count < maximum_count; count++) \
 { \
   voters[count].public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
@@ -91,7 +91,7 @@ for (count = 0; count < maximum_amount; count++) \
 
 
 // votes struct
-#define INITIALIZE_VOTES_STRUCT(count,maximum_amount,function_name,buffer) \
+#define INITIALIZE_VOTES_STRUCT(count,maximum_amount,function_name,buffer,current_date_and_time,current_UTC_date_and_time) \
 for (count = 0; (int)count < maximum_amount; count++) \
 { \
   votes[count].public_address_created_reserve_proof = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
@@ -120,7 +120,7 @@ for (count = 0; count < maximum_amount; count++) \
 
 
 // delegates_online_status struct
-#define INITIALIZE_DELEGATES_ONLINE_STATUS_STRUCT(count,maximum_amount,function_name,buffer) \
+#define INITIALIZE_DELEGATES_ONLINE_STATUS_STRUCT(count,maximum_amount,function_name,buffer,current_date_and_time,current_UTC_date_and_time) \
 for (count = 0; (int)count < maximum_amount; count++) \
 { \
   delegates_online_status[count].public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
@@ -144,7 +144,7 @@ for (count = 0; count < maximum_amount; count++) \
 
 
 // database_document_fields struct
-#define INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,maximum_amount,function_name,buffer) \
+#define INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,maximum_amount,function_name,buffer,current_date_and_time,current_UTC_date_and_time) \
 for (count = 0; (int)count < maximum_amount; count++) \
 { \
   database_data.item[count] = (char*)calloc(BUFFER_SIZE,sizeof(char)); \
@@ -170,7 +170,7 @@ for (count = 0; (int)count < (int)database_data.count; count++) \
 
 
 // database_multiple_documents_fields struct
-#define INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,total_document_count,maximum_amount,function_name,buffer) \
+#define INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,total_document_count,maximum_amount,function_name,buffer,current_date_and_time,current_UTC_date_and_time) \
 for (count = 0; (int)count < total_document_count; count++) \
 { \
   for (count2 = 0; count2 < maximum_amount; count2++) \
