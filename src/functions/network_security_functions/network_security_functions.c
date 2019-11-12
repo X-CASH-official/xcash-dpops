@@ -117,7 +117,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     SIGN_DATA_ERROR("Could not create the message");
   }
   
-  if (strstr(message,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST") == NULL && strstr(message,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") == NULL)
+  if (strstr(message,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST") == NULL && strstr(message,"XCASH_PROOF_OF_STAKE_TEST_DATA") == NULL && strstr(message,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") == NULL)
   {
     // sign data
     if (crypto_vrf_prove((unsigned char*)proof_data,(const unsigned char*)secret_key_data,(const unsigned char*)result,(unsigned long long)strlen((const char*)result)) != 0 || crypto_vrf_proof_to_hash((unsigned char*)beta_string_data,(const unsigned char*)proof_data) != 0)
@@ -134,8 +134,6 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     {
       snprintf(beta_string+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",beta_string_data[count2] & 0xFF);
     } 
-
-     //fprintf(stderr,"message = \n%s\n\nbeta = \n%s\n\n proof = \n%s\n\n",result,proof,beta_string);
 
     pthread_rwlock_rdlock(&rwlock);
     // create the message  
