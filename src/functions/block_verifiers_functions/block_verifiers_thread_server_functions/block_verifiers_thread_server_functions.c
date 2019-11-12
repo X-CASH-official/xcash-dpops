@@ -506,6 +506,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         }
       }
     }
+    usleep(500000);
   }
   pointer_reset(message);
   pointer_reset_database_array;
