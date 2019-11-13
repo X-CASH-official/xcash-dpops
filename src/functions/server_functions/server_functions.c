@@ -599,7 +599,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   else
   {
     // nothing to serve
-    return;  
+    return 0;  
   }
   memcpy(data2+strlen(data2),buffer,strnlen(buffer,sizeof(data2)));
   
