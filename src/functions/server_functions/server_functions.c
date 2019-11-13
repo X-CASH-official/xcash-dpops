@@ -567,6 +567,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   // Variables
   unsigned char* data = (unsigned char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(unsigned char));
   char data2[BUFFER_SIZE];
+  char buffer[BUFFER_SIZE];
   long file_size;
   int settings = 0;
 
@@ -578,8 +579,15 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   return 0;
 
   memset(data2,0,sizeof(data2));
+  memset(buffer,0,sizeof(buffer));
 
   // get the file
+  memcpy(buffer,&MESSAGE[(strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5],(strlen(MESSAGE) - strlen(strstr(MESSAGE," HTTP/"))) - ((strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5));
+ 
+  // remove any invalid request from the url
+  string_replace(buffer,sizeof(buffer),"../","");
+  string_replace(buffer,sizeof(buffer),"%",""); 
+  
   if (shared_delegates_website == 1)
   {
     memcpy(data2,"../shared_delegates_website/",28);
@@ -588,7 +596,8 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   {
     memcpy(data2,"../delegates_website/",21);
   }
-  memcpy(data2+strlen(data2),&MESSAGE[(strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5],(strlen(MESSAGE) - strlen(strstr(MESSAGE," HTTP/"))) - ((strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5));
+  memcpy(data2+strlen(data2),buffer,strnlen(buffer,sizeof(data2)));
+  
   file_size = read_file(data,data2);
   if (file_size == 0)
   {
