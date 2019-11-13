@@ -592,9 +592,14 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   {
     memcpy(data2,"../shared_delegates_website/",28);
   }
-  if (delegates_website == 1)
+  else if (delegates_website == 1)
   {
     memcpy(data2,"../delegates_website/",21);
+  }
+  else
+  {
+    // nothing to serve
+    return;  
   }
   memcpy(data2+strlen(data2),buffer,strnlen(buffer,sizeof(data2)));
   
