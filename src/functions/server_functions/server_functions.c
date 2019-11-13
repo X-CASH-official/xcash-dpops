@@ -479,7 +479,7 @@ int socket_thread(int client_socket)
  { 
    server_receive_data_socket_node_to_node((const char*)buffer);
  }
- else if (strstr(buffer,"GET /") != NULL)
+ else if (strstr(buffer,"GET /") != NULL && (delegates_website == 1 || shared_delegates_website == 1))
  {
    server_receive_data_socket_get_files(client_socket,(const char*)buffer);
  }
