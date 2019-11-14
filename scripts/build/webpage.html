@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+.testpassed {
+  background-color: #00FF00;
+}
+.testfailed {
+  background-color: #FF0000;
+}
+</style>
+</head>
+<body>
+
+<h2 align="center">XCASH and XCASH_DPOPS Build Status</h2>
+
+<table style="width:100%">
+  <tr>
+    <th>Operating System</th>
+    <th>Build Step</th>
+    <th>Description</th> 
+    <th>Status</th>
+    <th>Results</th>
+  </tr>
+  <tr>
+    <th>Ubuntu 18.04</th>
+    <th>Programs</th>
+    <th>Update all programs</th> 
+    <th id="ubuntu1804buildstep1"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_1_PROGRAMS.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 18.04</th>
+    <th>Delegates Website</th>
+    <th>Update and build the delegates website</th> 
+    <th id="ubuntu1804buildstep2"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_2_DELEGATES_WEBSITE.log" target="_blank">Results</a></th>
+  </tr>
+    <tr>
+    <th>Ubuntu 18.04</th>
+    <th>Shared Delegates Website</th>
+    <th>Update and build the shared delegates website</th> 
+    <th id="ubuntu1804buildstep3"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_3_SHARED_DELEGATES_WEBSITE.log" target="_blank">Results</a></th>
+  </tr>
+    <tr>
+    <th>Ubuntu 18.04</th>
+    <th>XCASH Build Mainnet</th>
+    <th>Update and build XCASH Mainnet</th> 
+    <th id="ubuntu1804buildstep4"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_4_XCASH_BUILD_MAINNET.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 18.04</th>
+    <th>XCASH Blockchain Syncing</th>
+    <th>Test XCASH blockchain syncing</th> 
+    <th id="ubuntu1804buildstep5"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_5_XCASH_BLOCKCHAIN_SYNCING.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 18.04</th>
+    <th>XCASH Build Development</th>
+    <th>Update and build XCASH Development</th> 
+    <th id="ubuntu1804buildstep6"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_6_XCASH_BUILD_DEVELOPMENT.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 18.04</th>
+    <th>XCASH_DPOPS Build</th>
+    <th>Update and build XCASH_DPOPS</th> 
+    <th id="ubuntu1804buildstep7"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_7_XCASH_DPOPS_BUILD.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 18.04</th>
+    <th>XCASH_DPOPS - CPP Check</th>
+    <th>Run CPP Check on XCASH_DPOPS</th> 
+    <th id="ubuntu1804buildstep8"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_8_CPP_CHECK.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 18.04</th>
+    <th>XCASH DPOPS Test</th>
+    <th>Run the XCASH_DPOPS Test</th> 
+    <th id="ubuntu1804buildstep9"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_9_XCASH_DPOPS_TEST.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 19.10</th>
+    <th>Programs</th>
+    <th>Update all programs</th> 
+    <th id="ubuntu1910buildstep1"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_1_PROGRAMS.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 19.10</th>
+    <th>Delegates Website</th>
+    <th>Update and build the delegates website</th> 
+    <th id="ubuntu1910buildstep2"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_2_DELEGATES_WEBSITE.log" target="_blank">Results</a></th>
+  </tr>
+    <tr>
+    <th>Ubuntu 19.10</th>
+    <th>Shared Delegates Website</th>
+    <th>Update and build the shared delegates website</th> 
+    <th id="ubuntu1910buildstep3"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_3_SHARED_DELEGATES_WEBSITE.log" target="_blank">Results</a></th>
+  </tr>
+    <tr>
+    <th>Ubuntu 19.10</th>
+    <th>XCASH Build Mainnet</th>
+    <th>Update and build XCASH Mainnet</th> 
+    <th id="ubuntu1910buildstep4"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_4_XCASH_BUILD_MAINNET.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 19.10</th>
+    <th>XCASH Blockchain Syncing</th>
+    <th>Test XCASH blockchain syncing</th> 
+    <th id="ubuntu1910buildstep5"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_5_XCASH_BLOCKCHAIN_SYNCING.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 19.10</th>
+    <th>XCASH Build Development</th>
+    <th>Update and build XCASH Development</th> 
+    <th id="ubuntu1910buildstep6"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_6_XCASH_BUILD_DEVELOPMENT.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 19.10</th>
+    <th>XCASH_DPOPS Build</th>
+    <th>Update and build XCASH_DPOPS</th> 
+    <th id="ubuntu1910buildstep7"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_7_XCASH_DPOPS_BUILD.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 19.10</th>
+    <th>XCASH_DPOPS - CPP Check</th>
+    <th>Run CPP Check on XCASH_DPOPS</th> 
+    <th id="ubuntu1910buildstep8"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_8_CPP_CHECK.log" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 19.10</th>
+    <th>XCASH DPOPS Test</th>
+    <th>Run the XCASH_DPOPS Test</th> 
+    <th id="ubuntu1910buildstep9"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_9_XCASH_DPOPS_TEST.log" target="_blank">Results</a></th>
+  </tr>
+</table>
+
+</body>
+</html>
+
+<script>
+async function get_data(URL)
+{
+  const res = await fetch(URL);
+  const data = await res.text();
+  return data;
+}
+
+
+
+async function STEP_1_PROGRAMS_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_1_PROGRAMS.log");
+  if (data.includes("STEP_1_PROGRAMS_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep1").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep1").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep1").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep1").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_2_DELEGATES_WEBSITE_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_2_DELEGATES_WEBSITE.log");
+  if (data.includes("STEP_2_DELEGATES_WEBSITE_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep2").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep2").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep2").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep2").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_3_SHARED_DELEGATES_WEBSITE_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_3_SHARED_DELEGATES_WEBSITE.log");
+  if (data.includes("STEP_3_SHARED_DELEGATES_WEBSITE_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep3").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep3").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep3").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep3").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_4_XCASH_BUILD_MAINNET_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_4_XCASH_BUILD_MAINNET.log");
+  if (data.includes("STEP_4_XCASH_BUILD_MAINNET_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep4").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep4").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep4").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep4").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_5_XCASH_BLOCKCHAIN_SYNCING_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_5_XCASH_BLOCKCHAIN_SYNCING.log");
+  if (data.includes("STEP_5_XCASH_BLOCKCHAIN_SYNCING_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep5").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep5").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep5").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep5").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_6_XCASH_BUILD_DEVELOPMENT_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_6_XCASH_BUILD_DEVELOPMENT.log");
+  if (data.includes("STEP_4_XCASH_BUILD_DEVELOPMENT_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep6").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep6").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep6").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep6").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_7_XCASH_DPOPS_BUILD_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_7_XCASH_DPOPS_BUILD.log");
+  if (data.includes("STEP_7_XCASH_DPOPS_BUILD_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep7").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep7").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep7").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep7").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_8_CPP_CHECK_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_8_CPP_CHECK.log");
+  if (data.includes("STEP_8_CPP_CHECK_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep8").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep8").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep8").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep8").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_9_XCASH_DPOPS_TEST_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_9_XCASH_DPOPS_TEST.log");
+  if (data.includes("STEP_9_XCASH_DPOPS_TEST_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep9").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep9").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep9").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep9").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_1_PROGRAMS_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_1_PROGRAMS.log");
+  if (data.includes("STEP_1_PROGRAMS_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep1").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep1").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep1").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep1").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_2_DELEGATES_WEBSITE_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_2_DELEGATES_WEBSITE.log");
+  if (data.includes("STEP_2_DELEGATES_WEBSITE_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep2").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep2").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep2").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep2").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_3_SHARED_DELEGATES_WEBSITE_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_3_SHARED_DELEGATES_WEBSITE.log");
+  if (data.includes("STEP_3_SHARED_DELEGATES_WEBSITE_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep3").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep3").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep3").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep3").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_4_XCASH_BUILD_MAINNET_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_4_XCASH_BUILD_MAINNET.log");
+  if (data.includes("STEP_4_XCASH_BUILD_MAINNET_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep4").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep4").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep4").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep4").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_5_XCASH_BLOCKCHAIN_SYNCING_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_5_XCASH_BLOCKCHAIN_SYNCING.log");
+  if (data.includes("STEP_5_XCASH_BLOCKCHAIN_SYNCING_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep5").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep5").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep5").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep5").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_6_XCASH_BUILD_DEVELOPMENT_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_6_XCASH_BUILD_DEVELOPMENT.log");
+  if (data.includes("STEP_4_XCASH_BUILD_DEVELOPMENT_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep6").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep6").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep6").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep6").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_7_XCASH_DPOPS_BUILD_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_7_XCASH_DPOPS_BUILD.log");
+  if (data.includes("STEP_7_XCASH_DPOPS_BUILD_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep7").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep7").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep7").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep7").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_8_CPP_CHECK_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_8_CPP_CHECK.log");
+  if (data.includes("STEP_8_CPP_CHECK_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep8").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep8").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep8").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep8").classList.toggle("testpassed");
+  }
+}
+
+
+
+async function STEP_9_XCASH_DPOPS_TEST_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_9_XCASH_DPOPS_TEST.log");
+  if (data.includes("STEP_9_XCASH_DPOPS_TEST_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep9").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep9").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep9").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep9").classList.toggle("testpassed");
+  }
+}
+
+
+
+
+
+
+
+
+STEP_1_PROGRAMS_UBUNTU_1804();
+STEP_2_DELEGATES_WEBSITE_UBUNTU_1804();
+STEP_3_SHARED_DELEGATES_WEBSITE_UBUNTU_1804();
+STEP_4_XCASH_BUILD_MAINNET_UBUNTU_1804();
+STEP_5_XCASH_BLOCKCHAIN_SYNCING_UBUNTU_1804();
+STEP_6_XCASH_BUILD_DEVELOPMENT_UBUNTU_1804();
+STEP_7_XCASH_DPOPS_BUILD_UBUNTU_1804();
+STEP_8_CPP_CHECK_UBUNTU_1804();
+STEP_9_XCASH_DPOPS_TEST_UBUNTU_1804();
+
+STEP_1_PROGRAMS_UBUNTU_1910();
+STEP_2_DELEGATES_WEBSITE_UBUNTU_1910();
+STEP_3_SHARED_DELEGATES_WEBSITE_UBUNTU_1910();
+STEP_4_XCASH_BUILD_MAINNET_UBUNTU_1910();
+STEP_5_XCASH_BLOCKCHAIN_SYNCING_UBUNTU_1910();
+STEP_6_XCASH_BUILD_DEVELOPMENT_UBUNTU_1910();
+STEP_7_XCASH_DPOPS_BUILD_UBUNTU_1910();
+STEP_8_CPP_CHECK_UBUNTU_1910();
+STEP_9_XCASH_DPOPS_TEST_UBUNTU_1910();
+</script>
