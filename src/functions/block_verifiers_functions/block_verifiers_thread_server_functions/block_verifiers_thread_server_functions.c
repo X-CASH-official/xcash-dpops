@@ -202,7 +202,8 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count])); \
     memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count])); \
   } \
-  invalid_reserve_proofs.count = 0;
+  invalid_reserve_proofs.count = 0; \
+  database_settings = 1;
 
   #define CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR(message) \
   memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33); \
@@ -254,6 +255,9 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     {
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
       sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
+
+      // set the database to not accept any new data
+      database_settings = 0;
 
       // copy all of the reserve proofs to the reserve_proofs array
       for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
@@ -400,12 +404,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         snprintf(data2+25,sizeof(data2)-26,"%zu",block_verifiers_score);
         memcpy(data2+strlen(data2),"\"}",2);
 
-        pthread_rwlock_rdlock(&rwlock_reserve_proofs);
-        while(database_settings != 1)
-        {
-          sleep(1);
-        }
-        pthread_rwlock_unlock(&rwlock_reserve_proofs);
         if (update_document_from_collection(DATABASE_NAME,"delegates",data,data2,1) == 0)
         {
           RESET_INVALID_RESERVE_PROOFS;
@@ -428,6 +426,9 @@ void* check_reserve_proofs_timer_thread(void* parameters)
           delete_document_from_collection(DATABASE_NAME,data,data2,1);
         }       
       }
+
+      // set the database to accept new data
+      database_settings = 1;
       
       // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
       RESET_INVALID_RESERVE_PROOFS;

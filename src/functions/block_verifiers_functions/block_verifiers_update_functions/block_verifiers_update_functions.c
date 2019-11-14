@@ -69,8 +69,12 @@ int update_block_verifiers_list(void)
   memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  database_settings = 1; \
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   return 0;
+
+  // set the database to not accept any new data
+  database_settings = 0;
 
   // reset the previous_block_verifiers_list struct
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -159,7 +163,12 @@ int update_block_verifiers_list(void)
   {
     settings = 2;
   } 
+
+  // set the database to accept data
+  database_settings = 1;
+
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+
   return settings;
   
   #undef UPDATE_BLOCK_VERIFIERS_LIST_ERROR
