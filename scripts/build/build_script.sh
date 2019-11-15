@@ -213,7 +213,7 @@ function update_cppcheck()
 function update_npm()
 {
   echo -e "Updating NPM\n" >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
-  ${NODEJS_DIR}bin/npm install -g ${NODEJS_DIR}bin/npm >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
+  npm install -g npm >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
   echo -e "\n" >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
 }
 
@@ -224,6 +224,9 @@ function STEP_1_PROGRAMS()
   # Reset the log Files
   rm -r ${LOGFILE_DIR}
   mkdir ${LOGFILE_DIR}
+
+  # Update the profile
+  source ~/.profile
 
   # Get the dependencies current version
   get_dependencies_current_version || return 1
@@ -266,7 +269,7 @@ function STEP_2_DELEGATES_WEBSITE()
   cd ${DELEGATES_WEBSITE_DIR} || return 1
   git pull >> ${LOGFILE_STEP_2_DELEGATES_WEBSITE} 2>&1 || return 1
   sudo rm -r node_modules
-  ${NODEJS_DIR}bin/npm update >> ${LOGFILE_STEP_2_DELEGATES_WEBSITE} 2>&1 || return 1
+  npm update >> ${LOGFILE_STEP_2_DELEGATES_WEBSITE} 2>&1 || return 1
   ng build --prod --aot >> ${LOGFILE_STEP_2_DELEGATES_WEBSITE} 2>&1 || return 1
   cd dist || return 1
   for f in *.js; do uglifyjs $f --compress --mangle --output "{$f}min"; rm $f; mv "{$f}min" $f; done || return 1
@@ -286,7 +289,7 @@ function STEP_3_SHARED_DELEGATES_WEBSITE()
   cd ${SHARED_DELEGATES_WEBSITE_DIR} || return 1
   git pull >> ${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE} 2>&1 || return 1
   sudo rm -r node_modules
-  ${NODEJS_DIR}bin/npm update >> ${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE} 2>&1 || return 1
+  npm update >> ${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE} 2>&1 || return 1
   ng build --prod --aot >> ${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE} 2>&1 || return 1
   cd dist
   for f in *.js; do uglifyjs $f --compress --mangle --output "{$f}min"; rm $f; mv "{$f}min" $f; done
@@ -307,7 +310,7 @@ function STEP_4_XCASH_BUILD_MAINNET()
   git checkout master >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
   git pull >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
   echo "y" | make clean  >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
-  make release -j ${CPU_THREADS} >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
+  make -j ${CPU_THREADS} >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
   echo -e "\n" >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
 }
 
@@ -335,7 +338,7 @@ function STEP_6_XCASH_BUILD_DEVELOPMENT()
   git checkout xcash_proof_of_stake >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
   git pull >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
   echo "y" | make clean  >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
-  make release -j ${CPU_THREADS} >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
+  make -j ${CPU_THREADS} >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
   echo -e "\n" >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
 }
 
