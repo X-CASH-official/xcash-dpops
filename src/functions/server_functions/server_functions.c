@@ -421,7 +421,7 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(client_socket,(const char*)buffer);
+   server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(client_socket);
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
  {
@@ -429,7 +429,7 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(client_socket,(const char*)buffer);
+   server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(client_socket);
  }
  else if (strstr(buffer,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL)
  {

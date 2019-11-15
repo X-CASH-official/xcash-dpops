@@ -412,12 +412,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not verify the message");
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"reserve_proofs_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
@@ -634,12 +628,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
     exit(0);
   }
 
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"file",data,MAXIMUM_BUFFER_SIZE) == 0)
   {
@@ -712,12 +700,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memset(reserve_bytes_database,0,sizeof(reserve_bytes_database));
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
-
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not verify the message");
-  }
 
   // parse the message
   if (parse_json_data(MESSAGE,"reserve_bytes_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
@@ -829,12 +811,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"file",data,sizeof(data)) == 0)
   {
@@ -940,12 +916,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
     exit(0);
   }
 
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"file",data,MAXIMUM_BUFFER_SIZE) == 0)
   {
@@ -1014,12 +984,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
-  }
-
   // get the database data hash for the delegates database
   memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION) == 0)
@@ -1077,7 +1041,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
+int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(const int CLIENT_SOCKET)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1119,12 +1083,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
     error_message.total++;
     print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
-  }
-
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
 
   // get the database data for the reserve bytes database
@@ -1190,12 +1148,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
-  }
-
   // get the database data hash for the statistics database
   memset(data2,0,sizeof(data2));
   if (get_database_data_hash(data2,DATABASE_NAME,DATABASE_COLLECTION) == 0)
@@ -1252,7 +1204,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
+int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(const int CLIENT_SOCKET)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1292,12 +1244,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
     error_message.total++;
     print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
     exit(0);
-  }
-
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not verify the message");
   }
 
   // get the database data for the reserve bytes database
