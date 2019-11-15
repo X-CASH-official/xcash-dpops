@@ -8,6 +8,8 @@
 #include "define_macros.h"
 #include "variables.h"
 
+#include "count_database_functions.h"
+#include "read_database_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
@@ -522,6 +524,29 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(public_key,current_block_verifiers_list.block_verifiers_public_key,VRF_PUBLIC_KEY_LENGTH);
+        break;
+      }
+    }
+
+    // check if the block verifiers public key was found, and if not use the database to try to find it
+    if (count == BLOCK_VERIFIERS_AMOUNT)
+    {
+      // create the message
+      memset(data,0,sizeof(data));
+      memcpy(data,"{\"public_address\":\"",19);
+      memcpy(data+19,public_address,XCASH_WALLET_LENGTH);
+      memcpy(data+117,"\"}",2);
+
+      if (count_documents_in_collection(DATABASE_NAME,"delegates",data,1) == 1)
+      {
+        if (read_document_field_from_collection(DATABASE_NAME,"delegates",data,"public_key",public_key,1) == 0)
+        {
+          VERIFY_DATA_ERROR("Could not find the public key to verify the message1");
+        }
+      }
+      else
+      {
+        VERIFY_DATA_ERROR("Could not find the public key to verify the message");
       }
     }
 

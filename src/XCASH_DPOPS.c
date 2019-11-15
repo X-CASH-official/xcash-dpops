@@ -566,7 +566,7 @@ int main(int parameters_count, char* parameters[])
         exit(0);
       }
 
-      if (verify_data(data,0,0) == 0)
+      if (verify_data(data2,0,0) == 0)
       {
         memcpy(error_message.function[error_message.total],"main",4);
         memcpy(error_message.data[error_message.total],"Could not verify the data from ",31);
