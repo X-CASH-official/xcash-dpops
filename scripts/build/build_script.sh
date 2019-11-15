@@ -143,11 +143,11 @@ function update_mongodb()
   tar -xf mongodb-linux-x86_64-*.tgz >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
   sudo rm mongodb-linux-x86_64-*.tgz >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
   MONGODB_DIR=`sudo find / -type d -name "mongodb-linux-x86_64-ubuntu1804-*"`/ || return 1
-  sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.profile || return 1
-  sudo sed '/^[[:space:]]*$/d' -i ~/.profile || return 1
-  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.profile  || return 1
-  sudo echo -ne '$PATH' >> ~/.profile || return 1
-  source ~/.profile || return 1
+  sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.bashrc || return 1
+  sudo sed '/^[[:space:]]*$/d' -i ~/.bashrc || return 1
+  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.bashrc  || return 1
+  sudo echo -ne '$PATH' >> ~/.bashrc || return 1
+  source ~/.bashrc || return 1
   echo -e "\n" >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
 }
 
@@ -183,12 +183,12 @@ function update_nodejs()
   tar -xf node*.tar.xz >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
   sudo rm node*.tar.xz >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
   NODEJS_DIR=`sudo find / -type d -name "node-*-linux-x64"`/ || return 1
-  sudo sed '/node-v/d' -i ~/.profile || return 1
-  sudo sed '/PATH=\/bin:/d' -i ~/.profile || return 1
-  sudo sed '/^[[:space:]]*$/d' -i ~/.profile || return 1
-  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.profile  || return 1
-  sudo echo -ne '$PATH' >> ~/.profile || return 1
-  source ~/.profile || return 1
+  sudo sed '/node-v/d' -i ~/.bashrc || return 1
+  sudo sed '/PATH=\/bin:/d' -i ~/.bashrc || return 1
+  sudo sed '/^[[:space:]]*$/d' -i ~/.bashrc || return 1
+  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.bashrc  || return 1
+  sudo echo -ne '$PATH' >> ~/.bashrc || return 1
+  source ~/.bashrc || return 1
   echo -e "\n" >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
 }
 
@@ -226,7 +226,7 @@ function STEP_1_PROGRAMS()
   mkdir ${LOGFILE_DIR}
 
   # Update the profile
-  source ~/.profile
+  source ~/.bashrc
 
   # Get the dependencies current version
   get_dependencies_current_version || return 1
