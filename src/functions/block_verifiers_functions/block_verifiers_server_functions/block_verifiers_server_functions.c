@@ -165,7 +165,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(const int CLIENT_SOCKET, const char* MESSAGE)
+int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(const int CLIENT_SOCKET)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -179,12 +179,6 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   return 0;
 
   memset(data,0,sizeof(data));
-
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR("Could not verify the message");
-  }
   
   // create the message
   memset(data,0,strlen(data));
