@@ -210,12 +210,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
       snprintf(data+15,sizeof(data)-16,"%zu",count);
       while (count_documents_in_collection(DATABASE_NAME,data,data3,0) > 0)
       {
-        pthread_rwlock_rdlock(&rwlock);
-        while(database_settings != 1)
-        {
-          sleep(1);
-        }
-        pthread_rwlock_unlock(&rwlock);
+        sync_database_threads;
         if (delete_document_from_collection(DATABASE_NAME,data,data3,1) == 0)
         {
           SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The previous reserve proof could not be cancelled for this public address");
@@ -236,10 +231,10 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(data+strlen(data),reserve_proof,strnlen(reserve_proof,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
 
-  pthread_rwlock_wrlock(&rwlock);
+  pthread_mutex_lock(&database_lock);
   while(database_settings != 1)
   {
-    sleep(1);
+    pthread_cond_wait(&thread_settings_lock, &database_lock);
   }
   // add the reserve proof to the database
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
@@ -299,7 +294,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     delete_document_from_collection(DATABASE_NAME,data2,data,1);
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
   }
-  pthread_rwlock_unlock(&rwlock);
+  pthread_mutex_unlock(&database_lock);
   send_data(CLIENT_SOCKET,(unsigned char*)"The vote was successfully added to the database}",0,0,"");
   return 1;
   
@@ -431,12 +426,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(data+strlen(data),"\"}",2);
 
   // add the delegate to the database
-  pthread_rwlock_rdlock(&rwlock);
-  while(database_settings != 1)
-  {
-    sleep(1);
-  }
-  pthread_rwlock_unlock(&rwlock);
+  sync_database_threads;
   if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database");
@@ -516,12 +506,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   }
 
   // remove the delegate from the database
-  pthread_rwlock_rdlock(&rwlock);
-  while(database_settings != 1)
-  {
-    sleep(1);
-  }
-  pthread_rwlock_unlock(&rwlock);
+  sync_database_threads;
   if (delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,1) == 0)
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate could not be removed from the database");
@@ -626,12 +611,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   memcpy(data2+strlen(data2),value,strnlen(value,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
 
-  pthread_rwlock_rdlock(&rwlock);
-  while(database_settings != 1)
-  {
-    sleep(1);
-  }
-  pthread_rwlock_unlock(&rwlock);
+  sync_database_threads;
 
   // update the delegate in the database
   if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data,data2,1) == 0)

@@ -70,6 +70,7 @@ int update_block_verifiers_list(void)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   database_settings = 1; \
+  pthread_cond_broadcast(&thread_settings_lock); \
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   return 0;
 
@@ -166,6 +167,9 @@ int update_block_verifiers_list(void)
 
   // set the database to accept data
   database_settings = 1;
+
+  // reset any thread that was waiting for the database
+  pthread_cond_broadcast(&thread_settings_lock);
 
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
 
@@ -282,12 +286,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memcpy(data,"{\"block_verifier_total_rounds\":\"",32);
     snprintf(data+32,sizeof(data)-33,"%zu",block_verifier_total_rounds); 
     memcpy(data+strlen(data),"\"}",2);
-    pthread_rwlock_rdlock(&rwlock);
-    while(database_settings != 1)
-    {
-      sleep(1);
-    }
-    pthread_rwlock_unlock(&rwlock);
+    sync_database_threads;
     if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,1) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_total_rounds in the database");
@@ -305,12 +304,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memcpy(data,"{\"block_verifier_online_total_rounds\":\"",39);
     snprintf(data+39,sizeof(data)-40,"%zu",block_verifier_online_total_rounds); 
     memcpy(data+strlen(data),"\"}",2);
-    pthread_rwlock_rdlock(&rwlock);
-    while(database_settings != 1)
-    {
-      sleep(1);
-    }
-    pthread_rwlock_unlock(&rwlock);
+    sync_database_threads;
     if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,1) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
@@ -323,12 +317,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memcpy(data,"{\"block_verifier_online_percentage\":\"",37);
     snprintf(data+37,sizeof(data)-38,"%zu",number); 
     memcpy(data+strlen(data),"\"}",2);
-    pthread_rwlock_rdlock(&rwlock);
-    while(database_settings != 1)
-    {
-      sleep(1);
-    }
-    pthread_rwlock_unlock(&rwlock);
+    sync_database_threads;
     if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,1) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
@@ -349,12 +338,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memcpy(data,"{\"block_producer_total_rounds\":\"",32);
       snprintf(data+32,sizeof(data)-33,"%zu",number); 
       memcpy(data+strlen(data),"\"}",2);
-      pthread_rwlock_rdlock(&rwlock);
-      while(database_settings != 1)
-      {
-        sleep(1);
-      }
-      pthread_rwlock_unlock(&rwlock);
+      sync_database_threads;
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,1) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_total_rounds in the database");
@@ -371,12 +355,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memcpy(data2,"{\"block_producer_block_heights\":\"",33);
       memcpy(data2+33,data,strnlen(data,sizeof(data2)));
       memcpy(data2+strlen(data2),"\"}",2);
-      pthread_rwlock_rdlock(&rwlock);
-      while(database_settings != 1)
-      {
-        sleep(1);
-      }
-      pthread_rwlock_unlock(&rwlock);
+      sync_database_threads;
       if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,1) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
@@ -550,12 +529,7 @@ int add_round_statistics(void)
   snprintf(message6+37,sizeof(message6)-38,"%zu",most_block_producer_total_rounds_count);
   memcpy(message6+strlen(message6),"\"}",2);
 
-  pthread_rwlock_rdlock(&rwlock);
-  while(database_settings != 1)
-  {
-    sleep(1);
-  }
-  pthread_rwlock_unlock(&rwlock);
+  sync_database_threads;
 
   // update the database
   if (update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message1,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message2,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message3,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message4,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message5,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message6,1) == 0)
@@ -938,12 +912,7 @@ int get_delegates_online_status(void)
         memcpy(data,"{\"online_status\":\"false\"}",25);
       }   
 
-      pthread_rwlock_rdlock(&rwlock);
-      while(database_settings != 1)
-      {
-        sleep(1);
-      }
-      pthread_rwlock_unlock(&rwlock);
+      sync_database_threads;
       update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,data,1);  
     }
   }

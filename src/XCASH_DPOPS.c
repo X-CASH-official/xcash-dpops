@@ -86,6 +86,8 @@ int main(int parameters_count, char* parameters[])
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
   pthread_mutex_init(&lock, NULL);
+  pthread_mutex_init(&database_lock, NULL);
+  pthread_cond_init(&thread_settings_lock,NULL);
 
   // initialize the error_message struct
   for (count = 0; count < TOTAL_ERROR_MESSAGES; count++)
@@ -619,7 +621,7 @@ int main(int parameters_count, char* parameters[])
     }
   }*/
 
-  /*print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
 
   // start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
@@ -627,7 +629,7 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
   
-  color_print("Started the current block height timer thread","green");*/
+  color_print("Started the current block height timer thread","green");
 
   /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)

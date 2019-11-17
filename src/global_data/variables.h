@@ -39,6 +39,8 @@ char current_round_part_backup_node[2]; // The current main node in the current 
 pthread_rwlock_t rwlock;
 pthread_rwlock_t rwlock_reserve_proofs;
 pthread_mutex_t lock;
+pthread_mutex_t database_lock;
+pthread_cond_t thread_settings_lock;
 
 pthread_t server_threads[100];
 int epoll_fd;

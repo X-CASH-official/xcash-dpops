@@ -440,12 +440,7 @@ int start_current_round_start_blocks(void)
   memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
 
-  pthread_rwlock_rdlock(&rwlock);
-  while(database_settings != 1)
-  {
-    sleep(1);
-  }
-  pthread_rwlock_unlock(&rwlock);
+  sync_database_threads;
 
   // add the network block string to the database
   if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data2,1) == 0)
@@ -838,12 +833,7 @@ int data_network_node_create_block(void)
     memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,sizeof(data2)));
     memcpy(data2+strlen(data2),"\"}",2);
 
-    pthread_rwlock_rdlock(&rwlock);
-    while(database_settings != 1)
-    {
-      sleep(1);
-    }
-    pthread_rwlock_unlock(&rwlock);
+    sync_database_threads;
 
     // add the network block string to the database
     sscanf(current_block_height, "%zu", &count);
@@ -1406,12 +1396,7 @@ int block_verifiers_create_block_and_update_database(void)
   memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
 
-  pthread_rwlock_rdlock(&rwlock);
-  while(database_settings != 1)
-  {
-    sleep(1);
-  }
-  pthread_rwlock_unlock(&rwlock);
+  sync_database_threads;
 
   // add the network block string to the database
   get_reserve_bytes_database(count,0);

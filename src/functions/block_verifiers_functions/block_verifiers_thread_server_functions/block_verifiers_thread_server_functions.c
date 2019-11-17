@@ -203,7 +203,8 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count])); \
   } \
   invalid_reserve_proofs.count = 0; \
-  database_settings = 1;
+  database_settings = 1; \
+  pthread_cond_broadcast(&thread_settings_lock);
 
   #define CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR(message) \
   memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33); \
@@ -429,6 +430,9 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
       // set the database to accept new data
       database_settings = 1;
+
+      // reset any thread that was waiting for the database
+      pthread_cond_broadcast(&thread_settings_lock);
       
       // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
       RESET_INVALID_RESERVE_PROOFS;
