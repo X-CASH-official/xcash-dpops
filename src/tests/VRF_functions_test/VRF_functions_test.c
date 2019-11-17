@@ -47,7 +47,7 @@ int VRF_functions_test(void)
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
   unsigned char vrf_proof[crypto_vrf_PROOFBYTES];
-  unsigned char* vrf_beta = (unsigned char*)calloc(250,sizeof(unsigned char));
+  unsigned char vrf_beta[crypto_vrf_OUTPUTBYTES];
 
   // define macros
   #define DATA_HASH_TEXT "X-CASH Proof Of Stake"
@@ -78,6 +78,7 @@ int VRF_functions_test(void)
   memset(vrf_public_key,0,sizeof(vrf_public_key));
   memset(vrf_secret_key,0,sizeof(vrf_secret_key));
   memset(vrf_proof,0,sizeof(vrf_proof));
+  memset(vrf_beta,0,sizeof(vrf_beta));
 
   // reset the variables
   memset(&string1_test,0,sizeof(string1_test)); 
@@ -127,7 +128,7 @@ int VRF_functions_test(void)
   }
 
   // create the beta string
-  memset(vrf_beta,0,strnlen((char*)vrf_beta,0));
+  memset(vrf_beta,0,sizeof(vrf_beta));
   if (crypto_vrf_proof_to_hash((unsigned char*)vrf_beta,(const unsigned char*)vrf_proof) == 0)
   {
     color_print("PASSED! Test for creating the VRF beta string","green");

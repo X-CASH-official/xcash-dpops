@@ -207,7 +207,7 @@ int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const ch
 
   // create the message
   memcpy(data2,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"verify\",\"params\":{\"data\":\"",62);
-  memcpy(data2+strlen(data2),DATA,strlen(DATA));
+  memcpy(data2+strlen(data2),DATA,strnlen(DATA,sizeof(data2)));
   memcpy(data2+strlen(data2),"\",\"address\":\"",13);
   memcpy(data2+strlen(data2),PUBLIC_ADDRESS,strlen(PUBLIC_ADDRESS));
   memcpy(data2+strlen(data2),"\",\"signature\":\"",15);

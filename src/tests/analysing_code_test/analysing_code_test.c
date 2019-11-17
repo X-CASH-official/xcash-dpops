@@ -431,6 +431,7 @@ int analysing_code_test(void)
 
     }
    }
+   fclose(file);
   }
   
   pointer_reset_all;  

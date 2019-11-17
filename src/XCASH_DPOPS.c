@@ -386,6 +386,17 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not get the previous block hash");
   }
 
+  // get the secret key for signing messages
+  memcpy(secret_key,BLOCK_VERIFIERS_SECRET_KEY,sizeof(BLOCK_VERIFIERS_SECRET_KEY)-1);
+  
+  // convert the hexadecimal string to a string
+  for (count = 0, count2 = 0; count < sizeof(BLOCK_VERIFIERS_SECRET_KEY)-1; count2++, count += 2)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,&secret_key[count],2);
+    secret_key_data[count2] = (int)strtol(data2, NULL, 16);
+  }
+
   // set the default parameter settings
   total_threads = get_nprocs();
   delegates_website = 0;
@@ -506,17 +517,6 @@ int main(int parameters_count, char* parameters[])
     }    
   }
 
-  // get the secret key for signing messages
-  memcpy(secret_key,BLOCK_VERIFIERS_SECRET_KEY,sizeof(BLOCK_VERIFIERS_SECRET_KEY)-1);
-  
-  // convert the hexadecimal string to a string
-  for (count = 0, count2 = 0; count < sizeof(BLOCK_VERIFIERS_SECRET_KEY)-1; count2++, count += 2)
-  {
-    memset(data2,0,sizeof(data2));
-    memcpy(data2,&secret_key[count],2);
-    secret_key_data[count2] = (int)strtol(data2, NULL, 16);
-  }
-
   if (count2 == 1)
   {
     goto disable_synchronizing_databases_and_starting_timers;
@@ -621,7 +621,7 @@ int main(int parameters_count, char* parameters[])
     }
   }*/
 
-  print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
+  /*print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
 
   // start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
@@ -629,7 +629,7 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
   
-  color_print("Started the current block height timer thread","green");
+  color_print("Started the current block height timer thread","green");*/
 
   /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)

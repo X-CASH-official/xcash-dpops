@@ -275,6 +275,7 @@ int sync_all_block_verifiers_list(void)
   memcpy(error_message.function[error_message.total],"sync_all_block_verifiers_list",29); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  pointer_reset(data3); \
   return 0;
 
   memset(message,0,sizeof(message));

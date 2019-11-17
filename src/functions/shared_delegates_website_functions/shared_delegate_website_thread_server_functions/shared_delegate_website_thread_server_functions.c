@@ -148,11 +148,6 @@ long long int add_block_to_blocks_found(void)
     number--;
     number -= block_height_number;
     sprintf(data2,"%lld",number);
-  }  
-  else
-  {
-    // set it to the default average
-    memcpy(data2,"100",3);
   } 
 
   // add the blocks data

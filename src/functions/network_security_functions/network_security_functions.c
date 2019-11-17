@@ -130,11 +130,11 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     // convert the data to a string
     for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
     {
-      snprintf(proof+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",proof_data[count2] & 0xFF);
+      snprintf(proof+count,sizeof(proof)-1,"%02x",proof_data[count2] & 0xFF);
     }
     for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
     {
-      snprintf(beta_string+count,BUFFER_SIZE_NETWORK_BLOCK_DATA-1,"%02x",beta_string_data[count2] & 0xFF);
+      snprintf(beta_string+count,sizeof(beta_string)-1,"%02x",beta_string_data[count2] & 0xFF);
     } 
 
     pthread_rwlock_rdlock(&rwlock);
