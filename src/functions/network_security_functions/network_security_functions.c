@@ -520,10 +520,10 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     memcpy(proof,XCASH_DPOPS_signature,VRF_PROOF_LENGTH);
     memcpy(beta_string,&XCASH_DPOPS_signature[VRF_PROOF_LENGTH],VRF_BETA_LENGTH);
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
+    {      
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0)
       {
-        memcpy(public_key,current_block_verifiers_list.block_verifiers_public_key,VRF_PUBLIC_KEY_LENGTH);
+        memcpy(public_key,current_block_verifiers_list.block_verifiers_public_key[count],VRF_PUBLIC_KEY_LENGTH);
         break;
       }
     }
