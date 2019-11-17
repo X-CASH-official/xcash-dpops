@@ -38,25 +38,21 @@ int create_random_VRF_keys(unsigned char *VRF_public_key, unsigned char *VRF_sec
   #define MINIMUM 1
   #define MAXIMUM 255
 
-  start:
-
-  memset(VRF_public_key,0,strlen((char*)VRF_public_key));
-  memset(VRF_secret_key,0,strlen((char*)VRF_secret_key));
-
-  for (count = 0; count < crypto_vrf_SEEDBYTES; count++)
+  do
   {
-    data[count] = ((rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM);
-  }
+    memset(VRF_public_key,0,strlen((char*)VRF_public_key));
+    memset(VRF_secret_key,0,strlen((char*)VRF_secret_key));
 
-  // create the VRF private and secret key
-  crypto_vrf_keypair_from_seed(VRF_public_key, VRF_secret_key, data);
+    for (count = 0; count < crypto_vrf_SEEDBYTES; count++)
+    {
+      data[count] = ((rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM);
+    }
 
-  // check the byte amounts
-  if (strnlen((char*)VRF_public_key,crypto_vrf_PUBLICKEYBYTES) != crypto_vrf_PUBLICKEYBYTES || strnlen((char*)VRF_secret_key,crypto_vrf_SECRETKEYBYTES) != crypto_vrf_SECRETKEYBYTES)
-  {
-    goto start;
-  }
+    // create the VRF private and secret key
+    crypto_vrf_keypair_from_seed(VRF_public_key, VRF_secret_key, data);
 
+  } while (strnlen((char*)VRF_public_key,crypto_vrf_PUBLICKEYBYTES) != crypto_vrf_PUBLICKEYBYTES || strnlen((char*)VRF_secret_key,crypto_vrf_SECRETKEYBYTES) != crypto_vrf_SECRETKEYBYTES);
+  
   return 1;
 
   #undef MINIMUM

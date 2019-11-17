@@ -132,7 +132,16 @@ static void fe25519_reduce(fe25519 h, const fe25519 f)
     int32_t h9 = f[9];
 
     int32_t q;
-    int32_t carry0, carry1, carry2, carry3, carry4, carry5, carry6, carry7, carry8, carry9;
+    int32_t carry0;
+    int32_t carry1;
+    int32_t carry2;
+    int32_t carry3;
+    int32_t carry4;
+    int32_t carry5;
+    int32_t carry6;
+    int32_t carry7;
+    int32_t carry8;
+    int32_t carry9;
 
     q = (19 * h9 + ((uint32_t) 1L << 24)) >> 25;
     q = (h0 + q) >> 26;

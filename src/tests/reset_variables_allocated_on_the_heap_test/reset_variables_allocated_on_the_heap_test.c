@@ -73,8 +73,8 @@ size_t get_program_memory_usage(char* process_id_file)
       if (strstr(data,"VmSize:") != NULL)
       {
         string_replace(data,BUFFER_SIZE,"VmSize:","");
-        string_replace(data,BUFFER_SIZE,"	",""); // tab
-        string_replace(data,BUFFER_SIZE," ",""); // space
+        string_replace(data,BUFFER_SIZE,"\t","");
+        string_replace(data,BUFFER_SIZE," ","");
         string_replace(data,BUFFER_SIZE,"kB","");
         string_replace(data,BUFFER_SIZE,"\n","");
         programs_memory_usage = atoi(data);
@@ -242,7 +242,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   
   // get the process_id_file
   memcpy(process_id_file,"/proc/",6);
-  sprintf(process_id_file+6,"%d",getpid());
+  snprintf(process_id_file+6,BUFFER_SIZE-7,"%d",getpid());
   memcpy(process_id_file+strnlen(process_id_file,BUFFER_SIZE),"/status",7);
 
   // initialize the arrays
@@ -261,8 +261,8 @@ int reset_variables_allocated_on_the_heap_test(void)
   // create the the arrays
   for (count = 0; count < 5; count++)
   {
-    sprintf(data[count],"%zu",count);
-    sprintf(settings[count],"%zu",count);
+    snprintf(data[count],BUFFER_SIZE,"%zu",count);
+    snprintf(settings[count],BUFFER_SIZE,"%zu",count);
   }
 
   // write the start test message
@@ -2327,7 +2327,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   sscanf(data_test, "%zu", &count);
   count--;
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  sprintf(data_test,"%zu",count);
+  snprintf(data_test,BUFFER_SIZE,"%zu",count);
   // read the current system memory usage
   if (settings2 == 1)
   {

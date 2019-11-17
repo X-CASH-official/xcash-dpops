@@ -90,8 +90,13 @@ vrf_prove(unsigned char pi[80], const ge25519_p3 *Y_point,
 {
     /* c fits in 16 bytes, but we store it in a 32-byte array because
      * sc25519_muladd expects a 32-byte scalar */
-    unsigned char h_string[32], k_scalar[32], c_scalar[32];
-    ge25519_p3    H_point, Gamma_point, kB_point, kH_point;
+    unsigned char h_string[32];
+    unsigned char k_scalar[32];
+    unsigned char c_scalar[32];
+    ge25519_p3 H_point;
+    ge25519_p3 Gamma_point;
+    ge25519_p3 kB_point;
+    ge25519_p3 kH_point;
 
     _vrf_ietfdraft03_hash_to_curve_elligator2_25519(h_string, Y_point, alpha, alphalen);
     ge25519_frombytes(&H_point, h_string);
@@ -139,7 +144,8 @@ crypto_vrf_ietfdraft03_prove(unsigned char proof[crypto_vrf_ietfdraft03_PROOFBYT
 			     unsigned long long msglen)
 {
     ge25519_p3    Y_point;
-    unsigned char x_scalar[32], truncated_hashed_sk_string[32];
+    unsigned char x_scalar[32];
+    unsigned char truncated_hashed_sk_string[32];
 
     if (vrf_expand_sk(&Y_point, x_scalar, truncated_hashed_sk_string, skpk) != 0) {
 	memset(x_scalar, 0, 32);

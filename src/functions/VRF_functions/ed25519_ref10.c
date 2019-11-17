@@ -257,10 +257,12 @@ ge25519_frombytes(ge25519_p3 *h, const unsigned char *s)
     fe25519 v;
     fe25519 v3;
     fe25519 vxx;
-    fe25519 m_root_check, p_root_check;
+    fe25519 m_root_check;
+    fe25519 p_root_check;
     fe25519 negx;
     fe25519 x_sqrtm1;
-    int     has_m_root, has_p_root;
+    int has_m_root;
+    int has_p_root;
 
     fe25519_frombytes(h->Y, s);
     fe25519_1(h->Z);
@@ -302,7 +304,8 @@ ge25519_frombytes_negate_vartime(ge25519_p3 *h, const unsigned char *s)
     fe25519 v;
     fe25519 v3;
     fe25519 vxx;
-    fe25519 m_root_check, p_root_check;
+    fe25519 m_root_check;
+    fe25519 p_root_check;
 
     fe25519_frombytes(h->Y, s);
     fe25519_1(h->Z);
@@ -773,15 +776,27 @@ ge25519_double_scalarmult_vartime(ge25519_p2 *r, const unsigned char *a,
 void
 ge25519_scalarmult(ge25519_p3 *h, const unsigned char *a, const ge25519_p3 *p)
 {
-    signed char     e[64];
-    signed char     carry;
-    ge25519_p1p1    r;
-    ge25519_p2      s;
-    ge25519_p1p1    t2, t3, t4, t5, t6, t7, t8;
-    ge25519_p3      p2, p3, p4, p5, p6, p7, p8;
-    ge25519_cached  pi[8];
-    ge25519_cached  t;
-    int             i;
+    signed char e[64];
+    signed char carry;
+    ge25519_p1p1 r;
+    ge25519_p2 s;
+    ge25519_p1p1 t2;
+    ge25519_p1p1 t3;
+    ge25519_p1p1 t4;
+    ge25519_p1p1 t5;
+    ge25519_p1p1 t6;
+    ge25519_p1p1 t7;
+    ge25519_p1p1 t8;
+    ge25519_p3 p2;
+    ge25519_p3 p3;
+    ge25519_p3 p4;
+    ge25519_p3 p5;
+    ge25519_p3 p6;
+    ge25519_p3 p7;
+    ge25519_p3 p8;
+    ge25519_cached pi[8];
+    ge25519_cached t;
+    int i;
 
     ge25519_p3_to_cached(&pi[0], p);   /* p */
 
@@ -1059,7 +1074,8 @@ ge25519_has_small_order(const unsigned char s[32])
     };
     unsigned char c[7] = { 0 };
     unsigned int  k;
-    size_t        i, j;
+    size_t i;
+    size_t j;
 
     COMPILER_ASSERT(7 == sizeof blacklist / sizeof blacklist[0]);
     for (j = 0; j < 31; j++) {
@@ -1924,8 +1940,11 @@ sc25519_is_canonical(const unsigned char *s)
 static void
 chi25519(fe25519 out, const fe25519 z)
 {
-    fe25519 t0, t1, t2, t3;
-    int     i;
+    fe25519 t0;
+    fe25519 t1;
+    fe25519 t2;
+    fe25519 t3;
+    int i;
 
     fe25519_sq(t0, z);
     fe25519_mul(t1, t0, z);
@@ -1980,14 +1999,16 @@ chi25519(fe25519 out, const fe25519 z)
 void
 ge25519_from_uniform(unsigned char s[32], const unsigned char r[32])
 {
-    fe25519       e;
-    fe25519       negx;
-    fe25519       rr2;
-    fe25519       x, x2, x3;
-    ge25519_p3    p3;
-    ge25519_p1p1  p1;
-    ge25519_p2    p2;
-    unsigned int  e_is_minus_1;
+    fe25519 e;
+    fe25519 negx;
+    fe25519 rr2;
+    fe25519 x;
+    fe25519 x2;
+    fe25519 x3;
+    ge25519_p3 p3;
+    ge25519_p1p1 p1;
+    ge25519_p2 p2;
+    unsigned int e_is_minus_1;
     unsigned char x_sign;
 
     memcpy(s, r, 32);

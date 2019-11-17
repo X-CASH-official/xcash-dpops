@@ -155,13 +155,6 @@ static inline void fe25519_neg(fe25519 h, const fe25519 f)
     h[9] = h9;
 }
 
-/*
- Replace (f,g) with (g,g) if b == 1;
- replace (f,g) with (f,g) if b == 0.
- *
- Preconditions: b in {0,1}.
- */
-
 static inline void fe25519_cmov(fe25519 f, const fe25519 g, unsigned int b)
 {
     const uint32_t mask = (uint32_t) (-(int32_t) b);
@@ -1027,8 +1020,16 @@ fe25519_scalar_product(fe25519 h, const fe25519 f, uint32_t n)
     int64_t h7 = f7 * sn;
     int64_t h8 = f8 * sn;
     int64_t h9 = f9 * sn;
-    int64_t carry0, carry1, carry2, carry3, carry4, carry5, carry6, carry7,
-            carry8, carry9;
+    int64_t carry0;
+    int64_t carry1;
+    int64_t carry2;
+    int64_t carry3;
+    int64_t carry4;
+    int64_t carry5;
+    int64_t carry6;
+    int64_t carry7;
+    int64_t carry8;
+    int64_t carry9;
 
     carry9 = (h9 + ((int64_t) 1 << 24)) >> 25;
     h0 += carry9 * 19;

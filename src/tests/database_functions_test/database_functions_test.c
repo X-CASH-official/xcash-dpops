@@ -98,8 +98,8 @@ int database_test(void)
   // create the the arrays
   for (count = 0; count < DATA_COUNT; count++)
   {
-    sprintf(data[count],"%d",count);
-    sprintf(settings[count],"%d",count);
+    snprintf(data[count],BUFFER_SIZE,"%d",count);
+    snprintf(settings[count],BUFFER_SIZE,"%d",count);
   }
 
   // insert a document into the collection using arrays

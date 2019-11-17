@@ -441,7 +441,7 @@ int get_previous_block_information(char *block_hash, char *block_reward, char *b
   // get the previous block height
   sscanf(current_block_height, "%zu", &block_height);
   block_height--;
-  sprintf(data2,"%zu",block_height);
+  snprintf(data2,sizeof(data2)-1,"%zu",block_height);
 
   // create the message
   memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":",66);
@@ -490,7 +490,7 @@ int check_found_block(void)
   sscanf(current_block_height, "%zu", &block_height);
   block_height--;
   memset(result,0,sizeof(result));
-  sprintf(data2,"%zu",block_height);
+  snprintf(data2,sizeof(data2)-1,"%zu",block_height);
 
   // create the message
   memset(data,0,sizeof(data));

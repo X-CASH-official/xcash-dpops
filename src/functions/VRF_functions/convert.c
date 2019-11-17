@@ -69,11 +69,11 @@ _vrf_ietfdraft03_hash_to_curve_elligator2_25519(unsigned char H_string[32],
 						const unsigned long long alphalen)
 {
     crypto_hash_sha512_state hs;
-    unsigned char            Y_string[32], r_string[64];
+    unsigned char Y_string[32];
+    unsigned char r_string[64];
 
     _vrf_ietfdraft03_point_to_string(Y_string, Y_point);
 
-    /* r = first 32 bytes of SHA512(suite || 0x01 || Y || alpha) */
     crypto_hash_sha512_init(&hs);
     crypto_hash_sha512_update(&hs, &SUITE, 1);
     crypto_hash_sha512_update(&hs, &ONE, 1);
@@ -93,7 +93,8 @@ _vrf_ietfdraft03_hash_points(unsigned char c[16], const ge25519_p3 *P1,
 			     const ge25519_p3 *P2, const ge25519_p3 *P3,
 			     const ge25519_p3 *P4)
 {
-    unsigned char str[2+32*4], c1[64];
+    unsigned char str[2+32*4];
+    unsigned char c1[64];
 
     str[0] = SUITE;
     str[1] = TWO;

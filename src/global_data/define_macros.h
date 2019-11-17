@@ -22,7 +22,7 @@ Using define statements instead of constants for increased efficiency
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
-#define MAXIMUM_TRANSACATIONS_PER_BLOCK 10000 // The maximum amount of transaction per block
+#define MAXIMUM_TRANSACATIONS_PER_BLOCK 16384 // The maximum amount of transaction per block
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a XCASH_DPOPS_signature for the signed data
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a XCASH_DPOPS_signature for the signed data
 

@@ -117,7 +117,7 @@ long long int add_block_to_blocks_found(void)
   // get the block height of the previous block
   sscanf(current_block_height, "%lld", &number);
   number--;
-  sprintf(block_height,"%lld",number);
+  snprintf(block_height,sizeof(block_height)-1,"%lld",number);
 
   // get the lat block height of the last block found to calculate the average
   if (document_count > 0)
@@ -147,7 +147,7 @@ long long int add_block_to_blocks_found(void)
     sscanf(current_block_height, "%lld", &number);
     number--;
     number -= block_height_number;
-    sprintf(data2,"%lld",number);
+    snprintf(data2,sizeof(data2)-1,"%lld",number);
   } 
 
   // add the blocks data
@@ -353,7 +353,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
     number += current_delegates_block_reward;
     memset(data,0,sizeof(data));
     memset(data3,0,sizeof(data3));
-    sprintf(data3,"%lld",number);
+    snprintf(data3,sizeof(data3)-1,"%lld",number);
     memcpy(data,"{\"current_total\":\"",18);
     memcpy(data+18,data3,strnlen(data3,sizeof(data)));
     memcpy(data+strlen(data),"\"}",2);
@@ -558,7 +558,7 @@ void* payment_timer_thread(void* parameters)
           // add the current total to the total in the public_addresses collection
           sscanf(total, "%lld", &updated_total);
           updated_total += number;
-          sprintf(data3,"%lld",updated_total);
+          snprintf(data3,sizeof(data3)-1,"%lld",updated_total);
           memset(data2,0,sizeof(data2));
           memcpy(data2,"{\"total\":\"",10);
           memcpy(data2+10,data3,strnlen(data3,sizeof(data2)));
@@ -571,7 +571,7 @@ void* payment_timer_thread(void* parameters)
 
           // get the current date and time
           memset(data3,0,sizeof(data3));
-          sprintf(data3,"%lld",(long long int)time(NULL));
+          snprintf(data3,sizeof(data3)-1,"%lld",(long long int)time(NULL));
 
           // add the payment to the public_addresses_payments in the collection
           memset(data2,0,sizeof(data2));
@@ -618,7 +618,7 @@ void* payment_timer_thread(void* parameters)
 
           // update the amount_of_payments in the database
           memset(data3,0,sizeof(data3));
-          sprintf(data3,"%lld",number);
+          snprintf(data3,sizeof(data3)-1,"%lld",number);
           memcpy(data2,"{\"inactivity_count\":\"",21);
           memcpy(data2+21,data3,strnlen(data3,sizeof(data2)));
           memcpy(data2+strlen(data2),"\"}",2);

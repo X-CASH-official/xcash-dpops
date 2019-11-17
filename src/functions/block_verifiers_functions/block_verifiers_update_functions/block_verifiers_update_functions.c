@@ -476,14 +476,11 @@ int add_round_statistics(void)
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
 
-    if ((int)total2 != 0)
+    if ((int)total2 != 0 && total3 / total2 > total)
     {
-      if (total3 / total2 > total)
-      {
-        total = total3 / total2;
-        memset(best_block_verifier_online_percentage_delegate_name,0,sizeof(best_block_verifier_online_percentage_delegate_name));
-        memcpy(best_block_verifier_online_percentage_delegate_name,delegates_name,strnlen(delegates_name,sizeof(best_block_verifier_online_percentage_delegate_name)));
-      }
+      total = total3 / total2;
+      memset(best_block_verifier_online_percentage_delegate_name,0,sizeof(best_block_verifier_online_percentage_delegate_name));
+      memcpy(best_block_verifier_online_percentage_delegate_name,delegates_name,strnlen(delegates_name,sizeof(best_block_verifier_online_percentage_delegate_name)));
     }
  
     // get the block_producer_total_rounds

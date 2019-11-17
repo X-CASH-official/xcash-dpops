@@ -60,7 +60,8 @@ crypto_vrf_ietfdraft03_proof_to_hash(unsigned char beta[crypto_vrf_ietfdraft03_O
 				  const unsigned char pi[crypto_vrf_ietfdraft03_PROOFBYTES])
 {
     ge25519_p3    Gamma_point;
-    unsigned char c_scalar[16], s_scalar[32]; /* unused */
+    unsigned char c_scalar[16];
+    unsigned char s_scalar[32]; /* unused */
     unsigned char hash_input[2+32];
 
     /* (Gamma, c, s) = ECVRF_decode_proof(pi_string) */
@@ -68,7 +69,6 @@ crypto_vrf_ietfdraft03_proof_to_hash(unsigned char beta[crypto_vrf_ietfdraft03_O
 	return -1;
     }
 
-    /* beta_string = Hash(suite_string || three_string || point_to_string(cofactor * Gamma)) */
     hash_input[0] = SUITE;
     hash_input[1] = THREE;
     multiply_by_cofactor(&Gamma_point);
@@ -118,10 +118,17 @@ vrf_verify(const ge25519_p3 *Y_point, const unsigned char pi[80],
 {
     /* Note: c fits in 16 bytes, but ge25519_scalarmult expects a 32-byte scalar.
      * Similarly, s_scalar fits in 32 bytes but sc25519_reduce takes in 64 bytes. */
-    unsigned char h_string[32], c_scalar[32], s_scalar[64], cprime[16];
+    unsigned char h_string[32];
+    unsigned char c_scalar[32];
+    unsigned char s_scalar[64];
+    unsigned char cprime[16];
 
-    ge25519_p3     H_point, Gamma_point, U_point, V_point, tmp_p3_point;
-    ge25519_p1p1   tmp_p1p1_point;
+    ge25519_p3 H_point;
+    ge25519_p3 Gamma_point;
+    ge25519_p3 U_point;
+    ge25519_p3 V_point;
+    ge25519_p3 tmp_p3_point;
+    ge25519_p1p1 tmp_p1p1_point;
     ge25519_cached tmp_cached_point;
 
     if (_vrf_ietfdraft03_decode_proof(&Gamma_point, c_scalar, s_scalar, pi) != 0) {

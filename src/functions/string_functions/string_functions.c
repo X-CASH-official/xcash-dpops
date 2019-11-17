@@ -700,7 +700,7 @@ int random_string(char *result, const size_t LENGTH)
   memcpy(data,STRING,sizeof(STRING)-1);
   for (count = 0; count < LENGTH; count++)
   {
-    memcpy(result+count,&data[((rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM)],1);
+    memcpy(result+count,&data[(rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM],1);
   }
   return 1;
   

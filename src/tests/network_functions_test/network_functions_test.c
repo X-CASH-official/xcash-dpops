@@ -103,7 +103,7 @@ void network_daemon_test(void)
   sscanf(data_test, "%zu", &count);
   count--;
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  sprintf(data_test,"%zu",count);
+  snprintf(data_test,BUFFER_SIZE,"%zu",count);
   if (get_block_settings(data_test,0) != 0)
   {   
     color_print("PASSED! Test for getting the block settings","green");
