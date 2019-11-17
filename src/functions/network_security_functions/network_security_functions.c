@@ -244,7 +244,6 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   size_t message_length;
   size_t count;
   size_t count2;
-  int settings = 0;
 
   // define macros
   #define VERIFY_DATA_ERROR(settings) \
@@ -426,15 +425,15 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
   } 
   else
   {
-    // check if the public address is in the current_block_verifiers_list struct
+    // check if the public address is in the current_block_verifiers_list struct, or the 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (memcmp(public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+      if (memcmp(public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0 || memcmp(public_address,network_data_nodes_list.network_data_nodes_public_address[count],XCASH_WALLET_LENGTH) == 0)
       {
-        settings = 1;
+        break;
       }
     }
-    if (settings == 0)
+    if (count == BLOCK_VERIFIERS_AMOUNT)
     {
       VERIFY_DATA_ERROR("Invalid message1");
     }
