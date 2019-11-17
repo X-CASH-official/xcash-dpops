@@ -843,6 +843,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memcpy(str+20,HOST,HOST_LENGTH);
     memcpy(str+20+HOST_LENGTH," on port ",9);
     memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+    freeaddrinfo(settings);
     SEND_DATA_SOCKET_ERROR(str);
   }
 
@@ -854,6 +855,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memcpy(str+20,HOST,HOST_LENGTH);
     memcpy(str+20+HOST_LENGTH," on port ",9);
     memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+    freeaddrinfo(settings);
     SEND_DATA_SOCKET_ERROR(str);
   }
 
@@ -866,6 +868,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memcpy(str+22,HOST,HOST_LENGTH);
     memcpy(str+22+HOST_LENGTH," on port ",9);
     memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+    freeaddrinfo(settings);
     SEND_DATA_SOCKET_ERROR(str);
   }
 

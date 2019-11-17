@@ -773,7 +773,7 @@ void sync_check_majority_reserve_proofs_database(void)
   // check if the block verifiers database is in the majority
   if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    color_print("The database is not in the majority, syncing from the main network data node","red");
+    color_print("The database is not in the majority, syncing from a random network data node","red");
     get_random_network_data_node(count);
     sync_reserve_proofs_database(count+3);    
   }
@@ -791,7 +791,7 @@ void sync_check_majority_reserve_proofs_database(void)
 Name: sync_reserve_proofs_database
 Description: Syncs the reserve proofs database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 2
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -825,16 +825,6 @@ int sync_reserve_proofs_database(int settings)
     pointer_reset_all; \
     return 0; \
   } \
-  else if ((data_settings) != 0 && (data_settings) != 1) \
-  { \
-    memset(data,0,strlen(data)); \
-    memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
-    color_print(data,"red"); \
-    settings = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT)) + 3; \
-    goto start; \
-  } \
   else \
   { \
     memset(data,0,strlen(data)); \
@@ -842,6 +832,8 @@ int sync_reserve_proofs_database(int settings)
     memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
+    get_random_network_data_node(settings); \
+    settings += 3; \
     goto start; \
   } 
 
@@ -1321,7 +1313,7 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
   // check if the block verifiers database is in the majority
   if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    color_print("The database is not in the majority, syncing from the main network data node","red");
+    color_print("The database is not in the majority, syncing from a random network data node","red");
     get_random_network_data_node(count);
     sync_reserve_bytes_database(count+3,reserve_bytes_start_settings); 
   }
@@ -1339,7 +1331,7 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
 Name: sync_reserve_bytes_database
 Description: Syncs the reserve bytes database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 2
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
   reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
@@ -1375,16 +1367,6 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
     pointer_reset_all; \
     return 0; \
   } \
-  else if ((data_settings) != 0 && (data_settings) != 1) \
-  { \
-    memset(data,0,strlen(data)); \
-    memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
-    color_print(data,"red"); \
-    settings = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT)) + 3; \
-    goto start; \
-  } \
   else \
   { \
     memset(data,0,strlen(data)); \
@@ -1392,6 +1374,8 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
     memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
+    get_random_network_data_node(settings); \
+    settings += 3; \
     goto start; \
   } 
 
@@ -1843,7 +1827,7 @@ void sync_check_majority_delegates_database(void)
   // check if the block verifiers database is in the majority
   if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    color_print("The database is not in the majority, syncing from the main network data node","red");
+    color_print("The database is not in the majority, syncing from a random network data node","red");
     get_random_network_data_node(count);
     sync_delegates_database(count+3);   
   }
@@ -1862,7 +1846,7 @@ void sync_check_majority_delegates_database(void)
 Name: sync_delegates_database
 Description: Syncs the delegates database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 2
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1889,16 +1873,6 @@ int sync_delegates_database(int settings)
     pointer_reset(data); \
     return 0; \
   } \
-  else if ((data_settings) != 0 && (data_settings) != 1) \
-  { \
-    memset(data,0,strlen(data)); \
-    memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
-    color_print(data,"red"); \
-    settings = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT)) + 3; \
-    goto start; \
-  } \
   else \
   { \
     memset(data,0,strlen(data)); \
@@ -1906,6 +1880,8 @@ int sync_delegates_database(int settings)
     memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
+    get_random_network_data_node(settings); \
+    settings += 3; \
     goto start; \
   } 
 
@@ -2235,7 +2211,7 @@ void sync_check_majority_statistics_database(void)
   // check if the block verifiers database is in the majority
   if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    color_print("The database is not in the majority, syncing from the main network data node","red");
+    color_print("The database is not in the majority, syncing from a random network data node","red");
     get_random_network_data_node(count);
     sync_statistics_database(count+3);     
   }
@@ -2254,7 +2230,7 @@ void sync_check_majority_statistics_database(void)
 Name: sync_statistics_database
 Description: Syncs the statistics database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 2
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -2281,16 +2257,6 @@ int sync_statistics_database(int settings)
     pointer_reset(data); \
     return 0; \
   } \
-  else if ((data_settings) != 0 && (data_settings) != 1) \
-  { \
-    memset(data,0,strlen(data)); \
-    memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
-    color_print(data,"red"); \
-    settings = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT)) + 3; \
-    goto start; \
-  } \
   else \
   { \
     memset(data,0,strlen(data)); \
@@ -2298,6 +2264,8 @@ int sync_statistics_database(int settings)
     memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
+    get_random_network_data_node(settings); \
+    settings += 3; \
     goto start; \
   } 
 
