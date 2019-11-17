@@ -8,6 +8,7 @@ Function prototypes
 */
 
 int check_if_databases_are_synced(const int SETTINGS, const int reserve_bytes_start_settings);
+void sync_network_data_nodes_database(void);
 int sync_all_block_verifiers_list(void);
 int get_synced_block_verifiers(void);
 int sync_check_reserve_proofs_database(int settings);

@@ -1,6 +1,12 @@
 #ifndef DEFINE_MACRO_FUNCTIONS_H_   /* Include guard */
 #define DEFINE_MACRO_FUNCTIONS_H_
 
+#include "define_macros.h"
+#include "variables.h"
+#include <mongoc/mongoc.h>
+#include <bson/bson.h>
+
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Using define macros instead of functions for increased efficiency
@@ -155,6 +161,23 @@ else \
   count = (((count - 1) - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1; \
 }
 
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_random_network_data_node
+Description: gets a random network data node
+Parameters:
+  count - count
+Return: Writes the correct code
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define get_random_network_data_node(count) \
+do \
+{ \
+  count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT); \
+} while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0); \
 
 
 

@@ -183,6 +183,63 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check
+Description: Runs the code when the server receives the NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK message
+Parameters:
+  MESSAGE - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check(const char* MESSAGE)
+{
+  // Variables
+  int count;
+  char public_address[BUFFER_SIZE];
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",87); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+
+  memset(public_address,0,sizeof(public_address));
+
+  // verify the message
+  if (verify_data(MESSAGE,0,0) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not verify the message");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
+  }
+
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0)
+    {      
+      memset(public_address,0,sizeof(public_address));
+      parse_json_data(MESSAGE,"data_hash",public_address,DATA_HASH_LENGTH);
+      if (strlen(public_address) == DATA_HASH_LENGTH)
+      {
+        memcpy(network_data_nodes_database_data[count],public_address,DATA_HASH_LENGTH);
+      }      
+      break;
+    }
+  }
+  return 1;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list
 Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE message
 Parameters:

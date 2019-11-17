@@ -1768,6 +1768,12 @@ int block_verifiers_create_block(void)
       BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not send data to the block verifiers");
     }
 
+    // while waiting for the block to be submitted, the network data nodes will make sure they are all synced with the same database data
+    if (network_data_node_settings == 1)
+    {
+      sync_network_data_nodes_database();
+    }
+
     // wait for the block verifiers to process the votes
     sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,55);
 

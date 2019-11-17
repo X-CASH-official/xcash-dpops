@@ -5,6 +5,8 @@
 #include <pthread.h>
 
 #include "structures.h"
+#include <mongoc/mongoc.h>
+#include <bson/bson.h>
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -43,6 +45,7 @@ int epoll_fd;
 struct epoll_event events_copy;
 int server_socket;
 
+char network_data_nodes_database_data[NETWORK_DATA_NODES_AMOUNT][DATA_HASH_LENGTH+1];
 char current_block_height[100]; // The current block height
 char previous_block_hash[BLOCK_HASH_LENGTH+1]; // The current block height
 int error_message_count; // The error message count

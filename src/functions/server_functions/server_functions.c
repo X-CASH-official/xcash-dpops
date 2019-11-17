@@ -383,6 +383,10 @@ int socket_thread(int client_socket)
  {
    server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(client_socket);
  } 
+ else if (strstr(buffer,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL)
+ {
+   server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check((const char*)buffer);
+ }
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
    server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket);
