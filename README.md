@@ -31,9 +31,9 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 ## Table of Contents  
 [System Requirements](#system-requirements)  
 [Dependencies](#dependencies)  
-[Recommendations For the XCASH Wallet](#recommendations-for-the-xcash-wallet) 
-[XCASH_DPOPS Parameters](#xcash_dpops-parameters) 
-[Manual vs Autoinstall](#manual-vs-autoinstall) 
+[Recommendations For the XCASH Wallet](#recommendations-for-the-xcash-wallet)  
+[XCASH_DPOPS Parameters](#xcash_dpops-parameters)  
+[Installation Options](#installation-options)  
 [Installation Process](#installation-process)  
 * [Installation Path](#installation-path)  
 * [Install System Packages](#install-system-packages) 
@@ -67,7 +67,8 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 *  [Update](#update)  
 *  [Remove](#remove)
   
-[Docker Installation Process](#docker-installation-process)
+[Docker Manual Installation Process](#docker-manual-installation-process)
+[Docker Automatic Installation Process](#docker-automatic-installation-process)
  
 [How to Setup A Private Test](#how-to-setup-a-private-test)  
 [How to Debug the Code on a Server](#how-to-debug-the-code-on-a-server)
@@ -146,13 +147,13 @@ The minimum for a public_address to receive a payment (10000 etc. The minimum am
 ```
 
 
-## Manual VS Autoinstall
-XCASH_DPOPS does provide a [autoinstall script](https://github.com/X-CASH-official/XCASH_DPOPS/blob/master/scripts/autoinstaller/autoinstaller.sh) to make the installation process easier. The script can also be run in an update mode to update any needed x-network repositories or newer third party dependencies. 
+## Installation Options
+XCASH_DPOPS provides a few different installation options. It is recommended to at least read over how to manually install XCASH_DPOPS, and then choose one of the installation options below:
 
-The recommended installation type is to read over how to manually install XCASH_DPOPS, but to use the autoinstaller to install XCASH_DPOPS, since the autoinstaller does allow for custom settings.
-
-To learn more about the auto installation process you can read the [auto installation process](#auto-installation-process) in the appendix section
-
+[Manual Installation Process](#installation-process)  
+[Automatic Installation Process](#auto-installation-process)  
+[Docker Manual Installation Process](#docker-manual-installation-process)  
+[Docker Automatic Installation Process](#docker-automatic-installation-process)
 
 
 ## Installation Process
@@ -660,7 +661,7 @@ NPM
 
 
 
-## Docker Installation Process
+## Docker Manual Installation Process
 This will allow you to install the node inside of a docker container
 
 It is recommended to install the firewall on your system (not inside the docker container)  
@@ -742,6 +743,106 @@ screen -XS "XCASH_Daemon" quit
 screen -XS "XCASH_Wallet" quit
 screen -XS "XCASH_DPOPS" quit
 ```
+
+To keep the system up to date, you will need to download and rebuild anytime there is an update to the [X-CASH](https://github.com/X-CASH-official/X-CASH) or [XCASH_DPOPS](https://github.com/X-CASH-official/XCASH_DPOPS) repository.  
+
+You can also use the autoinstaller for docker and run it in update mode, to keep the system up to date
+```
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller_docker.sh)"
+```
+
+You can also delete the container, **(Make sure to backup your wallet and block verifier key)** pull the latest docker version of the container, create a new container and import your wallet and block verifier key.
+
+
+
+
+
+## Docker Automatic Installation Process
+This will allow you to donwload a prebuilt docker image with the XCASH_DPOPS installed
+
+It is recommended to install the firewall on your system (not inside the docker container)  
+Follow the [How To Setup the Firewall](#how-to-setup-the-firewall)  part of the readme first.
+
+Now you will need to install docker
+
+After this you will need to pull a [XCASH_DPOPS_image](https://hub.docker.com/r/xnetwork/xcash_dpops)  
+`docker pull xnetwork/xcash_dpops:TAG`
+
+[Supported tags](https://hub.docker.com/repository/docker/xnetwork/xcash_dpops/tags?page=1) use the following syntax:
+
+PRODUCTIONTYPE_ LINUXDISTRO_LINUXDISTROVERSION
+
+For example: mainnet_ubuntu_18.04  
+
+Now list all of the images installed, and save the IMAGE_ID for the image you just downloaded  
+`docker images`
+
+Now create and start a new container from the image you just downloaded 
+```
+docker run -i -t -p 18280:18280 -p 18281:18281 -p 18283:18283 IMAGE_ID /bin/bash
+```
+
+You should now have a bash prompt inside of the docker container. Now run `exit`
+
+Now list all of the docker containers  
+`docker ps -a`
+
+Save the CONTAINER_ID of the container you just created  
+
+Optionally rename the container so you can use the name instead of the container ID in the commands  
+`docker rename CURRENT_CONTAINER_NAME NEW_CONTAINER_NAME`
+
+From this point the docker container has been created. You will need to start the docker container by running  
+`docker start CONTAINER_ID`
+
+The docker container will remain running until stopped. You can enter and exit a container and it will still run unless stoped. At any time if you want enter the docker container you can run  
+```
+docker exec -e USER="root" -u root -t -i --privileged CONTAINER_ID /bin/bash
+```
+
+To exit the container type  
+`exit`
+
+To stop the container run  
+`docker stop CONTAINER_ID`
+
+To list all running containers run  
+`docker ps -a`
+
+To remove the container run  
+`docker rm container CONTAINER_ID`
+
+Once you have a bash prompt inside of the container, you will need to either create a new wallet and block verifier key, or import them. To do this run the docker configuration script
+```
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller_docker.sh)"
+```
+
+Note: systemd is not enabled in docker containers. Once the docker configuration script is done, you will need to start all of the processes 
+
+To start the following process using screen (just replace the password and remove the shared delegate flags if you are going to run a solo node
+```
+screen -dmS MongoDB /root/x-network/mongodb-*/bin/mongod --dbpath /data/db/
+screen -dmS XCASH_Daemon /root/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
+screen -dmS XCASH_Wallet /root/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/XCASH_DPOPS_WALLET --password WALLET_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+screen -dmS XCASH_DPOPS /root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --shared_delegates_website --fee DPOPS_FEE --minimum_amount DPOPS_MINIMUM_AMOUNT
+```
+
+To stop the following process using screen:
+```
+screen -XS "MongoDB" quit
+screen -XS "XCASH_Daemon" quit
+screen -XS "XCASH_Wallet" quit
+screen -XS "XCASH_DPOPS" quit
+```
+
+To keep the system up to date, you will need to download and rebuild anytime there is an update to the [X-CASH](https://github.com/X-CASH-official/X-CASH) or [XCASH_DPOPS](https://github.com/X-CASH-official/XCASH_DPOPS) repository.  
+
+You can also use the autoinstaller for docker and run it in update mode, to keep the system up to date
+```
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller_docker.sh)"
+```
+
+You can also delete the container, **(Make sure to backup your wallet and block verifier key)** pull the latest docker version of the container, create a new container and import your wallet and block verifier key.
 
 
 
