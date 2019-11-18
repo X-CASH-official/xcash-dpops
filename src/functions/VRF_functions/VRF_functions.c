@@ -100,11 +100,11 @@ void generate_key()
   }
 
   fprintf(stderr,"\n");
-  color_print("Secret Key:","green");
-  color_print(vrf_secret_key,"green");
-  fprintf(stderr,"\n");
   color_print("Public Key:","green");
-  color_print(vrf_public_key,"green");  
+  color_print(vrf_public_key,"green");
+  fprintf(stderr,"\n");
+  color_print("Secret Key:","green");
+  color_print(vrf_secret_key,"green"); 
   
   return;
 }
