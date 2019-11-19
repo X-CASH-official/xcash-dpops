@@ -1030,12 +1030,12 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
     if (buffer[0] != '\0' && (strstr(buffer,STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL))
     {
       // there is data, but this is not the final data
-      memcpy(data+strlen(data),buffer,strnlen(buffer,MAXIMUM_BUFFER_SIZE));
+      append_string(data,buffer,MAXIMUM_BUFFER_SIZE);
     }
     if (buffer[0] != '\0' && (strstr(buffer,STRING) != NULL || strstr(buffer,HTTP_SOCKET_END_STRING) != NULL))
     {
       // there is data, and this is the final data
-      memcpy(data+strlen(data),buffer,strnlen(buffer,MAXIMUM_BUFFER_SIZE));
+      append_string(data,buffer,MAXIMUM_BUFFER_SIZE);
       // if the final message has the SOCKET_END_STRING in the message, remove it
       if (strstr(data,SOCKET_END_STRING) != NULL)
       {
