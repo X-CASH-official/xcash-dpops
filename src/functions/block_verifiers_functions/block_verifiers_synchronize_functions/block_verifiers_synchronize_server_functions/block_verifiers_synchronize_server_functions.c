@@ -384,15 +384,10 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Invalid block height");
   }
-  reserve_bytes_blocks_amount = count2 - current_block_height_reserve_bytes;
+  reserve_bytes_blocks_amount = (count2 - current_block_height_reserve_bytes) + 1;
   if (reserve_bytes_blocks_amount > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME)
   {
     reserve_bytes_blocks_amount = BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
-  }
-  else if (reserve_bytes_blocks_amount == 0)
-  {
-    // set it to 1 as this will enable syncing after it has already synced
-    reserve_bytes_blocks_amount = 1;
   }
 
   // create the message
