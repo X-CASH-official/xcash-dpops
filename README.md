@@ -67,7 +67,7 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 *  [Update](#update)  
 *  [Remove](#remove)
   
-[Docker Manual Installation Process](#docker-manual-installation-process)
+[Docker Manual Installation Process](#docker-manual-installation-process)  
 [Docker Automatic Installation Process](#docker-automatic-installation-process)
  
 [How to Setup A Private Test](#how-to-setup-a-private-test)  
@@ -814,7 +814,7 @@ To remove the container run
 
 Once you have a bash prompt inside of the container, you will need to either create a new wallet and block verifier key, or import them. To do this run the docker configuration script
 ```
-bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller_docker.sh)"
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/docker_configuration.sh)"
 ```
 
 Note: systemd is not enabled in docker containers. Once the docker configuration script is done, you will need to start all of the processes 
