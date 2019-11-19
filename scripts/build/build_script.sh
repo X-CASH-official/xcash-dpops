@@ -98,6 +98,22 @@ function update_packages()
 
 
 
+function update_all_repositories()
+{
+  cd ${XCASH_DPOPS_INSTALLATION_DIR} || return 1
+  sudo rm -r ${XCASH_DIR}
+  sudo rm -r ${XCASH_DPOPS_DIR}
+  sudo rm -r ${DELEGATES_WEBSITE_DIR}
+  sudo rm -r ${SHARED_DELEGATES_WEBSITE_DIR}
+  git clone ${XCASH_URL} >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
+  git clone ${XCASH_DPOPS_URL} >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
+  git clone ${DELEGATES_WEBSITE_URL} >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
+  git clone ${SHARED_DELEGATES_WEBSITE_URL} >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
+}
+  
+
+
+
 function get_dependencies_current_version()
 {
   echo -e "Getting Dependencies Current Versions\n" >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
@@ -229,6 +245,9 @@ function STEP_1_PROGRAMS()
   # Get the dependencies current version
   get_dependencies_current_version || return 1
 
+  # Update the repositories
+  update_all_repositories || return 1
+
   # Update the package list
   update_packages_list || return 1
 
@@ -265,7 +284,6 @@ function STEP_2_DELEGATES_WEBSITE()
 {
   echo -e "Updating Delegates Website\n" >> ${LOGFILE_STEP_2_DELEGATES_WEBSITE} 2>&1 || return 1
   cd ${DELEGATES_WEBSITE_DIR} || return 1
-  git pull >> ${LOGFILE_STEP_2_DELEGATES_WEBSITE} 2>&1 || return 1
   sudo rm -r node_modules
   npm update >> ${LOGFILE_STEP_2_DELEGATES_WEBSITE} 2>&1 || return 1
   ng build --prod --aot >> ${LOGFILE_STEP_2_DELEGATES_WEBSITE} 2>&1 || return 1
@@ -285,7 +303,6 @@ function STEP_3_SHARED_DELEGATES_WEBSITE()
 {
   echo -e "Updating Shared Delegates Website\n" >> ${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE} 2>&1 || return 1
   cd ${SHARED_DELEGATES_WEBSITE_DIR} || return 1
-  git pull >> ${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE} 2>&1 || return 1
   sudo rm -r node_modules
   npm update >> ${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE} 2>&1 || return 1
   ng build --prod --aot >> ${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE} 2>&1 || return 1
@@ -306,7 +323,6 @@ function STEP_4_XCASH_BUILD_MAINNET()
   echo -e "Updating X-CASH Mainnet\n" >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
   cd ${XCASH_DIR} || return 1
   git checkout master >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
-  git pull >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
   echo "y" | make clean  >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
   make -j ${CPU_THREADS} >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
   echo -e "\n" >> ${LOGFILE_STEP_4_XCASH_BUILD_MAINNET} 2>&1 || return 1
@@ -334,7 +350,6 @@ function STEP_6_XCASH_BUILD_DEVELOPMENT()
   echo -e "Updating X-CASH Development\n" >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
   cd ${XCASH_DIR} || return 1
   git checkout xcash_proof_of_stake >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
-  git pull >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
   echo "y" | make clean  >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
   make -j ${CPU_THREADS} >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
   echo -e "\n" >> ${LOGFILE_STEP_6_XCASH_BUILD_DEVELOPMENT} 2>&1 || return 1
@@ -346,7 +361,6 @@ function STEP_7_XCASH_DPOPS_BUILD()
 {
   echo -e "Updating XCASH_DPOPS\n" >> ${LOGFILE_STEP_7_XCASH_DPOPS_BUILD} 2>&1 || return 1
   cd ${XCASH_DPOPS_DIR} || return 1
-  git pull >> ${LOGFILE_STEP_7_XCASH_DPOPS_BUILD} 2>&1 || return 1
   make clean  >> ${LOGFILE_STEP_7_XCASH_DPOPS_BUILD} 2>&1 || return 1
   make release -j ${CPU_THREADS} >> ${LOGFILE_STEP_7_XCASH_DPOPS_BUILD} 2>&1 || return 1
   echo -e "\n" >> ${LOGFILE_STEP_7_XCASH_DPOPS_BUILD} 2>&1 || return 1
