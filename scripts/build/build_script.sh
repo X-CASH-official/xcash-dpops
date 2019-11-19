@@ -118,7 +118,6 @@ function start_processes()
   sleep 10s || return 1
   screen -dmS XCASH_Wallet ${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password password --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon || return 1
   sleep 10s || return 1
-  screen -dmS XCASH_DPOPS ${XCASH_DPOPS_DIR}build/XCASH_DPOPS || return 1
   echo -e "\n" >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
 }
 
@@ -128,7 +127,6 @@ function stop_processes()
   screen -XS "MongoDB" quit || return 1
   screen -XS "XCASH_Daemon" quit || return 1
   screen -XS "XCASH_Wallet" quit || return 1
-  screen -XS "XCASH_DPOPS" quit || return 1
   echo -e "\n" >> ${LOGFILE_STEP_1_PROGRAMS} 2>&1 || return 1
 }
 
