@@ -710,7 +710,7 @@ To remove the container run
 Once you have a bash prompt inside of the container, you will need to install some packages before installing XCASH_DPOPS
 ```
 apt update
-apt install -y sudo screen nano wget curl
+apt install -y sudo screen nano wget curl git
 ```
 
 Now you can install XCASH_DPOPS using the autoinstaller for docker  

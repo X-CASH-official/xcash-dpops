@@ -90,6 +90,13 @@ table, th, td {
     <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_9_XCASH_DPOPS_TEST.txt" target="_blank">Results</a></th>
   </tr>
   <tr>
+    <th>Ubuntu 18.04</th>
+    <th>XCASH Build Static</th>
+    <th>Update and Build XCASH Statically</th> 
+    <th id="ubuntu1804buildstep10"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-18.04/STEP_10_XCASH_BUILD_STATIC.txt" target="_blank">Results</a></th>
+  </tr>
+  <tr>
     <th>Ubuntu 19.10</th>
     <th>Programs</th>
     <th>Update all programs</th> 
@@ -151,6 +158,13 @@ table, th, td {
     <th>Run the XCASH_DPOPS Test</th> 
     <th id="ubuntu1910buildstep9"></th>
     <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_9_XCASH_DPOPS_TEST.txt" target="_blank">Results</a></th>
+  </tr>
+  <tr>
+    <th>Ubuntu 19.10</th>
+    <th>XCASH Build Static</th>
+    <th>Update and Build XCASH Statically</th> 
+    <th id="ubuntu1910buildstep10"></th>
+    <th><a href="http://88.99.148.237/build/ubuntu-19.10/STEP_10_XCASH_BUILD_STATIC.txt" target="_blank">Results</a></th>
   </tr>
 </table>
 
@@ -320,6 +334,23 @@ async function STEP_9_XCASH_DPOPS_TEST_UBUNTU_1804()
 
 
 
+async function STEP_10_XCASH_BUILD_STATIC_UBUNTU_1804()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_10_XCASH_BUILD_STATIC.txt");
+  if (data.includes("STEP_10_XCASH_BUILD_STATIC_ERROR"))
+  {
+    document.getElementById("ubuntu1804buildstep10").textContent = "FAILED";
+    document.getElementById("ubuntu1804buildstep10").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1804buildstep10").textContent = "PASSED";
+    document.getElementById("ubuntu1804buildstep10").classList.toggle("testpassed");
+  }
+}
+
+
+
 async function STEP_1_PROGRAMS_UBUNTU_1910()
 {  
   const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_1_PROGRAMS.txt");
@@ -473,6 +504,23 @@ async function STEP_9_XCASH_DPOPS_TEST_UBUNTU_1910()
 
 
 
+async function STEP_10_XCASH_BUILD_STATIC_UBUNTU_1910()
+{  
+  const data = await get_data("http://88.99.148.237/build/ubuntu-19.10/STEP_10_XCASH_BUILD_STATIC.txt");
+  if (data.includes("STEP_10_XCASH_BUILD_STATIC_ERROR"))
+  {
+    document.getElementById("ubuntu1910buildstep10").textContent = "FAILED";
+    document.getElementById("ubuntu1910buildstep10").classList.toggle("testfailed");
+  }
+  else
+  {
+    document.getElementById("ubuntu1910buildstep10").textContent = "PASSED";
+    document.getElementById("ubuntu1910buildstep10").classList.toggle("testpassed");
+  }
+}
+
+
+
 
 
 
@@ -487,6 +535,7 @@ STEP_6_XCASH_BUILD_DEVELOPMENT_UBUNTU_1804();
 STEP_7_XCASH_DPOPS_BUILD_UBUNTU_1804();
 STEP_8_CPP_CHECK_UBUNTU_1804();
 STEP_9_XCASH_DPOPS_TEST_UBUNTU_1804();
+STEP_10_XCASH_BUILD_STATIC_UBUNTU_1804();
 
 STEP_1_PROGRAMS_UBUNTU_1910();
 STEP_2_DELEGATES_WEBSITE_UBUNTU_1910();
@@ -497,4 +546,5 @@ STEP_6_XCASH_BUILD_DEVELOPMENT_UBUNTU_1910();
 STEP_7_XCASH_DPOPS_BUILD_UBUNTU_1910();
 STEP_8_CPP_CHECK_UBUNTU_1910();
 STEP_9_XCASH_DPOPS_TEST_UBUNTU_1910();
+STEP_10_XCASH_BUILD_STATIC_UBUNTU_1910();
 </script>
