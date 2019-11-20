@@ -167,6 +167,7 @@ function stop_processes()
   screen -XS "MongoDB" quit > /dev/null 2>&1
   screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
   screen -XS "XCASH_Wallet" quit > /dev/null 2>&1
+  sleep 30s
   echo -ne "\r${COLOR_PRINT_GREEN}Stoping Processes${END_COLOR_PRINT}"
   echo
 }

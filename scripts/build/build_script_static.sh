@@ -7,7 +7,7 @@ PROGRAMS_INSTALLATION_DIRECTORY="${INSTALLATION_DIRECTORY}Installed-Programs/"
 # Latest versions
 XCASH_URL="https://github.com/X-CASH-official/X-CASH.git"
 BOOST_URL="https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz"
-OPENSSL_URL="https://www.openssl.org/source/openssl-1.0.2t.tar.gz"
+OPENSSL_URL="https://www.openssl.org/source/openssl-1.1.1d.tar.gz"
 PCSC_LITE_URL="https://pcsclite.apdu.fr/files/pcsc-lite-1.8.24.tar.bz2"
 ZEROMQ_URL="https://github.com/zeromq/libzmq/releases/download/v4.3.2/zeromq-4.3.2.tar.gz"
 
@@ -16,7 +16,6 @@ XCASH_DIRECTORY="${PROGRAMS_INSTALLATION_DIRECTORY}X-CASH/"
 BOOST_DIRECTORY="${PROGRAMS_INSTALLATION_DIRECTORY}boost_build/"
 OPENSSL_DIRECTORY="${PROGRAMS_INSTALLATION_DIRECTORY}openssl_build/"
 PCSC_LITE_DIRECTORY="${PROGRAMS_INSTALLATION_DIRECTORY}pcsc_lite_build/"
-ZEROMQ_DIRECTORY="${PROGRAMS_INSTALLATION_DIRECTORY}zeromq_build/"
 
 # Log Files
 LOGFILE_DIRECTORY="${INSTALLATION_DIRECTORY}build/"
@@ -135,7 +134,6 @@ function build_zeromq()
   tar -xf zeromq*.tar.gz >> ${LOGFILE} 2>&1 || return 1
   rm zeromq*.tar.gz || return 1
   cd zeromq* || return 1
-  mkdir ${ZEROMQ_DIRECTORY} || return 1
   ./autogen.sh || return 1
   ./configure CPPFLAGS=-DPIC CFLAGS=-fPIC CXXFLAGS=-fPIC LDFLAGS=-fPIC || return 1
   make -j ${CPU_THREADS} || return 1
