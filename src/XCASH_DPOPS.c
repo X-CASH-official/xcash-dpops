@@ -16,6 +16,8 @@
 
 #include "shared_delegate_website_thread_server_functions.h"
 
+#include "block_verifiers_synchronize_functions.h"
+#include "block_verifiers_synchronize_check_functions.h"
 #include "block_verifiers_thread_server_functions.h"
 #include "block_verifiers_update_functions.h"
 #include "database_functions.h"
@@ -27,7 +29,6 @@
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
 #include "server_functions.h"
-#include "block_verifiers_synchronize_functions.h"
 #include "string_functions.h"
 #include "VRF_functions.h"
 
@@ -621,7 +622,7 @@ int main(int parameters_count, char* parameters[])
     }
   }*/
 
-  /*print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
 
   // start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
@@ -629,7 +630,7 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
   
-  color_print("Started the current block height timer thread","green");*/
+  color_print("Started the current block height timer thread","green");
 
   /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
