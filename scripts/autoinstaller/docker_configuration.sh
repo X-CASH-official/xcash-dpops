@@ -7,7 +7,7 @@ COLOR_PRINT_YELLOW="\033[1;33m"
 END_COLOR_PRINT="\033[0m"
 
 # Configuration settings
-MONGODB_INSTALLATION_DIR="/root/x-network/mongodb-linux-x86_64-*/"
+MONGODB_INSTALLATION_DIR="/root/x-network/mongodb-linux-x86_64-ubuntu1804-4.2.1/"
 XCASH_DPOPS_INSTALLATION_DIR="/root/x-network/XCASH_DPOPS/"
 XCASH_WALLETS_INSTALLATION_DIR="/root/x-network/xcash_wallets/"
 XCASH_INSTALLATION_DIR="/root/x-network/X-CASH/"
@@ -204,16 +204,6 @@ EOF
 )"
 }
 
-function build_xcash_dpops()
-{
-  echo -ne "${COLOR_PRINT_YELLOW}Building XCASH_DPOPS${END_COLOR_PRINT}"
-  cd ${XCASH_DPOPS_INSTALLATION_DIR}
-  make clean > /dev/null 2>&1
-  make release -j ${CPU_THREADS} > /dev/null 2>&1
-  echo -ne "\r${COLOR_PRINT_GREEN}Building XCASH_DPOPS${END_COLOR_PRINT}"
-  echo
-}
-
 function build_xcash_dpops_with_block_verifiers_key()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building XCASH_DPOPS With Block Verifiers Key${END_COLOR_PRINT}"
@@ -310,14 +300,11 @@ function install()
 
   # Create the block verifier key if they choose to create a block verifier key
   if [ "${BLOCK_VERIFIER_KEY_SETTINGS^^}" == "C" ]; then
-    build_xcash_dpops
     create_block_verifier_key
-    update_block_verifiers_sign_and_verify_messages_file
-    build_xcash_dpops_with_block_verifiers_key
-  else
-    update_block_verifiers_sign_and_verify_messages_file
-    build_xcash_dpops_with_block_verifiers_key
   fi
+
+  update_block_verifiers_sign_and_verify_messages_file
+  build_xcash_dpops_with_block_verifiers_key
 
   stop_processes
 
