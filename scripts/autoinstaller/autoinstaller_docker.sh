@@ -499,9 +499,9 @@ function install_mongodb()
   wget -q ${MONGODB_URL}
   tar -xf mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
   sudo rm mongodb-linux-x86_64-*.tgz >> ${LOGFILE} 2>&1
-  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.bashrc 
-  sudo echo -ne '$PATH' >> ~/.bashrc
-  source ~/.bashrc
+  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ${HOME}/.profile 
+  sudo echo -ne '$PATH' >> ${HOME}/.profile
+  . ${HOME}/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Installing MongoDB${END_COLOR_PRINT}"
   echo
 }
@@ -615,9 +615,9 @@ function install_nodejs()
   wget -q ${NODEJS_URL}
   tar -xf node*.tar.xz >> ${LOGFILE} 2>&1
   sudo rm node*.tar.xz >> ${LOGFILE} 2>&1
-  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.bashrc 
-  sudo echo -ne '$PATH' >> ~/.bashrc
-  source ~/.bashrc
+  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ${HOME}/.profile 
+  sudo echo -ne '$PATH' >> ${HOME}/.profile
+  . ${HOME}/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Installing Node.js${END_COLOR_PRINT}"
   echo
 }
@@ -695,7 +695,7 @@ function install_shared_delegates_website()
   download_shared_delegate_website
   install_shared_delegates_website_npm_packages
   build_shared_delegates_website
-  source ~/.bashrc
+  . ${HOME}/.profile
   echo
   echo
 }
@@ -762,7 +762,7 @@ function get_installation_directory()
       configure_npm
       update_npm
       install_npm_global_packages
-      source ~/.bashrc
+      . ${HOME}/.profile
     fi
   fi
 }
@@ -862,11 +862,11 @@ function update_mongodb()
   echo
   echo
   echo "${MONGODB_DIR}"
-  sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.bashrc
-  sudo sed '/^[[:space:]]*$/d' -i ~/.bashrc
-  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.bashrc 
-  sudo echo -ne '$PATH' >> ~/.bashrc
-  source ~/.bashrc
+  sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ${HOME}/.profile
+  sudo sed '/^[[:space:]]*$/d' -i ${HOME}/.profile
+  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ${HOME}/.profile 
+  sudo echo -ne '$PATH' >> ${HOME}/.profile
+  . ${HOME}/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating MongoDB${END_COLOR_PRINT}"
   echo
 }
@@ -900,12 +900,12 @@ function update_nodejs()
   tar -xf node*.tar.xz >> ${LOGFILE} 2>&1
   sudo rm node*.tar.xz >> ${LOGFILE} 2>&1
   NODEJS_DIR=`sudo find / -type d -name "node-*-linux-x64"`/
-  sudo sed '/node-v/d' -i ~/.bashrc
-  sudo sed '/PATH=\/bin:/d' -i ~/.bashrc
-  sudo sed '/^[[:space:]]*$/d' -i ~/.bashrc
-  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ~/.bashrc 
-  sudo echo -ne '$PATH' >> ~/.bashrc
-  source ~/.bashrc
+  sudo sed '/node-v/d' -i ${HOME}/.profile
+  sudo sed '/PATH=\/bin:/d' -i ${HOME}/.profile
+  sudo sed '/^[[:space:]]*$/d' -i ${HOME}/.profile
+  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> ${HOME}/.profile 
+  sudo echo -ne '$PATH' >> ${HOME}/.profile
+  . ${HOME}/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NodeJS${END_COLOR_PRINT}"
   echo
 }
@@ -969,10 +969,10 @@ function uninstall_shared_delegates_website()
 
   sudo rm -r ${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR} ${SHARED_DELEGATES_WEBSITE_DIR} ${NODEJS_DIR} >> ${LOGFILE} 2>&1
 
-  sudo sed '/node-v/d' -i ~/.bashrc
-  sudo sed '/PATH=\/bin:/d' -i ~/.bashrc
-  sudo sed '/^[[:space:]]*$/d' -i ~/.bashrc
-  source ~/.bashrc
+  sudo sed '/node-v/d' -i ${HOME}/.profile
+  sudo sed '/PATH=\/bin:/d' -i ${HOME}/.profile
+  sudo sed '/^[[:space:]]*$/d' -i ${HOME}/.profile
+  . ${HOME}/.profile
   echo
   echo
 }
@@ -1036,6 +1036,9 @@ function install()
   echo
   echo
   echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
+  echo
+  echo
+  echo -e "${COLOR_PRINT_YELLOW}Make sure to run source ~/.profile in your terminal${END_COLOR_PRINT}"
 }
 
 function update()
@@ -1102,6 +1105,9 @@ function update()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}          Update Has Completed Successfully  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+  echo -e "${COLOR_PRINT_YELLOW}Make sure to run source ~/.profile in your terminal${END_COLOR_PRINT}"
 }
 
 function uninstall()
@@ -1156,11 +1162,11 @@ function uninstall()
 
   # Update profile
   echo -ne "${COLOR_PRINT_YELLOW}Updating Profile${END_COLOR_PRINT}"
-  sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.bashrc
-  sudo sed '/node-v/d' -i ~/.bashrc
-  sudo sed '/PATH=\/bin:/d' -i ~/.bashrc
-  sudo sed '/^[[:space:]]*$/d' -i ~/.bashrc
-  source ~/.bashrc
+  sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ${HOME}/.profile
+  sudo sed '/node-v/d' -i ${HOME}/.profile
+  sudo sed '/PATH=\/bin:/d' -i ${HOME}/.profile
+  sudo sed '/^[[:space:]]*$/d' -i ${HOME}/.profile
+  . ${HOME}/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Profile${END_COLOR_PRINT}"
   echo
 
@@ -1169,6 +1175,9 @@ function uninstall()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}          Uninstall Has Completed Successfully  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+  echo -e "${COLOR_PRINT_YELLOW}Make sure to run source ~/.profile in your terminal${END_COLOR_PRINT}"
   
   # Display X-CASH current wallet data  
   echo
