@@ -272,7 +272,12 @@ int socket_thread(int client_socket)
   } 
 
   // check if the message length is correct for the type of message
-  if (strstr(buffer,"GET /") != NULL)
+  if (strstr(buffer,"POST /") != NULL)
+  {
+    pointer_reset(buffer);
+    return 0;
+  }
+  else if (strstr(buffer,"GET /") != NULL)
   {
     memcpy(data2,"HTTP ",5);
     memcpy(data2+5,buffer,strnlen(buffer,sizeof(data2)) - strnlen(strstr(buffer," HTTP/"),sizeof(data2)));
