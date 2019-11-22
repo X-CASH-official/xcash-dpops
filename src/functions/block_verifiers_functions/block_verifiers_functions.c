@@ -18,6 +18,7 @@
 
 #include "blockchain_functions.h"
 #include "block_verifiers_functions.h"
+#include "block_verifiers_synchronize_check_functions.h"
 #include "block_verifiers_synchronize_server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
 #include "block_verifiers_thread_server_functions.h"
@@ -1410,6 +1411,14 @@ int block_verifiers_create_block_and_update_database(void)
   // wait for the block verifiers to process the votes
   color_print("Waiting for the block producer to submit the block to the network","blue");
   fprintf(stderr,"\n");
+
+  // while waiting for the block to be submitted, the network data nodes will make sure they are all synced with the same database data
+  if (network_data_node_settings == 1)
+  {
+    color_print("Your block verifier is a network data node, checking to make sure all network data nodes databases are synced","yellow");
+    sync_network_data_nodes_database();
+  }
+
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
   // have the block producer submit the block to the network
@@ -1575,6 +1584,17 @@ int block_verifiers_create_block(void)
   // wait for all block verifiers to sync the database
   color_print("Waiting for all block verifiers to sync the databases","blue");
   fprintf(stderr,"\n");
+
+  if (network_data_node_settings == 0)
+  {
+    check_if_databases_are_synced(1,1);
+    memcpy(data,"Waiting for the round to start for block ",41);
+    memcpy(data+41,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+    print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
+  }
+  
   sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);
 
   start:
@@ -1751,12 +1771,6 @@ int block_verifiers_create_block(void)
     if (block_verifiers_send_data_socket((const char*)data) == 0)
     {
       BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not send data to the block verifiers");
-    }
-
-    // while waiting for the block to be submitted, the network data nodes will make sure they are all synced with the same database data
-    if (network_data_node_settings == 1)
-    {
-      sync_network_data_nodes_database();
     }
 
     // wait for the block verifiers to process the votes

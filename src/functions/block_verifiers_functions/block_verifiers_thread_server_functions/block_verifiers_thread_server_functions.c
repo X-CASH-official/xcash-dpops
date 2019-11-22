@@ -787,9 +787,9 @@ void* sync_network_data_nodes_database_timer_thread(void* parameters)
 
   for (;;)
   {
-    sleep(10);
+    usleep(200000);
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec >= 0 && current_UTC_date_and_time.tm_sec <= 10)
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 0)
     {
       sync_network_data_nodes_database();
     }

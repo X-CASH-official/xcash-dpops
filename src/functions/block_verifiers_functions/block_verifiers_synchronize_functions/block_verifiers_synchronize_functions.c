@@ -79,6 +79,10 @@ void sync_network_data_nodes_database(void)
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
+
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data2);
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
   
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
