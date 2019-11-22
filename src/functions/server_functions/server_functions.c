@@ -271,8 +271,15 @@ int socket_thread(int client_socket)
     return 0;
   } 
 
+  // validate the message
+  if (validate_data(buffer) == 0)
+  {
+    pointer_reset(buffer);
+    return 0;
+  }
+
   // check if the message length is correct for the type of message
-  if (strstr(buffer,"POST /") != NULL)
+  if (strstr(buffer,"POST /") != NULL || strstr(buffer,"PUT /") != NULL || strstr(buffer,"PATCH /") != NULL || strstr(buffer,"DELETE /") != NULL)
   {
     pointer_reset(buffer);
     return 0;
