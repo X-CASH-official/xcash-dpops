@@ -232,7 +232,7 @@ After cloning the repository, navigate to the folder
 `cd ~/x-network/XCASH_DPOPS`
  
 Then use the make file to build the binary file  
-``make clean ; make release -j `nproc` ``
+`make clean ; make release -j $(nproc)`
  
  
  
@@ -496,7 +496,7 @@ To run the X-CASH Proof of stake test, make sure to have already started the XCA
 
 Navigate to the folder that contains the binary  
 Rebuild the binary in debug mode  
-``make clean ; make debug -j `nproc` ``
+`make clean ; make debug -j $(nproc)`
 
 Then run the binary  
 `./XCASH_DPOPS --test`
@@ -519,7 +519,7 @@ Generate a public and secret key pair for signing and verifying the block verifi
 Put the secret key in the `BLOCK_VERIFIERS_SECRET_KEY` in `XCASH_DPOPS/src/global_data/define_macros.h`
 
 Rebuild XCASH_DPOPS  
-``make clean ; make debug -j `nproc` ``
+`make clean ; make debug -j $(nproc)`
 
 Make sure to stop the XCASH Wallet service, if it is running  
 `systemctl stop XCASH_Wallet`
