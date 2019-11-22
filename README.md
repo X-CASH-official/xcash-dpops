@@ -667,7 +667,18 @@ This will allow you to install the node inside of a docker container
 It is recommended to install the firewall on your system (not inside the docker container)  
 Follow the [How To Setup the Firewall](#how-to-setup-the-firewall)  part of the readme first.
 
-Now you will need to install docker
+Now you will need to install docker  
+```
+sudo apt update
+sudo apt install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install -y docker-ce
+sudo usermod -aG docker $USER
+```
+
+
 
 After this you will need to pull a [ubuntu image from docker](https://hub.docker.com/_/ubuntu/)  
 `docker pull ubuntu:TAG`  
@@ -763,7 +774,16 @@ This will allow you to donwload a prebuilt docker image with the XCASH_DPOPS ins
 It is recommended to install the firewall on your system (not inside the docker container)  
 Follow the [How To Setup the Firewall](#how-to-setup-the-firewall)  part of the readme first.
 
-Now you will need to install docker
+Now you will need to install docker  
+```
+sudo apt update
+sudo apt install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install -y docker-ce
+sudo usermod -aG docker $USER
+```
 
 After this you will need to pull a [XCASH_DPOPS_image](https://hub.docker.com/r/xnetwork/xcash_dpops)  
 `docker pull xnetwork/xcash_dpops:TAG`
