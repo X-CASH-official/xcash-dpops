@@ -21,6 +21,7 @@
 #include "variables.h"
 
 #include "block_verifiers_functions.h"
+#include "block_verifiers_synchronize_functions.h"
 #include "block_verifiers_thread_server_functions.h"
 #include "database_functions.h"
 #include "insert_database_functions.h"
@@ -763,4 +764,35 @@ void* send_and_receive_data_socket_thread(void* parameters)
   SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
 
   #undef CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_network_data_nodes_database_timer_thread
+Description: Makes sure that all of the network data nodes have the same synced database every BLOCK_TIME interval
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* sync_network_data_nodes_database_timer_thread(void* parameters)
+{
+  // Variables
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // unused parameters
+  (void)parameters;
+
+  for (;;)
+  {
+    sleep(10);
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec >= 0 && current_UTC_date_and_time.tm_sec <= 10)
+    {
+      sync_network_data_nodes_database();
+    }
+  }
+  pthread_exit((void *)(intptr_t)1);
 }
