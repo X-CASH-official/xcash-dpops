@@ -25,7 +25,7 @@ DPOPS_MINIMUM_AMOUNT=0
 # Latest versions
 MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.1"
 MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.15.2"
-NODEJS_LATEST_VERSION="node-v13.1.0-linux-x64"
+NODEJS_LATEST_VERSION="node-v13.2.0-linux-x64"
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/X-CASH.git"
@@ -792,7 +792,7 @@ function install_packages()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
-    sudo apt install "${XCASH_DPOPS_PACKAGES}" -y >> "${LOGFILE}" 2>&1
+    sudo apt install ${XCASH_DPOPS_PACKAGES} -y >> "${LOGFILE}" 2>&1
     build_libgtest
     echo -ne "\r${COLOR_PRINT_GREEN}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
     echo

@@ -14,7 +14,7 @@ CPP_CHECK_CURRENT_VERSION=""
 # Latest versions
 MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.1"
 MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.15.2"
-NODEJS_LATEST_VERSION="node-v13.1.0-linux-x64"
+NODEJS_LATEST_VERSION="node-v13.2.0-linux-x64"
 CPP_CHECK_LATEST_VERSION="cppcheck-1.89"
 
 XCASH_URL="https://github.com/X-CASH-official/X-CASH.git"
