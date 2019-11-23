@@ -63,6 +63,7 @@ int update_block_verifiers_list(void)
   size_t count;
   size_t count2;
   int settings = 0;
+  int total_delegates = 0;
 
   // define macros
   #define UPDATE_BLOCK_VERIFIERS_LIST_ERROR(settings) \
@@ -86,8 +87,18 @@ int update_block_verifiers_list(void)
     memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
   }
 
+  // get the delegate amount
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  {
+    if (strlen(current_block_verifiers_list.block_verifiers_public_address[count]) != XCASH_WALLET_LENGTH)
+    {
+      total_delegates = count;
+      break;
+    }
+  }
+
   // copy the current_block_verifiers_list to the previous_block_verifiers_list
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; (int)count < total_delegates; count++)
   {
     memcpy(previous_block_verifiers_list.block_verifiers_name[count],current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
     memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count],strnlen(current_block_verifiers_list.block_verifiers_public_address[count],sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));
@@ -102,10 +113,20 @@ int update_block_verifiers_list(void)
     memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count]));
     memset(current_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]));
     memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count]));
-  }  
+  } 
+
+  // get the delegate amount
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  {
+    if (strlen(next_block_verifiers_list.block_verifiers_public_address[count]) != XCASH_WALLET_LENGTH)
+    {
+      total_delegates = count;
+      break;
+    }
+  } 
 
   // copy the next_block_verifiers_list to the current_block_verifiers_list
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; (int)count < total_delegates; count++)
   {
     memcpy(current_block_verifiers_list.block_verifiers_name[count],next_block_verifiers_list.block_verifiers_name[count],strnlen(next_block_verifiers_list.block_verifiers_name[count],sizeof(current_block_verifiers_list.block_verifiers_name[count])));
     memcpy(current_block_verifiers_list.block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],strnlen(next_block_verifiers_list.block_verifiers_public_address[count],sizeof(current_block_verifiers_list.block_verifiers_public_address[count])));
@@ -125,14 +146,20 @@ int update_block_verifiers_list(void)
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
 
-   // organize the delegates
-   if (organize_delegates(delegates) < BLOCK_VERIFIERS_AMOUNT)
-   {
-     UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
-   }
+  // organize the delegates
+  total_delegates = organize_delegates(delegates);
+  if (total_delegates == 0)
+  {
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+  }
+  else if (total_delegates > BLOCK_VERIFIERS_TOTAL_AMOUNT)
+  {
+    total_delegates = BLOCK_VERIFIERS_TOTAL_AMOUNT;
+  }
 
   // copy the database_multiple_documents_fields to the next_block_verifiers_list
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; (int)count < total_delegates; count++)
   {
     if (strncmp(delegates[count].online_status,"true",BUFFER_SIZE) == 0)
     {

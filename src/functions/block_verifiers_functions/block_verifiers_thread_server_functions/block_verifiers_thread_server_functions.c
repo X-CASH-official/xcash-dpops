@@ -796,3 +796,34 @@ void* sync_network_data_nodes_database_timer_thread(void* parameters)
   }
   pthread_exit((void *)(intptr_t)1);
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_all_block_verifiers_list_timer_thread
+Description: Updates the block verifiers list every BLOCK_TIME interval
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* sync_all_block_verifiers_list_timer_thread(void* parameters)
+{
+  // Variables
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // unused parameters
+  (void)parameters;
+
+  for (;;)
+  {
+    usleep(200000);
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 2 && current_UTC_date_and_time.tm_sec == 0)
+    {
+      sync_all_block_verifiers_list();
+    }
+  }
+  pthread_exit((void *)(intptr_t)1);
+}

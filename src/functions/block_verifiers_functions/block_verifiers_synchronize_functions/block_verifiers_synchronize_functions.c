@@ -197,6 +197,7 @@ int sync_all_block_verifiers_list(void)
   char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   size_t count;
   size_t count2;
+  int total_delegates = 0;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -206,7 +207,7 @@ int sync_all_block_verifiers_list(void)
   { \
     SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message"); \
   } \
-  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  for (count = 0, count2 = 0; (int)count < total_delegates; count++) \
   { \
     memcpy((block_verifiers_data)[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2); \
     count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1; \
@@ -285,6 +286,8 @@ int sync_all_block_verifiers_list(void)
     {
       SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not verify data");
     }
+
+    total_delegates = string_count(data3,"|") / 12;
     
     PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_name_list",previous_block_verifiers_list.block_verifiers_name);
     PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_public_address_list",previous_block_verifiers_list.block_verifiers_public_address);
@@ -309,19 +312,19 @@ int sync_all_block_verifiers_list(void)
     INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"sync_all_block_verifiers_list",data2,current_date_and_time,current_UTC_date_and_time);
 
     // organize the delegates
-    count2 = organize_delegates(delegates);
-    if (count2 == 0)
+    total_delegates = organize_delegates(delegates);
+    if (total_delegates == 0)
     {
       POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
       SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
     }
-    else if (count2 > BLOCK_VERIFIERS_TOTAL_AMOUNT)
+    else if (total_delegates > BLOCK_VERIFIERS_TOTAL_AMOUNT)
     {
-      count2 = BLOCK_VERIFIERS_TOTAL_AMOUNT;
+      total_delegates = BLOCK_VERIFIERS_TOTAL_AMOUNT;
     }
 
     // copy the database_multiple_documents_fields to the next, current and previous block verifiers list
-    for (count = 0; count < count2; count++)
+    for (count = 0; (int)count < total_delegates; count++)
     {
        memcpy(previous_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
        memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));

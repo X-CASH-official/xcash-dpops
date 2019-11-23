@@ -659,16 +659,28 @@ int main(int parameters_count, char* parameters[])
     color_print("Started the payment_timer_thread","green");
   }*/
 
+
+
   // start the sync_network_data_nodes_database_timer_thread
   if (network_data_node_settings == 1)
   {
     if (pthread_create(&thread_id[0], NULL, &sync_network_data_nodes_database_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
     {
-      MAIN_ERROR("Could not start the check_reserve_proofs_timer_thread");
+      MAIN_ERROR("Could not start the sync network data nodes database timer thread");
     }
   }
 
   color_print("Started the sync network data nodes database timer thread","green");
+
+  if (network_data_node_settings == 1)
+  {
+    if (pthread_create(&thread_id[1], NULL, &sync_all_block_verifiers_list_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
+    {
+      MAIN_ERROR("Could not start the sync all block verifiers list timer thread");
+    }
+  }
+
+  color_print("Started the sync all block verifiers list timer thread","green");
 
   for (;;)
   {

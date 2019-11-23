@@ -1587,6 +1587,7 @@ int block_verifiers_create_block(void)
 
   if (network_data_node_settings == 0)
   {
+    sleep(5);
     check_if_databases_are_synced(1,1);
     memcpy(data,"Waiting for the round to start for block ",41);
     memcpy(data+41,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
