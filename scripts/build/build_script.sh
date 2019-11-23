@@ -189,6 +189,7 @@ function update_mongoc_driver()
 function update_nodejs()
 {
   echo -e "Updating NodeJS\n" >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
+  NODEJS_DIR=$(sudo find / -type d -name "node-*-linux-x64")/ || return 1
   sudo rm -r "${NODEJS_DIR}"   || return 1
   cd "${XCASH_DPOPS_INSTALLATION_DIR}" || return 1
   wget -q ${NODEJS_URL} || return 1
