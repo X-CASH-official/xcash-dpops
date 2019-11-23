@@ -792,6 +792,7 @@ void* sync_network_data_nodes_database_timer_thread(void* parameters)
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 0)
     {
       sync_network_data_nodes_database();
+      sleep(1);
     }
   }
   pthread_exit((void *)(intptr_t)1);
@@ -823,6 +824,7 @@ void* sync_all_block_verifiers_list_timer_thread(void* parameters)
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 2 && current_UTC_date_and_time.tm_sec == 0)
     {
       sync_all_block_verifiers_list();
+      sleep(1);
     }
   }
   pthread_exit((void *)(intptr_t)1);
