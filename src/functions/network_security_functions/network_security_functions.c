@@ -939,6 +939,13 @@ int validate_data(const char* MESSAGE)
       VALIDATE_DATA_ERROR("Invalid message");
     }
   }
+  else if (strstr(MESSAGE,"XCASH_PROOF_OF_STAKE_TEST_DATA") != NULL)
+  {
+    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(data)) != 0)
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
+    }
+  }
   else
   {
     VALIDATE_DATA_ERROR("Invalid message");
