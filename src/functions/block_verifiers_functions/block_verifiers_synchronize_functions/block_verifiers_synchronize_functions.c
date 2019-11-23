@@ -57,7 +57,6 @@ void sync_network_data_nodes_database(void)
 {
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -77,12 +76,13 @@ void sync_network_data_nodes_database(void)
   color_print("Syncing the statistics database","yellow"); \
   sync_statistics_database(settings);
 
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
+  // set the database to not accept any new data
+  //database_settings = 0;
 
-  print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data2);
   memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
+
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
+  memset(data,0,sizeof(data));
   
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
@@ -101,7 +101,7 @@ void sync_network_data_nodes_database(void)
       // create the message
       memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash\": \"",104);
       memcpy(data+strlen(data),network_data_nodes_database_data[count],DATA_HASH_LENGTH);
-      memcpy(data+strlen(data),"\",\r\n ",5);
+      memcpy(data+strlen(data),"\",\r\n}",5);
     }
   }
 
@@ -145,6 +145,8 @@ void sync_network_data_nodes_database(void)
   if (sync_network_data_nodes_database_count_total < NETWORK_DATA_NODES_VALID_AMOUNT)
   {
     // sync from the main network data node, since a majority could not be reached
+    color_print(network_data_nodes_database_data[0],"green");
+    color_print(network_data_nodes_database_data[1],"green");
     color_print("A majority could not be reached between network data nodes for the database sync. Syncing the database from the main network data node","yellow");
     SYNC_DATABASES(3);
   }
@@ -172,6 +174,12 @@ void sync_network_data_nodes_database(void)
       }
     }    
   }
+
+  // set the database to accept data
+  database_settings = 1;
+
+  // reset any thread that was waiting for the database
+  pthread_cond_broadcast(&thread_settings_lock);
   return;
 
   #undef SYNC_DATABASES
@@ -217,8 +225,13 @@ int sync_all_block_verifiers_list(void)
   memcpy(error_message.function[error_message.total],"sync_all_block_verifiers_list",29); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  database_settings = 1; \
+  pthread_cond_broadcast(&thread_settings_lock); \
   pointer_reset(data3); \
   return 0;
+
+  // set the database to not accept any new data
+  database_settings = 0;
 
   memset(message,0,sizeof(message));
   memset(data2,0,sizeof(data2));
@@ -343,6 +356,13 @@ int sync_all_block_verifiers_list(void)
     POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
     color_print("The previous, current and next block verifiers have been loaded from the database","green");
   }
+
+  // set the database to accept data
+  database_settings = 1;
+
+  // reset any thread that was waiting for the database
+  pthread_cond_broadcast(&thread_settings_lock);
+
   pointer_reset(data3);
   return 1;
 
