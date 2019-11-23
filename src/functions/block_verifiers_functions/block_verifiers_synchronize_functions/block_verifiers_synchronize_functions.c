@@ -166,6 +166,7 @@ void sync_network_data_nodes_database(void)
         }
         else
         {
+          color_print("A majority has been reached and the block verifier is already synced with the majority","yellow");
           return;
         }        
       }
