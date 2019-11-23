@@ -633,6 +633,7 @@ int validate_data(const char* MESSAGE)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
+  int total_delegates = 0;
 
   // define macros  
   #define VALIDATE_DATA_ERROR(settings) \
@@ -871,7 +872,7 @@ int validate_data(const char* MESSAGE)
   }
   else if (strstr(MESSAGE,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE") != NULL)
   {
-    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE",sizeof(data)) != 0 || parse_json_data(MESSAGE,"file",data,sizeof(data)) == 0 || strstr(data,"reserve_bytes_") == NULL || parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 0 || strlen(data) != XCASH_WALLET_LENGTH || memcmp(data,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"previous_block_hash",data,sizeof(data)) == 0 || strlen(data) != BLOCK_HASH_LENGTH || parse_json_data(MESSAGE,"current_round_part",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"current_round_part_backup_node",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"data",data,sizeof(data)) == 0 || strlen(data) != RANDOM_STRING_LENGTH || parse_json_data(MESSAGE,"XCASH_DPOPS_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_BETA_LENGTH+VRF_PROOF_LENGTH)
+    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE",sizeof(data)) != 0 || parse_json_data(MESSAGE,"file",data,sizeof(data)) == 0 || strstr(data,"reserve_proofs_") == NULL || parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 0 || strlen(data) != XCASH_WALLET_LENGTH || memcmp(data,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"previous_block_hash",data,sizeof(data)) == 0 || strlen(data) != BLOCK_HASH_LENGTH || parse_json_data(MESSAGE,"current_round_part",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"current_round_part_backup_node",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"data",data,sizeof(data)) == 0 || strlen(data) != RANDOM_STRING_LENGTH || parse_json_data(MESSAGE,"XCASH_DPOPS_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_BETA_LENGTH+VRF_PROOF_LENGTH)
     {
       VALIDATE_DATA_ERROR("Invalid message");
     }
@@ -954,16 +955,28 @@ int validate_data(const char* MESSAGE)
   // check if the message came from a valid user
   if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 1 && strncmp(data,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",BUFFER_SIZE) != 0 && strncmp(data,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0)
   {
+
+    // get the delegate amount
+    for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+    {
+      if (strlen(current_block_verifiers_list.block_verifiers_public_address[count]) != XCASH_WALLET_LENGTH)
+      {
+        total_delegates = count;
+        break;
+      }
+    }
+
+
     if (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1)
     {
-      for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+      for (count = 0; count < total_delegates; count++)
       {
         if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data,XCASH_WALLET_LENGTH) == 0)
         {
           break;
         }
       }
-      if (count == BLOCK_VERIFIERS_AMOUNT)
+      if (count == total_delegates)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       }
