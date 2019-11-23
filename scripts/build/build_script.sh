@@ -283,7 +283,6 @@ function STEP_2_DELEGATES_WEBSITE()
 {
   echo -e "Updating Delegates Website\n" >> "${LOGFILE_STEP_2_DELEGATES_WEBSITE}" 2>&1 || return 1
   cd "${DELEGATES_WEBSITE_DIR}" || return 1
-  sudo rm -r node_modules
   npm update >> "${LOGFILE_STEP_2_DELEGATES_WEBSITE}" 2>&1 || return 1
   ng build --prod --aot >> "${LOGFILE_STEP_2_DELEGATES_WEBSITE}" 2>&1 || return 1
   cd dist || return 1
@@ -302,7 +301,6 @@ function STEP_3_SHARED_DELEGATES_WEBSITE()
 {
   echo -e "Updating Shared Delegates Website\n" >> "${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE}" 2>&1 || return 1
   cd "${SHARED_DELEGATES_WEBSITE_DIR}" || return 1
-  sudo rm -r node_modules
   npm update >> "${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE}" 2>&1 || return 1
   ng build --prod --aot >> "${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE}" 2>&1 || return 1
   cd dist || exit
