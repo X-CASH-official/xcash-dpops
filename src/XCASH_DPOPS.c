@@ -560,42 +560,24 @@ int main(int parameters_count, char* parameters[])
 
       if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
       {
-        memcpy(error_message.function[error_message.total],"main",4);
-        memcpy(error_message.data[error_message.total],"Could not receive data from ",28);
-        memcpy(error_message.data[error_message.total]+28,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
-        error_message.total++;
-        print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
-        database_reset;
-        exit(0);
+        continue;
       }
 
       if (verify_data(data2,0,0) == 0)
       {
-        memcpy(error_message.function[error_message.total],"main",4);
-        memcpy(error_message.data[error_message.total],"Could not verify the data from ",31);
-        memcpy(error_message.data[error_message.total]+31,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
-        error_message.total++;
-        print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
-        database_reset;
-        exit(0);
+        continue;
      }
 
       // parse the message
       memset(data,0,sizeof(data));
       if (parse_json_data(data2,"current_time",data,sizeof(data)) == 0 || memcmp(data,"",1) == 0)
       {
-        memcpy(error_message.function[error_message.total],"main",4);
-        memcpy(error_message.data[error_message.total],"Could not receive data from ",28);
-        memcpy(error_message.data[error_message.total]+28,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data2)));
-        error_message.total++;
-        print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
-        database_reset;
-        exit(0);
+        continue;
       }
 
       sscanf(data,"%ld", &current_time);
 
-      if (time(NULL) - current_time > 2)
+      if (time(NULL) - current_time > BLOCK_VERIFIERS_SETTINGS)
       {
         MAIN_ERROR("Invalid current time");
       }

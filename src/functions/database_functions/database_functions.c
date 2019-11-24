@@ -414,7 +414,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
     }
   }
-  else
+  else if (strncmp(COLLECTION,"delegates",BUFFER_SIZE) == 0 || strncmp(COLLECTION,"statistics",BUFFER_SIZE) == 0)
   {
     // get the data hash of the reserve proofs database
     memset(data,0,strlen(data));
