@@ -645,11 +645,6 @@ int validate_data(const char* MESSAGE)
 
   memset(data,0,sizeof(data));
 
-  color_print(MESSAGE,"yellow");
-  parse_json_data(MESSAGE,"message_settings",data,sizeof(data));
-  color_print(data,"yellow");
-  memset(data,0,sizeof(data));
-
   // check if the format is correct for each message
   if (strstr(MESSAGE,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK") != NULL)
   {
