@@ -823,6 +823,11 @@ void* sync_all_block_verifiers_list_timer_thread(void* parameters)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 2 && current_UTC_date_and_time.tm_sec == 0)
     {
+      // if the block verifier is not a network data node then it needs to run the timer after the networm data nodes, since it loads the block verifiers list from the network data nodes
+      if (network_data_node_settings == 0)
+      {
+        sleep(60);
+      }
       sync_all_block_verifiers_list();
       sleep(1);
     }
