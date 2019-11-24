@@ -37,6 +37,13 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   char* str2;
   size_t start; 
 
+  // define macros
+  #define PARSE_JSON_DATA_ERROR \
+  memcpy(error_message.function[error_message.total],"parse_json_data",15); \
+  memcpy(error_message.data[error_message.total],"Could not parse the message",27); \
+  error_message.total++; \
+  return 0;
+
   // reset the variables
   memset(result,0,strlen(result));
   memset(str,0,sizeof(str));
@@ -49,12 +56,15 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   if (strstr(DATA,str) != NULL)
   { 
     memset(str,0,sizeof(str));
+
     // modify the field to add the field syntax
     memcpy(str,"\"",1);
     memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
     memcpy(str+strlen(str),"\": ",3);
+
     // get the start of the field's data
     start = strnlen(str,sizeof(str));
+    
     // get the pointers location to the start of the field
     str1 = strstr(DATA,str);
     if (str1 == NULL)
@@ -64,25 +74,27 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
        start = 11;
        if (str1 == NULL)
        {
-         memcpy(error_message.function[error_message.total],"parse_json_data",15);
-         memcpy(error_message.data[error_message.total],"Could not parse the message",27);
-         error_message.total++;
-         return 0;
+         PARSE_JSON_DATA_ERROR;
        }
     }
+
     // get the end location of the data
     str2 = strstr(str1,"\r\n");
+    if (str2 == NULL)
+    {
+      PARSE_JSON_DATA_ERROR;
+    }
+    
     // get the length of the field's data
     const int LENGTH = str2 - str1 - start;
     if (LENGTH <= 0)
     {
-      memcpy(error_message.function[error_message.total],"parse_json_data",15);
-      memcpy(error_message.data[error_message.total],"Could not parse the message",27);
-      error_message.total++;
-      return 0;
+      PARSE_JSON_DATA_ERROR;
     }
+
     // copy the field's data
     memcpy(result,&str1[start],LENGTH);
+
     // remove all the formating from the result, if it is not a database document
     if (strstr(result,"username") == NULL && strstr(result,"total_vote_count") == NULL && strstr(result,"public_address_created_reserve_proof") == NULL && strstr(result,"reserve_bytes_data_hash") == NULL)
     {
@@ -100,12 +112,11 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   }
   else
   {
-    memcpy(error_message.function[error_message.total],"parse_json_data",15);
-    memcpy(error_message.data[error_message.total],"Could not parse the message",27);
-    error_message.total++;
-    return 0;
+    PARSE_JSON_DATA_ERROR;
   }  
   return 1;
+
+  #undef PARSE_JSON_DATA_ERROR
 }
 
 
