@@ -249,28 +249,10 @@ function import_xcash_wallet()
 function get_xcash_wallet_data()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting X-CASH Wallet Data${END_COLOR_PRINT}"
-
-  screen -dmS XCASH_Daemon ${XCASH_INSTALLATION_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
-  sleep 30s
-  screen -dmS XCASH_RPC_Wallet ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18285 --confirm-external-bind --disable-rpc-login --trusted-daemon
-  sleep 10s
-  
-   while
-    data=$(curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json') 
-    sleep 10s
-    [[ "$data" == "" ]]
-  do true; done
-
   PUBLIC_ADDRESS=$(curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json' | grep \"address\" | head -1 | sed s"|    \"address\": ||g" | sed s"|\"||g" | sed s"|,||g")
   SPEND_KEY=$(curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"spend_key"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g")
   VIEW_KEY=$(curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"view_key"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g")
   MNEMONIC_SEED=$(curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"mnemonic"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g")
-  
-  curl -s -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"stop_wallet"}' -H 'Content-Type: application/json' > /dev/null 2>&1
-  sleep 10s
-
-  screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
-  
   echo -ne "\r${COLOR_PRINT_GREEN}Getting X-CASH Wallet Data${END_COLOR_PRINT}"
   echo
 }
@@ -304,8 +286,6 @@ function install()
 
   update_block_verifiers_sign_and_verify_messages_file
   build_xcash_dpops_with_block_verifiers_key
-
-  stop_processes
 
   get_xcash_wallet_data
 
