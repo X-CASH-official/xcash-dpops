@@ -160,6 +160,17 @@ function start_processes()
   echo
 }
 
+function stop_processes()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Stoping Processes${END_COLOR_PRINT}"
+  screen -XS "MongoDB" quit > /dev/null 2>&1
+  screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
+  screen -XS "XCASH_Wallet" quit > /dev/null 2>&1
+  sleep 30s
+  echo -ne "\r${COLOR_PRINT_GREEN}Stoping Processes${END_COLOR_PRINT}"
+  echo
+}
+
 
 
 
@@ -277,6 +288,8 @@ function install()
   build_xcash_dpops_with_block_verifiers_key
 
   get_xcash_wallet_data
+
+  stop_processes
 
   # Display Configuration data
   echo
