@@ -154,20 +154,9 @@ function start_processes()
   screen -dmS MongoDB ${MONGODB_INSTALLATION_DIR}bin/mongod --dbpath /data/db/
   screen -dmS XCASH_Daemon ${XCASH_INSTALLATION_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
   sleep 30s
-  screen -dmS XCASH_Wallet ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+  screen -dmS XCASH_Wallet ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
   sleep 30s
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Processes${END_COLOR_PRINT}"
-  echo
-}
-
-function stop_processes()
-{
-  echo -ne "${COLOR_PRINT_YELLOW}Stoping Processes${END_COLOR_PRINT}"
-  screen -XS "MongoDB" quit > /dev/null 2>&1
-  screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
-  screen -XS "XCASH_Wallet" quit > /dev/null 2>&1
-  sleep 30s
-  echo -ne "\r${COLOR_PRINT_GREEN}Stoping Processes${END_COLOR_PRINT}"
   echo
 }
 
