@@ -227,9 +227,14 @@ function build_xcash_dpops_with_block_verifiers_key()
 function create_xcash_wallet()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating X-CASH Wallet (This might take a while)${END_COLOR_PRINT}"
-  screen -dmS XCASH_Daemon ${XCASH_INSTALLATION_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
-  sleep 30s
-  echo "exit" | ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-cli --generate-new-wallet ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --mnemonic-language English --restore-height 0
+  while
+    screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
+    screen -dmS XCASH_Daemon ${XCASH_INSTALLATION_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
+    data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json') 
+    sleep 30s
+    [[ ! $data =~ "count" ]]
+  do true; done
+  echo "exit" | ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-cli --generate-new-wallet ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 > /dev/null 2>&1
   screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
   sleep 30s
   echo -ne "\r${COLOR_PRINT_GREEN}Creating X-CASH Wallet (This might take a while)${END_COLOR_PRINT}"
@@ -241,7 +246,7 @@ function import_xcash_wallet()
   echo -ne "${COLOR_PRINT_YELLOW}Importing X-CASH Wallet (This might take a while)${END_COLOR_PRINT}"
   screen -dmS XCASH_Daemon ${XCASH_INSTALLATION_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
   sleep 30s
-  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed ${WALLET_SEED} --generate-new-wallet ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --mnemonic-language English --restore-height 0 >> /dev/null 2>&1
+  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 >> /dev/null 2>&1
   screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
   sleep 30s
   echo -ne "\r${COLOR_PRINT_GREEN}Importing X-CASH Wallet (This might take a while)${END_COLOR_PRINT}"
