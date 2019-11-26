@@ -788,7 +788,7 @@ sudo usermod -aG docker $USER
 After this you will need to pull a [XCASH_DPOPS_image](https://hub.docker.com/r/xnetwork/xcash_dpops)  
 `docker pull xnetwork/xcash_dpops:TAG`
 
-[Supported tags](https://hub.docker.com/repository/docker/xnetwork/xcash_dpops/tags?page=1) use the following syntax:
+[Supported tags](https://hub.docker.com/r/xnetwork/xcash_dpops/tags) use the following syntax:
 
 PRODUCTIONTYPE_ LINUXDISTRO_LINUXDISTROVERSION
 
@@ -841,10 +841,10 @@ Note: systemd is not enabled in docker containers. Once the docker configuration
 
 To start the following process using screen (just replace the password and remove the shared delegate flags if you are going to run a solo node
 ```
-screen -dmS MongoDB /root/x-network/mongodb-*/bin/mongod --dbpath /data/db/
-screen -dmS XCASH_Daemon /root/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
+screen -dmS MongoDB /root/x-network/mongodb-*/bin/mongod --logpath /root/x-network/logs/MongoDB_log.txt --logappend
+screen -dmS XCASH_Daemon /root/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0
 screen -dmS XCASH_Wallet /root/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/XCASH_DPOPS_WALLET --password WALLET_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
-screen -dmS XCASH_DPOPS /root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --shared_delegates_website --fee DPOPS_FEE --minimum_amount DPOPS_MINIMUM_AMOUNT
+screen -dmS XCASH_DPOPS /root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --log_file /root/x-network/logs/XCASH_DPOPS_log.txt --shared_delegates_website --fee DPOPS_FEE --minimum_amount DPOPS_MINIMUM_AMOUNT
 ```
 
 To stop the following process using screen:
