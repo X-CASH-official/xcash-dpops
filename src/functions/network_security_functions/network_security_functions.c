@@ -919,6 +919,10 @@ int validate_data(const char* MESSAGE)
       VALIDATE_DATA_ERROR("Invalid message");
     }
   }
+  else if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL)
+  {
+    
+  }
   else
   {
     VALIDATE_DATA_ERROR("Invalid message");
