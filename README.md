@@ -69,6 +69,13 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
   
 [Docker Manual Installation Process](#docker-manual-installation-process)  
 [Docker Automatic Installation Process](#docker-automatic-installation-process)
+*  [Install Docker](#install-docker)  
+*  [Download XCASH_DPOPS Docker Image](#download-xcash-dpops-docker-image)  
+*  [Create Docker Container](#create-docker-container)  
+*  [Configure the Container](#configure-the-container)  
+*  [Start and Stop Programs in the Container](#start-and-stop-programs-in-the-container)  
+*  [View Logs](#view-logs)  
+*  [Update the Containerm](#update-the-container)  
  
 [How to Setup A Private Test](#how-to-setup-a-private-test)  
 [How to Debug the Code on a Server](#how-to-debug-the-code-on-a-server)
@@ -774,7 +781,7 @@ This will allow you to donwload a prebuilt docker image with the XCASH_DPOPS ins
 It is recommended to install the firewall on your system (not inside the docker container)  
 Follow the [How To Setup the Firewall](#how-to-setup-the-firewall)  part of the readme first.
 
-Now you will need to install docker  
+### Install Docker  
 ```
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
@@ -785,6 +792,7 @@ sudo apt install -y docker-ce
 sudo usermod -aG docker $USER
 ```
 
+### Download XCASH_DPOPS Docker Image
 After this you will need to pull a [XCASH_DPOPS_image](https://hub.docker.com/r/xnetwork/xcash_dpops)  
 `docker pull xnetwork/xcash_dpops:TAG`
 
@@ -796,6 +804,8 @@ For example: mainnet_ubuntu_18.04
 
 Now list all of the images installed, and save the IMAGE_ID for the image you just downloaded  
 `docker images`
+
+### Create Docker Container
 
 Now create and start a new container from the image you just downloaded 
 ```
@@ -832,10 +842,14 @@ To list all running containers run
 To remove the container run  
 `docker rm container CONTAINER_ID`
 
+### Configure the Container
+
 Once you have a bash prompt inside of the container, you will need to either create a new wallet and block verifier key, or import them. To do this run the docker configuration script
 ```
 bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/docker_configuration.sh)"
 ```
+
+### Start and Stop Programs in the Container
 
 Note: systemd is not enabled in docker containers. Instead the docker container uses screen with an auto restart script and log files
 
@@ -857,6 +871,8 @@ screen -XS "XCASH_Wallet" quit
 screen -XS "XCASH_DPOPS" quit
 ```
 
+### View Logs
+
 To view the log files run the following commands  
 MongoDB  
 `less +F /root/x-network/logs/MongoDB_log.txt`
@@ -868,6 +884,7 @@ XCASH_DPOPS
 `less +F /root/x-network/logs/XCASH_DPOPS_log.txt`
 
 
+### Update the Container
 
 To keep the system up to date use the docker configuration script and run it in update mode
 
