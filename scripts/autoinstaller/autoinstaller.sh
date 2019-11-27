@@ -1225,7 +1225,7 @@ function update_packages()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Updating Packages${END_COLOR_PRINT}"
-    sudo apt install --only-upgrade "${XCASH_DPOPS_PACKAGES}" -y >> "${LOGFILE}" 2>&1
+    sudo apt install --only-upgrade ${XCASH_DPOPS_PACKAGES} -y >> "${LOGFILE}" 2>&1
     echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages${END_COLOR_PRINT}"
     echo
 }
@@ -1233,8 +1233,12 @@ function update_packages()
 function update_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
+  if [ ! -d "$XCASH_DIR" ]; then
+    cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+    git clone "${XCASH_URL}" >> /dev/null 2>&1
+  fi
   cd "${XCASH_DIR}"
-  data=$(git pull)
+  data=$(git pull) >> /dev/null 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
@@ -1249,8 +1253,12 @@ function update_xcash()
 function update_xcash_dpops()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  if [ ! -d "$XCASH_DPOPS_DIR" ]; then
+    cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+    git clone "${XCASH_DPOPS_URL}" >> /dev/null 2>&1
+  fi
   cd "${XCASH_DPOPS_DIR}"
-  data=$(git pull)
+  data=$(git pull) >> /dev/null 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
@@ -1265,8 +1273,12 @@ function update_xcash_dpops()
 function update_shared_delegates_website()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegates Website${END_COLOR_PRINT}"
+  if [ ! -d "$SHARED_DELEGATES_WEBSITE_DIR" ]; then
+    cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+    git clone "${SHARED_DELEGATES_WEBSITE_URL}" >> /dev/null 2>&1
+  fi
   cd "${SHARED_DELEGATES_WEBSITE_DIR}"
-  data=$(git pull)
+  data=$(git pull) >> /dev/null 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     npm update >> "${LOGFILE}" 2>&1
     ng build --prod --aot >> "${LOGFILE}" 2>&1

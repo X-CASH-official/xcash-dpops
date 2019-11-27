@@ -837,9 +837,11 @@ Once you have a bash prompt inside of the container, you will need to either cre
 bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/docker_configuration.sh)"
 ```
 
-Note: systemd is not enabled in docker containers. Once the docker configuration script is done, you will need to start all of the processes 
+Note: systemd is not enabled in docker containers. Instead the docker container uses screen with an auto restart script and log files
 
-To start the following process using screen (just replace the password and remove the shared delegate flags if you are going to run a solo node
+To start or stop the processes use the docker configuration script and run it in start programs or stop programs mode
+
+You can also start or stop an individual process using screen (just replace the password and remove the shared delegate flags if you are going to run a solo node
 ```
 screen -dmS MongoDB /root/x-network/mongodb-*/bin/mongod --logpath /root/x-network/logs/MongoDB_log.txt --logappend
 screen -dmS XCASH_Daemon /root/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0
@@ -855,12 +857,19 @@ screen -XS "XCASH_Wallet" quit
 screen -XS "XCASH_DPOPS" quit
 ```
 
-To keep the system up to date, you will need to download and rebuild anytime there is an update to the [X-CASH](https://github.com/X-CASH-official/X-CASH) or [XCASH_DPOPS](https://github.com/X-CASH-official/XCASH_DPOPS) repository.  
+To view the log files run the following commands  
+MongoDB  
+`less +F /root/x-network/logs/MongoDB_log.txt`
 
-You can also use the autoinstaller for docker and run it in update mode, to keep the system up to date
-```
-bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller_docker.sh)"
-```
+XCASH_Daemon  
+`less +F /root/x-network/logs/XCASH_Daemon_log.txt`
+
+XCASH_DPOPS  
+`less +F /root/x-network/logs/XCASH_DPOPS_log.txt`
+
+
+
+To keep the system up to date use the docker configuration script and run it in update mode
 
 You can also delete the container, **(Make sure to backup your wallet and block verifier key)** pull the latest docker version of the container, create a new container and import your wallet and block verifier key.
 

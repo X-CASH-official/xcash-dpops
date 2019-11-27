@@ -33,16 +33,16 @@ XCASH_DPOPS_PROCESS=$(ps -eo args | grep XCASH_DPOPS | head -n -1)
 # Restart a process if it fails
 while true; do
 data=$(ps -eaf)
-if [[ ! $data =~ "MongoDB" ]]; then
+if [[ ! $data =~ "/root/x-network/mongodb" ]]; then
    eval "screen${MONGODB_PROCESS:6}"
 fi
-if [[ ! $data =~ "XCASH_Daemon" ]]; then
+if [[ ! $data =~ "/root/x-network/X-CASH/build/release/bin/xcashd" ]]; then
    eval "screen${XCASH_DAEMON_PROCESS:6}"
 fi
-if [[ ! $data =~ "XCASH_Wallet" ]]; then
+if [[ ! $data =~ " /root/x-network/X-CASH/build/release/bin/xcash-wallet-rpc" ]]; then
    eval "screen${XCASH_WALLET_PROCESS:6}"
 fi
-if [[ ! $data =~ "XCASH_DPOPS" ]]; then
+if [[ ! $data =~ "/root/x-network/XCASH_DPOPS/build/XCASH_DPOPS" ]]; then
    eval "screen${XCASH_DPOPS_PROCESS:6}"
 fi
 if [[ $count -eq $XCASH_DAEMON_RESTART ]]; then
