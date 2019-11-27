@@ -35,12 +35,13 @@ int file_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define READ_AND_WRITE_FILE_TEST 4
+  #define READ_AND_WRITE_FILE_TEST 6
   #define NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY "nodes_public_address_list_copy.txt"
   #define MESSAGE "XCASH_PROOF_OF_STAKE_TEST_DATA"
 
   // reset the variables
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  memset(data_test,0,strlen(data_test));
+  memset(result_test,0,strlen(result_test));
   count_test = 0;
 
   // write the start test message
@@ -52,7 +53,7 @@ int file_functions_test(void)
   // run the test
 
   // write the file
-  memcpy(data_test,MESSAGE,30);
+  memcpy(data_test,MESSAGE,sizeof(MESSAGE)-1);
   if (write_file(data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0)
   {
     color_print("FAILED! Test for writing the file","red");
@@ -63,18 +64,18 @@ int file_functions_test(void)
     count_test++;
   }
 
-  // read the file
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (read_file((unsigned char*)data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0)
+  // append and read the file
+  if (append_file("|",NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || append_file(data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || read_file((unsigned char*)result_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || memcmp(result_test,"XCASH_PROOF_OF_STAKE_TEST_DATA|XCASH_PROOF_OF_STAKE_TEST_DATA",61) != 0)
   {
+    color_print("FAILED! Test for appending the file","red");
     color_print("FAILED! Test for reading the file","red");
   }
-  if (strncmp(data_test,MESSAGE,BUFFER_SIZE) != 0)
+  else
   {
-    color_print("FAILED! Test for reading the file","red");
+    color_print("PASSED! Test for appending the file","green");
+    color_print("PASSED! Test for reading the file","green");
+    count_test += 2;
   }
-  color_print("PASSED! Test for reading the file","green");
-  count_test++;
   remove(NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY);
 
 
@@ -93,7 +94,22 @@ int file_functions_test(void)
     count_test++;
   }
 
-   // read the file
+  // append the file
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  struct append_file_thread_parameters append_file_thread_parameters = {MESSAGE,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY};
+  pthread_create(&thread_id, NULL, &append_file_thread,(void *)&append_file_thread_parameters);
+  if (thread_settings(thread_id) == 0)
+  {
+    color_print("FAILED! Test for appending the file on a seperate thread","red");
+  }
+  if (strncmp(data_test,MESSAGE,BUFFER_SIZE) != 0)
+  {
+    color_print("FAILED! Test for appending the file on a seperate thread","red");
+  }
+  color_print("PASSED! Test for appending the file on a seperate thread","green");
+  count_test++;
+
+  // read the file
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   struct read_file_thread_parameters read_file_thread_parameters = {(unsigned char*)data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY};
   pthread_create(&thread_id, NULL, &read_file_thread,(void *)&read_file_thread_parameters);

@@ -82,7 +82,9 @@ int main(int parameters_count, char* parameters[])
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
   memset(secret_key,0,sizeof(secret_key));
   memset(secret_key_data,0,sizeof(secret_key_data));
+  memset(log_file,0,sizeof(log_file));
   database_settings = 1;
+  log_file_settings = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -417,6 +419,17 @@ int main(int parameters_count, char* parameters[])
       generate_key();
       database_reset;
       exit(0);
+    }
+    if (strncmp(parameters[count],"--log_file",BUFFER_SIZE) == 0)
+    {
+      log_file_settings = 1;
+      memcpy(log_file,parameters[count+1],strnlen(parameters[count+1],sizeof(log_file)));
+
+      memset(data,0,sizeof(data));
+      color_print("\n\n\n\n\nXCASH DPOPS - Version 1.0.0\n","green");
+      memcpy(data,"Successfully received the public address:",41);
+      memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+      color_print(data,"green");
     }
     if (strncmp(parameters[count],"--synchronize_database_from_network_data_node",BUFFER_SIZE) == 0)
     {

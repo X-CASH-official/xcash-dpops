@@ -3,6 +3,7 @@
 
 #include "define_macros.h"
 #include "variables.h"
+#include "file_functions.h"
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -34,33 +35,41 @@ Color available values:
 */
 
 #define color_print(string,color) \
-if (strncmp(color,"red",BUFFER_SIZE) == 0) \
+if (log_file_settings == 0) \
 { \
-  fprintf(stderr,"\033[1;31m%s\033[0m\n",string); \
+  if (strncmp(color,"red",BUFFER_SIZE) == 0) \
+  { \
+    fprintf(stderr,"\033[1;31m%s\033[0m\n",string); \
+  } \
+  else if (strncmp(color,"green",BUFFER_SIZE) == 0) \
+  { \
+    fprintf(stderr,"\033[1;32m%s\033[0m\n",string); \
+  } \
+  else if (strncmp(color,"yellow",BUFFER_SIZE) == 0) \
+  { \
+    fprintf(stderr,"\033[1;33m%s\033[0m\n",string); \
+  } \
+  else if (strncmp(color,"blue",BUFFER_SIZE) == 0) \
+  { \
+    fprintf(stderr,"\033[1;34m%s\033[0m\n",string); \
+  } \
+  else if (strncmp(color,"purple",BUFFER_SIZE) == 0) \
+  { \
+    fprintf(stderr,"\033[1;35m%s\033[0m\n",string); \
+  } \
+  else if (strncmp(color,"lightblue",BUFFER_SIZE) == 0) \
+  { \
+    fprintf(stderr,"\033[1;36m%s\033[0m\n",string); \
+  } \
+  else \
+  { \
+    fprintf(stderr,"%s\n",string); \
+  } \
 } \
-else if (strncmp(color,"green",BUFFER_SIZE) == 0) \
+else if (log_file_settings == 1) \
 { \
-  fprintf(stderr,"\033[1;32m%s\033[0m\n",string); \
-} \
-else if (strncmp(color,"yellow",BUFFER_SIZE) == 0) \
-{ \
-  fprintf(stderr,"\033[1;33m%s\033[0m\n",string); \
-} \
-else if (strncmp(color,"blue",BUFFER_SIZE) == 0) \
-{ \
-  fprintf(stderr,"\033[1;34m%s\033[0m\n",string); \
-} \
-else if (strncmp(color,"purple",BUFFER_SIZE) == 0) \
-{ \
-  fprintf(stderr,"\033[1;35m%s\033[0m\n",string); \
-} \
-else if (strncmp(color,"lightblue",BUFFER_SIZE) == 0) \
-{ \
-  fprintf(stderr,"\033[1;36m%s\033[0m\n",string); \
-} \
-else \
-{ \
-  fprintf(stderr,"%s",string); \
+  append_file(string,log_file); \
+  append_file("\n",log_file); \
 }
 
 
@@ -89,19 +98,31 @@ Description: Prints all of the functions and error messages
 */
 
 #define print_error_message(current_date_and_time,current_UTC_date_and_time,buffer) \
-fprintf(stderr,"\n\n"); \
-color_print(TEST_OUTLINE,"red"); \
-fprintf(stderr,"\033[1;31m%s: Error\033[0m\n",error_message.function[0]); \
+memset(buffer,0,sizeof(buffer)); \
+memcpy(buffer,"\n\n",2); \
+memcpy(buffer+2,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
+memcpy(buffer+strlen(buffer),"\n",1); \
+memcpy(buffer+strlen(buffer),error_message.function[0],strlen(error_message.function[0])); \
+memcpy(buffer+strlen(buffer),": Error",7); \
+color_print(buffer,"red"); \
 get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 memset(buffer,0,sizeof(buffer)); \
-strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time); \
-fprintf(stderr,"\033[1;31m%s\033[0m",buffer); \
-color_print(TEST_OUTLINE,"red"); \
-fprintf(stderr,"\033[1;31mFunction Calls:\033[0m\n"); \
+strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC",&current_UTC_date_and_time); \
+color_print(buffer,"red"); \
+memset(buffer,0,sizeof(buffer)); \
+memcpy(buffer,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
+memcpy(buffer+strlen(buffer),"\nFunction Calls:\n",17); \
 for (error_message_count = 0; error_message_count < error_message.total; error_message_count++) \
 { \
-  fprintf(stderr,"\033[1;31m#%d %s: %s\033[0m\n",error_message_count+1,error_message.function[error_message_count],error_message.data[error_message_count]); \
+  memcpy(buffer+strlen(buffer),"#",1); \
+  sprintf(buffer+strlen(buffer),"%d",error_message_count+1); \
+  memcpy(buffer+strlen(buffer)," ",1); \
+  memcpy(buffer+strlen(buffer),error_message.function[error_message_count],strnlen(error_message.function[error_message_count],sizeof(buffer))); \
+  memcpy(buffer+strlen(buffer),": ",2); \
+  memcpy(buffer+strlen(buffer),error_message.data[error_message_count],strnlen(error_message.data[error_message_count],sizeof(buffer))); \
+  memcpy(buffer+strlen(buffer),"\n",1); \
 } \
+color_print(buffer,"red"); \
 for (error_message_count = 0; error_message_count < TOTAL_DELEGATES_DATABASE_FIELDS; error_message_count++) \
 { \
   memset(error_message.function[error_message_count],0,strlen(error_message.function[error_message_count])); \
@@ -125,14 +146,18 @@ Description: Prints the start message of a section
 */
 
 #define print_start_message(current_date_and_time,current_UTC_date_and_time,string,buffer) \
-fprintf(stderr,"\n"); \
-color_print(TEST_OUTLINE,"blue"); \
-fprintf(stderr,"\033[1;34m%s\033[0m\n",string); \
+memset(buffer,0,sizeof(buffer)); \
+memcpy(buffer,"\n",1); \
+memcpy(buffer+1,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
+memcpy(buffer+strlen(buffer),"\n",1); \
+memcpy(buffer+strlen(buffer),string,strnlen(string,sizeof(buffer))); \
+color_print(buffer,"blue"); \
 get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 memset(buffer,0,sizeof(buffer)); \
 strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time); \
-fprintf(stderr,"\033[1;34m%s\033[0m",buffer); \
-color_print(TEST_OUTLINE,"blue");
+memcpy(buffer+strlen(buffer),TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
+color_print(buffer,"blue"); \
+memset(buffer,0,sizeof(buffer));
 
 
 

@@ -77,6 +77,28 @@ void* write_file_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: append_file_thread
+Description: Appends a file on a separate thread
+Parameters:
+  parameters - A pointer to the append_file_thread_parameters struct
+  struct append_file_thread_parameters
+    DATA - The data to write to the file
+    FILE_NAME - The file name
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* append_file_thread(void* parameters)
+{
+  struct append_file_thread_parameters* data = parameters;
+  int settings = append_file(data->DATA, data->FILE_NAME);
+  pthread_exit((void *)(intptr_t)settings);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: insert_document_into_collection_json_thread
 Description: Inserts a document into the collection in the database from json data on a separate thread
 Parameters:

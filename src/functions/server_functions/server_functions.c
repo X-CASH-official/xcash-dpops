@@ -150,8 +150,11 @@ int create_server(const int MESSAGE_SETTINGS)
 
   if (MESSAGE_SETTINGS == 1)
   {
-    fprintf(stderr,"\033[1;32mConnected to port %s\033[0m\n",buffer);
-    fprintf(stderr,"Waiting for a connection...\n\n");
+    memcpy(data,"Connected to port ",18);
+    memcpy(data+18,buffer,strnlen(buffer,sizeof(data)));
+    memcpy(data+strlen(data),"\nWaiting for a connection...\n",29);
+    color_print(data,"green");
+    memset(data,0,sizeof(data));
   }
 
   // create the epoll file descriptor

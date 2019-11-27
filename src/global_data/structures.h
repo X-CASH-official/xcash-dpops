@@ -288,6 +288,11 @@ struct delegates_online_status {
     const char* FILE_NAME; // The file name
 };
 
+struct append_file_thread_parameters {
+    const char* DATA; // The data to append to the file
+    const char* FILE_NAME; // The file name
+};
+
 struct insert_document_into_collection_json_thread_parameters {
     const char* DATABASE; // The database name
     const char* COLLECTION; // The collection name

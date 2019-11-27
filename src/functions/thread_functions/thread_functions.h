@@ -9,6 +9,7 @@ Function prototypes
 
 void* read_file_thread(void* parameters);
 void* write_file_thread(void* parameters);
+void* append_file_thread(void* parameters);
 void* insert_document_into_collection_json_thread(void* parameters);
 void* insert_multiple_documents_into_collection_json_thread(void* parameters);
 void* read_document_from_collection_thread(void* parameters);

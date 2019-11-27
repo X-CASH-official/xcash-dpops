@@ -199,7 +199,7 @@ int sync_check_reserve_proofs_database(int settings)
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
     }
 
-    fprintf(stderr,"Sending all block verifiers a message to check if the reserve proofs database is synced\n"); 
+    color_print("Sending all block verifiers a message to check if the reserve proofs database is synced","white"); 
     
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -246,7 +246,7 @@ int sync_check_reserve_proofs_database(int settings)
   }
   if (settings == 2)
   {
-    fprintf(stderr,"Syncing from a random network data node\n");
+    color_print("Syncing from a random network data node","white");
     if (sync_reserve_proofs_database(settings) == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
@@ -484,7 +484,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
     }
 
-    fprintf(stderr,"Sending all block verifiers a message to check if the reserve bytes database is synced\n"); 
+    color_print("Sending all block verifiers a message to check if the reserve bytes database is synced","white"); 
 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -531,7 +531,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
   }
   if (settings == 2)
   {
-    fprintf(stderr,"Syncing from a random network data node\n");
+    color_print("Syncing from a random network data node","white");
     if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings) == 0)
     {
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
@@ -750,7 +750,7 @@ int sync_check_delegates_database(int settings)
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sign_data");
     }
 
-    fprintf(stderr,"Sending all block verifiers a message to check if the delegates database is synced\n"); 
+    color_print("Sending all block verifiers a message to check if the delegates database is synced","white"); 
 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -797,7 +797,7 @@ int sync_check_delegates_database(int settings)
   }
   if (settings == 2)
   {
-    fprintf(stderr,"Syncing from a random network data node\n");
+    color_print("Syncing from a random network data node","white");
     if (sync_delegates_database(settings) == 0)
     {
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database database");
@@ -994,7 +994,7 @@ int sync_check_statistics_database(int settings)
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sign_data");
     }
 
-    fprintf(stderr,"Sending all block verifiers a message to check if the statistics database is synced\n"); 
+    color_print("Sending all block verifiers a message to check if the statistics database is synced","white"); 
 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -1041,7 +1041,7 @@ int sync_check_statistics_database(int settings)
   }
   if (settings == 2)
   {
-    fprintf(stderr,"Syncing from a random network data node\n");
+    color_print("Syncing from a random network data node","white");
     if (sync_statistics_database(settings) == 0)
     {
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database database");

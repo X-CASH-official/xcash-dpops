@@ -53,6 +53,8 @@ char previous_block_hash[BLOCK_HASH_LENGTH+1]; // The current block height
 int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
 int database_settings; // 1 if the database can have documents added to it, 0 if not
+int log_file_settings; // 1 to use a log file, 0 to use the terminal
+char log_file[BUFFER_SIZE]; // The log file
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not

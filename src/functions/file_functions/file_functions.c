@@ -79,3 +79,32 @@ int write_file(const char* DATA, const char* FILE_NAME)
   }
   return settings;  
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: append_file
+Description: Appends data to a file
+Parameters:
+  DATA = The data to write to the file
+  file_name - The file name
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int append_file(const char* DATA, const char* FILE_NAME)
+{
+  // Variables
+  FILE* file;
+  int settings = 0;
+
+  file = fopen(FILE_NAME,"a");
+  if (file != NULL)
+  {
+    fprintf(file,"%s",DATA);
+    fclose(file);
+    settings = 1;
+  }
+  return settings;  
+}

@@ -262,7 +262,7 @@ int sync_all_block_verifiers_list(void)
     memcpy(message,"{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\",\r\n}",103);
 
     start:
-    fprintf(stderr,"Connecting to a random network data node to get a list of previous, current and next block verifiers\n");
+    color_print("Connecting to a random network data node to get a list of previous, current and next block verifiers","white");
     
     memset(data2,0,sizeof(data2));
     memset(data3,0,strlen(data3));
@@ -281,7 +281,7 @@ int sync_all_block_verifiers_list(void)
     memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
     strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
     memcpy(data3+strlen(data3),data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
-    fprintf(stderr,"%s\n",data3);
+    color_print(data3,"white");
     memset(data2,0,sizeof(data2));
     memset(data3,0,strlen(data3));
 
@@ -291,7 +291,7 @@ int sync_all_block_verifiers_list(void)
       memcpy(data2,"Could not receive data from network data node ",46);
       memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
       color_print(data2,"red");
-      fprintf(stderr,"Connecting to a different network data node\n\n");
+      color_print("Connecting to a different network data node\n","white");
       goto start;
     }
 
@@ -421,7 +421,7 @@ int get_synced_block_verifiers(void)
   synced_block_verifiers.vote_settings_false = 0;
 
   start:
-  fprintf(stderr,"Connecting to a random network data node to get a list of current block verifiers\n");
+  color_print("Connecting to a random network data node to get a list of current block verifiers","white");
 
   memset(data,0,sizeof(data));
   memset(data2,0,strlen(data2));
@@ -440,7 +440,7 @@ int get_synced_block_verifiers(void)
   memcpy(data+strlen(data)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
   strftime(data2,MAXIMUM_BUFFER_SIZE,"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
   memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
-  fprintf(stderr,"%s\n",data);
+  color_print(data,"white");
   memset(data,0,sizeof(data));
   memset(data2,0,strlen(data2));
 
@@ -450,7 +450,7 @@ int get_synced_block_verifiers(void)
     memcpy(data+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     color_print(data,"red");
     memset(data,0,sizeof(data));
-    fprintf(stderr,"Connecting to a different network data node\n\n");
+    color_print("Connecting to a different network data node\n","white");
     goto start;
   }
 
@@ -575,13 +575,18 @@ int sync_reserve_proofs_database(int settings)
 
 
   // get the database data hash for the reserve proofs database
-  fprintf(stderr,"Getting the database data from %s\n\n",block_verifiers_ip_address);
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"Getting the database data from ",31);
+  memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BUFFER_SIZE));
+  memcpy(data3+strlen(data3),"\n",1);
+  color_print(data3,"white");
   if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
   {
     SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
   }
 
   // create the message
+  memset(data3,0,strlen(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_proofs_data_hash\": \"",139);
   memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
   memcpy(data3+strlen(data3),"\",\r\n ",5);
@@ -630,7 +635,7 @@ int sync_reserve_proofs_database(int settings)
     memcpy(data,"Checking if reserve_proofs_",27);
     snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
     memcpy(data+strlen(data)," is synced",10);
-    fprintf(stderr,"%s\n",data);
+    color_print(data,"white");
 
     // parse the database_data
     memset(data,0,strlen(data));
@@ -829,13 +834,18 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
   get_reserve_bytes_database(current_reserve_bytes_database,0);
   
   // get the database data hash for the reserve bytes database
-  fprintf(stderr,"Getting the database data from %s\n\n",block_verifiers_ip_address);
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"Getting the database data from ",31);
+  memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BUFFER_SIZE));
+  memcpy(data3+strlen(data3),"\n",1);
+  color_print(data3,"white");
   if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
   {
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database from ",1);
   }
 
   // create the message
+  memset(data3,0,strlen(data3));
   memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_data_hash\": \"",137);
   memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
   memcpy(data3+strlen(data3),"\",\r\n ",5);
@@ -901,7 +911,7 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
     memcpy(data,"Checking if reserve_bytes_",26);
     snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
     memcpy(data+strlen(data)," is synced",10);
-    fprintf(stderr,"%s\n",data);
+    color_print(data,"white");
 
     // parse the database_data
     memset(data,0,strlen(data));
@@ -1080,7 +1090,11 @@ int sync_delegates_database(int settings)
 
 
   // get the database data hash for the delegates database
-  fprintf(stderr,"Getting the database data from %s\n\n",block_verifiers_ip_address);
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"Getting the database data from ",31);
+  memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
+  memcpy(data2+strlen(data2),"\n",1);
+  color_print(data2,"white");
   if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database from ",1);
@@ -1220,7 +1234,11 @@ int sync_statistics_database(int settings)
 
 
   // get the database data hash for the statistics database
-  fprintf(stderr,"Getting the database data from %s\n\n",block_verifiers_ip_address);
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"Getting the database data from ",31);
+  memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
+  memcpy(data2+strlen(data2),"\n",1);
+  color_print(data2,"white");
   if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database from ",1);
