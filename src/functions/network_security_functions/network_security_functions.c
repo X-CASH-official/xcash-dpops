@@ -919,9 +919,83 @@ int validate_data(const char* MESSAGE)
       VALIDATE_DATA_ERROR("Invalid message");
     }
   }
-  else if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL)
+  else if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || memcmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) != 0 || memcmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) != 0 || memcmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) != 0 || memcmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) != 0 || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL)
   {
     
+  }
+  else if (delegates_website == 1)
+  {
+    if (strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL)
+    {
+
+    }
+    else if (memcmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0)
+    {
+      if (strlen(&MESSAGE[39]) > XCASH_WALLET_LENGTH)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      }      
+    }
+    else if (memcmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
+    {
+      if (strlen(&MESSAGE[40]) > XCASH_WALLET_LENGTH)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      } 
+    }
+    else if (memcmp(MESSAGE,"GET /getdelegatesvoterslist?parameter1=",39) == 0)
+    {
+      if (strlen(&MESSAGE[39]) > XCASH_WALLET_LENGTH)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      } 
+    }
+    else if (memcmp(MESSAGE,"GET /getroundstatistics?parameter1=",35) == 0)
+    {
+      for (count = 35; count < (int)strlen(MESSAGE); count++)
+      {
+        if (memcmp(&MESSAGE[count],"0",1) != 0 && memcmp(&MESSAGE[count],"1",1) != 0 && memcmp(&MESSAGE[count],"2",1) != 0 && memcmp(&MESSAGE[count],"3",1) != 0 && memcmp(&MESSAGE[count],"4",1) != 0 && memcmp(&MESSAGE[count],"5",1) != 0 && memcmp(&MESSAGE[count],"6",1) != 0 && memcmp(&MESSAGE[count],"7",1) != 0 && memcmp(&MESSAGE[count],"8",1) != 0 && memcmp(&MESSAGE[count],"9",1) != 0)
+        {
+          VALIDATE_DATA_ERROR("Invalid message");
+        }
+      }
+    }
+    else
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
+    }
+  }
+  else if (shared_delegates_website == 1)
+  {
+    if (strstr(MESSAGE,"GET /shareddelegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getblocksfound HTTP/") != NULL)
+    {
+
+    }
+    else if (memcmp(MESSAGE,"GET /getpublicaddressinformation?public_address=",48) == 0)
+    {
+      if (strlen(&MESSAGE[48]) != XCASH_WALLET_LENGTH || memcmp(&MESSAGE[48],XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      } 
+    }
+    else if (memcmp(MESSAGE,"GET /getpublicaddresspaymentinformation?public_address=",55) == 0)
+    {
+      if (strlen(&MESSAGE[55]) != XCASH_WALLET_LENGTH || memcmp(&MESSAGE[55],XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      }
+    }
+    else if (memcmp(MESSAGE,"GET /getdelegatesvoterslist?parameter1=",39) == 0)
+    {
+      if (strlen(&MESSAGE[39]) > XCASH_WALLET_LENGTH)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      } 
+    }
+    else
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
+    }
   }
   else
   {
@@ -941,7 +1015,6 @@ int validate_data(const char* MESSAGE)
         break;
       }
     }
-
 
     if (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1)
     {
