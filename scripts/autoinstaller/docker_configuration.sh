@@ -238,6 +238,20 @@ function build_xcash_dpops_with_block_verifiers_key()
   echo
 }
 
+function build_xcash()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
+  cd "${XCASH_INSTALLATION_DIR}"
+  echo "y" | make clean > /dev/null 2>&1
+  if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
+    make release -j "${CPU_THREADS}" >> /dev/null 2>&1
+  else
+    make release -j $((CPU_THREADS / 2)) >> /dev/null 2>&1 
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
+  echo
+}
+
 
 
 
@@ -299,6 +313,8 @@ function configuration()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
   configuration_settings
+
+  build_xcash
 
   # Create or import the wallet
   if [ "${WALLET_SETTINGS^^}" == "C" ]; then
