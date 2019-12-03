@@ -663,9 +663,8 @@ int main(int parameters_count, char* parameters[])
     {
       MAIN_ERROR("Could not start the sync network data nodes database timer thread");
     }
+    color_print("Started the sync network data nodes database timer thread","green");
   }
-
-  color_print("Started the sync network data nodes database timer thread","green");
  
   if (pthread_create(&thread_id[1], NULL, &sync_all_block_verifiers_list_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
   {

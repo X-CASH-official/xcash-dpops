@@ -684,9 +684,15 @@ int sync_reserve_proofs_database(int settings)
 
       // parse the message
       memset(data3,0,strlen(data3));
-      if (parse_json_data(data,"reserve_proofs_database",data3,MAXIMUM_BUFFER_SIZE) == 0 || memcmp(data3,"",1) == 0)
+      if (parse_json_data(data,"reserve_proofs_database",data3,MAXIMUM_BUFFER_SIZE) == 0)
       {
         SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
+      }
+
+      // if the delegate did send data over, but the database is empty then just exit the loop
+      if (memcmp(data3,"",1) == 0)
+      {
+        break;
       }
 
       // add the data to the database
@@ -960,9 +966,15 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
 
       // parse the message
       memset(data3,0,strlen(data3));
-      if (parse_json_data(data,"reserve_bytes_database",data3,MAXIMUM_BUFFER_SIZE) == 0 || memcmp(data3,"",1) == 0)
+      if (parse_json_data(data,"reserve_bytes_database",data3,MAXIMUM_BUFFER_SIZE) == 0)
       {
         SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
+      }
+
+      // if the delegate did send data over, but the database is empty then just exit the loop
+      if (memcmp(data3,"",1) == 0)
+      {
+        break;
       }
 
       // add the data to the database
@@ -1125,7 +1137,7 @@ int sync_delegates_database(int settings)
 
   // parse the message
   memset(data2,0,sizeof(data2));
-  if (parse_json_data(data,"delegates_database",data2,sizeof(data2)) == 0 || memcmp(data2,"",1) == 0)
+  if (parse_json_data(data,"delegates_database",data2,sizeof(data2)) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
   }
@@ -1269,7 +1281,7 @@ int sync_statistics_database(int settings)
 
   // parse the message
   memset(data2,0,sizeof(data2));
-  if (parse_json_data(data,"statistics_database",data2,sizeof(data2)) == 0 || memcmp(data2,"",1) == 0)
+  if (parse_json_data(data,"statistics_database",data2,sizeof(data2)) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
   }
