@@ -185,13 +185,14 @@ function start_processes()
 
 function stop_processes()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Stoping Processes${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Stoping Programs${END_COLOR_PRINT}"
+  screen -XS "XCASH_DPOPS_AUTO_RESTART" quit > /dev/null 2>&1
+  screen -XS "XCASH_DPOPS" quit > /dev/null 2>&1
   screen -XS "MongoDB" quit > /dev/null 2>&1
   screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
-  screen -XS "XCASH_Wallet" quit > /dev/null 2>&1
+  screen -XS "XCASH_Wallet" quit > /dev/null 2>&1 
   sleep 30s
-  echo -ne "\r${COLOR_PRINT_GREEN}Stoping Processes${END_COLOR_PRINT}"
-  echo
+  echo -ne "\r${COLOR_PRINT_GREEN}Stoping Programs${END_COLOR_PRINT}"
 }
 
 
@@ -622,14 +623,7 @@ function stop_programs()
   echo
   echo
 
-  echo -ne "${COLOR_PRINT_YELLOW}Stoping Programs${END_COLOR_PRINT}"
-  screen -XS "XCASH_DPOPS_AUTO_RESTART" quit > /dev/null 2>&1
-  screen -XS "XCASH_DPOPS" quit > /dev/null 2>&1
-  screen -XS "MongoDB" quit > /dev/null 2>&1
-  screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
-  screen -XS "XCASH_Wallet" quit > /dev/null 2>&1 
-  echo -ne "\r${COLOR_PRINT_GREEN}Stoping Programs${END_COLOR_PRINT}"
-  echo
+  stop_processes
 }
 
 
@@ -684,14 +678,7 @@ function start_programs()
   echo -ne "\r"
   echo
 
-  echo -ne "${COLOR_PRINT_YELLOW}Stoping Programs${END_COLOR_PRINT}"
-  screen -XS "XCASH_DPOPS_AUTO_RESTART" quit > /dev/null 2>&1
-  screen -XS "XCASH_DPOPS" quit > /dev/null 2>&1
-  screen -XS "MongoDB" quit > /dev/null 2>&1
-  screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
-  screen -XS "XCASH_Wallet" quit > /dev/null 2>&1 
-  echo -ne "\r${COLOR_PRINT_GREEN}Stoping Programs${END_COLOR_PRINT}"
-  echo
+  stop_processes
 
   echo -ne "${COLOR_PRINT_YELLOW}Starting Programs${END_COLOR_PRINT}"
 
