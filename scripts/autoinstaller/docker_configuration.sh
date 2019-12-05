@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Color print variables
+COLOR_PRINT_RED="\033[1;31m"
 COLOR_PRINT_GREEN="\033[1;32m"
 COLOR_PRINT_YELLOW="\033[1;33m"
 END_COLOR_PRINT="\033[0m"
@@ -193,6 +194,7 @@ function stop_processes()
   screen -XS "XCASH_Wallet" quit > /dev/null 2>&1 
   sleep 30s
   echo -ne "\r${COLOR_PRINT_GREEN}Stoping Programs${END_COLOR_PRINT}"
+  echo
 }
 
 
@@ -428,7 +430,7 @@ function update_xcash()
     git clone "${XCASH_URL}" >> /dev/null 2>&1
   fi
   cd "${XCASH_INSTALLATION_DIR}"
-  data=$(git pull)
+  data=$(git pull) >> /dev/null 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> /dev/null 2>&1
@@ -448,7 +450,7 @@ function update_xcash_dpops()
     git clone "${XCASH_DPOPS_URL}" >> /dev/null 2>&1
   fi
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  data=$(git pull)
+  data=$(git pull) >> /dev/null 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> /dev/null 2>&1
@@ -468,7 +470,7 @@ function update_shared_delegates_website()
     git clone "${SHARED_DELEGATES_WEBSITE_URL}" >> /dev/null 2>&1
   fi
   cd "${SHARED_DELEGATES_INSTALLATION_DIR}"
-  data=$(git pull)
+  data=$(git pull) >> /dev/null 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     npm update >> /dev/null 2>&1
     ng build --prod --aot >> /dev/null 2>&1
@@ -703,16 +705,27 @@ function start_programs()
     else
       screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file_color ${LOGS_DIR}XCASH_DPOPS_log.txt
     fi
-  elif
+  else
     if [ "${start_programs_shared_delegate_settings^^}" == "YES" ]; then
       screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt --shared_delegates_website --fee "${DPOPS_FEE}" --minimum_amount "${DPOPS_MINIMUM_AMOUNT}"
     else
       screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt
     fi
-  fi
-  
+  fi  
 
-  screen -dmS XCASH_DPOPS_AUTO_RESTART ./docker_auto_restart.sh
+  chmod +x ${XCASH_DPOPS_INSTALLATION_DIR}scripts/autoinstaller/docker_auto_restart.sh
+  screen -dmS XCASH_DPOPS_AUTO_RESTART ${XCASH_DPOPS_INSTALLATION_DIR}scripts/autoinstaller/docker_auto_restart.sh
+  sleep 10s
+  
+  # Check if all of the programs have started
+  data=$(ps -eaf)
+  if [[ ! $data =~ "SCREEN -dmS MongoDB" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Daemon" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Wallet" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_DPOPS" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_DPOPS_AUTO_RESTART" ]]; then
+    echo -ne "\r${COLOR_PRINT_GREEN}Starting Programs${END_COLOR_PRINT}"
+    echo -e "\r${COLOR_PRINT_RED}All of the programs could not start.\nMake sure the password to the wallet file is correct${END_COLOR_PRINT}"
+    stop_processes
+    exit
+  fi
+
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Programs${END_COLOR_PRINT}"
   echo
   echo
