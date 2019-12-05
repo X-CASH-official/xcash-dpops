@@ -70,6 +70,50 @@ else if (log_file_settings == 1) \
 { \
   append_file(string,log_file); \
   append_file("\n",log_file); \
+} \
+else if (log_file_settings == 2) \
+{ \
+  if (strncmp(color,"red",BUFFER_SIZE) == 0) \
+  { \
+    append_file("\033[1;31m",log_file); \
+    append_file(string,log_file); \
+    append_file("\n\033[0m",log_file); \
+  } \
+  else if (strncmp(color,"green",BUFFER_SIZE) == 0) \
+  { \
+    append_file("\033[1;32m",log_file); \
+    append_file(string,log_file); \
+    append_file("\n\033[0m",log_file); \
+  } \
+  else if (strncmp(color,"yellow",BUFFER_SIZE) == 0) \
+  { \
+    append_file("\033[1;33m",log_file); \
+    append_file(string,log_file); \
+    append_file("\n\033[0m",log_file); \
+  } \
+  else if (strncmp(color,"blue",BUFFER_SIZE) == 0) \
+  { \
+    append_file("\033[1;34m",log_file); \
+    append_file(string,log_file); \
+    append_file("\n\033[0m",log_file); \
+  } \
+  else if (strncmp(color,"purple",BUFFER_SIZE) == 0) \
+  { \
+    append_file("\033[1;35m",log_file); \
+    append_file(string,log_file); \
+    append_file("\n\033[0m",log_file); \
+  } \
+  else if (strncmp(color,"lightblue",BUFFER_SIZE) == 0) \
+  { \
+    append_file("\033[1;36m",log_file); \
+    append_file(string,log_file); \
+    append_file("\n\033[0m",log_file); \
+  } \
+  else \
+  { \
+    append_file(string,log_file); \
+    append_file("\n",log_file); \
+  } \
 }
 
 

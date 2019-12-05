@@ -644,8 +644,17 @@ function start_programs()
   echo
   start_programs_wallet_password=""
   start_programs_shared_delegate_settings=""
+  start_programs_color_output=""
   DPOPS_MINIMUM_AMOUNT=""
   DPOPS_FEE=""
+
+  while
+    echo -ne "${COLOR_PRINT_YELLOW}Color Output For Logs (YES or NO): ${END_COLOR_PRINT}"
+    read -r start_programs_color_output
+    echo -ne "\r"
+    echo
+    [ ! "${start_programs_color_output^^}" == "YES" ] && [ ! "${start_programs_color_output^^}" == "NO" ]
+  do true; done
 
   while
     echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate (YES or NO): ${END_COLOR_PRINT}"
@@ -688,15 +697,31 @@ function start_programs()
   screen -dmS XCASH_Wallet ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password "${start_programs_wallet_password}" --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
   sleep 30s
 
-  if [ "${start_programs_shared_delegate_settings^^}" == "YES" ]; then
-    screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt --shared_delegates_website --fee "${DPOPS_FEE}" --minimum_amount "${DPOPS_MINIMUM_AMOUNT}"
-  else
-    screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt
+  if [ "${start_programs_color_output^^}" == "YES" ]; then
+    if [ "${start_programs_shared_delegate_settings^^}" == "YES" ]; then
+      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file_color ${LOGS_DIR}XCASH_DPOPS_log.txt --shared_delegates_website --fee "${DPOPS_FEE}" --minimum_amount "${DPOPS_MINIMUM_AMOUNT}"
+    else
+      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file_color ${LOGS_DIR}XCASH_DPOPS_log.txt
+    fi
+  elif
+    if [ "${start_programs_shared_delegate_settings^^}" == "YES" ]; then
+      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt --shared_delegates_website --fee "${DPOPS_FEE}" --minimum_amount "${DPOPS_MINIMUM_AMOUNT}"
+    else
+      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt
+    fi
   fi
+  
 
   screen -dmS XCASH_DPOPS_AUTO_RESTART ./docker_auto_restart.sh
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Programs${END_COLOR_PRINT}"
   echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Started XCASH DPOPS Programs Successfully         ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+  echo -e "${COLOR_PRINT_YELLOW}To view the log file\ntail -f -n 100 ${LOGS_DIR}XCASH_DPOPS_log.txt${END_COLOR_PRINT}"
 }
 
 

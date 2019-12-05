@@ -9,7 +9,7 @@ XCASH_DPOPS_PROCESS=""
 count=0
 XCASH_DAEMON_RESTART=21600
 
-# make sure they have all of the processes started before running the Script
+# make sure they have all of the processes started before running the script
 data=$(ps -eaf)
 if [[ ! $data =~ "SCREEN -dmS MongoDB" ]]; then
    echo "Please start MongoDB before running the autorestart script"

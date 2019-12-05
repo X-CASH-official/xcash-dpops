@@ -215,7 +215,8 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "Parameters\n" \
 "--parameters - Show a list of all valid parameters\n\n" \
 "--test - Run the test to make sure the program is compatible with your system\n\n" \
-"--log_file \"log_file\" - Write all output to a log file\n\n" \
+"--log_file \"log_file\" - Write all output to a log file with no colors\n\n" \
+"--log_file_color \"log_file\" - Write all output to a log file with colors\n\n" \
 "--generate_key - Generate a public and private key for signing and verifying messages between block verifiers" \
 "--total_threads \"total_threads\" - The total threads to use, the maximum is 100 total threads.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
 "--delegates_website - Run the delegates website\n\n" \

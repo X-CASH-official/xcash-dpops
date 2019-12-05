@@ -492,7 +492,7 @@ To view live logging of XCASH DPOPS, you can run
 `journalctl --unit=XCASH_DPOPS --follow -n 100 --output cat`
 
 To view logs for the XCASH_Daemon systemd service  
-`tail -n 100 /root/x-network/logs/XCASH_Daemon_log.txt`
+`tail -f -n 100 /root/x-network/logs/XCASH_Daemon_log.txt`
  
  
  
@@ -875,13 +875,13 @@ screen -XS "XCASH_DPOPS" quit
 
 To view the log files run the following commands  
 MongoDB  
-`less +F /root/x-network/logs/MongoDB_log.txt`
+`tail -f -n 100 /root/x-network/logs/MongoDB_log.txt`
 
 XCASH_Daemon  
-`less +F /root/x-network/logs/XCASH_Daemon_log.txt`
+`tail -f -n 100 /root/x-network/logs/XCASH_Daemon_log.txt`
 
 XCASH_DPOPS  
-`less +F /root/x-network/logs/XCASH_DPOPS_log.txt`
+`tail -f -n 100 /root/x-network/logs/XCASH_DPOPS_log.txt`
 
 
 ### Update the Container

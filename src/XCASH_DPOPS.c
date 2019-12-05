@@ -431,6 +431,17 @@ int main(int parameters_count, char* parameters[])
       memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       color_print(data,"green");
     }
+    if (strncmp(parameters[count],"--log_file_color",BUFFER_SIZE) == 0)
+    {
+      log_file_settings = 2;
+      memcpy(log_file,parameters[count+1],strnlen(parameters[count+1],sizeof(log_file)));
+
+      memset(data,0,sizeof(data));
+      color_print("\n\n\n\n\nXCASH DPOPS - Version 1.0.0\n","green");
+      memcpy(data,"Successfully received the public address:",41);
+      memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+      color_print(data,"green");
+    }
     if (strncmp(parameters[count],"--synchronize_database_from_network_data_node",BUFFER_SIZE) == 0)
     {
       check_if_databases_are_synced(2,0);
