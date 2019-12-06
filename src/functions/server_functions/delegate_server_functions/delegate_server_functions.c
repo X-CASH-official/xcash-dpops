@@ -391,6 +391,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
 
   // create the message
+  memset(data,0,sizeof(data));
   memcpy(data,"{\"public_address\":\"",19);
   memcpy(data+19,delegate_public_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\"}",2);
@@ -402,6 +403,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
 
   // create the message
+  memset(data,0,sizeof(data));
   memcpy(data,"{\"IP_address\":\"",15);
   memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2); 
@@ -413,6 +415,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
 
   // create the message
+  memset(data,0,sizeof(data));
   memcpy(data,"{\"public_key\":\"",15);
   memcpy(data+15,delegate_public_key,VRF_PUBLIC_KEY_LENGTH);
   memcpy(data+79,"\"}",2); 
@@ -421,6 +424,18 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) > 0)
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public key is already registered");
+  }
+
+  // create the message
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"delegate_name\":\"",18);
+  memcpy(data+18,delegate_name,strnlen(delegate_name,sizeof(data)));
+  memcpy(data+strlen(data),"\"}",2); 
+
+  // check if the delegate name is already registered
+  if (count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,data,0) > 0)
+  {    
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates name is already registered");
   }
   
   // create the message
