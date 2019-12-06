@@ -86,6 +86,12 @@ void* current_block_height_timer_thread(void* parameters)
     fprintf(stderr,"\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
   }*/
 
+  do
+  {
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    sleep(60);
+  } while (current_UTC_date_and_time.tm_mday != 7 || current_UTC_date_and_time.tm_hour != 17 || current_UTC_date_and_time.tm_min != 56);
+  
   // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
   sscanf(current_block_height,"%zu", &count);
   while (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)

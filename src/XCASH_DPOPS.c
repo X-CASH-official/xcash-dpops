@@ -628,7 +628,7 @@ int main(int parameters_count, char* parameters[])
     }
   }*/
 
-  /*print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
 
   // start the current block height timer thread
   if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
@@ -636,7 +636,7 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not start the current_block_height_timer_thread");
   }
   
-  color_print("Started the current block height timer thread","green");*/
+  color_print("Started the current block height timer thread","green");
 
   /*// start the check_reserve_proofs_timer_thread
   if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
@@ -667,7 +667,7 @@ int main(int parameters_count, char* parameters[])
 
 
 
-  // start the sync_network_data_nodes_database_timer_thread
+  /*// start the sync_network_data_nodes_database_timer_thread
   if (network_data_node_settings == 1)
   {
     if (pthread_create(&thread_id[0], NULL, &sync_network_data_nodes_database_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
@@ -682,7 +682,7 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not start the sync all block verifiers list timer thread");
   }
 
-  color_print("Started the sync all block verifiers list timer thread","green");
+  color_print("Started the sync all block verifiers list timer thread","green");*/
 
   for (;;)
   {
