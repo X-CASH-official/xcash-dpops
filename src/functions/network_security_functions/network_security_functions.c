@@ -717,7 +717,7 @@ int validate_data(const char* MESSAGE)
     }
   }
   else if (strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST") != NULL)
-  {
+  {   
     if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(data)) != 0)
     {
       VALIDATE_DATA_ERROR("Invalid message");
@@ -921,7 +921,7 @@ int validate_data(const char* MESSAGE)
   }
   else if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || memcmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) != 0 || memcmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) != 0 || memcmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) != 0 || memcmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) != 0 || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL || strstr(MESSAGE,"") != NULL)
   {
-    
+    return 1;
   }
   else if (delegates_website == 1)
   {

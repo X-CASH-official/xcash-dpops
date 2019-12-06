@@ -274,6 +274,13 @@ int socket_thread(int client_socket)
     return 0;
   } 
 
+  // check if the message length is correct for the type of message
+  if (strstr(buffer,"POST /") != NULL || strstr(buffer,"PUT /") != NULL || strstr(buffer,"PATCH /") != NULL || strstr(buffer,"DELETE /") != NULL)
+  {
+    pointer_reset(buffer);
+    return 0;
+  }
+
   // validate the message
   if (validate_data(buffer) == 0)
   {
@@ -281,13 +288,7 @@ int socket_thread(int client_socket)
     return 0;
   }
 
-  // check if the message length is correct for the type of message
-  if (strstr(buffer,"POST /") != NULL || strstr(buffer,"PUT /") != NULL || strstr(buffer,"PATCH /") != NULL || strstr(buffer,"DELETE /") != NULL)
-  {
-    pointer_reset(buffer);
-    return 0;
-  }
-  else if (strstr(buffer,"GET /") != NULL)
+  if (strstr(buffer,"GET /") != NULL)
   {
     memcpy(data2,"HTTP ",5);
     memcpy(data2+5,buffer,strnlen(buffer,sizeof(data2)) - strnlen(strstr(buffer," HTTP/"),sizeof(data2)));
@@ -315,7 +316,7 @@ int socket_thread(int client_socket)
     pointer_reset(buffer);
     return 0;
   }
-
+  
   if (getpeername(client_socket, (struct sockaddr *) &addr, &addrlength) != 0)
   {
     pointer_reset(buffer);
