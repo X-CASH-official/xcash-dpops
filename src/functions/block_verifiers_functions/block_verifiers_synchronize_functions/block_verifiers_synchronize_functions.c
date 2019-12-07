@@ -388,6 +388,7 @@ int get_synced_block_verifiers(void)
   struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
+  size_t total_delegates = 0;
 
   // define macros
   #define GET_SYNCED_BLOCK_VERIFIERS_DATA "{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}"
@@ -397,7 +398,7 @@ int get_synced_block_verifiers(void)
   { \
     GET_SYNCED_BLOCK_VERIFIERS_ERROR("Could not parse the message"); \
   } \
-  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  for (count = 0, count2 = 0; count < total_delegates; count++) \
   { \
     memcpy(block_verifiers_data[count],&data[count2],strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) - count2); \
     count2 = strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) + 1; \
@@ -456,6 +457,9 @@ int get_synced_block_verifiers(void)
   {
     GET_SYNCED_BLOCK_VERIFIERS_ERROR("Could not verify data");
   }
+
+  // get the delegate amount
+  total_delegates = string_count(data2,"|") / 3;
 
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_public_address_list",synced_block_verifiers.synced_block_verifiers_public_address);
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_public_key_list",synced_block_verifiers.synced_block_verifiers_public_key);
