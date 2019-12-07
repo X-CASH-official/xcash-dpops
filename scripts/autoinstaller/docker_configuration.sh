@@ -830,7 +830,6 @@ function main()
     start_programs
   elif [ "${data^^}" == "STOP" ]; then
     stop_programs
-  fi  
   elif [ "${data^^}" == "RESTART" ]; then
     restart_programs
   fi  
