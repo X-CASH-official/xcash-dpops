@@ -1365,7 +1365,7 @@ int block_verifiers_create_block_and_update_database(void)
 
   // define macros
   #define BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"block_verifiers_create_block_and_update_database",47); \
+  memcpy(error_message.function[error_message.total],"block_verifiers_create_block_and_update_database",48); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0; 

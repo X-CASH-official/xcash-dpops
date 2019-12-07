@@ -133,18 +133,22 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   // get the total blocks found
   document_count = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"blocks_found",1);
+  total_blocks_found = document_count;
   if (document_count <= 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(1);
+    total_blocks_found = 0;
+    total_xcash_from_found_blocks = 0;
+    total_payments = 0; 
   }
-  total_blocks_found = document_count;
 
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_shared_delegates_website_get_statistics",data,current_date_and_time,current_UTC_date_and_time);
 
   // initialize the database_multiple_documents_fields struct 
-  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_shared_delegates_website_get_statistics",data,current_date_and_time,current_UTC_date_and_time);
-
+  if (total_blocks_found != 0)
+  {
+    INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_shared_delegates_website_get_statistics",data,current_date_and_time,current_UTC_date_and_time);
+  }
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
   {
@@ -179,20 +183,23 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     }
   }
 
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
+  if (total_blocks_found != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
-  }
+    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
+    }
 
-  // get the total xcash from found blocks
-  for (total_xcash_from_found_blocks = 0, count = 0; (int)count < document_count; count++)
-  {
-    sscanf(database_multiple_documents_fields.value[count][3], "%lld", &block_reward_number);
-    total_xcash_from_found_blocks += block_reward_number;
-  }
+    // get the total xcash from found blocks
+    for (total_xcash_from_found_blocks = 0, count = 0; (int)count < document_count; count++)
+    {
+      sscanf(database_multiple_documents_fields.value[count][3], "%lld", &block_reward_number);
+      total_xcash_from_found_blocks += block_reward_number;
+    }
 
-  // add the total payments to the database_document_fields struct 
-  total_payments = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses_payments",1); 
+    // add the total payments to the database_document_fields struct 
+    total_payments = count_all_documents_in_collection(DATABASE_NAME_DELEGATES,"public_addresses_payments",1);
+  }
 
   // get the total voters and total votes
   memcpy(message,"{\"public_address_voted_for\":\"",29);
@@ -239,7 +246,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   if (read_document_field_from_collection(DATABASE_NAME,"delegates",message,"block_verifier_online_percentage",data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
-  }
+  } 
   
   memset(message,0,sizeof(message));
 

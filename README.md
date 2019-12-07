@@ -45,14 +45,13 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 [How To Setup and Install the Systemd Files](#how-to-setup-and-install-the-systemd-files)  
 * [MongoDB](#mongodb)  
 * [XCASH Daemon](#xcash-daemon)  
-* [XCASH Daemon Block Verifier](#xcash-daemon-block-verifier)  
 * [XCASH Wallet](#xcash-wallet)
 * [XCASH DPOPS](#xcash-dpops)
 * [Firewall](#firewall)  
 
 [How To Setup the Firewall](#how-to-setup-the-firewall)  
 [How To Run Each Component](#how-to-run-each-component)  
-[How To View Logs For Each Component](how-to-view-logs-for-each-component)  
+[How To View Logs For Each Component](#how-to-view-logs-for-each-component)  
 [Running X-CASH Proof of stake test](#running-x-cash-proof-of-stake-test)  
 [How to Use the XCASH DPOPS Wallet Commands](#how-to-use-the-xcash-dpops-wallet-commands)  
 *  [How to Register a Delegate](#how-to-register-a-delegate)  
@@ -70,7 +69,7 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 [Docker Manual Installation Process](#docker-manual-installation-process)  
 [Docker Automatic Installation Process](#docker-automatic-installation-process)
 *  [Install Docker](#install-docker)  
-*  [Download XCASH_DPOPS Docker Image](#download-xcash-dpops-docker-image)  
+*  [Download XCASH_DPOPS Docker Image](#download-xcash_dpops-docker-image)  
 *  [Create Docker Container](#create-docker-container)  
 *  [Configure the Container](#configure-the-container)  
 *  [Start and Stop Programs in the Container](#start-and-stop-programs-in-the-container)  
@@ -81,7 +80,7 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 [How to Debug the Code on a Server](#how-to-debug-the-code-on-a-server)
 *  [Allow X11 Forwarding on the server](#allow-x11-forwarding-on-the-server)  
 *  [Install GDB and vscode](#install-gdb-and-vscode)
-*  [Run vscode on the Server and Forward the GUI to a Dekstop](#run-vscode-on-the-server-and-forward-the-gui-to-a-desktop)
+*  [Run vscode on the Server and Forward the GUI to a Dekstop](#run-vscode-on-the-server-and-forward-the-gui-to-a-dekstop)
 *  [Change vscode Keyboard Shortcuts](#change-vscode-keyboard-shortcuts)
 
  
@@ -129,13 +128,16 @@ It is recommended if you are going to run a XCASH DPOPS node, to not keep all of
 
 ## XCASH_DPOPS Parameters
 ```
+Parameters
 --parameters - Show a list of all valid parameters
 
 --test - Run the test to make sure the program is compatible with your system
 
---generate_key - Generate a public and private key for signing and verifying messages between block verifiers
+--log_file "log_file" - Write all output to a log file with no colors
 
---total_threads "total_threads" - The total threads to use.
+--log_file_color "log_file" - Write all output to a log file with colors
+
+--generate_key - Generate a public and private key for signing and verifying messages between block verifiers--total_threads "total_threads" - The total threads to use, the maximum is 100 total threads.
 If this parameter is not specified, the default is the number of threads the CPU has.
 
 --delegates_website - Run the delegates website
@@ -144,9 +146,9 @@ If this parameter is not specified, the default is the number of threads the CPU
 The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)
 The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)
 
---synchronize_database - Synchronize the database from a network data node.
+--synchronize_database_from_network_data_node - Synchronize the database from a network data node.
 
---disable_synchronizing_databases_and_starting_timers - Disables synchronzing the databases and starting the timers. Used for testing.
+--disable_synchronizing_databases_and_starting_timers - Disables synchronizing the databases and starting the timers. Used for testing.
 
 --test_data_add - Add test data to the databases
 

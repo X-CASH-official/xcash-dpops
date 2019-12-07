@@ -145,8 +145,6 @@ void sync_network_data_nodes_database(void)
   if (sync_network_data_nodes_database_count_total < NETWORK_DATA_NODES_VALID_AMOUNT)
   {
     // sync from the main network data node, since a majority could not be reached
-    color_print(network_data_nodes_database_data[0],"green");
-    color_print(network_data_nodes_database_data[1],"green");
     color_print("A majority could not be reached between network data nodes for the database sync. Syncing the database from the main network data node","yellow");
     SYNC_DATABASES(3);
   }
