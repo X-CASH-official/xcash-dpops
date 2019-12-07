@@ -90,7 +90,7 @@ void* current_block_height_timer_thread(void* parameters)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     sleep(60);
-  } while (current_UTC_date_and_time.tm_mday != 7 || current_UTC_date_and_time.tm_hour != 16 || current_UTC_date_and_time.tm_min != 56);
+  } while (current_UTC_date_and_time.tm_mday != 7 || current_UTC_date_and_time.tm_hour != 18 || current_UTC_date_and_time.tm_min != 11);
   
   // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
   sscanf(current_block_height,"%zu", &count);
@@ -128,7 +128,7 @@ void* current_block_height_timer_thread(void* parameters)
           memset(data2,0,sizeof(data2));
           memcpy(data2,"Network Block ",14);
           memcpy(data2+14,current_block_height,strnlen(current_block_height,sizeof(data2)));
-          memcpy(data2+strlen(data2),"Has Been Created Successfully",29);
+          memcpy(data2+strlen(data2)," Has Been Created Successfully",30);
           color_print(data2,"green");
         }
         settings = 1;
