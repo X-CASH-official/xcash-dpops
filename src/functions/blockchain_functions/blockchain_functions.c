@@ -1349,7 +1349,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
-  int counter;
+  int counter = 0;
   size_t count2;
   size_t count3;
   size_t number;
@@ -1661,11 +1661,20 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {
     snprintf(data2+count,BUFFER_SIZE,"%02x",data[count2] & 0xFF);
   }
+
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+    {
+      counter = count;
+      break;
+    }
+  }
   
   // check what block verifiers vrf secret key and vrf public key to use
   if (main_network_data_node_create_block == 0)
   {
-    if (memcmp(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[0],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING_DATA)-1) != 0)
+    if (memcmp(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING_DATA)-1) != 0)
     {
       for (count = 0; count < DATA_HASH_LENGTH; count += 2)
       {
@@ -1676,7 +1685,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
         // if it is not in the range of 01 - C8 then skip the byte
         if (counter != 0 && counter <= 200)
         {
-          counter = counter % BLOCK_VERIFIERS_TOTAL;
+          counter = counter % BLOCK_VERIFIERS_TOTAL;          
           break;
         }
       }
