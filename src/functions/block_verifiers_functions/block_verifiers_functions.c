@@ -1058,11 +1058,14 @@ int block_verifiers_create_VRF_data(void)
     memset(data,0,sizeof(data));
     memcpy(data,&data2[count],2);
     counter = (int)strtol(data, NULL, 16); 
+
+    fprintf(stderr,"data_hash=%s\nbyte=%s\ncounter=%zu\nblock_verifier=%d\n\n",data2,data,counter,BLOCK_VERIFIERS_AMOUNT);
    
     // if it is not in the range of 01 - C8 then skip the byte
     if (counter != 0 && counter <= 200)
     {
       counter = counter % BLOCK_VERIFIERS_AMOUNT;
+
       // check if the block verifier created the data
       if (memcmp(VRF_data.block_verifiers_vrf_secret_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1) != 0 && memcmp(VRF_data.block_verifiers_vrf_public_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1) != 0 && memcmp(VRF_data.block_verifiers_random_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1) != 0)
       {

@@ -1680,12 +1680,18 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       {
         memset(data,0,strlen(data));
         memcpy(data,&data2[count],2);
-        counter = (int)strtol(data, NULL, 16);
+        counter = (int)strtol(data, NULL, 16); 
    
         // if it is not in the range of 01 - C8 then skip the byte
         if (counter != 0 && counter <= 200)
         {
           counter = counter % BLOCK_VERIFIERS_TOTAL; 
+                   
+          // check if the block verifier created the data
+          if (memcmp(VRF_data.block_verifiers_vrf_secret_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1) != 0 && memcmp(VRF_data.block_verifiers_vrf_public_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1) != 0 && memcmp(VRF_data.block_verifiers_random_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1) != 0)
+          {
+            break;
+          }
         }
       }
     }
