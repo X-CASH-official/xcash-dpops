@@ -1057,7 +1057,7 @@ int block_verifiers_create_VRF_data(void)
   {
     memset(data,0,sizeof(data));
     memcpy(data,&data2[count],2);
-    counter = (int)strtol(data, NULL, 16);  
+    counter = (int)strtol(data, NULL, 16); 
    
     // if it is not in the range of 01 - C8 then skip the byte
     if (counter != 0 && counter <= 200)
@@ -1579,7 +1579,7 @@ int block_verifiers_create_block(void)
   if (network_data_node_settings == 0)
   {
     sleep(5);
-    check_if_databases_are_synced(1,1);
+    check_if_databases_are_synced(3,1);
     memcpy(data,"Waiting for the round to start for block ",41);
     memcpy(data+41,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
     print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);

@@ -559,11 +559,22 @@ int main(int parameters_count, char* parameters[])
   // check if the database is synced, unless this is the main network data node
   if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0)
   {
-    // check if all of the databases are synced from a network data node, since their is no way to tell if the previous round could not reach consensus
-    if (check_if_databases_are_synced(2,0) == 0)
+    if (network_data_node_settings == 1)
     {
-      MAIN_ERROR("Could not check if the databases are synced");
+      // check if all of the databases are synced from a random network data node
+      if (check_if_databases_are_synced(2,0) == 0)
+      {
+        MAIN_ERROR("Could not check if the databases are synced");
+      }
     }
+    else
+    {
+      // check if all of the databases are synced from a random block verifier
+      if (check_if_databases_are_synced(1,0) == 0)
+      {
+        MAIN_ERROR("Could not check if the databases are synced");
+      }
+    }    
   }
 
   // check the block verifiers current time, if it is not a network data node

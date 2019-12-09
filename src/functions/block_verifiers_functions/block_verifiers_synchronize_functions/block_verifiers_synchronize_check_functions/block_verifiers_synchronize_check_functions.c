@@ -52,7 +52,7 @@ Functions
 Name: check_if_databases_are_synced
 Description: Checks if the databases are synced, and if not syncs the databases
 Paramters:
-  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
   reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ int check_if_databases_are_synced(const int SETTINGS, const int reserve_bytes_st
 Name: sync_check_reserve_proofs_database
 Description: Checks if the block verifier needs to sync the reserve proofs database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -203,7 +203,7 @@ int sync_check_reserve_proofs_database(int settings)
 
     color_print("Sending all block verifiers a message to check if the reserve proofs database is synced","white"); 
     
-   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
@@ -249,7 +249,7 @@ int sync_check_reserve_proofs_database(int settings)
       }
     }
   }
-  if (settings == 2)
+  if (settings == 2 || settings == 3)
   {
     color_print("Syncing from a random network data node","white");
     if (sync_reserve_proofs_database(settings) == 0)
@@ -259,7 +259,10 @@ int sync_check_reserve_proofs_database(int settings)
   }
 
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
-  sync_check_majority_reserve_proofs_database();
+  if (settings != 3)
+  {
+    sync_check_majority_reserve_proofs_database();
+  }
 
   color_print("The reserve proofs database is synced","green");
   
@@ -404,7 +407,7 @@ void sync_check_majority_reserve_proofs_database(void)
 Name: sync_check_reserve_bytes_database
 Description: Checks if the block verifier needs to sync the reserve bytes database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
   reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
@@ -541,7 +544,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       }
     }
   }
-  if (settings == 2)
+  if (settings == 2 || settings == 3)
   {
     color_print("Syncing from a random network data node","white");
     if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings) == 0)
@@ -551,7 +554,10 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
   }
 
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
-  sync_check_majority_reserve_bytes_database(reserve_bytes_start_settings);
+  if (settings != 3)
+  {
+    sync_check_majority_reserve_bytes_database(reserve_bytes_start_settings);
+  }
 
   color_print("The reserve bytes database is synced","green");
   
@@ -703,7 +709,7 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
 Name: sync_check_delegates_database
 Description: Checks if the block verifier needs to sync the delegates database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -817,7 +823,7 @@ int sync_check_delegates_database(int settings)
       }
     }
   }
-  if (settings == 2)
+  if (settings == 2 || settings == 3)
   {
     color_print("Syncing from a random network data node","white");
     if (sync_delegates_database(settings) == 0)
@@ -827,7 +833,10 @@ int sync_check_delegates_database(int settings)
   }
 
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
-  sync_check_majority_delegates_database();
+  if (settings != 3)
+  {
+    sync_check_majority_delegates_database();
+  }
 
   color_print("The delegates database is synced","green");
   
@@ -957,7 +966,7 @@ void sync_check_majority_delegates_database(void)
 Name: sync_check_statistics_database
 Description: Checks if the block verifier needs to sync the statistics database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1070,7 +1079,7 @@ int sync_check_statistics_database(int settings)
       }
     }
   }
-  if (settings == 2)
+  if (settings == 2 || settings == 3)
   {
     color_print("Syncing from a random network data node","white");
     if (sync_statistics_database(settings) == 0)
@@ -1080,7 +1089,10 @@ int sync_check_statistics_database(int settings)
   }
 
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
-  sync_check_majority_statistics_database();
+  if (settings != 3)
+  {
+    sync_check_majority_statistics_database();
+  }
 
   color_print("The statistics database is synced","green");
   

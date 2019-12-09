@@ -1662,22 +1662,30 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     snprintf(data2+count,BUFFER_SIZE,"%02x",data[count2] & 0xFF);
   }
   
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+    {
+      counter = count;
+      break;
+    }
+  }
+  
   // check what block verifiers vrf secret key and vrf public key to use
   if (main_network_data_node_create_block == 0)
-  {    
-    if (blockchain_data.block_height != XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  {
+    if (memcmp(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING_DATA)-1) != 0)
     {
       for (count = 0; count < DATA_HASH_LENGTH; count += 2)
       {
         memset(data,0,strlen(data));
         memcpy(data,&data2[count],2);
-        counter = (int)strtol(data, NULL, 16);  
+        counter = (int)strtol(data, NULL, 16);
    
         // if it is not in the range of 01 - C8 then skip the byte
         if (counter != 0 && counter <= 200)
         {
-          counter = counter % BLOCK_VERIFIERS_TOTAL;          
-          break;
+          counter = counter % BLOCK_VERIFIERS_TOTAL; 
         }
       }
     }
