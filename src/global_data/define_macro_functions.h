@@ -252,6 +252,21 @@ do \
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: reset_synced_block_verifiers_vote_settings
+Description: Resets the synced block verifiers vote settings
+Return: Writes the correct code
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define reset_synced_block_verifiers_vote_settings \
+synced_block_verifiers.vote_settings_true = 1; \
+synced_block_verifiers.vote_settings_false = 0; \
+synced_block_verifiers.vote_settings_connection_timeout = 0;
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: sync_database_threads
 Description: waits for another thread to finish acessing the database
 Return: Writes the correct code

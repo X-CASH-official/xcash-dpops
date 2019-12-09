@@ -1070,7 +1070,7 @@ int block_verifiers_create_VRF_data(void)
       }
     }
   }
-  
+
   // create all of the VRF data
   memcpy(VRF_data.vrf_secret_key_data_round_part_4,VRF_data.block_verifiers_vrf_secret_key_data[counter],VRF_SECRET_KEY_LENGTH);
   memcpy(VRF_data.vrf_secret_key_round_part_4,VRF_data.block_verifiers_vrf_secret_key[counter],crypto_vrf_SECRETKEYBYTES);

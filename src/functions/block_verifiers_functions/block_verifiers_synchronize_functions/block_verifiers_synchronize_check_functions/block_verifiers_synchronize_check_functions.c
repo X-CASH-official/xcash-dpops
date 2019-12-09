@@ -161,9 +161,11 @@ int sync_check_reserve_proofs_database(int settings)
     SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the synced block verifiers");
   }
 
+  reset_synced_block_verifiers_vote_settings;
+
   if (settings == 1)
   {
-     // get the database data hash for the reserve proofs database
+    // get the database data hash for the reserve proofs database
     if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -201,7 +203,9 @@ int sync_check_reserve_proofs_database(int settings)
 
     color_print("Sending all block verifiers a message to check if the reserve proofs database is synced","white"); 
     
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
       memset(data,0,strlen(data));
       memset(data2,0,sizeof(data2));
@@ -212,7 +216,7 @@ int sync_check_reserve_proofs_database(int settings)
       }
       else
       {
-        parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2));
+        parse_json_data(data,"statistics_database",data2,sizeof(data2));
         memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
         if (memcmp(data2,"true",4) == 0)
         {
@@ -222,8 +226,9 @@ int sync_check_reserve_proofs_database(int settings)
         {
           synced_block_verifiers.vote_settings_false++;
         }
-      }   
-    }
+      } 
+    }  
+  }
 
     // get the vote settings of the block verifiers
 
@@ -311,6 +316,7 @@ void sync_check_majority_reserve_proofs_database(void)
     SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not get the synced block verifiers");
   }
 
+  reset_synced_block_verifiers_vote_settings;
  
   // get the database data hash for the reserve proofs database
   if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
@@ -350,26 +356,29 @@ void sync_check_majority_reserve_proofs_database(void)
     
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-      synced_block_verifiers.vote_settings_connection_timeout++;
-    }
-    else
-    {
-      parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2));
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      if (memcmp(data2,"true",4) == 0)
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
       {
-        synced_block_verifiers.vote_settings_true++;
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
       }
-      else if (memcmp(data2,"false",5) == 0)
+      else
       {
-        synced_block_verifiers.vote_settings_false++;
-      }
-    }   
+        parse_json_data(data,"statistics_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      } 
+    }  
   }
 
   // get the vote settings of the block verifiers
@@ -441,7 +450,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
     SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the synced block verifiers");
   }
 
-  
+  reset_synced_block_verifiers_vote_settings;  
 
   if (settings == 1)
   {
@@ -486,7 +495,9 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
 
     color_print("Sending all block verifiers a message to check if the reserve bytes database is synced","white"); 
 
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
       memset(data,0,strlen(data));
       memset(data2,0,sizeof(data2));
@@ -497,7 +508,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       }
       else
       {
-        parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2));
+        parse_json_data(data,"statistics_database",data2,sizeof(data2));
         memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
         if (memcmp(data2,"true",4) == 0)
         {
@@ -507,8 +518,9 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
         {
           synced_block_verifiers.vote_settings_false++;
         }
-      }   
-    }
+      } 
+    }  
+  }
 
     // get the vote settings of the block verifiers
 
@@ -600,6 +612,8 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
     SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not get the synced block verifiers");
   }
 
+  reset_synced_block_verifiers_vote_settings;
+
   // get the current reserve bytes database
   get_reserve_bytes_database(current_reserve_bytes_database,0);
 
@@ -641,26 +655,29 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-      synced_block_verifiers.vote_settings_connection_timeout++;
-    }
-    else
-    {
-      parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2));
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      if (memcmp(data2,"true",4) == 0)
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
       {
-        synced_block_verifiers.vote_settings_true++;
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
       }
-      else if (memcmp(data2,"false",5) == 0)
+      else
       {
-        synced_block_verifiers.vote_settings_false++;
-      }
-    }   
+        parse_json_data(data,"statistics_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      } 
+    }  
   }
 
   // get the vote settings of the block verifiers
@@ -731,6 +748,8 @@ int sync_check_delegates_database(int settings)
     SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not get the synced block verifiers");
   }
 
+  reset_synced_block_verifiers_vote_settings;
+
   if (settings == 1)
   {
     // get the database data hash for the delegates database
@@ -754,6 +773,8 @@ int sync_check_delegates_database(int settings)
 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
+    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    {
       memset(data,0,strlen(data));
       memset(data2,0,sizeof(data2));
       if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
@@ -763,7 +784,7 @@ int sync_check_delegates_database(int settings)
       }
       else
       {
-        parse_json_data(data,"delegates_database",data2,sizeof(data2));
+        parse_json_data(data,"statistics_database",data2,sizeof(data2));
         memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
         if (memcmp(data2,"true",4) == 0)
         {
@@ -773,8 +794,9 @@ int sync_check_delegates_database(int settings)
         {
           synced_block_verifiers.vote_settings_false++;
         }
-      }   
-    }
+      } 
+    }  
+  }
 
     // get the vote settings of the block verifiers
 
@@ -865,6 +887,8 @@ void sync_check_majority_delegates_database(void)
     SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR("Could not get the synced block verifiers");
   }
 
+  reset_synced_block_verifiers_vote_settings;
+
   // get the database data hash for the reserve proofs database
   if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
   {
@@ -884,26 +908,29 @@ void sync_check_majority_delegates_database(void)
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-      synced_block_verifiers.vote_settings_connection_timeout++;
-    }
-    else
-    {
-      parse_json_data(data,"delegates_database",data2,sizeof(data2));
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      if (memcmp(data2,"true",4) == 0)
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
       {
-        synced_block_verifiers.vote_settings_true++;
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
       }
-      else if (memcmp(data2,"false",5) == 0)
+      else
       {
-        synced_block_verifiers.vote_settings_false++;
-      }
-    }   
+        parse_json_data(data,"statistics_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      } 
+    }  
   }
 
   // get the vote settings of the block verifiers
@@ -975,6 +1002,8 @@ int sync_check_statistics_database(int settings)
     SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not get the synced block verifiers");
   }
 
+  reset_synced_block_verifiers_vote_settings;
+
   if (settings == 1)
   {
     // get the database data hash for the reserve proofs database
@@ -996,7 +1025,9 @@ int sync_check_statistics_database(int settings)
 
     color_print("Sending all block verifiers a message to check if the statistics database is synced","white"); 
 
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
       memset(data,0,strlen(data));
       memset(data2,0,sizeof(data2));
@@ -1017,9 +1048,9 @@ int sync_check_statistics_database(int settings)
         {
           synced_block_verifiers.vote_settings_false++;
         }
-      }   
-    }
-
+      } 
+    }  
+  }
     // get the vote settings of the block verifiers
 
     // check if a consensus could not be reached and sync from a network data node
@@ -1108,6 +1139,8 @@ void sync_check_majority_statistics_database(void)
   {
     SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR("Could not get the synced block verifiers");
   }
+
+  reset_synced_block_verifiers_vote_settings;
   
   // get the database data hash for the reserve proofs database
   if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
@@ -1128,26 +1161,29 @@ void sync_check_majority_statistics_database(void)
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
+    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-      synced_block_verifiers.vote_settings_connection_timeout++;
-    }
-    else
-    {
-      parse_json_data(data,"statistics_database",data2,sizeof(data2));
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      if (memcmp(data2,"true",4) == 0)
+      memset(data,0,strlen(data));
+      memset(data2,0,sizeof(data2));
+      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
       {
-        synced_block_verifiers.vote_settings_true++;
+        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
+        synced_block_verifiers.vote_settings_connection_timeout++;
       }
-      else if (memcmp(data2,"false",5) == 0)
+      else
       {
-        synced_block_verifiers.vote_settings_false++;
-      }
-    }   
+        parse_json_data(data,"statistics_database",data2,sizeof(data2));
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+        if (memcmp(data2,"true",4) == 0)
+        {
+          synced_block_verifiers.vote_settings_true++;
+        }
+        else if (memcmp(data2,"false",5) == 0)
+        {
+          synced_block_verifiers.vote_settings_false++;
+        }
+      } 
+    }  
   }
 
   // get the vote settings of the block verifiers

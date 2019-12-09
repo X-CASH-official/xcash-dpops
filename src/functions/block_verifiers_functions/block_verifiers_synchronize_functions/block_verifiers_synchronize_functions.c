@@ -418,6 +418,7 @@ int get_synced_block_verifiers(void)
   }
   synced_block_verifiers.vote_settings_true = 0;
   synced_block_verifiers.vote_settings_false = 0;
+  synced_block_verifiers.vote_settings_connection_timeout = 0;
 
   start:
   color_print("Connecting to a random network data node to get a list of current block verifiers","white");
