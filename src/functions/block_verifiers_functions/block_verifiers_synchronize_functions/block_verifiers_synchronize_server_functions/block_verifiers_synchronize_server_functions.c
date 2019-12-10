@@ -457,6 +457,74 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_data_hash
+Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_data_hash(const int CLIENT_SOCKET, const char* MESSAGE)
+{  
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  size_t count;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_data_hash",78); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes data hash}",0,0,""); \
+  return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+  
+  if (parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR("Could not create the message");
+  }
+
+  // get the blocks data hash
+  memcpy(data2,"{\"block_height\": \"",18);
+  memcpy(data2+18,data,strnlen(data,sizeof(data2)));
+  memcpy(data2+strlen(data2),"\"}",2);
+
+  get_reserve_bytes_database(count,0);
+  memset(data,0,sizeof(data));
+  memcpy(data,"reserve_bytes_",14);
+  snprintf(data+14,sizeof(data)-15,"%zu",count);
+
+  if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes_data_hash",message,1) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR("Could not get the network blocks reserve bytes data hash");
+  }
+
+  // create the message
+  memset(data,0,sizeof(data));
+  memcpy(data,"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES_DATA_HASH|",53);
+  memcpy(data+53,message,DATA_HASH_LENGTH);
+  memcpy(data+strlen(data),"|}",2);
+
+  // send the data
+  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR("Could not send the network blocks reserve bytes data hash");
+  }
+  return 1;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE message
 Parameters:

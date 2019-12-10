@@ -1058,8 +1058,6 @@ int block_verifiers_create_VRF_data(void)
     memset(data,0,sizeof(data));
     memcpy(data,&data2[count],2);
     counter = (int)strtol(data, NULL, 16); 
-
-    fprintf(stderr,"data_hash=%s\nbyte=%s\ncounter=%zu\nblock_verifier=%d\n\n",data2,data,counter,BLOCK_VERIFIERS_AMOUNT);
    
     // if it is not in the range of 01 - C8 then skip the byte
     if (counter != 0 && counter <= 200)

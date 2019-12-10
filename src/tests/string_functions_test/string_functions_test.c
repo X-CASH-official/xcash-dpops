@@ -28,7 +28,7 @@ Return: The number of passed string_functions test
 int string_functions_test(void)
 {
   // define macros
-  #define STRING_FUNCTIONS_TOTAL_TEST 51
+  #define STRING_FUNCTIONS_TOTAL_TEST 52
 
   #define DATA1 "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}"
   #define DATA2 "[{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"},{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}]"
@@ -346,6 +346,16 @@ int string_functions_test(void)
   block_height - The block height
   */
   #define NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES "{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES\",\r\n \"block_height\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES\",\r\n}"
+ 
+
+
+ /*
+  The purpose of this message is for a node to retrieve the reserve bytes data hash for a given block
+ 
+  message_settings - The type of the message
+  block_height - The block height
+  */
+  #define NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH "{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH\",\r\n \"block_height\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH\",\r\n}"
  
  
  
@@ -1139,6 +1149,20 @@ int string_functions_test(void)
     count_test++;
   }
 
+  // test for parsing NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH
+  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  memcpy(result_test,NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH,strnlen(NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH,BUFFER_SIZE));
+  if (parse_json_data(result_test,"message_settings",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH",BUFFER_SIZE) != 0 || parse_json_data(result_test,"block_height",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH",BUFFER_SIZE) != 0)
+  {
+    color_print("FAILED! Test for parsing NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for parsing NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH","green");
+    count_test++;
+  }
+
   // test for parsing BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
@@ -1761,6 +1785,7 @@ int string_functions_test(void)
   #undef NETWORK_DATA_NODE_TO_NODE_SEND_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST
   #undef NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST
   #undef NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES
+  #undef NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH
   #undef NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK
   #undef BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES
   #undef NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF
