@@ -357,6 +357,15 @@ int string_functions_test(void)
   */
   #define NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH "{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH\",\r\n \"block_height\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH\",\r\n}"
  
+
+
+ /*
+  The purpose of this message is for a node to check if they are a current block verifier
+ 
+  message_settings - The type of the message
+  */
+  #define NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER "{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER\",\r\n}"
+ 
  
  
 /*
@@ -1163,6 +1172,20 @@ int string_functions_test(void)
     count_test++;
   }
 
+  // test for parsing NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER
+  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
+  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  memcpy(result_test,NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER,strnlen(NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER,BUFFER_SIZE));
+  if (parse_json_data(result_test,"message_settings",data_test,BUFFER_SIZE) == 0 || strncmp(data_test,"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER",BUFFER_SIZE) != 0)
+  {
+    color_print("FAILED! Test for parsing NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for parsing NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER","green");
+    count_test++;
+  }
+
   // test for parsing BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
@@ -1786,6 +1809,7 @@ int string_functions_test(void)
   #undef NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST
   #undef NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES
   #undef NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH
+  #undef NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER
   #undef NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK
   #undef BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES
   #undef NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF

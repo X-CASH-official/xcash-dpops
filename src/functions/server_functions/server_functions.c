@@ -411,6 +411,14 @@ int socket_thread(int client_socket)
  {
    server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(client_socket,(const char*)buffer);
  }
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH\"") != NULL)
+ {
+   server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_data_hash(client_socket,(const char*)buffer);
+ }
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER\"") != NULL)
+ {
+   server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(client_socket);
+ }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(client_socket,(const char*)buffer);
