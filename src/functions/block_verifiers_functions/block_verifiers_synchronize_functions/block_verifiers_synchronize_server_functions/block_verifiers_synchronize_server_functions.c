@@ -507,9 +507,8 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_data_ha
 
   // create the message
   memset(data,0,sizeof(data));
-  memcpy(data,"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES_DATA_HASH|",53);
-  memcpy(data+53,message,DATA_HASH_LENGTH);
-  memcpy(data+strlen(data),"|}",2);
+  memcpy(data,message,DATA_HASH_LENGTH);
+  memcpy(data+DATA_HASH_LENGTH,"}",1);
 
   // send the data
   if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") == 0)
