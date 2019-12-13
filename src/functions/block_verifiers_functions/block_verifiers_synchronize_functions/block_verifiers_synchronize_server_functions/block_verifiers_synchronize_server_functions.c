@@ -378,6 +378,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   pointer_reset(message2); \
+  color_print(MESSAGE,"yellow"); \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes}",0,0,""); \
   return 0;
 
@@ -433,13 +434,21 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
     // get the data hash
     if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes",message,1) == 0)
     {
-      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not get the previous blocks reserve bytes");
+      if (count+1 != reserve_bytes_blocks_amount)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not get the previous blocks reserve bytes");
+      }
+      else
+      {
+        goto start;
+      }      
     }
   
     memcpy(message2+strlen(message2),message,strnlen(message,MAXIMUM_BUFFER_SIZE));
     memcpy(message2+strlen(message2),"|",1);
   }
-
+  
+  start:
   memcpy(message2+strlen(message2),"}",1);
   
   // send the data

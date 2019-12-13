@@ -74,7 +74,8 @@ void sync_network_data_nodes_database(void)
   color_print("Syncing the delegates database","yellow"); \
   sync_delegates_database(settings); \
   color_print("Syncing the statistics database","yellow"); \
-  sync_statistics_database(settings);
+  sync_statistics_database(settings); \
+  color_print("Successfully synced all database","yellow");
 
   // set the database to not accept any new data
   //database_settings = 0;

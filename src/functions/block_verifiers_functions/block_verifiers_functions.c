@@ -127,13 +127,6 @@ int start_new_round(void)
   // get the delegates online status
   get_delegates_online_status();
 
-  /*// check if all of the databases are synced
-  if (check_if_databases_are_synced(settings,1) == 0)
-  {
-    START_NEW_ROUND_ERROR("Could not check if the database is synced. Your block verifier will now sit out for the remainder of the round");
-  }
-  */
-
   // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
   settings = update_block_verifiers_list();
   if (settings == 0)
@@ -167,10 +160,7 @@ int start_new_round(void)
     {
       // update all of the databases 
       color_print("Updating the previous rounds data in the databases","blue");
-      if (update_databases() == 0)
-      {  
-        START_NEW_ROUND_ERROR("Could not update the databases for the previous round");
-      }
+      update_databases();
     }
 
     RESET_VARIABLES
@@ -195,6 +185,7 @@ int start_new_round(void)
       {      
         START_NEW_ROUND_ERROR("data_network_node_create_block error");
       } 
+      return 2;
     }
     if (block_verifiers_create_block() == 0)
     {
@@ -794,14 +785,6 @@ int data_network_node_create_block(void)
     if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,1) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
-    }
-
-    // verify the block
-    memset(data3,0,sizeof(data3));
-    snprintf(data3,sizeof(data3)-1,"%zu",count);
-    if (verify_network_block_data(1,1,1,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
-    {
-      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
     }
 
     // convert the blockchain_data to a network_block_string
@@ -1561,6 +1544,7 @@ int block_verifiers_create_block(void)
   else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
   { \
     data_network_node_create_block(); \
+    return 1; \
   } \
   pthread_rwlock_unlock(&rwlock); \
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,0); \

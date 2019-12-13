@@ -305,6 +305,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memset(data,0,sizeof(data));
     if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data,1) == 0)
     {
+      color_print(message,"yellow");
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_total_rounds from the database");
     }
     sscanf(data, "%zu", &block_verifier_total_rounds);
