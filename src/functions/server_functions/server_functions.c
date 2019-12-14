@@ -491,6 +491,10 @@ int socket_thread(int client_socket)
  {  
    server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(client_socket,(const char*)buffer);
  } 
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK\"") != NULL)
+ {  
+   server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block((const char*)buffer);
+ }
  else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time.tm_sec >= 10 && current_UTC_date_and_time.tm_sec < 30)
  {
    server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);

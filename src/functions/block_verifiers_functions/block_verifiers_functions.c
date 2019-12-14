@@ -745,7 +745,7 @@ int data_network_node_create_block(void)
 
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (memcmp(VRF_data.block_blob_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1) != 0)
+      if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],"5369675631",10) == 0)
       {
         count2++;
       }
@@ -785,6 +785,14 @@ int data_network_node_create_block(void)
     if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,1) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
+    }
+
+    // verify the block
+    memset(data3,0,sizeof(data3));
+    snprintf(data3,sizeof(data3)-1,"%zu",count);
+    if (verify_network_block_data(1,1,1,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
     }
 
     // convert the blockchain_data to a network_block_string

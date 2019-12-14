@@ -160,7 +160,6 @@ Name: server_receive_data_socket_block_verifiers_to_network_data_nodes_block_ver
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -266,6 +265,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 Name: server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block
 Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK message
 Parameters:
+  CLIENT_SOCKET - The socket to send data to
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
@@ -325,6 +325,62 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   return 1;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK message
+Parameters:
+  message - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block(const char* MESSAGE)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  int count;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK(settings) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block",84); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+  // verify the data
+  if (verify_data(MESSAGE,0,1) == 0 || memcmp(current_round_part_backup_node,"2",1) != 0 || main_network_data_node_create_block != 1)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK("Could not verify data");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != XCASH_SIGN_DATA_LENGTH || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK("Could not parse the data");
+  }
+
+  // add the block verifiers signature to the network block string
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
+    {
+      memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count]));
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data,XCASH_SIGN_DATA_LENGTH);
+    }
+  } 
+
+  return 1;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK
 }
 
 
