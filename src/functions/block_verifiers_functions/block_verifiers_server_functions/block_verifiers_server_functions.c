@@ -265,13 +265,12 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 Name: server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block
 Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK message
 Parameters:
-  CLIENT_SOCKET - The socket to send data to
   message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(const int CLIENT_SOCKET, const char* MESSAGE)
+int server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(const char* MESSAGE)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -318,7 +317,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   }
   
   // send the network block signature to the main network data node
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
+  if (send_data_socket(NETWORK_DATA_NODE_1_IP_ADDRESS,SEND_DATA_PORT,data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not send the data to the main network data node");
   }
