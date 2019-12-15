@@ -751,16 +751,9 @@ int validate_data(const char* MESSAGE)
       VALIDATE_DATA_ERROR("Invalid message");
     }
   }
-  else if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH") != NULL)
+  else if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL)
   {
-    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH",sizeof(data)) != 0 || parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
-    {
-      VALIDATE_DATA_ERROR("Invalid message");
-    }
-  }
-  else if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES") != NULL)
-  {
-    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(data)) != 0 || parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
+    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH",sizeof(data)) != 0 || parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
     {
       VALIDATE_DATA_ERROR("Invalid message");
     }
@@ -1016,8 +1009,10 @@ int validate_data(const char* MESSAGE)
     VALIDATE_DATA_ERROR("Invalid message");
   }
 
+
+
   // check if the message came from a valid user
-  if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 1 && strncmp(data,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER",BUFFER_SIZE) != 0 && strncmp(data,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0)
+  if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 1 && strncmp(data,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER",BUFFER_SIZE) != 0 && strncmp(data,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0)
   {
     // get the delegate amount
     for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)

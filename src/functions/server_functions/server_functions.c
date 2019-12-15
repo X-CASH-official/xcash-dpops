@@ -407,13 +407,9 @@ int socket_thread(int client_socket)
  {
    server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket);
  }
- else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES\"") != NULL)
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\"") != NULL)
  {
-   server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(client_socket,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH\"") != NULL)
- {
-   server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_data_hash(client_socket,(const char*)buffer);
+   server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(client_socket,(const char*)buffer);
  }
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER\"") != NULL)
  {

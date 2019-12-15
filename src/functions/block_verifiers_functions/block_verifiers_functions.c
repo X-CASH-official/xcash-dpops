@@ -312,9 +312,13 @@ int start_current_round_start_blocks(void)
   }
 
   memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data));
+  memset(blockchain_data.previous_block_hash_data,0,strlen(blockchain_data.previous_block_hash_data));
+  memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen((char*)VRF_data.vrf_alpha_string_round_part_4));    
   memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH);
-  memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,BLOCK_HASH_LENGTH);
-  memcpy(VRF_data.vrf_alpha_string_round_part_4,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BLOCK_HASH_LENGTH);
+  memcpy(blockchain_data.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH);
+  memcpy(VRF_data.vrf_alpha_string_round_part_4,previous_block_hash,BLOCK_HASH_LENGTH);
+  blockchain_data.previous_block_hash_data_length = BLOCK_HASH_LENGTH;
+  blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length = BLOCK_HASH_LENGTH;
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -527,6 +531,8 @@ int data_network_node_create_block(void)
   memcpy(error_message.function[error_message.total],"data_network_node_create_block",30); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  memset(data,0,sizeof(data)); \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   pointer_reset_all; \
   return 0;
 
@@ -577,6 +583,7 @@ int data_network_node_create_block(void)
     color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
     
     // get a block template
+    memset(data,0,sizeof(data));
     if (get_block_template(data,0) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get a block template");
@@ -608,9 +615,13 @@ int data_network_node_create_block(void)
     }
 
     memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data));
+    memset(blockchain_data.previous_block_hash_data,0,strlen(blockchain_data.previous_block_hash_data));
+    memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen((char*)VRF_data.vrf_alpha_string_round_part_4));    
     memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH);
-    memcpy(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,blockchain_data.previous_block_hash_data,BLOCK_HASH_LENGTH);
-    memcpy(VRF_data.vrf_alpha_string_round_part_4,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,BLOCK_HASH_LENGTH);
+    memcpy(blockchain_data.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH);
+    memcpy(VRF_data.vrf_alpha_string_round_part_4,previous_block_hash,BLOCK_HASH_LENGTH);
+    blockchain_data.previous_block_hash_data_length = BLOCK_HASH_LENGTH;
+    blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length = BLOCK_HASH_LENGTH;
 
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -745,7 +756,7 @@ int data_network_node_create_block(void)
 
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],"5369675631",10) == 0)
+      if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
       {
         count2++;
       }
@@ -757,35 +768,33 @@ int data_network_node_create_block(void)
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Invalid amount of block verifiers network block signatures");
     }
 
-    // convert the blockchain_data to a network_block_string
+    /*// convert the blockchain_data to a network_block_string
     memset(data,0,sizeof(data));
     if (blockchain_data_to_network_block_string(data,BLOCK_VERIFIERS_AMOUNT) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not convert the blockchain_data to a network_block_string");
-    }
+    }*/
 
-    // get the previous network block string
     memset(data,0,sizeof(data));
-    memset(data2,0,sizeof(data2));
-    memset(data3,0,sizeof(data3));
-    sscanf(current_block_height,"%zu", &count);
-    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
-    {
-      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the current block height");
-    }
-    count--;
-    snprintf(data3,sizeof(data3)-1,"%zu",count);
-    count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-    memcpy(data,"{\"block_height\":\"",17);
-    memcpy(data+17,data3,strnlen(data3,BUFFER_SIZE));
-    memcpy(data+strlen(data),"\"}",2);
-    memset(data3,0,strlen(data3));
-    memcpy(data3,"reserve_bytes_",14);
-    snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
-    if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,1) == 0)
-    {
-      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
-    }
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  // get the previous network block string
+  sscanf(current_block_height,"%zu", &count);
+  count--;
+  snprintf(data3,sizeof(data3)-1,"%zu",count);
+  
+  memcpy(data,"{\"block_height\":\"",17);
+  memcpy(data+17,data3,strnlen(data3,sizeof(data)));
+  memcpy(data+strlen(data),"\"}",2);
+  memset(data3,0,strlen(data3));
+  memcpy(data3,"reserve_bytes_",14);
+  get_reserve_bytes_database(count,1);  
+  snprintf(data3+14,sizeof(data3)-15,"%zu",count);
+  if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,1) == 0)
+  {
+    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
+  }
 
     // verify the block
     memset(data3,0,sizeof(data3));
@@ -796,8 +805,8 @@ int data_network_node_create_block(void)
     }
 
     // convert the blockchain_data to a network_block_string
-    memset(data,0,sizeof(data));
-    if (blockchain_data_to_network_block_string(data,BLOCK_VERIFIERS_AMOUNT) == 0)
+    memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+    if (blockchain_data_to_network_block_string(VRF_data.block_blob,BLOCK_VERIFIERS_AMOUNT) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not convert the blockchain_data to a network_block_string");
     }

@@ -151,6 +151,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",86); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not get a list of the current block verifiers",0,1,""); \
   return 0;
   
   memset(data,0,sizeof(data));
@@ -350,21 +351,22 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes
-Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES message
+Name: server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash
+Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const int CLIENT_SOCKET, const char* MESSAGE)
+int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(const int CLIENT_SOCKET, const char* MESSAGE)
 {  
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
-  char* message2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* message2 = (char*)calloc(2097152,sizeof(char)); // 2 MB
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
@@ -373,19 +375,19 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   size_t reserve_bytes_blocks_amount;
 
   // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes",68); \
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash",82); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   pointer_reset(message2); \
   color_print(MESSAGE,"yellow"); \
-  send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes}",0,0,""); \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes database hash}",0,0,""); \
   return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (message2 == NULL)
   {
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes",68);
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash",82);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
@@ -398,7 +400,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   
   if (parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not create the message");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not create the message");
   }
 
   // calculate how many blocks to send
@@ -406,17 +408,16 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
   sscanf(data,"%zu",&current_block_height_reserve_bytes);
   if (current_block_height_reserve_bytes < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Invalid block height");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Invalid block height");
   }
   reserve_bytes_blocks_amount = (count2 - current_block_height_reserve_bytes) + 1;
-  if (reserve_bytes_blocks_amount > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME)
+  if (reserve_bytes_blocks_amount > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME * 30)
   {
-    reserve_bytes_blocks_amount = BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
+    // maximum range of blocks returned is 1 months worth of blocks
+    reserve_bytes_blocks_amount = BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME * 30;
   }
 
   // create the message
-  memcpy(message2,"BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES|",43);
-
   for (count = 0; count < reserve_bytes_blocks_amount; count++, current_block_height_reserve_bytes++)
   {
     // create the message
@@ -432,101 +433,26 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes(const i
     snprintf(data+14,sizeof(data)-15,"%zu",count2);
 
     // get the data hash
-    if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes",message,1) == 0)
+    if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes_data_hash",message,1) == 0)
     {
-      if (count+1 != reserve_bytes_blocks_amount)
-      {
-        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not get the previous blocks reserve bytes");
-      }
-      else
-      {
-        goto start;
-      }      
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
     }
   
     memcpy(message2+strlen(message2),message,strnlen(message,MAXIMUM_BUFFER_SIZE));
     memcpy(message2+strlen(message2),"|",1);
   }
   
-  start:
   memcpy(message2+strlen(message2),"}",1);
   
   // send the data
   if (send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node");
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node");
   }
   pointer_reset(message2);
   return 1;
   
-  #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_data_hash
-Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH message
-Parameters:
-  CLIENT_SOCKET - The socket to send data to
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_data_hash(const int CLIENT_SOCKET, const char* MESSAGE)
-{  
-  // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
-  size_t count;
-
-  // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_data_hash",78); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes data hash}",0,0,""); \
-  return 0;
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-  memset(message,0,sizeof(message));
-  
-  if (parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR("Could not create the message");
-  }
-
-  // get the blocks data hash
-  memcpy(data2,"{\"block_height\": \"",18);
-  memcpy(data2+18,data,strnlen(data,sizeof(data2)));
-  memcpy(data2+strlen(data2),"\"}",2);
-
-  get_reserve_bytes_database(count,0);
-  memset(data,0,sizeof(data));
-  memcpy(data,"reserve_bytes_",14);
-  snprintf(data+14,sizeof(data)-15,"%zu",count);
-
-  if (read_document_field_from_collection(DATABASE_NAME,data,data2,"reserve_bytes_data_hash",message,1) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR("Could not get the network blocks reserve bytes data hash");
-  }
-
-  // create the message
-  memset(data,0,sizeof(data));
-  memcpy(data,message,DATA_HASH_LENGTH);
-  memcpy(data+DATA_HASH_LENGTH,"}",1);
-
-  // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR("Could not send the network blocks reserve bytes data hash");
-  }
-  return 1;
-  
-  #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATA_HASH_ERROR
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR
 }
 
 
