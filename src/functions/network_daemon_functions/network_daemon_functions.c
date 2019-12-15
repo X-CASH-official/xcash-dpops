@@ -52,7 +52,7 @@ int check_if_blockchain_is_fully_synced(void)
   memset(message,0,sizeof(message));
   memset(data,0,sizeof(data));
 
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,MESSAGE,RECEIVE_DATA_TIMEOUT_SETTINGS,"get info",HTTP_SETTINGS) <= 0)
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,MESSAGE,RECEIVE_DATA_TIMEOUT_SETTINGS,"get info",0) <= 0)
   {  
     return 0;
   }

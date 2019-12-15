@@ -386,7 +386,7 @@ int main(int parameters_count, char* parameters[])
   // wait until the blockchain is fully synced
   if (check_if_blockchain_is_fully_synced() == 0)
   {
-    color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue");  
+    color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue","yellow");  
     do
     {
       sleep(60);
