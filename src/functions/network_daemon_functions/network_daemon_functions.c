@@ -23,6 +23,62 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_if_blockchain_is_fully_synced
+Description: Gets if the blockchain is fully synced
+Return: 1 if fully synced, 0 if not or an error
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_if_blockchain_is_fully_synced(void)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
+  size_t count;
+  size_t count2;
+
+  // define macros
+  #define MESSAGE "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_info\"}"
+  #define CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"check_if_blockchain_is_fully_synced",35); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+  
+  memset(message,0,sizeof(message));
+  memset(data,0,sizeof(data));
+
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,MESSAGE,RECEIVE_DATA_TIMEOUT_SETTINGS,"get info",HTTP_SETTINGS) <= 0)
+  {  
+    return 0;
+  }
+  
+  if (parse_json_data(data,"target_height",message,BUFFER_SIZE) == 0)
+  {
+    return 0;
+  }
+
+  sscanf(current_block_height,"%zu",&count);
+  sscanf(message,"%zu",&count2);
+
+  if (count < count2)
+  {
+    return 0;
+  }
+  return 1;
+  
+  #undef MESSAGE
+  #undef CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_block_template
 Description: Gets the block template for creating a new block
 Parameters:

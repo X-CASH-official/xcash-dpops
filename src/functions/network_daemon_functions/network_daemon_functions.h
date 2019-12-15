@@ -7,6 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
+int check_if_blockchain_is_fully_synced(void);
 int get_block_template(char *result, const int HTTP_SETTINGS);
 int submit_block_template(char* data, const int HTTP_SETTINGS);
 int get_block_settings(char* block_height, const int HTTP_SETTINGS);

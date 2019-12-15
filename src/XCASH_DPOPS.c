@@ -383,6 +383,16 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not get the current block height");
   }
 
+  // wait until the blockchain is fully synced
+  if (check_if_blockchain_is_fully_synced() == 0)
+  {
+    color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue");  
+    do
+    {
+      sleep(60);
+    } while (check_if_blockchain_is_fully_synced() == 0);
+  }
+
   // get the previous block hash
   if (get_previous_block_hash(previous_block_hash,0) == 0)
   {
