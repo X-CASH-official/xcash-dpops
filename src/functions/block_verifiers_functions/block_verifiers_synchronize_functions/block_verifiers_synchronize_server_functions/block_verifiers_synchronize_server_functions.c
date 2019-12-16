@@ -416,6 +416,13 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
     // maximum range of blocks returned is 1 months worth of blocks
     reserve_bytes_blocks_amount = BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME * 30;
   }
+  if (reserve_bytes_blocks_amount == 0)
+  {
+    // set it to 1 if 0, due to live syncing it will always show 0
+    reserve_bytes_blocks_amount = 1;
+  }
+
+  fprintf(stderr,"%s\n\n\n\n\n%zu",MESSAGE,reserve_bytes_blocks_amount);
 
   // create the message
   for (count = 0; count < reserve_bytes_blocks_amount; count++, current_block_height_reserve_bytes++)
