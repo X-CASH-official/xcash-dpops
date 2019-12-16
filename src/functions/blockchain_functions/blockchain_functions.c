@@ -496,7 +496,6 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   }
   memcpy(blockchain_data.block_height_data,&DATA[count-blockchain_data.block_height_data_length],blockchain_data.block_height_data_length);
   blockchain_data.block_height = varint_decode((size_t)strtol(blockchain_data.block_height_data, NULL, 16));
-  fprintf(stderr,"blockheight=%s|%zu!",blockchain_data.block_height_data,blockchain_data.block_height);
 
   // block_reward_output
   blockchain_data.block_reward_output_data_length = sizeof(BLOCK_REWARD_OUTPUT)-1;
@@ -1494,7 +1493,6 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {
     if ((blockchain_data.block_height <= 2097151 && blockchain_data.block_height_data_length != 6) || (blockchain_data.block_height > 2097151 && blockchain_data.block_height_data_length != 8) || blockchain_data.block_height != number)
     {
-      fprintf(stderr,"%zu|%zu",blockchain_data.block_height_data_length,blockchain_data.block_height);
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_height");
     }
   }
@@ -1764,15 +1762,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
         }      
       }
 
-      for (count = 0;(int)count < BLOCK_VERIFIERS_TOTAL; count++) {fprintf(stderr,"%s||%s\n\n",previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count]);}
-
       // create a network block string
       if (blockchain_data_to_network_block_string(network_block_string,BLOCK_VERIFIERS_TOTAL) == 0)
       {
         VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not convert the blockchain struct to a network block string");
       }
-
-      color_print(network_block_string,"yellow");
 
       // replace the block validation signatures with the GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA
       for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
@@ -1782,17 +1776,13 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
 
       // check if at least 67 of the next block verifiers in the previous block signed the data in the current block
       for (count = 0, number = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
-      {      
-        
-          for (count2 = 0; (int)count2 < BLOCK_VERIFIERS_TOTAL; count2++)
-          {
-            if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count2],"5369675631",10) == 0)
+      { 
+        if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
         {
           // check the signed data 
-          if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],network_block_string) == 1)
+          if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],network_block_string) == 1)
           {
             number++;
-          }
           }
         }
       }

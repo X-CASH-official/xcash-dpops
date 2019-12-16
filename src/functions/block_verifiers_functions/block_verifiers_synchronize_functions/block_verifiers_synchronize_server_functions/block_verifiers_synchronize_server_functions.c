@@ -410,7 +410,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Invalid block height");
   }
-  reserve_bytes_blocks_amount = (count2 - current_block_height_reserve_bytes) + 1;
+  reserve_bytes_blocks_amount = (count2 - current_block_height_reserve_bytes);
   if (reserve_bytes_blocks_amount > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME * 30)
   {
     // maximum range of blocks returned is 1 months worth of blocks
