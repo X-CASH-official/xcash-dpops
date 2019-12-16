@@ -422,8 +422,6 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
     reserve_bytes_blocks_amount = 1;
   }
 
-  fprintf(stderr,"%s\n\n\n\n\n%zu",MESSAGE,reserve_bytes_blocks_amount);
-
   // create the message
   for (count = 0; count < reserve_bytes_blocks_amount; count++, current_block_height_reserve_bytes++)
   {

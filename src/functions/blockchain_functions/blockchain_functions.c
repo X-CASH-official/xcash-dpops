@@ -1333,7 +1333,7 @@ Return: 0 if an error has occured or it is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const int TRANSACTIONS_SETTINGS, const char* BLOCK_HEIGHT, const char* PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES, const int BLOCK_VERIFIERS_TOTAL)
+int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const int TRANSACTIONS_SETTINGS, const char* BLOCK_HEIGHT, char* PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES, const int BLOCK_VERIFIERS_TOTAL)
 {
   // Variables
   char* block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
@@ -1743,7 +1743,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     else
     { 
       // get the next block verifiers public addresses from the previous network blocks reserve bytes
-      message_copy1 = (char*)PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES;
+      message_copy1 = PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES;
       // skip the first public address, since this is the block verifier public address
       message_copy1 = strstr(message_copy1,BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1);
 
