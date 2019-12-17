@@ -640,7 +640,7 @@ function stop_programs()
 function start_programs()
 {
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}              Starting XCASH DPOPS Programs                 ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}              Restarting XCASH DPOPS Programs                 ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
   echo
@@ -732,65 +732,6 @@ function start_programs()
   echo
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}          Started XCASH DPOPS Programs Successfully         ${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo
-  echo
-  echo -e "${COLOR_PRINT_YELLOW}To view the log file\ntail -f -n 100 ${LOGS_DIR}XCASH_DPOPS_log.txt${END_COLOR_PRINT}"
-}
-
-
-
-
-
-
-
-
-
-
-function restart_programs()
-{
-  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}              Restarting XCASH DPOPS Programs                 ${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo
-  echo
-  
-  # Update the processes
-  MONGODB_PROCESS=$(ps -eo args | grep MongoDB | head -n -1)
-  XCASH_DAEMON_PROCESS=$(ps -eo args | grep XCASH_Daemon | head -n -1)
-  XCASH_WALLET_PROCESS=$(ps -eo args | grep XCASH_Wallet | head -n -1)
-  XCASH_DPOPS_PROCESS=$(ps -eo args | grep XCASH_DPOPS | head -n -1)
-
-  stop_processes
-
-  echo -ne "${COLOR_PRINT_YELLOW}Starting Programs${END_COLOR_PRINT}"
-
-  eval "screen${MONGODB_PROCESS:6}"
-  eval "screen${XCASH_DAEMON_PROCESS:6}"
-  sleep 30s
-  eval "screen${XCASH_WALLET_PROCESS:6}"
-  sleep 30s
-  eval "screen${XCASH_DPOPS_PROCESS:6}"
-  sleep 10s
-
-  chmod +x ${XCASH_DPOPS_INSTALLATION_DIR}scripts/autoinstaller/docker_auto_restart.sh
-  screen -dmS XCASH_DPOPS_AUTO_RESTART ${XCASH_DPOPS_INSTALLATION_DIR}scripts/autoinstaller/docker_auto_restart.sh
-  sleep 10s
-  
-  # Check if all of the programs have started
-  data=$(ps -eaf)
-  if [[ ! $data =~ "SCREEN -dmS MongoDB" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Daemon" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Wallet" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_DPOPS" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_DPOPS_AUTO_RESTART" ]]; then
-    echo -ne "\r${COLOR_PRINT_GREEN}Starting Programs${END_COLOR_PRINT}"
-    echo -e "\r${COLOR_PRINT_RED}All of the programs could not start${END_COLOR_PRINT}"
-    stop_processes
-    exit
-  fi
-
-  echo -ne "\r${COLOR_PRINT_GREEN}Starting Programs${END_COLOR_PRINT}"
-  echo
-  echo
-  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}          Restarted XCASH DPOPS Programs Successfully         ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
@@ -815,23 +756,21 @@ function main()
   echo
   echo
   while
-    echo -ne "${COLOR_PRINT_YELLOW}(C)onfigure, (U)pdate, (Start) Programs, (Stop) Programs, (Restart) Programs: ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}(C)onfigure, (U)pdate, (R)estart Programs, (S)top Programs: ${END_COLOR_PRINT}"
     read -r data
     echo -ne "\r"
     echo
-    [ ! "${data^^}" == "C" ] && [ ! "${data^^}" == "U" ] &&  [ ! "${data^^}" == "START" ] &&  [ ! "${data^^}" == "STOP" ] && [ ! "${data^^}" == "RESTART" ]
+    [ ! "${data^^}" == "C" ] && [ ! "${data^^}" == "U" ] &&  [ ! "${data^^}" == "R" ] && [ ! "${data^^}" == "S" ]
   do true; done
   if [ "${data^^}" == "C" ]; then
     configuration
     update
   elif [ "${data^^}" == "U" ]; then
     update
-  elif [ "${data^^}" == "START" ]; then
+  elif [ "${data^^}" == "R" ]; then
     start_programs
-  elif [ "${data^^}" == "STOP" ]; then
+  elif [ "${data^^}" == "S" ]; then
     stop_programs
-  elif [ "${data^^}" == "RESTART" ]; then
-    restart_programs
   fi  
 }
 
