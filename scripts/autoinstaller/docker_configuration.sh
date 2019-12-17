@@ -819,7 +819,7 @@ function main()
     read -r data
     echo -ne "\r"
     echo
-    [ ! "${data^^}" == "C" ] && [ ! "${data^^}" == "U" ] &&  [ ! "${data^^}" == "START" ] &&  [ ! "${data^^}" == "STOP" ]
+    [ ! "${data^^}" == "C" ] && [ ! "${data^^}" == "U" ] &&  [ ! "${data^^}" == "START" ] &&  [ ! "${data^^}" == "STOP" ] && [ ! "${data^^}" == "RESTART" ]
   do true; done
   if [ "${data^^}" == "C" ]; then
     configuration
