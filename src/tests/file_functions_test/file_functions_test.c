@@ -95,19 +95,20 @@ int file_functions_test(void)
   }
 
   // append the file
+  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  struct append_file_thread_parameters append_file_thread_parameters = {MESSAGE,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY};
+  memcpy(data_test,"|XCASH_PROOF_OF_STAKE_TEST_DATA",31);
+  struct append_file_thread_parameters append_file_thread_parameters = {data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY};
   pthread_create(&thread_id, NULL, &append_file_thread,(void *)&append_file_thread_parameters);
-  if (thread_settings(thread_id) == 0)
+  if (thread_settings(thread_id) == 0 || read_file((unsigned char*)result_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || memcmp(result_test,"XCASH_PROOF_OF_STAKE_TEST_DATA|XCASH_PROOF_OF_STAKE_TEST_DATA",61) != 0)
   {
     color_print("FAILED! Test for appending the file on a seperate thread","red");
   }
-  if (strncmp(data_test,MESSAGE,BUFFER_SIZE) != 0)
+  else
   {
-    color_print("FAILED! Test for appending the file on a seperate thread","red");
-  }
-  color_print("PASSED! Test for appending the file on a seperate thread","green");
-  count_test++;
+    color_print("PASSED! Test for appending the file on a seperate thread","green");
+    count_test++;
+  }  
 
   // read the file
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
@@ -117,12 +118,11 @@ int file_functions_test(void)
   {
     color_print("FAILED! Test for reading the file on a seperate thread","red");
   }
-  if (strncmp(data_test,MESSAGE,BUFFER_SIZE) != 0)
+  else
   {
-    color_print("FAILED! Test for reading the file on a seperate thread","red");
-  }
-  color_print("PASSED! Test for reading the file on a seperate thread","green");
-  count_test++;
+    color_print("PASSED! Test for reading the file on a seperate thread","green");
+    count_test++; 
+  }  
   remove(NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY);
 
 
