@@ -1777,12 +1777,15 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       // check if at least 67 of the next block verifiers in the previous block signed the data in the current block
       for (count = 0, number = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
       { 
-        if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
+        for (count2 = 0; (int)count2 < BLOCK_VERIFIERS_TOTAL; count2++)
         {
-          // check the signed data 
-          if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],network_block_string) == 1)
-          {
-            number++;
+          if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
+          {            
+            // check the signed data 
+            if (data_verify(0,previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],network_block_string) == 1)
+            {
+              number++;
+            }
           }
         }
       }
