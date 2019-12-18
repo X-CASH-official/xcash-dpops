@@ -7,8 +7,8 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int varint_encode(const uint_fast64_t number, char *result, const uint_fast64_t RESULT_TOTAL_LENGTH);
-uint_fast64_t varint_decode(uint_fast64_t varint);
+int varint_encode(long long int number, char *result, const size_t RESULT_TOTAL_LENGTH);
+size_t varint_decode(size_t varint);
 int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_HEIGHT, const int BLOCK_VERIFIERS_TOTAL);
 int blockchain_data_to_network_block_string(char *result, const int BLOCK_VERIFIERS_TOTAL);
 int add_data_hash_to_network_block_string(char* network_block_string, char *network_block_string_data_hash);
