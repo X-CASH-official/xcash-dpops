@@ -1230,8 +1230,6 @@ int block_verifiers_create_block_signature(char* message)
     BLOCK_VERIFIERS_CREATE_BLOCK_SIGNATURE_ERROR("Could not sign the network block string");
   }
 
-  fprintf(stderr,"signature %s\n\n%s\n\n\n\n\n",data,VRF_data.block_blob);
-
   // add the block verifier signature to the VRF data and the blockchain_data struct
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {

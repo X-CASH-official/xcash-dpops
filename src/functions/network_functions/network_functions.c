@@ -939,7 +939,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     {
       memcpy(message+strlen(message)," Not Found",10);
     }
-    memcpy(message+strlen(message),"\r\nConnection: close\r\nContent-Length: ",37);
+    memcpy(message+strlen(message),"\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept\r\nContent-Length: ",147);
     snprintf(message+strlen(message),MAXIMUM_BUFFER_SIZE,"%ld",DATA_LENGTH);
     memcpy(message+strlen(message),"\r\nContent-Language: en\r\nContent-Type: ",38);
     memcpy(message+strlen(message),MESSAGE_DATA_SETTINGS,strnlen(MESSAGE_DATA_SETTINGS,MAXIMUM_BUFFER_SIZE));
