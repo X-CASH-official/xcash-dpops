@@ -85,7 +85,7 @@ Using define statements instead of constants for increased efficiency
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 
 // Lengths
-#define BUFFER_SIZE 164000
+#define BUFFER_SIZE 175000
 #define BUFFER_SIZE_RESERVE_PROOF 35000
 #define BUFFER_SIZE_NETWORK_BLOCK_DATA 500
 #define BUFFER_SIZE_NETWORK_BLOCK_TRANSACTIONS_DATA 100
