@@ -169,6 +169,9 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   {  
     SUBMIT_BLOCK_TEMPLATE_ERROR("Could not submit the block template");
   }
+
+
+  color_print("SUBMITTED BLOCK","yellow");
   
   if (strstr(data,"error") != NULL)
   {
@@ -451,6 +454,7 @@ int get_previous_block_hash(char *result, const int MESSAGE_SETTINGS)
   return 0;
 
   memset(data,0,sizeof(data));
+  memset(result,0,strlen(result));
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_last_block_header\"}",RECEIVE_DATA_TIMEOUT_SETTINGS,"get previous block hash",MESSAGE_SETTINGS) <= 0)
   {

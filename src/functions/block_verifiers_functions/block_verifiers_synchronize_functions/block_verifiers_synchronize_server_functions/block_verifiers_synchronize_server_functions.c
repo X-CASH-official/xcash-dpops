@@ -380,7 +380,6 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   pointer_reset(message2); \
-  color_print(MESSAGE,"yellow"); \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes database hash}",0,0,""); \
   return 0;
 

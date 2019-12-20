@@ -189,8 +189,7 @@ int start_new_round(void)
     }
     if (block_verifiers_create_block() == 0)
     {
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);
-      color_print("Your block verifier will wait until the next round\n","red");
+      START_NEW_ROUND_ERROR("Your block verifier will wait until the next round\n");
     }
   }
   return 2;
