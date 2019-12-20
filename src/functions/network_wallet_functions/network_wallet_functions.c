@@ -11,6 +11,7 @@
 #include "network_functions.h"
 #include "network_wallet_functions.h"
 #include "string_functions.h"
+#include "VRF_functions.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -130,15 +131,11 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SETTINGS)
+int sign_network_block_string(char *data, const char* MESSAGE)
 {
-  // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-
   // Variables
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char beta_string[BUFFER_SIZE];
+  char proof[BUFFER_SIZE];
 
   // define macros
   #define SIGN_NETWORK_BLOCK_STRING_ERROR(settings) \
@@ -147,85 +144,20 @@ int sign_network_block_string(char *data, const char* MESSAGE, const int HTTP_SE
   error_message.total++; \
   return 0;
 
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
+  memset(beta_string,0,sizeof(beta_string));
+  memset(proof,0,sizeof(proof));
 
-  // sign_data
-  memcpy(data2,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
-  memcpy(data2+60,MESSAGE,strnlen(MESSAGE,sizeof(data2)));
-  memcpy(data2+strlen(data2),"\"}}",3);
-
-  if (send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data2,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
-  {  
-    SIGN_NETWORK_BLOCK_STRING_ERROR("Could not sign the network block string");
-  } 
-
-  if (parse_json_data(data3,"signature",data, BUFFER_SIZE) == 0)
+  // sign data
+  if (VRF_sign_data(beta_string,proof,MESSAGE) == 0)
   {
     SIGN_NETWORK_BLOCK_STRING_ERROR("Could not sign the network block string");
   }
+  memset(data,0,strlen(data));
+  memcpy(data,proof,VRF_PROOF_LENGTH);
+  memcpy(data+VRF_PROOF_LENGTH,beta_string,VRF_BETA_LENGTH);
   return 1;
   
   #undef SIGN_NETWORK_BLOCK_STRING_ERROR
-}
-
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: data_verify
-Description: Verifies data
-Parameters:
-  MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
-  PUBLIC_ADDRESS - The public address
-  DATA_SIGNATURE - The data signature
-  DATA - The data
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int data_verify(const int MESSAGE_SETTINGS, const char* PUBLIC_ADDRESS, const char* DATA_SIGNATURE, const char* DATA)
-{
-  // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-
-  // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-
-  // define macros
-  #define DATA_VERIFY_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"data_verify",11); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  return 0;
-  
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-
-  // create the message
-  memcpy(data2,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"verify\",\"params\":{\"data\":\"",62);
-  memcpy(data2+strlen(data2),DATA,strnlen(DATA,sizeof(data2)));
-  memcpy(data2+strlen(data2),"\",\"address\":\"",13);
-  memcpy(data2+strlen(data2),PUBLIC_ADDRESS,strlen(PUBLIC_ADDRESS));
-  memcpy(data2+strlen(data2),"\",\"signature\":\"",15);
-  memcpy(data2+strlen(data2),DATA_SIGNATURE,strlen(DATA_SIGNATURE));
-  memcpy(data2+strlen(data2),"\"}}",3);
-
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data2,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",MESSAGE_SETTINGS) <= 0)
-  {  
-    DATA_VERIFY_ERROR("Could not verify the data");
-  }
-  
-  if (strstr(data,"\"good\": true") == NULL)
-  {
-    DATA_VERIFY_ERROR("Could not verify the data");
-  }
-  return 1;
-
-  #undef DATA_VERIFY_ERROR
 }
 
 

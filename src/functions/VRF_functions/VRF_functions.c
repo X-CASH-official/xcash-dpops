@@ -108,3 +108,99 @@ void generate_key()
   
   return;
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: VRF_sign_data
+Description: Sign data using the block verifiers ECDSA key
+Parameters:
+  beta - The beta string
+  proof - The proof
+  data - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int VRF_sign_data(char *beta_string, char *proof, const char* data)
+{
+  // Variables
+  unsigned char proof_data[crypto_vrf_PROOFBYTES+1];
+  unsigned char beta_string_data[crypto_vrf_OUTPUTBYTES+1];
+  size_t count;
+  size_t count2;
+
+  memset(beta_string,0,strlen(beta_string));
+  memset(proof,0,strlen(proof));
+  memset(proof_data,0,sizeof(proof_data));
+  memset(beta_string_data,0,sizeof(beta_string_data));
+
+  // sign data
+  if (crypto_vrf_prove((unsigned char*)proof_data,(const unsigned char*)secret_key_data,(const unsigned char*)data,(unsigned long long)strlen((const char*)data)) != 0 || crypto_vrf_proof_to_hash((unsigned char*)beta_string_data,(const unsigned char*)proof_data) != 0)
+  {
+    return 0;
+  }
+
+  // convert the data to a string
+  for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+  {
+    snprintf(proof+count,VRF_PROOF_LENGTH,"%02x",proof_data[count2] & 0xFF);
+  }
+  for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
+  {
+    snprintf(beta_string+count,VRF_BETA_LENGTH,"%02x",beta_string_data[count2] & 0xFF);
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: VRF_data_verify
+Description: Verifies data
+Parameters:
+  PUBLIC_ADDRESS - The public address
+  DATA_SIGNATURE - The data signature
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int VRF_data_verify(const char* BLOCK_VERIFIERS_PUBLIC_KEY, const char* BLOCK_VERIFIERS_DATA_SIGNATURE, const char* DATA)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  unsigned char public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
+  unsigned char proof_data[crypto_vrf_PROOFBYTES+1];
+  unsigned char beta_string_data[crypto_vrf_OUTPUTBYTES+1];
+  size_t count;
+  size_t count2;
+
+  // convert the public key, proof and beta string to a string
+    for (count = 0, count2 = 0; count < VRF_PUBLIC_KEY_LENGTH; count2++, count += 2)
+    {
+      memset(data,0,sizeof(data));
+      memcpy(data,&BLOCK_VERIFIERS_PUBLIC_KEY[count],2);
+      public_key_data[count2] = (int)strtol(data, NULL, 16);
+    }
+    for (count = 0, count2 = 0; count < VRF_PROOF_LENGTH; count2++, count += 2)
+    {
+      memset(data,0,sizeof(data));
+      memcpy(data,&BLOCK_VERIFIERS_DATA_SIGNATURE[count],2);
+      proof_data[count2] = (int)strtol(data, NULL, 16);
+    }
+    for (count = VRF_PROOF_LENGTH, count2 = 0; count < VRF_BETA_LENGTH; count2++, count += 2)
+    {
+      memset(data,0,sizeof(data));
+      memcpy(data,&BLOCK_VERIFIERS_DATA_SIGNATURE[count],2);
+      beta_string_data[count2] = (int)strtol(data, NULL, 16);
+    }
+
+  if (crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)DATA,(unsigned long long)strlen((const char*)DATA)) != 0)
+  {
+   return 0;
+  }
+  return 1;
+}

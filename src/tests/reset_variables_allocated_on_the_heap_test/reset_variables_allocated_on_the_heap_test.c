@@ -123,7 +123,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   char* transactions[5];
 
   // define macros
-  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 45
+  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 44
   #define RESET_ERROR_MESSAGES \
   memset(error_message.function[0],0,strlen(error_message.function[0])); \
   memset(error_message.data[0],0,strlen(error_message.data[0])); \
@@ -2697,65 +2697,6 @@ int reset_variables_allocated_on_the_heap_test(void)
 
 
 
-  // data_verify   
-  // read the current system memory usage
-  if (settings2 == 1)
-  {
-    previous_system_memory_usage = get_program_memory_usage(process_id_file);
-    for (count = 0; count <= 1000; count++)
-    {
-      fprintf(stderr,"Current progress for data_verify: %zu / 1000",count);
-      fprintf(stderr,"\r");
-      data_verify(0,"XCA1rWqiYtmHPZssWpCpnsPuQd1uXP91zEVDYkEYdqzb2tDKZCZUaDahWignGvx38ugboroBRRMBS6M3NxDZJEdM5W2KU1BNDK","SigV1AFPX9VxwFgbNmLn2AmZbvG6n342EGfJYbDDZMtFRDkPUZc7bPYriHMYGQ4E996AU64RCsKKqG95X9UXRS1pDETyF","X-CASH");
-      RESET_ERROR_MESSAGES;
-      if (count == 0)
-      {    
-        current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
-      }
-      if (count == 10)
-      {
-        current_system_memory_usage = get_program_memory_usage(process_id_file);
-        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 9 && current_memory_usage > 0)
-        {
-          color_print("FAILED! data_verify has not reset all variables allocated on the heap","red");
-          settings2 = 0;
-          break;
-        }      
-      }
-      if (count == 100)
-      {
-        current_system_memory_usage = get_program_memory_usage(process_id_file);
-        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 50 && current_memory_usage > 0)
-        {
-          color_print("FAILED! data_verify has not reset all variables allocated on the heap","red");
-          settings2 = 0;
-          break;
-        }  
-      }
-      if (count == 1000)
-      {
-        current_system_memory_usage = get_program_memory_usage(process_id_file);
-        if ((current_system_memory_usage - previous_system_memory_usage) > current_memory_usage * 250 && current_memory_usage > 0)
-        {
-          color_print("FAILED! data_verify has not reset all variables allocated on the heap","red");
-          settings2 = 0;
-          break;
-        }
-        else
-        {
-          color_print("PASSED! data_verify has reset all variables allocated on the heap","green");
-          count_test++;
-        } 
-      }    
-    }
-  }
-  else
-  {
-    color_print("All other test will not be run","red");
-  }
-
-
-
   // sign_network_block_string   
   // read the current system memory usage
   if (settings2 == 1)
@@ -2765,7 +2706,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for sign_network_block_string: %zu / 1000",count);
       fprintf(stderr,"\r");
-      sign_network_block_string(data_test,"X-CASH",0);
+      sign_network_block_string(data_test,"X-CASH");
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    

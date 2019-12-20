@@ -14,6 +14,7 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "string_functions.h"
+#include "VRF_functions.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -43,12 +44,8 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   char data[BUFFER_SIZE];
   char proof[VRF_PROOF_LENGTH+1];
   char beta_string[VRF_BETA_LENGTH+1];
-  unsigned char proof_data[crypto_vrf_PROOFBYTES+1];
-  unsigned char beta_string_data[crypto_vrf_OUTPUTBYTES+1];
   char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
-  size_t count;
-  size_t count2;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
@@ -86,8 +83,6 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   
   memset(proof,0,sizeof(proof));
   memset(beta_string,0,sizeof(beta_string));
-  memset(proof_data,0,sizeof(proof_data));
-  memset(beta_string_data,0,sizeof(beta_string_data));  
   memset(random_data,0,sizeof(random_data));
   memset(data,0,sizeof(data));
   
@@ -122,20 +117,10 @@ int sign_data(char *message, const int HTTP_SETTINGS)
   if (strstr(message,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST") == NULL && strstr(message,"XCASH_PROOF_OF_STAKE_TEST_DATA") == NULL && strstr(message,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") == NULL)
   {
     // sign data
-    if (crypto_vrf_prove((unsigned char*)proof_data,(const unsigned char*)secret_key_data,(const unsigned char*)result,(unsigned long long)strlen((const char*)result)) != 0 || crypto_vrf_proof_to_hash((unsigned char*)beta_string_data,(const unsigned char*)proof_data) != 0)
+    if (VRF_sign_data(beta_string,proof,result) == 0)
     {
-      SIGN_DATA_ERROR("Could not create the message");
+      SIGN_DATA_ERROR("Could not sign the message");
     }
-
-    // convert the data to a string
-    for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
-    {
-      snprintf(proof+count,sizeof(proof)-1,"%02x",proof_data[count2] & 0xFF);
-    }
-    for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
-    {
-      snprintf(beta_string+count,sizeof(beta_string)-1,"%02x",beta_string_data[count2] & 0xFF);
-    } 
 
     pthread_rwlock_rdlock(&rwlock);
     // create the message  
@@ -697,8 +682,8 @@ int validate_data(const char* MESSAGE)
   }
   else if (strstr(MESSAGE,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE") != NULL)
   {
-    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",sizeof(data)) != 0 || parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != XCASH_SIGN_DATA_LENGTH || memcmp(data,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) || parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 0 || strlen(data) != XCASH_WALLET_LENGTH || memcmp(data,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"previous_block_hash",data,sizeof(data)) == 0 || strlen(data) != BLOCK_HASH_LENGTH || parse_json_data(MESSAGE,"current_round_part",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"current_round_part_backup_node",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"data",data,sizeof(data)) == 0 || strlen(data) != RANDOM_STRING_LENGTH || parse_json_data(MESSAGE,"XCASH_DPOPS_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_BETA_LENGTH+VRF_PROOF_LENGTH)
-    {
+    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",sizeof(data)) != 0 || parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_PROOF_LENGTH+VRF_BETA_LENGTH || parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 0 || strlen(data) != XCASH_WALLET_LENGTH || memcmp(data,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"previous_block_hash",data,sizeof(data)) == 0 || strlen(data) != BLOCK_HASH_LENGTH || parse_json_data(MESSAGE,"current_round_part",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"current_round_part_backup_node",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"data",data,sizeof(data)) == 0 || strlen(data) != RANDOM_STRING_LENGTH || parse_json_data(MESSAGE,"XCASH_DPOPS_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_BETA_LENGTH+VRF_PROOF_LENGTH)
+    {color_print(MESSAGE,"yellow");
       VALIDATE_DATA_ERROR("Invalid message");
     }
   }

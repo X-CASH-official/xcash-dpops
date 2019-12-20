@@ -616,7 +616,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   }
 
   // check if the item is valid
-  if (memcmp(item,"IP_address",10) != 0 && memcmp(item,"about",5) != 0 && memcmp(item,"website",7) != 0 && memcmp(item,"team",4) != 0 && memcmp(item,"pool_mode",9) != 0 && memcmp(item,"fee_structure",13) != 0 && memcmp(item,"server_settings",15) != 0 && memcmp(item,"public_key",10) != 0)
+  if (memcmp(item,"IP_address",10) != 0 && memcmp(item,"about",5) != 0 && memcmp(item,"website",7) != 0 && memcmp(item,"team",4) != 0 && memcmp(item,"pool_mode",9) != 0 && memcmp(item,"fee_structure",13) != 0 && memcmp(item,"server_settings",15) != 0)
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update");
   }
@@ -625,23 +625,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   if ((memcmp(item,"IP_address",10) == 0 && strlen(value) > 255) || (memcmp(item,"about",5) == 0 && strlen(value) > 1024) || (memcmp(item,"website",7) == 0 && strlen(value) > 255) || (memcmp(item,"team",4) == 0 && strlen(value) > 255) || (memcmp(item,"pool_mode",9) == 0 && memcmp(value,"true",4) != 0 && memcmp(value,"false",5) != 0) || (memcmp(item,"fee_structure",13) == 0 && strlen(value) > 10) || (memcmp(item,"server_settings",15) == 0 && strlen(value) > 1024))
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update");
-  }
-
-  // if the item is public_key, check if it is valid
-  if (memcmp(item,"public_key",10) == 0)
-  {
-    // convert the VRF public key string to a VRF public key
-    for (count2 = 0, count = 0; count2 < VRF_PUBLIC_KEY_LENGTH; count++, count2 += 2)
-    {
-      memset(data,0,sizeof(data));
-      memcpy(data,&value[count2],2);
-      delegate_public_key_data[count] = (int)strtol(data, NULL, 16);
-    } 
-
-    if (strlen(value) != VRF_PUBLIC_KEY_LENGTH || crypto_vrf_is_valid_key((const unsigned char*)delegate_public_key_data) != 1)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid public key");
-    }
   }
 
   // create the message

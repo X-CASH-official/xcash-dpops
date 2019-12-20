@@ -390,7 +390,7 @@ int start_current_round_start_blocks(void)
   // add the next block verifiers and add 0`s for the block_validation_node_signature
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   { 
-    memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_key[count],VRF_PUBLIC_KEY_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA)-1);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
   }
@@ -403,7 +403,7 @@ int start_current_round_start_blocks(void)
   }
 
   // sign the network block string
-  if (sign_network_block_string(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[0],data,0) == 0)
+  if (sign_network_block_string(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[0],data) == 0)
   {
     START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign the network block string");
   }
@@ -692,7 +692,7 @@ int data_network_node_create_block(void)
     // add the next block verifiers and add 0`s for the block_validation_node_signature
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     { 
-      memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+      memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_key[count],VRF_PUBLIC_KEY_LENGTH);
       memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA)-1);
       memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
     }
@@ -705,7 +705,7 @@ int data_network_node_create_block(void)
 
     // sign the network block string
     memset(data,0,sizeof(data));
-    if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
+    if (sign_network_block_string(data,VRF_data.block_blob) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign the network block string");
     }
@@ -768,14 +768,7 @@ int data_network_node_create_block(void)
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Invalid amount of block verifiers network block signatures");
     }
 
-    /*// convert the blockchain_data to a network_block_string
-    memset(data,0,sizeof(data));
-    if (blockchain_data_to_network_block_string(data,BLOCK_VERIFIERS_AMOUNT) == 0)
-    {
-      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not convert the blockchain_data to a network_block_string");
-    }*/
-
-    memset(data,0,sizeof(data));
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
@@ -1205,7 +1198,7 @@ int block_verifiers_create_block_signature(char* message)
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],VRF_data.block_verifiers_vrf_public_key_data[count],VRF_PUBLIC_KEY_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data_text[count],VRF_data.block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
 
-    memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+    memcpy(blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_key[count],VRF_PUBLIC_KEY_LENGTH);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA)-1);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
             
@@ -1225,25 +1218,27 @@ int block_verifiers_create_block_signature(char* message)
 
   // sign the network block string
   memset(data,0,sizeof(data));
-  if (sign_network_block_string(data,VRF_data.block_blob,0) == 0)
+  if (sign_network_block_string(data,VRF_data.block_blob) == 0)
   {
     BLOCK_VERIFIERS_CREATE_BLOCK_SIGNATURE_ERROR("Could not sign the network block string");
   }
+
+  fprintf(stderr,"Signed data = %s\n\n",data);
 
   // add the block verifier signature to the VRF data and the blockchain_data struct
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
-      memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
+      memcpy(VRF_data.block_blob_signature[count],data,strnlen(data,BUFFER_SIZE));
     }
   }
 
   // create the message
   memset(message,0,strlen(message));
   memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
-  memcpy(message+110,data,XCASH_SIGN_DATA_LENGTH);
-  memcpy(message+203,"\",\r\n}",5);
+  memcpy(message+110,data,strnlen(data,BUFFER_SIZE));
+  memcpy(message+strlen(message),"\",\r\n}",5);
   return 1;
 
   #undef BLOCK_VERIFIERS_CREATE_BLOCK_SIGNATURE_ERROR
@@ -1727,9 +1722,9 @@ int block_verifiers_create_block(void)
     // process the data and add the block verifiers signatures to the block
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strlen(VRF_data.block_blob_signature[count]) == XCASH_SIGN_DATA_LENGTH && memcmp(VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
+      if (strlen(VRF_data.block_blob_signature[count]) == VRF_PROOF_LENGTH+VRF_BETA_LENGTH)
       {
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],XCASH_SIGN_DATA_LENGTH);
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
         count2++;
       }
       else

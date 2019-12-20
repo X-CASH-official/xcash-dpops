@@ -387,20 +387,9 @@ void network_wallet_test(void)
     color_print("FAILED! Test for sending an HTTP request and getting the public address of the opened X-CASH wallet","red");
   }
 
-  // test the data_verify function
-  if (data_verify(0,"XCA1rWqiYtmHPZssWpCpnsPuQd1uXP91zEVDYkEYdqzb2tDKZCZUaDahWignGvx38ugboroBRRMBS6M3NxDZJEdM5W2KU1BNDK","SigV1AFPX9VxwFgbNmLn2AmZbvG6n342EGfJYbDDZMtFRDkPUZc7bPYriHMYGQ4E996AU64RCsKKqG95X9UXRS1pDETyF","X-CASH") == 1)
-  {   
-    color_print("PASSED! Test for data verify","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for data verify","red");
-  }
-
   // test the sign_network_block_string function
   memset(data_test,0,strlen(data_test));
-  if (sign_network_block_string(data_test,"X-CASH",0) == 1 && data_verify(0,xcash_wallet_public_address,data_test,"X-CASH") == 1)
+  if (sign_network_block_string(data_test,"X-CASH") == 1)
   {   
     color_print("PASSED! Test for sign_network_block_string","green");
     count_test++;
@@ -440,7 +429,7 @@ Return: The number of passed network test
 int network_functions_test(void)
 {
   // define macros
-  #define NETWORK_TOTAL_TEST 13
+  #define NETWORK_TOTAL_TEST 12
 
   // reset the varaibles
   count_test = 0;
