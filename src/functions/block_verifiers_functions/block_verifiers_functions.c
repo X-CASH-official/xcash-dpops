@@ -755,7 +755,7 @@ int data_network_node_create_block(void)
 
     for (count = 0, count2 = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
+      if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1) != 0)
       {
         count2++;
       }
@@ -1221,8 +1221,6 @@ int block_verifiers_create_block_signature(char* message)
   {
     BLOCK_VERIFIERS_CREATE_BLOCK_SIGNATURE_ERROR("Could not sign the network block string");
   }
-
-  fprintf(stderr,"Signed data = %s\n\n",data);
 
   // add the block verifier signature to the VRF data and the blockchain_data struct
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
