@@ -1490,12 +1490,6 @@ int block_verifiers_create_block(void)
   size_t count2;
 
   // define macros
-  #define BLOCK_VERIFIERS_CREATE_BLOCK_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"block_verifiers_create_block",28); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  return 0; 
-
   #define RESTART_ROUND(message) \
   color_print("\n","white"); \
   color_print(message,"red"); \
@@ -1588,19 +1582,19 @@ int block_verifiers_create_block(void)
     // create a random VRF public key and secret key
     if (block_verifiers_create_VRF_secret_key_and_VRF_public_key(data) == 0)
     {
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not create a VRF secret key and a VRF public key");
+      RESTART_ROUND("Could not create a VRF secret key and a VRF public key");
     }
 
     // sign_data
     if (sign_data(data,0) == 0)
     { 
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not sign_data");
+      RESTART_ROUND("Could not sign_data");
     }
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
     {
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not send data to the block verifiers");
+      RESTART_ROUND("Could not send data to the block verifiers");
     }
 
     // wait for the block verifiers to process the votes
@@ -1641,7 +1635,7 @@ int block_verifiers_create_block(void)
     // create all of the VRF data
     if (block_verifiers_create_VRF_data() == 0)
     {
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not create the VRF data");
+      RESTART_ROUND("Could not create the VRF data");
     }
 
     memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
@@ -1651,7 +1645,7 @@ int block_verifiers_create_block(void)
     {
       if (get_block_template(VRF_data.block_blob,0) == 0)
       {
-        BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not get a block template");
+        RESTART_ROUND("Could not get a block template");
       }  
 
       // create the message
@@ -1663,13 +1657,13 @@ int block_verifiers_create_block(void)
       // sign_data
       if (sign_data(data,0) == 0)
       { 
-        BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not sign_data");
+        RESTART_ROUND("Could not sign_data");
       }
 
       // send the message to all block verifiers
       if (block_verifiers_send_data_socket((const char*)data) == 0)
       {
-        BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not send data to the block verifiers");
+        RESTART_ROUND("Could not send data to the block verifiers");
       }
     }
     
@@ -1689,19 +1683,19 @@ int block_verifiers_create_block(void)
     // create the block verifiers block signature
     if (block_verifiers_create_block_signature(data) == 0)
     {
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not sign_data");
+      RESTART_ROUND("Could not sign_data");
     }
   
     // sign_data
     if (sign_data(data,0) == 0)
     { 
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not sign_data");
+      RESTART_ROUND("Could not sign_data");
     }
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
     {
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not send data to the block verifiers");
+      RESTART_ROUND("Could not send data to the block verifiers");
     }
 
     // wait for the block verifiers to process the votes
@@ -1735,13 +1729,13 @@ int block_verifiers_create_block(void)
     // create the vote results
     if (block_verifiers_create_vote_results(data) == 0)
     {
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not create the vote results");
+      RESTART_ROUND("Could not create the vote results");
     }
 
     // sign_data
     if (sign_data(data,0) == 0)
     { 
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not sign_data");
+      RESTART_ROUND("Could not sign_data");
     }    
 
     // wait for the block verifiers to process the votes
@@ -1750,7 +1744,7 @@ int block_verifiers_create_block(void)
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
     {
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not send data to the block verifiers");
+      RESTART_ROUND("Could not send data to the block verifiers");
     }
 
     // wait for the block verifiers to process the votes
@@ -1769,11 +1763,10 @@ int block_verifiers_create_block(void)
     // update the database and submit the block to the network
     if (block_verifiers_create_block_and_update_database() == 0)
     {
-      BLOCK_VERIFIERS_CREATE_BLOCK_ERROR("Could not update the database and create the block");
+      RESTART_ROUND("Could not update the database and create the block");
     }    
     return 1;
     
-    #undef BLOCK_VERIFIERS_CREATE_BLOCK_ERROR
     #undef RESTART_ROUND
 }
 
