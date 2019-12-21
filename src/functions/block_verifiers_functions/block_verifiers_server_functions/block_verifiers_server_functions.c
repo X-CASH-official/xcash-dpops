@@ -281,7 +281,6 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  color_print(MESSAGE,"yellow"); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -351,7 +350,6 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block",84); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  color_print(MESSAGE,"yellow"); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -408,7 +406,6 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4",59); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  color_print(MESSAGE,"yellow"); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -480,7 +477,6 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4_create_new_block",76); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  color_print(MESSAGE,"yellow"); \
   return 0;
 
   memset(message,0,sizeof(message));
@@ -577,7 +573,6 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_node",39); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  color_print(MESSAGE,"yellow"); \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -639,7 +634,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data",70); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  color_print(MESSAGE,"yellow"); \
   return 0;
 
   memset(public_address,0,sizeof(public_address));
@@ -719,7 +713,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",82); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  color_print(MESSAGE,"yellow"); \
   return 0;
 
   memset(data,0,sizeof(data));
