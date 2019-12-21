@@ -173,6 +173,20 @@ int start_new_round(void)
     memcpy(current_round_part_backup_node,"0",1);
     pthread_rwlock_unlock(&rwlock);
 
+    // wait for all block verifiers to sync the database
+    color_print("Waiting for all block verifiers to sync the databases\n","blue");
+    
+    if (network_data_node_settings == 0)
+    {
+      sleep(5);
+      memset(data,0,sizeof(data));
+      memset(data2,0,sizeof(data2));
+      check_if_databases_are_synced(3,1);
+      memcpy(data,"Waiting for the round to start for block ",41);
+      memcpy(data+41,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+      print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
+    }
+
     if (calculate_main_nodes_roles() == 0)
     {
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);
@@ -266,7 +280,7 @@ int start_current_round_start_blocks(void)
   pthread_rwlock_unlock(&rwlock);
 
   // check if the block verifier is the main network data node
-  if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
+  if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
   {
     color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round\n","yellow");
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
@@ -573,7 +587,7 @@ int data_network_node_create_block(void)
   pthread_rwlock_unlock(&rwlock);
 
   // check if the block verifier is the main network data node
-  if (memcmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
   {    
     color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
     
@@ -763,26 +777,26 @@ int data_network_node_create_block(void)
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Invalid amount of block verifiers network block signatures");
     }
 
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
+    memset(data3,0,sizeof(data3));
 
-  // get the previous network block string
-  sscanf(current_block_height,"%zu", &count);
-  count--;
-  snprintf(data3,sizeof(data3)-1,"%zu",count);
+    // get the previous network block string
+    sscanf(current_block_height,"%zu", &count);
+    count--;
+    snprintf(data3,sizeof(data3)-1,"%zu",count);
   
-  memcpy(data,"{\"block_height\":\"",17);
-  memcpy(data+17,data3,strnlen(data3,sizeof(data)));
-  memcpy(data+strlen(data),"\"}",2);
-  memset(data3,0,strlen(data3));
-  memcpy(data3,"reserve_bytes_",14);
-  get_reserve_bytes_database(count,1);  
-  snprintf(data3+14,sizeof(data3)-15,"%zu",count);
-  if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,1) == 0)
-  {
-    DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
-  }
+    memcpy(data,"{\"block_height\":\"",17);
+    memcpy(data+17,data3,strnlen(data3,sizeof(data)));
+    memcpy(data+strlen(data),"\"}",2);
+    memset(data3,0,strlen(data3));
+    memcpy(data3,"reserve_bytes_",14);
+    get_reserve_bytes_database(count,1);  
+    snprintf(data3+14,sizeof(data3)-15,"%zu",count);
+    if (read_document_field_from_collection(DATABASE_NAME,data3,data,"reserve_bytes",data2,1) == 0)
+    {
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
+    }
 
     // verify the block
     memset(data3,0,sizeof(data3));
@@ -1555,21 +1569,8 @@ int block_verifiers_create_block(void)
   pthread_rwlock_wrlock(&rwlock);
   main_network_data_node_create_block = 0;
   pthread_rwlock_unlock(&rwlock);
-
-  // wait for all block verifiers to sync the database
-  color_print("Waiting for all block verifiers to sync the databases\n","blue");
-
-  if (network_data_node_settings == 0)
-  {
-    sleep(5);
-    check_if_databases_are_synced(3,1);
-    memcpy(data,"Waiting for the round to start for block ",41);
-    memcpy(data+41,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
-    print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
-    memset(data,0,sizeof(data));
-    memset(data2,0,sizeof(data2));
-  }
   
+  // wait for all block verifiers to sync
   sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);
 
   start:
