@@ -753,7 +753,7 @@ int data_network_node_create_block(void)
 
     sleep(10);
 
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    for (count = 0, count2 = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) == 0)
       {
@@ -890,7 +890,7 @@ int data_network_node_create_block(void)
   }
   else
   {
-    color_print("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block\n","white");
+    color_print("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block\n","yellow");
 
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
@@ -1554,8 +1554,7 @@ int block_verifiers_create_block(void)
   } \
   else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
   { \
-    data_network_node_create_block(); \
-    return 1; \
+    return data_network_node_create_block(); \
   } \
   pthread_rwlock_unlock(&rwlock); \
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,0); \
