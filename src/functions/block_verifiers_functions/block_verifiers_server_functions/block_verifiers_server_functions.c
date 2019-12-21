@@ -307,8 +307,8 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   // create the message
   memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK\",\r\n \"block_blob_signature\": \"",113);
-  memcpy(data+113,data2,XCASH_SIGN_DATA_LENGTH);
-  memcpy(data+206,"\",\r\n}",5);
+  memcpy(data+113,data2,strnlen(data2,sizeof(data)));
+  memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
   if (sign_data(data,0) == 0)
