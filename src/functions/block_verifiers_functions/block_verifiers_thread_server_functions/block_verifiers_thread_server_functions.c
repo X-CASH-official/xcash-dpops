@@ -90,7 +90,7 @@ void* current_block_height_timer_thread(void* parameters)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     sleep(60);
-  } while (current_UTC_date_and_time.tm_mday != 21 || current_UTC_date_and_time.tm_hour != 16 || current_UTC_date_and_time.tm_min != 56);
+  } while (current_UTC_date_and_time.tm_mday != 21 || current_UTC_date_and_time.tm_hour != 18 || current_UTC_date_and_time.tm_min != 6);
   
   // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
   sscanf(current_block_height,"%zu", &count);
