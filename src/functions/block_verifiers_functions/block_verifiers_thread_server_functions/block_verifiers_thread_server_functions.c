@@ -128,7 +128,7 @@ void* current_block_height_timer_thread(void* parameters)
           memset(data2,0,sizeof(data2));
           memcpy(data2,"Network Block ",14);
           memcpy(data2+14,current_block_height,strnlen(current_block_height,sizeof(data2)));
-          memcpy(data2+strlen(data2)," Has Been Created Successfully",30);
+          memcpy(data2+strlen(data2)," Has Been Created Successfully\n",31);
           color_print(data2,"green");
         }
         settings = 1;
@@ -162,7 +162,7 @@ void* current_block_height_timer_thread(void* parameters)
             memset(data2,0,sizeof(data2));
             memcpy(data2,"Network Block ",14);
             memcpy(data2+14,current_block_height,strnlen(current_block_height,sizeof(data2)));
-            memcpy(data2+strlen(data2)," Has Been Created Successfully",30);
+            memcpy(data2+strlen(data2)," Has Been Created Successfully\n",31);
             color_print(data2,"green");
           }         
         }

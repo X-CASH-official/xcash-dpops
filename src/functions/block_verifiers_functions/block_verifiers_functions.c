@@ -265,10 +265,6 @@ int start_current_round_start_blocks(void)
   main_network_data_node_create_block = 1;
   pthread_rwlock_unlock(&rwlock);
 
-  // wait for all block verifiers to sync the database
-  color_print("Waiting for all block verifiers to sync the databases\n","blue");
-  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);
-
   // check if the block verifier is the main network data node
   if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
   {

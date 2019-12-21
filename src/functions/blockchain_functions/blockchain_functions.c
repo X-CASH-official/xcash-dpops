@@ -1396,11 +1396,6 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {    
     if (blockchain_data.previous_block_hash_data_length != BLOCK_HASH_LENGTH || memcmp(blockchain_data.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH) != 0)
     {
-      color_print("blockchain_data.previous_block_hash","yellow");
-      get_previous_block_hash(buffer,0);
-      color_print(buffer,"yellow");
-      fprintf(stderr,"%zu|%s|%s\n\n\n\n\n",blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,previous_block_hash);
-      fprintf(stderr,"%zu|%s|%s\n\n\n\n\n",blockchain_data.previous_block_hash_data_length,blockchain_data.previous_block_hash_data,previous_block_hash);
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid previous block hash");
     } 
   }
@@ -1672,9 +1667,6 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {
     if (blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length != BLOCK_HASH_LENGTH || memcmp(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH) != 0)
     { 
-      color_print("blockchain_data.blockchain_reserve_bytes.previous_block_hash","yellow");
-      fprintf(stderr,"%zu|%s|%s\n\n\n\n\n",blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length,blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,previous_block_hash);
-      fprintf(stderr,"%zu|%s|%s\n\n\n\n\n",blockchain_data.previous_block_hash_data_length,blockchain_data.previous_block_hash_data,previous_block_hash);
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid previous block hash");
     }
   }    
