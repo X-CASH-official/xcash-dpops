@@ -362,7 +362,7 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != XCASH_SIGN_DATA_LENGTH || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
+  if (parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_PROOF_LENGTH+VRF_BETA_LENGTH || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK("Could not parse the data");
   }
@@ -373,7 +373,7 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
     {
       memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count]));
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data,XCASH_SIGN_DATA_LENGTH);
+      memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
     }
   } 
 

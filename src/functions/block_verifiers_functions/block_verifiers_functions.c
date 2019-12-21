@@ -714,8 +714,8 @@ int data_network_node_create_block(void)
     {
       if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
       {
-        memcpy(VRF_data.block_blob_signature[count],data,XCASH_SIGN_DATA_LENGTH);
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data,XCASH_SIGN_DATA_LENGTH);
+        memcpy(VRF_data.block_blob_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
       }
     }
 

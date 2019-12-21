@@ -169,9 +169,6 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   {  
     SUBMIT_BLOCK_TEMPLATE_ERROR("Could not submit the block template");
   }
-
-
-  color_print("SUBMITTED BLOCK","yellow");
   
   if (strstr(data,"error") != NULL)
   {
