@@ -716,19 +716,20 @@ function start_programs()
   fi 
 
   sleep 10s 
-
-  chmod +x ${XCASH_DPOPS_INSTALLATION_DIR}scripts/autoinstaller/docker_auto_restart.sh
-  screen -dmS XCASH_DPOPS_AUTO_RESTART ${XCASH_DPOPS_INSTALLATION_DIR}scripts/autoinstaller/docker_auto_restart.sh
-  sleep 10s
   
   # Check if all of the programs have started
   data=$(ps -eaf)
-  if [[ ! $data =~ "SCREEN -dmS MongoDB" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Daemon" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Wallet" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_DPOPS" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_DPOPS_AUTO_RESTART" ]]; then
-    echo -ne "\r${COLOR_PRINT_GREEN}Starting Programs${END_COLOR_PRINT}"
+  if [[ ! $data =~ "SCREEN -dmS MongoDB" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Daemon" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Wallet" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_DPOPS" ]]; then
+    echo -ne "\r${COLOR_PRINT_RED}Starting Programs${END_COLOR_PRINT}"
     echo -e "\r${COLOR_PRINT_RED}All of the programs could not start.\nMake sure the password to the wallet file is correct${END_COLOR_PRINT}"
     stop_processes
     exit
   fi
+
+  # start the autorestarter script
+  chmod +x ${XCASH_DPOPS_INSTALLATION_DIR}scripts/autoinstaller/docker_auto_restart.sh
+  screen -dmS XCASH_DPOPS_AUTO_RESTART ${XCASH_DPOPS_INSTALLATION_DIR}scripts/autoinstaller/docker_auto_restart.sh
+  sleep 10s
 
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Programs${END_COLOR_PRINT}"
   echo
