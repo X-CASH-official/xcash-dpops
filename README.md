@@ -92,7 +92,7 @@ XCASH DPOPS will only run on a Linux/Unix OS at this time. We recommend installi
 Operating System: Ubuntu 18.04 (or higher)  
 CPU: 4 threads  
 RAM: 8GB  
-Hard drive: 50GB  
+Hard drive: 50GB (with 18 GB of space needed per year)  
 Bandwidth Transfer: 500GB per month  
 Bandwidth Speed: 30 Mbps
  
@@ -100,7 +100,7 @@ Bandwidth Speed: 30 Mbps
 Operating System: Ubuntu 18.04 (or higher)  
 CPU: 8 threads  
 RAM: 16GB  
-Hard drive: 100GB  
+Hard drive: 100GB (with 18 GB of space needed per year)  
 Bandwidth Transfer: 2TB per month  
 Bandwidth Speed: 100 Mbps
  
@@ -171,13 +171,13 @@ XCASH_DPOPS provides a few different installation options. It is recommended to 
 It is recommend to install the XCASH_DPOPS folder, MongoDB and MongoDB C Driver in the home directory (`/home/$USER/`) or root directory (`/root/`) in a `x-network` folder
 
 Create the `x-network` folder  
-`mkdir /root/x-network`
+`mkdir ~/x-network/`
 
 Create a `xcash_wallets` folder  
-`mkdir /root/x-network/xcash_wallets`
+`mkdir ~/x-network/xcash_wallets`
 
 Create a `logs` folder  
-`mkdir /root/x-network/logs`
+`mkdir ~/x-network/logs`
 
 
 
@@ -229,8 +229,7 @@ After you have built the MongoDB C driver from source, you will need to run
 ```
 cd ~/x-network 
 git clone https://github.com/X-CASH-official/XCASH_DPOPS.git
-```
- 
+``` 
  
  
 ### Build Instructions
@@ -494,7 +493,7 @@ To view live logging of XCASH DPOPS, you can run
 `journalctl --unit=XCASH_DPOPS --follow -n 100 --output cat`
 
 To view logs for the XCASH_Daemon systemd service  
-`tail -f -n 100 /root/x-network/logs/XCASH_Daemon_log.txt`
+`tail -f -n 100 ~/x-network/logs/XCASH_Daemon_log.txt`
  
  
  
@@ -522,13 +521,26 @@ The test will return the number of passed and failed test on the bottom of the c
 Make sure to stop the XCASH_DPOPS service, if it is running  
 `systemctl stop XCASH_DPOPS`
 
-Generate a public and secret key pair for signing and verifying the block verifier messages  
-`/root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --generate_key`
+Generate a public and secret key pair for signing and verifying the block verifier messages, and for signing and verifying the blocks reserve bytes  
+`~/x-network/XCASH_DPOPS/build/XCASH_DPOPS --generate_key`
 
-Put the secret key in the `BLOCK_VERIFIERS_SECRET_KEY` in `XCASH_DPOPS/src/global_data/define_macros.h`
+Put the secret key in the `BLOCK_VERIFIERS_SECRET_KEY` in 
+```
+~/x-network/XCASH_DPOPS/src/global_data/block_verifiers_sign_and_verify_messages.h
+```
 
 Rebuild XCASH_DPOPS  
 `make clean ; make debug -j $(nproc)`
+
+Make sure that when updating the repository the `block_verifiers_sign_and_verify_messages.h` does not update  
+```
+git update-index --skip-worktree ~/x-network/XCASH_DPOPS/src/global_data/block_verifiers_sign_and_verify_messages.h
+```
+
+You can always undo this change by running 
+```  
+git update-index --no-skip-worktree ~/x-network/XCASH_DPOPS/src/global_data/block_verifiers_sign_and_verify_messages.h
+```
 
 Make sure to stop the XCASH Wallet service, if it is running  
 `systemctl stop XCASH_Wallet`
@@ -751,9 +763,9 @@ screen -dmS XCASH_DPOPS ${XCASH_DPOPS_DIR}build/XCASH_DPOPS --shared_delegates_w
 For example, if you installed everything in the default paths (replace MONGODB_DIR, WALLET_PASSWORD, DPOPS_FEE and DPOPS_MINIMUM_AMOUNT):  
 ```
 screen -dmS MongoDB MONGODB_DIR/bin/mongod --dbpath /data/db/
-screen -dmS XCASH_Daemon /root/x-network/X-CASH/build/release/bin/xcashd --data-dir /root/.X-CASH/ --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
-screen -dmS XCASH_Wallet /root/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/XCASH_DPOPS_WALLET --password WALLET_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
-screen -dmS XCASH_DPOPS /root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --shared_delegates_website --fee DPOPS_FEE --minimum_amount DPOPS_MINIMUM_AMOUNT
+screen -dmS XCASH_Daemon ~/x-network/X-CASH/build/release/bin/xcashd --data-dir /root/.X-CASH/ --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
+screen -dmS XCASH_Wallet ~/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/XCASH_DPOPS_WALLET --password WALLET_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+screen -dmS XCASH_DPOPS ~/x-network/XCASH_DPOPS/build/XCASH_DPOPS --shared_delegates_website --fee DPOPS_FEE --minimum_amount DPOPS_MINIMUM_AMOUNT
 ```
 
 To stop the following process using screen:
@@ -859,10 +871,10 @@ To start or stop the processes use the docker configuration script and run it in
 
 You can also start or stop an individual process using screen (just replace the password and remove the shared delegate flags if you are going to run a solo node
 ```
-screen -dmS MongoDB /root/x-network/mongodb-*/bin/mongod --logpath /root/x-network/logs/MongoDB_log.txt --logappend
-screen -dmS XCASH_Daemon /root/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0
-screen -dmS XCASH_Wallet /root/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/XCASH_DPOPS_WALLET --password WALLET_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
-screen -dmS XCASH_DPOPS /root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --log_file /root/x-network/logs/XCASH_DPOPS_log.txt --shared_delegates_website --fee DPOPS_FEE --minimum_amount DPOPS_MINIMUM_AMOUNT
+screen -dmS MongoDB ~/x-network/mongodb-*/bin/mongod --logpath /root/x-network/logs/MongoDB_log.txt --logappend
+screen -dmS XCASH_Daemon ~/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0
+screen -dmS XCASH_Wallet ~/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/XCASH_DPOPS_WALLET --password WALLET_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+screen -dmS XCASH_DPOPS ~/x-network/XCASH_DPOPS/build/XCASH_DPOPS --log_file ~/x-network/logs/XCASH_DPOPS_log.txt --shared_delegates_website --fee DPOPS_FEE --minimum_amount DPOPS_MINIMUM_AMOUNT
 ```
 
 To stop the following process using screen:
@@ -877,13 +889,13 @@ screen -XS "XCASH_DPOPS" quit
 
 To view the log files run the following commands  
 MongoDB  
-`tail -f -n 100 /root/x-network/logs/MongoDB_log.txt`
+`tail -f -n 100 ~/x-network/logs/MongoDB_log.txt`
 
 XCASH_Daemon  
-`tail -f -n 100 /root/x-network/logs/XCASH_Daemon_log.txt`
+`tail -f -n 100 ~/x-network/logs/XCASH_Daemon_log.txt`
 
 XCASH_DPOPS  
-`tail -f -n 100 /root/x-network/logs/XCASH_DPOPS_log.txt`
+`tail -f -n 100 ~/x-network/logs/XCASH_DPOPS_log.txt`
 
 
 ### Update the Container
