@@ -719,9 +719,27 @@ function start_programs()
   
   # Check if all of the programs have started
   data=$(ps -eaf)
-  if [[ ! $data =~ "SCREEN -dmS MongoDB" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Daemon" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_Wallet" ]] || [[ ! $data =~ "SCREEN -dmS XCASH_DPOPS" ]]; then
+  if [[ ! $data =~ "SCREEN -dmS MongoDB" ]]; then
     echo -ne "\r${COLOR_PRINT_RED}Starting Programs${END_COLOR_PRINT}"
-    echo -e "\r${COLOR_PRINT_RED}All of the programs could not start.\nMake sure the password to the wallet file is correct${END_COLOR_PRINT}"
+    echo -e "\n${COLOR_PRINT_RED}Could not start MongoDB${END_COLOR_PRINT}"
+    stop_processes
+    exit
+  fi
+  if [[ ! $data =~ "SCREEN -dmS XCASH_Daemon" ]]; then
+    echo -ne "\r${COLOR_PRINT_RED}Starting Programs${END_COLOR_PRINT}"
+    echo -e "\n${COLOR_PRINT_RED}Could not start XCASH_Daemon${END_COLOR_PRINT}"
+    stop_processes
+    exit
+  fi
+  if [[ ! $data =~ "SCREEN -dmS XCASH_Wallet" ]]; then
+    echo -ne "\r${COLOR_PRINT_RED}Starting Programs${END_COLOR_PRINT}"
+    echo -e "\n${COLOR_PRINT_RED}Could not start XCASH_Wallet${END_COLOR_PRINT}"
+    stop_processes
+    exit
+  fi
+  if [[ ! $data =~ "SCREEN -dmS XCASH_DPOPS" ]]; then
+    echo -ne "\r${COLOR_PRINT_RED}Starting Programs${END_COLOR_PRINT}"
+    echo -e "\n${COLOR_PRINT_RED}Could not start XCASH_DPOPS${END_COLOR_PRINT}"
     stop_processes
     exit
   fi
