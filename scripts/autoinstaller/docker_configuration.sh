@@ -450,7 +450,9 @@ function update_xcash_dpops()
     git clone "${XCASH_DPOPS_URL}" >> /dev/null 2>&1
   fi
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+  git update-index --skip-worktree src/global_data/block_verifiers_sign_and_verify_messages.h
   data=$(git pull) >> /dev/null 2>&1
+  git update-index --skip-worktree src/global_data/block_verifiers_sign_and_verify_messages.h
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> /dev/null 2>&1

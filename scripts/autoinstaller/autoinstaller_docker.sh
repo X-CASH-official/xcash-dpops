@@ -530,6 +530,7 @@ function build_xcash_dpops()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building XCASH_DPOPS${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
+  git update-index --skip-worktree src/global_data/block_verifiers_sign_and_verify_messages.h
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
     make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
   else
@@ -811,6 +812,7 @@ function update_xcash_dpops()
   echo -ne "${COLOR_PRINT_YELLOW}Updating XCASH_DPOPS${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
   data=$(git pull)
+  git update-index --skip-worktree src/global_data/block_verifiers_sign_and_verify_messages.h
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
