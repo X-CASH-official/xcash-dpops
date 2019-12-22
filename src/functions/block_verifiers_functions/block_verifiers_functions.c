@@ -175,14 +175,12 @@ int start_new_round(void)
 
     // wait for all block verifiers to sync the database
     color_print("Waiting for all block verifiers to sync the databases\n","blue");
-    
-    sleep(5);
-    memset(data,0,sizeof(data));
-    memset(data2,0,sizeof(data2));
-    check_if_databases_are_synced(3,1);
-    memcpy(data,"Waiting for the round to start for block ",41);
-    memcpy(data+41,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
-    print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);    
+  
+    if (network_data_node_settings == 0)
+    {
+      sleep(15);
+    }    
+    check_if_databases_are_synced(3,1);    
 
     if (calculate_main_nodes_roles() == 0)
     {
