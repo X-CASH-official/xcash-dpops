@@ -178,9 +178,9 @@ int start_new_round(void)
   
     if (network_data_node_settings == 0)
     {
-      sleep(15);
+      sleep(10);
+      check_if_databases_are_synced(3,1);
     }    
-    check_if_databases_are_synced(3,1);    
 
     if (calculate_main_nodes_roles() == 0)
     {
@@ -248,22 +248,6 @@ int start_current_round_start_blocks(void)
   error_message.total++; \
   pointer_reset_all; \
   return 0;
-
-  // initialize the send_and_receive_data_socket_thread_parameters struct
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
-    }
-  }
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -283,6 +267,22 @@ int start_current_round_start_blocks(void)
   } 
 
   color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
+
+  // initialize the send_and_receive_data_socket_thread_parameters struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+      exit(0);
+    }
+  }
 
   // get a block template
   if (get_block_template(data,0) == 0)
@@ -478,6 +478,12 @@ int start_current_round_start_blocks(void)
     }
   }
 
+  // reset the send_and_receive_data_socket_thread_parameters struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA);
+  }
+
   color_print("Waiting for the block producer to submit the block to the network\n","blue");
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
@@ -540,22 +546,6 @@ int data_network_node_create_block(void)
   pointer_reset_all; \
   return 0;
 
-  // initialize the send_and_receive_data_socket_thread_parameters struct
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"data_network_node_create_block",30);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
-    }
-  }
-
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
@@ -585,6 +575,22 @@ int data_network_node_create_block(void)
   if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
   {    
     color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
+
+    // initialize the send_and_receive_data_socket_thread_parameters struct
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+      // check if the memory needed was allocated on the heap successfully
+      if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
+      {
+        memcpy(error_message.function[error_message.total],"data_network_node_create_block",30);
+        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+        error_message.total++;
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+        exit(0);
+      }
+    }
     
     // get a block template
     memset(data,0,sizeof(data));
@@ -871,6 +877,12 @@ int data_network_node_create_block(void)
       {
         usleep(500000);
       }
+    }
+
+    // reset the send_and_receive_data_socket_thread_parameters struct
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA);
     }
 
     color_print("Waiting for the block producer to submit the block to the network\n","blue");
