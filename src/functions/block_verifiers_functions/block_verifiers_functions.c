@@ -144,10 +144,10 @@ int start_new_round(void)
 
     RESET_VARIABLES;
 
-    pthread_rwlock_wrlock(&rwlock);
+    //pthread_rwlock_wrlock(&rwlock);
     // set the main_network_data_node_create_block so the main network data node can create the block
     main_network_data_node_create_block = 1;
-    pthread_rwlock_unlock(&rwlock);
+    //pthread_rwlock_unlock(&rwlock);
     if (start_current_round_start_blocks() == 0)
     {      
       START_NEW_ROUND_ERROR("start_current_round_start_blocks error");
@@ -165,13 +165,13 @@ int start_new_round(void)
 
     RESET_VARIABLES;
 
-    pthread_rwlock_wrlock(&rwlock);
+    //pthread_rwlock_wrlock(&rwlock);
     // reset the current_round_part and current_round_part_backup_node
     memset(current_round_part,0,sizeof(current_round_part));
     memcpy(current_round_part,"1",1);
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
     memcpy(current_round_part_backup_node,"0",1);
-    pthread_rwlock_unlock(&rwlock);
+    //pthread_rwlock_unlock(&rwlock);
 
     // wait for all block verifiers to sync the database
     color_print("Waiting for all block verifiers to sync the databases\n","blue");
@@ -186,10 +186,10 @@ int start_new_round(void)
     {
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);
       
-      pthread_rwlock_wrlock(&rwlock);
+      //pthread_rwlock_wrlock(&rwlock);
       // set the main_network_data_node_create_block so the main network data node can create the block
       main_network_data_node_create_block = 1;
-      pthread_rwlock_unlock(&rwlock);
+      //pthread_rwlock_unlock(&rwlock);
       if (data_network_node_create_block() == 0)
       {      
         START_NEW_ROUND_ERROR("data_network_node_create_block error");
@@ -254,9 +254,9 @@ int start_current_round_start_blocks(void)
   memset(data3,0,sizeof(data3));
 
   // set the main_network_data_node_create_block so the main network data node can create the block
-  pthread_rwlock_wrlock(&rwlock);
+  //pthread_rwlock_wrlock(&rwlock);
   main_network_data_node_create_block = 1;
-  pthread_rwlock_unlock(&rwlock);
+  //pthread_rwlock_unlock(&rwlock);
 
   // check if the block verifier is the main network data node
   if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
@@ -554,14 +554,14 @@ int data_network_node_create_block(void)
   print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
 
   // set the main_network_data_node_create_block so the main network data node can create the block
-  pthread_rwlock_wrlock(&rwlock);
+  //pthread_rwlock_wrlock(&rwlock);
   main_network_data_node_create_block = 1;
-  pthread_rwlock_unlock(&rwlock);
+  //pthread_rwlock_unlock(&rwlock);
 
   // wait for the block verifiers to process the votes
   sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,4);
 
-  pthread_rwlock_wrlock(&rwlock);
+  //pthread_rwlock_wrlock(&rwlock);
   // set the current_round_part
   memset(current_round_part,0,sizeof(current_round_part));
   memcpy(current_round_part,"1",1);
@@ -569,7 +569,7 @@ int data_network_node_create_block(void)
   // set the current_round_part_backup_node
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
   memcpy(current_round_part_backup_node,"2",1);
-  pthread_rwlock_unlock(&rwlock);
+  //pthread_rwlock_unlock(&rwlock);
 
   // check if the block verifier is the main network data node
   if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
@@ -1538,7 +1538,6 @@ int block_verifiers_create_block(void)
     memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count])); \
     memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); \
   } \
-  pthread_rwlock_wrlock(&rwlock); \
   if (memcmp(current_round_part_backup_node,"0",1) == 0) \
   { \
     memset(current_round_part,0,sizeof(current_round_part)); \
@@ -1565,7 +1564,6 @@ int block_verifiers_create_block(void)
   { \
     return data_network_node_create_block(); \
   } \
-  pthread_rwlock_unlock(&rwlock); \
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,0); \
   goto start; 
 
@@ -1573,9 +1571,9 @@ int block_verifiers_create_block(void)
   memset(data2,0,sizeof(data2));
 
   // set the main_network_data_node_create_block so the main network data node can create the block
-  pthread_rwlock_wrlock(&rwlock);
+  //pthread_rwlock_wrlock(&rwlock);
   main_network_data_node_create_block = 0;
-  pthread_rwlock_unlock(&rwlock);
+  //pthread_rwlock_unlock(&rwlock);
   
   // wait for all block verifiers to sync
   sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);
@@ -1631,7 +1629,7 @@ int block_verifiers_create_block(void)
     }
 
     // check if at least 67 of the block verifiers created the data
-    if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
+    if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
     {
       RESTART_ROUND("Less than the required amount of block verifiers created the data");
     }

@@ -503,12 +503,12 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         color_print("Found an invalid reserve proof","yellow");
 
         // add the reserve proof to the invalid_reserve_proofs struct
-        pthread_rwlock_wrlock(&rwlock);
+        pthread_rwlock_wrlock(&rwlock_reserve_proofs);
         memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],xcash_wallet_public_address,XCASH_WALLET_LENGTH);
         memcpy(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count],database_multiple_documents_fields.value[0][0],XCASH_WALLET_LENGTH);
         memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],database_multiple_documents_fields.value[0][3],strnlen(database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF));
         invalid_reserve_proofs.count++;
-        pthread_rwlock_unlock(&rwlock);
+        pthread_rwlock_unlock(&rwlock_reserve_proofs);
 
         // send the reserve proof to all block verifiers
         // create the message
