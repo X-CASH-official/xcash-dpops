@@ -7,6 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
+int sync_check_previous_blocks_reserve_bytes(void);
 int check_if_databases_are_synced(const int SETTINGS, const int reserve_bytes_start_settings);
 int sync_check_reserve_proofs_database(int settings);
 void sync_check_majority_reserve_proofs_database(void);

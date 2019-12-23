@@ -24,6 +24,7 @@
 #include "block_verifiers_synchronize_check_functions.h"
 #include "block_verifiers_thread_server_functions.h"
 #include "database_functions.h"
+#include "read_database_functions.h"
 #include "insert_database_functions.h"
 #include "delete_database_functions.h"
 #include "file_functions.h"
@@ -46,6 +47,47 @@
 Functions
 -----------------------------------------------------------------------------------------------------------
 */
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_check_previous_blocks_reserve_bytes
+Description: Checks if the database has the previous blocks reserve bytes
+Return: 0 if an error has occured or if the database does not have the previous blocks reserve bytes, 1 if the database does have the previous blocks reserve bytes
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sync_check_previous_blocks_reserve_bytes(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  size_t count;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  sscanf(current_block_height,"%zu", &count);
+  count--;
+  snprintf(data2,sizeof(data2)-1,"%zu",count);
+
+  // calculate the database to get the reserve byte data
+  count = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+  memcpy(data,"reserve_bytes_",14);
+  snprintf(data+14,sizeof(data)-15,"%zu",count);
+
+  // create the message
+  memcpy(data3,"{\"block_height\":\"",17);
+  memcpy(data3+17,data2,strnlen(data2,sizeof(data3)));
+  memcpy(data3+strlen(data3),"\"}",2);
+
+  // get the reserve byte data
+  memset(data2,0,sizeof(data2));
+  return read_document_field_from_collection(DATABASE_NAME,data,data3,"reserve_bytes",data2,1);
+}
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------
