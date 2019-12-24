@@ -23,9 +23,9 @@ DPOPS_FEE=0
 DPOPS_MINIMUM_AMOUNT=0
 
 # Latest versions
-MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.1"
-MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.15.2"
-NODEJS_LATEST_VERSION="node-v13.2.0-linux-x64"
+MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.2"
+MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.15.3"
+NODEJS_LATEST_VERSION="node-v13.5.0-linux-x64"
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/X-CASH.git"
