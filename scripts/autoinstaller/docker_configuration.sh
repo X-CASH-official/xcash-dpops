@@ -509,8 +509,8 @@ function update_mongodb()
 function update_mongoc_driver()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating Mongo C Driver${END_COLOR_PRINT}"
-  sudo rm -r mongo-c-driver-*
   cd "${INSTALLATION_DIR}"
+  sudo rm -r mongo-c-driver-*
   wget -q ${MONGOC_DRIVER_URL}
   tar -xf mongo-c-driver-*.tar.gz >> /dev/null 2>&1
   sudo rm mongo-c-driver-*.tar.gz >> /dev/null 2>&1
