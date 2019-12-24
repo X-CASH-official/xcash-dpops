@@ -509,7 +509,7 @@ function install_mongoc_driver()
   cd mongo-c-driver-*
   mkdir cmake-build >> "${LOGFILE}" 2>&1
   cd cmake-build >> "${LOGFILE}" 2>&1
-  sudo cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> "${LOGFILE}" 2>&1
+  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> "${LOGFILE}" 2>&1
   sudo make -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
   sudo make install >> "${LOGFILE}" 2>&1
   sudo ldconfig

@@ -1324,15 +1324,15 @@ function update_mongodb()
 function update_mongoc_driver()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating Mongo C Driver${END_COLOR_PRINT}"
-  sudo rm -r "${MONGOC_DRIVER_DIR}"
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+  sudo rm -r "${MONGOC_DRIVER_DIR}"
   wget -q ${MONGOC_DRIVER_URL}
   tar -xf mongo-c-driver-*.tar.gz >> "${LOGFILE}" 2>&1
   sudo rm mongo-c-driver-*.tar.gz >> "${LOGFILE}" 2>&1
   cd mongo-c-driver-*
-  mkdir cmake-build >> "${LOGFILE}" 2>&1
-  cd cmake-build >> "${LOGFILE}" 2>&1
-  sudo make -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> "${LOGFILE}" 2>&1
+  mkdir cmake-build
+  cd cmake-build
+  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> "${LOGFILE}" 2>&1
   sudo make -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
   sudo make install >> "${LOGFILE}" 2>&1
   sudo ldconfig
