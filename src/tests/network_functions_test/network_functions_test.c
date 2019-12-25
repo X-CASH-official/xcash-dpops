@@ -17,6 +17,7 @@
 #include "network_wallet_functions.h"
 #include "server_functions.h"
 #include "string_functions.h"
+#include "VRF_functions.h"
 
 #include "variables_test.h"
 #include "network_functions_test.h"

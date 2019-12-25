@@ -178,7 +178,7 @@ int start_new_round(void)
       sleep(5);
       check_if_databases_are_synced(3,1);
     }
-    
+
     if (calculate_main_nodes_roles() == 0)
     {
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);
@@ -1502,7 +1502,7 @@ int block_verifiers_create_block(void)
   { \
     print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
     memset(data,0,sizeof(data)); \
-  } \  
+  } \
   memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4)); \
   memset(VRF_data.vrf_secret_key_round_part_4,0,strlen((const char*)VRF_data.vrf_secret_key_round_part_4)); \
   memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4)); \
