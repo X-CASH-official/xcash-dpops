@@ -178,18 +178,11 @@ int start_new_round(void)
       sleep(5);
       check_if_databases_are_synced(3,1);
     }
-
+    
     if (calculate_main_nodes_roles() == 0)
     {
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);
-      
-      // set the main_network_data_node_create_block so the main network data node can create the block
-      main_network_data_node_create_block = 1;
-      if (data_network_node_create_block() == 0)
-      {      
-        START_NEW_ROUND_ERROR("data_network_node_create_block error");
-      } 
-      return 2;
+      START_NEW_ROUND_ERROR("Error calculating the next block producer.\nYour block verifier will wait until the next round\n");
     }
     if (block_verifiers_create_block() == 0)
     {
@@ -1505,6 +1498,11 @@ int block_verifiers_create_block(void)
   color_print(message,"red"); \
   memset(data,0,sizeof(data)); \
   memset(data2,0,sizeof(data2)); \
+  if (error_message_count != 0) \
+  { \
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+    memset(data,0,sizeof(data)); \
+  } \  
   memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4)); \
   memset(VRF_data.vrf_secret_key_round_part_4,0,strlen((const char*)VRF_data.vrf_secret_key_round_part_4)); \
   memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4)); \

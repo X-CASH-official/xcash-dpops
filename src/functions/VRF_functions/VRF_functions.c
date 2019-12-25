@@ -113,6 +113,49 @@ void generate_key()
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sign_network_block_string
+Description: Signs the network block string
+Parameters:
+  data - The signed data
+  MESSAGE - The sign_data
+  MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sign_network_block_string(char *data, const char* MESSAGE)
+{
+  // Variables
+  char beta_string[BUFFER_SIZE];
+  char proof[BUFFER_SIZE];
+
+  // define macros
+  #define SIGN_NETWORK_BLOCK_STRING_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sign_network_block_string",25); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+
+  memset(beta_string,0,sizeof(beta_string));
+  memset(proof,0,sizeof(proof));
+
+  // sign data
+  if (VRF_sign_data(beta_string,proof,MESSAGE) == 0)
+  {
+    SIGN_NETWORK_BLOCK_STRING_ERROR("Could not sign the network block string");
+  }
+  memset(data,0,strlen(data));
+  memcpy(data,proof,VRF_PROOF_LENGTH);
+  memcpy(data+VRF_PROOF_LENGTH,beta_string,VRF_BETA_LENGTH);
+  return 1;
+  
+  #undef SIGN_NETWORK_BLOCK_STRING_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: VRF_sign_data
 Description: Sign data using the block verifiers ECDSA key
 Parameters:
