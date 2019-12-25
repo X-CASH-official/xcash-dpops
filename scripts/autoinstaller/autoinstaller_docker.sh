@@ -415,7 +415,7 @@ function download_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Downloading X-CASH${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  git clone ${XCASH_URL} 2>"${LOGFILE}" 1>&2
+  git clone ${XCASH_URL} >> "${LOGFILE}" 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Downloading X-CASH${END_COLOR_PRINT}"
   echo
 }
@@ -521,7 +521,7 @@ function download_xcash_dpops()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  git clone ${XCASH_DPOPS_URL} 2>"${LOGFILE}" 1>&2
+  git clone ${XCASH_DPOPS_URL} >> "${LOGFILE}" 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
   echo
 }
@@ -647,7 +647,7 @@ function download_shared_delegate_website()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Downloading Shared Delegates Website${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  git clone ${SHARED_DELEGATES_WEBSITE_URL} 2>"${LOGFILE}" 1>&2
+  git clone ${SHARED_DELEGATES_WEBSITE_URL} >> "${LOGFILE}" 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Downloading Shared Delegates Website${END_COLOR_PRINT}"
   echo
 }
@@ -795,7 +795,7 @@ function update_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   cd "${XCASH_DIR}"
-  data=$(git pull) 2>"${LOGFILE}" 1>&2
+  data=$(git pull) >> "${LOGFILE}" 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
@@ -811,7 +811,7 @@ function update_xcash_dpops()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating XCASH_DPOPS${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
-  data=$(git pull) 2>"${LOGFILE}" 1>&2
+  data=$(git pull) >> "${LOGFILE}" 2>&1
   git update-index --skip-worktree src/global_data/block_verifiers_sign_and_verify_messages.h
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
@@ -828,7 +828,7 @@ function update_shared_delegates_website()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegates Website${END_COLOR_PRINT}"
   cd "${SHARED_DELEGATES_WEBSITE_DIR}"
-  data=$(git pull) 2>"${LOGFILE}" 1>&2
+  data=$(git pull) >> "${LOGFILE}" 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     npm update >> "${LOGFILE}" 2>&1
     ng build --prod --aot >> "${LOGFILE}" 2>&1
