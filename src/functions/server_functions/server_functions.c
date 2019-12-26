@@ -123,7 +123,14 @@ int create_server(const int MESSAGE_SETTINGS)
   use htons to convert the port from host byte order to network byte order short
   */
   addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = INADDR_ANY;
+  if (memcmp(XCASH_DPOPS_delegates_IP_address,"",1) == 0)
+  {
+    addr.sin_addr.s_addr = INADDR_ANY;
+  }
+  else
+  {
+    addr.sin_addr.s_addr = inet_addr(XCASH_DPOPS_delegates_IP_address);
+  }
   addr.sin_port = htons(SEND_DATA_PORT);
  
   // connect to 0.0.0.0
@@ -210,11 +217,6 @@ int new_socket_thread(void)
 
   while ((client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen)) != -1)
   {
-    /*// set the socket to non blocking
-    settings = fcntl(client_socket, F_GETFL, 0);
-    settings |= O_NONBLOCK;
-    fcntl(client_socket, F_SETFL, settings);*/
-
     /* create the epoll_event struct
     EPOLLIN = signal when the file descriptor is ready to read
     EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states

@@ -10,7 +10,6 @@
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
-#include "block_verifiers_sign_and_verify_messages.h"
 #include "structures.h"
 #include "variables.h"
 
@@ -83,8 +82,10 @@ int main(int parameters_count, char* parameters[])
   memset(secret_key,0,sizeof(secret_key));
   memset(secret_key_data,0,sizeof(secret_key_data));
   memset(log_file,0,sizeof(log_file));
+  memset(XCASH_DPOPS_delegates_IP_address,0,sizeof(XCASH_DPOPS_delegates_IP_address));
   database_settings = 1;
   log_file_settings = 0;
+  xcash_wallet_port = XCASH_WALLET_PORT;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -365,15 +366,8 @@ int main(int parameters_count, char* parameters[])
   memcpy(current_round_part_backup_node,"0",1);
 
   // get the wallets public address
-  if (get_public_address(0) == 1)
-  {  
-    // print the public address
-    memcpy(data,"Successfully received the public address:",41);
-    memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-    color_print(data,"green");
-  }
-  else
-  {
+  if (get_public_address(0) == 0)
+  { 
     MAIN_ERROR("Could not get the wallets public address");
   }
 
@@ -403,6 +397,7 @@ int main(int parameters_count, char* parameters[])
   total_threads = get_nprocs();
   delegates_website = 0;
   shared_delegates_website = 0;
+  log_file_settings = 0;
 
   // check the parameters
   for (count = 0, count2 = 0; count < (size_t)parameters_count; count++)
@@ -423,14 +418,14 @@ int main(int parameters_count, char* parameters[])
     {
       // get the secret key for signing messages
       memcpy(secret_key,parameters[count+1],VRF_SECRET_KEY_LENGTH);
-  
-      // convert the hexadecimal string to a string
-      for (count = 0, count2 = 0; count < VRF_SECRET_KEY_LENGTH; count2++, count += 2)
-      {
-        memset(data2,0,sizeof(data2));
-        memcpy(data2,&secret_key[count],2);
-        secret_key_data[count2] = (int)strtol(data2, NULL, 16);
-      }
+    }
+    if (strncmp(parameters[count],"--XCASH_DPOPS_delegates_IP_address",BUFFER_SIZE) == 0)
+    {
+      memcpy(XCASH_DPOPS_delegates_IP_address,parameters[count+1],strnlen(parameters[count+1],sizeof(XCASH_DPOPS_delegates_IP_address)));
+    }
+    if (strncmp(parameters[count],"--xcash_wallet_port",BUFFER_SIZE) == 0)
+    {
+      sscanf(parameters[count+1], "%d", &xcash_wallet_port);
     }
     if (strncmp(parameters[count],"--log_file",BUFFER_SIZE) == 0)
     {
@@ -556,8 +551,76 @@ int main(int parameters_count, char* parameters[])
 
   if (count2 == 1)
   {
+    // convert the hexadecimal string to a string
+    for (count = 0, count2 = 0; count < VRF_SECRET_KEY_LENGTH; count2++, count += 2)
+    {
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,&secret_key[count],2);
+      secret_key_data[count2] = (int)strtol(data2, NULL, 16);
+    }
     goto disable_synchronizing_databases_and_starting_timers;
   }
+
+  // convert the hexadecimal string to a string
+  for (count = 0, count2 = 0; count < VRF_SECRET_KEY_LENGTH; count2++, count += 2)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,&secret_key[count],2);
+    secret_key_data[count2] = (int)strtol(data2, NULL, 16);
+  }
+
+  // print the settings
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"Settings\n\nPublic Address: ",26);
+  memcpy(data2+strlen(data2),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data2+strlen(data2),"\nBlock Verifiers Secret Key: ",29);
+  memcpy(data2+strlen(data2),secret_key,VRF_SECRET_KEY_LENGTH);
+  if (shared_delegates_website == 1)
+  {
+    memcpy(data2+strlen(data2),"\nShared Delegate Settings: YES",30);
+  }
+  else
+  {
+    memcpy(data2+strlen(data2),"\nShared Delegate Settings: NO",29);
+  }  
+  if (delegates_website == 1)
+  {
+    memcpy(data2+strlen(data2),"\nDelegate Settings: YES",23);
+  }
+  else
+  {
+    memcpy(data2+strlen(data2),"\nDelegate Settings: NO",22);
+  }  
+  if (log_file_settings == 0)
+  {
+    memcpy(data2+strlen(data2),"\nLog file Settings: NO",22);
+  }
+  else
+  {
+    if (log_file_settings == 1)
+    {
+      memcpy(data2+strlen(data2),"\nLog file Settings: YES\nLog File Color Output: NO",49);
+    }
+    else
+    {
+      memcpy(data2+strlen(data2),"\nLog file Settings: YES\nLog File Color Output: YES",50);
+    } 
+  } 
+  memcpy(data2+strlen(data2),"\nDelegates Server IP Address: ",30);
+  if (memcmp(XCASH_DPOPS_delegates_IP_address,"",1) == 0)
+  {
+    memcpy(data2+strlen(data2),"0.0.0.0",7);
+  }
+  else
+  {
+    memcpy(data2+strlen(data2),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data2)));
+  }
+  memcpy(data2+strlen(data2),"\nDelegates Server Port: 18283\nXCASH Wallet Port: ",49);
+  snprintf(data2+strlen(data2),sizeof(data2)-1,"%d",xcash_wallet_port);
+  memcpy(data2+strlen(data2),"\nTotal Threads: ",16);
+  snprintf(data2+strlen(data2),sizeof(data2)-1,"%d",total_threads);
+  memcpy(data2+strlen(data2),"\n\n",2);
+  color_print(data2,"yellow");
 
   // check if the block verifier is a network data node
   CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;     

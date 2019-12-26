@@ -53,8 +53,10 @@ char previous_block_hash[BLOCK_HASH_LENGTH+1]; // The current block height
 int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
 int database_settings; // 1 if the database can have documents added to it, 0 if not
-int log_file_settings; // 1 to use a log file, 0 to use the terminal
+int log_file_settings; // 0 to use the terminal, 1 to use a log file, 2 to use a log file with color output
 char log_file[BUFFER_SIZE]; // The log file
+char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The  block verifiers IP address to run the server on
+int xcash_wallet_port; // The xcash wallet port
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not

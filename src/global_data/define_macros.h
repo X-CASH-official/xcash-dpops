@@ -20,7 +20,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake
 //#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 440875 // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
-#define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
+#define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 10 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
 #define MAXIMUM_TRANSACATIONS_PER_BLOCK 16384 // The maximum amount of transaction per block
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a XCASH_DPOPS_signature for the signed data
@@ -217,11 +217,13 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "All parameters are optional, execept for --block_verifiers_secret_key\n\n" \
 "--parameters - Show a list of all valid parameters\n\n" \
 "--test - Run the test to make sure the program is compatible with your system\n\n" \
-"--block_verifiers_secret_key - The block verifiers secret key\n\n" \
+"--block_verifiers_secret_key \"block_verifiers_secret_key\" - The block verifiers secret key\n\n" \
 "--log_file \"log_file\" - Write all output to a log file with no colors\n\n" \
 "--log_file_color \"log_file\" - Write all output to a log file with colors\n\n" \
 "--generate_key - Generate a public and private key for signing and verifying messages between block verifiers" \
 "--total_threads \"total_threads\" - The total threads to use, the maximum is 100 total threads.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
+"--XCASH_DPOPS_delegates_IP_address \"delegates IP address\" - The delegates IP address (IPV4 only) to create the server on.\nIf this parameter is not specified, the default is 0.0.0.0 (all available networking interfaces).\n\n" \
+"--xcash_wallet_port \"xcash_wallet_port\" - The xcash wallet port.\nIf this parameter is not specified, the default port is 18285.\n\n" \
 "--delegates_website - Run the delegates website\n\n" \
 "--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
 "The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \

@@ -48,7 +48,7 @@ int get_public_address(const int MESSAGE_SETTINGS)
 
   memset(data,0,sizeof(data));
   
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",MESSAGE_SETTINGS) <= 0)
+  if (send_http_request(data,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",MESSAGE_SETTINGS) <= 0)
   {  
     GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
@@ -105,7 +105,7 @@ int send_payment(const char* PUBLIC_ADDRESS, const char* TOTAL, char *tx_hash, c
   memcpy(message+strlen(message),PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
   memcpy(message+strlen(message),"\"}],\"priority\":0,\"ring_size\":21,\"get_tx_keys\": true}}",53);
 
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS,"send payment",0) <= 0)
+  if (send_http_request(data,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS,"send payment",0) <= 0)
   {  
     return 0;
   }
@@ -153,7 +153,7 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   memcpy(data+204,RESERVE_PROOF,RESERVE_PROOF_LENGTH);
   memcpy(data+204+RESERVE_PROOF_LENGTH,"\"}}",3);
 
-  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"check reserve proof",HTTP_SETTINGS) <= 0)
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"check reserve proof",HTTP_SETTINGS) <= 0)
   {  
     return 0;
   }
