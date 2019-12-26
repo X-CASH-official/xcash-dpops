@@ -816,11 +816,10 @@ int data_network_node_create_block(void)
     sync_database_threads;
 
     // add the network block string to the database
-    sscanf(current_block_height, "%zu", &count);
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
-    count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-    snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
+    get_reserve_bytes_database(count,0);
+    snprintf(data3+14,sizeof(data3)-15,"%zu",count);
     if (insert_document_into_collection_json(DATABASE_NAME,data3,data2,1) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not add the new block to the database");
@@ -878,11 +877,10 @@ int data_network_node_create_block(void)
       memcpy(data2,"{\"block_height\":\"",17);
       memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
       memcpy(data2+strlen(data2),"\"}",2);
-      sscanf(current_block_height, "%zu", &count);
       memset(data3,0,sizeof(data3));
       memcpy(data3,"reserve_bytes_",14);
-      count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-      snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
+      get_reserve_bytes_database(count,0);
+      snprintf(data3+14,sizeof(data3)-15,"%zu",count);
       delete_document_from_collection(DATABASE_NAME,data3,data2,1);
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not submit the block to the network");
     }

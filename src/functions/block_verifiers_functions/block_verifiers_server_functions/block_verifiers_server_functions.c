@@ -514,13 +514,12 @@ int server_receive_data_socket_main_node_to_node_message_part_4_create_new_block
     count--;
     snprintf(data3,sizeof(data3)-1,"%zu",count);
     get_reserve_bytes_database(count,1);
-    count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
     memcpy(message,"{\"block_height\":\"",17);
     memcpy(message+17,data3,strnlen(data3,sizeof(message)));
     memcpy(message+strlen(message),"\"}",2);
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_bytes_",14);
-    snprintf(data3+14,sizeof(data3)-15,"%zu",count2);
+    snprintf(data3+14,sizeof(data3)-15,"%zu",count);
     memset(data2,0,sizeof(data2));
     if (read_document_field_from_collection(DATABASE_NAME,data3,message,"reserve_bytes",data2,1) == 0)
     {
