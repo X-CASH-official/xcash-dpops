@@ -22,6 +22,8 @@ WALLET_PASSWORD=$(< /dev/urandom tr -dc 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLM
 BLOCK_VERIFIER_KEY_SETTINGS=""
 BLOCK_VERIFIER_SECRET_KEY="00"
 BLOCK_VERIFIER_PUBLIC_KEY=""
+BLOCK_VERIFIERS_SECRET_KEY_LENGTH=128
+BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH=64
 DPOPS_FEE=0
 DPOPS_MINIMUM_AMOUNT=0
 
@@ -623,7 +625,6 @@ function installation_settings()
     get_wallet_settings
     get_password_settings
     get_block_verifier_key_settings
-    update_systemd_service_files
     print_installation_settings
   fi
 }
@@ -991,14 +992,6 @@ function build_xcash_dpops()
 function create_block_verifier_key()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Block Verifiers Key${END_COLOR_PRINT}"
-  
-  # start the programs
-  screen -dmS MongoDB ${MONGODB_DIR}bin/mongod --dbpath ${MONGODB_INSTALLATION_DIR}
-  screen -dmS XCASH_Daemon ${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
-  sleep 30s
-  screen -dmS XCASH_Wallet ${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
-  sleep 30s
-
   cd "${XCASH_DPOPS_DIR}"
   data=$(build/XCASH_DPOPS --generate_key 2>&1 >/dev/null)
   BLOCK_VERIFIER_SECRET_KEY="${data: -132}"
@@ -1042,6 +1035,7 @@ function install_xcash_dpops()
     create_block_verifier_key
   fi
 
+  update_systemd_service_files
   create_systemd_service_files
   install_firewall
   echo
