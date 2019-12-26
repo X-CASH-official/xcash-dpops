@@ -311,6 +311,12 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
+  if (parameters_count == 2 && strncmp(parameters[1],"--generate_key",BUFFER_SIZE) == 0)
+  {
+    generate_key();
+    exit(0);
+  }
+
   // initialize the database connection
   mongoc_init();
 
@@ -405,12 +411,6 @@ int main(int parameters_count, char* parameters[])
     if (strncmp(parameters[count],"--test",BUFFER_SIZE) == 0)
     {
       test();
-      database_reset;
-      exit(0);
-    }
-    if (strncmp(parameters[count],"--generate_key",BUFFER_SIZE) == 0)
-    {
-      generate_key();
       database_reset;
       exit(0);
     }
@@ -577,7 +577,10 @@ int main(int parameters_count, char* parameters[])
   memcpy(data2+strlen(data2),secret_key,VRF_SECRET_KEY_LENGTH);
   if (shared_delegates_website == 1)
   {
-    memcpy(data2+strlen(data2),"\nShared Delegate Settings: YES",30);
+    memcpy(data2+strlen(data2),"\nShared Delegate Settings: YES\nFee: ",36);
+    snprintf(data2+strlen(data2),sizeof(data2)-1,"%lf",fee);
+    memcpy(data2+strlen(data2),"\nMinimum Amount: ",17);
+    snprintf(data2+strlen(data2),sizeof(data2)-1,"%lld",minimum_amount);
   }
   else
   {

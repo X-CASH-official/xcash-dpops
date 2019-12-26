@@ -991,6 +991,14 @@ function build_xcash_dpops()
 function create_block_verifier_key()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Block Verifiers Key${END_COLOR_PRINT}"
+  
+  # start the programs
+  screen -dmS MongoDB ${MONGODB_DIR}bin/mongod --dbpath ${MONGODB_INSTALLATION_DIR}
+  screen -dmS XCASH_Daemon ${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
+  sleep 30s
+  screen -dmS XCASH_Wallet ${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+  sleep 30s
+
   cd "${XCASH_DPOPS_DIR}"
   data=$(build/XCASH_DPOPS --generate_key 2>&1 >/dev/null)
   BLOCK_VERIFIER_SECRET_KEY="${data: -132}"
