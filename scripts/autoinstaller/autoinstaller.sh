@@ -19,6 +19,9 @@ SHARED_DELEGATE="YES"
 WALLET_SETTINGS="YES"
 WALLET_SEED=""
 WALLET_PASSWORD=$(< /dev/urandom tr -dc 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' | head -c"${1:-32}";echo;)
+BLOCK_VERIFIER_KEY_SETTINGS=""
+BLOCK_VERIFIER_SECRET_KEY="00"
+BLOCK_VERIFIER_PUBLIC_KEY=""
 DPOPS_FEE=0
 DPOPS_MINIMUM_AMOUNT=0
 
@@ -462,7 +465,7 @@ Type=simple
 LimitNOFILE=64000
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS
+ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY}
 Restart=always
  
 [Install]
@@ -478,7 +481,7 @@ Type=simple
 LimitNOFILE=64000
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --shared_delegates_website --fee ${DPOPS_FEE} --minimum_amount ${DPOPS_MINIMUM_AMOUNT}
+ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY} --shared_delegates_website --fee ${DPOPS_FEE} --minimum_amount ${DPOPS_MINIMUM_AMOUNT}
 Restart=always
  
 [Install]
@@ -540,7 +543,31 @@ function get_password()
   if [ "$EUID" -ne 0 ]; then
     sudo echo
   fi
-}  
+}
+
+function get_block_verifier_key_settings()
+{
+  while
+    echo -ne "${COLOR_PRINT_YELLOW}Block Verifier Key Settings: (I)mport or (C)reate: ${END_COLOR_PRINT}"
+    read -r BLOCK_VERIFIER_KEY_SETTINGS
+    if [ "${BLOCK_VERIFIER_KEY_SETTINGS}" == "" ]; then
+      BLOCK_VERIFIER_KEY_SETTINGS="0"
+    fi
+    echo -ne "\r"
+    echo
+    [ ! ${BLOCK_VERIFIER_KEY_SETTINGS^^} == "I" ] && [ ! ${BLOCK_VERIFIER_KEY_SETTINGS^^} == "C" ]
+  do true; done
+  if [ ${BLOCK_VERIFIER_KEY_SETTINGS^^} == "I" ]; then
+    while
+      echo -ne "${COLOR_PRINT_YELLOW}Please Enter Block Verifiers Secret Key: ${END_COLOR_PRINT}"
+      read -r BLOCK_VERIFIER_SECRET_KEY
+      echo -ne "\r"
+      echo
+      [[ ! ${#BLOCK_VERIFIER_SECRET_KEY} -eq $BLOCK_VERIFIERS_SECRET_KEY_LENGTH ]]
+    do true; done
+    BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
+  fi
+}
 
 function print_installation_settings()
 {
@@ -595,6 +622,7 @@ function installation_settings()
     get_shared_delegate_installation_settings
     get_wallet_settings
     get_password_settings
+    get_block_verifier_key_settings
     update_systemd_service_files
     print_installation_settings
   fi
@@ -951,13 +979,24 @@ function build_xcash_dpops()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building XCASH_DPOPS${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
-  git update-index --skip-worktree src/global_data/block_verifiers_sign_and_verify_messages.h
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
     make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
   else
     make release -j $((CPU_THREADS / 2)) >> "${LOGFILE}" 2>&1
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Building XCASH_DPOPS${END_COLOR_PRINT}"
+  echo
+}
+
+function create_block_verifier_key()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Creating Block Verifiers Key${END_COLOR_PRINT}"
+  cd "${XCASH_DPOPS_DIR}"
+  data=$(build/XCASH_DPOPS --generate_key 2>&1 >/dev/null)
+  BLOCK_VERIFIER_SECRET_KEY="${data: -132}"
+  BLOCK_VERIFIER_SECRET_KEY="${BLOCK_VERIFIER_SECRET_KEY:0:128}"
+  BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Creating Block Verifiers Key${END_COLOR_PRINT}"
   echo
 }
 
@@ -985,11 +1024,17 @@ function install_xcash_dpops()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}                Installing XCASH_DPOPS${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  create_systemd_service_files
   install_mongodb
   install_mongoc_driver
   download_xcash_dpops
   build_xcash_dpops
+
+  # Create the block verifier key if they choose to create a block verifier key
+  if [ "${BLOCK_VERIFIER_KEY_SETTINGS^^}" == "C" ]; then
+    create_block_verifier_key
+  fi
+
+  create_systemd_service_files
   install_firewall
   echo
   echo
@@ -1260,7 +1305,6 @@ function update_xcash_dpops()
   fi
   cd "${XCASH_DPOPS_DIR}"
   data=$(git pull) >> /dev/null 2>&1
-  git update-index --skip-worktree src/global_data/block_verifiers_sign_and_verify_messages.h
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1

@@ -213,9 +213,11 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 // Test
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"
 #define INVALID_PARAMETERS_ERROR_MESSAGE \
-"Parameters\n" \
+"Parameters\n\n" \
+"All parameters are optional, execept for --block_verifiers_secret_key\n\n" \
 "--parameters - Show a list of all valid parameters\n\n" \
 "--test - Run the test to make sure the program is compatible with your system\n\n" \
+"--block_verifiers_secret_key - The block verifiers secret key\n\n" \
 "--log_file \"log_file\" - Write all output to a log file with no colors\n\n" \
 "--log_file_color \"log_file\" - Write all output to a log file with colors\n\n" \
 "--generate_key - Generate a public and private key for signing and verifying messages between block verifiers" \

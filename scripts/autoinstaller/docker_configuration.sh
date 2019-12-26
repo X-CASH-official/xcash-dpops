@@ -218,29 +218,6 @@ function create_block_verifier_key()
   echo
 }
 
-function update_block_verifiers_sign_and_verify_messages_file()
-{
-BLOCK_VERIFIERS_SIGN_AND_VERIFY_MESSAGES_FILE="$(cat << EOF
-#ifndef BLOCK_VERIFIERS_SIGN_AND_VERIFY_MESSAGES_H_
-#define BLOCK_VERIFIERS_SIGN_AND_VERIFY_MESSAGES_H_
-#define BLOCK_VERIFIERS_SECRET_KEY "${BLOCK_VERIFIER_SECRET_KEY}"
-#endif
-EOF
-)"
-}
-
-function build_xcash_dpops_with_block_verifiers_key()
-{
-  echo -ne "${COLOR_PRINT_YELLOW}Building XCASH_DPOPS With Block Verifiers Key${END_COLOR_PRINT}"
-  cd ${XCASH_DPOPS_INSTALLATION_DIR} || exit
-  echo "a" > src/global_data/block_verifiers_sign_and_verify_messages.h
-  echo "${BLOCK_VERIFIERS_SIGN_AND_VERIFY_MESSAGES_FILE}" > src/global_data/block_verifiers_sign_and_verify_messages.h
-  make clean > /dev/null 2>&1
-  make release -j "${CPU_THREADS}" > /dev/null 2>&1
-  echo -ne "\r${COLOR_PRINT_GREEN}Building XCASH_DPOPS With Block Verifiers Key${END_COLOR_PRINT}"
-  echo
-}
-
 function build_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
@@ -332,9 +309,6 @@ function configuration()
   if [ "${BLOCK_VERIFIER_KEY_SETTINGS^^}" == "C" ]; then
     create_block_verifier_key
   fi
-
-  update_block_verifiers_sign_and_verify_messages_file
-  build_xcash_dpops_with_block_verifiers_key
 
   get_xcash_wallet_data
 
@@ -691,6 +665,11 @@ function start_programs()
   echo -ne "\r"
   echo
 
+  echo -ne "${COLOR_PRINT_YELLOW}Block Verifiers Secret Key: ${END_COLOR_PRINT}"
+  read -r BLOCK_VERIFIER_SECRET_KEY
+  echo -ne "\r"
+  echo
+
   stop_processes
 
   echo -ne "${COLOR_PRINT_YELLOW}Starting Programs${END_COLOR_PRINT}"
@@ -703,15 +682,15 @@ function start_programs()
 
   if [ "${start_programs_color_output^^}" == "YES" ]; then
     if [ "${start_programs_shared_delegate_settings^^}" == "YES" ]; then
-      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file_color ${LOGS_DIR}XCASH_DPOPS_log.txt --shared_delegates_website --fee "${DPOPS_FEE}" --minimum_amount "${DPOPS_MINIMUM_AMOUNT}"
+      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY} --log_file_color ${LOGS_DIR}XCASH_DPOPS_log.txt --shared_delegates_website --fee "${DPOPS_FEE}" --minimum_amount "${DPOPS_MINIMUM_AMOUNT}"
     else
-      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file_color ${LOGS_DIR}XCASH_DPOPS_log.txt
+      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY} --log_file_color ${LOGS_DIR}XCASH_DPOPS_log.txt
     fi
   else
     if [ "${start_programs_shared_delegate_settings^^}" == "YES" ]; then
-      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt --shared_delegates_website --fee "${DPOPS_FEE}" --minimum_amount "${DPOPS_MINIMUM_AMOUNT}"
+      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY} --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt --shared_delegates_website --fee "${DPOPS_FEE}" --minimum_amount "${DPOPS_MINIMUM_AMOUNT}"
     else
-      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt
+      screen -dmS XCASH_DPOPS ${XCASH_DPOPS_INSTALLATION_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY} --log_file ${LOGS_DIR}XCASH_DPOPS_log.txt
     fi
   fi 
 

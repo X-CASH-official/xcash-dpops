@@ -399,17 +399,6 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not get the previous block hash");
   }
 
-  // get the secret key for signing messages
-  memcpy(secret_key,BLOCK_VERIFIERS_SECRET_KEY,sizeof(BLOCK_VERIFIERS_SECRET_KEY)-1);
-  
-  // convert the hexadecimal string to a string
-  for (count = 0, count2 = 0; count < sizeof(BLOCK_VERIFIERS_SECRET_KEY)-1; count2++, count += 2)
-  {
-    memset(data2,0,sizeof(data2));
-    memcpy(data2,&secret_key[count],2);
-    secret_key_data[count2] = (int)strtol(data2, NULL, 16);
-  }
-
   // set the default parameter settings
   total_threads = get_nprocs();
   delegates_website = 0;
@@ -429,6 +418,19 @@ int main(int parameters_count, char* parameters[])
       generate_key();
       database_reset;
       exit(0);
+    }
+    if (strncmp(parameters[count],"--block_verifiers_secret_key",BUFFER_SIZE) == 0)
+    {
+      // get the secret key for signing messages
+      memcpy(secret_key,parameters[count+1],VRF_SECRET_KEY_LENGTH);
+  
+      // convert the hexadecimal string to a string
+      for (count = 0, count2 = 0; count < VRF_SECRET_KEY_LENGTH; count2++, count += 2)
+      {
+        memset(data2,0,sizeof(data2));
+        memcpy(data2,&secret_key[count],2);
+        secret_key_data[count2] = (int)strtol(data2, NULL, 16);
+      }
     }
     if (strncmp(parameters[count],"--log_file",BUFFER_SIZE) == 0)
     {
@@ -588,7 +590,7 @@ int main(int parameters_count, char* parameters[])
   }
 
   // check the block verifiers current time, if it is not a network data node
-  if (network_data_node_settings != 1)
+  if (network_data_node_settings == 0)
   {
     color_print("Checking if the current time is synchronized with the network","green");
     for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
