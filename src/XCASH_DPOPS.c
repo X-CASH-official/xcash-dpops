@@ -85,9 +85,6 @@ int main(int parameters_count, char* parameters[])
   memset(XCASH_DPOPS_delegates_IP_address,0,sizeof(XCASH_DPOPS_delegates_IP_address));
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
-  database_settings = 1;
-  log_file_settings = 0;
-  xcash_wallet_port = XCASH_WALLET_PORT;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -393,6 +390,11 @@ int main(int parameters_count, char* parameters[])
   delegates_website = 0;
   shared_delegates_website = 0;
   log_file_settings = 0;
+  memcpy(database_name,DATABASE_NAME,sizeof(DATABASE_NAME)-1);
+  memcpy(shared_delegates_database_name,DATABASE_NAME_DELEGATES,sizeof(DATABASE_NAME_DELEGATES)-1);
+  database_settings = 1;
+  log_file_settings = 0;
+  xcash_wallet_port = XCASH_WALLET_PORT;
 
   // check the parameters
   for (count = 0, count2 = 0; count < (size_t)parameters_count; count++)
@@ -418,10 +420,12 @@ int main(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--database_name",BUFFER_SIZE) == 0)
     {
+      memset(database_name,0,sizeof(database_name));
       memcpy(database_name,parameters[count+1],strnlen(parameters[count+1],sizeof(database_name)));
     }
     if (strncmp(parameters[count],"--shared_delegates_database_name",BUFFER_SIZE) == 0)
     {
+      memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
       memcpy(shared_delegates_database_name,parameters[count+1],strnlen(parameters[count+1],sizeof(shared_delegates_database_name)));
     }
     if (strncmp(parameters[count],"--log_file",BUFFER_SIZE) == 0)
