@@ -1287,7 +1287,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for insert_document_into_collection_array: %zu / 1000",count);
       fprintf(stderr,"\r");
-      insert_document_into_collection_array(DATABASE_NAME,DATABASE_COLLECTION,data,settings,5);
+      insert_document_into_collection_array(database_name,DATABASE_COLLECTION,data,settings,5);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1346,7 +1346,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for insert_document_into_collection_json: %zu / 1000",count);
       fprintf(stderr,"\r");
-      insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0);
+      insert_document_into_collection_json(database_name,DATABASE_COLLECTION,MESSAGE,0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1405,7 +1405,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for update_document_from_collection: %zu / 1000",count);
       fprintf(stderr,"\r");
-      update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,MESSAGE_SETTINGS,0);
+      update_document_from_collection(database_name,DATABASE_COLLECTION,MESSAGE,MESSAGE_SETTINGS,0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1465,7 +1465,7 @@ int reset_variables_allocated_on_the_heap_test(void)
       fprintf(stderr,"Current progress for read_document_from_collection: %zu / 1000",count);
       fprintf(stderr,"\r");
       memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-      read_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE_SETTINGS,data_test,0);
+      read_document_from_collection(database_name,DATABASE_COLLECTION,MESSAGE_SETTINGS,data_test,0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1524,7 +1524,7 @@ int reset_variables_allocated_on_the_heap_test(void)
       fprintf(stderr,"Current progress for read_document_field_from_collection: %zu / 1000",count);
       fprintf(stderr,"\r");
       memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-      read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE_SETTINGS,"message_settings",data_test,0);
+      read_document_field_from_collection(database_name,DATABASE_COLLECTION,MESSAGE_SETTINGS,"message_settings",data_test,0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1574,8 +1574,8 @@ int reset_variables_allocated_on_the_heap_test(void)
 
 
 
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);  
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);  
   
   // read_document_all_fields_from_collection 
   // read the current system memory usage
@@ -1591,7 +1591,7 @@ int reset_variables_allocated_on_the_heap_test(void)
         memset(database_data.item[count2],0,strnlen(database_data.item[count2],BUFFER_SIZE));
         memset(database_data.value[count2],0,strnlen(database_data.value[count2],BUFFER_SIZE));
       }
-      read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"{\"username\":\"XCASH\"}",&database_data,0);
+      read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION,"{\"username\":\"XCASH\"}",&database_data,0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1665,9 +1665,9 @@ int reset_variables_allocated_on_the_heap_test(void)
 
 
 
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   
   // read_multiple_documents_all_fields_from_collection 
   // read the current system memory usage
@@ -1686,7 +1686,7 @@ int reset_variables_allocated_on_the_heap_test(void)
           memset(database_multiple_documents_fields.value[count2][counter],0,strnlen(database_multiple_documents_fields.value[count2][counter],BUFFER_SIZE));
         }
       }
-      read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0,"",0);
+      read_multiple_documents_all_fields_from_collection(database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0,"",0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1787,7 +1787,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for update_all_documents_from_collection: %zu / 1000",count);
       fprintf(stderr,"\r");
-      update_all_documents_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0);
+      update_all_documents_from_collection(database_name,DATABASE_COLLECTION,MESSAGE,0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1846,7 +1846,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for count_documents_in_collection: %zu / 1000",count);
       fprintf(stderr,"\r");
-      count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0);
+      count_documents_in_collection(database_name,DATABASE_COLLECTION,MESSAGE,0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1905,7 +1905,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for count_all_documents_in_collection: %zu / 1000",count);
       fprintf(stderr,"\r");
-      count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
+      count_all_documents_in_collection(database_name,DATABASE_COLLECTION,0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -1964,7 +1964,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for get_database_data: %zu / 1000",count);
       fprintf(stderr,"\r");
-      get_database_data(data_test,DATABASE_NAME,DATABASE_COLLECTION,0);
+      get_database_data(data_test,database_name,DATABASE_COLLECTION,0);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -2023,7 +2023,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for get_database_data_hash: %zu / 1000",count);
       fprintf(stderr,"\r");
-      get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION);
+      get_database_data_hash(data_test,database_name,DATABASE_COLLECTION);
       RESET_ERROR_MESSAGES;
       if (count == 0)
       {    
@@ -2077,7 +2077,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   // read the current system memory usage
   if (settings2 == 1)
   {
-    delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);    
+    delete_collection_from_database(database_name,DATABASE_COLLECTION,0);    
     memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
     memcpy(data_test+strlen(data_test),",",1);
     memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
@@ -2087,7 +2087,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     {
       fprintf(stderr,"Current progress for insert_multiple_documents_into_collection_json: %zu / 1000",count);
       fprintf(stderr,"\r");
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,sizeof(MESSAGE)-1,0);
+      insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,MESSAGE,sizeof(MESSAGE)-1,0);
       if (count == 0)
       {    
         current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage;
@@ -2135,8 +2135,8 @@ int reset_variables_allocated_on_the_heap_test(void)
   }
 
 
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0);
   
 
   // get_block_template 
@@ -3659,7 +3659,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     color_print("All other test will not be run","red");
   }
 
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
 
   for (count = 0; count < 7; count++)
   {

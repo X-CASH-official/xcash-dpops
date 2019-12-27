@@ -95,7 +95,7 @@ void sync_network_data_nodes_database(void)
   {
     if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
-      if (get_database_data_hash(network_data_nodes_database_data[count],DATABASE_NAME,"ALL") == 0)
+      if (get_database_data_hash(network_data_nodes_database_data[count],database_name,"ALL") == 0)
       {
         return;
       }
@@ -596,7 +596,7 @@ int sync_reserve_proofs_database(int settings)
   memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BUFFER_SIZE));
   memcpy(data3+strlen(data3),"\n",1);
   color_print(data3,"white");
-  if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
+  if (get_database_data_hash(data,database_name,"reserve_proofs") == 0)
   {
     SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
   }
@@ -617,7 +617,7 @@ int sync_reserve_proofs_database(int settings)
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_proofs_",15);  
     snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+    if (get_database_data_hash(data,database_name,data2) == 0)
     {
       SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
     }
@@ -717,12 +717,12 @@ int sync_reserve_proofs_database(int settings)
       snprintf(data2+15,sizeof(data2)-16,"%zu",count2);
 
       // delete the collection from the database
-      delete_collection_from_database(DATABASE_NAME,data2,1);
+      delete_collection_from_database(database_name,data2,1);
 
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,MAXIMUM_BUFFER_SIZE,1);
+      insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE,1);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
@@ -873,7 +873,7 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
   memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BUFFER_SIZE));
   memcpy(data3+strlen(data3),"\n",1);
   color_print(data3,"white");
-  if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
+  if (get_database_data_hash(data,database_name,"reserve_bytes") == 0)
   {
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database from ",1);
   }
@@ -903,7 +903,7 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_bytes_",14);  
     snprintf(data2+14,sizeof(data2)-15,"%zu",count);
-    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+    if (get_database_data_hash(data,database_name,data2) == 0)
     {
       SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database from ",1);
     }
@@ -1011,12 +1011,12 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
       snprintf(data2+14,sizeof(data2)-15,"%zu",count2);
 
       // delete the collection from the database
-      delete_collection_from_database(DATABASE_NAME,data2,1);
+      delete_collection_from_database(database_name,data2,1);
 
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(DATABASE_NAME,data2,data,MAXIMUM_BUFFER_SIZE,1);
+      insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE,1);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
@@ -1148,7 +1148,7 @@ int sync_delegates_database(int settings)
   memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
   memcpy(data2+strlen(data2),"\n",1);
   color_print(data2,"white");
-  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database from ",1);
   }
@@ -1184,12 +1184,12 @@ int sync_delegates_database(int settings)
   }
 
   // delete the collection from the database
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,1);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,1);
 
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE,1);
+  insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE,1);
 
   pointer_reset(data);
   return 1;
@@ -1305,7 +1305,7 @@ int sync_statistics_database(int settings)
   memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
   memcpy(data2+strlen(data2),"\n",1);
   color_print(data2,"white");
-  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database from ",1);
   }
@@ -1341,12 +1341,12 @@ int sync_statistics_database(int settings)
   }
 
   // delete the collection from the database
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,1);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,1);
 
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data,1);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data,1);
 
   pointer_reset(data);
   return 1;

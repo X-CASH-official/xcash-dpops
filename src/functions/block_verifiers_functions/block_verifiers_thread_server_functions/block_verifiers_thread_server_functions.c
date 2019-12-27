@@ -366,7 +366,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
           snprintf(data+15,sizeof(data)-16,"%d",count);
 
           // check if the reserve proof is in the database
-          if (count_all_documents_in_collection(DATABASE_NAME,data,0) > 0)
+          if (count_all_documents_in_collection(database_name,data,0) > 0)
           {
             memset(data2,0,sizeof(data2));
             memset(data3,0,sizeof(data3));
@@ -374,7 +374,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
             memcpy(data3+18,invalid_reserve_proofs.reserve_proof[count2],strnlen(invalid_reserve_proofs.reserve_proof[count2],sizeof(data3)));
             memcpy(data3+strlen(data3),"\"}",2);         
           
-            read_document_field_from_collection(DATABASE_NAME,data,data3,"public_address_voted_for",data2,1);
+            read_document_field_from_collection(database_name,data,data3,"public_address_voted_for",data2,1);
             break;
           }                  
         }
@@ -388,7 +388,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
         memset(data2,0,sizeof(data2));
 
-        read_document_field_from_collection(DATABASE_NAME,"delegates",data3,"total_vote_count",data,1);
+        read_document_field_from_collection(database_name,"delegates",data3,"total_vote_count",data,1);
 
         sscanf(data,"%zu", &block_verifiers_total_vote_count);
         block_verifiers_total_vote_count-= invalid_reserve_proofs.reserve_proof_amount[count2];
@@ -399,7 +399,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         memcpy(data2+strlen(data2),data,strnlen(data,sizeof(data2)));
         memcpy(data2+strlen(data2),"\"}",2);
 
-        update_document_from_collection(DATABASE_NAME,"delegates",data3,data2,1);  
+        update_document_from_collection(database_name,"delegates",data3,data2,1);  
       }
       
       // update all of the block verifiers score
@@ -413,7 +413,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
         // get the block verifiers score
         memset(data2,0,sizeof(data2));
-        if (read_document_field_from_collection(DATABASE_NAME,"delegates",data,"block_verifier_score",data2,1) == 0)
+        if (read_document_field_from_collection(database_name,"delegates",data,"block_verifier_score",data2,1) == 0)
         {
           RESET_INVALID_RESERVE_PROOFS;
           continue;
@@ -426,7 +426,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         snprintf(data2+25,sizeof(data2)-26,"%zu",block_verifiers_score);
         memcpy(data2+strlen(data2),"\"}",2);
 
-        if (update_document_from_collection(DATABASE_NAME,"delegates",data,data2,1) == 0)
+        if (update_document_from_collection(database_name,"delegates",data,data2,1) == 0)
         {
           RESET_INVALID_RESERVE_PROOFS;
           continue;
@@ -445,7 +445,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
           memcpy(data2,"{\"reserve_proof\":\"",18);
           memcpy(data2+18,invalid_reserve_proofs.reserve_proof[count2],strnlen(invalid_reserve_proofs.reserve_proof[count2],sizeof(data2)));
           memcpy(data2+strlen(data2),"\"}",2);
-          delete_document_from_collection(DATABASE_NAME,data,data2,1);
+          delete_document_from_collection(database_name,data,data2,1);
         }       
       }
 
@@ -474,7 +474,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     snprintf(data+15,sizeof(data)-16,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
 
     // select a random document in the collection
-    count = count_all_documents_in_collection(DATABASE_NAME,data,1);
+    count = count_all_documents_in_collection(database_name,data,1);
     if (count > 0)
     {
       count = (rand() % count) + 1;
@@ -485,7 +485,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     }   
 
     // get a random document from the collection
-    if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,data,"",&database_multiple_documents_fields,count,1,0,"",1) == 1)
+    if (read_multiple_documents_all_fields_from_collection(database_name,data,"",&database_multiple_documents_fields,count,1,0,"",1) == 1)
     {
       // check if the reserve proof is unique 
       for (counter = 0, settings = 0; counter <= invalid_reserve_proofs.count; counter++)

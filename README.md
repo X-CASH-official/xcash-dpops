@@ -140,8 +140,22 @@ All parameters are optional, execept for --block_verifiers_secret_key
 
 --log_file_color "log_file" - Write all output to a log file with colors
 
---generate_key - Generate a public and private key for signing and verifying messages between block verifiers--total_threads "total_threads" - The total threads to use, the maximum is 100 total threads.
+--generate_key - Generate a public and private key for signing and verifying messages between block verifiers
+
+--total_threads "total_threads" - The total threads to use, the maximum is 100 total threads.
 If this parameter is not specified, the default is the number of threads the CPU has.
+
+--XCASH_DPOPS_delegates_IP_address \"delegates IP address\" - The delegates IP address (IPV4 only) to create the server on.
+If this parameter is not specified, the default is 0.0.0.0 (all available networking interfaces).
+
+--xcash_wallet_port \"xcash_wallet_port\" - The xcash wallet port.
+If this parameter is not specified, the default port is 18285.
+
+--database_name - The name of the database.
+If this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE.
+
+--shared_delegates_database_name - The name of the shared delegates database.
+If this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE_DELEGATES.
 
 --delegates_website - Run the delegates website
 

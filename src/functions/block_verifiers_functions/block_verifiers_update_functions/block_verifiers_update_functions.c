@@ -300,7 +300,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
 
     // add one to the block_verifier_total_rounds for every block verifier
     memset(data,0,sizeof(data));
-    if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data,1) == 0)
+    if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data,1) == 0)
     {
       color_print(message,"yellow");
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_total_rounds from the database");
@@ -312,14 +312,14 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     snprintf(data+32,sizeof(data)-33,"%zu",block_verifier_total_rounds); 
     memcpy(data+strlen(data),"\"}",2);
     sync_database_threads;
-    if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,1) == 0)
+    if (update_document_from_collection(database_name,DATABASE_COLLECTION,message,data,1) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_total_rounds in the database");
     }
 
     // add one to the block_verifier_online_total_rounds
     memset(data,0,sizeof(data));
-    if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_verifier_online_total_rounds",data,1) == 0)
+    if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_online_total_rounds",data,1) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_online_total_rounds from the database");
     }
@@ -330,7 +330,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     snprintf(data+39,sizeof(data)-40,"%zu",block_verifier_online_total_rounds); 
     memcpy(data+strlen(data),"\"}",2);
     sync_database_threads;
-    if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,1) == 0)
+    if (update_document_from_collection(database_name,DATABASE_COLLECTION,message,data,1) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
     }
@@ -343,7 +343,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     snprintf(data+37,sizeof(data)-38,"%zu",number); 
     memcpy(data+strlen(data),"\"}",2);
     sync_database_threads;
-    if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,1) == 0)
+    if (update_document_from_collection(database_name,DATABASE_COLLECTION,message,data,1) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_verifier_online_total_rounds in the database");
     }
@@ -353,7 +353,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       memset(data,0,sizeof(data));
-      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_total_rounds",data,1) == 0)
+      if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_producer_total_rounds",data,1) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_total_rounds from the database");
       }
@@ -364,13 +364,13 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       snprintf(data+32,sizeof(data)-33,"%zu",number); 
       memcpy(data+strlen(data),"\"}",2);
       sync_database_threads;
-      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data,1) == 0)
+      if (update_document_from_collection(database_name,DATABASE_COLLECTION,message,data,1) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_total_rounds in the database");
       }
 
       memset(data,0,sizeof(data));
-      if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,"block_producer_block_heights",data,1) == 0)
+      if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_producer_block_heights",data,1) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database");
       }      
@@ -381,7 +381,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memcpy(data2+33,data,strnlen(data,sizeof(data2)));
       memcpy(data2+strlen(data2),"\"}",2);
       sync_database_threads;
-      if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,message,data2,1) == 0)
+      if (update_document_from_collection(database_name,DATABASE_COLLECTION,message,data2,1) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
       }
@@ -453,7 +453,7 @@ int add_round_statistics(void)
   memset(message6,0,sizeof(message6));
   
   // set the collection
-  collection = mongoc_client_get_collection(database_client, DATABASE_NAME,"delegates");
+  collection = mongoc_client_get_collection(database_client, database_name,"delegates");
   document = bson_new(); 
   document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
   while (mongoc_cursor_next(document_settings, &current_document))
@@ -554,7 +554,7 @@ int add_round_statistics(void)
   sync_database_threads;
 
   // update the database
-  if (update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message1,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message2,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message3,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message4,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message5,1) == 0 || update_document_from_collection(DATABASE_NAME,"statistics",MESSAGE,message6,1) == 0)
+  if (update_document_from_collection(database_name,"statistics",MESSAGE,message1,1) == 0 || update_document_from_collection(database_name,"statistics",MESSAGE,message2,1) == 0 || update_document_from_collection(database_name,"statistics",MESSAGE,message3,1) == 0 || update_document_from_collection(database_name,"statistics",MESSAGE,message4,1) == 0 || update_document_from_collection(database_name,"statistics",MESSAGE,message5,1) == 0 || update_document_from_collection(database_name,"statistics",MESSAGE,message6,1) == 0)
   {
     ADD_ROUND_STATISTICS_ERROR("Could not update the round statistics in the database");
   }
@@ -629,7 +629,7 @@ int calculate_main_nodes_roles(void)
 
   // get the reserve byte data
   memset(data2,0,sizeof(data2));
-  if (read_document_field_from_collection(DATABASE_NAME,data,data3,"reserve_bytes",data2,1) == 0)
+  if (read_document_field_from_collection(database_name,data,data3,"reserve_bytes",data2,1) == 0)
   {
     CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
   }
@@ -935,7 +935,7 @@ int get_delegates_online_status(void)
       }   
 
       sync_database_threads;
-      update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,data2,data,1);  
+      update_document_from_collection(database_name,DATABASE_COLLECTION,data2,data,1);  
     }
   }
 

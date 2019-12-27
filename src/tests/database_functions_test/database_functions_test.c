@@ -103,7 +103,7 @@ int database_test(void)
   }
 
   // insert a document into the collection using arrays
-  if (insert_document_into_collection_array(DATABASE_NAME,DATABASE_COLLECTION,data,settings,DATA_COUNT) == 0)
+  if (insert_document_into_collection_array(database_name,DATABASE_COLLECTION,data,settings,DATA_COUNT) == 0)
   {
     color_print("FAILED! Test for inserting a document into a collection using an array","red");
   }
@@ -122,7 +122,7 @@ int database_test(void)
   pointer_reset(settings);
   
   // insert a document into the collection using json data
-  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0) == 0)
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,MESSAGE,0) == 0)
   {
     color_print("FAILED! Test for inserting a document into a collection using json data","red");
   }
@@ -133,7 +133,7 @@ int database_test(void)
   }  
 
   // update a document in the collection
-  if (update_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,MESSAGE_SETTINGS,0) == 0)
+  if (update_document_from_collection(database_name,DATABASE_COLLECTION,MESSAGE,MESSAGE_SETTINGS,0) == 0)
   {
     color_print("FAILED! Test for updating a document in a collection","red");
   }
@@ -144,7 +144,7 @@ int database_test(void)
   }
 
   // insert a document into the collection using json data on a separate thread
-  struct insert_document_into_collection_json_thread_parameters insert_document_into_collection_json_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,MESSAGE};
+  struct insert_document_into_collection_json_thread_parameters insert_document_into_collection_json_thread_parameters = {database_name,DATABASE_COLLECTION,MESSAGE};
   pthread_create(&thread_id, NULL, &insert_document_into_collection_json_thread,(void *)&insert_document_into_collection_json_thread_parameters);
   if (thread_settings(thread_id) == 0)
   {
@@ -157,7 +157,7 @@ int database_test(void)
   }
 
   // update a document in the collection on a separate thread
-  struct update_document_from_collection_thread_parameters update_document_from_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,MESSAGE_SETTINGS};
+  struct update_document_from_collection_thread_parameters update_document_from_collection_thread_parameters = {database_name,DATABASE_COLLECTION,MESSAGE,MESSAGE_SETTINGS};
   pthread_create(&thread_id, NULL, &update_document_from_collection_thread,(void *)&update_document_from_collection_thread_parameters);
   if (thread_settings(thread_id) == 0)
   {
@@ -171,7 +171,7 @@ int database_test(void)
 
   // read a document in the collection
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (read_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE_SETTINGS,data_test,0) == 1)
+  if (read_document_from_collection(database_name,DATABASE_COLLECTION,MESSAGE_SETTINGS,data_test,0) == 1)
   {
     if (strstr(data_test,"XCASH_PROOF_OF_STAKE_DATA") != NULL)
     {
@@ -190,7 +190,7 @@ int database_test(void)
 
   // read a document in the collection on a separate thread
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  struct read_document_from_collection_thread_parameters read_document_from_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,MESSAGE_SETTINGS,data_test};
+  struct read_document_from_collection_thread_parameters read_document_from_collection_thread_parameters = {database_name,DATABASE_COLLECTION,MESSAGE_SETTINGS,data_test};
   pthread_create(&thread_id, NULL, &read_document_from_collection_thread,(void *)&read_document_from_collection_thread_parameters);
   if (thread_settings(thread_id) == 1)
   {
@@ -211,7 +211,7 @@ int database_test(void)
 
   // read a document in the collection and parse a field
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (read_document_field_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE_SETTINGS,"message_settings",data_test,0) == 1)
+  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,MESSAGE_SETTINGS,"message_settings",data_test,0) == 1)
   {
     if (strncmp(data_test,"XCASH_PROOF_OF_STAKE_DATA",BUFFER_SIZE) == 0)
     {
@@ -230,7 +230,7 @@ int database_test(void)
 
   // read a document in the collection and parse a field on a separate thread
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  struct read_document_field_from_collection_thread_parameters read_document_field_from_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,MESSAGE_SETTINGS,"message_settings",data_test};
+  struct read_document_field_from_collection_thread_parameters read_document_field_from_collection_thread_parameters = {database_name,DATABASE_COLLECTION,MESSAGE_SETTINGS,"message_settings",data_test};
   pthread_create(&thread_id, NULL, &read_document_field_from_collection_thread,(void *)&read_document_field_from_collection_thread_parameters);
   if (thread_settings(thread_id) == 1)
   {
@@ -251,8 +251,8 @@ int database_test(void)
 
    // read a document in the collection and parse all fields
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   struct database_document_fields database_data;
 
   // initialize the database_document_fields struct 
@@ -269,7 +269,7 @@ int database_test(void)
   }
   database_data.count = 0;
 
-  if (read_document_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"{\"username\":\"XCASH\"}",&database_data,0) == 1)
+  if (read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION,"{\"username\":\"XCASH\"}",&database_data,0) == 1)
   {
     if (strncmp(database_data.item[0],"username",BUFFER_SIZE) == 0 && strncmp(database_data.value[0],"XCASH",BUFFER_SIZE) == 0 &&
         strncmp(database_data.item[1],"most_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_data.value[1],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
@@ -300,8 +300,8 @@ int database_test(void)
 
   // read a document in the collection and parse all fields on a separate thread
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   
   // initialize the database_document_fields struct 
   for (count = 0; count < 7; count++)
@@ -317,7 +317,7 @@ int database_test(void)
   }
   database_data.count = 0;
 
-  struct read_document_all_fields_from_collection_thread_parameters read_document_all_fields_from_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,"{\"username\":\"XCASH\"}",&database_data};
+  struct read_document_all_fields_from_collection_thread_parameters read_document_all_fields_from_collection_thread_parameters = {database_name,DATABASE_COLLECTION,"{\"username\":\"XCASH\"}",&database_data};
   pthread_create(&thread_id, NULL, &read_document_all_fields_from_collection_thread,(void *)&read_document_all_fields_from_collection_thread_parameters);
   if (thread_settings(thread_id) == 1)
   {
@@ -351,9 +351,9 @@ int database_test(void)
   
   // read multiple documents in the collection and parse all fields
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   struct database_multiple_documents_fields database_multiple_documents_fields;
 
   // initialize the database_multiple_documents_fields struct 
@@ -374,7 +374,7 @@ int database_test(void)
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0,"",0) == 1)
+  if (read_multiple_documents_all_fields_from_collection(database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0,"",0) == 1)
   {
     if (strncmp(database_multiple_documents_fields.item[0][0],"username",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][0],"XCASH",BUFFER_SIZE) == 0 &&
         strncmp(database_multiple_documents_fields.item[0][1],"most_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
@@ -406,9 +406,9 @@ int database_test(void)
 
   // read multiple documents in the collection using the sort document option and parse all fields
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
 
   // reset the database_multiple_documents_fields struct 
   for (count = 0; count < 2; count++)
@@ -422,7 +422,7 @@ int database_test(void)
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
-  if (read_multiple_documents_all_fields_from_collection(DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,1,"data",0) == 1)
+  if (read_multiple_documents_all_fields_from_collection(database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,1,"data",0) == 1)
   {
      if (strncmp(database_multiple_documents_fields.item[0][0],"username",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][0],"XCASH",BUFFER_SIZE) == 0 &&
         strncmp(database_multiple_documents_fields.item[0][1],"most_total_rounds_delegate_name",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",BUFFER_SIZE) == 0 &&
@@ -463,9 +463,9 @@ int database_test(void)
 
   // read multiple documents in the collection and parse all fields on a separate thread
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 2; count++)
@@ -485,7 +485,7 @@ int database_test(void)
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
-  struct read_multiple_documents_all_fields_from_collection_thread_parameters read_multiple_documents_all_fields_from_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0,""};
+  struct read_multiple_documents_all_fields_from_collection_thread_parameters read_multiple_documents_all_fields_from_collection_thread_parameters = {database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,2,0,""};
   pthread_create(&thread_id, NULL, &read_multiple_documents_all_fields_from_collection_thread,(void *)&read_multiple_documents_all_fields_from_collection_thread_parameters);
   if (thread_settings(thread_id) == 1)
   { 
@@ -527,7 +527,7 @@ int database_test(void)
   }
 
   // update all document in the collection
-  if (update_all_documents_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0) == 0)
+  if (update_all_documents_from_collection(database_name,DATABASE_COLLECTION,MESSAGE,0) == 0)
   {
     color_print("FAILED! Test for updating all documents in a collection","red");
   }
@@ -538,7 +538,7 @@ int database_test(void)
   }
 
   // update all document in the collection on a separate thread
-  struct update_all_documents_from_collection_thread_parameters update_all_documents_from_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,MESSAGE};
+  struct update_all_documents_from_collection_thread_parameters update_all_documents_from_collection_thread_parameters = {database_name,DATABASE_COLLECTION,MESSAGE};
   pthread_create(&thread_id, NULL, &update_all_documents_from_collection_thread,(void *)&update_all_documents_from_collection_thread_parameters);
   if (thread_settings(thread_id) == 0)
   {
@@ -551,8 +551,8 @@ int database_test(void)
   }
 
   // count how many documents have "message_settings":"XCASH_PROOF_OF_STAKE_TEST_DATA" in the collection
-  int count1 = count_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0);
-  int count2 = count_all_documents_in_collection(DATABASE_NAME,DATABASE_COLLECTION,0);
+  int count1 = count_documents_in_collection(database_name,DATABASE_COLLECTION,MESSAGE,0);
+  int count2 = count_all_documents_in_collection(database_name,DATABASE_COLLECTION,0);
   if ((count1 == count2) && (count1 != -1 || count2 != -1))
   {
     color_print("PASSED! Test for counting documents in a collection that match a specific field name and field","green");
@@ -566,10 +566,10 @@ int database_test(void)
   }
 
   // count how many documents have "message_settings":"XCASH_PROOF_OF_STAKE_TEST_DATA" in the collection on a separate thread
-  struct count_documents_in_collection_thread_parameters count_documents_in_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,MESSAGE};
+  struct count_documents_in_collection_thread_parameters count_documents_in_collection_thread_parameters = {database_name,DATABASE_COLLECTION,MESSAGE};
   pthread_create(&thread_id, NULL, &count_documents_in_collection_thread,(void *)&count_documents_in_collection_thread_parameters);
   count1 = thread_settings(thread_id);
-  struct count_all_documents_in_collection_thread_parameters count_all_documents_in_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION};
+  struct count_all_documents_in_collection_thread_parameters count_all_documents_in_collection_thread_parameters = {database_name,DATABASE_COLLECTION};
   pthread_create(&thread_id, NULL, &count_all_documents_in_collection_thread,(void *)&count_all_documents_in_collection_thread_parameters);
   count2 = thread_settings(thread_id);
   if ((count1 == count2) && (count1 != -1 || count2 != -1))
@@ -585,7 +585,7 @@ int database_test(void)
   }
 
   // delete a document from the collection
-  if (delete_document_from_collection(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0) == 0)
+  if (delete_document_from_collection(database_name,DATABASE_COLLECTION,MESSAGE,0) == 0)
   {
     color_print("FAILED! Test for deleting a document from a collection","red");
   }
@@ -596,13 +596,13 @@ int database_test(void)
   }
 
   // delete a document from the collection on a separate thread
-  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0) == 0)
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,MESSAGE,0) == 0)
   {
     color_print("FAILED! Test for deleting a document from a collection on a separate thread","red");
   }
   else
   {
-    struct delete_document_from_collection_thread_parameters delete_document_from_collection_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,MESSAGE};
+    struct delete_document_from_collection_thread_parameters delete_document_from_collection_thread_parameters = {database_name,DATABASE_COLLECTION,MESSAGE};
     pthread_create(&thread_id, NULL, &delete_document_from_collection_thread,(void *)&delete_document_from_collection_thread_parameters);
     if (thread_settings(thread_id) == 0)
     {
@@ -616,7 +616,7 @@ int database_test(void)
   }  
 
   // delete a collection from the database
-  if (delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0) == 0)
+  if (delete_collection_from_database(database_name,DATABASE_COLLECTION,0) == 0)
   {
     color_print("FAILED! Test for deleting a collection from a database","red");
   }
@@ -627,13 +627,13 @@ int database_test(void)
   }
 
   // delete a collection from the database on a separate thread
-  if (insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,MESSAGE,0) == 0)
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,MESSAGE,0) == 0)
   {
     color_print("FAILED! Test for deleting a collection from a database on a separate thread","red");
   }
   else
   {
-    struct delete_collection_from_database_thread_parameters delete_collection_from_database_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION};
+    struct delete_collection_from_database_thread_parameters delete_collection_from_database_thread_parameters = {database_name,DATABASE_COLLECTION};
     pthread_create(&thread_id, NULL, &delete_collection_from_database_thread,(void *)&delete_collection_from_database_thread_parameters);
     if (thread_settings(thread_id) == 0)
     {
@@ -646,14 +646,14 @@ int database_test(void)
     }  
   }
 
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0);
 
   // get the database data hash
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  if (get_database_data_hash(data_test,database_name,DATABASE_COLLECTION) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for getting the database data hash","green");
     count_test++;
@@ -663,14 +663,14 @@ int database_test(void)
     color_print("FAILED! Test for getting the database data hash","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
 
   // get the database data hash on a separate thread
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
-  insert_document_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  struct get_database_data_hash_thread_parameters get_database_data_hash_thread_parameters = {data_test,DATABASE_NAME,DATABASE_COLLECTION};
+  struct get_database_data_hash_thread_parameters get_database_data_hash_thread_parameters = {data_test,database_name,DATABASE_COLLECTION};
   pthread_create(&thread_id, NULL, &get_database_data_hash_thread,(void *)&get_database_data_hash_thread_parameters);
   if (thread_settings(thread_id) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
@@ -682,15 +682,15 @@ int database_test(void)
     color_print("FAILED! Test for getting the database data hash on a separate thread","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
 
   // insert multiple documents into the collection using json data
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
   memcpy(data_test+strlen(data_test),",",1);
   memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
-  if (insert_multiple_documents_into_collection_json(DATABASE_NAME,DATABASE_COLLECTION,data_test,BUFFER_SIZE,0) == 1 && get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data_test,BUFFER_SIZE,0) == 1 && get_database_data_hash(data_test,database_name,DATABASE_COLLECTION) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for inserting multiple documents into a collection using json data","green");
     count_test++;
@@ -701,14 +701,14 @@ int database_test(void)
   }
 
   // insert multiple documents into the collection using json data on a separate thread
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
   memcpy(data_test+strlen(data_test),",",1);
   memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
-  struct insert_multiple_documents_into_collection_json_thread_parameters insert_multiple_documents_into_collection_json_thread_parameters = {DATABASE_NAME,DATABASE_COLLECTION,data_test,BUFFER_SIZE};
+  struct insert_multiple_documents_into_collection_json_thread_parameters insert_multiple_documents_into_collection_json_thread_parameters = {database_name,DATABASE_COLLECTION,data_test,BUFFER_SIZE};
   pthread_create(&thread_id, NULL, &insert_multiple_documents_into_collection_json_thread,(void *)&insert_multiple_documents_into_collection_json_thread_parameters);
-  if (thread_settings(thread_id) == 1 && get_database_data_hash(data_test,DATABASE_NAME,DATABASE_COLLECTION) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  if (thread_settings(thread_id) == 1 && get_database_data_hash(data_test,database_name,DATABASE_COLLECTION) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for inserting multiple documents into a collection using json data on a separate thread","green");
     count_test++;
@@ -720,7 +720,7 @@ int database_test(void)
 
   // get the database data
   memset(result_test,0,strlen(result_test));
-  if (get_database_data(result_test,DATABASE_NAME,DATABASE_COLLECTION,0) == 1 && strncmp("{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\" },{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\" }",result_test,BUFFER_SIZE) == 0)
+  if (get_database_data(result_test,database_name,DATABASE_COLLECTION,0) == 1 && strncmp("{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\" },{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\" }",result_test,BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for getting the database data","green");
     count_test++;
@@ -732,7 +732,7 @@ int database_test(void)
 
   // get the database data on a separate thread
   memset(result_test,0,strlen(result_test));
-  struct get_database_data_thread_parameters get_database_data_thread_parameters = {result_test,DATABASE_NAME,DATABASE_COLLECTION};
+  struct get_database_data_thread_parameters get_database_data_thread_parameters = {result_test,database_name,DATABASE_COLLECTION};
   pthread_create(&thread_id, NULL, &get_database_data_thread,(void *)&get_database_data_thread_parameters);
   if (thread_settings(thread_id) == 1 && strncmp("{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\" },{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\" }",result_test,BUFFER_SIZE) == 0)
   {
@@ -745,7 +745,7 @@ int database_test(void)
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-  delete_collection_from_database(DATABASE_NAME,DATABASE_COLLECTION,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION,0);
   
   // write the end test message
   if (count_test == DATABASE_TEST)

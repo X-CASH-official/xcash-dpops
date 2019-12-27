@@ -83,6 +83,8 @@ int main(int parameters_count, char* parameters[])
   memset(secret_key_data,0,sizeof(secret_key_data));
   memset(log_file,0,sizeof(log_file));
   memset(XCASH_DPOPS_delegates_IP_address,0,sizeof(XCASH_DPOPS_delegates_IP_address));
+  memset(database_name,0,sizeof(database_name));
+  memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
   database_settings = 1;
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
@@ -358,19 +360,6 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
-  // check if it should create the default database data
-  memset(data,0,sizeof(data));
-  if (read_document_field_from_collection(DATABASE_NAME,"statistics",MESSAGE,"username",data,0) == 0)
-  {
-    INITIALIZE_DATABASE_DATA;
-  }
-
-  // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
-  memset(current_round_part,0,sizeof(current_round_part));
-  memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-  memcpy(current_round_part,"1",1);
-  memcpy(current_round_part_backup_node,"0",1);
-
   // get the wallets public address
   if (get_public_address(0) == 0)
   { 
@@ -427,6 +416,14 @@ int main(int parameters_count, char* parameters[])
     {
       sscanf(parameters[count+1], "%d", &xcash_wallet_port);
     }
+    if (strncmp(parameters[count],"--database_name",BUFFER_SIZE) == 0)
+    {
+      memcpy(database_name,parameters[count+1],strnlen(parameters[count+1],sizeof(database_name)));
+    }
+    if (strncmp(parameters[count],"--shared_delegates_database_name",BUFFER_SIZE) == 0)
+    {
+      memcpy(shared_delegates_database_name,parameters[count+1],strnlen(parameters[count+1],sizeof(shared_delegates_database_name)));
+    }
     if (strncmp(parameters[count],"--log_file",BUFFER_SIZE) == 0)
     {
       log_file_settings = 1;
@@ -459,21 +456,21 @@ int main(int parameters_count, char* parameters[])
     {
       memset(data,0,sizeof(data));
       
-      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\",\"block_count\":\"10\"}",0);
-      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\",\"block_count\":\"10\"}",0);
+      insert_document_into_collection_json(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\",\"block_count\":\"10\"}",0);
+      insert_document_into_collection_json(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\",\"block_count\":\"10\"}",0);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+117,"\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}",59);
-      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses",data,0);
+      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses",data,0);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+117,"\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}",73);
-      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses_payments",data,0);
-      insert_document_into_collection_json(DATABASE_NAME_DELEGATES,"public_addresses_payments",data,0);
+      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses_payments",data,0);
+      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses_payments",data,0);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address_created_reserve_proof\":\"",41);
@@ -481,10 +478,10 @@ int main(int parameters_count, char* parameters[])
       memcpy(data+139,"\",\"public_address_voted_for\":\"",30);
       memcpy(data+169,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+267,"\",\"total\":\"10\",\"reserve_proof\":\"15\"}",36);
-      insert_document_into_collection_json(DATABASE_NAME,"reserve_proofs_5",data,0);
-      insert_document_into_collection_json(DATABASE_NAME,"reserve_proofs_10",data,0);
-      insert_document_into_collection_json(DATABASE_NAME,"reserve_proofs_10",data,0);
-      insert_document_into_collection_json(DATABASE_NAME,"reserve_proofs_15",data,0);
+      insert_document_into_collection_json(database_name,"reserve_proofs_5",data,0);
+      insert_document_into_collection_json(database_name,"reserve_proofs_10",data,0);
+      insert_document_into_collection_json(database_name,"reserve_proofs_10",data,0);
+      insert_document_into_collection_json(database_name,"reserve_proofs_15",data,0);
 
       color_print("The database test data has been added successfully\n","green");
       database_reset;
@@ -494,30 +491,30 @@ int main(int parameters_count, char* parameters[])
     {
       memset(data,0,strlen(data));
       
-      delete_document_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","{\"block_height\":\"5\"}",0);
-      delete_document_from_collection(DATABASE_NAME_DELEGATES,"blocks_found","{\"block_height\":\"5\"}",0);
+      delete_document_from_collection(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\"}",0);
+      delete_document_from_collection(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\"}",0);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+117,"\"}",2);
-      delete_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses",data,0);
+      delete_document_from_collection(shared_delegates_database_name,"public_addresses",data,0);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+117,"\"}",2);
-      delete_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses_payments",data,0);
-      delete_document_from_collection(DATABASE_NAME_DELEGATES,"public_addresses_payments",data,0);
+      delete_document_from_collection(shared_delegates_database_name,"public_addresses_payments",data,0);
+      delete_document_from_collection(shared_delegates_database_name,"public_addresses_payments",data,0);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address_voted_for\":\"",29);
       memcpy(data+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+127,"\"}",2);
-      delete_document_from_collection(DATABASE_NAME,"reserve_proofs_5",data,0);
-      delete_document_from_collection(DATABASE_NAME,"reserve_proofs_10",data,0);
-      delete_document_from_collection(DATABASE_NAME,"reserve_proofs_10",data,0);
-      delete_document_from_collection(DATABASE_NAME,"reserve_proofs_15",data,0);
+      delete_document_from_collection(database_name,"reserve_proofs_5",data,0);
+      delete_document_from_collection(database_name,"reserve_proofs_10",data,0);
+      delete_document_from_collection(database_name,"reserve_proofs_10",data,0);
+      delete_document_from_collection(database_name,"reserve_proofs_15",data,0);
 
       color_print("The database test data has been removed successfully\n","green");
       database_reset;
@@ -569,18 +566,35 @@ int main(int parameters_count, char* parameters[])
     secret_key_data[count2] = (int)strtol(data2, NULL, 16);
   }
 
+  // check if it should create the default database data
+  memset(data,0,sizeof(data));
+  if (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0)
+  {
+    INITIALIZE_DATABASE_DATA;
+  }
+
+  // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
+  memset(current_round_part,0,sizeof(current_round_part));
+  memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
+  memcpy(current_round_part,"1",1);
+  memcpy(current_round_part_backup_node,"0",1);
+
   // print the settings
   memset(data2,0,sizeof(data2));
   memcpy(data2,"Settings\n\nPublic Address: ",26);
   memcpy(data2+strlen(data2),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(data2+strlen(data2),"\nBlock Verifiers Secret Key: ",29);
   memcpy(data2+strlen(data2),secret_key,VRF_SECRET_KEY_LENGTH);
+  memcpy(data2+strlen(data2),"\nDatabase Name: ",16);
+  memcpy(data2+strlen(data2),database_name,strnlen(database_name,sizeof(data2)));
   if (shared_delegates_website == 1)
   {
     memcpy(data2+strlen(data2),"\nShared Delegate Settings: YES\nFee: ",36);
     snprintf(data2+strlen(data2),sizeof(data2)-1,"%lf",fee);
     memcpy(data2+strlen(data2),"\nMinimum Amount: ",17);
     snprintf(data2+strlen(data2),sizeof(data2)-1,"%lld",minimum_amount);
+    memcpy(data2+strlen(data2),"\nShared Delegates Database Name: ",33);
+    memcpy(data2+strlen(data2),shared_delegates_database_name,strnlen(shared_delegates_database_name,sizeof(data2)));
   }
   else
   {

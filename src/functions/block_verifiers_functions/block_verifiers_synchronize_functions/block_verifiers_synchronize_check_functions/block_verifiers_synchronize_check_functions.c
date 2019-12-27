@@ -84,7 +84,7 @@ int sync_check_previous_blocks_reserve_bytes(void)
 
   // get the reserve byte data
   memset(data2,0,sizeof(data2));
-  return read_document_field_from_collection(DATABASE_NAME,data,data3,"reserve_bytes",data2,1);
+  return read_document_field_from_collection(database_name,data,data3,"reserve_bytes",data2,1);
 }
 
 
@@ -208,7 +208,7 @@ int sync_check_reserve_proofs_database(int settings)
   if (settings == 1)
   {
     // get the database data hash for the reserve proofs database
-    if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
+    if (get_database_data_hash(data,database_name,"reserve_proofs") == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
     }
@@ -228,7 +228,7 @@ int sync_check_reserve_proofs_database(int settings)
       memset(data2,0,strlen(data2));  
       memcpy(data2,"reserve_proofs_",15);  
       snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-      if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+      if (get_database_data_hash(data,database_name,data2) == 0)
       {
         SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
       }
@@ -364,7 +364,7 @@ void sync_check_majority_reserve_proofs_database(void)
   reset_synced_block_verifiers_vote_settings;
  
   // get the database data hash for the reserve proofs database
-  if (get_database_data_hash(data,DATABASE_NAME,"reserve_proofs") == 0)
+  if (get_database_data_hash(data,database_name,"reserve_proofs") == 0)
   {
     SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
@@ -384,7 +384,7 @@ void sync_check_majority_reserve_proofs_database(void)
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_proofs_",15);  
     snprintf(data2+15,sizeof(data2)-16,"%zu",count);
-    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+    if (get_database_data_hash(data,database_name,data2) == 0)
     {
       SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
     }
@@ -503,7 +503,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
     get_reserve_bytes_database(current_reserve_bytes_database,0);
 
     // get the database data hash for the reserve bytes database
-    if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
+    if (get_database_data_hash(data,database_name,"reserve_bytes") == 0)
     {
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
     }
@@ -523,7 +523,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       memset(data2,0,strlen(data2));  
       memcpy(data2,"reserve_bytes_",14);  
       snprintf(data2+14,sizeof(data2)-15,"%zu",count);
-      if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+      if (get_database_data_hash(data,database_name,data2) == 0)
       {
         SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
       }
@@ -666,7 +666,7 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
   get_reserve_bytes_database(current_reserve_bytes_database,0);
 
   // get the database data hash for the reserve bytes database
-  if (get_database_data_hash(data,DATABASE_NAME,"reserve_bytes") == 0)
+  if (get_database_data_hash(data,database_name,"reserve_bytes") == 0)
   {
     SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
@@ -686,7 +686,7 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_bytes_",14);  
     snprintf(data2+14,sizeof(data2)-15,"%zu",count);
-    if (get_database_data_hash(data,DATABASE_NAME,data2) == 0)
+    if (get_database_data_hash(data,database_name,data2) == 0)
     {
       SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database");
     }
@@ -801,7 +801,7 @@ int sync_check_delegates_database(int settings)
   if (settings == 1)
   {
     // get the database data hash for the delegates database
-    if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
+    if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
     {
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database");
     }
@@ -941,7 +941,7 @@ void sync_check_majority_delegates_database(void)
   reset_synced_block_verifiers_vote_settings;
 
   // get the database data hash for the reserve proofs database
-  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
   {
     SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database");
   }
@@ -1058,7 +1058,7 @@ int sync_check_statistics_database(int settings)
   if (settings == 1)
   {
     // get the database data hash for the reserve proofs database
-    if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
+    if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
     {
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database");
     }
@@ -1197,7 +1197,7 @@ void sync_check_majority_statistics_database(void)
   reset_synced_block_verifiers_vote_settings;
   
   // get the database data hash for the reserve proofs database
-  if (get_database_data_hash(data,DATABASE_NAME,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
   {
     SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database");
   }

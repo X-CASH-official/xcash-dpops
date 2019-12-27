@@ -20,7 +20,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake
 //#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 440875 // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
-#define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 10 // The blocks per day with a 5 minute block time
+#define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
 #define MAXIMUM_TRANSACATIONS_PER_BLOCK 16384 // The maximum amount of transaction per block
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a XCASH_DPOPS_signature for the signed data
@@ -115,8 +115,6 @@ Using define statements instead of constants for increased efficiency
 
 // Database
 #define DATABASE_CONNECTION "mongodb://localhost:27017" // The database connection string
-#define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
-#define DATABASE_NAME_DELEGATES "XCASH_PROOF_OF_STAKE_DELEGATES" // The name of the database for the delegates
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
 #define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The reserve bytes database fields
 #define TOTAL_RESERVE_PROOFS_DATABASE_FIELDS 4 // The reserve proofs database fields
@@ -152,13 +150,13 @@ Using define statements instead of constants for increased efficiency
 
 #define INITIALIZE_DATABASE_DATA \
 color_print("Initializing database data","yellow"); \
-insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,0); \
-insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2,0); \
-insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_3,0); \
-insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_4,0); \
-insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_5,0); \
-insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_6,0); \
-insert_document_into_collection_json(DATABASE_NAME,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0); \
+insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,0); \
+insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2,0); \
+insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_3,0); \
+insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_4,0); \
+insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_5,0); \
+insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_6,0); \
+insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0); \
 sleep(10);
 
 #define INITIALIZE_NETWORK_DATA_NODES \
@@ -193,9 +191,9 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 
 #define INITIALIZE_DATABASE_DATA \
 color_print("Initializing database data","yellow"); \
-insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,0); \
-insert_document_into_collection_json(DATABASE_NAME,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2,0); \
-insert_document_into_collection_json(DATABASE_NAME,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0); \
+insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,0); \
+insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2,0); \
+insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0); \
 sleep(10);
 
 #define INITIALIZE_NETWORK_DATA_NODES \
@@ -224,6 +222,8 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "--total_threads \"total_threads\" - The total threads to use, the maximum is 100 total threads.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
 "--XCASH_DPOPS_delegates_IP_address \"delegates IP address\" - The delegates IP address (IPV4 only) to create the server on.\nIf this parameter is not specified, the default is 0.0.0.0 (all available networking interfaces).\n\n" \
 "--xcash_wallet_port \"xcash_wallet_port\" - The xcash wallet port.\nIf this parameter is not specified, the default port is 18285.\n\n" \
+"--database_name - The name of the database.\nIf this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE.\n\n" \
+"--shared_delegates_database_name - The name of the shared delegates database.\nIf this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE_DELEGATES.\n\n" \
 "--delegates_website - Run the delegates website\n\n" \
 "--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
 "The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \
