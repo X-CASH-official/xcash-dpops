@@ -85,6 +85,9 @@ int main(int parameters_count, char* parameters[])
   memset(XCASH_DPOPS_delegates_IP_address,0,sizeof(XCASH_DPOPS_delegates_IP_address));
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
+  database_settings = 1;
+  log_file_settings = 0;
+  xcash_wallet_port = XCASH_WALLET_PORT;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
