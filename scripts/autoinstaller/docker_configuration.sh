@@ -192,7 +192,13 @@ function stop_processes()
   screen -XS "MongoDB" quit > /dev/null 2>&1
   screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
   screen -XS "XCASH_Wallet" quit > /dev/null 2>&1 
-  sleep 30s
+  sleep 15s
+  pkill -f XCASH_DPOPS_AUTO_RESTART
+  pkill -f XCASH_DPOPS
+  pkill -f mongod
+  pkill -f xcashd
+  pkill -f xcash-wallet-rpc
+  sleep 15s
   echo -ne "\r${COLOR_PRINT_GREEN}Stoping Programs${END_COLOR_PRINT}"
   echo
 }
