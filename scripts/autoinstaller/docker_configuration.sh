@@ -193,11 +193,22 @@ function stop_processes()
   screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
   screen -XS "XCASH_Wallet" quit > /dev/null 2>&1 
   sleep 15s
-  pkill -f XCASH_DPOPS_AUTO_RESTART
-  pkill -f XCASH_DPOPS
-  pkill -f mongod
-  pkill -f xcashd
-  pkill -f xcash-wallet-rpc
+  data=$(ps -eaf)
+  if [[ ! $data =~ "XCASH_DPOPS_AUTO_RESTART" ]]; then
+     pkill -f XCASH_DPOPS_AUTO_RESTART
+  fi
+  if [[ ! $data =~ "XCASH_DPOPS" ]]; then
+     pkill -f XCASH_DPOPS
+  fi
+  if [[ ! $data =~ "mongod" ]]; then
+     pkill -f mongod
+  fi
+  if [[ ! $data =~ "xcashd" ]]; then
+     pkill -f xcashd
+  fi
+  if [[ ! $data =~ "xcash-wallet-rpc" ]]; then
+     pkill -f xcash-wallet-rpc
+  fi
   sleep 15s
   echo -ne "\r${COLOR_PRINT_GREEN}Stoping Programs${END_COLOR_PRINT}"
   echo
