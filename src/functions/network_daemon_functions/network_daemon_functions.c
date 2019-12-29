@@ -149,13 +149,6 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
 
   // Variables
   char message[BUFFER_SIZE];
-
-  // define macros
-  #define SUBMIT_BLOCK_TEMPLATE_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"submit_block_template",21); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  return 0;
   
   memset(message,0,sizeof(message));
 
@@ -165,15 +158,7 @@ int submit_block_template(char* data, const int HTTP_SETTINGS)
   memcpy(message+61+DATA_LENGTH,"\"]}",3);
   memset(data,0,strlen(data));
 
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"submit block template",HTTP_SETTINGS) <= 0)
-  {  
-    SUBMIT_BLOCK_TEMPLATE_ERROR("Could not submit the block template");
-  }
-  
-  if (strstr(data,"error") != NULL)
-  {
-    SUBMIT_BLOCK_TEMPLATE_ERROR("Could not submit the block template");
-  }
+  send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"submit block template",HTTP_SETTINGS);
   return 1;
 
   #undef SUBMIT_BLOCK_TEMPLATE_ERROR

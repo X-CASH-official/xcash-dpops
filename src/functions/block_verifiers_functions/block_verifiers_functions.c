@@ -1408,7 +1408,7 @@ int block_verifiers_create_block_and_update_database(void)
   {
     submit_block_template(data,0);
   }
-  sleep(2);
+  sleep(BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS);
 
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
