@@ -258,16 +258,15 @@ int sync_check_reserve_proofs_database(int settings)
       }
       else
       {
-        parse_json_data(data,"statistics_database",data2,sizeof(data2));
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-        if (memcmp(data2,"true",4) == 0)
+        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
-        else if (memcmp(data2,"false",5) == 0)
+        else
         {
           synced_block_verifiers.vote_settings_false++;
         }
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       } 
     }  
   }
@@ -412,16 +411,15 @@ void sync_check_majority_reserve_proofs_database(void)
       }
       else
       {
-        parse_json_data(data,"statistics_database",data2,sizeof(data2));
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-        if (memcmp(data2,"true",4) == 0)
+        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
-        else if (memcmp(data2,"false",5) == 0)
+        else
         {
           synced_block_verifiers.vote_settings_false++;
         }
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       } 
     }  
   }
@@ -553,16 +551,15 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       }
       else
       {
-        parse_json_data(data,"statistics_database",data2,sizeof(data2));
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-        if (memcmp(data2,"true",4) == 0)
+        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
-        else if (memcmp(data2,"false",5) == 0)
+        else
         {
           synced_block_verifiers.vote_settings_false++;
         }
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       } 
     }  
   }
@@ -714,16 +711,15 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
       }
       else
       {
-        parse_json_data(data,"statistics_database",data2,sizeof(data2));
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-        if (memcmp(data2,"true",4) == 0)
+        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
-        else if (memcmp(data2,"false",5) == 0)
+        else
         {
           synced_block_verifiers.vote_settings_false++;
         }
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       } 
     }  
   }
@@ -832,17 +828,16 @@ int sync_check_delegates_database(int settings)
       }
       else
       {
-        parse_json_data(data,"statistics_database",data2,sizeof(data2));
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-        if (memcmp(data2,"true",4) == 0)
+        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
-        else if (memcmp(data2,"false",5) == 0)
+        else
         {
           synced_block_verifiers.vote_settings_false++;
         }
-      } 
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
+      }
     }  
   }
 
@@ -970,16 +965,15 @@ void sync_check_majority_delegates_database(void)
       }
       else
       {
-        parse_json_data(data,"statistics_database",data2,sizeof(data2));
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-        if (memcmp(data2,"true",4) == 0)
+        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
-        else if (memcmp(data2,"false",5) == 0)
+        else
         {
           synced_block_verifiers.vote_settings_false++;
         }
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       } 
     }  
   }
@@ -1089,16 +1083,15 @@ int sync_check_statistics_database(int settings)
       }
       else
       {
-        parse_json_data(data,"statistics_database",data2,sizeof(data2));
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-        if (memcmp(data2,"true",4) == 0)
+        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
-        else if (memcmp(data2,"false",5) == 0)
+        else
         {
           synced_block_verifiers.vote_settings_false++;
         }
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       } 
     }  
   }
@@ -1226,16 +1219,15 @@ void sync_check_majority_statistics_database(void)
       }
       else
       {
-        parse_json_data(data,"statistics_database",data2,sizeof(data2));
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-        if (memcmp(data2,"true",4) == 0)
+        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
-        else if (memcmp(data2,"false",5) == 0)
+        else
         {
           synced_block_verifiers.vote_settings_false++;
         }
+        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
       } 
     }  
   }
