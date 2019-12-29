@@ -1203,6 +1203,7 @@ function get_installation_directory()
   XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_DIR}shared_delegates_website/
   SHARED_DELEGATES_WEBSITE_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_shared_delegates_website/
   NODEJS_DIR=$(sudo find / -type d -name "node-*-linux-x64")/
+  MONGODB_INSTALLATION_DIR=$(sudo find / -type d -path "*/data/db")/
   MONGODB_DIR=$(sudo find / -type d -name "mongodb-linux-x86_64-ubuntu1804-*")/
   MONGOC_DRIVER_DIR=$(sudo find / -type d -name "mongo-c-driver-*")/
   LOGFILE=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_INSTALL.log
