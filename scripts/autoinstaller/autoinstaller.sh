@@ -1352,10 +1352,6 @@ function update_mongodb()
   sudo rm mongodb-linux-x86_64-*.tgz >> "${LOGFILE}" 2>&1
   MONGODB_DIR=$(sudo find / -type d -name "mongodb-linux-x86_64-ubuntu1804-*")/
   update_systemd_service_files
-  echo "${SYSTEMD_SERVICE_FILE_MONGODB}"
-  echo
-  echo
-  echo "${MONGODB_DIR}"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
   sudo systemctl daemon-reload
   sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
