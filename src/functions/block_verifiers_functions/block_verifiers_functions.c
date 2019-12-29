@@ -1403,67 +1403,20 @@ int block_verifiers_create_block_and_update_database(void)
 
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
-  // have the block producer submit the block to the network
+  // since the block is valid, it will get added to the network, let the block producer try to submit the block first, then loop through all of the network data nodes to make sure it was submitted
   if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
-    if (submit_block_template(data,0) == 0)
-    {
-      memset(data2,0,sizeof(data2));
-      memcpy(data2,"{\"block_height\":\"",17);
-      memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
-      memcpy(data2+strlen(data2),"\"}",2);
-      get_reserve_bytes_database(count,0);
-      memset(data3,0,sizeof(data3));
-      memcpy(data3,"reserve_bytes_",14);
-      snprintf(data3+14,sizeof(data3)-15,"%zu",count);
-      delete_document_from_collection(database_name,data3,data2,1);
-      BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not submit the block to the network");
-    }
+    submit_block_template(data,0);
   }
-  sleep(BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS);
+  sleep(2);
 
-  if (network_data_node_settings == 1)
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
-    memset(data3,0,sizeof(data3));
-    if (get_current_block_height(data3,0) == 0)
+    if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
-      BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not get the current block height");
+      submit_block_template(data,0);
     }
-
-    if (strncmp(data3,current_block_height,sizeof(data3)) == 0)
-    {
-      // the block was not submitted to the network. Loop through each network data node until it is submitted to the network
-      for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-      {
-        if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-        {
-          if (submit_block_template(data,0) == 0)
-          {
-            memset(data2,0,sizeof(data2));
-            memcpy(data2,"{\"block_height\":\"",17);
-            memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
-            memcpy(data2+strlen(data2),"\"}",2);
-            get_reserve_bytes_database(count,0);
-            memset(data3,0,sizeof(data3));
-            memcpy(data3,"reserve_bytes_",14);
-            snprintf(data3+14,sizeof(data3)-15,"%zu",count);
-            delete_document_from_collection(database_name,data3,data2,1);
-            BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not submit the block to the network");
-          }
-
-          if (get_current_block_height(data3,0) == 0)
-          {
-            BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not get the current block height");
-          }
-
-          if (memcmp(data3,current_block_height,strnlen(current_block_height,BUFFER_SIZE)) != 0)
-          {
-            break;
-          }
-        }
-        sleep(BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS);
-      } 
-    }   
+    usleep(200000);
   }
   return 1;
 
