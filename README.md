@@ -129,7 +129,6 @@ It is recommended if you are going to run a XCASH DPOPS node, to not keep all of
 ```
 Parameters
 --parameters - Show a list of all valid parameters
-
 All parameters are optional, execept for --block_verifiers_secret_key
 
 --test - Run the test to make sure the program is compatible with your system
@@ -388,7 +387,7 @@ Type=simple
 LimitNOFILE=64000
 User=root
 WorkingDirectory=/root/x-network/XCASH_DPOPS/build/
-ExecStart=/root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --block_verifiers_secret_key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a
+ExecStart=/root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --block_verifiers_secret_key BLOCK_VERIFIERS_SECRET_KEY
 Restart=always
  
 [Install]
@@ -401,9 +400,15 @@ You will need to change the **User** to the user of the system
 
 You will need to change the **ExecStart** to the full path of the `XCASH_DPOPS` file and add any startup flags if running a shared delegates website or a delegates website
 
-To run the XCASH DPOPS node and the shared delegates website, add the flag `--shared_delegates_website`
+You will need to change the **BLOCK_VERIFIERS_SECRET_KEY** to your block verifiers secret key
 
-To run the XCASH DPOPS node and the delegates website, add the flag `--delegates_website`
+For a full list of XCASH_DPOPS parameters please read the [XCASH_DPOPS Parameters](#xcash_dpops-parameters) section. This section will explain how to change any of the provided parameters in detail. Since the shared delegate option is probably the most used parameter, this parameter will be explained below.
+
+```
+--shared_delegates_website --fee "fee" --minimum_amount "minimum_amount" - Run the shared delegates website, with a fee of "fee" and a minimum amount of "minimum_amount"
+The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)
+The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)
+```
 
 Reload systemd after you have made any changes to the systemd service files  
 `systemctl daemon-reload`

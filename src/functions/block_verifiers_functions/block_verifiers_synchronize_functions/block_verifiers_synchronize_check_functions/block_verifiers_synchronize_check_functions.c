@@ -258,7 +258,7 @@ int sync_check_reserve_proofs_database(int settings)
       }
       else
       {
-        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
+        if (strstr(data,"reserve_proofs_database") != NULL && parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
@@ -411,7 +411,7 @@ void sync_check_majority_reserve_proofs_database(void)
       }
       else
       {
-        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
+        if (strstr(data,"reserve_proofs_database") != NULL && parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
@@ -551,7 +551,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       }
       else
       {
-        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
+        if (strstr(data,"reserve_bytes_database") != NULL && parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
@@ -711,7 +711,7 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
       }
       else
       {
-        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
+        if (strstr(data,"reserve_bytes_database") != NULL && parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
@@ -828,7 +828,7 @@ int sync_check_delegates_database(int settings)
       }
       else
       {
-        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
+        if (strstr(data,"delegates_database") != NULL && parse_json_data(data,"delegates_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
@@ -965,7 +965,7 @@ void sync_check_majority_delegates_database(void)
       }
       else
       {
-        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
+        if (strstr(data,"delegates_database") != NULL && parse_json_data(data,"delegates_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
         {
           synced_block_verifiers.vote_settings_true++;
         }
