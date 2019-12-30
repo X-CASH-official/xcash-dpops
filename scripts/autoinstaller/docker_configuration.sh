@@ -23,7 +23,6 @@ WALLET_SEED=""
 WALLET_PASSWORD_SETTINGS=""
 WALLET_PASSWORD=$(< /dev/urandom tr -dc 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' | head -c"${1:-32}";echo;)
 XCASH_DPOPS_PACKAGES="build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libpcsclite-dev git screen"
-GIT_PULL_ALREADY_UPDATED_MESSAGE="Already up to date."
 
 # Program Settings
 MONGODB_CURRENT_VERSION=""
@@ -418,11 +417,12 @@ function update_xcash()
   echo -ne "${COLOR_PRINT_YELLOW}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   if [ ! -d "$XCASH_INSTALLATION_DIR" ]; then
     cd "${INSTALLATION_DIR}"
-    git clone "${XCASH_URL}" >> /dev/null 2>&1
+    git clone --quiet "${XCASH_URL}"
   fi
   cd "${XCASH_INSTALLATION_DIR}"
-  data=$(git pull) >> /dev/null 2>&1
-  if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
+  data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
+  if [ "$data" == "0" ]; then
+    git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> /dev/null 2>&1
     else
@@ -438,11 +438,12 @@ function update_xcash_dpops()
   echo -ne "${COLOR_PRINT_YELLOW}Updating XCASH_DPOPS${END_COLOR_PRINT}"
   if [ ! -d "$XCASH_DPOPS_INSTALLATION_DIR" ]; then
     cd "${INSTALLATION_DIR}"
-    git clone "${XCASH_DPOPS_URL}" >> /dev/null 2>&1
+    git clone --quiet "${XCASH_DPOPS_URL}"
   fi
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  data=$(git pull) >> /dev/null 2>&1
-  if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
+  data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
+  if [ "$data" == "0" ]; then
+    git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> /dev/null 2>&1
     else
@@ -458,11 +459,12 @@ function update_shared_delegates_website()
   echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegates Website${END_COLOR_PRINT}"
   if [ ! -d "$SHARED_DELEGATES_INSTALLATION_DIR" ]; then
     cd "${INSTALLATION_DIR}"
-    git clone "${SHARED_DELEGATES_WEBSITE_URL}" >> /dev/null 2>&1
+    git clone --quiet "${SHARED_DELEGATES_WEBSITE_URL}"
   fi
   cd "${SHARED_DELEGATES_INSTALLATION_DIR}"
-  data=$(git pull) >> /dev/null 2>&1
-  if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
+  data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
+  if [ "$data" == "0" ]; then
+    git pull --quiet
     npm update >> /dev/null 2>&1
     ng build --prod --aot >> /dev/null 2>&1
     cd dist

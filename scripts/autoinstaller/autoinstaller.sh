@@ -54,7 +54,6 @@ MONGOC_DRIVER_DIR=""
 MONGOC_DRIVER_CURRENT_VERSION=""
 LOGFILE=""
 XCASH_DPOPS_PACKAGES="build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libpcsclite-dev git screen"
-GIT_PULL_ALREADY_UPDATED_MESSAGE="Already up to date."
 CURRENT_XCASH_WALLET_INFORMATION=""
 
 # Files
@@ -848,7 +847,7 @@ function download_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Downloading X-CASH${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  git clone ${XCASH_URL} >> "${LOGFILE}" 2>&1
+  git clone --quiet ${XCASH_URL}
   echo -ne "\r${COLOR_PRINT_GREEN}Downloading X-CASH${END_COLOR_PRINT}"
   echo
 }
@@ -971,7 +970,7 @@ function download_xcash_dpops()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  git clone ${XCASH_DPOPS_URL} >> "${LOGFILE}" 2>&1
+  git clone --quiet ${XCASH_DPOPS_URL}
   echo -ne "\r${COLOR_PRINT_GREEN}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
   echo
 }
@@ -1134,7 +1133,7 @@ function download_shared_delegate_website()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Downloading Shared Delegates Website${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  git clone ${SHARED_DELEGATES_WEBSITE_URL} >> "${LOGFILE}" 2>&1
+  git clone --quiet ${SHARED_DELEGATES_WEBSITE_URL}
   echo -ne "\r${COLOR_PRINT_GREEN}Downloading Shared Delegates Website${END_COLOR_PRINT}"
   echo
 }
@@ -1284,11 +1283,12 @@ function update_xcash()
   echo -ne "${COLOR_PRINT_YELLOW}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   if [ ! -d "$XCASH_DIR" ]; then
     cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-    git clone "${XCASH_URL}" >> /dev/null 2>&1
+    git clone --quiet "${XCASH_URL}"
   fi
   cd "${XCASH_DIR}"
-  data=$(git pull --progress) > /dev/null 2>&1
-  if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
+  data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
+  if [ "$data" == "0" ]; then
+    git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
     else
@@ -1307,14 +1307,14 @@ function update_xcash_dpops()
     git clone --quiet "${XCASH_DPOPS_URL}"
   fi
   cd "${XCASH_DPOPS_DIR}"
-  data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && true || echo false)
-  if [ ! "$data" == "true" ]; then
+  data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
+  if [ "$data" == "0" ]; then
     git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
     else
       make release -j $((CPU_THREADS / 2)) >> "${LOGFILE}" 2>&1
-    fi 
+    fi
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Updating XCASH_DPOPS${END_COLOR_PRINT}"
   echo
@@ -1325,11 +1325,12 @@ function update_shared_delegates_website()
   echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegates Website${END_COLOR_PRINT}"
   if [ ! -d "$SHARED_DELEGATES_WEBSITE_DIR" ]; then
     cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-    git clone "${SHARED_DELEGATES_WEBSITE_URL}" >> /dev/null 2>&1
+    git clone --quiet "${SHARED_DELEGATES_WEBSITE_URL}"
   fi
   cd "${SHARED_DELEGATES_WEBSITE_DIR}"
-  data=$(git pull) >> /dev/null 2>&1
-  if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
+  data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
+  if [ "$data" == "0" ]; then
+    git pull --quiet
     npm update >> "${LOGFILE}" 2>&1
     ng build --prod --aot >> "${LOGFILE}" 2>&1
     cd dist
