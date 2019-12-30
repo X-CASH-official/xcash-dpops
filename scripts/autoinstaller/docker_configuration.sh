@@ -330,6 +330,10 @@ function configuration()
 
   stop_processes
 
+  # reset the XCASH_DPOPS repository
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+  git reset --hard 0514cafa3a07864342423e7bfdea62edfc5a8957
+
   # Display Configuration data
   echo
   echo
