@@ -1304,11 +1304,12 @@ function update_xcash_dpops()
   echo -ne "${COLOR_PRINT_YELLOW}Updating XCASH_DPOPS${END_COLOR_PRINT}"
   if [ ! -d "$XCASH_DPOPS_DIR" ]; then
     cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-    git clone --quiet "${XCASH_DPOPS_URL}" >> /dev/null 2>&1
+    git clone --quiet "${XCASH_DPOPS_URL}"
   fi
   cd "${XCASH_DPOPS_DIR}"
-  data=$(git pull --progress) &>/dev/null
-  if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
+  data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && true || echo false)
+  if [ ! "$data" == "true" ]; then
+    git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
     else
