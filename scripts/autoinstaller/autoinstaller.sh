@@ -1287,7 +1287,7 @@ function update_xcash()
     git clone "${XCASH_URL}" >> /dev/null 2>&1
   fi
   cd "${XCASH_DIR}"
-  data=$(git pull) >> /dev/null 2>&1
+  data=$(git pull --progress) > /dev/null 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
@@ -1307,7 +1307,7 @@ function update_xcash_dpops()
     git clone "${XCASH_DPOPS_URL}" >> /dev/null 2>&1
   fi
   cd "${XCASH_DPOPS_DIR}"
-  data=$(git pull) >> /dev/null 2>&1
+  data=$(git pull --progress) > /dev/null 2>&1
   if [ ! "$data" == "$GIT_PULL_ALREADY_UPDATED_MESSAGE" ]; then
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
