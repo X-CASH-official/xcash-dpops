@@ -737,7 +737,7 @@ Now list all of the images installed, and save the IMAGE_ID for the image you ju
 
 Now create and start a new container from the image you just downloaded 
 ```
-docker run -i -t -p 18280:18280 -p 18281:18281 -p 18283:18283 IMAGE_ID /bin/bash
+docker run -i -t --network host IMAGE_ID /bin/bash
 ```
 
 You should now have a bash prompt inside of the docker container. Now run `exit`
