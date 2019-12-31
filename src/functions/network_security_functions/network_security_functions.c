@@ -420,13 +420,13 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     }
     if (count == BLOCK_VERIFIERS_AMOUNT)
     {
-      VERIFY_DATA_ERROR("Invalid message1");
+      VERIFY_DATA_ERROR("Invalid message");
     }
     memset(data,0,sizeof(data));
   }
 
   // verify if the previous block hash is correct
-  if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",sizeof(message_settings)) != 0)
+  if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"XCASH_PROOF_OF_STAKE_TEST_DATA",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_DOWNLOAD",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD",sizeof(message_settings)) != 0 && strncmp(message_settings,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD",sizeof(message_settings)) != 0)
   {    
     if (strncmp(previous_block_hash,message_previous_block_hash,BUFFER_SIZE) != 0)
     {
@@ -460,7 +460,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       memcpy(result+message_length,"}",1);  
       if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
       {
-        VERIFY_DATA_ERROR("Invalid message2");
+        VERIFY_DATA_ERROR("Invalid message");
       }   
     }
     else
@@ -470,7 +470,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       memcpy(result+message_length,"}",1);  
       if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
       {
-        VERIFY_DATA_ERROR("Invalid message3");
+        VERIFY_DATA_ERROR("Invalid message");
       }   
     }
   }
@@ -483,7 +483,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       memcpy(result+message_length,"}",1);  
       if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
       {
-        VERIFY_DATA_ERROR("Invalid message4");
+        VERIFY_DATA_ERROR("Invalid message");
       }   
     }
     else
@@ -493,7 +493,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
       memcpy(result+message_length,"}",1);  
       if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
       {
-        VERIFY_DATA_ERROR("Invalid message5");
+        VERIFY_DATA_ERROR("Invalid message");
       }   
     }
   }
@@ -557,7 +557,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     // verify the message
     if (crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)result,(unsigned long long)strlen((const char*)result)) != 0)
     {
-      VERIFY_DATA_ERROR("Invalid message6");
+      VERIFY_DATA_ERROR("Invalid message");
     }
   }
   else
@@ -587,7 +587,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     // check if the returned data is valid
     if (strncmp(data,"true",BUFFER_SIZE) != 0)
     {
-       VERIFY_DATA_ERROR("Invalid message7");
+       VERIFY_DATA_ERROR("Invalid message");
     }
   }
  
