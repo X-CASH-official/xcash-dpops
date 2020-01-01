@@ -22,7 +22,7 @@ Using define statements instead of constants for increased efficiency
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
-#define MAXIMUM_TRANSACATIONS_PER_BLOCK 16384 // The maximum amount of transaction per block
+#define MAXIMUM_TRANSACATIONS_PER_BLOCK 500 // The maximum amount of transaction per block
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a XCASH_DPOPS_signature for the signed data
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a XCASH_DPOPS_signature for the signed data
 
@@ -85,7 +85,7 @@ Using define statements instead of constants for increased efficiency
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 
 // Lengths
-#define BUFFER_SIZE 175000
+#define BUFFER_SIZE 200000
 #define BUFFER_SIZE_RESERVE_PROOF 35000
 #define BUFFER_SIZE_NETWORK_BLOCK_DATA 500
 #define BUFFER_SIZE_NETWORK_BLOCK_TRANSACTIONS_DATA 100

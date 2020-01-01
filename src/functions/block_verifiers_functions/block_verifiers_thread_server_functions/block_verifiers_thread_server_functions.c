@@ -104,8 +104,6 @@ void* current_block_height_timer_thread(void* parameters)
 
   for (;;)
   {
-    // pause 200 milliseconds and then check the time. If it is a possible block time check if their is a new block
-    usleep(200000);
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if ((settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 0) || (settings == 1 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0))
     {
@@ -134,40 +132,30 @@ void* current_block_height_timer_thread(void* parameters)
         settings = 1;
         continue;
       }
-      // try for the next 5 seconds and if not then a new block is not going to be added to the network
-      for (count = 0; count < 5; count++)
-      {
-        get_current_block_height(data,0);
-        if (memcmp(data,current_block_height,strlen(current_block_height)) != 0)
-        {      
-          // replace the current_block_height and the previous block hash
-          memset(current_block_height,0,strlen(current_block_height));
-          memcpy(current_block_height,data,strnlen(data,BUFFER_SIZE));
-          get_previous_block_hash(previous_block_hash,0);
 
-          block_verifier_settings = start_new_round();
-          if (block_verifier_settings == 0)
-          {
-            print_error_message(current_date_and_time,current_UTC_date_and_time,data);
-          }
-          else if (block_verifier_settings == 1)
-          {
-            memset(data2,0,sizeof(data2));
-            memcpy(data2,"Your delegate is not a block verifier for network block ",56);
-            memcpy(data2+56,current_block_height,strnlen(current_block_height,sizeof(data2)));
-            color_print(data2,"red");
-          }
-          else
-          {
-            memset(data2,0,sizeof(data2));
-            memcpy(data2,"Network Block ",14);
-            memcpy(data2+14,current_block_height,strnlen(current_block_height,sizeof(data2)));
-            memcpy(data2+strlen(data2)," Has Been Created Successfully\n",31);
-            color_print(data2,"green");
-          }         
-        }
-        sleep(1);
+      get_current_block_height(current_block_height,0);
+      get_previous_block_hash(previous_block_hash,0);
+      block_verifier_settings = start_new_round();
+      if (block_verifier_settings == 0)
+      {
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data);
       }
+      else if (block_verifier_settings == 1)
+      {
+        memset(data2,0,sizeof(data2));
+        memcpy(data2,"Your delegate is not a block verifier for network block ",56);
+        memcpy(data2+56,current_block_height,strnlen(current_block_height,sizeof(data2)));
+        color_print(data2,"red");
+      }
+      else
+      {
+        memset(data2,0,sizeof(data2));
+        memcpy(data2,"Network Block ",14);
+        memcpy(data2+14,current_block_height,strnlen(current_block_height,sizeof(data2)));
+        memcpy(data2+strlen(data2)," Has Been Created Successfully\n",31);
+        color_print(data2,"green");
+      }
+      sleep(1);
     }
   }
   pthread_exit((void *)(intptr_t)1);
