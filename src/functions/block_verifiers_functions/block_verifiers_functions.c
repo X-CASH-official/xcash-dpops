@@ -887,7 +887,7 @@ int data_network_node_create_block(void)
   }
   else
   {
-    color_print("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block\n","yellow");
+    color_print("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block, and will sign the block\n","yellow");
 
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);

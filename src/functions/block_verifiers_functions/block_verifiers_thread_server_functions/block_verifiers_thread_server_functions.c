@@ -86,13 +86,15 @@ void* current_block_height_timer_thread(void* parameters)
     fprintf(stderr,"\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
   }*/
 
-  /*do
+  do
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     sleep(60);
-  } while (current_UTC_date_and_time.tm_mday != 28 || current_UTC_date_and_time.tm_hour != 16 || current_UTC_date_and_time.tm_min != 56);*/
+  } while (current_UTC_date_and_time.tm_mday != 4 || current_UTC_date_and_time.tm_hour != 16 || current_UTC_date_and_time.tm_min != 56);
   
   // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
+  get_current_block_height(current_block_height,0);
+  get_previous_block_hash(previous_block_hash,0);
   sscanf(current_block_height,"%zu", &count);
   while (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
@@ -154,9 +156,9 @@ void* current_block_height_timer_thread(void* parameters)
         memcpy(data2+14,current_block_height,strnlen(current_block_height,sizeof(data2)));
         memcpy(data2+strlen(data2)," Has Been Created Successfully\n",31);
         color_print(data2,"green");
-      }
-      sleep(1);
+      }      
     }
+    sleep(1);
   }
   pthread_exit((void *)(intptr_t)1);
 }
