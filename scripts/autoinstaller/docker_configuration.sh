@@ -363,9 +363,9 @@ function configuration()
 function get_dependencies_current_version()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting Dependencies Current Versions${END_COLOR_PRINT}"
-  NODEJS_CURRENT_VERSION=$(sudo find / -xdev -type d -name "node-*-linux-x64" -exec basename {} \;)
-  MONGODB_CURRENT_VERSION=$(sudo find / -xdev -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -exec basename {} \;)
-  MONGOC_DRIVER_CURRENT_VERSION=$(sudo find / -xdev -type d -name "mongo-c-driver-*" -exec basename {} \;)
+  NODEJS_CURRENT_VERSION=$(sudo find / -not -path "/proc*" -type d -name "node-*-linux-x64" -exec basename {} \;)
+  MONGODB_CURRENT_VERSION=$(sudo find / -not -path "/proc*" -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -exec basename {} \;)
+  MONGOC_DRIVER_CURRENT_VERSION=$(sudo find / -not -path "/proc*" -type d -name "mongo-c-driver-*" -exec basename {} \;)
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Dependencies Current Versions${END_COLOR_PRINT}"
   echo
 }
@@ -491,7 +491,7 @@ function update_mongodb()
   wget -q ${MONGODB_URL}
   tar -xf mongodb-linux-x86_64-*.tgz >> /dev/null 2>&1
   sudo rm mongodb-linux-x86_64-*.tgz >> /dev/null 2>&1
-  MONGODB_DIR=$(sudo find / -xdev -type d -name "mongodb-linux-x86_64-ubuntu1804-*")/
+  MONGODB_DIR=$(sudo find / -not -path "/proc*" -type d -name "mongodb-linux-x86_64-ubuntu1804-*")/
   sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i /root/.profile
   sudo sed '/^[[:space:]]*$/d' -i /root/.profile
   sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> /root/.profile 
@@ -528,7 +528,7 @@ function update_nodejs()
   wget -q ${NODEJS_URL}
   tar -xf node*.tar.xz >> /dev/null 2>&1
   sudo rm node*.tar.xz >> /dev/null 2>&1
-  NODEJS_DIR=$(sudo find / -xdev -type d -name "node-*-linux-x64")/
+  NODEJS_DIR=$(sudo find / -not -path "/proc*" -type d -name "node-*-linux-x64")/
   sudo sed '/node-v/d' -i /root/.profile
   sudo sed '/PATH=\/bin:/d' -i /root/.profile
   sudo sed '/^[[:space:]]*$/d' -i /root/.profile
