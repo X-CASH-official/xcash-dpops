@@ -464,14 +464,14 @@ int start_current_round_start_blocks(void)
     }
   }
 
+  color_print("Waiting for the block producer to submit the block to the network\n","blue");
+  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+
   // reset the send_and_receive_data_socket_thread_parameters struct
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA);
   }
-
-  color_print("Waiting for the block producer to submit the block to the network\n","blue");
-  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
   // have the main network data node submit the block to the network  
   if (submit_block_template(data,0) == 0)
@@ -860,15 +860,15 @@ int data_network_node_create_block(void)
       }
     }
 
+    color_print("Waiting for the block producer to submit the block to the network\n","blue");
+    // wait for the block verifiers to process the votes
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+
     // reset the send_and_receive_data_socket_thread_parameters struct
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA);
     }
-
-    color_print("Waiting for the block producer to submit the block to the network\n","blue");
-    // wait for the block verifiers to process the votes
-    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
     // submit the block to the network
     if (submit_block_template(data,0) == 0)
