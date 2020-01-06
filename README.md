@@ -129,11 +129,11 @@ It is recommended if you are going to run a XCASH DPOPS node, to not keep all of
 ```
 Parameters
 --parameters - Show a list of all valid parameters
-All parameters are optional, execept for --block_verifiers_secret_key
+All parameters are optional, execept for --block_verifiers_secret_key. **The --block_verifiers_secret_key must be the first parameter**
 
 --test - Run the test to make sure the program is compatible with your system
 
---block_verifiers_secret_key - The block verifiers secret key
+--block_verifiers_secret_key - The block verifiers secret key. This must be the first parameter
 
 --log_file "log_file" - Write all output to a log file with no colors
 
@@ -400,7 +400,7 @@ You will need to change the **User** to the user of the system
 
 You will need to change the **ExecStart** to the full path of the `XCASH_DPOPS` file and add any startup flags if running a shared delegates website or a delegates website
 
-You will need to change the **BLOCK_VERIFIERS_SECRET_KEY** to your block verifiers secret key
+You will need to change the **BLOCK_VERIFIERS_SECRET_KEY** to your block verifiers secret key. Make sure this is the first parameter
 
 For a full list of XCASH_DPOPS parameters please read the [XCASH_DPOPS Parameters](#xcash_dpops-parameters) section. This section will explain how to change any of the provided parameters in detail. Since the shared delegate option is probably the most used parameter, this parameter will be explained below.
 
@@ -528,7 +528,9 @@ Rebuild the binary in debug mode
 `make clean ; make debug -j $(nproc)`
 
 Then run the binary  
-`./XCASH_DPOPS --test`
+`./XCASH_DPOPS --block_verifiers_secret_key BLOCK_VERIFIER_SECRET_KEY --test`
+
+Replace BLOCK_VERIFIER_SECRET_KEY with your block_verifiers_secret_key 
  
 The test will return the number of passed and failed test on the bottom of the console. The failed test need to be 0 before you run the node. If the output is not showing 0 for failed test, then you need to scroll through the testing output and find what test failed (It will be red instead of green). If this is a system compatibility test, then you will need to fix the system. If this is a core test that has failed, then you need to possibly rebuild, or contact us with your OS version, and we can look into it.
 
