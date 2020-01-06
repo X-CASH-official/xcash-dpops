@@ -627,7 +627,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
       bson_free(message); 
       string_replace(data,BUFFER_SIZE," }, ",", ");
 
-      // parse the json data      
+      // parse the json data    
       database_multiple_documents_parse_json_data(data,result,counter);
       counter++;
       result->document_count++;

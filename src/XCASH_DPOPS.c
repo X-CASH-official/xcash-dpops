@@ -52,6 +52,8 @@ int main(int parameters_count, char* parameters[])
   long int current_time;
   size_t count = 0;
   size_t count2 = 0;
+  size_t count3 = 0;
+  size_t counter = 0;
 
   // threads
   pthread_t thread_id[4];
@@ -88,6 +90,7 @@ int main(int parameters_count, char* parameters[])
   database_settings = 1;
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
+  network_functions_test_settings = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -399,19 +402,52 @@ int main(int parameters_count, char* parameters[])
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
 
+  // check all of the parameters to see if there is a block verifier secret key
+  if (parameters_count < 3)
+  {
+    MAIN_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block_verifier_secret_key parameter");
+  }
+  
   // check the parameters
   for (count = 0, count2 = 0; count < (size_t)parameters_count; count++)
-  {    
+  { 
+    if (strncmp(parameters[count],"--block_verifiers_secret_key",BUFFER_SIZE) == 0)
+    {
+      count2 = 1;
+    }
+  }
+
+  if (count2 != 1)
+  {
+    MAIN_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block_verifier_secret_key parameter");
+  }
+
+  // check the parameters
+  for (count = 0, count2 = 0; count < (size_t)parameters_count; count++)
+  { 
+    if (strncmp(parameters[count],"--block_verifiers_secret_key",BUFFER_SIZE) == 0)
+    {
+      if (strlen(parameters[count+1]) != VRF_SECRET_KEY_LENGTH)
+      {
+        MAIN_ERROR("Invalid block verifiers secret key");
+      }
+
+      // get the secret key for signing messages
+      memcpy(secret_key,parameters[count+1],VRF_SECRET_KEY_LENGTH);
+    
+      // convert the hexadecimal string to a string
+      for (count3 = 0, counter = 0; count3 < VRF_SECRET_KEY_LENGTH; counter++, count3 += 2)
+      {
+        memset(data2,0,sizeof(data2));
+        memcpy(data2,&secret_key[count3],2);
+        secret_key_data[counter] = (int)strtol(data2, NULL, 16);
+      }
+    }
     if (strncmp(parameters[count],"--test",BUFFER_SIZE) == 0)
     {
       test();
       database_reset;
       exit(0);
-    }
-    if (strncmp(parameters[count],"--block_verifiers_secret_key",BUFFER_SIZE) == 0)
-    {
-      // get the secret key for signing messages
-      memcpy(secret_key,parameters[count+1],VRF_SECRET_KEY_LENGTH);
     }
     if (strncmp(parameters[count],"--XCASH_DPOPS_delegates_IP_address",BUFFER_SIZE) == 0)
     {
@@ -419,7 +455,7 @@ int main(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--xcash_wallet_port",BUFFER_SIZE) == 0)
     {
-      sscanf(parameters[count+1], "%d", &xcash_wallet_port);
+      sscanf(parameters[count+1],"%d",&xcash_wallet_port);
     }
     if (strncmp(parameters[count],"--database_name",BUFFER_SIZE) == 0)
     {
@@ -555,22 +591,7 @@ int main(int parameters_count, char* parameters[])
 
   if (count2 == 1)
   {
-    // convert the hexadecimal string to a string
-    for (count = 0, count2 = 0; count < VRF_SECRET_KEY_LENGTH; count2++, count += 2)
-    {
-      memset(data2,0,sizeof(data2));
-      memcpy(data2,&secret_key[count],2);
-      secret_key_data[count2] = (int)strtol(data2, NULL, 16);
-    }
     goto disable_synchronizing_databases_and_starting_timers;
-  }
-
-  // convert the hexadecimal string to a string
-  for (count = 0, count2 = 0; count < VRF_SECRET_KEY_LENGTH; count2++, count += 2)
-  {
-    memset(data2,0,sizeof(data2));
-    memcpy(data2,&secret_key[count],2);
-    secret_key_data[count2] = (int)strtol(data2, NULL, 16);
   }
 
   // check if it should create the default database data

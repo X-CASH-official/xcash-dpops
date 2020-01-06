@@ -134,96 +134,35 @@ int get_block_template(char *result, const int HTTP_SETTINGS)
 Name: submit_block_template
 Description: Adds a network block to the network
 Parameters:
-  data - The block_blob
+  DATA - The block_blob
   MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int submit_block_template(char* data, const int HTTP_SETTINGS)
+int submit_block_template(const char* DATA, const int HTTP_SETTINGS)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-  const size_t DATA_LENGTH = strnlen(data,BUFFER_SIZE);
+  const size_t DATA_LENGTH = strnlen(DATA,BUFFER_SIZE);
 
   // Variables
+  char data[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   
+  memset(data,0,sizeof(data));
   memset(message,0,sizeof(message));
 
   // create the message
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"submit_block\",\"params\":[\"",61);
-  memcpy(message+61,data,DATA_LENGTH);
+  memcpy(message+61,DATA,DATA_LENGTH);
   memcpy(message+61+DATA_LENGTH,"\"]}",3);
-  memset(data,0,strlen(data));
 
   send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"submit block template",HTTP_SETTINGS);
   return 1;
 
   #undef SUBMIT_BLOCK_TEMPLATE_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: get_block_settings
-Description: Gets the block settings
-Parameters:
-  block_height - The block height
-  HTTP_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
-Return: 0 if an error has occured, 1 if the block is a proof of work block, 2 if the block is a X-CASH proof of stake block
------------------------------------------------------------------------------------------------------------
-*/
-
-int get_block_settings(char* block_height, const int HTTP_SETTINGS)
-{
-  // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-
-  // Variables
-  char message[BUFFER_SIZE];
-  char data[BUFFER_SIZE];
-
-  // define macros
-  #define GET_BLOCK_SETTINGS_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"get_block_settings",18); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  return 0;
-
-  memset(message,0,sizeof(message));
-  memset(data,0,sizeof(data));
-  
-  // create the message
-  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",67);
-  memcpy(message+67,block_height,strnlen(block_height,sizeof(message)));
-  memcpy(message+strlen(message),"\"}}",3);
-
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block settings",HTTP_SETTINGS) <= 0)
-  {  
-    GET_BLOCK_SETTINGS_ERROR("Could not get the block settings");
-  }
-  memset(message,0,sizeof(message));
-  
-  if (parse_json_data(data,"blob",message, sizeof(message)) == 0)
-  {
-    GET_BLOCK_SETTINGS_ERROR("Could not get the block settings");
-  }
-
-  if (strstr(message,BLOCKCHAIN_RESERVED_BYTES_START) != NULL)
-  {
-    return 2; 
-  }
-  else
-  {
-    return 1; 
-  }  
-  return 0;
-  
-  #undef GET_BLOCK_SETTINGS_ERROR
 }
 
 
@@ -261,9 +200,9 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   memset(data,0,sizeof(data));
   
   // create the message
-  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",68);
-  memcpy(message+68,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,sizeof(message)));
-  memcpy(message+68+strnlen(BLOCK_HEIGHT,sizeof(message)),"\"}}",3);
+  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block\",\"params\":{\"height\":\"",67);
+  memcpy(message+67,BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,sizeof(message)));
+  memcpy(message+67+strnlen(BLOCK_HEIGHT,sizeof(message)),"\"}}",3);
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"get block settings",HTTP_SETTINGS) <= 0)
   {  
@@ -273,6 +212,7 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   
   if (parse_json_data(data,"blob",message,sizeof(message)) == 0)
   {
+    
     GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR("Could not get the blocks reserve bytes data hash");
   }
 

@@ -335,18 +335,21 @@ int socket_thread(int client_socket)
   
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-  
-  memcpy(message,"Received ",9);
-  memcpy(message+9,data2,strnlen(data2,sizeof(message)));
-  memcpy(message+strlen(message),"\n",1);
-  memcpy(message+strlen(message),client_address,strnlen(client_address,sizeof(message)));
-  memcpy(message+strlen(message)," on port ",9);
-  memcpy(message+strlen(message),buffer2,strnlen(buffer2,sizeof(message)));
-  memcpy(message+strlen(message),"\n",1);
-  memset(data2,0,sizeof(data2));
-  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
-  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
-  color_print(message,"green");
+
+  if (strstr(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA") == NULL)
+  {  
+    memcpy(message,"Received ",9);
+    memcpy(message+9,data2,strnlen(data2,sizeof(message)));
+    memcpy(message+strlen(message),"\n",1);
+    memcpy(message+strlen(message),client_address,strnlen(client_address,sizeof(message)));
+    memcpy(message+strlen(message)," on port ",9);
+    memcpy(message+strlen(message),buffer2,strnlen(buffer2,sizeof(message)));
+    memcpy(message+strlen(message),"\n",1);
+    memset(data2,0,sizeof(data2));
+    strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
+    memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
+    color_print(message,"green");
+  }
 
  // check if a certain type of message has been received 
  if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)

@@ -65,6 +65,7 @@ int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, char* ME
   {
     if (send_data(CLIENT_SOCKET,(unsigned char*)MESSAGE,0,1,"") == 1)
     {
+      network_functions_test_settings = 1;
       return 1;
     }
     else
@@ -225,7 +226,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK(settings) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84); \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_start_block",79); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;

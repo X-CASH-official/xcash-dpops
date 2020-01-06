@@ -334,6 +334,9 @@ function configuration()
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
   git reset --hard 0514cafa3a07864342423e7bfdea62edfc5a8957
 
+  # create the log file
+  touch /root/x-network/logs/XCASH_DPOPS_log.txt
+
   # Display Configuration data
   echo
   echo
