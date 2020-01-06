@@ -1,5 +1,5 @@
-#ifndef NETWORK_FUNCTIONS_TEST_H_   /* Include guard */
-#define NETWORK_FUNCTIONS_TEST_H_
+#ifndef NETWORK_DAEMON_FUNCTIONS_TEST_H_   /* Include guard */
+#define NETWORK_DAEMON_FUNCTIONS_TEST_H_
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -7,6 +7,5 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* create_server_on_separate_thread(void* parameters);
-int network_functions_test(void);
+int network_daemon_functions_test(void);
 #endif

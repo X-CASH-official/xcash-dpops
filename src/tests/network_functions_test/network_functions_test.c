@@ -30,113 +30,6 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: network_daemon_test
-Description: Test the network_daemon functions
-Return: The number of passed network_daemon test
------------------------------------------------------------------------------------------------------------
-*/
-
-void network_daemon_test(void)
-{  
-  // Variables
-  char* transactions[5];
-  size_t count;
-
-  for (count = 0; count < 5; count++)
-  {
-    transactions[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  }
-
-  for (count = 0; count < 5; count++)
-  {
-    if (transactions[count] == NULL)
-    {
-      color_print("Could not allocate the memory needed on the heap","red");
-      exit(0);
-    }
-  }
-
-  // reset the variables
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-
-  // run the test
-
-  // test the get_block_template function
-  if (get_block_template(data_test,0) == 1)
-  {   
-    color_print("PASSED! Test for getting the block template","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for getting the block template","red");
-  }
-
-  // test the verify_blockchain_network_transactions function
-  memcpy(transactions[0],"f6458824e54ea5cddd80a6bb0105ecdd6d2248629482df2c0f989db3d46f6ebd",64);
-  memcpy(transactions[1],"871eb7b29c72582572041c597ff092143031bfcef5fa1fa92808dacab2ba226f",64);
-  memcpy(transactions[2],"72f97600db9d7522a2a39fc690d25e1cc9a17535064b08f81bd7424a51bba931",64);
-  memcpy(transactions[3],"b180489867776c7e39c07ddb0d88609dac6f748dec554e2d96b6a168785bdb44",64);
-  memcpy(transactions[4],"",1);
-  if (verify_blockchain_network_transactions(transactions,5,0,0) == 1)
-  {   
-    color_print("PASSED! Test for verifying transactions","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for verifying transactions","red");
-  }
-
-  // test the get_current_block_height function
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_current_block_height(data_test,0) == 1)
-  {   
-    color_print("PASSED! Test for getting the current block height","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for getting the current block height","red");
-  }
-
-  // test the get_block_settings function
-  sscanf(data_test, "%zu", &count);
-  count--;
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  snprintf(data_test,BUFFER_SIZE,"%zu",count);
-  if (get_block_settings(data_test,0) != 0)
-  {   
-    color_print("PASSED! Test for getting the block settings","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for getting the block settings","red");
-  }  
-
-  // test the get_previous_block_hash function
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_previous_block_hash(data_test,0) == 1)
-  {   
-    color_print("PASSED! Test for getting the previous block hash","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for getting the previous block hash","red");
-  }
-
-  for (count = 0; count < 5; count++)
-  {
-    pointer_reset(transactions[count]);
-  }
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: create_server_on_separate_thread
 Description: Creates the server on a separate thread
 Return: NULL
@@ -156,54 +49,44 @@ void* create_server_on_separate_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: general_network_test
+Name: network_functions_test
 Description: Test the network functions
-Return: The number of passed general_network test
+Return: The number of passed network_functions_test
 -----------------------------------------------------------------------------------------------------------
 */
 
-void general_network_test(void)
+int network_functions_test(void)
 {  
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
   // Variables
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* public_address = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* string = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
+  char public_address[BUFFER_SIZE];
+  char string[BUFFER_SIZE];
   int settings = 1;
   pthread_t thread_id;
 
   // define macros
+  #define NETWORK_FUNCTIONS_TEST 6
+  #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
 
-  #define pointer_reset_all \
-  free(message); \
-  message = NULL; \
-  free(public_address); \
-  public_address = NULL; \
-  free(string); \
-  string = NULL;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL || public_address == NULL || string == NULL)
-  {
-    if (message != NULL)
-    {
-      pointer_reset(message);
-    }
-    if (public_address != NULL)
-    {
-      pointer_reset(public_address);
-    }
-    if (string != NULL)
-    {
-      pointer_reset(string);
-    }
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
+  memset(message,0,sizeof(message));
+  memset(public_address,0,sizeof(public_address));
+  memset(string,0,sizeof(string));
 
   // reset the variables
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  count_test = 0;
+
+  // write the start test message
+  color_print(TEST_OUTLINE,"blue");
+  fprintf(stderr,"\033[1;34mnetwork functions test - Total test: %d\033[0m\n",NETWORK_FUNCTIONS_TEST);
+  color_print(TEST_OUTLINE,"blue");
+  fprintf(stderr,"\n");
 
   pthread_rwlock_wrlock(&rwlock);
   // run the test
@@ -214,20 +97,35 @@ void general_network_test(void)
   memcpy(current_round_part,"1",1);
   memcpy(current_round_part_backup_node,"0",1); 
   pthread_rwlock_unlock(&rwlock);
+
+  // test send_http_request
+  if (send_http_request(data_test,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",0) <= 0)
+  {  
+    color_print("FAILED! Test for send_data","red");
+    color_print("FAILED! Test for receive_data","red");
+    color_print("FAILED! Test for send_http_request","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for send_data","green");
+    color_print("PASSED! Test for receive_data","green");
+    color_print("PASSED! Test for send_http_request","green");
+    count_test += 3;
+  }  
   
-  // test for creating the server
+  // Test for create_server
   if (pthread_create(&thread_id, NULL, &create_server_on_separate_thread,NULL) != 0)
   {
-    color_print("FAILED! Test for creating the server","red");
-    color_print("FAILED! Test for sending and receving data using sockets","red");
+    color_print("FAILED! Test for create_server","red");
+    color_print("FAILED! Test for send_and_receive_data_socket","red");
     settings = 0;
   }
   if (settings == 1)
   {
     if (pthread_detach(thread_id) != 0)
     {
-      color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for create_server","red");
+      color_print("FAILED! Test for send_and_receive_data_socket","red");
       settings = 0;
     }  
   }
@@ -237,22 +135,22 @@ void general_network_test(void)
 
   // test for sending and receiving data using sockets
   // create the message
-  memset(message,0,strnlen(message,BUFFER_SIZE));
-  memcpy(message,MESSAGE,strnlen(MESSAGE,BUFFER_SIZE));
+  memset(message,0,sizeof(message));
+  memcpy(message,MESSAGE,sizeof(MESSAGE)-1);
 
   // sign_data
   if (settings == 1)
   {
     if (sign_data(message,0) == 0)
     { 
-      color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for create_server","red");
+      color_print("FAILED! Test for send_and_receive_data_socket","red");
     }
     memset(string,0,strlen(string));
     if (send_and_receive_data_socket(string,"127.0.0.1",SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0) <= 0)
     {
-      color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for create_server","red");
+      color_print("FAILED! Test for send_and_receive_data_socket","red");
       settings = 0;
     }
   }
@@ -265,8 +163,8 @@ void general_network_test(void)
   {
     if (verify_data(string,0,1) == 0)
     {   
-      color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for create_server","red");
+      color_print("FAILED! Test for send_and_receive_data_socket","red");
       settings = 0;
     }
   }
@@ -276,8 +174,8 @@ void general_network_test(void)
   {
     if (parse_json_data(string,"message_settings",data_test,BUFFER_SIZE) == 0)
     {
-      color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for create_server","red");
+      color_print("FAILED! Test for send_and_receive_data_socket","red");
       settings = 0;
     }
   }
@@ -287,172 +185,46 @@ void general_network_test(void)
   {
     if (strncmp(data_test,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0)
     {
-      color_print("PASSED! Test for creating the server","green");
-      color_print("PASSED! Test for sending and receving data using sockets","green");
+      color_print("PASSED! Test for create_server","green");
+      color_print("PASSED! Test for send_and_receive_data_socket","green");
       count_test += 2;
     }
     else
     {
-      color_print("FAILED! Test for creating the server","red");
-      color_print("FAILED! Test for sending and receving data using sockets","red");
+      color_print("FAILED! Test for create_server","red");
+      color_print("FAILED! Test for send_and_receive_data_socket","red");
     }
   }
 
-  pointer_reset_all;
+  // test send_data_socket
+  network_functions_test_settings = 0;
+  memset(message,0,sizeof(message));
+  memcpy(message,MESSAGE,sizeof(MESSAGE)-1);
 
-  #undef MESSAGE
-  #undef pointer_reset_all
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: network_security_test
-Description: Test the network_security functions
-Return: The number of passed network_security test
------------------------------------------------------------------------------------------------------------
-*/
-
-void network_security_test(void)
-{  
-  // define macros
-  #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
-  
-  // reset the variables
-  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-
-  pthread_rwlock_wrlock(&rwlock);
-  // set the current_round_part and current_round_part_backup_node
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  memcpy(current_round_part,"1",1);
-  memcpy(current_round_part_backup_node,"0",1);
-  pthread_rwlock_unlock(&rwlock);
-  
-  // create the message
-  memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-  memcpy(result_test,MESSAGE,strnlen(MESSAGE,BUFFER_SIZE));
-
-  // test the sign_data functions
-  if (sign_data(result_test,0) == 1)
-  {   
-    color_print("PASSED! Test for sign data to send data securely","green");
-    count_test++;
+  if (sign_data(message,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,message) == 1)
+  {
+    sleep(5);
+    if (network_functions_test_settings == 1)
+    {
+      color_print("PASSED! Test for send_data_socket","green");
+      count_test++;
+    }
+    else
+    {
+      color_print("FAILED! Test for send_data_socket","red");
+    }
   }
   else
   {
-    color_print("FAILED! Test for sign data to send data securely","red");
+    color_print("FAILED! Test for send_data_socket","red");
   }
-  
-  // test the verify_data functions
-  if (verify_data(result_test,0,1) == 1)
-  {   
-    color_print("PASSED! Test for verify data to receive data securely","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for verify data to receive data securely","red");
-  }
-  #undef MESSAGE
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: network_wallet_test
-Description: Test the network_wallet functions
-Return: The number of passed network_wallet test
------------------------------------------------------------------------------------------------------------
-*/
-
-void network_wallet_test(void)
-{ 
-  // define macros
-  #define CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS "XCA1va68ZVYVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rk16g7dYjbcKDwsAggp8Z1dNjPgcCzkcV7hDg99Wtk8nyUBBK4K7"
-  #define CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT"
-  #define CHECK_RESERVE_PROOF_TEST_AMOUNT "10"
-  
-  // test the get_public_address function
-  memset(xcash_wallet_public_address,0,strnlen(xcash_wallet_public_address,BUFFER_SIZE));
-  if (get_public_address(0) == 1)
-  {   
-    color_print("PASSED! Test for sending an HTTP request and getting the public address of the opened X-CASH wallet","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for sending an HTTP request and getting the public address of the opened X-CASH wallet","red");
-  }
-
-  // test the sign_network_block_string function
-  memset(data_test,0,strlen(data_test));
-  if (sign_network_block_string(data_test,"X-CASH") == 1)
-  {   
-    color_print("PASSED! Test for sign_network_block_string","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for sign_network_block_string","red");
-  }
-
-  // test the check_reserve_proofs function
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (check_reserve_proofs(data_test,CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS,CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF,0) == 1 && memcmp(data_test,CHECK_RESERVE_PROOF_TEST_AMOUNT,2) == 0)
-  {   
-    color_print("PASSED! Test for check reserve proofs","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for check reserve proofs","red");
-  }
-
-  #undef CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS
-  #undef CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF
-  #undef CHECK_RESERVE_PROOF_TEST_AMOUNT
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: network_test
-Description: Runs all of the network test
-Return: The number of passed network test
------------------------------------------------------------------------------------------------------------
-*/
-
-int network_functions_test(void)
-{
-  // define macros
-  #define NETWORK_TOTAL_TEST 12
-
-  // reset the varaibles
-  count_test = 0;
-
-  // write the start test message
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\033[1;34mnetwork test - Total test: %d\033[0m\n",NETWORK_TOTAL_TEST);
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\n");
-
-  // run the test
-  network_daemon_test();
-  general_network_test();
-  network_security_test();
-  network_wallet_test();
 
   // write the end test message
-  if (count_test == NETWORK_TOTAL_TEST)
+  if (count_test == NETWORK_FUNCTIONS_TEST)
   {
     fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\033[1;32mnetwork test - Passed test: %d, Failed test: 0\033[0m\n",NETWORK_TOTAL_TEST);
+    fprintf(stderr,"\033[1;32mnetwork functions test - Passed test: %d, Failed test: 0\033[0m\n",NETWORK_FUNCTIONS_TEST);
     color_print(TEST_OUTLINE,"green");
     fprintf(stderr,"\n\n");
   }
@@ -460,11 +232,13 @@ int network_functions_test(void)
   {
     fprintf(stderr,"\n");
     color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\033[1;31mnetwork test - Passed test: %d, Failed test: %d\033[0m\n",count_test,NETWORK_TOTAL_TEST-count_test);
+    fprintf(stderr,"\033[1;31mnetwork functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,NETWORK_FUNCTIONS_TEST-count_test);
     color_print(TEST_OUTLINE,"red");
     fprintf(stderr,"\n\n");
-  }
+  } 
   return count_test;
 
-  #undef NETWORK_TOTAL_TEST
+  #undef NETWORK_FUNCTIONS_TEST
+  #undef GET_PUBLIC_ADDRESS_DATA
+  #undef MESSAGE
 }

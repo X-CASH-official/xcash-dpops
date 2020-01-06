@@ -52,7 +52,7 @@ int VRF_functions_test(void)
   // define macros
   #define DATA_HASH_TEXT "X-CASH Proof Of Stake"
   #define DATA_HASH "92a910aeccda99f96b2bf8833faac13e0085acd6971d303531035e0e674cb1932417267189abc35d6fd151e92442984ed11cdc0652a7d18d11b9707b0ffd48df"
-  #define VRF_TOTAL_TEST 7
+  #define VRF_TOTAL_TEST 8
   
   #define pointer_reset_all \
   free(data2); \
@@ -176,6 +176,18 @@ int VRF_functions_test(void)
   else
   {
     color_print("FAILED! Test for verifying the SHA2-512 data hash","red");
+  }
+
+  // test the sign_network_block_string function
+  memset(data_test,0,strlen(data_test));
+  if (sign_network_block_string(data_test,"X-CASH") == 1)
+  {   
+    color_print("PASSED! Test for sign_network_block_string","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sign_network_block_string","red");
   }
 
   // write the end test message

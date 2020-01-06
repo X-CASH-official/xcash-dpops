@@ -1,5 +1,5 @@
-#ifndef NETWORK_FUNCTIONS_TEST_H_   /* Include guard */
-#define NETWORK_FUNCTIONS_TEST_H_
+#ifndef DELETE_DATABASE_FUNCTIONS_TEST_H_   /* Include guard */
+#define DELETE_DATABASE_FUNCTIONS_TEST_H_
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -7,6 +7,5 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* create_server_on_separate_thread(void* parameters);
-int network_functions_test(void);
+int delete_database_functions_test(void);
 #endif
