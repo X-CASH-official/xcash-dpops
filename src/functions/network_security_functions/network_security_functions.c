@@ -996,16 +996,14 @@ int validate_data(const char* MESSAGE)
   {
     VALIDATE_DATA_ERROR("Invalid message");
   }
-
-
-
-  // check if the message came from a valid user
-  if ((parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && memcmp(data,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) == 0) || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE") != NULL)
+  
+  // dont check if the message came from a valid user, if the message is from the test wallet, or your own wallet
+  if ((parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && memcmp(data,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && memcmp(data,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) == 0) || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE") != NULL)
   {
-    // dont check if it is a valid delegate since this is a test wallet
     return 1;
   }
   
+  // check if the message came from a valid user
   if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 1 && strncmp(data,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER",BUFFER_SIZE) != 0 && strncmp(data,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) != 0 && strncmp(data,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0)
   {
     // get the delegate amount

@@ -12,6 +12,8 @@
 #include "variables.h"
 #include "define_macros_test.h"
 
+#include "blockchain_functions.h"
+#include "block_verifiers_server_functions_test.h"
 #include "database_functions.h"
 #include "insert_database_functions.h"
 #include "read_database_functions.h"
@@ -23,7 +25,7 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
-#include "blockchain_functions.h"
+#include "organize_functions.h"
 #include "server_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
@@ -364,6 +366,10 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data_test,0,sizeof(data_test)); \
   check_reserve_proofs(data_test,CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS,CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF,0);
 
+  #define ORGANIZE_DELEGATES_CODE \
+  RESET_DELEGATES_STRUCT; \
+  organize_delegates(delegates,DATABASE_COLLECTION_TEST);
+
   #define PARSE_JSON_DATA_CODE \
   memcpy(result_test,"{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}",60);
   parse_json_data(result_test,"message_settings",data_test,sizeof(data_test));
@@ -417,6 +423,60 @@ int reset_variables_allocated_on_the_heap_test(void)
   #define CRYPTO_HASH_SHA512_CODE crypto_hash_sha512((unsigned char*)data_test,(const unsigned char*)DATA_HASH_TEXT,sizeof(DATA_HASH_TEXT)-1);
 
   #define SIGN_NETWORK_BLOCK_STRING_CODE sign_network_block_string(data_test,"X-CASH");
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
 
 
 
@@ -556,12 +616,10 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(transactions[4],"",1);
 
   // set the current_round_part and current_round_part_backup_node
-  pthread_rwlock_wrlock(&rwlock);
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
+  memset(current_round_part,0,sizeof(current_round_part));
+  memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
   memcpy(current_round_part,"1",1);
   memcpy(current_round_part_backup_node,"0",1); 
-  pthread_rwlock_unlock(&rwlock);
 
   // reset the variables
   memset(data3,0,sizeof(data3));
@@ -657,7 +715,14 @@ int reset_variables_allocated_on_the_heap_test(void)
   CHECK_RESET_VARIABLES_ON_THE_HEAP("validate_data",VALIDATE_DATA_CODE);
 
   CHECK_RESET_VARIABLES_ON_THE_HEAP("get_public_address",GET_PUBLIC_ADDRESS_CODE);
-  CHECK_RESET_VARIABLES_ON_THE_HEAP("check_reserve_proofs",CHECK_RESERVE_PROOFS_CODE);  
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("check_reserve_proofs",CHECK_RESERVE_PROOFS_CODE);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,ORGANIZE_DELEGATES_TEST_DATA_1,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,ORGANIZE_DELEGATES_TEST_DATA_2,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,ORGANIZE_DELEGATES_TEST_DATA_3,0);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("organize_delegates",ORGANIZE_DELEGATES_CODE);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);  
 
   CHECK_RESET_VARIABLES_ON_THE_HEAP("parse_json_data",PARSE_JSON_DATA_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("random_string",RANDOM_STRING_CODE);

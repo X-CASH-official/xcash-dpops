@@ -32,10 +32,7 @@ int organize_functions_test(void)
 {
   // define macros
   #define ORGANIZE_FUNCTIONS_TOTAL_TEST 3
-  #define ORGANIZE_DELEGATES_TEST_DATA_1 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"15\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"false\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
-  #define ORGANIZE_DELEGATES_TEST_DATA_2 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"5\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
-  #define ORGANIZE_DELEGATES_TEST_DATA_3 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"10\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
-
+  
   // variables
   char reserve_proofs[2][BUFFER_SIZE_RESERVE_PROOF] = {"RESERVE_PROOF_TEST_DATA_2","RESERVE_PROOF_TEST_DATA"};
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
@@ -163,28 +160,10 @@ int organize_functions_test(void)
     color_print("FAILED! Test for organize_delegates_settings","red");
   }
 
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
   // reset the delegates struct
-  for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    memset(delegates[count].public_address,0,strlen(delegates[count].public_address));
-    memset(delegates[count].total_vote_count,0,strlen(delegates[count].total_vote_count));
-    memset(delegates[count].IP_address,0,strlen(delegates[count].IP_address));
-    memset(delegates[count].delegate_name,0,strlen(delegates[count].delegate_name));
-    memset(delegates[count].about,0,strlen(delegates[count].about));
-    memset(delegates[count].website,0,strlen(delegates[count].website));
-    memset(delegates[count].team,0,strlen(delegates[count].team));
-    memset(delegates[count].pool_mode,0,strlen(delegates[count].pool_mode));
-    memset(delegates[count].fee_structure,0,strlen(delegates[count].fee_structure));
-    memset(delegates[count].server_settings,0,strlen(delegates[count].server_settings));
-    memset(delegates[count].block_verifier_score,0,strlen(delegates[count].block_verifier_score));
-    memset(delegates[count].online_status,0,strlen(delegates[count].online_status));
-    memset(delegates[count].block_verifier_total_rounds,0,strlen(delegates[count].block_verifier_total_rounds));
-    memset(delegates[count].block_verifier_online_total_rounds,0,strlen(delegates[count].block_verifier_online_total_rounds));
-    memset(delegates[count].block_verifier_online_percentage,0,strlen(delegates[count].block_verifier_online_percentage));
-    memset(delegates[count].block_producer_total_rounds,0,strlen(delegates[count].block_producer_total_rounds));
-    memset(delegates[count].block_producer_block_heights,0,strlen(delegates[count].block_producer_block_heights));
-    memset(delegates[count].public_key,0,strlen(delegates[count].public_key));
-  }
+  RESET_DELEGATES_STRUCT;
 
   // insert the delegates into the database
   if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,ORGANIZE_DELEGATES_TEST_DATA_1,0) == 1 && insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,ORGANIZE_DELEGATES_TEST_DATA_2,0) == 1 && insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,ORGANIZE_DELEGATES_TEST_DATA_3,0) == 1)
@@ -249,8 +228,4 @@ int organize_functions_test(void)
   return count_test;
 
   #undef ORGANIZE_FUNCTIONS_TOTAL_TEST
-  #undef MAXIMUM_DELEGATES_AMOUNT
-  #undef ORGANIZE_DELEGATES_TEST_DATA_1
-  #undef ORGANIZE_DELEGATES_TEST_DATA_2
-  #undef ORGANIZE_DELEGATES_TEST_DATA_3
 }

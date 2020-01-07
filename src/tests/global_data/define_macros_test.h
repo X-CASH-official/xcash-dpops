@@ -606,6 +606,10 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define DATABASE_COLLECTION_STATISTICS_TEST_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
 #define DATABASE_COLLECTION_DELEGATES_TEST_DATA "{\"public_address\":\"XCA\",\"total_vote_count\":\"XCA\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"XCA\",\"about\":\"XCA\",\"website\":\"XCA\",\"team\":\"XCA\",\"pool_mode\":\"XCA\",\"fee_structure\":\"XCA\",\"server_settings\":\"XCA\",\"block_verifier_score\":\"XCA\",\"online_status\":\"XCA\",\"block_verifier_total_rounds\":\"XCA\",\"block_verifier_online_total_rounds\":\"XCA\",\"block_verifier_online_percentage\":\"XCA\",\"block_producer_total_rounds\":\"XCA\",\"block_producer_block_heights\":\"XCA\"}"
 #define DATABASE_COLLECTION_STATISTICS_PARSE_JSON_TEST_DATA "{ \"_id\" : { \"$oid\" : \"5\", \"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\" }"
+#define ORGANIZE_DELEGATES_TEST_DATA_1 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"15\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"false\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
+#define ORGANIZE_DELEGATES_TEST_DATA_2 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"5\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
+#define ORGANIZE_DELEGATES_TEST_DATA_3 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"10\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
+
 #define INITIALIZE_DELEGATES_STRUCT_TEST_DATA \
 for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
 { \
@@ -669,6 +673,7 @@ memcpy(delegates[1].block_verifier_online_percentage,"0",1); \
 memcpy(delegates[1].block_producer_total_rounds,"0",1); \
 memcpy(delegates[1].block_producer_block_heights,"0",1); \
 memcpy(delegates[1].public_key,"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a",VRF_PUBLIC_KEY_LENGTH);
+
 #define INITIALIZE_VOTES_STRUCT_TEST_DATA \
 for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
 { \
@@ -689,7 +694,40 @@ memcpy(votes[0].reserve_proof,CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF,sizeof(CHEC
 memcpy(votes[1].public_address_created_reserve_proof,CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS,sizeof(CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS)-1); \
 memcpy(votes[1].public_address_voted_for,CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS,sizeof(CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS)-1); \
 memcpy(votes[1].total,"0",1); \
-memcpy(votes[1].reserve_proof,CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF,sizeof(CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF)-1); \
+memcpy(votes[1].reserve_proof,CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF,sizeof(CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF)-1);
+
+#define RESET_DELEGATES_STRUCT \
+for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
+{ \
+  memset(delegates[count].public_address,0,strlen(delegates[count].public_address)); \
+  memset(delegates[count].total_vote_count,0,strlen(delegates[count].total_vote_count)); \
+  memset(delegates[count].IP_address,0,strlen(delegates[count].IP_address)); \
+  memset(delegates[count].delegate_name,0,strlen(delegates[count].delegate_name)); \
+  memset(delegates[count].about,0,strlen(delegates[count].about)); \
+  memset(delegates[count].website,0,strlen(delegates[count].website)); \
+  memset(delegates[count].team,0,strlen(delegates[count].team)); \
+  memset(delegates[count].pool_mode,0,strlen(delegates[count].pool_mode)); \
+  memset(delegates[count].fee_structure,0,strlen(delegates[count].fee_structure)); \
+  memset(delegates[count].server_settings,0,strlen(delegates[count].server_settings)); \
+  memset(delegates[count].block_verifier_score,0,strlen(delegates[count].block_verifier_score)); \
+  memset(delegates[count].online_status,0,strlen(delegates[count].online_status)); \
+  memset(delegates[count].block_verifier_total_rounds,0,strlen(delegates[count].block_verifier_total_rounds)); \
+  memset(delegates[count].block_verifier_online_total_rounds,0,strlen(delegates[count].block_verifier_online_total_rounds)); \
+  memset(delegates[count].block_verifier_online_percentage,0,strlen(delegates[count].block_verifier_online_percentage)); \
+  memset(delegates[count].block_producer_total_rounds,0,strlen(delegates[count].block_producer_total_rounds)); \
+  memset(delegates[count].block_producer_block_heights,0,strlen(delegates[count].block_producer_block_heights)); \
+  memset(delegates[count].public_key,0,strlen(delegates[count].public_key)); \
+}
+
+#define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\",\r\n \"public_address_that_created_the_reserve_proof\": \"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3\",\r\n,\r\n \"reserve_proof\": \"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT\",\r\n}"
+#define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}"
+#define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA "{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"DATA\",\r\n \"reserve_bytes_data_hash\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+#define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK_TEST_DATA "{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"DATA\",\r\n}"
+#define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK\",\r\n \"block_blob_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+#define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"DATA\",\r\n}"
+#define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_TEST_DATA "{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+#define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\",\r\n \"vrf_secret_key\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"vrf_public_key\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"random_data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+#define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
 
 // Message Templates
  // Block verifiers verification process messages
@@ -731,7 +769,7 @@ memcpy(votes[1].reserve_proof,CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF,sizeof(CHEC
   The purpose of this message is for the main network data node to send the network block string to the block verifiers so they can sign the network block string
  
   message_settings - The type of the message
-  block_blob_signature - The block_blob.
+  block_blob - The block_blob.
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (always 1)
