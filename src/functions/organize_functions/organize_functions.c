@@ -80,11 +80,12 @@ Name: organize_delegates
 Description: Organize the delegates in descending order of total_vote_count
 Parameters:
   struct delegates - struct delegates
+  DATABASE_COLLECTION - The database collection to read the delegates from
 Return: 0 if an error has occured, otherwise the amount of delegates in the struct delegates
 -----------------------------------------------------------------------------------------------------------
 */
 
-int organize_delegates(struct delegates* delegates)
+int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECTION)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -96,7 +97,6 @@ int organize_delegates(struct delegates* delegates)
   int document_count = 0;
 
   // define macros
-  #define DATABASE_COLLECTION "delegates"
   #define ORGANIZE_DELEGATES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"organize_delegates",18); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -143,7 +143,7 @@ int organize_delegates(struct delegates* delegates)
      }      
    } 
   database_multiple_documents_fields.document_count = 0;
-  database_multiple_documents_fields.database_fields_count = 0;
+  database_multiple_documents_fields.database_fields_count = TOTAL_DELEGATES_DATABASE_FIELDS;
 
   // get all of the delegates  
   if (read_multiple_documents_all_fields_from_collection(database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
@@ -151,7 +151,7 @@ int organize_delegates(struct delegates* delegates)
     ORGANIZE_DELEGATES_ERROR("Could not get the delegates from the database");
   }
 
-  // convert the database_multiple_documents_fields to an array of structs
+  // convert the database_multiple_documents_fields to delegates struct
   for (count = 0; count < database_multiple_documents_fields.document_count; count++)
   {
     memcpy(delegates[count].public_address,database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],BUFFER_SIZE_NETWORK_BLOCK_DATA));
@@ -172,7 +172,7 @@ int organize_delegates(struct delegates* delegates)
     memcpy(delegates[count].block_producer_total_rounds,database_multiple_documents_fields.value[count][15],strnlen(database_multiple_documents_fields.value[count][15],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],50000));
     memcpy(delegates[count].public_key,database_multiple_documents_fields.value[count][17],VRF_PUBLIC_KEY_LENGTH);
-  }  
+  }
   
   // organize the delegates by total_vote_count
   qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates_settings);
@@ -180,7 +180,6 @@ int organize_delegates(struct delegates* delegates)
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS+1);
 
   return database_multiple_documents_fields.document_count;
-
-  #undef DATABASE_COLLECTION
+  
   #undef ORGANIZE_DELEGATES_ERROR
 }

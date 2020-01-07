@@ -86,7 +86,7 @@ int read_database_functions_test(void)
       exit(0);
     }
   }
-  database_data.count = 0;
+  database_data.count = DATABASE_FIELDS_COUNT;
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < 2; count++)
@@ -104,7 +104,7 @@ int read_database_functions_test(void)
     }
   }
   database_multiple_documents_fields.document_count = 0;
-  database_multiple_documents_fields.database_fields_count = 0;
+  database_multiple_documents_fields.database_fields_count = DATABASE_FIELDS_COUNT;
 
   // read a document in the collection
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);

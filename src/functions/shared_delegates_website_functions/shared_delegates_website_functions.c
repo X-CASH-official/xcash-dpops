@@ -80,6 +80,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   int delegates_count;
 
   // define macros
+  #define DATABASE_COLLECTION "delegates"
   #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings) \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
@@ -171,7 +172,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   database_multiple_documents_fields2.database_fields_count = 0;
 
   // organize the delegates
-  delegates_count = organize_delegates(delegates);
+  delegates_count = organize_delegates(delegates,DATABASE_COLLECTION);
 
   // get the current_delegate_rank
   for (count = 0; (int)count < delegates_count; count++)
@@ -280,6 +281,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   pointer_reset_database_array; 
   return 1;
 
+  #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR
   #undef pointer_reset_database_array
 }

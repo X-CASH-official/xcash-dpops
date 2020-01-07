@@ -418,12 +418,8 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   {
     result->count = TOTAL_BLOCKS_FOUND_DATABASE_FIELDS;
   }
-  else if (strstr(COLLECTION,"XCASH_PROOF_OF_STAKE_TEST_DATA") != NULL)
-  {
-    result->count = 7;
-  } 
 
-   // check if we need to create a database connection, or use the global database connection
+  // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
   {
     // set the collection
@@ -572,10 +568,6 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   {
     result->database_fields_count = TOTAL_BLOCKS_FOUND_DATABASE_FIELDS;
   }
-  else if (strstr(COLLECTION,"XCASH_PROOF_OF_STAKE_TEST_DATA") != NULL)
-  {
-    result->database_fields_count = 7;
-  } 
 
    // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)

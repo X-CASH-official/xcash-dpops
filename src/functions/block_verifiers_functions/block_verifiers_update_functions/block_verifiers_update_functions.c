@@ -66,6 +66,7 @@ int update_block_verifiers_list(void)
   int total_delegates = 0;
 
   // define macros
+  #define DATABASE_COLLECTION "delegates"
   #define UPDATE_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -147,7 +148,7 @@ int update_block_verifiers_list(void)
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
-  total_delegates = organize_delegates(delegates);
+  total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
   if (total_delegates == 0)
   {
     POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
@@ -199,6 +200,7 @@ int update_block_verifiers_list(void)
 
   return settings;
   
+  #undef DATABASE_COLLECTION
   #undef UPDATE_BLOCK_VERIFIERS_LIST_ERROR
 }
 
@@ -795,7 +797,7 @@ int get_delegates_online_status(void)
   INITIALIZE_DELEGATES_ONLINE_STATUS_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"get_delegates_online_status",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
-  total_delegates = organize_delegates(delegates);
+  total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
   
   // create the epoll file descriptor
   epoll_fd_copy = epoll_create1(0);

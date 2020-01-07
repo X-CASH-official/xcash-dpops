@@ -324,7 +324,7 @@ int sync_all_block_verifiers_list(void)
     INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"sync_all_block_verifiers_list",data2,current_date_and_time,current_UTC_date_and_time);
 
     // organize the delegates
-    total_delegates = organize_delegates(delegates);
+    total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
     if (total_delegates == 0)
     {
       POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
