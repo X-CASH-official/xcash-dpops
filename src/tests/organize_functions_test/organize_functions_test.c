@@ -129,10 +129,7 @@ int organize_functions_test(void)
   memcpy(delegates[2].public_key,"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a",VRF_PUBLIC_KEY_LENGTH);
  
   // write the start test message
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\033[1;34morganize functions test - Total test: %d\033[0m\n",ORGANIZE_FUNCTIONS_TOTAL_TEST);
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\n");
+  fprintf(stderr,"\033[1;34m%s\norganize functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,ORGANIZE_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
  
   // run the test
  
@@ -211,19 +208,11 @@ int organize_functions_test(void)
   // write the end test message
   if (count_test == ORGANIZE_FUNCTIONS_TOTAL_TEST)
   {
-    fprintf(stderr,"\n\n");
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\033[1;32morganize functions test - Passed test: %d, Failed test: 0\033[0m\n",ORGANIZE_FUNCTIONS_TOTAL_TEST);
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\n\n");
+    fprintf(stderr,"\033[1;32m\n\n%s\norganize functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,ORGANIZE_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
   }
   else
   {
-    fprintf(stderr,"\n\n");
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\033[1;31morganize functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,ORGANIZE_FUNCTIONS_TOTAL_TEST-count_test);
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\n\n");
+    fprintf(stderr,"\033[1;31m\n\n%s\norganize functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,ORGANIZE_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   }
   return count_test;
 

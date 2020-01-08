@@ -83,10 +83,7 @@ int network_functions_test(void)
   count_test = 0;
 
   // write the start test message
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\033[1;34mnetwork functions test - Total test: %d\033[0m\n",NETWORK_FUNCTIONS_TEST);
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\n");
+  fprintf(stderr,"\033[1;34m%s\nnetwork functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,NETWORK_FUNCTIONS_TEST,TEST_OUTLINE);
 
   pthread_rwlock_wrlock(&rwlock);
   // run the test
@@ -222,19 +219,11 @@ int network_functions_test(void)
   // write the end test message
   if (count_test == NETWORK_FUNCTIONS_TEST)
   {
-    fprintf(stderr,"\n");
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\033[1;32mnetwork functions test - Passed test: %d, Failed test: 0\033[0m\n",NETWORK_FUNCTIONS_TEST);
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\n\n");
+    fprintf(stderr,"\033[1;32m\n\n%s\nnetwork functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,NETWORK_FUNCTIONS_TEST,TEST_OUTLINE);
   }
   else
   {
-    fprintf(stderr,"\n");
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\033[1;31mnetwork functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,NETWORK_FUNCTIONS_TEST-count_test);
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\n\n");
+    fprintf(stderr,"\033[1;31m\n\n%s\nnetwork functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,NETWORK_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   } 
   return count_test;
 

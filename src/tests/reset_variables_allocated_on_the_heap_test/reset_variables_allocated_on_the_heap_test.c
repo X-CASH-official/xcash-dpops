@@ -478,6 +478,90 @@ int reset_variables_allocated_on_the_heap_test(void)
   sign_data(result_test,0); \
   send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
 
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1); \
+  sign_data(result_test,0); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
 
 
   // initialize the data
@@ -625,10 +709,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data3,0,sizeof(data3));
 
   // write the start test message
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\033[1;34mReset variables allocated on the heap test - Total test: %d\033[0m\n",RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST);
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\n");
+  fprintf(stderr,"\033[1;34m%s\nreset variables allocated on the heap functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST,TEST_OUTLINE);
 
 
   // run the test
@@ -742,7 +823,35 @@ int reset_variables_allocated_on_the_heap_test(void)
   CHECK_RESET_VARIABLES_ON_THE_HEAP("crypto_vrf_verify",CRYPTO_VRF_VERIFY_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("crypto_hash_sha512",CRYPTO_HASH_SHA512_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("sign_network_block_string",SIGN_NETWORK_BLOCK_STRING_CODE);
-  
+
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_main_network_data_node_to_block_verifier_start_block",SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_CODE);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_main_node_to_node_message_part_4",SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_node_to_node",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_CODE);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_CODE);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,RESERVE_BYTES_TEST_DATA,0);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_CODE);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
 
   for (count = 0; count < 7; count++)
   {
@@ -775,20 +884,11 @@ int reset_variables_allocated_on_the_heap_test(void)
   // write the end test message
   if (count_test == RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST)
   {
-    fprintf(stderr,"\n");
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\033[1;32mReset variables allocated on the heap test - Passed test: %d, Failed test: 0\033[0m\n",RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST);
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\n\n");
+    fprintf(stderr,"\033[1;32m\n\n%s\nreset variables allocated on the heap functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST,TEST_OUTLINE);
   }
   else
   {
-    fprintf(stderr,"\n");
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\033[1;31mReset variables allocated on the heap test - Passed test: %d, Failed test: 1\033[0m\n",count_test);
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\n\n");
-    exit(0);
+    fprintf(stderr,"\033[1;31m\n\n%s\nreset variables allocated on the heap functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST-count_test,TEST_OUTLINE);
   } 
   pointer_reset(process_id_file);
   return count_test;

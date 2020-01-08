@@ -35,7 +35,7 @@ int file_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define READ_AND_WRITE_FILE_TEST 6
+  #define FILE_FUNCTIONS_TOTAL_TEST 6
   #define NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY "nodes_public_address_list_copy.txt"
   #define MESSAGE "XCASH_PROOF_OF_STAKE_TEST_DATA"
 
@@ -45,10 +45,7 @@ int file_functions_test(void)
   count_test = 0;
 
   // write the start test message
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\033[1;34mfile functions test - Total test: %d\033[0m\n",READ_AND_WRITE_FILE_TEST);
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\n");
+  fprintf(stderr,"\033[1;34m%s\nfile functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,FILE_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
 
   // run the test
 
@@ -128,25 +125,17 @@ int file_functions_test(void)
 
 
   // write the end test message
-  if (count_test == READ_AND_WRITE_FILE_TEST)
+  if (count_test == FILE_FUNCTIONS_TOTAL_TEST)
   {
-    fprintf(stderr,"\n");
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\033[1;32mfile functions test - Passed test: %d, Failed test: 0\033[0m\n",READ_AND_WRITE_FILE_TEST);
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\n\n");
+    fprintf(stderr,"\033[1;32m\n\n%s\nfile functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,FILE_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
   }
   else
   {
-    fprintf(stderr,"\n");
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\033[1;31mfile functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,READ_AND_WRITE_FILE_TEST-count_test);
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\n\n");
+    fprintf(stderr,"\033[1;31m\n\n%s\nfile functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,FILE_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   } 
   return count_test;
 
-  #undef READ_AND_WRITE_FILE_TEST
+  #undef FILE_FUNCTIONS_TOTAL_TEST
   #undef NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY
   #undef MESSAGE
 }

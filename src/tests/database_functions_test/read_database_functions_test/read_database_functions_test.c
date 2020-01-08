@@ -63,10 +63,7 @@ int read_database_functions_test(void)
   
 
   // write the start test message
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\033[1;34mread database functions test - Total test: %d\033[0m\n",READ_DATABASE_FUNCTIONS_TEST);
-  color_print(TEST_OUTLINE,"blue");
-  fprintf(stderr,"\n");
+  fprintf(stderr,"\033[1;34m%s\nread database functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,READ_DATABASE_FUNCTIONS_TEST,TEST_OUTLINE);
 
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
 
@@ -461,19 +458,11 @@ int read_database_functions_test(void)
   // write the end test message
   if (count_test == READ_DATABASE_FUNCTIONS_TEST)
   {
-    fprintf(stderr,"\n");
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\033[1;32mread database functions test - Passed test: %d, Failed test: 0\033[0m\n",READ_DATABASE_FUNCTIONS_TEST);
-    color_print(TEST_OUTLINE,"green");
-    fprintf(stderr,"\n\n");
+    fprintf(stderr,"\033[1;32m\n\n%s\nread database functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,READ_DATABASE_FUNCTIONS_TEST,TEST_OUTLINE);
   }
   else
   {
-    fprintf(stderr,"\n");
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\033[1;31mread database functions test - Passed test: %d, Failed test: %d\033[0m\n",count_test,READ_DATABASE_FUNCTIONS_TEST-count_test);
-    color_print(TEST_OUTLINE,"red");
-    fprintf(stderr,"\n\n");
+    fprintf(stderr,"\033[1;31m\n\n%s\nread database functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,READ_DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   } 
   return count_test;
 
