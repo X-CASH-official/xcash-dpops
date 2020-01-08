@@ -27,6 +27,7 @@
 #include "network_wallet_functions_test.h"
 #include "organize_functions_test.h"
 #include "reset_variables_allocated_on_the_heap_test.h"
+#include "shared_delegate_website_functions_test.h"
 #include "string_functions_test.h"
 #include "VRF_functions_test.h"
 #include "XCASH_DPOPS_test.h"
@@ -91,6 +92,7 @@ void test(void)
   XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_server_functions_test();
   XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
   XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
+  XCASH_DPOPS_total_passed_test += shared_delegate_website_functions_test();
   XCASH_DPOPS_total_passed_test += reset_variables_allocated_on_the_heap_test();*/
   //XCASH_DPOPS_total_passed_test += analysing_code_test();
 

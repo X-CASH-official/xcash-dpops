@@ -40,7 +40,7 @@ int delegate_website_functions_test(void)
   memset(database_name,0,sizeof(database_name));
   memcpy(database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);
   delegates_website = 1;
-  insert_document_into_collection_json(database_name,"reserve_bytes_1",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA,0);
   insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA,0);
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
@@ -50,7 +50,7 @@ int delegate_website_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   memset(data,0,sizeof(data));
   count_test = 0;
-  error_message.total = 0;
+  network_functions_test_settings = 0;
  
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\ndelegate website functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
