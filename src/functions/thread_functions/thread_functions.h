@@ -20,6 +20,7 @@ void* update_document_from_collection_thread(void* parameters);
 void* update_all_documents_from_collection_thread(void* parameters);
 void* delete_document_from_collection_thread(void* parameters);
 void* delete_collection_from_database_thread(void* parameters);
+void* delete_database_thread(void* parameters);
 void* count_documents_in_collection_thread(void* parameters);
 void* count_all_documents_in_collection_thread(void* parameters);
 void* get_database_data_thread(void* parameters);

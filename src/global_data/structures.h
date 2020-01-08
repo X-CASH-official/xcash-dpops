@@ -363,6 +363,10 @@ struct delete_collection_from_database_thread_parameters {
     const char* COLLECTION; // The collection name
 };
 
+struct delete_database_thread_parameters {
+    const char* DATABASE; // The database name
+};
+
 struct count_documents_in_collection_thread_parameters {
     const char* DATABASE; // The database name
     const char* COLLECTION; // The collection name

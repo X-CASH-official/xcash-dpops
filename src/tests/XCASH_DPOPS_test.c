@@ -14,6 +14,7 @@
 #include "block_verifiers_synchronize_server_functions_test.h"
 #include "database_functions_test.h"
 #include "delegate_server_functions_test.h"
+#include "delegate_website_functions_test.h"
 #include "insert_database_functions_test.h"
 #include "read_database_functions_test.h"
 #include "update_database_functions_test.h"
@@ -70,7 +71,7 @@ void test(void)
   
   // run the tests
   XCASH_DPOPS_total_passed_test += network_functions_test();
-  XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
+  XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
   /*XCASH_DPOPS_total_passed_test += blockchain_functions_test();
   XCASH_DPOPS_total_passed_test += database_test(); 
   XCASH_DPOPS_total_passed_test += insert_database_functions_test(); 
@@ -89,6 +90,7 @@ void test(void)
   XCASH_DPOPS_total_passed_test += block_verifiers_server_functions_test();
   XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_server_functions_test();
   XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
+  XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
   XCASH_DPOPS_total_passed_test += reset_variables_allocated_on_the_heap_test();*/
   //XCASH_DPOPS_total_passed_test += analysing_code_test();
 

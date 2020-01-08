@@ -346,6 +346,27 @@ void* delete_collection_from_database_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: delete_database_thread
+Description: Deletes a database on a separate thread
+Parameters:
+  parameters - A pointer to the delete_collection_from_database_thread_parameters struct
+  struct delete_database_thread_parameters
+    DATABASE - The database name
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* delete_database_thread(void* parameters)
+{
+  struct delete_database_thread_parameters* data = parameters;
+  int settings = delete_database(data->DATABASE, 1);
+  pthread_exit((void *)(intptr_t)settings);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: count_documents_in_collection_thread
 Description: Counts the documents in the collection that match a specific field name and field on a separate thread
 Parameters:

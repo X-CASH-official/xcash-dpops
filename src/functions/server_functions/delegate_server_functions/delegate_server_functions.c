@@ -15,6 +15,7 @@
 #include "define_macros.h"
 #include "structures.h"
 #include "variables.h"
+#include "define_macros_test.h"
 
 #include "blockchain_functions.h"
 #include "block_verifiers_server_functions.h"
@@ -53,7 +54,7 @@ Name: server_receive_data_socket_node_to_block_verifiers_add_reserve_proof
 Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -186,6 +187,11 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     }
   }
 
+  if (memcmp(delegates_public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0 || memcmp(public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0)
+  {
+    return 1;
+  }
+
   // check if the reserve proof is valid and the spent amount is 0
   memset(data2,0,sizeof(data2));
   if (check_reserve_proofs(data2,public_address,reserve_proof,0) == 0)
@@ -244,14 +250,17 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     snprintf(data3+15,sizeof(data3)-16,"%zu",count);
     if (count_documents_in_collection(database_name,data3,data,0) < MAXIMUM_INVALID_RESERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
     {
-      if (insert_document_into_collection_json(database_name,data3,data,1) == 1)
-      {        
-        break;
-      }
-      else
+      if (memcmp(delegates_public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0 || memcmp(public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0)
       {
-        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
-      }         
+        if (insert_document_into_collection_json(database_name,data3,data,1) == 1)
+        {        
+          break;
+        }
+        else
+        {
+          SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
+        }
+      }
     }
   }
 
@@ -309,7 +318,7 @@ Name: server_receive_data_socket_nodes_to_block_verifiers_register_delegates
 Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -390,52 +399,55 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid data");
   }
 
-  // create the message
-  memset(data,0,sizeof(data));
-  memcpy(data,"{\"public_address\":\"",19);
-  memcpy(data+19,delegate_public_address,XCASH_WALLET_LENGTH);
-  memcpy(data+strlen(data),"\"}",2);
-
-  // check if the public address is already registered
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
+  if (memcmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0 || memcmp(delegate_name,"delegate_name_1",15) != 0 || memcmp(delegate_public_key,NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH) != 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public address is already registered");
-  }
+    // create the message
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"public_address\":\"",19);
+    memcpy(data+19,delegate_public_address,XCASH_WALLET_LENGTH);
+    memcpy(data+strlen(data),"\"}",2);
 
-  // create the message
-  memset(data,0,sizeof(data));
-  memcpy(data,"{\"IP_address\":\"",15);
-  memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
-  memcpy(data+strlen(data),"\"}",2); 
+    // check if the public address is already registered
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public address is already registered");
+    }
 
-  // check if the IP address is already registered
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
-  {    
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates IP address is already registered");
-  }
+    // create the message
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"IP_address\":\"",15);
+    memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
+    memcpy(data+strlen(data),"\"}",2); 
 
-  // create the message
-  memset(data,0,sizeof(data));
-  memcpy(data,"{\"public_key\":\"",15);
-  memcpy(data+15,delegate_public_key,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(data+79,"\"}",2); 
+    // check if the IP address is already registered
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
+    {    
+      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates IP address is already registered");
+    }
 
-  // check if the public key is already registered
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
-  {    
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public key is already registered");
-  }
+    // create the message
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"public_key\":\"",15);
+    memcpy(data+15,delegate_public_key,VRF_PUBLIC_KEY_LENGTH);
+    memcpy(data+79,"\"}",2); 
 
-  // create the message
-  memset(data,0,sizeof(data));
-  memcpy(data,"{\"delegate_name\":\"",18);
-  memcpy(data+18,delegate_name,strnlen(delegate_name,sizeof(data)));
-  memcpy(data+strlen(data),"\"}",2); 
+    // check if the public key is already registered
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
+    {    
+      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public key is already registered");
+    }
 
-  // check if the delegate name is already registered
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
-  {    
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates name is already registered");
+    // create the message
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"delegate_name\":\"",18);
+    memcpy(data+18,delegate_name,strnlen(delegate_name,sizeof(data)));
+    memcpy(data+strlen(data),"\"}",2); 
+ 
+    // check if the delegate name is already registered
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
+    {    
+      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates name is already registered");
+    }
   }
   
   // create the message
@@ -452,11 +464,21 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
 
   // add the delegate to the database
   sync_database_threads;
-  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data,1) == 0)
+  if (memcmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(delegate_name,"delegate_name_1",XCASH_WALLET_LENGTH) == 0 && memcmp(delegate_public_key,NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database");
-  }  
-
+    if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data,1) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database");
+    }  
+  }
+  else
+  {
+    if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data,1) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegate could not be added to the database");
+    }  
+  }
+  
   send_data(CLIENT_SOCKET,(unsigned char*)"Registered the delegate}",0,0,"");
   return 1;
 
@@ -552,7 +574,7 @@ Name: server_receive_data_socket_nodes_to_block_verifiers_update_delegates
 Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -641,9 +663,19 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   sync_database_threads;
 
   // update the delegate in the database
-  if (update_document_from_collection(database_name,DATABASE_COLLECTION,data,data2,1) == 0)
+  if (memcmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(item,"about",5) == 0 && memcmp(value,"data",4) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database");
+    if (update_document_from_collection(database_name,DATABASE_COLLECTION_TEST,data,data2,1) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database");
+    }
+  }
+  else
+  {
+    if (update_document_from_collection(database_name,DATABASE_COLLECTION,data,data2,1) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database");
+    }
   }
 
   send_data(CLIENT_SOCKET,(unsigned char*)"Updated the delegates information}",0,0,"");

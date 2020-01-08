@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
-#include <errno.h>
 #include <sys/sysinfo.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
@@ -18,6 +17,7 @@
 #include "initialize_and_reset_structs_define_macros.h"
 #include "structures.h"
 #include "variables.h"
+#include "define_macros_test.h"
 
 #include "blockchain_functions.h"
 #include "block_verifiers_synchronize_server_functions.h"
@@ -117,10 +117,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
   return 1;
 
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR
@@ -194,10 +191,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
   return 1;
 
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR
@@ -272,7 +266,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET)
+int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const char* MESSAGE, const int CLIENT_SOCKET)
 {
    // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
@@ -297,10 +291,22 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memset(message,0,sizeof(message));
 
   // get the database data hash for the reserve bytes database
-  if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
+  if (strstr(MESSAGE,xcash_wallet_public_address) == NULL)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
+    if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
+    {
+     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
+    }
   }
+  else
+  {
+    if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION_TEST) == 0)
+    {
+     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
+    }
+  }
+  
+  
 
   // create the message
   memcpy(data,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD|",72);
@@ -337,10 +343,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memcpy(data+strlen(data),"|}",2);
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"");
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -437,11 +440,21 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
     snprintf(data+14,sizeof(data)-15,"%zu",count2);
 
     // get the data hash
-    if (read_document_field_from_collection(database_name,data,data2,"reserve_bytes_data_hash",message,1) == 0)
+    if (strstr(MESSAGE,xcash_wallet_public_address) == NULL)
     {
-      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
+      if (read_document_field_from_collection(database_name,data,data2,"reserve_bytes_data_hash",message,1) == 0)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
+      }
     }
-  
+    else
+    {
+      if (read_document_field_from_collection(database_name,DATABASE_COLLECTION_TEST,data2,"reserve_bytes_data_hash",message,1) == 0)
+      {
+        color_print(data2,"yellow");
+        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
+      }
+    }
     memcpy(message2+strlen(message2),message,strnlen(message,MAXIMUM_BUFFER_SIZE));
     memcpy(message2+strlen(message2),"|",1);
   }
@@ -449,10 +462,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   memcpy(message2+strlen(message2),"}",1);
   
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not send the BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the node");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"");
   pointer_reset(message2);
   return 1;
   
@@ -592,102 +602,10 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)message,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,1,"");
   return 1;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update
-Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE message
-Parameters:
-  CLIENT_SOCKET - The socket to send data to
-  message - The message
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
-{
-  // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-
-  // define macros
-  #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\",\r\n}"
-  #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\",\r\n}"
-  
-  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update",103); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  return 0;
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-
-  // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not verify the message");
-  }
-
-  // parse the message
-  if (parse_json_data(MESSAGE,"file",data,sizeof(data)) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
-  }
-
-  // get the database data hash for the reserve proofs database
-  memset(data2,0,sizeof(data2));
-  if (get_database_data_hash(data2,database_name,data) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
-  }
-
-  // parse the message
-  memset(data,0,sizeof(data));
-  if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
-  }
-
-  // create the message
-  if (strncmp(data,data2,DATA_HASH_LENGTH) == 0)
-  {
-    memset(data,0,strlen(data));
-    memcpy(data,DATABASE_MESSAGE_SYNCED_TRUE,sizeof(DATABASE_MESSAGE_SYNCED_TRUE)-1);
-  }
-  else
-  {
-    memset(data,0,strlen(data));
-    memcpy(data,DATABASE_MESSAGE_SYNCED_FALSE,sizeof(DATABASE_MESSAGE_SYNCED_FALSE)-1);
-  }
-  
-  // sign_data
-  if (sign_data(data,0) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
-  }
-
-  // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
-
-  return 1;
-
-  #undef DATABASE_MESSAGE_SYNCED_TRUE
-  #undef DATABASE_MESSAGE_SYNCED_FALSE
-  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE_ERROR
 }
 
 
@@ -770,10 +688,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   pointer_reset_all;
   return 1;
@@ -885,97 +800,10 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)message,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not send the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,1,"");
   return 1;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update
-Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE message
-Parameters:
-  CLIENT_SOCKET - The socket to send data to
-  message - The message
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
-{
-  // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-
-  // define macros
-  #define DATABASE_MESSAGE_SYNCED_TRUE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n}"
-  #define DATABASE_MESSAGE_SYNCED_FALSE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n}"
-  
-  // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update",102); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  return 0;
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-
-  // parse the message
-  if (parse_json_data(MESSAGE,"file",data,sizeof(data)) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
-  }
-
-  // get the database data hash for the reserve bytes database
-  memset(data2,0,sizeof(data2));
-  if (get_database_data_hash(data2,database_name,data) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
-  }
-
-  // parse the message
-  memset(data,0,sizeof(data));
-  if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
-  }
-
-  // create the message
-  if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
-  {
-    memset(data,0,sizeof(data));
-    memcpy(data,DATABASE_MESSAGE_SYNCED_TRUE,strnlen(DATABASE_MESSAGE_SYNCED_TRUE,BUFFER_SIZE));
-  }
-  else
-  {
-    memset(data,0,sizeof(data));
-    memcpy(data,DATABASE_MESSAGE_SYNCED_FALSE,strnlen(DATABASE_MESSAGE_SYNCED_FALSE,BUFFER_SIZE));
-  }
-  
-  // sign_data
-  if (sign_data(data,0) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
-  }
-
-  // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
-
-  return 1;
-
-  #undef DATABASE_MESSAGE_SYNCED_TRUE
-  #undef DATABASE_MESSAGE_SYNCED_FALSE
-  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE_ERROR
 }
 
 
@@ -1058,10 +886,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   pointer_reset_all;
   return 1;
@@ -1133,10 +958,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   return 1;
 
@@ -1221,10 +1043,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   pointer_reset_all;
   return 1;
@@ -1297,10 +1116,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   return 1;
   
@@ -1382,10 +1198,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   }
 
   // send the data
-  if (send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not send the NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST message to the block verifier");
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   pointer_reset_all;
   return 1;

@@ -337,7 +337,7 @@ int socket_thread(int client_socket)
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // dont display the message if the message came from the test wallet, or your own wallet
-  if (strstr(data2,xcash_wallet_public_address) != NULL || strstr(data2,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3") != NULL)
+  if (strstr(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA") == NULL && strstr(data2,xcash_wallet_public_address) == NULL && strstr(data2,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3") == NULL)
   {  
     memcpy(message,"Received ",9);
     memcpy(message+9,data2,strnlen(data2,sizeof(message)));
@@ -411,7 +411,7 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
-   server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket);
+   server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update((const char*)buffer,client_socket);
  }
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\"") != NULL)
  {
@@ -424,11 +424,7 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(client_socket,(const char*)buffer);
- } 
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_update(client_socket,(const char*)buffer);
- }  
+ }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(client_socket,(const char*)buffer);
@@ -436,10 +432,6 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket,(const char*)buffer);
- }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
- {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_update(client_socket,(const char*)buffer);
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
@@ -679,12 +671,9 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   else
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
-  } 
-
-  if (send_data(CLIENT_SOCKET,data,(const long)file_size,200,data2) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
   }
+
+  send_data(CLIENT_SOCKET,data,(const long)file_size,200,data2);
 
   pointer_reset(data);
   return 1;

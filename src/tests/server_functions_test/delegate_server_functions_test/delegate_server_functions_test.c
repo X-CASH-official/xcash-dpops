@@ -24,8 +24,8 @@ Functions
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: delegate_server_functions_test
-Description: Test the server functions
-Return: The number of passed server_functions test
+Description: Test the delegate_server functions
+Return: The number of passed delegate_server_functions test
 -----------------------------------------------------------------------------------------------------------
 */
 

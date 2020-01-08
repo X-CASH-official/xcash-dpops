@@ -32,7 +32,7 @@ int delete_database_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define DELETE_DATABASE_FUNCTIONS_TEST 4
+  #define DELETE_DATABASE_FUNCTIONS_TEST 6
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
 
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
@@ -52,7 +52,7 @@ int delete_database_functions_test(void)
   }
   else
   {
-    color_print("PASSED! Test for ddelete_document_from_collection","green");
+    color_print("PASSED! Test for delete_document_from_collection","green");
     count_test++;
   }
 
@@ -108,6 +108,32 @@ int delete_database_functions_test(void)
       color_print("PASSED! Test for delete_collection_from_database_thread","green");
       count_test++;
     }  
+  }
+
+  // delete a database
+  insert_document_into_collection_json(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  if (delete_database(DATABASE_NAME_TEST,0) == 0)
+  {
+    color_print("FAILED! Test for delete_database","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for delete_database","green");
+    count_test++;
+  }
+
+  // delete a database on a separate thread
+  insert_document_into_collection_json(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  struct delete_database_thread_parameters delete_database_thread_parameters = {DATABASE_NAME_TEST};
+  pthread_create(&thread_id, NULL, &delete_database_thread,(void *)&delete_database_thread_parameters);
+  if (thread_settings(thread_id) == 0)
+  {
+    color_print("FAILED! Test for delete_database_thread","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for delete_database_thread","green");
+    count_test++;
   }
   
   // write the end test message

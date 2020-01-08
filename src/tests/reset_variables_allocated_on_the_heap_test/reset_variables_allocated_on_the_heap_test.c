@@ -227,6 +227,10 @@ int reset_variables_allocated_on_the_heap_test(void)
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0); \
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
 
+  #define DELETE_DATABASE_CODE \
+  insert_document_into_collection_json(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,MESSAGE,0); \
+  delete_database(DATABASE_NAME_TEST,0);
+
   #define INSERT_DOCUMENT_INTO_COLLECTION_ARRAY_CODE insert_document_into_collection_array(database_name,DATABASE_COLLECTION_TEST,data,settings,5);
 
   #define INSERT_DOCUMENT_INTO_COLLECTION_JSON_CODE insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
@@ -564,6 +568,36 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   #define DELEGATES_SERVER_FUNCTIONS_TEST_CODE send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
 
+  #define SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA)-1); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_TEST_DATA)-1); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_TEST_DATA)-1); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA)-1); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA)-1); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_TEST_DATA)-1); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
 
 
   // initialize the data
@@ -733,6 +767,7 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   CHECK_RESET_VARIABLES_ON_THE_HEAP("delete_document_from_collection",DELETE_DOCUMENT_FROM_COLLECTION_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("delete_collection_from_database",DELETE_COLLECTION_FROM_DATABASE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("delete_database",DELETE_DATABASE_CODE);
 
   CHECK_RESET_VARIABLES_ON_THE_HEAP("insert_document_into_collection_array",INSERT_DOCUMENT_INTO_COLLECTION_ARRAY_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("insert_document_into_collection_json",INSERT_DOCUMENT_INTO_COLLECTION_JSON_CODE);
@@ -905,6 +940,18 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(result_test+strlen(result_test),"|",1);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_nodes_to_block_verifiers_update_delegates",DELEGATES_SERVER_FUNCTIONS_TEST_CODE);
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_delegates_website_get_statistics",SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_get_delegates",SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_get_delegates_statistics",SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_get_delegates_information",SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_get_delegates_voters_list",SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_get_round_statistics",SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_CODE);
+  delete_database(DATABASE_NAME_TEST,0);
 
   for (count = 0; count < 7; count++)
   {
