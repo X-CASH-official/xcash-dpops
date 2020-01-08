@@ -15,6 +15,7 @@
 #include "blockchain_functions.h"
 #include "block_verifiers_server_functions_test.h"
 #include "database_functions.h"
+#include "delegate_website_functions_test.h"
 #include "insert_database_functions.h"
 #include "read_database_functions.h"
 #include "update_database_functions.h"
@@ -27,6 +28,8 @@
 #include "network_wallet_functions.h"
 #include "organize_functions.h"
 #include "server_functions.h"
+#include "shared_delegates_website_functions.h"
+#include "shared_delegate_website_thread_server_functions.h"
 #include "string_functions.h"
 #include "thread_functions.h"
 #include "vrf.h"
@@ -618,6 +621,8 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_TEST_DATA)-1); \
   send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
 
+  #define CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_CODE calculate_block_reward_for_each_delegate(100000000000);
+
 
 
   // initialize the data
@@ -989,6 +994,14 @@ int reset_variables_allocated_on_the_heap_test(void)
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_get_blocks_found",SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_get_public_address_information",SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_get_public_address_payment_information",SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_CODE);
+  delete_database(DATABASE_NAME_TEST,0);
+
+  memset(result_test,0,sizeof(result_test));
+  memcpy(result_test,"{\"public_address_created_reserve_proof\":\"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3\",\"public_address_voted_for\":\"",169);
+  memcpy(result_test+strlen(result_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(result_test+strlen(result_test),"\",\"total\":\"0\",\"reserve_proof\":\"DATA\"}",37);
+  insert_document_into_collection_json(DATABASE_NAME_TEST,"reserve_proofs_1",result_test,0);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("calculate_block_reward_for_each_delegate",CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_CODE);
   delete_database(DATABASE_NAME_TEST,0);
 
   for (count = 0; count < 7; count++)

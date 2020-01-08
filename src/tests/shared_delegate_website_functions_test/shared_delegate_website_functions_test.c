@@ -7,6 +7,7 @@
 #include "structures.h"
 #include "define_macros_test.h"
 
+#include "shared_delegate_website_thread_server_functions.h"
 #include "insert_database_functions.h"
 #include "delete_database_functions.h"
 #include "network_functions.h"

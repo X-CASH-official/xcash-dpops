@@ -77,6 +77,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   #define DATA "{\"username\":\"XCASH\"}"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR \
+  network_functions_test_settings = 1; \
   memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE)); \
   memcpy(data,"{\"Error\":\"Could not get statistics\"}",36); \
   send_data(CLIENT_SOCKET,(unsigned char*)data,strlen(data),400,"application/json"); \
@@ -185,7 +186,8 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
 
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
-  pointer_reset(data);  
+  pointer_reset(data); 
+  network_functions_test_settings = 0; 
   return 200;
 
   #undef DATABASE_FIELDS
@@ -220,6 +222,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   #define DATABASE_FIELDS "public_address|IP_address|public_key|about|website|team|server_settings|block_verifier_online_total_rounds|block_producer_total_rounds|block_producer_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR \
+  network_functions_test_settings = 1; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -296,6 +299,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   #define DATABASE_FIELDS "IP_address|public_key|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR \
+  network_functions_test_settings = 1; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -435,6 +439,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   #define DATABASE_FIELDS "total_vote_count|IP_address|delegate_name|public_key|block_verifier_score|online_status|block_verifier_total_rounds|block_verifier_online_total_rounds|block_verifier_online_percentage|block_producer_total_rounds|VRF_node_public_and_secret_key_total_rounds|VRF_node_random_data_total_rounds|VRF_node_next_main_nodes_total_rounds|block_producer_block_heights|VRF_node_public_and_secret_key_block_heights|VRF_node_random_data_block_heights|VRF_node_next_main_nodes_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR \
+  network_functions_test_settings = 1; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -544,6 +549,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(settings) \
+  network_functions_test_settings = 1; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates voters list\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -693,6 +699,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR \
+  network_functions_test_settings = 1; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the round statistics\"}",46); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \

@@ -82,6 +82,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   // define macros
   #define DATABASE_COLLECTION "delegates"
   #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings) \
+  network_functions_test_settings = 1; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   if ((settings) == 0) \
@@ -315,6 +316,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   #define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(settings) \
+  network_functions_test_settings = 1; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates blocks found\"}",52); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -389,6 +391,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   #define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(settings) \
+  network_functions_test_settings = 1; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -481,6 +484,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   #define TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS 5
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(settings) \
+  network_functions_test_settings = 1; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
