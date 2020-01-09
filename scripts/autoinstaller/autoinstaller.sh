@@ -26,6 +26,7 @@ BLOCK_VERIFIERS_SECRET_KEY_LENGTH=128
 BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH=64
 DPOPS_FEE=0
 DPOPS_MINIMUM_AMOUNT=0
+XCASH_DPOPS_BLOCK_HEIGHT=449850
 
 # Latest versions
 MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.2"
@@ -83,10 +84,10 @@ regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 100
 # Functions
 function get_installation_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Restart Programs\n5 = Stop Programs\n6 = Test Update\nEnter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] && echo "$data" || echo "1")
-  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation") || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update") || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall")
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation") || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update") || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall") || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Restart") || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Stop") || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Test")
   echo -ne "\r"
   echo
   # Check if XCASH_DPOPS is already installed, if the user choose to install
@@ -668,9 +669,9 @@ function start_systemd_service_files()
   echo -ne "${COLOR_PRINT_YELLOW}Starting Systemd Service Files${END_COLOR_PRINT}"
   sudo systemctl start MongoDB >> "${LOGFILE}" 2>&1
   sudo systemctl start XCASH_Daemon >> "${LOGFILE}" 2>&1
-  sleep 10s
+  sleep 30s
   sudo systemctl start XCASH_Wallet >> "${LOGFILE}" 2>&1
-  sleep 10s
+  sleep 30s
   sudo systemctl start XCASH_DPOPS >> "${LOGFILE}" 2>&1
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Systemd Service Files${END_COLOR_PRINT}"
   echo
@@ -1193,6 +1194,7 @@ function get_installation_directory()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting Installation Directories${END_COLOR_PRINT}"
   XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "XCASH_DPOPS" -exec dirname {} \;)/
+  XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name ".X-CASH" -print)/
   WALLET_PASSWORD=$(cat /lib/systemd/system/XCASH_Wallet.service | awk '/password/ {print $5}')
   XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}X-CASH/
   XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/
@@ -1698,6 +1700,30 @@ function uninstall()
   echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
 }
 
+function test_update()
+{
+  stop_systemd_service_files
+  echo -ne "${COLOR_PRINT_YELLOW}Resetting the blockchain${END_COLOR_PRINT}"
+  sudo systemctl start XCASH_Daemon MongoDB
+  sleep 30s
+  data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
+  data="${data:66:6}"
+  data=$(($data-$XCASH_DPOPS_BLOCK_HEIGHT))
+  systemctl stop XCASH_Daemon
+  if [ $data -ne 0 ]
+    ${XCASH_DIR}build/release/bin/xcash-blockchain-import --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --pop-blocks ${data} &>/dev/null
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Resetting the blockchain${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Resetting the database${END_COLOR_PRINT}"
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_1.drop()"; echo "exit";) | mongo &>/dev/null
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_2.drop()"; echo "exit";) | mongo &>/dev/null
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_3.drop()"; echo "exit";) | mongo &>/dev/null
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_4.drop()"; echo "exit";) | mongo &>/dev/null
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_5.drop()"; echo "exit";) | mongo &>/dev/null
+  echo -ne "\r${COLOR_PRINT_GREEN}Resetting the database${END_COLOR_PRINT}"
+  update
+}
+
 
 
   
@@ -1719,4 +1745,11 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ]; then
   update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ]; then
   uninstall
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ]; then
+  stop_systemd_service_files
+  start_systemd_service_files
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
+  stop_systemd_service_files
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
+  test_update
 fi
