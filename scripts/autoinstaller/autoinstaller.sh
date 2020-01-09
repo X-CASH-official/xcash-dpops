@@ -92,7 +92,7 @@ function get_installation_settings()
   # Check if XCASH_DPOPS is already installed, if the user choose to install
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
     echo -ne "${COLOR_PRINT_YELLOW}Checking if XCASH_DPOPS is already installed${END_COLOR_PRINT}"
-    data=$(sudo find / -not -path "/proc*" -type d -name "XCASH_DPOPS" | wc -l)
+    data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "XCASH_DPOPS" -print | wc -l)
     if [ "$data" -ne "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is already installed. You can either update or uninstall${END_COLOR_PRINT}"
       exit 1
@@ -103,7 +103,7 @@ function get_installation_settings()
 
   # Check if XCASH_DPOPS is not installed, if the user choose to update or uninstall
   if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ]; then
-    data=$(sudo find / -not -path "/proc*" -type d -name "XCASH_DPOPS" | wc -l)
+    data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "XCASH_DPOPS" -print | wc -l)
     if [ "$data" -eq "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is not installed. Please install XCASH_DPOPS before running update or uninstall${END_COLOR_PRINT}"
       exit 1
@@ -696,7 +696,7 @@ function stop_systemd_service_files()
 function check_if_solo_node()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Checking If Solo Node${END_COLOR_PRINT}"
-  data=$(sudo find / -not -path "/proc*" -type d -name "XCASH_DPOPS_shared_delegates_website" | wc -l)
+  data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "XCASH_DPOPS_shared_delegates_website" -print | wc -l)
   if [ "$data" -eq 1 ]; then
     SHARED_DELEGATE="YES"
   else
@@ -1192,7 +1192,7 @@ function install_shared_delegates_website()
 function get_installation_directory()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting Installation Directories${END_COLOR_PRINT}"
-  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -not -path "/proc*" -type d -name "XCASH_DPOPS" -exec dirname {} \;)/
+  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "XCASH_DPOPS" -exec dirname {} \;)/
   WALLET_PASSWORD=$(cat /lib/systemd/system/XCASH_Wallet.service | awk '/password/ {print $5}')
   XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}X-CASH/
   XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/
@@ -1201,10 +1201,10 @@ function get_installation_directory()
   XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS/
   XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_DIR}shared_delegates_website/
   SHARED_DELEGATES_WEBSITE_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_shared_delegates_website/
-  NODEJS_DIR=$(sudo find / -not -path "/proc*" -type d -name "node-*-linux-x64")/
-  MONGODB_INSTALLATION_DIR=$(sudo find / -not -path "/proc*" -type d -path "*/data/db")/
-  MONGODB_DIR=$(sudo find / -not -path "/proc*" -type d -name "mongodb-linux-x86_64-ubuntu1804-*")/
-  MONGOC_DRIVER_DIR=$(sudo find / -not -path "/proc*" -type d -name "mongo-c-driver-*")/
+  NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "node-*-linux-x64" -print)/
+  MONGODB_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -path "*/data/db" -print)/
+  MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -print)/
+  MONGOC_DRIVER_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "mongo-c-driver-*" -print)/
   LOGFILE=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_INSTALL.log
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Installation Directories${END_COLOR_PRINT}"
   echo
@@ -1255,9 +1255,9 @@ function get_installation_directory()
 function get_dependencies_current_version()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting Dependencies Current Versions${END_COLOR_PRINT}"
-  NODEJS_CURRENT_VERSION=$(sudo find / -not -path "/proc*" -type d -name "node-*-linux-x64" -exec basename {} \;)
-  MONGODB_CURRENT_VERSION=$(sudo find / -not -path "/proc*" -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -exec basename {} \;)
-  MONGOC_DRIVER_CURRENT_VERSION=$(sudo find / -not -path "/proc*" -type d -name "mongo-c-driver-*" -exec basename {} \;)
+  NODEJS_CURRENT_VERSION=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "node-*-linux-x64" -exec basename {} \;)
+  MONGODB_CURRENT_VERSION=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -exec basename {} \;)
+  MONGOC_DRIVER_CURRENT_VERSION=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "mongo-c-driver-*" -exec basename {} \;)
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Dependencies Current Versions${END_COLOR_PRINT}"
   echo
 }
@@ -1357,7 +1357,7 @@ function update_mongodb()
   wget -q ${MONGODB_URL}
   tar -xf mongodb-linux-x86_64-*.tgz >> "${LOGFILE}" 2>&1
   sudo rm mongodb-linux-x86_64-*.tgz >> "${LOGFILE}" 2>&1
-  MONGODB_DIR=$(sudo find / -not -path "/proc*" -type d -name "mongodb-linux-x86_64-ubuntu1804-*")/
+  MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -print)/
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
   sudo systemctl daemon-reload
@@ -1385,7 +1385,7 @@ function update_mongoc_driver()
   sudo make -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1
   sudo make install >> "${LOGFILE}" 2>&1
   sudo ldconfig
-  MONGOC_DRIVER_DIR=$(sudo find / -not -path "/proc*" -type d -name "mongo-c-driver-*")/
+  MONGOC_DRIVER_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "mongo-c-driver-*" -print)/
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Mongo C Driver${END_COLOR_PRINT}"
   echo
 }
@@ -1398,7 +1398,7 @@ function update_nodejs()
   wget -q ${NODEJS_URL}
   tar -xf node*.tar.xz >> "${LOGFILE}" 2>&1
   sudo rm node*.tar.xz >> "${LOGFILE}" 2>&1
-  NODEJS_DIR=$(sudo find / -not -path "/proc*" -type d -name "node-*-linux-x64")/
+  NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "node-*-linux-x64" -print)/
   sudo sed '/node-v/d' -i "${HOME}"/.profile
   sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
