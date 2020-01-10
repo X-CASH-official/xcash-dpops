@@ -19,6 +19,7 @@
 #include "define_macros.h"
 #include "structures.h"
 #include "variables.h"
+#include "initialize_and_reset_structs_define_macros.h"
 
 #include "block_verifiers_functions.h"
 #include "block_verifiers_synchronize_functions.h"
@@ -774,6 +775,88 @@ void* send_and_receive_data_socket_thread(void* parameters)
   SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
 
   #undef CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: remove_inactive_delegates_timer_thread
+Description: Removes any inactive delegates from the database at UTC 00:00
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* remove_inactive_delegates_timer_thread(void* parameters)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char buffer[BUFFER_SIZE];
+  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  int count2;
+  int document_count;
+  long long int total_votes;
+
+  // unused parameters
+  (void)parameters;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+
+  for (;;)
+  {
+    // check if it is UTC 01:00
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time.tm_hour == 0 && current_UTC_date_and_time.tm_min == 0)
+    {
+      color_print("It is UTC 00:00\nRemoving all inactive delegates from the database","yellow");
+
+      // initialize the delegates struct
+      INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"remove_inactive_delegates_timer_thread",buffer,current_date_and_time,current_UTC_date_and_time);
+
+      // reset the variables
+      memset(data,0,sizeof(data));
+      memset(buffer,0,sizeof(buffer));
+
+      // organize the delegates
+      document_count = organize_delegates(delegates,DATABASE_COLLECTION);
+
+      for (count = 0, count2 = 0; count < document_count; count++)
+      {
+        sscanf(delegates[count].total_vote_count, "%lld", &total_votes);
+
+        // check if each delegate has not mined a block, and their vote count is under the MINIMUM_AMOUNT_REGISTER_DELEGATE
+        if (memcmp(delegates[count].block_producer_block_heights,"",1) == 0 && total_votes < MINIMUM_AMOUNT_REGISTER_DELEGATE)
+        {
+          // remove the delegate from the database
+          memset(data,0,sizeof(data));
+          memcpy(data,"{\"public_address\":\'",19);
+          memcpy(data+strlen(data),delegates[count].public_address,XCASH_WALLET_LENGTH);
+          memcpy(data+strlen(data),"\"}",2);
+          if (delete_document_from_collection(database_name,DATABASE_COLLECTION,data,1) == 1)
+          {
+            count2++;
+          }
+        }
+      }
+      memset(data,0,sizeof(data));  
+      print_start_message(current_date_and_time,current_UTC_date_and_time,"Inactive Delegates",data);      
+      memcpy(data,"Amount of delegates: ",21);
+      snprintf(data+strlen(data),sizeof(data)-1,"%d",document_count);
+      memcpy(data,"\nAmount of inactive delegates removed: ",39);
+      snprintf(data+strlen(data),sizeof(data)-1,"%d",count2);
+      memcpy(data,"\n",1);
+      color_print(data,"yellow");
+
+      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    }
+    sleep(10);
+  }
+  pthread_exit((void *)(intptr_t)1);
+
+  #undef DATABASE_COLLECTION
 }
 
 

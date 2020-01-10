@@ -478,7 +478,7 @@ void* payment_timer_thread(void* parameters)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_hour == 0 && current_UTC_date_and_time.tm_min == 0)
     {
-      color_print("It is UTC 00:00\nSending the daily payments","green");
+      color_print("It is UTC 00:00\nSending the daily payments","yellow");
 
       memset(data,0,sizeof(data));
       memset(data2,0,sizeof(data2));
@@ -655,7 +655,7 @@ void* payment_timer_thread(void* parameters)
       memcpy(data,"\nTotal amount: ",15);
       snprintf(data+strlen(data),sizeof(data)-1,"%lld",total_amount);
       memcpy(data,"\n",1);
-      color_print(data,"green");
+      color_print(data,"yellow");
     }
     sleep(10);
   }
