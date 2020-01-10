@@ -191,9 +191,12 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
 
   // define macros
   #define GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"get_block_reserve_byte_data_hash",32); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if (network_functions_test_error_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"get_block_reserve_byte_data_hash",32); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   return 0;
   
   memset(message,0,sizeof(message));
@@ -212,12 +215,16 @@ int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* B
   
   if (parse_json_data(data,"blob",message,sizeof(message)) == 0)
   {
-    
+    GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR("Could not get the blocks reserve bytes data hash");
+  }
+
+  if (strstr(data,BLOCKCHAIN_RESERVED_BYTES_START_DATA) == NULL)
+  {
     GET_BLOCK_RESERVE_BYTE_DATA_HASH_ERROR("Could not get the blocks reserve bytes data hash");
   }
 
   memset(reserve_byte_data_hash,0,strlen(reserve_byte_data_hash));
-  memcpy(reserve_byte_data_hash,&data[strlen(data) - (strlen(strstr(data,BLOCKCHAIN_RESERVED_BYTES_START_DATA)) - 62)],128);
+  memcpy(reserve_byte_data_hash,&data[strlen(data) - (strlen(strstr(data,BLOCKCHAIN_RESERVED_BYTES_START_DATA)) - 62)],DATA_HASH_LENGTH);
   
   return 1;
 

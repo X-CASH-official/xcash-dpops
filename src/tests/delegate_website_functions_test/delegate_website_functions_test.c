@@ -62,6 +62,7 @@ int delegate_website_functions_test(void)
   CHECK_WEBSITE_SERVER_FUNCTIONS("server_receive_data_socket_get_delegates_information",SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA);
   CHECK_WEBSITE_SERVER_FUNCTIONS("server_receive_data_socket_get_delegates_voters_list",SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA);
   CHECK_WEBSITE_SERVER_FUNCTIONS("server_receive_data_socket_get_round_statistics",SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_TEST_DATA);
+  sleep(5);
   delete_database(DATABASE_NAME_TEST,0);
 
   // write the end test message

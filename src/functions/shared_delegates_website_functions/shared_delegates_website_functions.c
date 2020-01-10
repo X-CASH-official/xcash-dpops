@@ -420,7 +420,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
   
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,message,0) <= 0)
+  if (count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,message,1) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1);
   }

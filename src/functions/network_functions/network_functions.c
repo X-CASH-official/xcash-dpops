@@ -773,7 +773,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memset(str,0,sizeof(str));
     memcpy(str,"Error invalid hostname of ",26);
     memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
-    memcpy(error_message.function[error_message.total],"send_http_request",17);
+    memcpy(error_message.function[error_message.total],"send_data_socket",16);
     memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
     error_message.total++;  
     freeaddrinfo(settings);
@@ -788,7 +788,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   const int SOCKET = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
   if (SOCKET == -1)
   { 
-    memcpy(error_message.function[error_message.total],"send_http_request",17);
+    memcpy(error_message.function[error_message.total],"send_data_socket",16);
     memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
     error_message.total++;
     freeaddrinfo(settings);
@@ -801,7 +801,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   */
   if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
-    memcpy(error_message.function[error_message.total],"send_http_request",17);
+    memcpy(error_message.function[error_message.total],"send_data_socket",16);
     memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
     error_message.total++;  
     freeaddrinfo(settings);     
@@ -820,15 +820,18 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   {    
     count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
     if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    {        
-      memset(str,0,sizeof(str));
-      memcpy(str,"Error connecting to ",20);
-      memcpy(str+20,HOST,HOST_LENGTH);
-      memcpy(str+20+HOST_LENGTH," on port ",9);
-      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
-      error_message.total++; 
+    { 
+      if (network_functions_test_error_settings == 1)
+      {       
+        memset(str,0,sizeof(str));
+        memcpy(str,"Error connecting to ",20);
+        memcpy(str+20,HOST,HOST_LENGTH);
+        memcpy(str+20+HOST_LENGTH," on port ",9);
+        memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+        memcpy(error_message.function[error_message.total],"send_data_socket",16);
+        memcpy(error_message.data[error_message.total],str,strlen(str));
+        error_message.total++; 
+      }
       freeaddrinfo(settings);
       close(SOCKET);
       return 0;

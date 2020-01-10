@@ -47,7 +47,7 @@ int read_database_functions_test(void)
     memset(database_data.item[count],0,strlen(database_data.item[count])); \
     memset(database_data.value[count],0,strlen(database_data.value[count])); \
   } \
-  database_data.count = 0;
+  database_data.count = DATABASE_FIELDS_COUNT;
 
   #define RESET_DATABASE_DATA_MULTIPLE_DOCUMENTS_FIELDS \
   for (count = 0; count < 2; count++) \
@@ -59,7 +59,7 @@ int read_database_functions_test(void)
     } \
   } \
   database_multiple_documents_fields.document_count = 0; \
-  database_multiple_documents_fields.database_fields_count = 0;
+  database_multiple_documents_fields.database_fields_count = DATABASE_FIELDS_COUNT;
   
 
   // write the start test message

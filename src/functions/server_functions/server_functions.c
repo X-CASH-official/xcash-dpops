@@ -337,7 +337,7 @@ int socket_thread(int client_socket)
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // dont display the message if the message came from the test wallet, or your own wallet
-  if (strstr(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA") == NULL && strstr(data2,xcash_wallet_public_address) == NULL && strstr(data2,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3") == NULL)
+  if (network_functions_test_server_messages_settings == 1)
   {  
     memcpy(message,"Received ",9);
     memcpy(message+9,data2,strnlen(data2,sizeof(message)));
@@ -511,7 +511,20 @@ int socket_thread(int client_socket)
  }
  if (error_message.total != 0)
  {
-   print_error_message(current_date_and_time,current_UTC_date_and_time,data2);
+   if (network_functions_test_error_settings == 1)
+   {
+     print_error_message(current_date_and_time,current_UTC_date_and_time,data2);
+   }
+   else
+   {
+     // reset the error messages
+     for (error_message_count = 0; error_message_count < TOTAL_DELEGATES_DATABASE_FIELDS; error_message_count++)
+     {
+       memset(error_message.function[error_message_count],0,strlen(error_message.function[error_message_count]));
+       memset(error_message.data[error_message_count],0,strlen(error_message.data[error_message_count]));
+     }
+     error_message.total = 0;
+   }
  }
 pointer_reset(buffer);
 return 1;

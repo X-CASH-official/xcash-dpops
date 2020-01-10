@@ -176,12 +176,12 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     snprintf(data2+15,sizeof(data2)-16,"%zu",count);
 
     // check if the reserve proof is in the database
-    if (count_documents_in_collection(database_name,data2,data,0) > 0)
+    if (count_documents_in_collection(database_name,data2,data,1) > 0)
     {      
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database");
     }
     // check if another proof from the public address is already in the database
-    if (count_documents_in_collection(database_name,data2,data3,0) > 0)
+    if (count_documents_in_collection(database_name,data2,data3,1) > 0)
     {      
       settings = 1;
     }
@@ -214,7 +214,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
       memset(data,0,sizeof(data));
       memcpy(data,"reserve_proofs_",15);
       snprintf(data+15,sizeof(data)-16,"%zu",count);
-      while (count_documents_in_collection(database_name,data,data3,0) > 0)
+      while (count_documents_in_collection(database_name,data,data3,1) > 0)
       {
         sync_database_threads;
         if (delete_document_from_collection(database_name,data,data3,1) == 0)
@@ -248,7 +248,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_proofs_",15);
     snprintf(data3+15,sizeof(data3)-16,"%zu",count);
-    if (count_documents_in_collection(database_name,data3,data,0) < MAXIMUM_INVALID_RESERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
+    if (count_documents_in_collection(database_name,data3,data,1) < MAXIMUM_INVALID_RESERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
     {
       if (memcmp(delegates_public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0 || memcmp(public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0)
       {
@@ -352,7 +352,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memset(delegates_IP_address,0,sizeof(delegates_IP_address));
 
   // check if the maximum amount of delegates has been registered
-  if (count_all_documents_in_collection(database_name,DATABASE_COLLECTION,0) >= MAXIMUM_AMOUNT_OF_DELEGATES)
+  if (count_all_documents_in_collection(database_name,DATABASE_COLLECTION,1) >= MAXIMUM_AMOUNT_OF_DELEGATES)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The maximum amount of delegates has been registered");
   }
@@ -408,7 +408,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     memcpy(data+strlen(data),"\"}",2);
 
     // check if the public address is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) > 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public address is already registered");
     }
@@ -420,7 +420,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     memcpy(data+strlen(data),"\"}",2); 
 
     // check if the IP address is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) > 0)
     {    
       SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates IP address is already registered");
     }
@@ -432,7 +432,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     memcpy(data+79,"\"}",2); 
 
     // check if the public key is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) > 0)
     {    
       SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public key is already registered");
     }
@@ -444,7 +444,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     memcpy(data+strlen(data),"\"}",2); 
  
     // check if the delegate name is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) > 0)
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) > 0)
     {    
       SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates name is already registered");
     }
@@ -547,7 +547,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   memcpy(data+strlen(data),"\"}",2);
 
   // check if the delegate is already removed
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,0) <= 0)
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate is already removed");
   }

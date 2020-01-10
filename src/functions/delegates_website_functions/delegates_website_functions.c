@@ -102,7 +102,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_STATISTICS_DATABASE_FIELDS+4,"server_receive_data_socket_delegates_website_get_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
 
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(database_name,"statistics",DATA,0) <= 0)
+  if (count_documents_in_collection(database_name,"statistics",DATA,1) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR;
   }
@@ -352,7 +352,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   }
 
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message,0) <= 0)
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message,1) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR;
   }
@@ -487,7 +487,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   }
   
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message,0) <= 0)
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message,1) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR;
   }
@@ -735,7 +735,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
   memcpy(message+strlen(message),"\"}",2);
 
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(database_name,data3,message,0) <= 0)
+  if (count_documents_in_collection(database_name,data3,message,1) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR;
   }

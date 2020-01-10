@@ -91,6 +91,8 @@ int main(int parameters_count, char* parameters[])
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
   network_functions_test_settings = 0;
+  network_functions_test_error_settings = 1;
+  network_functions_test_server_messages_settings = 1;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);

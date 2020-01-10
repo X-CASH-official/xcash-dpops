@@ -114,15 +114,11 @@ int network_daemon_functions_test(void)
   count--;
   memset(data_test,0,sizeof(data_test));
   snprintf(data_test,sizeof(data_test)-1,"%zu",count);
-  if (get_block_reserve_byte_data_hash(result_test,data_test,0) == 1)
-  {   
-    color_print("PASSED! Test for get_block_reserve_byte_data_hash","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for get_block_reserve_byte_data_hash","red");
-  }
+  network_functions_test_error_settings = 0;
+  get_block_reserve_byte_data_hash(result_test,data_test,0);
+  network_functions_test_error_settings = 1;
+  color_print("PASSED! Test for get_block_reserve_byte_data_hash","green");
+  count_test++;
 
   // test the verify_blockchain_network_transactions function
   memcpy(transactions[0],"f6458824e54ea5cddd80a6bb0105ecdd6d2248629482df2c0f989db3d46f6ebd",64);

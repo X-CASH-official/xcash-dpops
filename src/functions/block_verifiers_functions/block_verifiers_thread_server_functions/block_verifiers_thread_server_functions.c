@@ -356,7 +356,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
           snprintf(data+15,sizeof(data)-16,"%d",count);
 
           // check if the reserve proof is in the database
-          if (count_all_documents_in_collection(database_name,data,0) > 0)
+          if (count_all_documents_in_collection(database_name,data,1) > 0)
           {
             memset(data2,0,sizeof(data2));
             memset(data3,0,sizeof(data3));

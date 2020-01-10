@@ -168,6 +168,7 @@ long long int add_block_to_blocks_found(void)
   {
     ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("Could not add the block to the blocks_found database.\nCould not check if the block verifier found the last block.",0);
   }
+  database_multiple_documents_fields.document_count = document_count;
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS);
   return block_reward_number;
 
@@ -254,7 +255,8 @@ int get_delegates_total_voters(struct voters* voters)
       database_multiple_documents_fields.database_fields_count = 0;
     }
   }
-  RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS);
+  database_multiple_documents_fields.document_count = MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE;
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS);
   return total_votes;
   
   #undef GET_DELEGATES_TOTAL_VOTERS_ERROR
@@ -331,7 +333,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
     memset(data,0,sizeof(data));
 
     // check if the public address is in the database, if not add it
-    if (count_documents_in_collection(shared_delegates_database_name,"public_addresses",data2,0) <= 0)
+    if (count_documents_in_collection(shared_delegates_database_name,"public_addresses",data2,1) <= 0)
     {
       memset(data3,0,sizeof(data3));
       memcpy(data3,"{\"public_address\":\"",19);

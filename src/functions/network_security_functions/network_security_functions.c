@@ -232,10 +232,13 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
 
   // define macros
   #define VERIFY_DATA_ERROR(settings) \
+  if (network_functions_test_error_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"verify_data",11); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  } \
   pointer_reset_all; \
   return 0;
 
@@ -504,7 +507,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     memcpy(proof,XCASH_DPOPS_signature,VRF_PROOF_LENGTH);
     memcpy(beta_string,&XCASH_DPOPS_signature[VRF_PROOF_LENGTH],VRF_BETA_LENGTH);
 
-    if (strstr(MESSAGE,"XCASH_PROOF_OF_STAKE_TEST_DATA_2") == NULL)
+    if (strstr(MESSAGE,xcash_wallet_public_address) == NULL && strstr(MESSAGE,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3") == NULL)
     {
       for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
       {      
@@ -528,11 +531,12 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
         {
           if (read_document_field_from_collection(database_name,"delegates",data,"public_key",public_key,1) == 0)
           {
-            VERIFY_DATA_ERROR("Could not find the public key to verify the message1");
+            VERIFY_DATA_ERROR("Could not find the public key to verify the message");
           }
         }
         else
         {
+          color_print(MESSAGE,"yellow");
           VERIFY_DATA_ERROR("Could not find the public key to verify the message");
         }
       }
