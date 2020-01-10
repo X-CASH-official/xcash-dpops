@@ -220,7 +220,6 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "--block_verifiers_secret_key \"block_verifiers_secret_key\" - The block verifiers secret key. This must be the first parameter\n\n" \
 "--log_file \"log_file\" - Write all output to a log file with no colors\n\n" \
 "--log_file_color \"log_file\" - Write all output to a log file with colors\n\n" \
-"--generate_key - Generate a public and private key for signing and verifying messages between block verifiers" \
 "--total_threads \"total_threads\" - The total threads to use, the maximum is 100 total threads.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
 "--XCASH_DPOPS_delegates_IP_address \"delegates IP address\" - The delegates IP address (IPV4 only) to create the server on.\nIf this parameter is not specified, the default is 0.0.0.0 (all available networking interfaces).\n\n" \
 "--xcash_wallet_port \"xcash_wallet_port\" - The xcash wallet port.\nIf this parameter is not specified, the default port is 18285.\n\n" \
@@ -230,7 +229,9 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
 "The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \
 "The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)\n\n" \
+"--generate_key - Generate a public and private key for signing and verifying messages between block verifiers" \
 "--synchronize_database_from_network_data_node - Synchronize the database from a network data node.\n\n" \
+"--synchronize_database_from_specific_delegate DELEGATES_IP_ADDRESS - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nIt should only be used in specific circumstances.\n\n" \
 "--disable_synchronizing_databases_and_starting_timers - Disables synchronizing the databases and starting the timers. Used for testing.\n\n" \
 "--test_data_add - Add test data to the databases\n\n" \
 "--test_data_remove - Remove test data from the databases\n\n"

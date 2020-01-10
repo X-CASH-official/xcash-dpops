@@ -139,8 +139,6 @@ All parameters are optional, execept for --block_verifiers_secret_key. **The --b
 
 --log_file_color "log_file" - Write all output to a log file with colors
 
---generate_key - Generate a public and private key for signing and verifying messages between block verifiers
-
 --total_threads "total_threads" - The total threads to use, the maximum is 100 total threads.
 If this parameter is not specified, the default is the number of threads the CPU has.
 
@@ -162,7 +160,13 @@ If this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE_DEL
 The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)
 The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)
 
+--generate_key - Generate a public and private key for signing and verifying messages between block verifiers
+
 --synchronize_database_from_network_data_node - Synchronize the database from a network data node.
+
+--synchronize_database_from_specific_delegate DELEGATES_IP_ADDRESS - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.
+Note: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.
+It should only be used in specific circumstances.
 
 --disable_synchronizing_databases_and_starting_timers - Disables synchronizing the databases and starting the timers. Used for testing.
 

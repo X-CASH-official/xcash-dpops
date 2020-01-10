@@ -284,7 +284,7 @@ int sync_check_reserve_proofs_database(int settings)
       color_print("The reserve proofs database is not synced, syncing from a random block verifier","red");
 
       // get the data
-      if (sync_reserve_proofs_database(settings) == 0)
+      if (sync_reserve_proofs_database(settings,"") == 0)
       {
         SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
       }
@@ -293,7 +293,7 @@ int sync_check_reserve_proofs_database(int settings)
   if (settings == 2 || settings == 3)
   {
     color_print("Syncing from a random network data node","white");
-    if (sync_reserve_proofs_database(settings) == 0)
+    if (sync_reserve_proofs_database(settings,"") == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
@@ -431,7 +431,7 @@ void sync_check_majority_reserve_proofs_database(void)
   {
     color_print("The database is not in the majority, syncing from a random network data node","red");
     get_random_network_data_node(count);
-    sync_reserve_proofs_database(count+3);    
+    sync_reserve_proofs_database(count+3,"");    
   }
   
   pointer_reset(data);
@@ -577,7 +577,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       color_print("The reserve bytes database is not synced, syncing from a random block verifier","red");
 
       // get the data
-      if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings) == 0)
+      if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings,"") == 0)
       {
         SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
       }
@@ -586,7 +586,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
   if (settings == 2 || settings == 3)
   {
     color_print("Syncing from a random network data node","white");
-    if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings) == 0)
+    if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings,"") == 0)
     {
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
     }
@@ -731,7 +731,7 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
   {
     color_print("The database is not in the majority, syncing from a random network data node","red");
     get_random_network_data_node(count);
-    sync_reserve_bytes_database(count+3,reserve_bytes_start_settings); 
+    sync_reserve_bytes_database(count+3,reserve_bytes_start_settings,""); 
   }
   
   pointer_reset(data);
@@ -854,7 +854,7 @@ int sync_check_delegates_database(int settings)
       color_print("The delegates database is not synced, syncing from a random block verifier","red");
 
       // get the data
-      if (sync_delegates_database(settings) == 0)
+      if (sync_delegates_database(settings,"") == 0)
       {
         SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database database");
       }
@@ -863,7 +863,7 @@ int sync_check_delegates_database(int settings)
   if (settings == 2 || settings == 3)
   {
     color_print("Syncing from a random network data node","white");
-    if (sync_delegates_database(settings) == 0)
+    if (sync_delegates_database(settings,"") == 0)
     {
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database database");
     }
@@ -985,7 +985,7 @@ void sync_check_majority_delegates_database(void)
   {
     color_print("The database is not in the majority, syncing from a random network data node","red");
     get_random_network_data_node(count);
-    sync_delegates_database(count+3);   
+    sync_delegates_database(count+3,"");   
   }
   
   pointer_reset(data);
@@ -1108,7 +1108,7 @@ int sync_check_statistics_database(int settings)
       color_print("The statistics database is not synced, syncing from a random block verifier","red");
 
       // get the data
-      if (sync_statistics_database(settings) == 0)
+      if (sync_statistics_database(settings,"") == 0)
       {
         SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database database");
       }
@@ -1117,7 +1117,7 @@ int sync_check_statistics_database(int settings)
   if (settings == 2 || settings == 3)
   {
     color_print("Syncing from a random network data node","white");
-    if (sync_statistics_database(settings) == 0)
+    if (sync_statistics_database(settings,"") == 0)
     {
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database database");
     }
@@ -1239,7 +1239,7 @@ void sync_check_majority_statistics_database(void)
   {
     color_print("The database is not in the majority, syncing from a random network data node","red");
     get_random_network_data_node(count);
-    sync_statistics_database(count+3);     
+    sync_statistics_database(count+3,"");     
   }
   
   pointer_reset(data);

@@ -497,6 +497,20 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
+    if (strncmp(parameters[count],"--synchronize_database_from_specific_delegate",BUFFER_SIZE) == 0)
+    {
+      color_print("Syncing the reserve bytes database","yellow");
+      sync_reserve_bytes_database(0,0,parameters[count+1]);
+      color_print("Syncing the reserve proofs database","yellow");
+      sync_reserve_proofs_database(0,parameters[count+1]);
+      color_print("Syncing the delegates database","yellow");
+      sync_delegates_database(0,parameters[count+1]);
+      color_print("Syncing the statistics database","yellow");
+      sync_statistics_database(0,parameters[count+1]);
+      color_print("Successfully synced all databases","yellow");
+      database_reset;
+      exit(0);
+    }
     if (strncmp(parameters[count],"--test_data_add",BUFFER_SIZE) == 0)
     {
       memset(data,0,sizeof(data));

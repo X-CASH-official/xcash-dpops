@@ -68,14 +68,14 @@ void sync_network_data_nodes_database(void)
   // define macros
   #define SYNC_DATABASES(settings) \
   color_print("Syncing the reserve bytes database","yellow"); \
-  sync_reserve_bytes_database(settings,1); \
+  sync_reserve_bytes_database(settings,1,""); \
   color_print("Syncing the reserve proofs database","yellow"); \
-  sync_reserve_proofs_database(settings); \
+  sync_reserve_proofs_database(settings,""); \
   color_print("Syncing the delegates database","yellow"); \
-  sync_delegates_database(settings); \
+  sync_delegates_database(settings,""); \
   color_print("Syncing the statistics database","yellow"); \
-  sync_statistics_database(settings); \
-  color_print("Successfully synced all database","yellow");
+  sync_statistics_database(settings,""); \
+  color_print("Successfully synced all databases","yellow");
 
   // set the database to not accept any new data
   //database_settings = 0;
@@ -483,11 +483,12 @@ Name: sync_reserve_proofs_database
 Description: Syncs the reserve proofs database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
+  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_proofs_database(int settings)
+int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -528,7 +529,7 @@ int sync_reserve_proofs_database(int settings)
     goto start; \
   } 
 
-   // check if the memory needed was allocated on the heap successfully
+  // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data3 == NULL)
   {
     if (data != NULL)
@@ -554,6 +555,8 @@ int sync_reserve_proofs_database(int settings)
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
+  if (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0)
+  {
   // check if all block verifiers were not from the majority, and if so sync from a network data node
   for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -589,6 +592,11 @@ int sync_reserve_proofs_database(int settings)
   {     
     memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
   }
+  }
+  else
+  {
+    memcpy(block_verifiers_ip_address,DELEGATES_IP_ADDRESS,strnlen(DELEGATES_IP_ADDRESS,sizeof(block_verifiers_ip_address)));
+  }  
 
   // get the database data hash for the reserve proofs database
   memset(data3,0,strlen(data3));
@@ -756,11 +764,12 @@ Description: Syncs the reserve bytes database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
   reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
+  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_settings)
+int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_settings, const char* DELEGATES_IP_ADDRESS)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -828,6 +837,8 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
+  if (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0)
+  {
   // check if all block verifiers were not from the majority, and if so sync from a network data node
   for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -862,6 +873,11 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
   else
   {     
     memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
+  }
+  }
+  else
+  {
+    memcpy(block_verifiers_ip_address,DELEGATES_IP_ADDRESS,strnlen(DELEGATES_IP_ADDRESS,sizeof(block_verifiers_ip_address)));
   }
 
   // get the current reserve bytes database
@@ -1049,11 +1065,12 @@ Name: sync_delegates_database
 Description: Syncs the delegates database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
+  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_delegates_database(int settings)
+int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1106,6 +1123,8 @@ int sync_delegates_database(int settings)
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
+  if (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0)
+  {
   // check if all block verifiers were not from the majority, and if so sync from a network data node
   for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -1140,6 +1159,11 @@ int sync_delegates_database(int settings)
   else
   {     
     memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
+  }
+  }
+  else
+  {
+    memcpy(block_verifiers_ip_address,DELEGATES_IP_ADDRESS,strnlen(DELEGATES_IP_ADDRESS,sizeof(block_verifiers_ip_address)));
   }
 
   // get the database data hash for the delegates database
@@ -1206,11 +1230,12 @@ Name: sync_statistics_database
 Description: Syncs the statistics database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
+  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_statistics_database(int settings)
+int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1263,6 +1288,8 @@ int sync_statistics_database(int settings)
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
+  if (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0)
+  {
   // check if all block verifiers were not from the majority, and if so sync from a network data node
   for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -1297,6 +1324,11 @@ int sync_statistics_database(int settings)
   else
   {     
     memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
+  }
+  }
+  else
+  {
+    memcpy(block_verifiers_ip_address,DELEGATES_IP_ADDRESS,strnlen(DELEGATES_IP_ADDRESS,sizeof(block_verifiers_ip_address)));
   }
 
   // get the database data hash for the statistics database
