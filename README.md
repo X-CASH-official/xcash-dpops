@@ -160,6 +160,8 @@ If this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE_DEL
 The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)
 The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)
 The voter inactivity count is optional. This is the number of consecutive days where a voter would have registered in the database, but is not actively participating towards the shared delegate. If this number of consecutive days is reached, the voter will be removed from the database and all funds that were left over would not sent out, since they were below the MINIMUM AMOUNT. If this parameter is not specified, the default amount is 30 consecutive days.
+The shared delegate payment time hour is optional. This is the hour that the shared delegate will send the daily payments. If this parameter is not specified, the default amount is a random hour
+The shared delegate payment time minute is optional. This is the minute that the shared delegate will send the daily payments. If this parameter is not specified, the default amount is a random minute.
 
 --generate_key - Generate a public and private key for signing and verifying messages between block verifiers
 

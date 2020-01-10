@@ -431,7 +431,7 @@ void* block_height_timer_thread(void* parameters)
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: payment_timer_thread
-Description: Sends all of the delegates payments at UTC 00:00
+Description: Sends all of the delegates payments once a day at a random time, or a set time if using the --shared_delegate_payment_time_hour and --shared_delegate_payment_time_minute paramters
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -474,11 +474,11 @@ void* payment_timer_thread(void* parameters)
 
   for (;;)
   {
-    // check if it is UTC 00:00
+    // check if it is time to send the payments
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_hour == 0 && current_UTC_date_and_time.tm_min == 0)
+    if (current_UTC_date_and_time.tm_hour == shared_delegate_payment_time_hour && current_UTC_date_and_time.tm_min == shared_delegate_payment_time_minute)
     {
-      color_print("It is UTC 00:00\nSending the daily payments","yellow");
+      color_print("Sending the daily payments","yellow");
 
       memset(data,0,sizeof(data));
       memset(data2,0,sizeof(data2));

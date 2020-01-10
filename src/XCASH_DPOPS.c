@@ -56,7 +56,7 @@ int main(int parameters_count, char* parameters[])
   size_t counter = 0;
 
   // threads
-  pthread_t thread_id[4];
+  pthread_t thread_id[5];
   
   // define macros
   #define MESSAGE "{\"username\":\"XCASH\"}"
@@ -91,6 +91,8 @@ int main(int parameters_count, char* parameters[])
   database_settings = 1;
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
+  shared_delegate_payment_time_hour = (rand() % (23 - 0 + 1)) + 0;
+  shared_delegate_payment_time_minute = (rand() % (59 - 0 + 1)) + 0;
   network_functions_test_settings = 0;
   network_functions_test_error_settings = 1;
   network_functions_test_server_messages_settings = 1;
@@ -605,7 +607,15 @@ int main(int parameters_count, char* parameters[])
     {
       memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
       memcpy(voter_inactivity_count,parameters[count+1],strnlen(parameters[count+1],sizeof(voter_inactivity_count)));
-    }  
+    }
+    if (strncmp(parameters[count],"--shared_delegate_payment_time_hour",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
+    {
+      sscanf(parameters[count+1], "%d", &shared_delegate_payment_time_hour);
+    }
+    if (strncmp(parameters[count],"--shared_delegate_payment_time_minute",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
+    {
+      sscanf(parameters[count+1], "%d", &shared_delegate_payment_time_minute);
+    }
     if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       sscanf(parameters[count+1], "%d", &total_threads);
@@ -792,8 +802,16 @@ int main(int parameters_count, char* parameters[])
   
   color_print("Started the current block height timer thread","green");
 
+  /*// start the remove_inactive_delegates_timer_thread
+  if (pthread_create(&thread_id[1], NULL, &remove_inactive_delegates_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
+  {
+    MAIN_ERROR("Could not start the current_block_height_timer_thread");
+  }
+  
+  color_print("Started the remove inactive delegates timer thread","green");*/
+
   /*// start the check_reserve_proofs_timer_thread
-  if (pthread_create(&thread_id[1], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
+  if (pthread_create(&thread_id[2], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[2]) != 0)
   {
     MAIN_ERROR("Could not start the check_reserve_proofs_timer_thread");
   }

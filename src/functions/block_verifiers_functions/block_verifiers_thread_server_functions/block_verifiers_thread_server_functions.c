@@ -807,11 +807,11 @@ void* remove_inactive_delegates_timer_thread(void* parameters)
 
   for (;;)
   {
-    // check if it is UTC 01:00
+    // check if it is UTC 23:58
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_hour == 0 && current_UTC_date_and_time.tm_min == 0)
+    if (current_UTC_date_and_time.tm_hour == 23 && current_UTC_date_and_time.tm_min == 58)
     {
-      color_print("It is UTC 00:00\nRemoving all inactive delegates from the database","yellow");
+      color_print("It is UTC 23:58\nRemoving all inactive delegates from the database","yellow");
 
       // initialize the delegates struct
       INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"remove_inactive_delegates_timer_thread",buffer,current_date_and_time,current_UTC_date_and_time);

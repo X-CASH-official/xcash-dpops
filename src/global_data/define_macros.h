@@ -62,8 +62,8 @@ Using define statements instead of constants for increased efficiency
 
 // XCASH DPOPS
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 4 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 2 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_AMOUNT 20 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 3 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 1000 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 5000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
@@ -227,10 +227,12 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "--database_name - The name of the database.\nIf this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE.\n\n" \
 "--shared_delegates_database_name - The name of the shared delegates database.\nIf this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE_DELEGATES.\n\n" \
 "--delegates_website - Run the delegates website\n\n" \
-"--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" (optional) --voter_inactivity_count NUMBER_OF_DAYS - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
+"--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" (optional) --voter_inactivity_count NUMBER_OF_DAYS (optional) --shared_delegate_payment_time_hour HOUR (optional) --shared_delegate_payment_time_minute MINUTE - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
 "The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \
 "The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)\n" \
-"The voter inactivity count is optional. This is the number of consecutive days where a voter would have registered in the database, but is not actively participating towards the shared delegate. If this number of consecutive days is reached, the voter will be removed from the database and all funds that were left over would not sent out, since they were below the MINIMUM AMOUNT. If this parameter is not specified, the default amount is 30 consecutive days.\n\n" \
+"The voter inactivity count is optional. This is the number of consecutive days where a voter would have registered in the database, but is not actively participating towards the shared delegate. If this number of consecutive days is reached, the voter will be removed from the database and all funds that were left over would not sent out, since they were below the MINIMUM AMOUNT. If this parameter is not specified, the default amount is 30 consecutive days.\n" \
+"The shared delegate payment time hour is optional. This is the hour that the shared delegate will send the daily payments. If this parameter is not specified, the default amount is a random hour.\n" \
+"The shared delegate payment time minute is optional. This is the minute that the shared delegate will send the daily payments. If this parameter is not specified, the default amount is a random minute.\n\n" \
 "--generate_key - Generate a public and private key for signing and verifying messages between block verifiers" \
 "--synchronize_database_from_network_data_node - Synchronize the database from a network data node.\n\n" \
 "--synchronize_database_from_specific_delegate DELEGATES_IP_ADDRESS - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nIt should only be used in specific circumstances.\n\n" \
