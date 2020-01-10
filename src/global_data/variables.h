@@ -68,5 +68,6 @@ int shared_delegates_website; // 1 if the running the shared delegates websites,
 int total_threads; // The total threads
 double fee; // the fee
 long long int minimum_amount; // the minimum amount to send a payment
+char voter_inactivity_count[10]; // the number of days to wait to remove an inactive delegates information from the database
 
 #endif

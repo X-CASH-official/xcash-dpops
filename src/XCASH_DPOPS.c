@@ -87,6 +87,7 @@ int main(int parameters_count, char* parameters[])
   memset(XCASH_DPOPS_delegates_IP_address,0,sizeof(XCASH_DPOPS_delegates_IP_address));
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
+  memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
   database_settings = 1;
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
@@ -402,6 +403,7 @@ int main(int parameters_count, char* parameters[])
   memcpy(shared_delegates_database_name,DATABASE_NAME_DELEGATES,sizeof(DATABASE_NAME_DELEGATES)-1);
   database_settings = 1;
   log_file_settings = 0;
+  memcpy(voter_inactivity_count,VOTER_INACTIVITY_COUNT,sizeof(VOTER_INACTIVITY_COUNT)-1);
   xcash_wallet_port = XCASH_WALLET_PORT;
 
   // check all of the parameters to see if there is a block verifier secret key
@@ -451,25 +453,25 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
-    if (strncmp(parameters[count],"--XCASH_DPOPS_delegates_IP_address",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--XCASH_DPOPS_delegates_IP_address",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       memcpy(XCASH_DPOPS_delegates_IP_address,parameters[count+1],strnlen(parameters[count+1],sizeof(XCASH_DPOPS_delegates_IP_address)));
     }
-    if (strncmp(parameters[count],"--xcash_wallet_port",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--xcash_wallet_port",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       sscanf(parameters[count+1],"%d",&xcash_wallet_port);
     }
-    if (strncmp(parameters[count],"--database_name",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--database_name",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       memset(database_name,0,sizeof(database_name));
       memcpy(database_name,parameters[count+1],strnlen(parameters[count+1],sizeof(database_name)));
     }
-    if (strncmp(parameters[count],"--shared_delegates_database_name",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--shared_delegates_database_name",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
       memcpy(shared_delegates_database_name,parameters[count+1],strnlen(parameters[count+1],sizeof(shared_delegates_database_name)));
     }
-    if (strncmp(parameters[count],"--log_file",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--log_file",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       log_file_settings = 1;
       memcpy(log_file,parameters[count+1],strnlen(parameters[count+1],sizeof(log_file)));
@@ -480,7 +482,7 @@ int main(int parameters_count, char* parameters[])
       memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       color_print(data,"green");
     }
-    if (strncmp(parameters[count],"--log_file_color",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--log_file_color",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       log_file_settings = 2;
       memcpy(log_file,parameters[count+1],strnlen(parameters[count+1],sizeof(log_file)));
@@ -497,7 +499,7 @@ int main(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
-    if (strncmp(parameters[count],"--synchronize_database_from_specific_delegate",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--synchronize_database_from_specific_delegate",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       color_print("Syncing the reserve bytes database","yellow");
       sync_reserve_bytes_database(0,0,parameters[count+1]);
@@ -591,15 +593,20 @@ int main(int parameters_count, char* parameters[])
     {
       shared_delegates_website = 1;
     }
-    if (strncmp(parameters[count],"--fee",BUFFER_SIZE) == 0 && count+1 != (size_t)parameters_count)
+    if (strncmp(parameters[count],"--fee",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       sscanf(parameters[count+1], "%lf", &fee);
     }
-    if (strncmp(parameters[count],"--minimum_amount",BUFFER_SIZE) == 0 && count+1 != (size_t)parameters_count)
+    if (strncmp(parameters[count],"--minimum_amount",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       sscanf(parameters[count+1], "%lld", &minimum_amount);
     }
-    if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count+1 != (size_t)parameters_count)
+    if (strncmp(parameters[count],"--voter_inactivity_count",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
+    {
+      memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
+      memcpy(voter_inactivity_count,parameters[count+1],strnlen(parameters[count+1],sizeof(voter_inactivity_count)));
+    }  
+    if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       sscanf(parameters[count+1], "%d", &total_threads);
     }    

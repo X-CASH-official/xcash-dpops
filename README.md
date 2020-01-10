@@ -159,6 +159,7 @@ If this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE_DEL
 --shared_delegates_website --fee "fee" --minimum_amount "minimum_amount" - Run the shared delegates website, with a fee of "fee" and a minimum amount of "minimum_amount"
 The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)
 The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)
+The voter inactivity count is optional. This is the number of consecutive days where a voter would have registered in the database, but is not actively participating towards the shared delegate. If this number of consecutive days is reached, the voter will be removed from the database and all funds that were left over would not sent out, since they were below the MINIMUM AMOUNT. If this parameter is not specified, the default amount is 30 consecutive days.
 
 --generate_key - Generate a public and private key for signing and verifying messages between block verifiers
 

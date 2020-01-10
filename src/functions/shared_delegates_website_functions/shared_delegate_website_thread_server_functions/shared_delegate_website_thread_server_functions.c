@@ -601,7 +601,7 @@ void* payment_timer_thread(void* parameters)
         set the inactivity_count
         if the address has a 0 current_total before sending any payments the inactivity_count ++
         if any address has not a 0 current_total and has an inactivity_count > 0 then reset it to 0
-        if any address has an inactivity_count of 30 and a current_total of 0 before sending a payment, remove this document from the collection
+        if any address has an inactivity_count of the set maximum inactivity count (default is 30) and a current_total of 0 before sending a payment, remove this document from the collection
         */
 
         memset(data2,0,sizeof(data2));
@@ -612,7 +612,7 @@ void* payment_timer_thread(void* parameters)
           PAYMENT_TIMER_THREAD_ERROR("Could not read the inactivity_count from the database.\nCould not send payments.",0);
         }
 
-        if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) != 0)
+        if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,voter_inactivity_count,BUFFER_SIZE) != 0)
         {
           // convert the total_xcash to a number
           sscanf(data3, "%lld", &number);
@@ -639,7 +639,7 @@ void* payment_timer_thread(void* parameters)
             PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity_count for the database.\nCould not send payments.",0);
           }
         }
-        else if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,VOTER_INACTIVITY_COUNT,BUFFER_SIZE) == 0)
+        else if (strncmp(current_total,"0",BUFFER_SIZE) == 0 && strncmp(data3,voter_inactivity_count,BUFFER_SIZE) == 0)
         {
           // remove the document from the database
           if (delete_document_from_collection(database_name,"public_addresses",data,1) == 0)
