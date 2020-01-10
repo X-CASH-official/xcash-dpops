@@ -50,47 +50,6 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: sync_check_previous_blocks_reserve_bytes
-Description: Checks if the database has the previous blocks reserve bytes
-Return: 0 if an error has occured or if the database does not have the previous blocks reserve bytes, 1 if the database does have the previous blocks reserve bytes
------------------------------------------------------------------------------------------------------------
-*/
-
-int sync_check_previous_blocks_reserve_bytes(void)
-{
-  // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
-  size_t count;
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
-
-  sscanf(current_block_height,"%zu", &count);
-  count--;
-  snprintf(data2,sizeof(data2)-1,"%zu",count);
-
-  // calculate the database to get the reserve byte data
-  count = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-  memcpy(data,"reserve_bytes_",14);
-  snprintf(data+14,sizeof(data)-15,"%zu",count);
-
-  // create the message
-  memcpy(data3,"{\"block_height\":\"",17);
-  memcpy(data3+17,data2,strnlen(data2,sizeof(data3)));
-  memcpy(data3+strlen(data3),"\"}",2);
-
-  // get the reserve byte data
-  memset(data2,0,sizeof(data2));
-  return read_document_field_from_collection(database_name,data,data3,"reserve_bytes",data2,1);
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: check_if_databases_are_synced
 Description: Checks if the databases are synced, and if not syncs the databases
 Paramters:
@@ -448,8 +407,8 @@ Name: sync_check_reserve_bytes_database
 Description: Checks if the block verifier needs to sync the reserve bytes database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
-  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
-Return: 0 if an error has occured, 1 if successfull
+  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database, 2 to only check if the current reserve bytes database needs to be synced
+Return: 0 if an error has occured, 1 if successfull, 2 to indicate the reserve bytes needs to be synced
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -574,6 +533,10 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
     }
     else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
+      if (reserve_bytes_start_settings == 2)
+      {
+        return 2;
+      }
       color_print("The reserve bytes database is not synced, syncing from a random block verifier","red");
 
       // get the data
