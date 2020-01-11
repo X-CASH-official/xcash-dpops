@@ -545,11 +545,23 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   memcpy(data,"{\"public_address\":\"",19);
   memcpy(data+19,delegate_public_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\"}",2);
+  memset(delegate_public_address,0,sizeof(delegate_public_address));
 
   // check if the delegate is already removed
   if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate is already removed");
+  }
+
+  // check if the delegate has already mined a block
+  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data,"block_producer_block_heights",delegate_public_address,1) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not check if the delegate has already mined a block");
+  }
+  
+  if (memcmp(delegate_public_address,"",1) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate has already mined a block");
   }
 
   // remove the delegate from the database
