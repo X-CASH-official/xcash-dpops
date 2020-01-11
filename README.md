@@ -744,40 +744,30 @@ Now list all of the images installed, and save the IMAGE_ID for the image you ju
 
 ### Create Docker Container
 
-Now create and start a new container from the image you just downloaded 
+Now create a new container from the image you just downloaded 
 ```
-docker run -i -t --network host IMAGE_ID /bin/bash
+docker run --name=XCASH_DPOPS -d --network host IMAGE_ID /bin/bash
 ```
-
-You should now have a bash prompt inside of the docker container. Now run `exit`
-
-Now list all of the docker containers  
-`docker ps -a`
-
-Save the CONTAINER_ID of the container you just created  
-
-Optionally rename the container so you can use the name instead of the container ID in the commands  
-`docker rename CURRENT_CONTAINER_NAME NEW_CONTAINER_NAME`
 
 From this point the docker container has been created. You will need to start the docker container by running  
-`docker start CONTAINER_ID`
+`docker start XCASH_DPOPS`
 
 The docker container will remain running until stopped. You can enter and exit a container and it will still run unless stoped. At any time if you want enter the docker container you can run  
 ```
-docker exec -e USER="root" -u root -t -i --privileged CONTAINER_ID /bin/bash
+docker exec -e USER="root" -u root -t -i --privileged XCASH_DPOPS /bin/bash
 ```
 
 To exit the container type  
 `exit`
 
 To stop the container run  
-`docker stop CONTAINER_ID`
+`docker stop XCASH_DPOPS`
 
 To list all running containers run  
 `docker ps -a`
 
 To remove the container run  
-`docker rm container CONTAINER_ID`
+`docker rm container XCASH_DPOPS`
 
 ### Configure the Container
 
