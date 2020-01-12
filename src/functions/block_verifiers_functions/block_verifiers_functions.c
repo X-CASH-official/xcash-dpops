@@ -173,7 +173,7 @@ int start_new_round(void)
     color_print("Waiting for all block verifiers to sync the databases\n","blue");
 
     // check if the block verifiers current reserve bytes database is synced
-    if (sync_check_reserve_bytes_database(2,2) == 2)
+    if (sync_check_reserve_bytes_database(3,2) == 2)
     {
       sleep(5);
       check_if_databases_are_synced(3,1);
