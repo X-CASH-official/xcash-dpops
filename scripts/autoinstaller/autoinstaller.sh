@@ -1230,22 +1230,6 @@ function get_installation_directory()
     echo -e "${COLOR_PRINT_RED}Can not find Mongo C Driver${END_COLOR_PRINT}"
     install_mongoc_driver
   fi
-  if [ "${SHARED_DELEGATE^^}" == "YES" ] ; then
-    if [ "$SHARED_DELEGATES_WEBSITE_DIR" == "XCASH_DPOPS_shared_delegates_website/" ]; then
-      echo -e "${COLOR_PRINT_RED}Can not find XCASH_DPOPS_shared_delegates_website${END_COLOR_PRINT}"
-      download_shared_delegate_website
-      install_shared_delegates_website_npm_packages
-      build_shared_delegates_website
-    fi
-    if [ "$NODEJS_DIR" == "/" ]; then
-      echo -e "${COLOR_PRINT_RED}Can not find NodeJS${END_COLOR_PRINT}"
-      install_nodejs
-      configure_npm
-      update_npm
-      install_npm_global_packages
-      . "${HOME}"/.profile
-    fi
-  fi
 }
 
 function get_dependencies_current_version()
