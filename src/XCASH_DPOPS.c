@@ -409,6 +409,12 @@ int main(int parameters_count, char* parameters[])
   memcpy(voter_inactivity_count,VOTER_INACTIVITY_COUNT,sizeof(VOTER_INACTIVITY_COUNT)-1);
   xcash_wallet_port = XCASH_WALLET_PORT;
 
+  // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
+  memset(current_round_part,0,sizeof(current_round_part));
+  memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
+  memcpy(current_round_part,"1",1);
+  memcpy(current_round_part_backup_node,"0",1);
+
   // check all of the parameters to see if there is a block verifier secret key
   if (parameters_count < 3)
   {
@@ -635,12 +641,6 @@ int main(int parameters_count, char* parameters[])
   {
     INITIALIZE_DATABASE_DATA;
   }
-
-  // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
-  memset(current_round_part,0,sizeof(current_round_part));
-  memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-  memcpy(current_round_part,"1",1);
-  memcpy(current_round_part_backup_node,"0",1);
 
   // print the settings
   memset(data2,0,sizeof(data2));
