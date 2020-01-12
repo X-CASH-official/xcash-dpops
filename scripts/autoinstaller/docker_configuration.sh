@@ -430,6 +430,7 @@ function update_xcash()
   cd "${XCASH_INSTALLATION_DIR}"
   data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
   if [ "$data" == "0" ]; then
+    git reset --hard HEAD --quiet
     git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" &>/dev/null
@@ -451,6 +452,7 @@ function update_xcash_dpops()
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
   data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
   if [ "$data" == "0" ]; then
+    git reset --hard HEAD --quiet
     git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
       make release -j "${CPU_THREADS}" &>/dev/null
@@ -472,6 +474,7 @@ function update_shared_delegates_website()
   cd "${SHARED_DELEGATES_INSTALLATION_DIR}"
   data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
   if [ "$data" == "0" ]; then
+    git reset --hard HEAD --quiet
     git pull --quiet
     npm update &>/dev/null
     ng build --prod --aot &>/dev/null
