@@ -746,11 +746,14 @@ Now list all of the images installed, and save the IMAGE_ID for the image you ju
 
 Now create a new container from the image you just downloaded 
 ```
-docker run --name=XCASH_DPOPS -d --network host IMAGE_ID /bin/bash
+docker run --name=XCASH_DPOPS -i -t -d --network host IMAGE_ID /bin/bash
 ```
 
-From this point the docker container has been created. You will need to start the docker container by running  
+From this point the docker container has been created and has already been started. If you need to start the container you can run  
 `docker start XCASH_DPOPS`
+
+and to stop the container run  
+
 
 The docker container will remain running until stopped. You can enter and exit a container and it will still run unless stoped. At any time if you want enter the docker container you can run  
 ```
@@ -1019,28 +1022,19 @@ Restart the ssh service
 Install gdb on the server  
 `sudo apt install gdb`
 
-Install vscode on the server  
-Go to [https://code.visualstudio.com/Download](https://code.visualstudio.com/Download) and download the binary for your OS.
-
-Upload the binary to your server using secure copy  
-`scp FILE root@server:/root/x-network`
-
-Install vscode  
-```
-cd /root/x-network
-dpkg -i ./code*
-```
-
-Installation will fail, so now install the dependencies  
-`sudo apt-get -f install`
-
-Install vscode  
-`dpkg -i ./code*`
-
 Install X11 dependencies  
 `sudo apt install xauth libx11-xcb1 libasound2 x11-apps libice6 libsm6 libxaw7 libxft2 libxmu6 libxpm4 libxt6 x11-apps xbitmaps libxtst6`
 
-After running vscode, [install the C++/C extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
+Install vscode on the server
+```
+wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+add-apt-repository -y "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+apt update -y
+apt install -y code
+```
+
+[Install the C++/C extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
+`code --install-extension ms-vscode.cpptools`
 
 ### Run vscode on the Server and Forward the GUI to a Dekstop
 
