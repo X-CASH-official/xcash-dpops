@@ -757,7 +757,7 @@ and to stop the container run
 
 The docker container will remain running until stopped. You can enter and exit a container and it will still run unless stoped. At any time if you want enter the docker container you can run  
 ```
-docker exec -e USER="root" -u root -t -i --privileged XCASH_DPOPS /bin/bash
+docker exec -e USER="root" -u root -t -i --privileged XCASH_DPOPS /bin/bash -c "source ~/.profile"
 ```
 
 To exit the container type  

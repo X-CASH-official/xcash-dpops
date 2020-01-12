@@ -14,6 +14,7 @@ XCASH_INSTALLATION_DIR="${INSTALLATION_DIR}X-CASH/"
 SHARED_DELEGATES_INSTALLATION_DIR="${INSTALLATION_DIR}XCASH_DPOPS_shared_delegates_website/"
 XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_INSTALLATION_DIR}shared_delegates_website/
 LOGS_DIR="${INSTALLATION_DIR}logs/"
+XCASH_DPOPS_BLOCK_HEIGHT=449850
 
 BLOCK_VERIFIER_KEY_SETTINGS=""
 BLOCK_VERIFIER_SECRET_KEY="00"
@@ -186,11 +187,11 @@ function start_processes()
 function stop_processes()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Stoping Programs${END_COLOR_PRINT}"
-  screen -XS "XCASH_DPOPS_AUTO_RESTART" quit > /dev/null 2>&1
-  screen -XS "XCASH_DPOPS" quit > /dev/null 2>&1
-  screen -XS "MongoDB" quit > /dev/null 2>&1
-  screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
-  screen -XS "XCASH_Wallet" quit > /dev/null 2>&1 
+  screen -XS "XCASH_DPOPS_AUTO_RESTART" quit &>/dev/null
+  screen -XS "XCASH_DPOPS" quit &>/dev/null
+  screen -XS "MongoDB" quit &>/dev/null
+  screen -XS "XCASH_Daemon" quit &>/dev/null
+  screen -XS "XCASH_Wallet" quit &>/dev/null 
   sleep 15s
   data=$(ps -eaf)
   if [[ ! $data =~ "XCASH_DPOPS_AUTO_RESTART" ]]; then
@@ -238,11 +239,11 @@ function build_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   cd "${XCASH_INSTALLATION_DIR}"
-  echo "y" | make clean > /dev/null 2>&1
+  echo "y" | make clean &>/dev/null
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-    make release -j "${CPU_THREADS}" >> /dev/null 2>&1
+    make release -j "${CPU_THREADS}" &>/dev/null
   else
-    make release -j $((CPU_THREADS / 2)) >> /dev/null 2>&1 
+    make release -j $((CPU_THREADS / 2)) &>/dev/null 
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   echo
@@ -262,8 +263,8 @@ function create_xcash_wallet()
   echo -ne "${COLOR_PRINT_YELLOW}Creating X-CASH Wallet (This might take a while)${END_COLOR_PRINT}"
   screen -dmS XCASH_Daemon ${XCASH_INSTALLATION_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
   sleep 30s
-  echo "exit" | ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-cli --generate-new-wallet ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 > /dev/null 2>&1
-  screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
+  echo "exit" | ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-cli --generate-new-wallet ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 &>/dev/null
+  screen -XS "XCASH_Daemon" quit &>/dev/null
   sleep 30s
   echo -ne "\r${COLOR_PRINT_GREEN}Creating X-CASH Wallet (This might take a while)${END_COLOR_PRINT}"
   echo
@@ -274,8 +275,8 @@ function import_xcash_wallet()
   echo -ne "${COLOR_PRINT_YELLOW}Importing X-CASH Wallet (This might take a while)${END_COLOR_PRINT}"
   screen -dmS XCASH_Daemon ${XCASH_INSTALLATION_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind
   sleep 30s
-  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 >> /dev/null 2>&1
-  screen -XS "XCASH_Daemon" quit > /dev/null 2>&1
+  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet ${XCASH_WALLETS_INSTALLATION_DIR}XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 &>/dev/null
+  screen -XS "XCASH_Daemon" quit &>/dev/null
   sleep 30s
   echo -ne "\r${COLOR_PRINT_GREEN}Importing X-CASH Wallet (This might take a while)${END_COLOR_PRINT}"
   echo
@@ -390,7 +391,7 @@ function update_packages_list()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Updating Packages List${END_COLOR_PRINT}"
-    sudo apt update -y >> /dev/null 2>&1
+    sudo apt update -y &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages List${END_COLOR_PRINT}"
     echo
 }
@@ -412,7 +413,7 @@ function update_packages()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Updating Packages${END_COLOR_PRINT}"
-    sudo apt install --only-upgrade ${XCASH_DPOPS_PACKAGES} -y >> /dev/null 2>&1
+    sudo apt install --only-upgrade ${XCASH_DPOPS_PACKAGES} -y &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages${END_COLOR_PRINT}"
     echo
 }
@@ -431,9 +432,9 @@ function update_xcash()
   if [ "$data" == "0" ]; then
     git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-      make release -j "${CPU_THREADS}" >> /dev/null 2>&1
+      make release -j "${CPU_THREADS}" &>/dev/null
     else
-      make release -j $((CPU_THREADS / 2)) >> /dev/null 2>&1
+      make release -j $((CPU_THREADS / 2)) &>/dev/null
     fi 
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
@@ -452,9 +453,9 @@ function update_xcash_dpops()
   if [ "$data" == "0" ]; then
     git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-      make release -j "${CPU_THREADS}" >> /dev/null 2>&1
+      make release -j "${CPU_THREADS}" &>/dev/null
     else
-      make release -j $((CPU_THREADS / 2)) >> /dev/null 2>&1
+      make release -j $((CPU_THREADS / 2)) &>/dev/null
     fi 
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Updating XCASH_DPOPS${END_COLOR_PRINT}"
@@ -472,8 +473,8 @@ function update_shared_delegates_website()
   data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] && echo "1" || echo "0")
   if [ "$data" == "0" ]; then
     git pull --quiet
-    npm update >> /dev/null 2>&1
-    ng build --prod --aot >> /dev/null 2>&1
+    npm update &>/dev/null
+    ng build --prod --aot &>/dev/null
     cd dist
     for f in *.js; do uglifyjs "$f" --compress --mangle --output "{$f}min"; rm "$f"; mv "{$f}min" "$f"; done
     if [ -d "$XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR" ]; then
@@ -492,8 +493,8 @@ function update_mongodb()
   cd "${INSTALLATION_DIR}"
   sudo rm -r mongodb-*
   wget -q ${MONGODB_URL}
-  tar -xf mongodb-linux-x86_64-*.tgz >> /dev/null 2>&1
-  sudo rm mongodb-linux-x86_64-*.tgz >> /dev/null 2>&1
+  tar -xf mongodb-linux-x86_64-*.tgz &>/dev/null
+  sudo rm mongodb-linux-x86_64-*.tgz &>/dev/null
   MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -print)/
   sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i /root/.profile
   sudo sed '/^[[:space:]]*$/d' -i /root/.profile
@@ -510,14 +511,14 @@ function update_mongoc_driver()
   cd "${INSTALLATION_DIR}"
   sudo rm -r mongo-c-driver-*
   wget -q ${MONGOC_DRIVER_URL}
-  tar -xf mongo-c-driver-*.tar.gz >> /dev/null 2>&1
-  sudo rm mongo-c-driver-*.tar.gz >> /dev/null 2>&1
+  tar -xf mongo-c-driver-*.tar.gz &>/dev/null
+  sudo rm mongo-c-driver-*.tar.gz &>/dev/null
   cd mongo-c-driver-*
-  mkdir cmake-build >> /dev/null 2>&1
-  cd cmake-build >> /dev/null 2>&1
-  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. >> /dev/null 2>&1
-  sudo make -j "${CPU_THREADS}" >> /dev/null 2>&1
-  sudo make install >> /dev/null 2>&1
+  mkdir cmake-build &>/dev/null
+  cd cmake-build &>/dev/null
+  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. &>/dev/null
+  sudo make -j "${CPU_THREADS}" &>/dev/null
+  sudo make install &>/dev/null
   sudo ldconfig
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Mongo C Driver${END_COLOR_PRINT}"
   echo
@@ -529,8 +530,8 @@ function update_nodejs()
   cd "${INSTALLATION_DIR}"
   sudo rm -r node-*
   wget -q ${NODEJS_URL}
-  tar -xf node*.tar.xz >> /dev/null 2>&1
-  sudo rm node*.tar.xz >> /dev/null 2>&1
+  tar -xf node*.tar.xz &>/dev/null
+  sudo rm node*.tar.xz &>/dev/null
   NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "node-*-linux-x64" -print)/
   sudo sed '/node-v/d' -i /root/.profile
   sudo sed '/PATH=\/bin:/d' -i /root/.profile
@@ -547,7 +548,7 @@ function update_nodejs()
 function update_npm()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating NPM${END_COLOR_PRINT}"
-  npm install -g npm >> /dev/null 2>&1
+  npm install -g npm &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NPM${END_COLOR_PRINT}"
   echo
 }
@@ -772,6 +773,43 @@ function start_programs()
 
 
 
+function test_update()
+{
+  stop_processes
+  echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
+  screen -dmS MongoDB /root/x-network/mongodb-*/bin/mongod --logpath ${LOGS_DIR}MongoDB_log.txt --logappend
+  screen -dmS XCASH_Daemon ${XCASH_INSTALLATION_DIR}build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${LOGS_DIR}XCASH_Daemon_log.txt --max-log-file-size 0
+  sleep 30s
+  data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
+  data="${data:66:6}"
+  data=$(($data-$XCASH_DPOPS_BLOCK_HEIGHT))
+  screen -XS XCASH_Daemon "quit"
+  sleep 30s
+  if [ $data -ne 0 ]; then
+    ${XCASH_INSTALLATION_DIR}build/release/bin/xcash-blockchain-import --pop-blocks ${data} &>/dev/null
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Blockchain${END_COLOR_PRINT}"
+  echo
+  echo -ne "${COLOR_PRINT_YELLOW}Resetting the Database${END_COLOR_PRINT}"
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_1.drop()"; echo "exit";) | mongo &>/dev/null
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_2.drop()"; echo "exit";) | mongo &>/dev/null
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_3.drop()"; echo "exit";) | mongo &>/dev/null
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_4.drop()"; echo "exit";) | mongo &>/dev/null
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_5.drop()"; echo "exit";) | mongo &>/dev/null
+  echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Database${END_COLOR_PRINT}"
+  echo
+  update
+}
+
+
+
+
+
+
+
+
+
+
 function main()
 {
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
@@ -780,11 +818,11 @@ function main()
   echo
   echo
   while
-    echo -ne "${COLOR_PRINT_YELLOW}(C)onfigure, (U)pdate, (R)estart Programs, (S)top Programs: ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}(C)onfigure, (U)pdate, (R)estart Programs, (S)top Programs, (T)est Update: ${END_COLOR_PRINT}"
     read -r data
     echo -ne "\r"
     echo
-    [ ! "${data^^}" == "C" ] && [ ! "${data^^}" == "U" ] &&  [ ! "${data^^}" == "R" ] && [ ! "${data^^}" == "S" ]
+    [ ! "${data^^}" == "C" ] && [ ! "${data^^}" == "U" ] &&  [ ! "${data^^}" == "R" ] && [ ! "${data^^}" == "S" ] && [ ! "${data^^}" == "T" ]
   do true; done
   if [ "${data^^}" == "C" ]; then
     configuration
@@ -795,6 +833,8 @@ function main()
     start_programs
   elif [ "${data^^}" == "S" ]; then
     stop_programs
+  elif [ "${data^^}" == "T" ]; then
+    test_update
   fi  
 }
 
