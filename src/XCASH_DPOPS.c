@@ -405,6 +405,7 @@ int main(int parameters_count, char* parameters[])
   memcpy(shared_delegates_database_name,DATABASE_NAME_DELEGATES,sizeof(DATABASE_NAME_DELEGATES)-1);
   database_settings = 1;
   log_file_settings = 0;
+  test_settings = 0;
   memcpy(voter_inactivity_count,VOTER_INACTIVITY_COUNT,sizeof(VOTER_INACTIVITY_COUNT)-1);
   xcash_wallet_port = XCASH_WALLET_PORT;
 
@@ -451,6 +452,7 @@ int main(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--test",BUFFER_SIZE) == 0)
     {
+      test_settings = 1;
       test();
       database_reset;
       exit(0);

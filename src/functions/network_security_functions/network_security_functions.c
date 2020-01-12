@@ -507,7 +507,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
     memcpy(proof,XCASH_DPOPS_signature,VRF_PROOF_LENGTH);
     memcpy(beta_string,&XCASH_DPOPS_signature[VRF_PROOF_LENGTH],VRF_BETA_LENGTH);
 
-    if (strstr(MESSAGE,xcash_wallet_public_address) == NULL && strstr(MESSAGE,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3") == NULL)
+    if (test_settings == 0)
     {
       for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
       {      
@@ -541,7 +541,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
         }
       }
     }
-    else
+    else if (test_settings == 1)
     {
       memcpy(public_key,&secret_key[VRF_PUBLIC_KEY_LENGTH],VRF_PUBLIC_KEY_LENGTH);
     }
