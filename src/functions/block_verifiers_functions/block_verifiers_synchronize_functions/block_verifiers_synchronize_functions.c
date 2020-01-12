@@ -555,43 +555,43 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
-  if (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0)
+  if (memcmp(DELEGATES_IP_ADDRESS,"",1) == 0)
   {
-  // check if all block verifiers were not from the majority, and if so sync from a network data node
-  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0)
+    // check if all block verifiers were not from the majority, and if so sync from a network data node
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      count2++;
+      if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0)
+      {
+        count2++;
+      }
     }
-  }
 
-  if (count2 == BLOCK_VERIFIERS_AMOUNT)
-  {
-    settings = 2;
-  }
-
-  /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
-     select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
-  */
-    
-  if (settings == 1)
-  {
-    do
+    if (count2 == BLOCK_VERIFIERS_AMOUNT)
     {
-      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
-    } while (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
-    memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(block_verifiers_ip_address)));
-  }
-  else if (settings == 2)
-  {
-    get_random_network_data_node(count);
-    memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
-  }
-  else
-  {     
-    memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
-  }
+      settings = 2;
+    }
+
+    /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
+       select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
+    */
+    
+    if (settings == 1)
+    {
+      do
+      {
+        count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
+      } while (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
+      memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else if (settings == 2)
+    {
+      get_random_network_data_node(count);
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else
+    {     
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
+    }
   }
   else
   {
@@ -837,43 +837,43 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
-  if (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0)
+  if (memcmp(DELEGATES_IP_ADDRESS,"",1) == 0)
   {
-  // check if all block verifiers were not from the majority, and if so sync from a network data node
-  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0)
+    // check if all block verifiers were not from the majority, and if so sync from a network data node
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      count2++;
+      if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0)
+      {
+        count2++;
+      }
     }
-  }
 
-  if (count2 == BLOCK_VERIFIERS_AMOUNT)
-  {
-    settings = 2;
-  }
-
-  /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
-     select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
-  */
-    
-  if (settings == 1)
-  {
-    do
+    if (count2 == BLOCK_VERIFIERS_AMOUNT)
     {
-      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
-    } while (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
-    memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(block_verifiers_ip_address)));
-  }
-  else if (settings == 2)
-  {
-    get_random_network_data_node(count);
-    memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
-  }
-  else
-  {     
-    memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
-  }
+      settings = 2;
+    }
+
+    /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
+       select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
+    */
+    
+    if (settings == 1)
+    {
+      do
+      {
+        count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
+      } while (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
+      memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else if (settings == 2)
+    {
+      get_random_network_data_node(count);
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else
+    {     
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
+    }
   }
   else
   {
@@ -1123,43 +1123,43 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
-  if (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0)
+  if (memcmp(DELEGATES_IP_ADDRESS,"",1) == 0)
   {
-  // check if all block verifiers were not from the majority, and if so sync from a network data node
-  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0)
+    // check if all block verifiers were not from the majority, and if so sync from a network data node
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      count2++;
+      if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0)
+      {
+        count2++;
+      }
     }
-  }
 
-  if (count2 == BLOCK_VERIFIERS_AMOUNT)
-  {
-    settings = 2;
-  }
-
-  /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
-     select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
-  */
-   
-  if (settings == 1)
-  {
-    do
+    if (count2 == BLOCK_VERIFIERS_AMOUNT)
     {
-      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
-    } while (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
-    memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(block_verifiers_ip_address)));
-  }
-  else if (settings == 2)
-  {
-    get_random_network_data_node(count);
-    memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
-  }
-  else
-  {     
-    memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
-  }
+      settings = 2;
+    }
+
+    /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
+       select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
+    */
+    
+    if (settings == 1)
+    {
+      do
+      {
+        count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
+      } while (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
+      memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else if (settings == 2)
+    {
+      get_random_network_data_node(count);
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else
+    {     
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
+    }
   }
   else
   {
@@ -1288,43 +1288,43 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 
-  if (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0)
+  if (memcmp(DELEGATES_IP_ADDRESS,"",1) == 0)
   {
-  // check if all block verifiers were not from the majority, and if so sync from a network data node
-  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0)
+    // check if all block verifiers were not from the majority, and if so sync from a network data node
+    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      count2++;
+      if (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0)
+      {
+        count2++;
+      }
     }
-  }
 
-  if (count2 == BLOCK_VERIFIERS_AMOUNT)
-  {
-    settings = 2;
-  }
-
-  /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
-     select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
-  */
-    
-  if (settings == 1)
-  {
-    do
+    if (count2 == BLOCK_VERIFIERS_AMOUNT)
     {
-      count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
-    } while (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
-    memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(block_verifiers_ip_address)));
-  }
-  else if (settings == 2)
-  {
-    get_random_network_data_node(count);
-    memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
-  }
-  else
-  {     
-    memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
-  }
+      settings = 2;
+    }
+
+    /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
+       select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
+    */
+    
+    if (settings == 1)
+    {
+      do
+      {
+        count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
+      } while (memcmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || memcmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
+      memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else if (settings == 2)
+    {
+      get_random_network_data_node(count);
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(block_verifiers_ip_address)));
+    }
+    else
+    {     
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(block_verifiers_ip_address)));
+    }
   }
   else
   {

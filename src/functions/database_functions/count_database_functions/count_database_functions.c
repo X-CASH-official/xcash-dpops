@@ -75,8 +75,19 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
     database_reset_all;
     return -1;
   }
+
+
+
+  /*bson_t* document_options = NULL;
+  document_options = BCON_NEW("regex", "{", "/^bar$/", "i", "}");*/
+  bson_t *query;
+
+query = BCON_NEW ("name", BCON_REGEX("XCA","i") );
+
+
+
   
-  const int count = mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
+  const int count = mongoc_collection_count_documents(collection, document, query, NULL, NULL, &error);
   if (count < 0)
   {
     database_reset_all;
