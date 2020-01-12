@@ -629,7 +629,7 @@ int main(int parameters_count, char* parameters[])
 
   // check if it should create the default database data
   memset(data,0,sizeof(data));
-  if (read_document_field_from_collection(database_name,"delegates",MESSAGE,"username",data,0) == 0)
+  if (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0)
   {
     INITIALIZE_DATABASE_DATA;
   }
