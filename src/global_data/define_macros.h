@@ -62,7 +62,7 @@ Using define statements instead of constants for increased efficiency
 
 // XCASH DPOPS
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 20 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_AMOUNT 21 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_VALID_AMOUNT 3 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 1000 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 5000 // The maximum amount of voters that a delegate can have
