@@ -249,7 +249,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     get_reserve_bytes_database(counter,0);
   }
 
-  char database_data_hash[counter][DATA_HASH_LENGTH];
+  char database_data_hash[counter][DATA_HASH_LENGTH+1];
   for (count = 0; count < counter; count++)
   {
     memset(database_data_hash[count],0,sizeof(database_data_hash[count]));
