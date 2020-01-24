@@ -135,14 +135,7 @@ int delegate_server_functions_test(void)
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
 
   // write the end test message
-  if (count_test == DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST)
-  {
-    fprintf(stderr,"\033[1;32m\n\n%s\ndelegate server functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31m\n\n%s\ndelegate server functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
-  }
+  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
 
   #undef DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST

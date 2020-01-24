@@ -1074,14 +1074,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   }
 
   // write the end test message
-  if (count_test == RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST)
-  {
-    fprintf(stderr,"\033[1;32m\n\n%s\nreset variables allocated on the heap functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST,TEST_OUTLINE);
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31m\n\n%s\nreset variables allocated on the heap functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST-count_test,TEST_OUTLINE);
-  } 
+  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST-count_test,TEST_OUTLINE);
   pointer_reset(process_id_file);
   return count_test;
 

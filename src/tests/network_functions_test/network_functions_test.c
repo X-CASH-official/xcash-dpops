@@ -217,14 +217,7 @@ int network_functions_test(void)
   }
 
   // write the end test message
-  if (count_test == NETWORK_FUNCTIONS_TEST)
-  {
-    fprintf(stderr,"\033[1;32m\n\n%s\nnetwork functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,NETWORK_FUNCTIONS_TEST,TEST_OUTLINE);
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31m\n\n%s\nnetwork functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,NETWORK_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
-  } 
+  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,NETWORK_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
 
   #undef NETWORK_FUNCTIONS_TEST

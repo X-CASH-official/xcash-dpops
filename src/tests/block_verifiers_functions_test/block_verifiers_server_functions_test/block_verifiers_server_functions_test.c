@@ -30,7 +30,7 @@ Return: The number of passed block_verifiers_server_functions test
 int block_verifiers_server_functions_test(void)
 {
   // define macros
-  #define BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST 9
+  #define BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST 10
 
   // reset the variables
   memset(result_test,0,sizeof(result_test));
@@ -65,14 +65,7 @@ int block_verifiers_server_functions_test(void)
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TEST_DATA);
 
   // write the end test message
-  if (count_test == BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST)
-  {
-    fprintf(stderr,"\033[1;32m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: 0\n%s\n\n\n\033[0m",TEST_OUTLINE,BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
-  }
+  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
 
   #undef BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST
