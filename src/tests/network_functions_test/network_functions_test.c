@@ -111,24 +111,13 @@ int network_functions_test(void)
   }  
   
   // Test for create_server
-  if (pthread_create(&thread_id, NULL, &create_server_on_separate_thread,NULL) != 0)
+  if (pthread_create(&thread_id, NULL, &create_server_on_separate_thread,NULL) != 0 && pthread_detach(thread_id) != 0)
   {
     color_print("FAILED! Test for create_server","red");
     color_print("FAILED! Test for send_and_receive_data_socket","red");
     settings = 0;
   }
-  if (settings == 1)
-  {
-    if (pthread_detach(thread_id) != 0)
-    {
-      color_print("FAILED! Test for create_server","red");
-      color_print("FAILED! Test for send_and_receive_data_socket","red");
-      settings = 0;
-    }  
-  }
-  sleep(1);
-
-
+  sleep(10);
 
   // test for sending and receiving data using sockets
   // create the message
@@ -143,8 +132,8 @@ int network_functions_test(void)
       color_print("FAILED! Test for create_server","red");
       color_print("FAILED! Test for send_and_receive_data_socket","red");
     }
-    memset(string,0,strlen(string));
-    if (send_and_receive_data_socket(string,"127.0.0.1",SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0) <= 0)
+    memset(string,0,sizeof(string));
+    if (send_and_receive_data_socket(string,"127.0.0.1",SEND_DATA_PORT,message,20,"XCASH_PROOF_OF_STAKE_TEST_DATA",0) <= 0)
     {
       color_print("FAILED! Test for create_server","red");
       color_print("FAILED! Test for send_and_receive_data_socket","red");
@@ -200,7 +189,7 @@ int network_functions_test(void)
 
   if (sign_data(message,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,message) == 1)
   {
-    sleep(5);
+    sleep(10);
     if (network_functions_test_settings == 1)
     {
       color_print("PASSED! Test for send_data_socket","green");
