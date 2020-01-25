@@ -408,7 +408,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     memcpy(data+strlen(data),"\"}",2);
 
     // check if the public address is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) > 0)
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public address is already registered");
     }
@@ -420,7 +420,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     memcpy(data+strlen(data),"\"}",2); 
 
     // check if the IP address is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) > 0)
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
     {    
       SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates IP address is already registered");
     }
@@ -432,7 +432,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     memcpy(data+79,"\"}",2); 
 
     // check if the public key is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) > 0)
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
     {    
       SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public key is already registered");
     }
@@ -444,7 +444,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     memcpy(data+strlen(data),"\"}",2); 
  
     // check if the delegate name is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) > 0)
+    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
     {    
       SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates name is already registered");
     }

@@ -743,7 +743,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,database_name,"reserve_bytes") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
   // create the message
@@ -777,7 +777,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
     snprintf(data2+14,sizeof(data2)-15,"%zu",count);
     if (get_database_data_hash(reserve_bytes_database,database_name,data2) == 0)
     {
-      SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
+      SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
     }
     if (memcmp(reserve_bytes_database,data,DATA_HASH_LENGTH) == 0)
     {
@@ -927,7 +927,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the delegates database");
   }
 
   // parse the message
@@ -1025,7 +1025,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   memset(data2,0,strlen(data2));
   if (get_database_data(data2,database_name,DATABASE_COLLECTION,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the delegates database");
   }
 
   // create the message
@@ -1085,7 +1085,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   memset(data2,0,sizeof(data2));
   if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the statistics database");
   }
 
   // parse the message
@@ -1180,7 +1180,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   memset(data2,0,strlen(data2));
   if (get_database_data(data2,database_name,DATABASE_COLLECTION,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the statistics database");
   }
 
   // create the message

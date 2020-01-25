@@ -12,6 +12,7 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "variables_test.h"
+#include "string_functions.h"
 #include "block_verifiers_synchronize_server_functions_test.h"
 
 /*
@@ -35,27 +36,27 @@ int block_verifiers_synchronize_server_functions_test(void)
   
   // initialize the previous, current and next block verifiers list
   memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH);
+  memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
   memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(previous_block_verifiers_list.block_verifiers_name[1],"delegate_1",10);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_address[1],"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH);
+  memcpy(previous_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(previous_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9);
   memcpy(previous_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(current_block_verifiers_list.block_verifiers_public_address[0],"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH);
+  memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
   memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(current_block_verifiers_list.block_verifiers_name[1],"delegate_1",10);
-  memcpy(current_block_verifiers_list.block_verifiers_public_address[1],"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH);
+  memcpy(current_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(current_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9);
   memcpy(current_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(next_block_verifiers_list.block_verifiers_public_address[0],"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH);
+  memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
   memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(next_block_verifiers_list.block_verifiers_name[1],"delegate_1",10);
-  memcpy(next_block_verifiers_list.block_verifiers_public_address[1],"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH);
+  memcpy(next_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(next_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9);
   memcpy(next_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
 
@@ -90,6 +91,22 @@ int block_verifiers_synchronize_server_functions_test(void)
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA);
   sleep(5);
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
+  // check all errors for each test
+  network_functions_test_error_settings = 2;
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_TEST_DATA,1,xcash_wallet_public_address,TEST_WALLET,"Could not verify the message");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,1,xcash_wallet_public_address,TEST_WALLET,"Could not get the database data hash for the reserve bytes database");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash","{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"100\",\r\n}",1,xcash_wallet_public_address,TEST_WALLET,"Invalid block height");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,0,"","","Could not get the previous blocks reserve bytes");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the reserve proofs database");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the reserve proofs database");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the reserve bytes database");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the reserve bytes database");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the delegates database");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the delegates database");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the statistics database");
+  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the statistics database");
 
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers synchronize server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_SYNCHRONIZE_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
