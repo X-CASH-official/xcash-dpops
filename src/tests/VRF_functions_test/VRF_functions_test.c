@@ -188,7 +188,7 @@ int VRF_functions_test(void)
   }
 
   // write the end test message
-  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,VRF_TOTAL_TEST-count_test,TEST_OUTLINE);
+  fprintf(stderr,"\033[1;33m\n\n%s\nVRF functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,VRF_TOTAL_TEST-count_test,TEST_OUTLINE);
   pointer_reset_all;
   return count_test;
 

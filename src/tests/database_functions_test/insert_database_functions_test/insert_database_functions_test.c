@@ -162,7 +162,7 @@ int insert_database_functions_test(void)
   }
 
   // write the end test message
-  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,INSERT_DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
+  fprintf(stderr,"\033[1;33m\n\n%s\ninsert database functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,INSERT_DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
   
   #undef DATA_COUNT

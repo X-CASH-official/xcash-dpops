@@ -135,7 +135,7 @@ int database_test(void)
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
 
   // write the end test message
-  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
+  fprintf(stderr,"\033[1;33m\n\n%s\ndatabase functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
   
   #undef DATABASE_FUNCTIONS_TEST

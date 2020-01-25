@@ -135,11 +135,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   char* transactions[5];
 
   // define macros
-  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 98
-  #define RESET_ERROR_MESSAGES \
-  memset(error_message.function[0],0,strlen(error_message.function[0])); \
-  memset(error_message.data[0],0,strlen(error_message.data[0])); \
-  error_message.total = 0;
+  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 98  
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
   #define GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"blockhashing_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"blocktemplate_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"difficulty\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"expected_reward\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"height\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"prev_hash\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"reserved_offset\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"status\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"untrusted\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\r\n  }\r\n}"
   #define DATA1 "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
@@ -159,7 +155,9 @@ int reset_variables_allocated_on_the_heap_test(void)
     fprintf(stderr,"Testing %s: %zu / 1000",FUNCTION_NAME,count2); \
     fprintf(stderr,"\r"); \
     CODE; \
-    RESET_ERROR_MESSAGES; \
+    memset(error_message.function[0],0,strlen(error_message.function[0])); \
+    memset(error_message.data[0],0,strlen(error_message.data[0])); \
+    error_message.total = 0; \
     if (count2 == 0) \
     { \
       current_memory_usage = get_program_memory_usage(process_id_file) - previous_system_memory_usage; \
@@ -1074,7 +1072,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   }
 
   // write the end test message
-  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST-count_test,TEST_OUTLINE);
+  fprintf(stderr,"\033[1;33m\n\n%s\nreset variables allocated on the heap functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST-count_test,TEST_OUTLINE);
   pointer_reset(process_id_file);
   return count_test;
 
