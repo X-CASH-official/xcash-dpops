@@ -1058,6 +1058,8 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
       count++;
       if (count > (RECEIVE_DATA_SOCKET_TIMEOUT * 5))
       {
+        color_print("TIMEDOUT","yellow");
+        color_print(data,"yellow");
         pointer_reset_all;
         return 1;
       }

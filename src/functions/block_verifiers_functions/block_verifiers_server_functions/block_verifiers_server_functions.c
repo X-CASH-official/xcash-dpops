@@ -59,7 +59,7 @@ int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, char* ME
 {
   // verify the message
   if (verify_data(MESSAGE,0,1) == 0)
-  {   
+  { 
     return 0;
   }
   else

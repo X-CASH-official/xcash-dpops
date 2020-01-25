@@ -509,21 +509,22 @@ int socket_thread(int client_socket)
  {
    server_receive_data_socket_get_files(client_socket,(const char*)buffer);
  }
- if (error_message.total != 0)
+ if (error_message.total != 0 && network_functions_test_error_settings <= 1)
  {
    if (network_functions_test_error_settings == 1)
    {
-     print_error_message(current_date_and_time,current_UTC_date_and_time,data2);
-   }
-   else
-   {
+     color_print("reset","yellow");
      // reset the error messages
      for (error_message_count = 0; error_message_count < TOTAL_DELEGATES_DATABASE_FIELDS; error_message_count++)
      {
        memset(error_message.function[error_message_count],0,strlen(error_message.function[error_message_count]));
        memset(error_message.data[error_message_count],0,strlen(error_message.data[error_message_count]));
      }
-     error_message.total = 0;
+     error_message.total = 0;     
+   }
+   else if (network_functions_test_error_settings == 1)
+   {
+     print_error_message(current_date_and_time,current_UTC_date_and_time,data2);
    }
  }
 pointer_reset(buffer);
