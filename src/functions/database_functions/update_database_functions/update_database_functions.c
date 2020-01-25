@@ -9,6 +9,7 @@
 #include "variables.h"
 
 #include "update_database_functions.h"
+#include "database_functions.h"
 #include "network_functions.h"
 #include "string_functions.h"
 #include "vrf.h"
@@ -85,6 +86,14 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
     }
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+  }
+
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  {
+    pointer_reset(data2);
+    database_reset_all;
+    return 0;
   }
   
   update = bson_new_from_json((const uint8_t *)DATA, -1, &error);
@@ -186,6 +195,14 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
     }
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+  }
+
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  {
+    pointer_reset(data2);
+    database_reset_all;
+    return 0;
   }
   
   // set the document to empty so it will get each document in the collection  

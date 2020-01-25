@@ -9,6 +9,7 @@
 #include "variables.h"
 
 #include "delete_database_functions.h"
+#include "database_functions.h"
 #include "network_functions.h"
 #include "string_functions.h"
 #include "vrf.h"
@@ -41,7 +42,7 @@ int delete_document_from_collection(const char* DATABASE, const char* COLLECTION
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
-  bson_t* document;
+  bson_t* document = NULL;
 
   // define macros
   #define database_reset_all \
@@ -185,7 +186,7 @@ int delete_database(const char* DATABASE, const int THREAD_SETTINGS)
       return 0;
     }
     database = mongoc_client_get_database(database_client_thread, DATABASE);
-  }  
+  }
    
   if (!mongoc_database_drop(database, &error))
   {    

@@ -216,6 +216,13 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
 
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  {
+    database_reset_all;
+    return 0;
+  }
+
   document = bson_new();
   if (!document)
   {
@@ -297,6 +304,13 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
+
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,1) == 0)
+  {
+    pointer_reset_all;
+    return 0;
+  }
 
   if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
   {

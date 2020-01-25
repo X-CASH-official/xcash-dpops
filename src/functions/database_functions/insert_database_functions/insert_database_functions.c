@@ -9,6 +9,7 @@
 #include "variables.h"
 
 #include "insert_database_functions.h"
+#include "database_functions.h"
 #include "network_functions.h"
 #include "string_functions.h"
 #include "vrf.h"
@@ -21,58 +22,6 @@
 Functions
 -----------------------------------------------------------------------------------------------------------
 */
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: insert_document_into_collection_array
-Description: Inserts a document into the collection in the database from an array
-Parameters:
-  DATABASE - The database name
-  COLLECTION - The collection name
-  field_name_array - The field name to insert into the document
-  field_data_array - The field data to insert into the document
-  DATA_COUNT - The size of the array
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int insert_document_into_collection_array(const char* DATABASE, const char* COLLECTION, char** field_name_array, char** field_data_array, const size_t DATA_COUNT)
-{
-  // Variables
-  mongoc_collection_t* collection;
-  bson_error_t error;
-  bson_oid_t oid;
-  bson_t* document;
-  size_t count;
-
-  // define macros
-  #define database_reset_all \
-  bson_destroy(document); \
-  mongoc_collection_destroy(collection);
-
-  // set the collection
-  collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);  
-
-  document = bson_new();
-  bson_oid_init(&oid, NULL);
-  BSON_APPEND_OID(document, "_id", &oid);
-  for (count = 0; count < DATA_COUNT; count++)
-  {
-    BSON_APPEND_UTF8(document, field_name_array[count], field_data_array[count]);
-  }
-
-  if (!mongoc_collection_insert_one(collection, document, NULL, NULL, &error))
-  {
-    database_reset_all;
-    return 0;
-  } 
-  database_reset_all;
-  return 1;
-
-  #undef database_reset_all
-}
-
-
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -90,10 +39,10 @@ Return: 0 if an error has occured, 1 if successfull
 int insert_document_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS)
 {
   // Variables
-  mongoc_client_t* database_client_thread;
+  mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
-  bson_t* document;
+  bson_t* document = NULL;
 
   // define macros
   #define database_reset_all \

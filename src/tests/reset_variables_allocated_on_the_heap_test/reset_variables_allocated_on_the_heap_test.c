@@ -115,8 +115,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   // Variables
   char data3[BUFFER_SIZE];
   char* process_id_file = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char** data = (char**)calloc(5 * sizeof(char*),sizeof(char*));
-  char** settings = (char**)calloc(5 * sizeof(char*),sizeof(char*));
   int previous_system_memory_usage;
   int current_system_memory_usage;
   int current_memory_usage = 0;
@@ -233,8 +231,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   #define DELETE_DATABASE_CODE \
   insert_document_into_collection_json(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,MESSAGE,0); \
   delete_database(DATABASE_NAME_TEST,0);
-
-  #define INSERT_DOCUMENT_INTO_COLLECTION_ARRAY_CODE insert_document_into_collection_array(database_name,DATABASE_COLLECTION_TEST,data,settings,5);
 
   #define INSERT_DOCUMENT_INTO_COLLECTION_JSON_CODE insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
 
@@ -749,26 +745,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   snprintf(process_id_file+6,BUFFER_SIZE-7,"%d",getpid());
   memcpy(process_id_file+strnlen(process_id_file,BUFFER_SIZE),"/status",7);
 
-  // initialize the arrays
-  for (count = 0; count < 5; count++)
-  {
-    data[count] = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-    settings[count] = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-
-    if (data[count] == NULL || settings[count] == NULL)
-    {
-      color_print("Could not allocate the memory needed on the heap","red");
-      exit(0);
-    }
-  }  
-
-  // create the the arrays
-  for (count = 0; count < 5; count++)
-  {
-    snprintf(data[count],BUFFER_SIZE,"%zu",count);
-    snprintf(settings[count],BUFFER_SIZE,"%zu",count);
-  }
-
   // initilize the transactions
   memcpy(transactions[0],"f6458824e54ea5cddd80a6bb0105ecdd6d2248629482df2c0f989db3d46f6ebd",64);
   memcpy(transactions[1],"871eb7b29c72582572041c597ff092143031bfcef5fa1fa92808dacab2ba226f",64);
@@ -811,7 +787,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   CHECK_RESET_VARIABLES_ON_THE_HEAP("delete_collection_from_database",DELETE_COLLECTION_FROM_DATABASE_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("delete_database",DELETE_DATABASE_CODE);
 
-  CHECK_RESET_VARIABLES_ON_THE_HEAP("insert_document_into_collection_array",INSERT_DOCUMENT_INTO_COLLECTION_ARRAY_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("insert_document_into_collection_json",INSERT_DOCUMENT_INTO_COLLECTION_JSON_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("insert_multiple_documents_into_collection_json",INSERT_MULTIPLE_DOCUMENTS_INTO_COLLECTION_JSON_CODE);
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
@@ -1057,14 +1032,6 @@ int reset_variables_allocated_on_the_heap_test(void)
       pointer_reset(database_multiple_documents_fields.value[count][counter]);
     }
   }
-
-  for (count = 0; count < 5; count++)
-  {
-    pointer_reset(data[count]);
-    pointer_reset(settings[count]);
-  }
-  pointer_reset(data);
-  pointer_reset(settings);
 
   for (count = 0; count < 5; count++)
   {

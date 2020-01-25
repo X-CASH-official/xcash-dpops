@@ -9,6 +9,7 @@
 #include "variables.h"
 
 #include "count_database_functions.h"
+#include "database_functions.h"
 #include "network_functions.h"
 #include "string_functions.h"
 #include "vrf.h"
@@ -41,7 +42,7 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
-  bson_t* document;
+  bson_t* document = NULL;
 
   // define macros
   #define database_reset_all \
@@ -63,10 +64,17 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
-      return 0;
+      return -1;
     }
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+  }
+
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  {
+    database_reset_all;
+    return -1;
   }
 
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
@@ -76,14 +84,9 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
     return -1;
   }
   
-  const int count = mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
-  if (count < 0)
-  {
-    database_reset_all;
-    return -1;
-  }
+  const int COUNT = mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
   database_reset_all;
-  return count;
+  return COUNT;
 
   #undef database_reset_all
 }
@@ -108,7 +111,7 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
-  bson_t* document;
+  bson_t* document = NULL;
 
   // define macros
   #define database_reset_all \
@@ -136,6 +139,13 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
 
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  {
+    database_reset_all;
+    return -1;
+  }
+
   document = bson_new();
   if (!document)
   {
@@ -143,14 +153,9 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
     return -1;
   }
   
-  const int count = mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
-  if (count < 0)
-  {
-    database_reset_all;
-    return -1;
-  }
+  const int COUNT = mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
   database_reset_all;
-  return count;
+  return COUNT;
 
   #undef database_reset_all
 }

@@ -67,7 +67,8 @@ int database_test(void)
   }
 
   // test check_if_database_collection_exist
-  if (check_if_database_collection_exist(database_name,DATABASE_COLLECTION_TEST,0) == 0 && insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0) == 1 && check_if_database_collection_exist(database_name,DATABASE_COLLECTION_TEST,0) == 1)
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0);
+  if (check_if_database_collection_exist(database_name,DATABASE_COLLECTION_TEST,0) == 1)
   {
     color_print("PASSED! Test for check_if_database_collection_exist","green");
     count_test++;

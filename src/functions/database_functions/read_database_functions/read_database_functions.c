@@ -9,6 +9,7 @@
 #include "variables.h"
 
 #include "read_database_functions.h"
+#include "database_functions.h"
 #include "network_functions.h"
 #include "string_functions.h"
 #include "vrf.h"
@@ -75,6 +76,13 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
     }
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+  }
+
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  {
+    database_reset_all;
+    return 0;
   }
   
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
@@ -193,6 +201,14 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     }
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+  }
+
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  {
+    pointer_reset_all;
+    database_reset_all;
+    return 0;
   }
   
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
@@ -436,6 +452,14 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
+
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  {
+    pointer_reset(data);
+    database_reset_all;
+    return 0;
+  }
   
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
@@ -585,6 +609,14 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     }
     // set the collection
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+  }
+
+  // check if the database collection exist
+  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  {
+    pointer_reset(data);
+    database_reset_all;
+    return 0;
   }
 
   if (memcmp(DATA,"",1) == 0)
