@@ -73,6 +73,61 @@ int create_database_connection(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_if_database_collection_exist
+Description: Checks if a database collection exist
+Parameters:
+  DATABASE - The database name
+  COLLECTION - The collection name
+  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_if_database_collection_exist(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS)
+{
+   // Variables
+  mongoc_client_t* database_client_thread = NULL;
+  mongoc_database_t* database;
+  bson_error_t error;
+
+  // define macros
+  #define database_reset_all \
+  mongoc_database_destroy(database); \
+  if (THREAD_SETTINGS == 1) \
+  { \
+    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
+  }
+
+  // check if we need to create a database connection, or use the global database connection
+  if (THREAD_SETTINGS == 0)
+  {
+    database = mongoc_client_get_database(database_client, DATABASE);
+  }
+  else
+  {
+    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
+    if (!database_client_thread)
+    {
+      return 0;
+    }
+    database = mongoc_client_get_database(database_client_thread, DATABASE);
+  }  
+   
+  if (!mongoc_database_has_collection(database,COLLECTION,&error))
+  {    
+    database_reset_all;
+    return 0;
+  }
+  database_reset_all;
+  return 1;
+
+  #undef database_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_delegates_total_voters_count
 Description: Counts all the delegates voters
 Parameters:

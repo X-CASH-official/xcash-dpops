@@ -41,7 +41,7 @@ int database_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define DATABASE_FUNCTIONS_TEST 5
+  #define DATABASE_FUNCTIONS_TEST 6
   #define MESSAGE "{\"message_settings\" : \"XCASH_DPOPS_TEST_DATA\" }"
   #define DATA_HASH "1e3c10c2d5396ac7dcce22ad7488db8c6d9ba6ec07660283f5e2198cba6507c8a136536e8c4ee16f43cf04a19fa84b5575b34e3186426b2b6db3101e9e25abd9FAILED"
 
@@ -66,7 +66,16 @@ int database_test(void)
     color_print("FAILED! Test for create_database_connection","red");
   }
 
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0);
+  // test check_if_database_collection_exist
+  if (check_if_database_collection_exist(database_name,DATABASE_COLLECTION_TEST,0) == 0 && insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0) == 1 && check_if_database_collection_exist(database_name,DATABASE_COLLECTION_TEST,0) == 1)
+  {
+    color_print("PASSED! Test for check_if_database_collection_exist","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for check_if_database_collection_exist","red");
+  }
 
   // get the database data hash
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);

@@ -489,19 +489,19 @@ int socket_thread(int client_socket)
  {  
    server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block((const char*)buffer);
  }
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && current_UTC_date_and_time.tm_sec >= 10 && current_UTC_date_and_time.tm_sec < 30)
+ else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && ((network_functions_test_error_settings != 2 && current_UTC_date_and_time.tm_sec >= 10 && current_UTC_date_and_time.tm_sec < 30) || (network_functions_test_error_settings == 2)))
  {
    server_receive_data_socket_main_node_to_node_message_part_4((const char*)buffer);
  }         
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && current_UTC_date_and_time.tm_sec < 10)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && ((network_functions_test_error_settings != 2 && current_UTC_date_and_time.tm_sec < 10) || (network_functions_test_error_settings == 2)))
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && current_UTC_date_and_time.tm_sec >= 30 && current_UTC_date_and_time.tm_sec < 40)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && ((network_functions_test_error_settings != 2 && current_UTC_date_and_time.tm_sec >= 30 && current_UTC_date_and_time.tm_sec < 40) || (network_functions_test_error_settings == 2)))
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time.tm_sec >= 45 && current_UTC_date_and_time.tm_sec < 55) || (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec >= 30 && current_UTC_date_and_time.tm_sec < 40)))
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time.tm_sec >= 45 && current_UTC_date_and_time.tm_sec < 55) || (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec >= 30 && current_UTC_date_and_time.tm_sec < 40) || (network_functions_test_error_settings == 2)))
  { 
    server_receive_data_socket_node_to_node((const char*)buffer);
  }
@@ -511,7 +511,7 @@ int socket_thread(int client_socket)
  }
  if (error_message.total != 0 && network_functions_test_error_settings <= 1)
  {
-   if (network_functions_test_error_settings == 1)
+   if (network_functions_test_error_settings == 0)
    {
      color_print("reset","yellow");
      // reset the error messages
