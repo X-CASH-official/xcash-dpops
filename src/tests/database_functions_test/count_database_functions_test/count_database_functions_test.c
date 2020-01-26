@@ -33,7 +33,7 @@ int count_database_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define COUNT_DATABASE_FUNCTIONS_TEST 4
+  #define COUNT_DATABASE_FUNCTIONS_TEST 7
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
 
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
@@ -79,11 +79,55 @@ int count_database_functions_test(void)
     color_print("FAILED! Test for count_all_documents_in_collection_thread","red");
   }
 
+
+
+  // check all errors for each test
+  RESET_ERROR_MESSAGES;
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
+  // count_documents_in_collection
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0) == -1 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for count_documents_in_collection checking for The database collection does not exist","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for count_documents_in_collection checking for The database collection does not exist","red");
+  }
+  RESET_ERROR_MESSAGES;
+
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,"data",0) == -1 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for count_documents_in_collection checking for Could not convert the data into a database document","green");
+    count_test++;
+  }
+  else
+  {
+    color_print(error_message.data[0],"yellow");
+    color_print("FAILED! Test for count_documents_in_collection checking for Could not convert the data into a database document","red");
+  }
+  RESET_ERROR_MESSAGES;
+
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
+  // count_all_documents_in_collection
+  if (count_all_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,0) == -1 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for count_all_documents_in_collection checking for The database collection does not exist","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for count_all_documents_in_collection checking for The database collection does not exist","red");
+  }
+  RESET_ERROR_MESSAGES;
+
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\ncount database functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,COUNT_DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
   
-  #undef DATA_COUNT
+  #undef COUNT_DATABASE_FUNCTIONS_TEST
   #undef MESSAGE
-  #undef MESSAGE_SETTINGS
 }

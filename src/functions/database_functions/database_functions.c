@@ -103,12 +103,6 @@ int check_if_database_collection_exist(const char* DATABASE, const char* COLLECT
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
-  #define CHECK_IF_DATABASE_COLLECTION_EXIST_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"check_if_database_collection_exist",34); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  database_reset_all; \
-  return 0;
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -127,7 +121,8 @@ int check_if_database_collection_exist(const char* DATABASE, const char* COLLECT
    
   if (!mongoc_database_has_collection(database,COLLECTION,&error))
   {    
-    CHECK_IF_DATABASE_COLLECTION_EXIST_ERROR("Could not check if the database collection exist");
+    database_reset_all;
+    return 0;
   }
   database_reset_all;
   return 1;
