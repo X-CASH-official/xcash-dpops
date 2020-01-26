@@ -218,7 +218,6 @@ int network_functions_test(void)
   }
   else
   {
-    color_print(error_message.data[0],"yellow");
     color_print("FAILED! Test for send_http_request checking for invalid hostname","red");
   }
   RESET_ERROR_MESSAGES;
@@ -230,7 +229,6 @@ int network_functions_test(void)
   }
   else
   {
-    color_print(error_message.data[0],"yellow");
     color_print("FAILED! Test for send_http_request checking for Connection error","red");
   }
   RESET_ERROR_MESSAGES;
@@ -243,7 +241,6 @@ int network_functions_test(void)
   }
   else
   {
-    color_print(error_message.data[0],"yellow");
     color_print("FAILED! Test for send_and_receive_data_socket checking for invalid hostname","red");
   }
   RESET_ERROR_MESSAGES;
@@ -255,7 +252,6 @@ int network_functions_test(void)
   }
   else
   {
-    color_print(error_message.data[0],"yellow");
     color_print("FAILED! Test for send_and_receive_data_socket checking for Connection error","red");
   }
   RESET_ERROR_MESSAGES;
@@ -268,7 +264,6 @@ int network_functions_test(void)
   }
   else
   {
-    color_print(error_message.data[0],"yellow");
     color_print("FAILED! Test for send_data_socket checking for invalid hostname","red");
   }
   RESET_ERROR_MESSAGES;

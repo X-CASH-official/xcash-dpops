@@ -101,7 +101,10 @@ int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECT
   memcpy(error_message.function[error_message.total],"organize_delegates",18); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  if (network_functions_test_error_settings != 2) \
+  { \
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  } \
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS+1); \
   return 0;
 

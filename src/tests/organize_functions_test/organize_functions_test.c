@@ -181,7 +181,26 @@ int organize_functions_test(void)
     color_print("FAILED! Test for organize_delegates","red");
   }
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
-  
+
+
+
+  // check all errors for each test
+  network_functions_test_error_settings = 2;
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  RESET_ERROR_MESSAGES;
+
+  // organize_delegates
+  if (organize_delegates(delegates,DATABASE_COLLECTION_TEST) == 0 && strncmp(error_message.data[2],"Could not get the delegates from the database",BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for organize_delegates checking for Could not get the delegates from the database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for organize_delegates checking for Could not get the delegates from the database","red");
+  }
+  RESET_ERROR_MESSAGES;
+
   // reset the delegates struct
   for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
@@ -204,7 +223,7 @@ int organize_functions_test(void)
     pointer_reset(delegates[count].block_producer_block_heights);
     pointer_reset(delegates[count].public_key);
   }
- 
+
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\norganize functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,ORGANIZE_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
