@@ -76,7 +76,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA);
   
   network_functions_test_error_settings = 0;
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,RESERVE_BYTES_TEST_DATA,0);
+  insert_document_into_collection_json(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,RESERVE_BYTES_TEST_DATA,0);
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA);
   network_functions_test_error_settings = 1;
   
@@ -90,11 +90,11 @@ int block_verifiers_synchronize_server_functions_test(void)
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA);
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA);
   sleep(5);
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,0);
 
   // check all errors for each test
   network_functions_test_error_settings = 2;
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,0);
   CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_TEST_DATA,1,xcash_wallet_public_address,TEST_WALLET,"Could not verify the message");
   CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,1,xcash_wallet_public_address,TEST_WALLET,"Could not get the database data hash for the reserve bytes database");
   CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash","{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"100\",\r\n}",1,xcash_wallet_public_address,TEST_WALLET,"Invalid block height");

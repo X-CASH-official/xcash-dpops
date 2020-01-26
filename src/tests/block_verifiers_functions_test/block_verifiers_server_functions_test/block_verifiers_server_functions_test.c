@@ -48,7 +48,7 @@ int block_verifiers_server_functions_test(void)
   main_network_data_node_create_block = 1;
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_main_network_data_node_to_block_verifier_start_block",SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA);
   sleep(5);
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,0);
   main_network_data_node_create_block = 0;
   
   // set the current_round_part and current_round_part_backup_node

@@ -135,6 +135,36 @@ int delete_database_functions_test(void)
     color_print("PASSED! Test for delete_database_thread","green");
     count_test++;
   }
+
+
+
+  // check all errors for each test
+  delete_database(DATABASE_NAME_TEST,0);
+  RESET_ERROR_MESSAGES;
+
+  // delete_document_from_collection
+  if (delete_document_from_collection(database_name,DATABASE_COLLECTION_TEST,"data",0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for delete_document_from_collection checking for Could not convert the data into a database document","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for delete_document_from_collection checking for Could not convert the data into a database document","red");
+  }
+  RESET_ERROR_MESSAGES;
+
+  // delete_collection_from_database
+  if (delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0) == 0 && strncmp(error_message.data[0],"Could not delete the database collection from the database",BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for delete_collection_from_database checking for Could not delete the database collection from the database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for delete_collection_from_database checking for Could not delete the database collection from the database","red");
+  }
+  RESET_ERROR_MESSAGES;
   
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\ndelete database functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,DELETE_DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);

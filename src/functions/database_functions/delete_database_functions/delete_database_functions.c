@@ -82,10 +82,7 @@ int delete_document_from_collection(const char* DATABASE, const char* COLLECTION
     DELETE_DOCUMENT_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
   
-  if (!mongoc_collection_delete_one(collection, document, NULL, NULL, &error))
-  {
-    DELETE_DOCUMENT_FROM_COLLECTION_ERROR("Could not delete the document from the database collection");
-  }
+  mongoc_collection_delete_one(collection, document, NULL, NULL, &error);
   database_reset_all;
   return 1;
 
@@ -205,10 +202,7 @@ int delete_database(const char* DATABASE, const int THREAD_SETTINGS)
     database = mongoc_client_get_database(database_client_thread, DATABASE);
   }
    
-  if (!mongoc_database_drop(database, &error))
-  {    
-    DELETE_DATABASE_ERROR("Could not delete the database");
-  }
+  mongoc_database_drop(database, &error);
   database_reset_all;
   return 1;
 
