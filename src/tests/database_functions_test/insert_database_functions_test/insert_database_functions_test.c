@@ -102,6 +102,36 @@ int insert_database_functions_test(void)
     color_print("FAILED! Test for insert_multiple_documents_into_collection_json_thread","red");    
   }
 
+
+
+  // check all errors for each test
+  RESET_ERROR_MESSAGES;
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
+  // insert_document_into_collection_json
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"data",0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for insert_document_into_collection_json checking for Could not convert the data into a database document","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for insert_document_into_collection_json checking for Could not convert the data into a database document","red");
+  }
+  RESET_ERROR_MESSAGES;
+
+  // insert_multiple_documents_into_collection_json
+  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"data",BUFFER_SIZE,0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  {
+    color_print("PASSED! Test for insert_multiple_documents_into_collection_json checking for Could not convert the data into a database document","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for insert_multiple_documents_into_collection_json checking for Could not convert the data into a database document","red");
+  }
+  RESET_ERROR_MESSAGES;
+
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\ninsert database functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,INSERT_DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
