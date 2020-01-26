@@ -82,8 +82,8 @@ int count_database_functions_test(void)
 
 
   // check all errors for each test
-  RESET_ERROR_MESSAGES;
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  RESET_ERROR_MESSAGES;
 
   // count_documents_in_collection
   if (count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0) == -1 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
@@ -95,9 +95,9 @@ int count_database_functions_test(void)
   {
     color_print("FAILED! Test for count_documents_in_collection checking for The database collection does not exist","red");
   }
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
   RESET_ERROR_MESSAGES;
 
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
   if (count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,"data",0) == -1 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for count_documents_in_collection checking for Could not convert the data into a database document","green");
@@ -108,9 +108,8 @@ int count_database_functions_test(void)
     color_print(error_message.data[0],"yellow");
     color_print("FAILED! Test for count_documents_in_collection checking for Could not convert the data into a database document","red");
   }
-  RESET_ERROR_MESSAGES;
-
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  RESET_ERROR_MESSAGES;
 
   // count_all_documents_in_collection
   if (count_all_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,0) == -1 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)

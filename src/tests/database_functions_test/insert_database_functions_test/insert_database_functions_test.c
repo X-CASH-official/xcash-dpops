@@ -105,8 +105,8 @@ int insert_database_functions_test(void)
 
 
   // check all errors for each test
-  RESET_ERROR_MESSAGES;
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  RESET_ERROR_MESSAGES;
 
   // insert_document_into_collection_json
   if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"data",0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)

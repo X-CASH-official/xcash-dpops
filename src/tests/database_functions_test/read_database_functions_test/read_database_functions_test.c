@@ -448,6 +448,7 @@ int read_database_functions_test(void)
 
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  RESET_ERROR_MESSAGES;
 
   // read_document_from_collection
   if (read_document_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,data_test,0) == 0 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
@@ -457,12 +458,12 @@ int read_database_functions_test(void)
   }
   else
   {
+    color_print(error_message.data[0],"yellow");
     color_print("FAILED! Test for read_document_from_collection checking for The database collection does not exist","red");
   }
-  RESET_ERROR_MESSAGES;
-
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  RESET_ERROR_MESSAGES;
 
   if (read_document_from_collection(database_name,DATABASE_COLLECTION_TEST,"data",data_test,0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
@@ -473,11 +474,10 @@ int read_database_functions_test(void)
   {
     color_print("FAILED! Test for read_document_from_collection checking for Could not convert the data into a database document","red");
   }
-  RESET_ERROR_MESSAGES;
-
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  RESET_ERROR_MESSAGES;
 
   if (read_document_from_collection(database_name,DATABASE_COLLECTION_TEST,"{\"message_settings\": \"data\"}",data_test,0) == 0 && strncmp(error_message.data[0],"Could not read the document from the database collection",BUFFER_SIZE) == 0)
   {
@@ -488,14 +488,9 @@ int read_database_functions_test(void)
   {
     color_print("FAILED! Test for read_document_from_collection checking for Could not read the document from the database collection","red");
   }
-  RESET_ERROR_MESSAGES;
-
-
-
-
-
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  RESET_ERROR_MESSAGES;
 
   // read_document_field_from_collection
   if (read_document_field_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,"message_settings",data_test,0) == 0 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
@@ -507,10 +502,9 @@ int read_database_functions_test(void)
   {
     color_print("FAILED! Test for read_document_field_from_collection checking for The database collection does not exist","red");
   }
-  RESET_ERROR_MESSAGES;
-
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  RESET_ERROR_MESSAGES;
 
   if (read_document_field_from_collection(database_name,DATABASE_COLLECTION_TEST,"data","message_settings",data_test,0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
@@ -521,11 +515,10 @@ int read_database_functions_test(void)
   {
     color_print("FAILED! Test for read_document_field_from_collection checking for Could not convert the data into a database document","red");
   }
-  RESET_ERROR_MESSAGES;
-
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  RESET_ERROR_MESSAGES;
 
   if (read_document_field_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,"data",data_test,0) == 0 && strncmp(error_message.data[0],"Could not read the document field from the database collection",BUFFER_SIZE) == 0)
   {
@@ -536,12 +529,9 @@ int read_database_functions_test(void)
   {
     color_print("FAILED! Test for read_document_field_from_collection checking for Could not read the document field from the database collection","red");
   }
-  RESET_ERROR_MESSAGES;
-
-
-
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  RESET_ERROR_MESSAGES;
 
   // read_document_all_fields_from_collection
   if (read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION_TEST,"{\"username\":\"XCASH\"}",&database_data,0) == 0 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
@@ -553,10 +543,9 @@ int read_database_functions_test(void)
   {
     color_print("FAILED! Test for read_document_all_fields_from_collection checking for The database collection does not exist","red");
   }
-  RESET_ERROR_MESSAGES;
-
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  RESET_ERROR_MESSAGES;
 
   if (read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION_TEST,"data",&database_data,0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
@@ -567,13 +556,9 @@ int read_database_functions_test(void)
   {
     color_print("FAILED! Test for read_document_all_fields_from_collection checking for Could not convert the data into a database document","red");
   }
-  RESET_ERROR_MESSAGES;
-
-
-
-
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  RESET_ERROR_MESSAGES;
 
   // read_document_all_fields_from_collection
   if (read_multiple_documents_all_fields_from_collection(database_name,DATABASE_COLLECTION_TEST,"",&database_multiple_documents_fields,1,2,0,"",0) == 0 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
@@ -585,11 +570,10 @@ int read_database_functions_test(void)
   {
     color_print("FAILED! Test for read_multiple_documents_all_fields_from_collection checking for The database collection does not exist","red");
   }
-  RESET_ERROR_MESSAGES;
-
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  RESET_ERROR_MESSAGES;
 
   if (read_multiple_documents_all_fields_from_collection(database_name,DATABASE_COLLECTION_TEST,"data",&database_multiple_documents_fields,1,2,0,"",0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
