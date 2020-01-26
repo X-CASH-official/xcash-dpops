@@ -45,6 +45,13 @@ int create_database_connection(void)
   bson_destroy(&reply); \
   bson_destroy(command);
 
+  #define CREATE_DATABASE_CONNECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"create_database_connection",26); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return 0;
+
   // create a connection to the database
   uri = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error);
   if (!uri)
@@ -54,19 +61,18 @@ int create_database_connection(void)
   database_client = mongoc_client_new_from_uri(uri);
   if (!database_client)
   {
-    database_reset_all;
-    return 0;
+    CREATE_DATABASE_CONNECTION_ERROR("Could not create a database connection");
   }
   command = BCON_NEW("ping", BCON_INT32(1));
   if (!mongoc_client_command_simple(database_client, "admin", command, NULL, &reply, &error))
   {
-    database_reset_all;
-    return 0;
+    CREATE_DATABASE_CONNECTION_ERROR("Could not create a database connection");
   }
   database_reset_all;
   return 1;
 
   #undef database_reset_all
+  #undef CREATE_DATABASE_CONNECTION_ERROR
 }
 
 
@@ -97,6 +103,12 @@ int check_if_database_collection_exist(const char* DATABASE, const char* COLLECT
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define CHECK_IF_DATABASE_COLLECTION_EXIST_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"check_if_database_collection_exist",34); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return 0;
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -115,13 +127,13 @@ int check_if_database_collection_exist(const char* DATABASE, const char* COLLECT
    
   if (!mongoc_database_has_collection(database,COLLECTION,&error))
   {    
-    database_reset_all;
-    return 0;
+    CHECK_IF_DATABASE_COLLECTION_EXIST_ERROR("Could not check if the database collection exist");
   }
   database_reset_all;
   return 1;
 
   #undef database_reset_all
+  #undef CHECK_IF_DATABASE_COLLECTION_EXIST_ERROR
 }
 
 
@@ -187,6 +199,7 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   bson_t* document = NULL;  
   bson_t* document_options = NULL;
   char* message;
+  int count = 0;
 
   // define macros
   #define database_reset_all \
@@ -198,6 +211,12 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define GET_DATABASE_DATA_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"get_database_data",17); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return 0;
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -216,18 +235,10 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
 
-  // check if the database collection exist
-  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
-  {
-    database_reset_all;
-    return 0;
-  }
-
   document = bson_new();
   if (!document)
   {
-    database_reset_all;
-    return 0;
+    GET_DATABASE_DATA_ERROR("Could not convert the data into a database document");
   }
 
   // sort the documents
@@ -261,12 +272,19 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     }
     memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
     bson_free(message);
+    count = 1;
+  }
+
+  if (count != 1)
+  {
+    GET_DATABASE_DATA_ERROR("Could not get the database data");
   }
   
   database_reset_all;
   return 1;
 
   #undef database_reset_all
+  #undef GET_DATABASE_DATA_ERROR
 }
 
 
@@ -300,17 +318,10 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   free(data); \
   data = NULL; \
   free(string); \
-  string = NULL; \
+  string = NULL;
 
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
-
-  // check if the database collection exist
-  if (check_if_database_collection_exist(DATABASE,COLLECTION,1) == 0)
-  {
-    pointer_reset_all;
-    return 0;
-  }
 
   if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
   {

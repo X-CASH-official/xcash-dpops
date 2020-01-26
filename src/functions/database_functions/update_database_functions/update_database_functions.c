@@ -59,6 +59,13 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define UPDATE_DOCUMENT_FROM_COLLECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"update_document_from_collection",31); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset(data2); \
+  database_reset_all; \
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data2 == NULL)
@@ -91,17 +98,13 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   // check if the database collection exist
   if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
   {
-    pointer_reset(data2);
-    database_reset_all;
-    return 0;
+    UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("The database collection does not exist");
   }
   
   update = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!update)
   {
-    pointer_reset(data2);
-    database_reset_all;
-    return 0;
+    UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
  
   const size_t FIELD_NAME_AND_DATA_LENGTH = strnlen(FIELD_NAME_AND_DATA,BUFFER_SIZE)-1;
@@ -112,16 +115,12 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   update_settings = bson_new_from_json((const uint8_t *)data2, -1, &error);
   if (!update_settings)
   {
-    pointer_reset(data2);
-    database_reset_all;
-    return 0;
+    UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
   
   if (!mongoc_collection_update_one(collection, update, update_settings, NULL, NULL, &error))
   {
-    pointer_reset(data2);
-    database_reset_all;
-    return 0;
+    UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("Could not update the document in the database collection");
   }
 
   pointer_reset(data2);
@@ -129,6 +128,7 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   return 1;
 
   #undef database_reset_all
+  #undef UPDATE_DOCUMENT_FROM_COLLECTION_ERROR
 }
 
 
@@ -168,6 +168,13 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"update_all_documents_from_collection",36); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset(data2); \
+  database_reset_all; \
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data2 == NULL)
@@ -200,18 +207,14 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   // check if the database collection exist
   if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
   {
-    pointer_reset(data2);
-    database_reset_all;
-    return 0;
+    UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR("The database collection does not exist");
   }
   
   // set the document to empty so it will get each document in the collection  
   update = bson_new();
   if (!update)
   {
-    pointer_reset(data2);
-    database_reset_all;
-    return 0;
+    UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
  
   const size_t DATA_LENGTH = strnlen(DATA,BUFFER_SIZE)-1;
@@ -222,16 +225,12 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   update_settings = bson_new_from_json((const uint8_t *)data2, -1, &error);
   if (!update_settings)
   {
-    pointer_reset(data2);
-    database_reset_all;
-    return 0;
+    UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
   
   if (!mongoc_collection_update_many(collection, update, update_settings, NULL, NULL, &error))
   {
-    pointer_reset(data2);
-    database_reset_all;
-    return 0;
+    UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR("Could not update the document in the database collection");
   }
 
   pointer_reset(data2);
@@ -239,4 +238,5 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   return 1;
 
   #undef database_reset_all
+  #undef UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR
 }

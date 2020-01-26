@@ -60,6 +60,12 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define READ_DOCUMENT_FROM_COLLECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"read_document_from_collection",29); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return 0;
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -81,15 +87,13 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
   // check if the database collection exist
   if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
   {
-    database_reset_all;
-    return 0;
+    READ_DOCUMENT_FROM_COLLECTION_ERROR("The database collection does not exist");
   }
   
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
   {
-    database_reset_all;
-    return 0;
+    READ_DOCUMENT_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
  
   document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
@@ -103,14 +107,14 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
 
   if (count != 1)
   {
-    database_reset_all;
-    return 0;
+    READ_DOCUMENT_FROM_COLLECTION_ERROR("Could not read the document from the database collection");
   }
 
   database_reset_all;
   return 1;
 
   #undef database_reset_all
+  #undef READ_DOCUMENT_FROM_COLLECTION_ERROR
 }
 
 
@@ -166,6 +170,13 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset_all; \
+  database_reset_all; \
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data2 == NULL || settings == NULL)
@@ -206,17 +217,13 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   // check if the database collection exist
   if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
   {
-    pointer_reset_all;
-    database_reset_all;
-    return 0;
+    READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR("The database collection does not exist");
   }
   
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
   {    
-    pointer_reset_all;
-    database_reset_all;
-    return 0;
+    READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
 
   document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
@@ -243,9 +250,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   }
   else
   {
-    pointer_reset_all; 
-    database_reset_all; 
-    return 0;
+    READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR("Could not read the document field from the database collection");
   }
 
   pointer_reset_all; 
@@ -254,6 +259,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
 
   #undef pointer_reset_all
   #undef database_reset_all
+  #undef READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR
 }
 
 
@@ -398,6 +404,13 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define READ_DOCUMENT_ALL_FIELDS_FROM_COLLECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"read_document_all_fields_from_collection",40); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset(data); \
+  database_reset_all; \
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
@@ -456,17 +469,13 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   // check if the database collection exist
   if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
   {
-    pointer_reset(data);
-    database_reset_all;
-    return 0;
+    READ_DOCUMENT_ALL_FIELDS_FROM_COLLECTION_ERROR("The database collection does not exist");
   }
   
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
   {    
-    pointer_reset(data);
-    database_reset_all;
-    return 0;
+    READ_DOCUMENT_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
  
   document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
@@ -488,9 +497,7 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   }  
   else
   {
-    pointer_reset(data);
-    database_reset_all;
-    return 0;
+    READ_DOCUMENT_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not read all of the document fields from the database collection");
   }
   
 
@@ -499,6 +506,7 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   return 1;
 
   #undef database_reset_all
+  #undef READ_DOCUMENT_ALL_FIELDS_FROM_COLLECTION_ERROR
 }
 
 
@@ -556,6 +564,13 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"read_multiple_documents_all_fields_from_collection",49); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset(data); \
+  database_reset_all; \
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
@@ -614,9 +629,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   // check if the database collection exist
   if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
   {
-    pointer_reset(data);
-    database_reset_all;
-    return 0;
+    READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR("The database collection does not exist");
   }
 
   if (memcmp(DATA,"",1) == 0)
@@ -630,9 +643,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
 
   if (!document)
   {
-    pointer_reset(data);
-    database_reset_all;
-    return 0;
+    READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
 
   if (DOCUMENT_OPTIONS == 1)
@@ -667,9 +678,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
 
   if (counter == 0)
   {
-    pointer_reset(data);
-    database_reset_all;
-    return 0;
+    READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not read all of the fields for all of the documents in the database collection");
   }
 
   pointer_reset(data);
@@ -677,4 +686,5 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   return 1;
 
   #undef database_reset_all
+  #undef READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR
 }

@@ -52,6 +52,12 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"insert_document_into_collection_json",36); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return 0;
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -73,19 +79,18 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
   {
-    database_reset_all;
-    return 0;
+    INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR("Could not convert the data into a database document");
   }
     
   if (!mongoc_collection_insert_one(collection, document, NULL, NULL, &error))
   {
-    database_reset_all;
-    return 0;
+    INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR("Could not insert the document into the database collection");
   }
   database_reset_all;
   return 1;
 
   #undef database_reset_all
+  #undef INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR
 }
 
 
@@ -133,6 +138,12 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define INSERT_MULTIPLE_DOCUMENTS_INTO_COLLECTION_JSON_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"insert_multiple_documents_into_collection_json",46); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset_all; \
+  database_reset_all;
 
   if (data2 == NULL || data3 == NULL)
   {
@@ -195,17 +206,15 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     bson_t* document = bson_new_from_json((const uint8_t *)data3, -1, &error);
     if (!document)
     {
-      pointer_reset_all;
+      INSERT_MULTIPLE_DOCUMENTS_INTO_COLLECTION_JSON_ERROR("Could not convert the data into a database document");
       bson_destroy(document);
-      database_reset_all;
       return 0;
     }
 
     if (!mongoc_collection_insert_one(collection, document, NULL, NULL, &error))
     {
-      pointer_reset_all;
+      INSERT_MULTIPLE_DOCUMENTS_INTO_COLLECTION_JSON_ERROR("Could not insert the document into the database collection");
       bson_destroy(document);
-      database_reset_all;
       return 0;
     }
     bson_destroy(document);
@@ -217,4 +226,5 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
 
   #undef pointer_reset_all
   #undef database_reset_all
+  #undef INSERT_MULTIPLE_DOCUMENTS_INTO_COLLECTION_JSON_ERROR
 }

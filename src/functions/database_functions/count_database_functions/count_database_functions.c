@@ -52,6 +52,12 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define COUNT_DOCUMENTS_IN_COLLECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"count_documents_in_collection",29); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return -1;
 
    // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -73,15 +79,13 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
   // check if the database collection exist
   if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
   {
-    database_reset_all;
-    return -1;
+    COUNT_DOCUMENTS_IN_COLLECTION_ERROR("The database collection does not exist");
   }
 
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
   {
-    database_reset_all;
-    return -1;
+    COUNT_DOCUMENTS_IN_COLLECTION_ERROR("Could not convert the data into a database document");
   }
   
   const int COUNT = mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
@@ -89,6 +93,7 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
   return COUNT;
 
   #undef database_reset_all
+  #undef COUNT_DOCUMENTS_IN_COLLECTION_ERROR
 }
 
 
@@ -121,6 +126,12 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"count_documents_in_collection",29); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return -1;
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -142,15 +153,13 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
   // check if the database collection exist
   if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
   {
-    database_reset_all;
-    return -1;
+    COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR("The database collection does not exist");
   }
 
   document = bson_new();
   if (!document)
   {
-    database_reset_all;
-    return -1;
+    COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR("Could not convert the data into a database document");
   }
   
   const int COUNT = mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
@@ -158,4 +167,5 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
   return COUNT;
 
   #undef database_reset_all
+  #undef COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR
 }

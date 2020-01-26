@@ -269,8 +269,9 @@ size_t varint_decode(size_t varint)
 Name: network_block_string_to_blockchain_data
 Description: Converts a network_block_string string to the blockchain_data struct
 Parameters:
-  data - The network_block_string
+  DATA - The network_block_string
   BLOCK_HEIGHT - The block height of the network block string, 0 to get the current block height
+  BLOCK_VERIFIERS_TOTAL - The maximum amount of block verifiers
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -812,6 +813,7 @@ Name: blockchain_data_to_network_block_string
 Description: Converts a blockchain_data struct to a network_block_string
 Parameters:
   result - The network block data string
+  BLOCK_VERIFIERS_TOTAL - The maximum amount of block verifiers
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1225,6 +1227,7 @@ Parameters:
   TRANSACTIONS_SETTINGS - 0 to not verify that the transactions are in the network, 1 to verify that the transactions are in the network. The blockchain_test should be the only time when the transactions are not verified
   BLOCK_HEIGHT - The block height of the network block string, 0 to get the current block height
   PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES - The previous network blocks reserve bytes
+  BLOCK_VERIFIERS_TOTAL - The maximum amount of block verifiers
 Return: 0 if an error has occured or it is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */

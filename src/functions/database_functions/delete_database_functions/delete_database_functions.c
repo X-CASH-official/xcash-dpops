@@ -52,6 +52,12 @@ int delete_document_from_collection(const char* DATABASE, const char* COLLECTION
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define DELETE_DOCUMENT_FROM_COLLECTION_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"delete_document_from_collection",31); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return 0;
 
    // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -73,19 +79,18 @@ int delete_document_from_collection(const char* DATABASE, const char* COLLECTION
   document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
   if (!document)
   {
-    database_reset_all;
-    return 0;
+    DELETE_DOCUMENT_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
   
   if (!mongoc_collection_delete_one(collection, document, NULL, NULL, &error))
   {
-    database_reset_all;
-    return 0;
+    DELETE_DOCUMENT_FROM_COLLECTION_ERROR("Could not delete the document from the database collection");
   }
   database_reset_all;
   return 1;
 
   #undef database_reset_all
+  #undef DELETE_DOCUMENT_FROM_COLLECTION_ERROR
 }
 
 
@@ -116,6 +121,12 @@ int delete_collection_from_database(const char* DATABASE, const char* COLLECTION
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define DELETE_COLLECTION_FROM_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"delete_collection_from_database",31); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return 0;
 
    // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -136,13 +147,13 @@ int delete_collection_from_database(const char* DATABASE, const char* COLLECTION
    
   if (!mongoc_collection_drop(collection, &error))
   {    
-    database_reset_all;
-    return 0;
+    DELETE_COLLECTION_FROM_DATABASE_ERROR("Could not delete the database collection from the database");
   }
   database_reset_all;
   return 1;
 
   #undef database_reset_all
+  #undef DELETE_COLLECTION_FROM_DATABASE_ERROR
 }
 
 
@@ -172,6 +183,12 @@ int delete_database(const char* DATABASE, const int THREAD_SETTINGS)
   { \
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
+  #define DELETE_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"delete_database",15); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_reset_all; \
+  return 0;
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -190,11 +207,11 @@ int delete_database(const char* DATABASE, const int THREAD_SETTINGS)
    
   if (!mongoc_database_drop(database, &error))
   {    
-    database_reset_all;
-    return 0;
+    DELETE_DATABASE_ERROR("Could not delete the database");
   }
   database_reset_all;
   return 1;
 
   #undef database_reset_all
+  #undef DELETE_DATABASE_ERROR
 }
