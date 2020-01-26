@@ -173,12 +173,12 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
     if (MESSAGE_SETTINGS == 1)
-    {       
+    {  
       memset(str,0,sizeof(str));
       memcpy(str,"Error invalid hostname of ",26);
       memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;  
     }
     freeaddrinfo(settings);
@@ -243,7 +243,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
         memcpy(str+20+HOST_LENGTH," on port ",9);
         memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
         memcpy(error_message.function[error_message.total],"send_http_request",17);
-        memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+        memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
         error_message.total++; 
       }
       freeaddrinfo(settings);
@@ -265,7 +265,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;  
     }
     freeaddrinfo(settings);
@@ -286,7 +286,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;  
     }
     freeaddrinfo(settings);
@@ -316,7 +316,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+22+HOST_LENGTH," on port ",9);
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;  
     }
     freeaddrinfo(settings);
@@ -345,7 +345,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
         memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a potential buffer overflow issue",46);
       }
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;  
     }
     freeaddrinfo(settings);
@@ -365,7 +365,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
       memcpy(str+26+HOST_LENGTH," on port ",9);
       memcpy(str+35+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;  
     }
     freeaddrinfo(settings);
@@ -498,7 +498,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str,"Error invalid hostname of ",26);
       memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
       memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;  
     }
     freeaddrinfo(settings);
@@ -563,7 +563,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
         memcpy(str+20+HOST_LENGTH," on port ",9);
         memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
         memcpy(error_message.function[error_message.total],"send_http_request",17);
-        memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+        memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
         error_message.total++; 
       }   
       freeaddrinfo(settings);
@@ -584,7 +584,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;
     }
     freeaddrinfo(settings);
@@ -604,7 +604,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+20+HOST_LENGTH," on port ",9);
       memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++; 
     }
     freeaddrinfo(settings);
@@ -634,7 +634,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
       memcpy(str+22+HOST_LENGTH," on port ",9);
       memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;
     }
     freeaddrinfo(settings);
@@ -663,7 +663,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
         memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a potential buffer overflow issue",46);
       }
       memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
       error_message.total++;
     }
     freeaddrinfo(settings);
@@ -774,7 +774,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
     memcpy(str,"Error invalid hostname of ",26);
     memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
     memcpy(error_message.function[error_message.total],"send_data_socket",16);
-    memcpy(error_message.data[error_message.total],str,strnlen(str,sizeof(error_message.data[error_message.total])));
+    memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
     error_message.total++;  
     freeaddrinfo(settings);
     return 0;
@@ -1058,8 +1058,6 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
       count++;
       if (count > (RECEIVE_DATA_SOCKET_TIMEOUT * 5))
       {
-        color_print("TIMEDOUT","yellow");
-        color_print(data,"yellow");
         pointer_reset_all;
         return 1;
       }
