@@ -243,10 +243,18 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     memcpy(settings+3,FIELD_NAME,FIELD_NAME_LENGTH);
     memcpy(settings+3+FIELD_NAME_LENGTH,"\" : \"",5);
 
+    if (strstr(data2,settings) == NULL)
+    {
+      READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR("Could not read the document field from the database collection");
+    }
     message_copy1 = strstr(data2,settings) + strnlen(settings,BUFFER_SIZE);
     message_copy2 = strstr(message_copy1,"\"");
     memset(result,0,strlen(result));
-    memcpy(result,message_copy1,message_copy2 - message_copy1);
+    if (message_copy1 == NULL || message_copy2 == NULL)
+    {
+      READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR("Could not read the document field from the database collection");
+    }
+    memcpy(result,message_copy1,message_copy2 - message_copy1); 
   }
   else
   {
@@ -287,26 +295,59 @@ int database_document_parse_json_data(const char* DATA, struct database_document
   char* data3;
   size_t count = 0;
 
-  // get the first item  
+  // define macros
+  #define DATABASE_DOCUMENT_PARSE_JSON_DATA_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"database_document_parse_json_data",33); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+
+  // get the first item 
+  if (strstr(DATA,",") == NULL)
+  {
+    DATABASE_DOCUMENT_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+  }
   data2 = strstr(DATA,",") + 3;
+  if (strstr(data2,"\"") == NULL)
+  {
+    DATABASE_DOCUMENT_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+  }
   data3 = strstr(data2,"\"");
   memcpy(result->item[0],data2,strnlen(data2,BUFFER_SIZE)-strnlen(data3,BUFFER_SIZE)); 
   
   for (count = 0; count < result->count; count++)
   {
+    if (data3 == NULL)
+    {
+      DATABASE_DOCUMENT_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+    }
     data2 = data3+5;
+    if (strstr(data2,"\"") == NULL)
+    {
+      DATABASE_DOCUMENT_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+    }
     data3 = strstr(data2,"\"");
     memcpy(result->value[count],data2,strnlen(data2,BUFFER_SIZE)-strnlen(data3,BUFFER_SIZE));
       
     // only get the item if its not the last count
     if (count+1 != result->count)
     { 
+      if (data3 == NULL)
+      {
+        DATABASE_DOCUMENT_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+      }
       data2 = data3+4;
+      if (strstr(data2,"\"") == NULL)
+      {
+       DATABASE_DOCUMENT_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+      }
       data3 = strstr(data2,"\"");
       memcpy(result->item[count+1],data2,strnlen(data2,BUFFER_SIZE)-strnlen(data3,BUFFER_SIZE));
     }    
   } 
   return 1;
+
+  #undef DATABASE_DOCUMENT_PARSE_JSON_DATA_ERROR
 }
 
 
@@ -335,26 +376,59 @@ int database_multiple_documents_parse_json_data(const char* DATA, struct databas
   char* data3;
   size_t count = 0;
 
-  // get the first item  
+  // define macros
+  #define DATABASE_MULTIPLE_DOCUMENTS_PARSE_JSON_DATA_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"database_document_parse_json_data",33); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+
+  // get the first item 
+  if (strstr(DATA,",") == NULL)
+  {
+    DATABASE_MULTIPLE_DOCUMENTS_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+  } 
   data2 = strstr(DATA,",") + 3;
+  if (strstr(data2,"\"") == NULL)
+  {
+    DATABASE_MULTIPLE_DOCUMENTS_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+  }
   data3 = strstr(data2,"\"");
   memcpy(result->item[document_count][0],data2,strnlen(data2,BUFFER_SIZE)-strnlen(data3,BUFFER_SIZE)); 
   
   for (count = 0; count < result->database_fields_count; count++)
   {
+    if (data3 == NULL)
+    {
+      DATABASE_MULTIPLE_DOCUMENTS_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+    }
     data2 = data3+5;
+    if (strstr(data2,"\"") == NULL)
+    {
+      DATABASE_MULTIPLE_DOCUMENTS_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+    }
     data3 = strstr(data2,"\"");
     memcpy(result->value[document_count][count],data2,strnlen(data2,BUFFER_SIZE)-strnlen(data3,BUFFER_SIZE));
       
     // only get the item if its not the last count
     if (count+1 != result->database_fields_count)
     { 
+      if (data3 == NULL)
+      {
+        DATABASE_MULTIPLE_DOCUMENTS_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+      }
       data2 = data3+4;
+      if (strstr(data2,"\"") == NULL)
+      {
+       DATABASE_MULTIPLE_DOCUMENTS_PARSE_JSON_DATA_ERROR("Could not parse the json data for the database document");
+      }
       data3 = strstr(data2,"\"");
       memcpy(result->item[document_count][count+1],data2,strnlen(data2,BUFFER_SIZE)-strnlen(data3,BUFFER_SIZE));
     }    
   } 
   return 1;
+
+  #undef DATABASE_MULTIPLE_DOCUMENTS_PARSE_JSON_DATA_ERROR
 }
 
 
@@ -493,7 +567,10 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   if (count == 1)
   {
     // parse the json data
-    database_document_parse_json_data(data,result);
+    if (database_document_parse_json_data(data,result) == 0)
+    {
+      READ_DOCUMENT_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not read all of the document fields from the database collection");
+    }
   }  
   else
   {
@@ -663,7 +740,10 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
       string_replace(data,BUFFER_SIZE," }, ",", ");
 
       // parse the json data    
-      database_multiple_documents_parse_json_data(data,result,counter);
+      if (database_multiple_documents_parse_json_data(data,result,counter) == 0)
+      {
+        READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not read all of the fields for all of the documents in the database collection");
+      }
       counter++;
       result->document_count++;
       
