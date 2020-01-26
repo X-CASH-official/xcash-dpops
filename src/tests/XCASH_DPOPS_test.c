@@ -82,8 +82,7 @@ void test(void)
   color_print(data_test,"yellow");
   
   // run the tests
-  XCASH_DPOPS_total_passed_test += network_functions_test();
-  XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_server_functions_test();
+  XCASH_DPOPS_total_passed_test += blockchain_functions_test();
   /*XCASH_DPOPS_total_passed_test += blockchain_functions_test();
   XCASH_DPOPS_total_passed_test += database_test(); 
   XCASH_DPOPS_total_passed_test += insert_database_functions_test(); 
@@ -107,6 +106,11 @@ void test(void)
   XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();
   XCASH_DPOPS_total_passed_test += reset_variables_allocated_on_the_heap_test();*/
   //XCASH_DPOPS_total_passed_test += analysing_code_test();
+
+  // reset the variables
+  memset(string2_test,0,sizeof(string2_test));
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
 
   // write the end test message
   memcpy(data_test,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1);
