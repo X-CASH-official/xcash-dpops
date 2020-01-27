@@ -96,19 +96,19 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
-  // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
+  /*// check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
   if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec > 25 && current_UTC_date_and_time.tm_sec < 50)
   {
     send_data(CLIENT_SOCKET,(unsigned char*)"The block verifiers are currently deleting invalid reserve proofs from the database.\n\nPlease wait a few seconds",0,0,"");
     return 0;
-  }
+  }*/
 
-  // verify the message
+  // verify the message  
   if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != VOTE_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not verify the message");
   }
-
+    
   // parse the message
   for (count = 0, count2 = 0; count < VOTE_PARAMETER_AMOUNT; count++)
   {
@@ -186,11 +186,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
       settings = 1;
     }
   }
-
-  if (memcmp(delegates_public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0 || memcmp(public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0)
-  {
-    return 1;
-  }
+  RESET_ERROR_MESSAGES;
 
   // check if the reserve proof is valid and the spent amount is 0
   memset(data2,0,sizeof(data2));
@@ -250,19 +246,17 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     snprintf(data3+15,sizeof(data3)-16,"%zu",count);
     if (count_documents_in_collection(database_name,data3,data,1) < MAXIMUM_INVALID_RESERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
     {
-      if (memcmp(delegates_public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0 || memcmp(public_address,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) != 0)
+      if (insert_document_into_collection_json(database_name,data3,data,1) == 1)
+      {        
+        break;
+      }
+      else
       {
-        if (insert_document_into_collection_json(database_name,data3,data,1) == 1)
-        {        
-          break;
-        }
-        else
-        {
-          SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
-        }
+        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
       }
     }
   }
+  RESET_ERROR_MESSAGES;
 
   // update the delegates total_vote_count
   memset(data3,0,sizeof(data3));
@@ -359,7 +353,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
 
   // verify the message
   if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != REGISTER_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
-  {   
+  { 
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not verify the message");
   }
 
@@ -398,56 +392,53 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid data");
   }
+  
+  // create the message
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"public_address\":\"",19);
+  memcpy(data+19,delegate_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
 
-  if (memcmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0 || memcmp(delegate_name,"delegate_name_1",15) != 0 || memcmp(delegate_public_key,NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH) != 0)
+  // check if the public address is already registered
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
   {
-    // create the message
-    memset(data,0,sizeof(data));
-    memcpy(data,"{\"public_address\":\"",19);
-    memcpy(data+19,delegate_public_address,XCASH_WALLET_LENGTH);
-    memcpy(data+strlen(data),"\"}",2);
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public address is already registered");
+  }
 
-    // check if the public address is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public address is already registered");
-    }
+  // create the message
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"IP_address\":\"",15);
+  memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
+  memcpy(data+strlen(data),"\"}",2); 
 
-    // create the message
-    memset(data,0,sizeof(data));
-    memcpy(data,"{\"IP_address\":\"",15);
-    memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
-    memcpy(data+strlen(data),"\"}",2); 
+  // check if the IP address is already registered
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
+  {    
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates IP address is already registered");
+  }
 
-    // check if the IP address is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
-    {    
-      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates IP address is already registered");
-    }
+  // create the message
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"public_key\":\"",15);
+  memcpy(data+15,delegate_public_key,VRF_PUBLIC_KEY_LENGTH);
+  memcpy(data+79,"\"}",2); 
 
-    // create the message
-    memset(data,0,sizeof(data));
-    memcpy(data,"{\"public_key\":\"",15);
-    memcpy(data+15,delegate_public_key,VRF_PUBLIC_KEY_LENGTH);
-    memcpy(data+79,"\"}",2); 
+  // check if the public key is already registered
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
+  {    
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public key is already registered");
+  }
 
-    // check if the public key is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
-    {    
-      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates public key is already registered");
-    }
-
-    // create the message
-    memset(data,0,sizeof(data));
-    memcpy(data,"{\"delegate_name\":\"",18);
-    memcpy(data+18,delegate_name,strnlen(delegate_name,sizeof(data)));
-    memcpy(data+strlen(data),"\"}",2); 
+  // create the message
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"delegate_name\":\"",18);
+  memcpy(data+18,delegate_name,strnlen(delegate_name,sizeof(data)));
+  memcpy(data+strlen(data),"\"}",2); 
  
-    // check if the delegate name is already registered
-    if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
-    {    
-      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates name is already registered");
-    }
+  // check if the delegate name is already registered
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data,1) != 0)
+  {    
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The delegates name is already registered");
   }
   
   // create the message
@@ -658,7 +649,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   // check if the value is valid
   if ((memcmp(item,"IP_address",10) == 0 && strlen(value) > 255) || (memcmp(item,"about",5) == 0 && strlen(value) > 1024) || (memcmp(item,"website",7) == 0 && strlen(value) > 255) || (memcmp(item,"team",4) == 0 && strlen(value) > 255) || (memcmp(item,"pool_mode",9) == 0 && memcmp(value,"true",4) != 0 && memcmp(value,"false",5) != 0) || (memcmp(item,"fee_structure",13) == 0 && strlen(value) > 10) || (memcmp(item,"server_settings",15) == 0 && strlen(value) > 1024))
   {    
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update");
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item value to update");
   }
 
   // create the message
@@ -675,19 +666,9 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   sync_database_threads;
 
   // update the delegate in the database
-  if (memcmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(item,"about",5) == 0 && memcmp(value,"data",4) == 0)
+  if (update_document_from_collection(database_name,DATABASE_COLLECTION,data,data2,1) == 0)
   {
-    if (update_document_from_collection(database_name,DATABASE_COLLECTION_TEST,data,data2,1) == 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database");
-    }
-  }
-  else
-  {
-    if (update_document_from_collection(database_name,DATABASE_COLLECTION,data,data2,1) == 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database");
-    }
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("The delegate could not be updated from the database");
   }
 
   send_data(CLIENT_SOCKET,(unsigned char*)"Updated the delegates information}",0,0,"");

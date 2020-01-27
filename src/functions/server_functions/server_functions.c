@@ -513,7 +513,6 @@ int socket_thread(int client_socket)
  {
    if (network_functions_test_error_settings == 0)
    {
-     color_print("reset","yellow");
      // reset the error messages
      for (error_message_count = 0; error_message_count < TOTAL_DELEGATES_DATABASE_FIELDS; error_message_count++)
      {

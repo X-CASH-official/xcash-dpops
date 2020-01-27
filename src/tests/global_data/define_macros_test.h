@@ -14,7 +14,7 @@ Using define statements instead of constants for increased efficiency
 #define RESET_ERROR_MESSAGES \
 if (error_message.total != 0) \
 { \
-  for (error_message_count = 0; error_message_count < TOTAL_DELEGATES_DATABASE_FIELDS; error_message_count++) \
+  for (error_message_count = 0; error_message_count < TOTAL_ERROR_MESSAGES; error_message_count++) \
   { \
     memset(error_message.function[error_message_count],0,strlen(error_message.function[error_message_count])); \
     memset(error_message.data[error_message_count],0,strlen(error_message.data[error_message_count])); \

@@ -105,7 +105,6 @@ int count_database_functions_test(void)
   }
   else
   {
-    color_print(error_message.data[0],"yellow");
     color_print("FAILED! Test for count_documents_in_collection checking for Could not convert the data into a database document","red");
   }
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
