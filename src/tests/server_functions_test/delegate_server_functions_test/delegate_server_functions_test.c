@@ -55,6 +55,31 @@ int delegate_server_functions_test(void)
   #define TEST_SIGNATURE_DELEGATES_UPDATE_INVALID_ITEM_VALUE "SigV1gM13gP3p6pmdRcM5mumi8C2A69LN4oM46PhLdQLd8o3bg6Yu3xEoXkX8uv71558fZRYAzRwUr3YbAGRgew24mya4" // the signature used for testing the delegate update function for Invalid item value to update
   #define TEST_SIGNATURE_DELEGATES_REMOVE "SigV1c34L3pqB73kJyWv4qNkz3VGS2SU8kE9dRdDXToAQSGVQDhBj93ZR9YLgn8g1WkDLh8G6EoWTgPbq6ChdYptqZjP9" // the signature used for testing the delegate remove function
  
+  #define DELEGATES_SERVER_FUNCTIONS_TEST_ERROR(DATA,FUNCTION_NAME,TEST) \
+  memcpy(result_test,DATA,sizeof(DATA)-1); \
+  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test); \
+  sleep(5); \
+  for (count = 0; count < error_message.total; count++) \
+  { \
+    if (strncmp(error_message.data[count],TEST,BUFFER_SIZE) == 0) \
+    { \
+      break; \
+    } \
+  } \
+  if (count != error_message.total) \
+  { \
+    fprintf(stderr,"\033[1;32mPASSED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
+    count_test++; \
+  } \
+  else \
+  { \
+    fprintf(stderr,"\033[1;31mFAILED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
+  } \
+  delete_database(database_name,0); \
+  memset(result_test,0,sizeof(result_test)); \
+  memset(data_test,0,sizeof(data_test)); \
+  memset(data,0,sizeof(data));
+
   // reset the variables
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
@@ -154,440 +179,65 @@ int delegate_server_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   memset(data,0,sizeof(data));
 
-  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|",872);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"Could not verify the message",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_node_to_block_verifiers_add_reserve_proof checking for Could not verify the message","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_node_to_block_verifiers_add_reserve_proof checking for Could not verify the message","red");
-  }
-
-  delete_database(database_name,0);
+  // server_receive_data_socket_node_to_block_verifiers_add_reserve_proof
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|","server_receive_data_socket_node_to_block_verifiers_add_reserve_proof","Could not verify the message");  
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
-  
-  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|XCA|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF_INVALID_DATA "|",777);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"Invalid data",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_node_to_block_verifiers_add_reserve_proof checking for Invalid data","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_node_to_block_verifiers_add_reserve_proof checking for Invalid data","red");
-  }
 
-  delete_database(database_name,0);
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|XCA|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF_INVALID_DATA "|","server_receive_data_socket_node_to_block_verifiers_add_reserve_proof","Invalid data");  
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
-  
-  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|DATA|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF_INVALID_RESERVE_PROOF "|",339);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
 
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"The reserve proof is invalid",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_node_to_block_verifiers_add_reserve_proof checking for The reserve proof is invalid","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_node_to_block_verifiers_add_reserve_proof checking for The reserve proof is invalid","red");
-  }
-  delete_database(database_name,0);
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|DATA|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF_INVALID_RESERVE_PROOF "|","server_receive_data_socket_node_to_block_verifiers_add_reserve_proof","The reserve proof is invalid");  
+  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
-  // test server_receive_data_socket_nodes_to_block_verifiers_register_delegates
+  // server_receive_data_socket_nodes_to_block_verifiers_register_delegates
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|192.168.2.0|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|","server_receive_data_socket_nodes_to_block_verifiers_register_delegates","Could not verify the message"); 
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|192.168.2.0|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|",329);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"Could not verify the message",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for Could not verify the message","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for Could not verify the message","red");
-  }
-  delete_database(database_name,0);
-  RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
-
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|DATA|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_INVALID_DATA "|",322);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"Invalid data",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for Invalid data","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for Invalid data","red");
-  }
-  delete_database(database_name,0);
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|DATA|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_INVALID_DATA "|","server_receive_data_socket_nodes_to_block_verifiers_register_delegates","Invalid data");
   insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"public_key\":\"" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "\"}",0);
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|192.168.2.0|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_PUBLIC_ADDRESS_ALREADY_REGISTERED "|",329);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"The delegates public address is already registered",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for The delegates public address is already registered","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for The delegates public address is already registered","red");
-  }
-  delete_database(database_name,0);
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|192.168.2.0|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_PUBLIC_ADDRESS_ALREADY_REGISTERED "|","server_receive_data_socket_nodes_to_block_verifiers_register_delegates","The delegates public address is already registered"); 
   insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"public_key\":\"" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "\"}",0);
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|127.0.0.1|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_IP_ADDRESS_ALREADY_REGISTERED "|",327);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"The delegates IP address is already registered",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for The delegates IP address is already registered","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for The delegates IP address is already registered","red");
-  }
-  delete_database(database_name,0);
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|127.0.0.1|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_IP_ADDRESS_ALREADY_REGISTERED "|","server_receive_data_socket_nodes_to_block_verifiers_register_delegates","The delegates IP address is already registered"); 
   insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"public_key\":\"" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "\"}",0);
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
-
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|192.168.2.0|" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_PUBLIC_KEY_ALREADY_REGISTERED "|",329);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"The delegates public key is already registered",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for The delegates public key is already registeredd","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for The delegates public key is already registered","red");
-  }
-  delete_database(database_name,0);
+  
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|192.168.2.0|" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_PUBLIC_KEY_ALREADY_REGISTERED "|","server_receive_data_socket_nodes_to_block_verifiers_register_delegates","The delegates public key is already registered"); 
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
-
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_1|192.168.2.0|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_DELEGATES_NAME_ALREADY_REGISTERED "|",329);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"The delegates name is already registered",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for The delegates name is already registered","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_register_delegates checking for The delegates name is already registered","red");
-  }
-
-
-
-
-
-
-
+  
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_1|192.168.2.0|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER_DELEGATES_NAME_ALREADY_REGISTERED "|","server_receive_data_socket_nodes_to_block_verifiers_register_delegates","The delegates name is already registered"); 
+  RESET_ERROR_MESSAGES;
 
   // test server_receive_data_socket_nodes_to_block_verifiers_update_delegates
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|about|data|" TEST_WALLET_DELEGATES_REGISTER "|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|","server_receive_data_socket_nodes_to_block_verifiers_update_delegates","Could not verify the message"); 
   RESET_ERROR_MESSAGES;
-  delete_database(database_name,0);
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|about|data|" TEST_WALLET_DELEGATES_REGISTER "|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|",245);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"Could not verify the message",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates checking for Could not verify the message","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates checking for Could not verify the message","red");
-  }
-  delete_database(database_name,0);
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|data|data|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_UPDATE_INVALID_ITEM "|","server_receive_data_socket_nodes_to_block_verifiers_update_delegates","Invalid item to update"); 
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|data|data|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_UPDATE_INVALID_ITEM "|",244);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"Invalid item to update",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates checking for Invalid item to update","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates checking for Invalid item to update","red");
-  }
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|IP_address|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_UPDATE_INVALID_ITEM_VALUE "|","server_receive_data_socket_nodes_to_block_verifiers_update_delegates","Invalid item value to update"); 
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|IP_address|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_UPDATE_INVALID_ITEM_VALUE "|",502);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"Invalid item value to update",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates checking for Invalid item value to update","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates checking for Invalid item value to update","red");
-  }
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|about|data|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_UPDATE "|","server_receive_data_socket_nodes_to_block_verifiers_update_delegates","The delegate could not be updated from the database"); 
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
-
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|about|data|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_UPDATE "|",245);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"The delegate could not be updated from the database",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates checking for The delegate could not be updated from the database","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates checking for The delegate could not be updated from the database","red");
-  }
-  RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
-
-
-
-
-
-
-
 
   // test server_receive_data_socket_nodes_to_block_verifiers_remove_delegates
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|","server_receive_data_socket_nodes_to_block_verifiers_remove_delegates","Could not verify the message"); 
   RESET_ERROR_MESSAGES;
-  delete_database(database_name,0);
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
-  
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|",234);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"Could not verify the message",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_remove_delegates checking for Could not verify the message","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_remove_delegates checking for Could not verify the message","red");
-  }
-  delete_database(database_name,0);
-  RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REMOVE "|",234);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"The delegate is already removed",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_remove_delegates checking for The delegate is already removed","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_remove_delegates checking for The delegate is already removed","red");
-  }
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REMOVE "|","server_receive_data_socket_nodes_to_block_verifiers_remove_delegates","The delegate is already removed"); 
   insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"public_key\":\"" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "\"}",0);
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REMOVE "|",234);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
-  sleep(5);
-  for (count = 0; count < error_message.total; count++)
-  {
-    if (strncmp(error_message.data[count],"The delegate has already mined a block",BUFFER_SIZE) == 0)
-    {
-      break;
-    }
-  }
-  if (count != error_message.total)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_remove_delegates checking for The delegate has already mined a block","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_remove_delegates checking for The delegate has already mined a block","red");
-  }
-  delete_database(database_name,0);
+  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REMOVE "|","server_receive_data_socket_nodes_to_block_verifiers_remove_delegates","The delegate has already mined a block"); 
   RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
 
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\ndelegate server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
@@ -609,4 +259,5 @@ int delegate_server_functions_test(void)
   #undef TEST_SIGNATURE_DELEGATES_UPDATE_INVALID_ITEM
   #undef TEST_SIGNATURE_DELEGATES_UPDATE_INVALID_ITEM_VALUE
   #undef TEST_SIGNATURE_DELEGATES_REMOVE
+  #undef DELEGATES_SERVER_FUNCTIONS_TEST_ERROR
 }
