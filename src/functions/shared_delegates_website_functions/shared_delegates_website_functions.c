@@ -18,6 +18,7 @@
 #include "structures.h"
 #include "variables.h"
 #include "initialize_and_reset_structs_define_macros.h"
+#include "define_macros_test.h"
 
 #include "blockchain_functions.h"
 #include "block_verifiers_synchronize_functions.h"
@@ -62,9 +63,9 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count;
-  size_t count2;
-  size_t counter;
+  int count;
+  int count2;
+  int counter;
   size_t number;
   int total_blocks_found;
   int total_payments;
@@ -81,8 +82,10 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings) \
-  network_functions_test_settings = 1; \
+  #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings,MESSAGE) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66); \
+  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+  error_message.total++; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   if ((settings) == 0) \
@@ -187,9 +190,9 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   if (total_blocks_found != 0)
   {
-    if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
+    if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",1) <= 0)
     {
-      SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
+      SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
     }
 
     // get the total xcash from found blocks
@@ -213,9 +216,13 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   { 
     memset(data,0,strlen(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%zu",count);
+    snprintf(data+15,sizeof(data)-16,"%d",count);
 
     counter = count_documents_in_collection(database_name,data,message,1);
+    if (counter == -1)
+    {
+      continue;
+    }
     total_voters += counter;
 
     if (read_multiple_documents_all_fields_from_collection(database_name,data,message,&database_multiple_documents_fields2,1,counter,0,"",1) == 1)
@@ -226,6 +233,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
         total_votes += number;
       }
     }
+    
 
     // reset the database_multiple_documents_fields struct
     for (count2 = 0; count2 < counter; count2++)
@@ -237,6 +245,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
       }
     }
   }
+  RESET_ERROR_MESSAGES;
 
   // get the block_verifier_online_percentage
   memset(data,0,sizeof(data));
@@ -245,9 +254,9 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+117,"\"}",2);
 
-  if (read_document_field_from_collection(database_name,"delegates",message,"block_verifier_online_percentage",data,1) == 0)
+  if (read_document_field_from_collection(database_name,"delegates",message,"block_verifier_online_percentage",data,1) <= 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
   } 
   
   memset(message,0,sizeof(message));
@@ -274,10 +283,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   snprintf(message+strlen(message),sizeof(message),"%lld",minimum_amount);
   memcpy(message+strlen(message),"\"}",2);
 
-  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0);
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
 
   pointer_reset_database_array; 
   return 1;
@@ -315,8 +321,10 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   #define DATABASE_COLLECTION "blocks_found"
   #define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5
 
-  #define SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(settings) \
-  network_functions_test_settings = 1; \
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(settings,MESSAGE) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_blocks_found",42); \
+  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+  error_message.total++; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates blocks found\"}",52); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -332,7 +340,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
 
   if (document_count <= 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1);
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1,"The delegate has not found any blocks");
   }
 
   memset(buffer,0,sizeof(buffer));
@@ -342,18 +350,14 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
 
   if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0,"Could not get the delegates blocks found data");
   }
   
   if (create_json_data_from_database_multiple_documents_array(&database_multiple_documents_fields,message,"") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
-  } 
-  
-  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0);
-  }
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0,"Could not create the json data");
+  }  
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
   
   pointer_reset(message);
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS);
@@ -390,8 +394,10 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   #define DATABASE_COLLECTION "public_addresses"
   #define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4
 
-  #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(settings) \
-  network_functions_test_settings = 1; \
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(settings,MESSAGE) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_information",57); \
+  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+  error_message.total++; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -410,7 +416,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   // error check
   if (strncmp(data2,"",BUFFER_SIZE) == 0 || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strnlen(data2,BUFFER_SIZE) != XCASH_WALLET_LENGTH)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1);
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1,"Invalid parameters");
   } 
   
   // check if the data is a public address or a delegate name
@@ -422,7 +428,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   // check if there is any data in the database that matches the message
   if (count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,message,1) <= 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1);
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1,"The public address could not be found in the database for the delegate");
   }
 
   // initialize the database_document_fields struct 
@@ -430,7 +436,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
    
   if (read_document_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,message,&database_data,1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0,"Could not get the public addresses data");
   }
   
   memset(message,0,strlen(message));
@@ -438,13 +444,9 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_document_array(&database_data,message,"") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0,"Could not create the json data");
   }
-
-  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0);
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
   
   POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
   return 1;
@@ -483,8 +485,10 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   #define DATABASE_COLLECTION "public_addresses_payments"
   #define TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS 5
 
-  #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(settings) \
-  network_functions_test_settings = 1; \
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(settings,MESSAGE) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_payment_information",65); \
+  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+  error_message.total++; \
   memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
   memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -510,7 +514,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   // error check
   if (strncmp(data2,"",BUFFER_SIZE) == 0 || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strnlen(data2,BUFFER_SIZE) != XCASH_WALLET_LENGTH)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1);
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"Invalid parameters");
   }
   
   // check if the data is a public address or a delegate name
@@ -523,7 +527,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   document_count = count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,message,1);
   if (document_count <= 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1);
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"There is no payment data for the public address");
   }
   
   // initialize the database_multiple_documents_fields struct
@@ -531,7 +535,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   
   if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0,"Could not get the payment data for the public address");
   }
   
   memset(message,0,strlen(message));
@@ -539,13 +543,10 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_multiple_documents_array(&database_multiple_documents_fields,message,"") == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0);
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0,"Could not create the json data");
   }
 
-  if (send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json") == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0);
-  }
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
   
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS);
   pointer_reset(message);
