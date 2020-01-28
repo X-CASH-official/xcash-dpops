@@ -150,6 +150,7 @@ int get_delegates_total_voters_count(const char* DELEGATES_PUBLIC_ADDRESS)
   char data2[1024];
   int public_address_count;
   int count;
+  int counter;
 
   memset(data,0,sizeof(data));
   memcpy(data,"{\"public_address_voted_for\":\"",29);
@@ -157,12 +158,16 @@ int get_delegates_total_voters_count(const char* DELEGATES_PUBLIC_ADDRESS)
   memcpy(data+127,"\"}",2);
 
   // get the count of how many public addresses voted for the delegate
-  for (public_address_count = 0, count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  for (public_address_count = 0, count = 1, counter = 0; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   { 
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
-    public_address_count += count_documents_in_collection(database_name,data2,data,1);
+    counter = count_documents_in_collection(database_name,data2,data,1);
+    if (counter != -1)
+    {
+      public_address_count += counter;
+    }
   }
   return public_address_count;
 }

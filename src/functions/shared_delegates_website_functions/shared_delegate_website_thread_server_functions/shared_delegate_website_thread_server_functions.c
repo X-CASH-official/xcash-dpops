@@ -184,7 +184,7 @@ Name: get_delegates_total_voters
 Description: Gets the delegates total voters
 Parameters:
   block_reward - The block reward
-Return: 0 if an error has occured, otherwise the total votes from all of the voters for the delegate
+Return: -1 if an error has occured, otherwise the total votes from all of the voters for the delegate
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -198,7 +198,7 @@ int get_delegates_total_voters(struct voters* voters)
   int count;
   int count2;
   int counter;
-  int total_votes;
+  int total_votes = 0;
   long long int number;
   struct database_multiple_documents_fields database_multiple_documents_fields;
 
@@ -207,7 +207,7 @@ int get_delegates_total_voters(struct voters* voters)
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
   RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS); \
-  return 0;
+  return -1;
 
   // initialize the database_multiple_documents_fields struct 
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"get_delegates_total_voters",data,current_date_and_time,current_UTC_date_and_time);
@@ -297,7 +297,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   POINTER_RESET_VOTERS_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE); \
   return 0;
 
-  // initialize the delegates struct
+  // initialize the voters struct
   INITIALIZE_VOTERS_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,"calculate_block_reward_for_each_delegate",data,current_date_and_time,current_UTC_date_and_time);
 
   memset(data,0,sizeof(data));
@@ -314,11 +314,15 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   total_voters = get_delegates_total_voters_count(xcash_wallet_public_address);
   if (total_voters < 1)
   {
-    CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("The delegate does not have enough voters to distribute the block rewards with yet");
+    CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("The delegate does not have enough voters to distribute the block rewards with");
   }
   
   // get the total votes for the delegate
   total_votes = get_delegates_total_voters(voters);
+  if (total_votes == -1)
+  {
+    total_votes = 0;
+  }
 
   // calculate the block reward for all of the voters
   for (count = 0; count < total_voters; count++)
