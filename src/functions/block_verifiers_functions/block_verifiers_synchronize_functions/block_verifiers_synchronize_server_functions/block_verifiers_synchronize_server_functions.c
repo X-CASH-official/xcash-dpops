@@ -265,7 +265,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const char* MESSAGE, const int CLIENT_SOCKET)
+int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET)
 {
    // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
@@ -290,22 +290,10 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memset(message,0,sizeof(message));
 
   // get the database data hash for the reserve bytes database
-  if (strstr(MESSAGE,xcash_wallet_public_address) == NULL)
+  if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
   {
-    if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
-    {
-     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
-    }
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
-  else
-  {
-    if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION_TEST) == 0)
-    {
-     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
-    }
-  }
-  
-  
 
   // create the message
   memcpy(data,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD|",72);
@@ -590,6 +578,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
       }
       memcpy(message+strlen(message),"\",\r\n",4);
     }
+    RESET_ERROR_MESSAGES;
     memcpy(message+strlen(message),"}",1);
   }
   

@@ -30,14 +30,18 @@ Return: The number of passed block_verifiers_server_functions test
 
 int block_verifiers_server_functions_test(void)
 {
+  // Variables
+  int count;
+
   // define macros
-  #define BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST 10
+  #define BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST 18
 
   // reset the variables
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
-  error_message.total = 0;
+  network_functions_test_error_settings = 2;
+  RESET_ERROR_MESSAGES;
  
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\nblock verifiers server functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);

@@ -32,7 +32,7 @@ Return: The number of passed blockchain test
 int blockchain_functions_test(void)
 { 
   // define macros
-  #define BLOCKCHAIN_TOTAL_TEST 5
+  #define BLOCKCHAIN_TOTAL_TEST 31
 
   #define INVALID_NETWORK_VERSION_CODE \
   memset(blockchain_data.network_version_data,0,strlen(blockchain_data.network_version_data)); \

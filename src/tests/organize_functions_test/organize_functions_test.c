@@ -31,7 +31,7 @@ Return: The number of passed organize_functions test
 int organize_functions_test(void)
 {
   // define macros
-  #define ORGANIZE_FUNCTIONS_TOTAL_TEST 3
+  #define ORGANIZE_FUNCTIONS_TOTAL_TEST 4
   
   // variables
   char reserve_proofs[2][BUFFER_SIZE_RESERVE_PROOF] = {"RESERVE_PROOF_TEST_DATA_2","RESERVE_PROOF_TEST_DATA"};

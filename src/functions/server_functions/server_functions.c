@@ -411,7 +411,7 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
-   server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update((const char*)buffer,client_socket);
+   server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket);
  }
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\"") != NULL)
  {

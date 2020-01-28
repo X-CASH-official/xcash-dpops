@@ -7,6 +7,7 @@
 #include "define_macros.h"
 #include "structures.h"
 #include "variables.h"
+#include "define_macros_test.h"
 
 #include "database_functions.h"
 #include "count_database_functions.h"
@@ -344,7 +345,10 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
       snprintf(data2+15,BUFFER_SIZE-16,"%zu",count);
-      get_database_data(data,DATABASE,data2,1);
+      if (get_database_data(data,DATABASE,data2,1) == 0)
+      {
+        continue;
+      }
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
@@ -354,6 +358,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
         snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
       }
     }
+    RESET_ERROR_MESSAGES;
 
     memset(data,0,strlen(data));
     memset(data_hash,0,strlen(data_hash));
@@ -424,6 +429,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
         snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
       }
     }
+    RESET_ERROR_MESSAGES;
 
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {

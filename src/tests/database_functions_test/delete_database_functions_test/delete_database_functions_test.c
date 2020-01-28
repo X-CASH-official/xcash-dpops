@@ -32,7 +32,7 @@ int delete_database_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define DELETE_DATABASE_FUNCTIONS_TEST 6
+  #define DELETE_DATABASE_FUNCTIONS_TEST 8
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
 
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);

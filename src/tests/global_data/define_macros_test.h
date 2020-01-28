@@ -8,7 +8,7 @@ Using define statements instead of constants for increased efficiency
 */
 
 // Test
-#define XCASH_DPOPS_TOTAL_TEST 264
+#define XCASH_DPOPS_TOTAL_TEST 381
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "521850" // The block height used for testing
 #define TEST_WALLET "XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3" // the wallet used for test
 #define RESET_ERROR_MESSAGES \
@@ -749,6 +749,7 @@ if (sign_data(result_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT
   } \
   else \
   { \
+  color_print(error_message.data[0],"yellow"); \
     fprintf(stderr,"\033[1;31mFAILED! Test for %s\033[0m\n",FUNCTION_NAME); \
   } \
 } \
@@ -756,7 +757,7 @@ else \
 { \
   fprintf(stderr,"\033[1;31mFAILED! Test for %s\033[0m\n",FUNCTION_NAME); \
 } \
-error_message.total = 0;
+RESET_ERROR_MESSAGES;
 
 #define CHECK_SERVER_FUNCTIONS_ERROR(FUNCTION_NAME,MESSAGE,STRING_REPLACE_SETTINGS,CURRENT_STRING,NEW_STRING,TEST) \
 memset(result_test,0,sizeof(result_test)); \
@@ -766,8 +767,15 @@ if (STRING_REPLACE_SETTINGS == 1) \
 if (sign_data(result_test,0) == 1 && string_replace(result_test,sizeof(result_test),CURRENT_STRING,NEW_STRING) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test) == 1) \
 { \
   sleep(5); \
-  if (error_message.total == 1 && strncmp(error_message.data[0],TEST,BUFFER_SIZE) == 0) \
+  for (count = 0; count < error_message.total; count++) \
+{ \
+  if (strncmp(error_message.data[count],TEST,BUFFER_SIZE) == 0) \
   { \
+    break; \
+  } \
+} \
+if (count != error_message.total) \
+{ \
     fprintf(stderr,"\033[1;32mPASSED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
     count_test++; \
   } \
@@ -786,8 +794,15 @@ else \
   if (sign_data(result_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test) == 1) \
 { \
   sleep(5); \
-  if (error_message.total == 1 && strncmp(error_message.data[0],TEST,BUFFER_SIZE) == 0) \
+  for (count = 0; count < error_message.total; count++) \
+{ \
+  if (strncmp(error_message.data[count],TEST,BUFFER_SIZE) == 0) \
   { \
+    break; \
+  } \
+} \
+if (count != error_message.total) \
+{ \
     fprintf(stderr,"\033[1;32mPASSED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
     count_test++; \
   } \
@@ -849,7 +864,7 @@ memset(data_test,0,sizeof(data_test));
 
 #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\",\r\n \"public_address_that_created_the_reserve_proof\": \"" TEST_WALLET "\",\r\n,\r\n \"reserve_proof\": \"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT\",\r\n}"
 #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}"
-#define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA "{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"DATA\",\r\n \"reserve_bytes_data_hash\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+#define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA "{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"{\"block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"data\"}\",\r\n \"reserve_bytes_data_hash\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
 #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK_TEST_DATA "{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"DATA\",\r\n}"
 #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK\",\r\n \"block_blob_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
 #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA "{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"DATA\",\r\n}"

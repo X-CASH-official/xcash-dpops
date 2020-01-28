@@ -244,7 +244,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 
   // add the data to the database
   memcpy(data3,data,strlen(data)-2);
-  if (strstr(MESSAGE,xcash_wallet_public_address) == NULL && strstr(MESSAGE,TEST_WALLET) == NULL)
+  if (network_functions_test_error_settings == 1)
   {
     if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data3,1) == 0)
     {

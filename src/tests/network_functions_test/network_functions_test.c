@@ -70,7 +70,7 @@ int network_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define NETWORK_FUNCTIONS_TEST 6
+  #define NETWORK_FUNCTIONS_TEST 11
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
 
@@ -124,6 +124,7 @@ int network_functions_test(void)
   // create the message
   memset(message,0,sizeof(message));
   memcpy(message,MESSAGE,sizeof(MESSAGE)-1);
+  network_functions_test_error_settings = 0;
 
   // sign_data
   if (settings == 1)
@@ -144,6 +145,8 @@ int network_functions_test(void)
   
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
+  network_functions_test_settings = 0;
+  network_functions_test_error_settings = 1;
   
   // verify the message
   if (settings == 1)
@@ -184,7 +187,6 @@ int network_functions_test(void)
   }
 
   // test send_data_socket
-  network_functions_test_settings = 0;
   memset(message,0,sizeof(message));
   memcpy(message,MESSAGE,sizeof(MESSAGE)-1);
 

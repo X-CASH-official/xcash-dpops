@@ -33,7 +33,7 @@ int update_database_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define UPDATE_DATABASE_FUNCTIONS_TEST 4
+  #define UPDATE_DATABASE_FUNCTIONS_TEST 8
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
   #define MESSAGE_SETTINGS "{\"message_settings\": \"XCASH_DPOPS_DATA\"}"
 

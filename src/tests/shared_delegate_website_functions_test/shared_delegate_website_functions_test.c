@@ -37,7 +37,7 @@ int shared_delegate_website_functions_test(void)
   int count;
 
   // define macros
-  #define SHARED_DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST 4
+  #define SHARED_DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST 10
   
   memset(database_name,0,sizeof(database_name));
   memcpy(database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);

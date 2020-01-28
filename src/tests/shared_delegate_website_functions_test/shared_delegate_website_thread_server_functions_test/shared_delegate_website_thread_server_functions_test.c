@@ -42,7 +42,7 @@ int shared_delegate_website_thread_server_functions_test(void)
   int count = 0;
 
   // define macros
-  #define SHARED_DELEGATE_WEBSITE_THREAD_SERVER_FUNCTIONS_TOTAL_TEST 2
+  #define SHARED_DELEGATE_WEBSITE_THREAD_SERVER_FUNCTIONS_TOTAL_TEST 5
 
   // initialize the voters struct
   INITIALIZE_VOTERS_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,"shared_delegate_website_thread_server_functions_test",data,current_date_and_time,current_UTC_date_and_time);

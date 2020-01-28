@@ -33,7 +33,7 @@ int count_database_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define COUNT_DATABASE_FUNCTIONS_TEST 4
+  #define COUNT_DATABASE_FUNCTIONS_TEST 7
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
 
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
