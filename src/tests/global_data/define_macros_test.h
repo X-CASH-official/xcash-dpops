@@ -807,13 +807,14 @@ RESET_ERROR_MESSAGES;
 if (send_data_socket("127.0.0.1",SEND_DATA_PORT,MESSAGE) == 1) \
 { \
   sleep(5); \
-  if (network_functions_test_settings == 0) \
+  if (error_message.total == 0) \
   { \
     fprintf(stderr,"\033[1;32mPASSED! Test for %s\033[0m\n",FUNCTION_NAME); \
     count_test++; \
   } \
   else \
   { \
+  color_print(error_message.data[0],"yellow"); \
     fprintf(stderr,"\033[1;31mFAILED! Test for %s\033[0m\n",FUNCTION_NAME); \
   } \
 } \
@@ -821,7 +822,30 @@ else \
 { \
   fprintf(stderr,"\033[1;31mFAILED! Test for %s\033[0m\n",FUNCTION_NAME); \
 } \
-network_functions_test_settings = 0;
+RESET_ERROR_MESSAGES;
+
+#define CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR(DATA,FUNCTION_NAME,TEST) \
+memcpy(result_test,DATA,sizeof(DATA)-1); \
+send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test); \
+sleep(5); \
+for (count = 0; count < error_message.total; count++) \
+{ \
+  if (strncmp(error_message.data[count],TEST,BUFFER_SIZE) == 0) \
+  { \
+    break; \
+  } \
+} \
+if (count != error_message.total) \
+{ \
+  fprintf(stderr,"\033[1;32mPASSED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
+  count_test++; \
+} \
+else \
+{ \
+  fprintf(stderr,"\033[1;31mFAILED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
+} \
+memset(result_test,0,sizeof(result_test)); \
+memset(data_test,0,sizeof(data_test));
 
 #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\",\r\n \"public_address_that_created_the_reserve_proof\": \"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3\",\r\n,\r\n \"reserve_proof\": \"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT\",\r\n}"
 #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}"
