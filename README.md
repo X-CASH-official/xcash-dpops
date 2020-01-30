@@ -1,4 +1,6 @@
 # X-CASH Delegated Proof Of Privacy Stake (DPOPS)
+
+⚠ Alpha: The DPOPS integration is still a work in progress 🏗 
  
 X-CASH DPOPS is a variation of DPOS and DBFT. The key features of X-CASH DPOPS are:
  
