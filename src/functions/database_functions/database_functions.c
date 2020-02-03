@@ -278,7 +278,9 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
 
   if (count != 1)
   {
-    GET_DATABASE_DATA_ERROR("Could not get the database data");
+    //GET_DATABASE_DATA_ERROR("Could not get the database data");
+    database_reset_all;
+    return 0;
   }
   
   database_reset_all;
@@ -394,6 +396,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
         snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
       }
     }
+    RESET_ERROR_MESSAGES;
 
     memset(data,0,strlen(data));
     memset(data_hash,0,strlen(data_hash));
@@ -459,6 +462,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
         snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
       }
     }
+    RESET_ERROR_MESSAGES;
 
     for (count = 1; count <= counter; count++)
     {
