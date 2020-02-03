@@ -32,48 +32,33 @@
 #include "VRF_functions.h"
 
 #include "XCASH_DPOPS_test.h"
+#include "XCASH_DPOPS.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Main function
+Name: Global Variables
 -----------------------------------------------------------------------------------------------------------
 */
 
-int main(int parameters_count, char* parameters[])
-{
-  // iniltize the random number generator
-  srand(time(NULL));
+mongoc_uri_t* uri_thread_pool;
+bson_error_t error;
 
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: initialize_data
+Description: Initializes the global variables
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void initialize_data(void)
+{
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  size_t count = 0;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  long int current_time;
-  size_t count = 0;
-  size_t count2 = 0;
-  size_t count3 = 0;
-  size_t counter = 0;
-
-  // threads
-  pthread_t thread_id[5];
-  
-  // define macros
-  #define MESSAGE "{\"username\":\"XCASH\"}"
-  
-  #define database_reset \
-  mongoc_client_destroy(database_client); \
-  mongoc_client_pool_destroy(database_client_thread_pool); \
-  mongoc_uri_destroy(uri_thread_pool); \
-  mongoc_cleanup();
-
-  #define MAIN_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"main",4); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  database_reset; \
-  exit(0);
 
   memset(data,0,sizeof(data));
 
@@ -310,22 +295,26 @@ int main(int parameters_count, char* parameters[])
     invalid_reserve_proofs.reserve_proof[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char)); 
   }
   invalid_reserve_proofs.count = 0;
+  return;
+}
 
-  // write the message
-  color_print("XCASH DPOPS - Version 1.0.0\n","green");
 
-  // check if they want to display the parameters
-  if (parameters_count == 2 && strncmp(parameters[1],"--parameters",BUFFER_SIZE) == 0)
-  {
-    printf(INVALID_PARAMETERS_ERROR_MESSAGE);
-    exit(0);
-  }
 
-  if (parameters_count == 2 && strncmp(parameters[1],"--generate_key",BUFFER_SIZE) == 0)
-  {
-    generate_key();
-    exit(0);
-  }
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: create_overall_database_connection
+Description: Create a database connection
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void create_overall_database_connection(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  memset(data,0,sizeof(data));
 
   // initialize the database connection
   mongoc_init();
@@ -342,8 +331,6 @@ int main(int parameters_count, char* parameters[])
   }
 
   // create a pool of connections for the database
-  mongoc_uri_t* uri_thread_pool;
-  bson_error_t error;
   uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error);
   if (!uri_thread_pool)
   {
@@ -367,17 +354,49 @@ int main(int parameters_count, char* parameters[])
     mongoc_cleanup();
     exit(0);
   }
+  return;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_delegates_data
+Description: Gets the delegates data
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void get_delegates_data(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // define macros
+  #define GET_DELEGATES_DATA_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"get_delegates_data",18); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  mongoc_client_destroy(database_client); \
+  mongoc_client_pool_destroy(database_client_thread_pool); \
+  mongoc_uri_destroy(uri_thread_pool); \
+  mongoc_cleanup(); \
+  exit(0);
+
+  memset(data,0,sizeof(data));
 
   // get the wallets public address
   if (get_public_address(0) == 0)
   { 
-    MAIN_ERROR("Could not get the wallets public address");
+    GET_DELEGATES_DATA_ERROR("Could not get the wallets public address");
   }
 
   // get the current block height
   if (get_current_block_height(current_block_height,0) == 0)
   {
-    MAIN_ERROR("Could not get the current block height");
+    GET_DELEGATES_DATA_ERROR("Could not get the current block height");
   }
 
   // wait until the blockchain is fully synced
@@ -393,8 +412,55 @@ int main(int parameters_count, char* parameters[])
   // get the previous block hash
   if (get_previous_block_hash(previous_block_hash,0) == 0)
   {
-    MAIN_ERROR("Could not get the previous block hash");
+    GET_DELEGATES_DATA_ERROR("Could not get the previous block hash");
   }
+  return;
+
+  #undef GET_DELEGATES_DATA_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: set_parameters
+Description: Sets the parameters
+Parameters:
+  parameters_count - The parameter count
+  parameters - The parameters
+Return: 0 if an error has occured, 1 if successfull, 2 to disable the timers
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int set_parameters(int parameters_count, char* parameters[])
+{
+  // define macros
+  #define database_reset \
+  mongoc_client_destroy(database_client); \
+  mongoc_client_pool_destroy(database_client_thread_pool); \
+  mongoc_uri_destroy(uri_thread_pool); \
+  mongoc_cleanup();
+
+  #define SET_PARAMETERS_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"set_parameters",14); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  database_reset; \
+  exit(0);
+
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  size_t count = 0;
+  size_t count2 = 0;
+  size_t count3 = 0;
+  size_t counter = 0;
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // set the default parameter settings
   total_threads = get_nprocs();
@@ -418,7 +484,7 @@ int main(int parameters_count, char* parameters[])
   // check all of the parameters to see if there is a block verifier secret key
   if (parameters_count < 3)
   {
-    MAIN_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block_verifier_secret_key parameter");
+    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block_verifier_secret_key parameter");
   }
   
   // check the parameters
@@ -432,7 +498,7 @@ int main(int parameters_count, char* parameters[])
 
   if (count2 != 1)
   {
-    MAIN_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block_verifier_secret_key parameter");
+    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block_verifier_secret_key parameter");
   }
 
   // check the parameters
@@ -442,7 +508,7 @@ int main(int parameters_count, char* parameters[])
     {
       if (strlen(parameters[count+1]) != VRF_SECRET_KEY_LENGTH)
       {
-        MAIN_ERROR("Invalid block verifiers secret key");
+        SET_PARAMETERS_ERROR("Invalid block verifiers secret key");
       }
 
       // get the secret key for signing messages
@@ -595,7 +661,7 @@ int main(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--disable_synchronizing_databases_and_starting_timers",BUFFER_SIZE) == 0)
     {
-      count2 = 1;
+      return 2;
     }
     if (strncmp(parameters[count],"--delegates_website",BUFFER_SIZE) == 0)
     {
@@ -631,86 +697,126 @@ int main(int parameters_count, char* parameters[])
       sscanf(parameters[count+1], "%d", &total_threads);
     }    
   }
+  return 1;
 
-  if (count2 == 1)
-  {
-    goto disable_synchronizing_databases_and_starting_timers;
-  }
+  #undef database_reset
+  #undef SET_PARAMETERS_ERROR
+}
 
-  // check if it should create the default database data
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: print_settings
+Description: Prints the delegates settings
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void print_settings(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+
   memset(data,0,sizeof(data));
-  if (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0)
-  {
-    INITIALIZE_DATABASE_DATA;
-  }
 
-  // print the settings
-  memset(data2,0,sizeof(data2));
-  memcpy(data2,"Settings\n\nPublic Address: ",26);
-  memcpy(data2+strlen(data2),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(data2+strlen(data2),"\nBlock Verifiers Secret Key: ",29);
-  memcpy(data2+strlen(data2),secret_key,VRF_SECRET_KEY_LENGTH);
-  memcpy(data2+strlen(data2),"\nDatabase Name: ",16);
-  memcpy(data2+strlen(data2),database_name,strnlen(database_name,sizeof(data2)));
+  memset(data,0,sizeof(data));
+  memcpy(data,"Settings\n\nPublic Address: ",26);
+  memcpy(data+strlen(data),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\nBlock Verifiers Secret Key: ",29);
+  memcpy(data+strlen(data),secret_key,VRF_SECRET_KEY_LENGTH);
+  memcpy(data+strlen(data),"\nDatabase Name: ",16);
+  memcpy(data+strlen(data),database_name,strnlen(database_name,sizeof(data)));
   if (shared_delegates_website == 1)
   {
-    memcpy(data2+strlen(data2),"\nShared Delegate Settings: YES\nFee: ",36);
-    snprintf(data2+strlen(data2),sizeof(data2)-1,"%lf",fee);
-    memcpy(data2+strlen(data2),"\nMinimum Amount: ",17);
-    snprintf(data2+strlen(data2),sizeof(data2)-1,"%lld",minimum_amount);
-    memcpy(data2+strlen(data2),"\nShared Delegates Database Name: ",33);
-    memcpy(data2+strlen(data2),shared_delegates_database_name,strnlen(shared_delegates_database_name,sizeof(data2)));
+    memcpy(data+strlen(data),"\nShared Delegate Settings: YES\nFee: ",36);
+    snprintf(data+strlen(data),sizeof(data)-1,"%lf",fee);
+    memcpy(data+strlen(data),"\nMinimum Amount: ",17);
+    snprintf(data+strlen(data),sizeof(data)-1,"%lld",minimum_amount);
+    memcpy(data+strlen(data),"\nShared Delegates Database Name: ",33);
+    memcpy(data+strlen(data),shared_delegates_database_name,strnlen(shared_delegates_database_name,sizeof(data)));
   }
   else
   {
-    memcpy(data2+strlen(data2),"\nShared Delegate Settings: NO",29);
+    memcpy(data+strlen(data),"\nShared Delegate Settings: NO",29);
   }  
   if (delegates_website == 1)
   {
-    memcpy(data2+strlen(data2),"\nDelegate Settings: YES",23);
+    memcpy(data+strlen(data),"\nDelegate Settings: YES",23);
   }
   else
   {
-    memcpy(data2+strlen(data2),"\nDelegate Settings: NO",22);
+    memcpy(data+strlen(data),"\nDelegate Settings: NO",22);
   }  
   if (log_file_settings == 0)
   {
-    memcpy(data2+strlen(data2),"\nLog file Settings: NO",22);
+    memcpy(data+strlen(data),"\nLog file Settings: NO",22);
   }
   else
   {
     if (log_file_settings == 1)
     {
-      memcpy(data2+strlen(data2),"\nLog file Settings: YES\nLog File Color Output: NO",49);
+      memcpy(data+strlen(data),"\nLog file Settings: YES\nLog File Color Output: NO",49);
     }
     else
     {
-      memcpy(data2+strlen(data2),"\nLog file Settings: YES\nLog File Color Output: YES",50);
+      memcpy(data+strlen(data),"\nLog file Settings: YES\nLog File Color Output: YES",50);
     } 
   } 
-  memcpy(data2+strlen(data2),"\nDelegates Server IP Address: ",30);
+  memcpy(data+strlen(data),"\nDelegates Server IP Address: ",30);
   if (memcmp(XCASH_DPOPS_delegates_IP_address,"",1) == 0)
   {
-    memcpy(data2+strlen(data2),"0.0.0.0",7);
+    memcpy(data+strlen(data),"0.0.0.0",7);
   }
   else
   {
-    memcpy(data2+strlen(data2),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data2)));
+    memcpy(data+strlen(data),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data)));
   }
-  memcpy(data2+strlen(data2),"\nDelegates Server Port: 18283\nXCASH Wallet Port: ",49);
-  snprintf(data2+strlen(data2),sizeof(data2)-1,"%d",xcash_wallet_port);
-  memcpy(data2+strlen(data2),"\nTotal Threads: ",16);
-  snprintf(data2+strlen(data2),sizeof(data2)-1,"%d",total_threads);
-  memcpy(data2+strlen(data2),"\n\n",2);
-  color_print(data2,"yellow");
+  memcpy(data+strlen(data),"\nDelegates Server Port: 18283\nXCASH Wallet Port: ",49);
+  snprintf(data+strlen(data),sizeof(data)-1,"%d",xcash_wallet_port);
+  memcpy(data+strlen(data),"\nTotal Threads: ",16);
+  snprintf(data+strlen(data),sizeof(data)-1,"%d",total_threads);
+  memcpy(data+strlen(data),"\n\n",2);
+  color_print(data,"yellow");
+}
 
-  // check if the block verifier is a network data node
-  CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;     
- 
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: database_sync_check
+Description: Sync check the databases
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void database_sync_check(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  size_t count = 0;
+  long int current_time;
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+  // define macros
+  #define DATABASE_SYNC_CHECK_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"database_sync_check",19); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  mongoc_client_destroy(database_client); \
+  mongoc_client_pool_destroy(database_client_thread_pool); \
+  mongoc_uri_destroy(uri_thread_pool); \
+  mongoc_cleanup(); \
+  exit(0);
+
   // sync the block verifiers list
   if (sync_all_block_verifiers_list() == 0)
   {
-    MAIN_ERROR("Could not sync the previous, current and next block verifiers list");
+    DATABASE_SYNC_CHECK_ERROR("Could not sync the previous, current and next block verifiers list");
   }
 
   // check if the database is synced, unless this is the main network data node
@@ -721,7 +827,7 @@ int main(int parameters_count, char* parameters[])
       // check if all of the databases are synced from a random network data node
       if (check_if_databases_are_synced(2,0) == 0)
       {
-        MAIN_ERROR("Could not check if the databases are synced");
+        DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
       }
     }
     else
@@ -729,7 +835,7 @@ int main(int parameters_count, char* parameters[])
       // check if all of the databases are synced from a random block verifier
       if (check_if_databases_are_synced(1,0) == 0)
       {
-        MAIN_ERROR("Could not check if the databases are synced");
+        DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
       }
     }    
   }
@@ -747,7 +853,7 @@ int main(int parameters_count, char* parameters[])
       // sign_data
       if (sign_data(data,0) == 0)
       { 
-        MAIN_ERROR("Could not sign the data");
+        DATABASE_SYNC_CHECK_ERROR("Could not sign the data");
       }
 
       if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0)
@@ -771,10 +877,238 @@ int main(int parameters_count, char* parameters[])
 
       if (time(NULL) - current_time > BLOCK_VERIFIERS_SETTINGS)
       {
-        MAIN_ERROR("Invalid current time");
+        DATABASE_SYNC_CHECK_ERROR("Invalid current time");
       }
     }
-  }  
+  }
+
+  color_print("Started the sync all block verifiers list timer thread","green");
+  return;
+
+  #undef DATABASE_SYNC_CHECK_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: start_timer_threads
+Description: Starts the timer threads
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void start_timer_threads(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // threads
+  pthread_t thread_id[5];
+
+  // define macros
+  #define START_TIMER_THREADS_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"start_timer_threads",19); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  mongoc_client_destroy(database_client); \
+  mongoc_client_pool_destroy(database_client_thread_pool); \
+  mongoc_uri_destroy(uri_thread_pool); \
+  mongoc_cleanup(); \
+  exit(0);
+
+  memset(data,0,sizeof(data));
+
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
+
+  // start the current block height timer thread
+  if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
+  {
+    START_TIMER_THREADS_ERROR("Could not start the current_block_height_timer_thread");
+  }
+  
+  color_print("Started the current block height timer thread","green");
+
+  /*// start the remove_inactive_delegates_timer_thread
+  if (pthread_create(&thread_id[1], NULL, &remove_inactive_delegates_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
+  {
+    START_TIMER_THREADS_ERROR("Could not start the current_block_height_timer_thread");
+  }
+  
+  color_print("Started the remove inactive delegates timer thread","green");*/
+
+  /*// start the check_reserve_proofs_timer_thread
+  if (pthread_create(&thread_id[2], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[2]) != 0)
+  {
+    START_TIMER_THREADS_ERROR("Could not start the check_reserve_proofs_timer_thread");
+  }
+
+  color_print("Started the check reserve proofs timer thread","green");*/
+
+  /*// start the block height timer thread
+  if (shared_delegates_website == 1)
+  {
+    if (pthread_create(&thread_id[3], NULL, &block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[3]) != 0)
+    {
+      START_TIMER_THREADS_ERROR("Could not start the block_height_timer_thread");
+    }
+  
+    color_print("Started the current block height timer thread","green");
+
+    // start the payment timer thread
+    if (pthread_create(&thread_id[4], NULL, &payment_timer_thread, NULL) != 0 && pthread_detach(thread_id[4]) != 0)
+    {
+      START_TIMER_THREADS_ERROR("Could not start the block_height_timer_thread");
+    }
+  
+    color_print("Started the payment_timer_thread","green");
+  }*/
+  return;
+
+  #undef START_TIMER_THREADS_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: start_registration_mode
+Description: Starts the registration mode used when the registration period is opened, but the blockchain is not mining XCASH_DPOPS blocks yet
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void start_registration_mode(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // threads
+  pthread_t thread_id[2];
+
+  // define macros
+  #define START_REGISTRATION_MODE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"start_registration_mode",23); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  mongoc_client_destroy(database_client); \
+  mongoc_client_pool_destroy(database_client_thread_pool); \
+  mongoc_uri_destroy(uri_thread_pool); \
+  mongoc_cleanup(); \
+  exit(0);
+
+   memset(data,0,sizeof(data));
+
+  // start the sync_network_data_nodes_database_timer_thread
+  if (network_data_node_settings == 1)
+  {
+    if (pthread_create(&thread_id[0], NULL, &sync_network_data_nodes_database_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
+    {
+      START_REGISTRATION_MODE_ERROR("Could not start the sync network data nodes database timer thread");
+    }
+    color_print("Started the sync network data nodes database timer thread","green");
+  }
+ 
+  if (pthread_create(&thread_id[1], NULL, &sync_all_block_verifiers_list_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
+  {
+    START_REGISTRATION_MODE_ERROR("Could not start the sync all block verifiers list timer thread");
+  }
+
+  color_print("Started the sync all block verifiers list timer thread","green");
+  return;
+
+  #undef START_REGISTRATION_MODE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: main
+Description: The start point of the program
+Parameters:
+  parameters_count - The parameter count
+  parameters - The parameters
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int main(int parameters_count, char* parameters[])
+{
+  // iniltize the random number generator
+  srand(time(NULL));
+
+  // Variables
+  char data[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  
+  // define macros
+  #define MESSAGE "{\"username\":\"XCASH\"}"
+  
+  #define database_reset \
+  mongoc_client_destroy(database_client); \
+  mongoc_client_pool_destroy(database_client_thread_pool); \
+  mongoc_uri_destroy(uri_thread_pool); \
+  mongoc_cleanup();
+
+  #define MAIN_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"start_registration_mode",23); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  mongoc_client_destroy(database_client); \
+  mongoc_client_pool_destroy(database_client_thread_pool); \
+  mongoc_uri_destroy(uri_thread_pool); \
+  mongoc_cleanup(); \
+  exit(0);
+
+  memset(data,0,sizeof(data));
+
+  initialize_data();
+
+  // write the message
+  color_print("XCASH DPOPS - Version 1.0.0\n","green");
+
+  // check if they want to display the parameters
+  if (parameters_count == 2 && strncmp(parameters[1],"--parameters",BUFFER_SIZE) == 0)
+  {
+    printf(INVALID_PARAMETERS_ERROR_MESSAGE);
+    exit(0);
+  }
+
+  if (parameters_count == 2 && strncmp(parameters[1],"--generate_key",BUFFER_SIZE) == 0)
+  {
+    generate_key();
+    exit(0);
+  }
+
+  create_overall_database_connection();
+
+  get_delegates_data();
+
+  if (set_parameters(parameters_count, parameters) == 2)
+  {
+    goto disable_synchronizing_databases_and_starting_timers;
+  }
+
+  // check if it should create the default database data
+  memset(data,0,sizeof(data));
+  if (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0)
+  {
+    INITIALIZE_DATABASE_DATA;
+  }
+
+  print_settings();  
+
+  // check if the block verifier is a network data node
+  CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;     
+ 
+  database_sync_check();  
   
   // start the server
   if (create_server(1) == 0)
@@ -796,69 +1130,10 @@ int main(int parameters_count, char* parameters[])
     }
   }*/
 
-  print_start_message(current_date_and_time,current_UTC_date_and_time,"Starting all of the threads",data);
+  start_timer_threads();
 
-  // start the current block height timer thread
-  if (pthread_create(&thread_id[0], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
-  {
-    MAIN_ERROR("Could not start the current_block_height_timer_thread");
-  }
-  
-  color_print("Started the current block height timer thread","green");
-
-  /*// start the remove_inactive_delegates_timer_thread
-  if (pthread_create(&thread_id[1], NULL, &remove_inactive_delegates_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
-  {
-    MAIN_ERROR("Could not start the current_block_height_timer_thread");
-  }
-  
-  color_print("Started the remove inactive delegates timer thread","green");*/
-
-  /*// start the check_reserve_proofs_timer_thread
-  if (pthread_create(&thread_id[2], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[2]) != 0)
-  {
-    MAIN_ERROR("Could not start the check_reserve_proofs_timer_thread");
-  }
-
-  color_print("Started the check reserve proofs timer thread","green");*/
-
-  /*// start the block height timer thread
-  if (shared_delegates_website == 1)
-  {
-    if (pthread_create(&thread_id[3], NULL, &block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[3]) != 0)
-    {
-      MAIN_ERROR("Could not start the block_height_timer_thread");
-    }
-  
-    color_print("Started the current block height timer thread","green");
-
-    // start the payment timer thread
-    if (pthread_create(&thread_id[4], NULL, &payment_timer_thread, NULL) != 0 && pthread_detach(thread_id[4]) != 0)
-    {
-      MAIN_ERROR("Could not start the block_height_timer_thread");
-    }
-  
-    color_print("Started the payment_timer_thread","green");
-  }*/
-
-
-
-  /*// start the sync_network_data_nodes_database_timer_thread
-  if (network_data_node_settings == 1)
-  {
-    if (pthread_create(&thread_id[0], NULL, &sync_network_data_nodes_database_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
-    {
-      MAIN_ERROR("Could not start the sync network data nodes database timer thread");
-    }
-    color_print("Started the sync network data nodes database timer thread","green");
-  }
- 
-  if (pthread_create(&thread_id[1], NULL, &sync_all_block_verifiers_list_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
-  {
-    MAIN_ERROR("Could not start the sync all block verifiers list timer thread");
-  }
-
-  color_print("Started the sync all block verifiers list timer thread","green");*/
+  // start registration only mode
+  // start_registration_mode();
 
   for (;;)
   {
