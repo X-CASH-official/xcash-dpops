@@ -7,6 +7,7 @@
 #include "define_macro_functions.h"
 #include "define_macros.h"
 #include "variables.h"
+#include "define_macros_test.h"
 
 #include "count_database_functions.h"
 #include "read_database_functions.h"
@@ -1002,7 +1003,7 @@ int validate_data(const char* MESSAGE)
   }
   
   // dont check if the message came from a valid user, if the message is from the test wallet, or your own wallet
-  if ((parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && memcmp(data,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && memcmp(data,"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3",XCASH_WALLET_LENGTH) == 0) || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE") != NULL)
+  if (strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE") != NULL || (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && memcmp(data,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && memcmp(data,TEST_WALLET,XCASH_WALLET_LENGTH) == 0))
   {
     return 1;
   }

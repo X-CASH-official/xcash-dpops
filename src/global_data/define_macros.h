@@ -17,8 +17,8 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_EMMISION_FACTOR 524288 // The emmision factor (2^19)
 #define XCASH_DPOPS_EMMISION_FACTOR 262144 // The XCASH_DPOPS emmision factor (2^18)
 #define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake
-//#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 521850 // The start block height for X-CASH proof of stake
+//#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 521850 // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
@@ -62,8 +62,8 @@ Using define statements instead of constants for increased efficiency
 
 // XCASH DPOPS
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 21 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 3 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_AMOUNT 5 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 5 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 1000 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 5000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
@@ -100,7 +100,7 @@ Using define statements instead of constants for increased efficiency
 #define MINIMUM_BUFFER_SIZE_DELEGATES_NAME 5 // The minimum length of the block verifiers name
 #define MAXIMUM_BUFFER_SIZE_DELEGATES_BACKUP_NAMES 505 // The maximum length of the block verifiers name
 #define MINIMUM_BUFFER_SIZE_DELEGATES_BACKUP_NAMES 30 // The minimum length of the block verifiers name
-#define TOTAL_ERROR_MESSAGES 100 // The total amount of error messages
+#define TOTAL_ERROR_MESSAGES 1000 // The total amount of error messages
 #define MAXIMUM_INVALID_RESERVE_PROOFS 50000 // The maximum invalid reserve proofs for the delegate
 #define VOTE_PARAMETER_AMOUNT 5 // The vote parameter amount
 #define REGISTER_PARAMETER_AMOUNT 6 // The register parameter amount
@@ -129,7 +129,7 @@ Using define statements instead of constants for increased efficiency
 // Shared delegates settings
 #define VOTER_INACTIVITY_COUNT "30" // the number of days to wait to remove an inactive delegates information from the database
 
-// Network data nodes
+/*// Network data nodes
 #define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
 #define NETWORK_DATA_NODES_VALID_AMOUNT 3 // The amount of network data nodes need to reach a consensus on the database data
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12"
@@ -178,9 +178,9 @@ memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],NETWORK_DATA_NOD
 if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0) \
 { \
   network_data_node_settings = 1; \
-}
+}*/
 
-/*// Network data nodes test
+// Network data nodes test
 #define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
 #define NETWORK_DATA_NODES_VALID_AMOUNT 3 // The amount of network data nodes need to reach a consensus on the database data
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
@@ -260,26 +260,26 @@ insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTI
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_18,0); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_19,0); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_20,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_2,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_3,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_4,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_5,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_6,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_7,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_8,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_9,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_10,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_11,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_12,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_13,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_14,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_15,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_16,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_17,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_18,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_19,0); \
-insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_20,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_2,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_3,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_4,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_5,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_6,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_7,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_8,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_9,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_10,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_11,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_12,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_13,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_14,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_15,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_16,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_17,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_18,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_19,0); \
+insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_20,0); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0); \
 sleep(10);
 
@@ -299,7 +299,7 @@ memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],NETWORK_DATA_NOD
 if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0) \
 { \
   network_data_node_settings = 1; \
-}*/
+}
 
 // Test
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"
