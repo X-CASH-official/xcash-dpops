@@ -200,105 +200,28 @@ int start_new_round(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: start_current_round_start_blocks
-Description: Runs the round where the network data node will create the first block of the X-CASH proof of stake block on the network
+Name: start_blocks_create_vrf_data
+Description: Creates the VRF data for the start block
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int start_current_round_start_blocks(void)
+int start_blocks_create_vrf_data(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-  struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
-  size_t count; 
-  size_t count2; 
-
-  // threads
-  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
+  size_t count;
+  size_t count2;
 
   // define macros
-  #define DATABASE_COLLECTION "reserve_bytes_1"
-
-  #define pointer_reset_all \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA); \
-  }
-
-  #define START_CURRENT_ROUND_START_BLOCKS_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
+  #define START_BLOCKS_CREATE_VRF_DATA_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"start_blocks_create_vrf_data",28); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
-  
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
 
-  // set the main_network_data_node_create_block so the main network data node can create the block
-  main_network_data_node_create_block = 1;
-
-  // check if the block verifier is the main network data node
-  if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-  {
-    color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round\n","yellow");
-    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
-    return 1;
-  } 
-
-  color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
-
-  // initialize the send_and_receive_data_socket_thread_parameters struct
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
-    }
-  }
-
-  // get a block template
-  if (get_block_template(data,0) == 0)
-  {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not get a block template");
-  }
-
-  // convert the network_block_string to blockchain_data
-  if (network_block_string_to_blockchain_data((const char*)data,"0",BLOCK_VERIFIERS_AMOUNT) == 0)
-  {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the network_block_string to blockchain_data");
-  }
-
-  // change the nonce to the CONSENSUS_NODE_NETWORK_BLOCK_NONCE
-  memcpy(blockchain_data.nonce_data,CONSENSUS_NODE_NETWORK_BLOCK_NONCE,sizeof(CONSENSUS_NODE_NETWORK_BLOCK_NONCE)-1);
-
-  // add the delegates data to the network_block_string
-  memset(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,"network_data_node_1",19);
-  memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
-  memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"0",1);
-  memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1",99);
-
-  // create the VRF data
   if (create_random_VRF_keys(VRF_data.vrf_public_key_round_part_4,VRF_data.vrf_secret_key_round_part_4) == 1 && crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key_round_part_4) != 1)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf_public_key_round_part_4 or vrf_secret_key_round_part_4");
+    START_BLOCKS_CREATE_VRF_DATA_ERROR("Could not create the vrf_public_key_round_part_4 or vrf_secret_key_round_part_4");
   }
 
   memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data));
@@ -323,15 +246,15 @@ int start_current_round_start_blocks(void)
 
   if (crypto_vrf_prove(VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_secret_key_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf proof");
+    START_BLOCKS_CREATE_VRF_DATA_ERROR("Could not create the vrf proof");
   }
   if (crypto_vrf_proof_to_hash(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4) != 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the vrf beta string");
+    START_BLOCKS_CREATE_VRF_DATA_ERROR("Could not create the vrf beta string");
   }
   if (crypto_vrf_verify(VRF_data.vrf_beta_string_round_part_4,(const unsigned char*)VRF_data.vrf_public_key_round_part_4,(const unsigned char*)VRF_data.vrf_proof_round_part_4,(const unsigned char*)VRF_data.vrf_alpha_string_data_round_part_4,(unsigned long long)strlen((const char*)VRF_data.vrf_alpha_string_data_round_part_4)) != 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the VRF data");
+    START_BLOCKS_CREATE_VRF_DATA_ERROR("Could not create the VRF data");
   }
 
   // convert all of the VRF data to a string
@@ -376,6 +299,74 @@ int start_current_round_start_blocks(void)
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_verifiers_random_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
   }
+  return 1;
+
+  #undef START_BLOCKS_CREATE_VRF_DATA_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: start_blocks_create_data
+Description: Creates the data for the start block
+Parameters:
+  message - The data
+  network_block_string - The network_block_string
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int start_blocks_create_data(char* message, char* network_block_string)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  size_t count;
+
+  // define macros
+  #define DATABASE_COLLECTION "reserve_bytes_1"
+  #define START_BLOCKS_CREATE_DATA_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"start_blocks_create_data",24); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  // get a block template
+  if (get_block_template(data,0) == 0)
+  {
+    START_BLOCKS_CREATE_DATA_ERROR("Could not get a block template");
+  }
+
+  // convert the network_block_string to blockchain_data
+  if (network_block_string_to_blockchain_data((const char*)data,"0",BLOCK_VERIFIERS_AMOUNT) == 0)
+  {
+    START_BLOCKS_CREATE_DATA_ERROR("Could not convert the network_block_string to blockchain_data");
+  }
+
+  // change the nonce to the CONSENSUS_NODE_NETWORK_BLOCK_NONCE
+  memcpy(blockchain_data.nonce_data,CONSENSUS_NODE_NETWORK_BLOCK_NONCE,sizeof(CONSENSUS_NODE_NETWORK_BLOCK_NONCE)-1);
+
+  // add the delegates data to the network_block_string
+  memset(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,"network_data_node_1",19);
+  memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"0",1);
+  memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1",99);
+
+  // add the VRF data
+  if (start_blocks_create_vrf_data() == 0)
+  {
+    START_BLOCKS_CREATE_DATA_ERROR("Could not add the VRF data");
+  }
   
   // add the next block verifiers and add 0`s for the block_validation_node_signature
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -389,27 +380,27 @@ int start_current_round_start_blocks(void)
   memset(data,0,sizeof(data));
   if (blockchain_data_to_network_block_string(data,BLOCK_VERIFIERS_AMOUNT) == 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the blockchain_data to a network_block_string");
+    START_BLOCKS_CREATE_DATA_ERROR("Could not convert the blockchain_data to a network_block_string");
   }
 
   // sign the network block string
   if (sign_network_block_string(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[0],data) == 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign the network block string");
+    START_BLOCKS_CREATE_DATA_ERROR("Could not sign the network block string");
   }
 
   // convert the blockchain_data to a network_block_string
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
   if (blockchain_data_to_network_block_string(VRF_data.block_blob,BLOCK_VERIFIERS_AMOUNT) == 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not convert the blockchain_data to a network_block_string");
+    START_BLOCKS_CREATE_DATA_ERROR("Could not convert the blockchain_data to a network_block_string");
   }
 
   // add the data hash to the network block string
-  memset(data,0,sizeof(data));
-  if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
+  memset(network_block_string,0,strlen(network_block_string));
+  if (add_data_hash_to_network_block_string(VRF_data.block_blob,network_block_string) == 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the network block string data hash");
+    START_BLOCKS_CREATE_DATA_ERROR("Could not add the network block string data hash");
   }
 
   // update the reserve bytes database
@@ -427,21 +418,103 @@ int start_current_round_start_blocks(void)
   // add the network block string to the database
   if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data2,1) == 0)
   {
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not add the new block to the database");
+    START_BLOCKS_CREATE_DATA_ERROR("Could not add the new block to the database");
   }
 
   // create the message
-  memset(data3,0,sizeof(data3));
-  memcpy(data3,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"",101);
-  memcpy(data3+101,data2,strnlen(data2,sizeof(data3)));
-  memcpy(data3+strlen(data3),"\",\r\n \"reserve_bytes_data_hash\": \"",33);
-  memcpy(data3+strlen(data3),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
-  memcpy(data3+strlen(data3),"\",\r\n}",5);
+  memset(message,0,strlen(message));
+  memcpy(message,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\",\r\n \"database_data\": \"",101);
+  memcpy(message+101,data2,strnlen(data2,BUFFER_SIZE));
+  memcpy(message+strlen(message),"\",\r\n \"reserve_bytes_data_hash\": \"",33);
+  memcpy(message+strlen(message),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
+  memcpy(message+strlen(message),"\",\r\n}",5);
   
   // sign_data
-  if (sign_data(data3,0) == 0)
+  if (sign_data(message,0) == 0)
   { 
-    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not sign_data");
+    START_BLOCKS_CREATE_DATA_ERROR("Could not sign_data");
+  }
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef START_BLOCKS_CREATE_DATA_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: start_current_round_start_blocks
+Description: Runs the round where the network data node will create the first block of the X-CASH proof of stake block on the network
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int start_current_round_start_blocks(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
+  size_t count; 
+
+  // threads
+  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
+
+  // define macros
+  #define DATABASE_COLLECTION "reserve_bytes_1"
+
+  #define pointer_reset_all \
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+  { \
+    pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA); \
+  }
+
+  #define START_CURRENT_ROUND_START_BLOCKS_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+  // set the main_network_data_node_create_block so the main network data node can create the block
+  main_network_data_node_create_block = 1;
+
+  // check if the block verifier is the main network data node
+  if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+  {
+    color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round\n","yellow");
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+    return 1;
+  } 
+
+  color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
+
+  // initialize the send_and_receive_data_socket_thread_parameters struct
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+      exit(0);
+    }
+  }
+  
+  // create the data
+  if (start_blocks_create_data(data,data2) == 0)
+  {
+    START_CURRENT_ROUND_START_BLOCKS_ERROR("Could not create the start blocks data");
   }
 
   // send the database data to all block verifiers
@@ -453,7 +526,7 @@ int start_current_round_start_blocks(void)
       memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
       memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
       memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
-      memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,BUFFER_SIZE));
+      memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data,strnlen(data,BUFFER_SIZE));
       send_and_receive_data_socket_thread_parameters[count].COUNT = count;
       pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
       pthread_detach(thread_id[count]);
@@ -474,7 +547,7 @@ int start_current_round_start_blocks(void)
   }
 
   // have the main network data node submit the block to the network  
-  if (submit_block_template(data,0) == 0)
+  if (submit_block_template(data2,0) == 0)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\"block_height\":\"",17);
@@ -486,8 +559,8 @@ int start_current_round_start_blocks(void)
   
   return 1;
 
-  #undef pointer_reset_all  
   #undef DATABASE_COLLECTION
+  #undef pointer_reset_all 
   #undef START_CURRENT_ROUND_START_BLOCKS_ERROR
 }
 
@@ -1623,14 +1696,8 @@ int block_verifiers_create_block(void)
     }
 
     // create the block verifiers block signature
-    if (block_verifiers_create_block_signature(data) == 0)
+    if (block_verifiers_create_block_signature(data) == 0 || sign_data(data,0) == 0)
     {
-      RESTART_ROUND("Could not sign_data");
-    }
-  
-    // sign_data
-    if (sign_data(data,0) == 0)
-    { 
       RESTART_ROUND("Could not sign_data");
     }
 
@@ -1739,7 +1806,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   int socket_settings;
   int total;
   int sent;
-  int bytes;
+  int bytes = 1;
   int count;
   int count2;
   int number;
@@ -1889,7 +1956,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    start:
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
       // set the socket to blocking mode
@@ -1916,24 +1982,11 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
       color_print(data2,"green");
       
-      for (sent = 0, bytes = 0; sent < total; sent+= bytes)
+      for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
       {
-        bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL);
-        if (bytes < 0)
+        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) < 0)
         {           
           count++;
-          if (count == BLOCK_VERIFIERS_AMOUNT)
-          {
-            break;
-          }
-          else
-          {
-            goto start;
-          }
-        }
-        else if (bytes == 0)  
-        {
-          break;
         }
       }
     }    

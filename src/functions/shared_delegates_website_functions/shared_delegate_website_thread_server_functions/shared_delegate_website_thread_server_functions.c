@@ -406,21 +406,18 @@ void* block_height_timer_thread(void* parameters)
   for (;;)
   {   
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 10)
+    // check if you found the previous block in the network
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 10 && check_found_block() == 2)
     {
-      // check if you found the previous block in the network
-      if (check_found_block() == 2)
+      block_reward_number = add_block_to_blocks_found();
+      if (block_reward_number == 0)
       {
-        block_reward_number = add_block_to_blocks_found();
-        if (block_reward_number == 0)
-        {
-          BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not add the previous block that the block verifier found to the database");
-        }
+        BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not add the previous block that the block verifier found to the database");
+      }
 
-        if (calculate_block_reward_for_each_delegate(block_reward_number) == 0)
-        {
-          BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not calculate the block reward for each delegate");
-        }
+      if (calculate_block_reward_for_each_delegate(block_reward_number) == 0)
+      {
+        BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not calculate the block reward for each delegate");
       }
     }
     usleep(200000);

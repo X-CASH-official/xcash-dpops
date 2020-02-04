@@ -149,25 +149,19 @@ int network_functions_test(void)
   network_functions_test_error_settings = 1;
   
   // verify the message
-  if (settings == 1)
-  {
-    if (verify_data(string,0,1) == 0)
-    {   
-      color_print("FAILED! Test for create_server","red");
-      color_print("FAILED! Test for send_and_receive_data_socket","red");
-      settings = 0;
-    }
+  if (settings == 1 && verify_data(string,0,1) == 0)
+  { 
+    color_print("FAILED! Test for create_server","red");
+    color_print("FAILED! Test for send_and_receive_data_socket","red");
+    settings = 0;
   }
   
   // parse the data
-  if (settings == 1)
+  if (settings == 1 && parse_json_data(string,"message_settings",data_test,BUFFER_SIZE) == 0)
   {
-    if (parse_json_data(string,"message_settings",data_test,BUFFER_SIZE) == 0)
-    {
-      color_print("FAILED! Test for create_server","red");
-      color_print("FAILED! Test for send_and_receive_data_socket","red");
-      settings = 0;
-    }
+    color_print("FAILED! Test for create_server","red");
+    color_print("FAILED! Test for send_and_receive_data_socket","red");
+    settings = 0;
   }
   
   // check if the received data is correct

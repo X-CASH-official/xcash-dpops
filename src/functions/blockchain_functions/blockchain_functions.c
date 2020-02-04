@@ -1683,13 +1683,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       { 
         for (count2 = 0; (int)count2 < BLOCK_VERIFIERS_TOTAL; count2++)
         {
-          if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1) != 0)
+          if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1) != 0 && VRF_data_verify(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],network_block_string) == 1)
           { 
-            // check the signed data 
-            if (VRF_data_verify(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],network_block_string) == 1)
-            {
-              number++;
-            }
+            number++;
           }
         }
       }
@@ -1713,12 +1709,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // transactions
-  if (TRANSACTIONS_SETTINGS == 1 && blockchain_data.transaction_amount != 0)
+  if (TRANSACTIONS_SETTINGS == 1 && blockchain_data.transaction_amount != 0 && verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,1,0) == 0)
   {
-    if (verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,1,0) == 0)
-    {
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transactions");
-    }
+    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transactions");
   }  
 
   pointer_reset_all;
