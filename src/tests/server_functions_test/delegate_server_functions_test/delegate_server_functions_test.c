@@ -15,6 +15,7 @@
 #include "network_security_functions.h"
 #include "string_functions.h"
 #include "variables_test.h"
+#include "delegate_server_functions.h"
 #include "delegate_server_functions_test.h"
 
 /*
@@ -38,7 +39,7 @@ int delegate_server_functions_test(void)
   int count;
 
   // define macros
-  #define DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST 20
+  #define DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST 22
   #define TEST_RESERVE_PROOF_DELEGATES_REGISTER "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti" // the reserve proof used for testing the delegate regster function
   #define TEST_WALLET_DELEGATES_REGISTER "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP" // the wallet used for testing the delegate regster function
   #define TEST_SIGNATURE_ADD_RESERVE_PROOF "SigV1N2NWu1Yzg4aVrhJUjZVcRZ52CcgUghX7x5Fn9W5drC4g8B9tZn7q4yJEKbiJMRFeNRPmSPT3rBSVkJnFWAGK5PA3" // the signature used for testing the delegate regster function
@@ -238,6 +239,27 @@ int delegate_server_functions_test(void)
 
   DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REMOVE "|","server_receive_data_socket_nodes_to_block_verifiers_remove_delegates","The delegate has already mined a block"); 
   RESET_ERROR_MESSAGES;
+
+  // test the check_for_valid_fee_structure
+  if (check_for_valid_fee_structure("2") == 1 && check_for_valid_fee_structure("2.5") == 1)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for check_for_valid_fee_structure\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for check_for_valid_fee_structure\033[0m\n");
+  }
+
+  if (check_for_valid_fee_structure("200") == 0 && check_for_valid_fee_structure("1.5000000") == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for check_for_valid_fee_structure checking for invalid fee structures\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for check_for_valid_fee_structure checking for invalid fee structures\033[0m\n");
+  }
 
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\ndelegate server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);

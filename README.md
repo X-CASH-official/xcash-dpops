@@ -623,7 +623,6 @@ Replace `item` with the item you want to update. The list of valid items are:
 | pool_mode                                    | Boolean       | true or false                 |
 | fee_structure                                | Number        | 0-100 up to 6 decimal places  |
 | server_settings                              | String        |  maximum of 255 characters    |
-| public_key                                   | String        |  64 characters only           |
 
 Replace value with the updated information
 

@@ -573,6 +573,54 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_for_valid_fee_structure
+Description: Checks for a valid fee structure
+Parameters:
+  MESSAGE - The fee structure
+Return: 0 if the string is not valid, 1 if the string is valid
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_for_valid_fee_structure(const char* MESSAGE)
+{
+  // Variables
+  int count;
+  int settings;
+  int settings2;
+  double number;
+
+  for (count = 0, settings = 0, settings2 = 0; count < (int)strlen(MESSAGE); count++)
+  {
+    if ((memcmp(&MESSAGE[count],"0",1) != 0 && memcmp(&MESSAGE[count],"1",1) != 0 && memcmp(&MESSAGE[count],"2",1) != 0 && memcmp(&MESSAGE[count],"3",1) != 0 && memcmp(&MESSAGE[count],"4",1) != 0 && memcmp(&MESSAGE[count],"5",1) != 0 && memcmp(&MESSAGE[count],"6",1) != 0 && memcmp(&MESSAGE[count],"7",1) != 0 && memcmp(&MESSAGE[count],"8",1) != 0 && memcmp(&MESSAGE[count],"9",1) != 0 && memcmp(&MESSAGE[count],".",1) != 0) || (count == 0 && memcmp(&MESSAGE[count],".",1) == 0))
+    {
+      return 0;
+    }
+    if (settings == 1)
+    {
+      settings2++;
+    }
+    if (settings2 > 6)
+    {
+      return 0;
+    }
+    if (memcmp(&MESSAGE[count],".",1) == 0)
+    {
+      settings = 1;
+    }
+  }
+
+  sscanf(MESSAGE,"%lf",&number);
+  if (number < 0 || number > 100)
+  {
+    return 0;
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_nodes_to_block_verifiers_update_delegates
 Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE message
 Parameters:
