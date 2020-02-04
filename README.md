@@ -614,16 +614,17 @@ Once the wallet is fully synchronized run the following:
 `delegate_update item value`
 
 Replace `item` with the item you want to update. The list of valid items are:  
-```
-IP_address
-about
-website
-team
-pool_mode
-fee_structure
-server_settings
-public_key
-```
+
+| Name                                         | Type          | Maximum Length or Range       |
+| -------------------------------------------- | ------------- | -------------------------     |
+| IP_address                                   | String        | maximum of 255 characters     |
+| about                                        | String        | maximum of 1024 characters    |
+| website                                      | String        | maximum of 255 characters     |
+| pool_mode                                    | Boolean       | true or false                 |
+| fee_structure                                | Number        | 0-100 up to 6 decimal places  |
+| server_settings                              | String        |  maximum of 255 characters    |
+| public_key                                   | String        |  64 characters only           |
+
 Replace value with the updated information
 
 
