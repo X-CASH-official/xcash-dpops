@@ -588,7 +588,7 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
     {
       pointer_reset(data3);
     }  
-    memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
+    memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_specific_database",43);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
@@ -695,6 +695,164 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
 
   #undef pointer_reset_all  
   #undef SYNC_CHECK_RESERVE_PROOFS_SPECIFIC_DATABASE_ERROR   
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_check_reserve_bytes_specific_database
+Description: Checks if all of the specific reserve bytes databases need to be synced and syncs them if needed
+Paramters:
+  DATABASE_DATA - The database data
+  block_verifiers_ip_address - The selected block verifier to sync the database from
+  starting_reserve_bytes_database - The starting reserve bytes database
+  CURRENT_RESERVE_BYTES_DATABASE - The current reserve bytes database
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const char* BLOCK_VERIFIERS_IP_ADDRESS, size_t starting_reserve_bytes_database, const size_t CURRENT_RESERVE_BYTES_DATABASE)
+{
+  // Variables
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
+  char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data3); \
+  data3 = NULL; \
+
+  #define SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_specific_database",42); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
+  error_message.total++; \
+  pointer_reset_all; \
+  return 0;
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data3 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }  
+    if (data3 != NULL)
+    {
+      pointer_reset(data3);
+    }  
+    memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_specific_database",42);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
+    exit(0);
+  }
+
+  for (; starting_reserve_bytes_database <= CURRENT_RESERVE_BYTES_DATABASE; starting_reserve_bytes_database++)
+  {
+    memset(data,0,strlen(data));
+    memcpy(data,"Checking if reserve_bytes_",26);
+    snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",starting_reserve_bytes_database);
+    memcpy(data+strlen(data)," is synced",10);
+    color_print(data,"white");
+
+    // parse the database_data
+    memset(data,0,strlen(data));
+    memset(data2,0,sizeof(data2));
+    memset(data3,0,strlen(data3));
+    memcpy(data2,"reserve_bytes_database_",23);
+    snprintf(data2+23,sizeof(data2)-24,"%zu",starting_reserve_bytes_database);
+
+    if (parse_json_data(DATABASE_DATA,data2,data,MAXIMUM_BUFFER_SIZE) == 0)
+    {
+      SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not receive data from the block verifier");
+    }
+   
+    if (memcmp(data,"false",5) == 0)
+    {
+      // sync the database
+      memset(data,0,strlen(data));
+      memcpy(data,"reserve_bytes_",14);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",starting_reserve_bytes_database);
+      memcpy(data+strlen(data)," is not synced, downloading it from ",36);
+      memcpy(data+strlen(data),BLOCK_VERIFIERS_IP_ADDRESS,strnlen(BLOCK_VERIFIERS_IP_ADDRESS,MAXIMUM_BUFFER_SIZE));
+      color_print(data,"red");
+
+      // create the message
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_bytes_",131);
+      snprintf(data2+131,sizeof(data2)-132,"%zu",starting_reserve_bytes_database);
+      memcpy(data2+strlen(data2),"\",\r\n}",5);
+
+      // sign_data
+      if (sign_data(data2,0) == 0)
+      { 
+        SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not sign_data");
+      }
+     
+      memset(data,0,strlen(data));
+      if (send_and_receive_data_socket(data,BLOCK_VERIFIERS_IP_ADDRESS,SEND_DATA_PORT,data2,SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS,"",0) == 0)
+      {
+        SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not receive data from the block verifier");
+      }
+
+      if (verify_data(data,0,0) == 0)
+      {
+        SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not verify data from the block verifier");
+      }
+
+      // parse the message
+      memset(data3,0,strlen(data3));
+      if (parse_json_data(data,"reserve_bytes_database",data3,MAXIMUM_BUFFER_SIZE) == 0)
+      {
+        SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not receive data from the block verifier");
+      }
+
+      // if the delegate did send data over, but the database is empty then just exit the loop
+      if (memcmp(data3,"",1) == 0)
+      {
+        break;
+      }
+
+      // add the data to the database
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,"reserve_bytes_",14);
+      snprintf(data2+14,sizeof(data2)-15,"%zu",starting_reserve_bytes_database);
+
+      // delete the collection from the database
+      delete_collection_from_database(database_name,data2,1);
+
+      // add the data to the database
+      memset(data,0,strlen(data));
+      memcpy(data,data3,strlen(data3)-2);
+      insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE,1);
+
+      memset(data,0,strlen(data));
+      memcpy(data,"reserve_bytes_",14);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",starting_reserve_bytes_database);
+      memcpy(data+strlen(data)," has been synced successfully\n",31);
+      color_print(data,"green");
+    }
+    else
+    {
+      memset(data,0,strlen(data));
+      memcpy(data,"reserve_bytes_",14);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",starting_reserve_bytes_database);
+      memcpy(data+strlen(data)," is already synced\n",19);
+      color_print(data,"green");
+    }
+  }
+
+  pointer_reset_all;
+  return 1;
+
+  #undef pointer_reset_all  
+  #undef SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR   
 }
 
 
@@ -833,31 +991,22 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_settings, const char* DELEGATES_IP_ADDRESS)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data3[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   size_t count = 0;
   size_t count2;
   size_t current_reserve_bytes_database;
   
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data3); \
-  data3 = NULL; \
-
   #define SYNC_RESERVE_BYTES_DATABASE_ERROR(message,data_settings) \
   if ((data_settings) == 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
     error_message.total++; \
-    pointer_reset_all; \
     return 0; \
   } \
   else \
@@ -870,26 +1019,8 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
     get_random_network_data_node(settings); \
     settings += 3; \
     goto start; \
-  } 
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data3 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }  
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }  
-    memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    exit(0);
   }
-
+  
   start:
 
   memset(data,0,strlen(data));
@@ -966,7 +1097,6 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not verify data from ",1);
   }
 
-
   if (reserve_bytes_start_settings == 0)
   {
     count2 = 1;
@@ -976,105 +1106,13 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
     count2 = current_reserve_bytes_database;
   }  
 
-  for (; count2 <= current_reserve_bytes_database; count2++)
+  // check if the block verifier needs to sync any of the reserve bytes databases and sync them if needed
+  if (sync_check_reserve_bytes_specific_database(database_data,(const char*)block_verifiers_ip_address,count2,(const size_t)current_reserve_bytes_database) == 0)
   {
-    memset(data,0,strlen(data));
-    memcpy(data,"Checking if reserve_bytes_",26);
-    snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
-    memcpy(data+strlen(data)," is synced",10);
-    color_print(data,"white");
-
-    // parse the database_data
-    memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
-    memset(data3,0,strlen(data3));
-    memcpy(data2,"reserve_bytes_database_",23);
-    snprintf(data2+23,sizeof(data2)-24,"%zu",count2);
-
-    if (parse_json_data(database_data,data2,data,MAXIMUM_BUFFER_SIZE) == 0)
-    {
-      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
-    }
-   
-    if (memcmp(data,"false",5) == 0)
-    {
-      // sync the database
-      memset(data,0,strlen(data));
-      memcpy(data,"reserve_bytes_",14);
-      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
-      memcpy(data+strlen(data)," is not synced, downloading it from ",36);
-      memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE));
-      color_print(data,"red");
-
-      // create the message
-      memset(data2,0,sizeof(data2));
-      memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_bytes_",131);
-      snprintf(data2+131,sizeof(data2)-132,"%zu",count2);
-      memcpy(data2+strlen(data2),"\",\r\n}",5);
-
-      // sign_data
-      if (sign_data(data2,0) == 0)
-      { 
-        SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data",0);
-      }
-     
-      memset(data,0,strlen(data));
-      if (send_and_receive_data_socket(data,block_verifiers_ip_address,SEND_DATA_PORT,data2,SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS,"",0) == 0)
-      {
-        SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
-      }
-
-      if (verify_data(data,0,0) == 0)
-      {
-        SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not verify data from ",1);
-      }
-
-      // parse the message
-      memset(data3,0,strlen(data3));
-      if (parse_json_data(data,"reserve_bytes_database",data3,MAXIMUM_BUFFER_SIZE) == 0)
-      {
-        SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
-      }
-
-      // if the delegate did send data over, but the database is empty then just exit the loop
-      if (memcmp(data3,"",1) == 0)
-      {
-        break;
-      }
-
-      // add the data to the database
-      memset(data2,0,sizeof(data2));
-      memcpy(data2,"reserve_bytes_",14);
-      snprintf(data2+14,sizeof(data2)-15,"%zu",count2);
-
-      // delete the collection from the database
-      delete_collection_from_database(database_name,data2,1);
-
-      // add the data to the database
-      memset(data,0,strlen(data));
-      memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE,1);
-
-      memset(data,0,strlen(data));
-      memcpy(data,"reserve_bytes_",14);
-      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
-      memcpy(data+strlen(data)," has been synced successfully\n",31);
-      color_print(data,"green");
-    }
-    else
-    {
-      memset(data,0,strlen(data));
-      memcpy(data,"reserve_bytes_",14);
-      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
-      memcpy(data+strlen(data)," is already synced\n",19);
-      color_print(data,"green");
-    }
+    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not check if any of the specific databases needed to be synced, from ",1);
   }
-
-  pointer_reset_all;
   return 1;
-
-  #undef pointer_reset_all  
+  
   #undef SYNC_RESERVE_BYTES_DATABASE_ERROR   
 }
 

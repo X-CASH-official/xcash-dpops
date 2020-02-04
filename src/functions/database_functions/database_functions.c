@@ -249,7 +249,7 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   }
   else if (strstr(COLLECTION,"reserve_bytes") != NULL)
   {
-    document_options = BCON_NEW("sort", "{", "block_height", BCON_INT32(-1), "}");
+    document_options = BCON_NEW("sort", "{", "block_height", BCON_INT32(1), "}");
   }
   else if (strstr(COLLECTION,"delegates") != NULL)
   {
