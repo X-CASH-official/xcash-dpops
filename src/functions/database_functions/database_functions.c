@@ -278,7 +278,10 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
 
   if (count != 1)
   {
-    //GET_DATABASE_DATA_ERROR("Could not get the database data");
+    if (test_settings == 1)
+    {
+      GET_DATABASE_DATA_ERROR("Could not get the database data");
+    }
     database_reset_all;
     return 0;
   }

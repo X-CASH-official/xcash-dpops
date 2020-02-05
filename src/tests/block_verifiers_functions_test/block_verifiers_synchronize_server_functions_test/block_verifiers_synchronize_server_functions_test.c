@@ -38,30 +38,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   #define BLOCK_VERIFIERS_SYNCHRONIZE_SERVER_FUNCTIONS_TOTAL_TEST 21
   
   // initialize the previous, current and next block verifiers list
-  memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(previous_block_verifiers_list.block_verifiers_name[1],"delegate_1",10);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
-  memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(current_block_verifiers_list.block_verifiers_name[1],"delegate_1",10);
-  memcpy(current_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(current_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9);
-  memcpy(current_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
-  memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(next_block_verifiers_list.block_verifiers_name[1],"delegate_1",10);
-  memcpy(next_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(next_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9);
-  memcpy(next_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
+  INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST;
 
   // reset the variables
   insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA,0);

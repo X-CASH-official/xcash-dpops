@@ -13,6 +13,7 @@
 #include "define_macros_test.h"
 
 #include "blockchain_functions.h"
+#include "block_verifiers_synchronize_functions.h"
 #include "block_verifiers_server_functions_test.h"
 #include "database_functions.h"
 #include "delegate_website_functions_test.h"
@@ -133,7 +134,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   char* transactions[5];
 
   // define macros
-  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 98  
+  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 104  
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
   #define GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"blockhashing_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"blocktemplate_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"difficulty\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"expected_reward\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"height\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"prev_hash\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"reserved_offset\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"status\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"untrusted\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\r\n  }\r\n}"
   #define DATA1 "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
@@ -480,6 +481,18 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TEST_DATA)-1); \
   sign_data(result_test,0); \
   send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
+
+  #define SYNC_RESERVE_PROOFS_DATABASE_CODE sync_reserve_proofs_database(0,"127.0.0.1");
+
+  #define SYNC_RESERVE_BYTES_DATABASE_CODE sync_reserve_bytes_database(0,1,"127.0.0.1");
+
+  #define SYNC_DELEGATES_DATABASE_CODE sync_delegates_database(0,"127.0.0.1");
+
+  #define SYNC_STATISTICS_DATABASE_CODE sync_statistics_database(0,"127.0.0.1");
+
+  #define SYNC_ALL_BLOCK_VERIFIERS_LIST_FOR_BLOCK_VERIFIERS_CODE sync_all_block_verifiers_list();
+
+  #define SYNC_ALL_BLOCK_VERIFIERS_LIST_FOR_NETWORK_DATA_NODES_CODE sync_all_block_verifiers_list();
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_CODE \
   memset(result_test,0,sizeof(result_test)); \
@@ -889,6 +902,32 @@ int reset_variables_allocated_on_the_heap_test(void)
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_CODE);
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}",0);
+  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("sync_reserve_proofs_database",SYNC_RESERVE_PROOFS_DATABASE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("sync_reserve_bytes_database",SYNC_RESERVE_BYTES_DATABASE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("sync_delegates_database",SYNC_DELEGATES_DATABASE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("sync_statistics_database",SYNC_STATISTICS_DATABASE_CODE);
+  network_data_node_settings = 0;
+  INITIALIZE_NETWORK_DATA_NODES_TEST
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("sync_all_block_verifiers_list for block verifiers",SYNC_ALL_BLOCK_VERIFIERS_LIST_FOR_BLOCK_VERIFIERS_CODE);
+  network_data_node_settings = 1;
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("sync_all_block_verifiers_list for network data nodes",SYNC_ALL_BLOCK_VERIFIERS_LIST_FOR_NETWORK_DATA_NODES_CODE);
+  INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST
+  network_data_node_settings = 0;
+  INITIALIZE_NETWORK_DATA_NODES
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+
+
+
+
+
+
+
+
 
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_CODE);

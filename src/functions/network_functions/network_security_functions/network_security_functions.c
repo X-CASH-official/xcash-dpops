@@ -422,7 +422,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
         break;
       }
     }
-    if (count == BLOCK_VERIFIERS_AMOUNT)
+    if (count == BLOCK_VERIFIERS_AMOUNT && test_settings == 0)
     {
       VERIFY_DATA_ERROR("Invalid message");
     }

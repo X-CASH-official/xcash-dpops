@@ -590,7 +590,6 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--test",BUFFER_SIZE) == 0)
     {
-      test_settings = 1;
       test();
       database_reset;
       exit(0);

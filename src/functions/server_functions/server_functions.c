@@ -397,11 +397,11 @@ int socket_thread(int client_socket)
  {
    server_receive_data_socket_get_public_address_payment_information(client_socket,(const char*)buffer);
  } 
- else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\"") != NULL && (network_data_node_settings == 1 || test_settings == 1))
  {
    server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(client_socket);
  } 
- else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && network_data_node_settings == 1)
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && (network_data_node_settings == 1 || test_settings == 1))
  {
    server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(client_socket);
  } 

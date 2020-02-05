@@ -8,7 +8,7 @@ Using define statements instead of constants for increased efficiency
 */
 
 // Test
-#define XCASH_DPOPS_TOTAL_TEST 372
+#define XCASH_DPOPS_TOTAL_TEST 386
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "521850" // The block height used for testing
 #define TEST_WALLET "XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3" // the wallet used for test
 #define RESET_ERROR_MESSAGES \
@@ -626,6 +626,65 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define ORGANIZE_DELEGATES_TEST_DATA_2 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"5\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
 #define ORGANIZE_DELEGATES_TEST_DATA_3 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"10\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
 #define RESERVE_BYTES_TEST_DATA "{\"block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}"
+
+#define INITIALIZE_NETWORK_DATA_NODES_TEST \
+for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++) \
+{ \
+  memset(network_data_nodes_list.network_data_nodes_public_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_public_address[count])); \
+  memset(network_data_nodes_list.network_data_nodes_IP_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_IP_address[count])); \
+} \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],"127.0.0.1",9); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],"127.0.0.1",9); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[2],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[2],"127.0.0.1",9); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[3],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[3],"127.0.0.1",9); \
+memcpy(network_data_nodes_list.network_data_nodes_public_address[4],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],"127.0.0.1",9); \
+
+#define INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST \
+for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++) \
+{ \
+  memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count])); \
+  memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])); \
+  memset(previous_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count])); \
+  memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count])); \
+  memset(current_block_verifiers_list.block_verifiers_name[count],0,sizeof(current_block_verifiers_list.block_verifiers_name[count])); \
+  memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])); \
+  memset(current_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_key[count])); \
+  memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count])); \
+  memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count])); \
+  memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count])); \
+  memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count])); \
+  memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])); \
+} \
+memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
+memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
+memcpy(previous_block_verifiers_list.block_verifiers_name[1],"delegate_1",10); \
+memcpy(previous_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(previous_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9); \
+memcpy(previous_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
+memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
+memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
+memcpy(current_block_verifiers_list.block_verifiers_name[1],"delegate_1",10); \
+memcpy(current_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(current_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9); \
+memcpy(current_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
+memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
+memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
+memcpy(next_block_verifiers_list.block_verifiers_name[1],"delegate_1",10); \
+memcpy(next_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
+memcpy(next_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9); \
+memcpy(next_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
+
 
 #define INITIALIZE_DELEGATES_STRUCT_TEST_DATA \
 for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
