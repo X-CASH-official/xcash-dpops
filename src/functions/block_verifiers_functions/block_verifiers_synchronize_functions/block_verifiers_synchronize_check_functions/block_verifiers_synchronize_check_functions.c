@@ -44,6 +44,40 @@
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Global Define Macros
+-----------------------------------------------------------------------------------------------------------
+*/
+#define SEND_DATABASE_SYNC_CHECK_MESSAGE(database) \
+for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+{ \
+  if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
+  { \
+    memset(data,0,strlen(data)); \
+    memset(data2,0,sizeof(data2)); \
+    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0) \
+    { \
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18); \
+      synced_block_verifiers.vote_settings_connection_timeout++; \
+    } \
+    else \
+    { \
+      if (strstr(data,database) != NULL && parse_json_data(data,database,data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0) \
+      { \
+        synced_block_verifiers.vote_settings_true++; \
+      } \
+      else \
+      { \
+        synced_block_verifiers.vote_settings_false++; \
+      } \
+      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE)); \
+    } \
+  } \
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Functions
 -----------------------------------------------------------------------------------------------------------
 */
@@ -155,7 +189,10 @@ int sync_check_reserve_proofs_database(int settings)
     exit(0);
   }
 
-  print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the reserve proofs database is synced",data2);
+  if (test_settings == 0)
+  {
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the reserve proofs database is synced",data2);
+  }
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -202,45 +239,30 @@ int sync_check_reserve_proofs_database(int settings)
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
     }
 
-    color_print("Sending all block verifiers a message to check if the reserve proofs database is synced","white"); 
-    
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    if (test_settings == 0)
     {
-      memset(data,0,strlen(data));
-      memset(data2,0,sizeof(data2));
-      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
-      {
-        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-        synced_block_verifiers.vote_settings_connection_timeout++;
-      }
-      else
-      {
-        if (strstr(data,"reserve_proofs_database") != NULL && parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
-        {
-          synced_block_verifiers.vote_settings_true++;
-        }
-        else
-        {
-          synced_block_verifiers.vote_settings_false++;
-        }
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      } 
-    }  
-  }
+      color_print("Sending all block verifiers a message to check if the reserve proofs database is synced","white");
+    }
+    
+    SEND_DATABASE_SYNC_CHECK_MESSAGE("reserve_proofs_database");
 
     // get the vote settings of the block verifiers
 
     // check if a consensus could not be reached and sync from a network data node
     if (synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      color_print("A Consensus could not be reached for trying to sync the reserve proofs database, syncing from a random network data node","red");
+      if (test_settings == 0)
+      {
+        color_print("A Consensus could not be reached for trying to sync the reserve proofs database, syncing from a random network data node","red");
+      }
       settings = 2;
     }
     else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      color_print("The reserve proofs database is not synced, syncing from a random block verifier","red");
+      if (test_settings == 0)
+      {
+        color_print("The reserve proofs database is not synced, syncing from a random block verifier","red");
+      }
 
       // get the data
       if (sync_reserve_proofs_database(settings,"") == 0)
@@ -251,7 +273,10 @@ int sync_check_reserve_proofs_database(int settings)
   }
   if (settings == 2 || settings == 3)
   {
-    color_print("Syncing from a random network data node","white");
+    if (test_settings == 0)
+    {
+      color_print("Syncing from a random network data node","white");
+    }
     if (sync_reserve_proofs_database(settings,"") == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
@@ -264,7 +289,10 @@ int sync_check_reserve_proofs_database(int settings)
     sync_check_majority_reserve_proofs_database();
   }
 
-  color_print("The reserve proofs database is synced","green");
+  if (test_settings == 0)
+  {
+    color_print("The reserve proofs database is synced","green");
+  }
   
   pointer_reset(data);
   return 1;
@@ -312,7 +340,10 @@ void sync_check_majority_reserve_proofs_database(void)
     exit(0);
   }
   
-  color_print("Checking if the database is in the majority","yellow");
+  if (test_settings == 0)
+  {
+    color_print("Checking if the database is in the majority","yellow");
+  }
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -357,38 +388,17 @@ void sync_check_majority_reserve_proofs_database(void)
     SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
   }
     
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      memset(data,0,strlen(data));
-      memset(data2,0,sizeof(data2));
-      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
-      {
-        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-        synced_block_verifiers.vote_settings_connection_timeout++;
-      }
-      else
-      {
-        if (strstr(data,"reserve_proofs_database") != NULL && parse_json_data(data,"reserve_proofs_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
-        {
-          synced_block_verifiers.vote_settings_true++;
-        }
-        else
-        {
-          synced_block_verifiers.vote_settings_false++;
-        }
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      } 
-    }  
-  }
+  SEND_DATABASE_SYNC_CHECK_MESSAGE("reserve_proofs_database");
 
   // get the vote settings of the block verifiers
 
   // check if the block verifiers database is in the majority
   if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    color_print("The database is not in the majority, syncing from a random network data node","red");
+    if (test_settings == 0)
+    {
+      color_print("The database is not in the majority, syncing from a random network data node","red");
+    }
     get_random_network_data_node(count);
     sync_reserve_proofs_database(count+3,"");    
   }
@@ -445,7 +455,10 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
     exit(0);
   }
 
-  print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the reserve bytes database is synced",data2);
+  if (test_settings == 0)
+  {
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the reserve bytes database is synced",data2);
+  }
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -495,40 +508,22 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
     }
 
-    color_print("Sending all block verifiers a message to check if the reserve bytes database is synced","white"); 
-
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    if (test_settings == 0)
     {
-      memset(data,0,strlen(data));
-      memset(data2,0,sizeof(data2));
-      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
-      {
-        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-        synced_block_verifiers.vote_settings_connection_timeout++;
-      }
-      else
-      {
-        if (strstr(data,"reserve_bytes_database") != NULL && parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
-        {
-          synced_block_verifiers.vote_settings_true++;
-        }
-        else
-        {
-          synced_block_verifiers.vote_settings_false++;
-        }
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      } 
-    }  
-  }
+      color_print("Sending all block verifiers a message to check if the reserve bytes database is synced","white");
+    }
+    
+    SEND_DATABASE_SYNC_CHECK_MESSAGE("reserve_bytes_database");
 
     // get the vote settings of the block verifiers
 
     // check if a consensus could not be reached and sync from a network data node
     if (synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      color_print("A Consensus could not be reached for trying to sync the reserve bytes database, syncing from a random network data node","red");
+      if (test_settings == 0)
+      {
+        color_print("A Consensus could not be reached for trying to sync the reserve bytes database, syncing from a random network data node","red");
+      }
       settings = 2;
     }
     else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
@@ -548,7 +543,10 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
   }
   if (settings == 2 || settings == 3)
   {
-    color_print("Syncing from a random network data node","white");
+    if (test_settings == 0)
+    {
+      color_print("Syncing from a random network data node","white");
+    }
     if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings,"") == 0)
     {
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
@@ -561,7 +559,10 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
     sync_check_majority_reserve_bytes_database(reserve_bytes_start_settings);
   }
 
-  color_print("The reserve bytes database is synced","green");
+  if (test_settings == 0)
+  {
+    color_print("The reserve bytes database is synced","green");
+  }
   
   pointer_reset(data);
   return 1;
@@ -613,7 +614,10 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
     exit(0);
   }
 
-  color_print("Checking if the database is in the majority","yellow");
+  if (test_settings == 0)
+  {
+    color_print("Checking if the database is in the majority","yellow");
+  }
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -661,38 +665,17 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
     SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
   }
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      memset(data,0,strlen(data));
-      memset(data2,0,sizeof(data2));
-      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
-      {
-        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-        synced_block_verifiers.vote_settings_connection_timeout++;
-      }
-      else
-      {
-        if (strstr(data,"reserve_bytes_database") != NULL && parse_json_data(data,"reserve_bytes_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
-        {
-          synced_block_verifiers.vote_settings_true++;
-        }
-        else
-        {
-          synced_block_verifiers.vote_settings_false++;
-        }
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      } 
-    }  
-  }
+  SEND_DATABASE_SYNC_CHECK_MESSAGE("reserve_bytes_database");
 
   // get the vote settings of the block verifiers
 
   // check if the block verifiers database is in the majority
   if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    color_print("The database is not in the majority, syncing from a random network data node","red");
+    if (test_settings == 0)
+    {
+      color_print("The database is not in the majority, syncing from a random network data node","red");
+    }
     get_random_network_data_node(count);
     sync_reserve_bytes_database(count+3,reserve_bytes_start_settings,""); 
   }
@@ -748,7 +731,10 @@ int sync_check_delegates_database(int settings)
     exit(0);
   }
 
-  print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the delegates database is synced",data2);
+  if (test_settings == 0)
+  {
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the delegates database is synced",data2);
+  }
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -776,45 +762,30 @@ int sync_check_delegates_database(int settings)
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sign_data");
     }
 
-    color_print("Sending all block verifiers a message to check if the delegates database is synced","white"); 
+    if (test_settings == 0)
+    {
+      color_print("Sending all block verifiers a message to check if the delegates database is synced","white"); 
+    }
 
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      memset(data,0,strlen(data));
-      memset(data2,0,sizeof(data2));
-      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
-      {
-        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-        synced_block_verifiers.vote_settings_connection_timeout++;
-      }
-      else
-      {
-        if (strstr(data,"delegates_database") != NULL && parse_json_data(data,"delegates_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
-        {
-          synced_block_verifiers.vote_settings_true++;
-        }
-        else
-        {
-          synced_block_verifiers.vote_settings_false++;
-        }
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      }
-    }  
-  }
+    SEND_DATABASE_SYNC_CHECK_MESSAGE("delegates_database");
 
     // get the vote settings of the block verifiers
 
     // check if a consensus could not be reached and sync from a network data node
     if (synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      color_print("A Consensus could not be reached for trying to sync the delegates database, syncing from a random network data node","red");
+      if (test_settings == 0)
+      {
+        color_print("A Consensus could not be reached for trying to sync the delegates database, syncing from a random network data node","red");
+      }
       settings = 2;
     }
     else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      color_print("The delegates database is not synced, syncing from a random block verifier","red");
+      if (test_settings == 0)
+      {
+        color_print("The delegates database is not synced, syncing from a random block verifier","red");
+      }
 
       // get the data
       if (sync_delegates_database(settings,"") == 0)
@@ -825,7 +796,10 @@ int sync_check_delegates_database(int settings)
   }
   if (settings == 2 || settings == 3)
   {
-    color_print("Syncing from a random network data node","white");
+    if (test_settings == 0)
+    {
+      color_print("Syncing from a random network data node","white");
+    }
     if (sync_delegates_database(settings,"") == 0)
     {
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database database");
@@ -838,7 +812,10 @@ int sync_check_delegates_database(int settings)
     sync_check_majority_delegates_database();
   }
 
-  color_print("The delegates database is synced","green");
+  if (test_settings == 0)
+  {
+    color_print("The delegates database is synced","green");
+  }
   
   pointer_reset(data);
   return 1;
@@ -889,7 +866,10 @@ void sync_check_majority_delegates_database(void)
     exit(0);
   }
 
-  color_print("Checking if the database is in the majority","yellow");
+  if (test_settings == 0)
+  {
+    color_print("Checking if the database is in the majority","yellow");
+  }
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -915,38 +895,17 @@ void sync_check_majority_delegates_database(void)
     SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR("Could not sign_data");
   }
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      memset(data,0,strlen(data));
-      memset(data2,0,sizeof(data2));
-      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
-      {
-        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-        synced_block_verifiers.vote_settings_connection_timeout++;
-      }
-      else
-      {
-        if (strstr(data,"delegates_database") != NULL && parse_json_data(data,"delegates_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
-        {
-          synced_block_verifiers.vote_settings_true++;
-        }
-        else
-        {
-          synced_block_verifiers.vote_settings_false++;
-        }
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      } 
-    }  
-  }
+  SEND_DATABASE_SYNC_CHECK_MESSAGE("delegates_database");
 
   // get the vote settings of the block verifiers
 
   // check if the block verifiers database is in the majority
   if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    color_print("The database is not in the majority, syncing from a random network data node","red");
+    if (test_settings == 0)
+    {
+      color_print("The database is not in the majority, syncing from a random network data node","red");
+    }
     get_random_network_data_node(count);
     sync_delegates_database(count+3,"");   
   }
@@ -1003,7 +962,10 @@ int sync_check_statistics_database(int settings)
     exit(0);
   }
 
-  print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the statistics database is synced",data2);
+  if (test_settings == 0)
+  {
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the statistics database is synced",data2);
+  }
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -1031,44 +993,30 @@ int sync_check_statistics_database(int settings)
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sign_data");
     }
 
-    color_print("Sending all block verifiers a message to check if the statistics database is synced","white"); 
-
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    if (test_settings == 0)
     {
-      memset(data,0,strlen(data));
-      memset(data2,0,sizeof(data2));
-      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
-      {
-        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-        synced_block_verifiers.vote_settings_connection_timeout++;
-      }
-      else
-      {
-        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
-        {
-          synced_block_verifiers.vote_settings_true++;
-        }
-        else
-        {
-          synced_block_verifiers.vote_settings_false++;
-        }
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      } 
-    }  
-  }
+      color_print("Sending all block verifiers a message to check if the statistics database is synced","white"); 
+    }
+
+    SEND_DATABASE_SYNC_CHECK_MESSAGE("statistics_database");
+
     // get the vote settings of the block verifiers
 
     // check if a consensus could not be reached and sync from a network data node
     if (synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      color_print("A Consensus could not be reached for trying to sync the statistics database, syncing from a random network data node","red");
+      if (test_settings == 0)
+      {
+        color_print("A Consensus could not be reached for trying to sync the statistics database, syncing from a random network data node","red");
+      }
       settings = 2;
     }
     else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      color_print("The statistics database is not synced, syncing from a random block verifier","red");
+      if (test_settings == 0)
+      {
+        color_print("The statistics database is not synced, syncing from a random block verifier","red");
+      }
 
       // get the data
       if (sync_statistics_database(settings,"") == 0)
@@ -1079,7 +1027,10 @@ int sync_check_statistics_database(int settings)
   }
   if (settings == 2 || settings == 3)
   {
-    color_print("Syncing from a random network data node","white");
+    if (test_settings == 0)
+    {
+      color_print("Syncing from a random network data node","white");
+    }
     if (sync_statistics_database(settings,"") == 0)
     {
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database database");
@@ -1092,7 +1043,10 @@ int sync_check_statistics_database(int settings)
     sync_check_majority_statistics_database();
   }
 
-  color_print("The statistics database is synced","green");
+  if (test_settings == 0)
+  {
+    color_print("The statistics database is synced","green");
+  }
   
   pointer_reset(data);
   return 1;
@@ -1143,7 +1097,10 @@ void sync_check_majority_statistics_database(void)
     exit(0);
   }
 
-  color_print("Checking if the database is in the majority","yellow");
+  if (test_settings == 0)
+  { 
+    color_print("Checking if the database is in the majority","yellow");
+  }
 
   if (get_synced_block_verifiers() == 0)
   {
@@ -1169,38 +1126,17 @@ void sync_check_majority_statistics_database(void)
     SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR("Could not sign_data");
   }
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {
-      memset(data,0,strlen(data));
-      memset(data2,0,sizeof(data2));
-      if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,TOTAL_CONNECTION_TIME_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0)
-      {
-        memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18);
-        synced_block_verifiers.vote_settings_connection_timeout++;
-      }
-      else
-      {
-        if (strstr(data,"statistics_database") != NULL && parse_json_data(data,"statistics_database",data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0)
-        {
-          synced_block_verifiers.vote_settings_true++;
-        }
-        else
-        {
-          synced_block_verifiers.vote_settings_false++;
-        }
-        memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE));
-      } 
-    }  
-  }
+  SEND_DATABASE_SYNC_CHECK_MESSAGE("statistics_database");
 
   // get the vote settings of the block verifiers
 
   // check if the block verifiers database is in the majority
   if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
   {
-    color_print("The database is not in the majority, syncing from a random network data node","red");
+    if (test_settings == 0)
+    {
+      color_print("The database is not in the majority, syncing from a random network data node","red");
+    }
     get_random_network_data_node(count);
     sync_statistics_database(count+3,"");     
   }
@@ -1211,3 +1147,5 @@ void sync_check_majority_statistics_database(void)
   #undef DATABASE_COLLECTION  
   #undef SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR  
 }
+
+#undef SEND_DATABASE_SYNC_CHECK_MESSAGE
