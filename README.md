@@ -2,13 +2,14 @@
 
 ⚠ Alpha: The DPOPS integration is still a work in progress 🏗 
  
-X-CASH DPOPS is a variation of DPOS and DBFT. The key features of X-CASH DPOPS are:
+X-CASH DPOPS is a variation of DPOS and DBFT that uses verifiable random functions for the selection of the next block producer. The key features of X-CASH DPOPS are:
  
 * The top 100 delegates are elected as block verifiers.
 * Reserve proof based voting/staking system, meaning the XCASH always stays in your wallet.
 * No need to keep your wallet or computer online if your just staking towards a shared delegate.
 * No need to keep your XCASH directly on the server if running a solo node, as you can use an empty wallet on the server and vote for yourself.
 * A minimum of 2 million XCASH is needed to vote for a delegate.
+* A minimum of 20 million XCASH is needed to register as a delegate and not be auto removed for inactivity at UTC 00:00.
  
 * The election process is every block, meaning a new vote will get counted for the next block.
 * No need to cancel a vote, as it will automatically get cancelled if you change your vote to a different delegate.
