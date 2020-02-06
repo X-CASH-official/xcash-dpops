@@ -621,6 +621,7 @@ Replace `item` with the item you want to update. The list of valid items are:
 | IP_address                                   | String        | maximum of 255 characters     |
 | about                                        | String        | maximum of 1024 characters    |
 | website                                      | String        | maximum of 255 characters     |
+| team                                         | String        | maximum of 255 characters     |
 | pool_mode                                    | Boolean       | true or false                 |
 | fee_structure                                | Number        | 0-100 up to 6 decimal places  |
 | server_settings                              | String        |  maximum of 255 characters    |
