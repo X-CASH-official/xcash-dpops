@@ -199,11 +199,20 @@ struct error_message {
 };
 
 struct invalid_reserve_proofs {  
-    char* block_verifier_public_address[MAXIMUM_INVALID_RESERVE_PROOFS]; // The block verifiers public address that added the reserve proof
-    char* public_address[MAXIMUM_INVALID_RESERVE_PROOFS]; // The public address that created the reserve proof
-    char* reserve_proof[MAXIMUM_INVALID_RESERVE_PROOFS]; // The reserve proof
+    char* block_verifier_public_address[MAXIMUM_INVALID_RESERVE_PROOFS]; // The block verifiers public address that added the invalid reserve proof
+    char* public_address_created_reserve_proof[MAXIMUM_INVALID_RESERVE_PROOFS]; // The public address that created the reserve proof
+    char* public_address_voted_for[MAXIMUM_INVALID_RESERVE_PROOFS]; // The public address that was voted for
     size_t reserve_proof_amount[MAXIMUM_INVALID_RESERVE_PROOFS]; // The reserve proof amount
+    char* reserve_proof[MAXIMUM_INVALID_RESERVE_PROOFS]; // The reserve proof
     int count; // The amount of reserve proofs in the invalid_reserve_proofs struct
+};
+
+struct reserve_proof {  
+    char block_verifier_public_address[XCASH_WALLET_LENGTH+1]; // The block verifiers public address that added the invalid reserve proof
+    char public_address_created_reserve_proof[XCASH_WALLET_LENGTH+1]; // The public address that created the reserve proof
+    char public_address_voted_for[XCASH_WALLET_LENGTH+1]; // The public address that was voted for
+    char reserve_proof_amount[100]; // The reserve proof amount
+    char reserve_proof[BUFFER_SIZE_RESERVE_PROOF+1]; // The reserve proof
 };
 
 // database struct
