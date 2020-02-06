@@ -168,63 +168,266 @@ void* current_block_height_timer_thread(void* parameters)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: check_reserve_proofs_timer_thread
-Description: Randomly selects a reserve proof from the database and will check if it is valid
-Return: NULL
+Name: check_reserve_proofs_timer_create_message
+Description: Creates the message to send to all of the block verifiers
+Paramters:
+  message - The message to send to the block verifiers
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* check_reserve_proofs_timer_thread(void* parameters)
+int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
 {
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   char* message = (char*)calloc(524288000,sizeof(char)); // 500 MB
   char* reserve_proofs[MAXIMUM_INVALID_RESERVE_PROOFS];
   int count;
   int count2;
-  int counter;
-  size_t block_verifiers_total_vote_count;
-  size_t block_verifiers_score;
-  struct database_multiple_documents_fields database_multiple_documents_fields;
-  int settings;
-  
-  // unused parameters
-  (void)parameters;
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
 
-  // define macros
-  #define pointer_reset_database_array \
-  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count++) \
-  { \
-    pointer_reset(database_multiple_documents_fields.item[0][count]); \
-    pointer_reset(database_multiple_documents_fields.value[0][count]); \
-  } \
+  #define RESET_RESERVE_PROOFS_ARRAY \
   for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++) \
   { \
     pointer_reset(reserve_proofs[count]); \
   }
 
-  #define RESET_INVALID_RESERVE_PROOFS \
-  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++) \
-  { \
-    memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count])); \
-    memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count])); \
-    memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count])); \
-  } \
-  invalid_reserve_proofs.count = 0; \
-  database_settings = 1; \
-  pthread_cond_broadcast(&thread_settings_lock);
+  // initialize the reserve_proofs array 
+  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
+  {
+    reserve_proofs[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
 
-  #define CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR(message) \
-  memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33); \
-  memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
-  error_message.total++; \
-  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  pointer_reset_database_array; \
-  continue;
+    if (reserve_proofs[count] == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+      exit(0);
+    }
+  } 
+
+  // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
+  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
+
+  // set the database to not accept any new data
+  database_settings = 0;
+
+  // copy all of the reserve proofs to the reserve_proofs array
+  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
+  {
+    memcpy(reserve_proofs[count],invalid_reserve_proofs.reserve_proof[count],strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF));
+  }
+
+  // organize the invalid reserve proofs struct so the data hash is the same
+  qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),organize_invalid_reserve_proofs_settings);
+
+  // get the data hash of the invalid_reserve_proofs struct
+  memset(message,0,strlen(message));
+  memset(data,0,sizeof(data));
+  memset(block_verifiers_message,0,strlen(block_verifiers_message));
+  if (invalid_reserve_proofs.count > 0)
+  {
+    for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
+    {
+      if (memcmp(reserve_proofs[count],"",1) != 0)
+      {
+        memcpy(message+strlen(message),reserve_proofs[count],strnlen(reserve_proofs[count],BUFFER_SIZE_RESERVE_PROOF));
+      }          
+    }
+  }
+  else
+  {
+    memcpy(message,"XCASH",5);
+  }
+      
+  crypto_hash_sha512((unsigned char*)data,(const unsigned char*)message,(unsigned long long)strnlen(message,524288000));
+
+  // convert the SHA512 data hash to a string
+  for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
+  {
+    snprintf(block_verifiers_message+count,sizeof(block_verifiers_message)-1,"%02x",data[count2] & 0xFF);
+  }
+
+  // reset the current_round_part_vote_data.vote_results_valid struct
+  memset(current_round_part_vote_data.current_vote_results,0,sizeof(current_round_part_vote_data.current_vote_results));
+  current_round_part_vote_data.vote_results_valid = 1;
+  current_round_part_vote_data.vote_results_invalid = 0;
+
+  memcpy(current_round_part_vote_data.current_vote_results,block_verifiers_message,DATA_HASH_LENGTH);
+
+  // create the message
+  memset(block_verifiers_message,0,strlen(block_verifiers_message));
+  memcpy(block_verifiers_message,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
+  memcpy(block_verifiers_message+strlen(block_verifiers_message),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
+  memcpy(block_verifiers_message+strlen(block_verifiers_message),"\",\r\n}",5); 
+
+  // sign_data
+  if (sign_data(block_verifiers_message,0) == 0)
+  { 
+    RESET_RESERVE_PROOFS_ARRAY
+    return 0;
+  }
+  RESET_RESERVE_PROOFS_ARRAY
+  return 1;
+
+  #undef RESET_RESERVE_PROOFS_ARRAY
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: check_reserve_proofs_timer_update_database
+Description: Updates the database
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_reserve_proofs_timer_update_database(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  int count;
+  int count2;
+  size_t block_verifiers_total_vote_count;
+  size_t block_verifiers_score;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  // update all of the delegates total_vote_count
+  for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+  {
+    // get the public address voted for
+    for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+    {
+      memset(data,0,sizeof(data));
+      memcpy(data,"reserve_proofs_",15);
+      snprintf(data+15,sizeof(data)-16,"%d",count);
+
+      // check if the reserve proof is in the database
+      if (count_all_documents_in_collection(database_name,data,1) > 0)
+      {
+        memset(data2,0,sizeof(data2));
+        memset(data3,0,sizeof(data3));
+        memcpy(data3,"{\"reserve_proof\":\"",18);
+        memcpy(data3+18,invalid_reserve_proofs.reserve_proof[count2],strnlen(invalid_reserve_proofs.reserve_proof[count2],sizeof(data3)));
+        memcpy(data3+strlen(data3),"\"}",2);         
+          
+        read_document_field_from_collection(database_name,data,data3,"public_address_voted_for",data2,1);
+        break;
+      }                  
+    }
+
+    memset(data,0,sizeof(data));
+    memset(data3,0,sizeof(data3));
+
+    memcpy(data3,"{\"public_address\":\"",19);
+    memcpy(data3+strlen(data3),data2,XCASH_WALLET_LENGTH);
+    memcpy(data3+strlen(data3),"\"}",2);
+
+    memset(data2,0,sizeof(data2));
+
+    read_document_field_from_collection(database_name,"delegates",data3,"total_vote_count",data,1);
+
+    sscanf(data,"%zu", &block_verifiers_total_vote_count);
+    block_verifiers_total_vote_count-= invalid_reserve_proofs.reserve_proof_amount[count2];
+    memset(data,0,sizeof(data));
+    snprintf(data,sizeof(data)-1,"%zu",block_verifiers_total_vote_count);  
+
+    memcpy(data2,"{\"total_vote_count\":\"",21);
+    memcpy(data2+strlen(data2),data,strnlen(data,sizeof(data2)));
+    memcpy(data2+strlen(data2),"\"}",2);
+
+    update_document_from_collection(database_name,"delegates",data3,data2,1);  
+  }
+      
+  // update all of the block verifiers score
+  for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+  {
+    // create the message
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"public_address\":\"",19);
+    memcpy(data+19,invalid_reserve_proofs.block_verifier_public_address[count2],strnlen(invalid_reserve_proofs.block_verifier_public_address[count2],sizeof(data)));
+    memcpy(data+strlen(data),"\"}",2);
+
+    // get the block verifiers score
+    memset(data2,0,sizeof(data2));
+    if (read_document_field_from_collection(database_name,"delegates",data,"block_verifier_score",data2,1) == 0)
+    {
+      return 0;
+    }
+    sscanf(data2, "%zu", &block_verifiers_score);
+    block_verifiers_score++;
+
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"{\"block_verifier_score\":\"",25);
+    snprintf(data2+25,sizeof(data2)-26,"%zu",block_verifiers_score);
+    memcpy(data2+strlen(data2),"\"}",2);
+
+    if (update_document_from_collection(database_name,"delegates",data,data2,1) == 0)
+    {
+      return 0;
+    }
+  }
+
+  // delete all of the reserve proofs in the database
+  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  {
+    memset(data,0,sizeof(data));
+    memcpy(data,"reserve_proofs_",15);
+    snprintf(data+15,sizeof(data)-16,"%d",count);
+    for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+    {
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,"{\"reserve_proof\":\"",18);
+      memcpy(data2+18,invalid_reserve_proofs.reserve_proof[count2],strnlen(invalid_reserve_proofs.reserve_proof[count2],sizeof(data2)));
+      memcpy(data2+strlen(data2),"\"}",2);
+      delete_document_from_collection(database_name,data,data2,1);
+    }       
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: select_random_unique_reserve_proof
+Description: Selects a random reserve proof and checks if it is unique to the current invalid reserve proofs list
+Paramters:
+  struct votes
+    public_address_created_reserve_proof - The public address that created the reserve proof
+    public_address_voted_for - The public address that the reserve proof is voted for
+    total - The total
+    reserve_proof - The reserve proof
+Return: 0 if the reserve proof is not unique, 1 if it is unique and needs to be checked if it is invalid
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int select_random_unique_reserve_proof(struct votes* votes)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  int count;
+  int count2;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  #define pointer_reset_database_array \
+  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count++) \
+  { \
+    pointer_reset(database_multiple_documents_fields.item[0][count]); \
+    pointer_reset(database_multiple_documents_fields.value[0][count]); \
+  }
+
+  memset(data,0,sizeof(data));
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count++)
@@ -244,87 +447,168 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
-  // initialize the reserve_proofs array 
-  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
+  // reset the votes struct
+  memset(votes->public_address_created_reserve_proof,0,strlen(votes->public_address_created_reserve_proof));
+  memset(votes->public_address_voted_for,0,strlen(votes->public_address_voted_for));
+  memset(votes->total,0,strlen(votes->total));
+  memset(votes->reserve_proof,0,strlen(votes->reserve_proof));
+
+  // select a random reserve proofs collection
+  memset(data,0,sizeof(data));
+  memcpy(data,"reserve_proofs_",15);
+  snprintf(data+15,sizeof(data)-16,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
+
+  // select a random document in the collection
+  if ((count = count_all_documents_in_collection(database_name,data,1)) <= 0)
   {
-    reserve_proofs[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+    return 0;
+  }
 
-    if (reserve_proofs[count] == NULL)
+  count = (rand() % count) + 1;
+
+  // get a random document from the collection
+  if (read_multiple_documents_all_fields_from_collection(database_name,data,"",&database_multiple_documents_fields,count,1,0,"",1) == 1)
+  {
+    // check if the reserve proof is unique 
+    for (count2 = 0; count2 <= invalid_reserve_proofs.count; count2++)
     {
-      memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
+      if (strncmp(invalid_reserve_proofs.reserve_proof[count2],database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF) == 0)
+      {
+        pointer_reset_database_array;
+        return 0;
+      }
     }
-  } 
+  }
+
+  // the reserve proof is unique copy the data to the votes struct
+  memcpy(votes->public_address_created_reserve_proof,database_multiple_documents_fields.value[0][0],strnlen(database_multiple_documents_fields.value[0][0],XCASH_WALLET_LENGTH));
+  memcpy(votes->public_address_voted_for,database_multiple_documents_fields.value[0][0],strnlen(database_multiple_documents_fields.value[0][1],XCASH_WALLET_LENGTH));
+  memcpy(votes->total,database_multiple_documents_fields.value[0][0],strnlen(database_multiple_documents_fields.value[0][2],100));
+  memcpy(votes->reserve_proof,database_multiple_documents_fields.value[0][0],strnlen(database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF));
+
+  pointer_reset_database_array;
+  return 1;
+
+  #undef pointer_reset_database_array
+}
 
 
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: send_invalid_reserve_proof_to_block_verifiers
+Description: Sends the invalid reserve proof to all of the block verifiers
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int send_invalid_reserve_proof_to_block_verifiers(struct votes* votes)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+
+  memset(data,0,sizeof(data));
+
+  color_print("Found an invalid reserve proof","yellow");
+
+  // add the reserve proof to the invalid_reserve_proofs struct
+  pthread_rwlock_wrlock(&rwlock_reserve_proofs);
+  memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count],votes->public_address_created_reserve_proof,XCASH_WALLET_LENGTH);
+  memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],votes->reserve_proof,strnlen(votes->reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
+  invalid_reserve_proofs.count++;
+  pthread_rwlock_unlock(&rwlock_reserve_proofs);
+
+  // send the reserve proof to all block verifiers
+  // create the message
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\",\r\n \"public_address_that_created_the_reserve_proof\": \"",137);
+  memcpy(data+strlen(data),invalid_reserve_proofs.public_address[invalid_reserve_proofs.count-1],strnlen(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count-1],sizeof(data)));
+  memcpy(data+strlen(data),"\",\r\n \"reserve_proof\": \"",23);
+  memcpy(data+strlen(data),invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count-1],strnlen(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count-1],sizeof(data)));
+  memcpy(data+strlen(data),"\",\r\n}",5);
+
+  // sign_data
+  if (sign_data(data,0) == 0)
+  { 
+    return 0;
+  }
+
+  // send the message to all block verifiers
+  if (block_verifiers_send_data_socket((const char*)data) == 0)
+  {
+    return 0;
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: check_reserve_proofs_timer_thread
+Description: checks all of the reserve proofs in the database and removes them if they are invalid
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* check_reserve_proofs_timer_thread(void* parameters)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  struct votes votes;
+  
+  // unused parameters
+  (void)parameters;
+
+  // define macros
+  #define RESET_INVALID_RESERVE_PROOFS \
+  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++) \
+  { \
+    memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count])); \
+    memset(invalid_reserve_proofs.public_address[count],0,strlen(invalid_reserve_proofs.public_address[count])); \
+    memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count])); \
+  } \
+  invalid_reserve_proofs.count = 0; \
+  database_settings = 1; \
+  pthread_cond_broadcast(&thread_settings_lock);
+
+  #define pointer_reset_all \
+  pointer_reset(votes.public_address_created_reserve_proof); \
+  pointer_reset(votes.public_address_voted_for); \
+  pointer_reset(votes.total); \
+  pointer_reset(votes.reserve_proof);
+
+  // initialize the votes struct
+  votes.public_address_created_reserve_proof = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  votes.public_address_voted_for = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  votes.total = (char*)calloc(100,sizeof(char));
+  votes.reserve_proof = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF+1,sizeof(char));
+  
+  if (votes.public_address_created_reserve_proof == NULL || votes.public_address_voted_for == NULL || votes.total == NULL || votes.reserve_proof == NULL)
+  {
+    memcpy(error_message.function[error_message.total],"check_reserve_proofs_timer_thread",33);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);
+    exit(0);
+  }
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   for (;;)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec == 25 && invalid_reserve_proofs.count > 0)
     {
-      // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
-      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
-
-      // set the database to not accept any new data
-      database_settings = 0;
-
-      // copy all of the reserve proofs to the reserve_proofs array
-      for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
+      // create the data to send to the block verifiers
+      if (check_reserve_proofs_timer_create_message(data2) == 0)
       {
-        memcpy(reserve_proofs[count],invalid_reserve_proofs.reserve_proof[count],strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF));
-      }
-
-      // organize the invalid reserve proofs struct so the data hash is the same
-      qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),organize_invalid_reserve_proofs_settings);
-
-      // get the data hash of the invalid_reserve_proofs struct
-      memset(message,0,strlen(message));
-      memset(data,0,sizeof(data));
-      memset(data2,0,sizeof(data2));
-      memset(data3,0,sizeof(data3));
-      if (invalid_reserve_proofs.count > 0)
-      {
-        for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
-        {
-          if (memcmp(reserve_proofs[count],"",1) != 0)
-          {
-            memcpy(message+strlen(message),reserve_proofs[count],strnlen(reserve_proofs[count],BUFFER_SIZE_RESERVE_PROOF));
-          }          
-        }
-      }
-      else
-      {
-        memcpy(message,"XCASH",5);
-      }
-      
-      crypto_hash_sha512((unsigned char*)data,(const unsigned char*)message,(unsigned long long)strnlen(message,524288000));
-
-      // convert the SHA512 data hash to a string
-      for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
-      {
-        snprintf(data2+count,sizeof(data2)-1,"%02x",data[count2] & 0xFF);
-      }
-
-      // reset the current_round_part_vote_data.vote_results_valid struct
-      memset(current_round_part_vote_data.current_vote_results,0,sizeof(current_round_part_vote_data.current_vote_results));
-      current_round_part_vote_data.vote_results_valid = 1;
-      current_round_part_vote_data.vote_results_invalid = 0;
-
-      memcpy(current_round_part_vote_data.current_vote_results,data2,DATA_HASH_LENGTH);
-
-      // create the message
-      memset(data2,0,sizeof(data2));
-      memcpy(data2,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
-      memcpy(data2+strlen(data2),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
-      memcpy(data2+strlen(data2),"\",\r\n}",5); 
-
-      // sign_data
-      if (sign_data(data2,0) == 0)
-      { 
         RESET_INVALID_RESERVE_PROOFS;
         continue;
       }
@@ -346,100 +630,13 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         continue;
       }
 
-      // update all of the delegates total_vote_count
-      for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+      // update the database
+      if (check_reserve_proofs_timer_update_database() == 0)
       {
-        // get the public address voted for
-        for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
-        {
-          memset(data,0,sizeof(data));
-          memcpy(data,"reserve_proofs_",15);
-          snprintf(data+15,sizeof(data)-16,"%d",count);
-
-          // check if the reserve proof is in the database
-          if (count_all_documents_in_collection(database_name,data,1) > 0)
-          {
-            memset(data2,0,sizeof(data2));
-            memset(data3,0,sizeof(data3));
-            memcpy(data3,"{\"reserve_proof\":\"",18);
-            memcpy(data3+18,invalid_reserve_proofs.reserve_proof[count2],strnlen(invalid_reserve_proofs.reserve_proof[count2],sizeof(data3)));
-            memcpy(data3+strlen(data3),"\"}",2);         
-          
-            read_document_field_from_collection(database_name,data,data3,"public_address_voted_for",data2,1);
-            break;
-          }                  
-        }
-
-        memset(data,0,sizeof(data));
-        memset(data3,0,sizeof(data3));
-
-        memcpy(data3,"{\"public_address\":\"",19);
-        memcpy(data3+strlen(data3),data2,XCASH_WALLET_LENGTH);
-        memcpy(data3+strlen(data3),"\"}",2);
-
-        memset(data2,0,sizeof(data2));
-
-        read_document_field_from_collection(database_name,"delegates",data3,"total_vote_count",data,1);
-
-        sscanf(data,"%zu", &block_verifiers_total_vote_count);
-        block_verifiers_total_vote_count-= invalid_reserve_proofs.reserve_proof_amount[count2];
-        memset(data,0,sizeof(data));
-        snprintf(data,sizeof(data)-1,"%zu",block_verifiers_total_vote_count);  
-
-        memcpy(data2,"{\"total_vote_count\":\"",21);
-        memcpy(data2+strlen(data2),data,strnlen(data,sizeof(data2)));
-        memcpy(data2+strlen(data2),"\"}",2);
-
-        update_document_from_collection(database_name,"delegates",data3,data2,1);  
+        RESET_INVALID_RESERVE_PROOFS;
+        continue;
       }
       
-      // update all of the block verifiers score
-      for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
-      {
-        // create the message
-        memset(data,0,sizeof(data));
-        memcpy(data,"{\"public_address\":\"",19);
-        memcpy(data+19,invalid_reserve_proofs.block_verifier_public_address[count2],strnlen(invalid_reserve_proofs.block_verifier_public_address[count2],sizeof(data)));
-        memcpy(data+strlen(data),"\"}",2);
-
-        // get the block verifiers score
-        memset(data2,0,sizeof(data2));
-        if (read_document_field_from_collection(database_name,"delegates",data,"block_verifier_score",data2,1) == 0)
-        {
-          RESET_INVALID_RESERVE_PROOFS;
-          continue;
-        }
-        sscanf(data2, "%zu", &block_verifiers_score);
-        block_verifiers_score++;
-
-        memset(data2,0,sizeof(data2));
-        memcpy(data2,"{\"block_verifier_score\":\"",25);
-        snprintf(data2+25,sizeof(data2)-26,"%zu",block_verifiers_score);
-        memcpy(data2+strlen(data2),"\"}",2);
-
-        if (update_document_from_collection(database_name,"delegates",data,data2,1) == 0)
-        {
-          RESET_INVALID_RESERVE_PROOFS;
-          continue;
-        }
-      }
-
-      // delete all of the reserve proofs in the database
-      for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
-      {
-        memset(data,0,sizeof(data));
-        memcpy(data,"reserve_proofs_",15);
-        snprintf(data+15,sizeof(data)-16,"%d",count);
-        for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
-        {
-          memset(data2,0,sizeof(data2));
-          memcpy(data2,"{\"reserve_proof\":\"",18);
-          memcpy(data2+18,invalid_reserve_proofs.reserve_proof[count2],strnlen(invalid_reserve_proofs.reserve_proof[count2],sizeof(data2)));
-          memcpy(data2+strlen(data2),"\"}",2);
-          delete_document_from_collection(database_name,data,data2,1);
-        }       
-      }
-
       // set the database to accept new data
       database_settings = 1;
 
@@ -452,85 +649,22 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
 
 
-    // reset the database_multiple_documents_fields
-    for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASE_FIELDS; count++)
-    {
-      memset(database_multiple_documents_fields.item[0][count],0,strlen(database_multiple_documents_fields.item[0][count]));
-      memset(database_multiple_documents_fields.value[0][count],0,strlen(database_multiple_documents_fields.value[0][count]));
-    }
-
-    // select a random reserve proofs collection
+    // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
     memset(data,0,sizeof(data));
-    memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
-
-    // select a random document in the collection
-    count = count_all_documents_in_collection(database_name,data,1);
-    if (count > 0)
-    {
-      count = (rand() % count) + 1;
-    }
-    else
-    {
-      continue;
-    }   
-
-    // get a random document from the collection
-    if (read_multiple_documents_all_fields_from_collection(database_name,data,"",&database_multiple_documents_fields,count,1,0,"",1) == 1)
-    {
-      // check if the reserve proof is unique 
-      for (counter = 0, settings = 0; counter <= invalid_reserve_proofs.count; counter++)
+    if (select_random_unique_reserve_proof(&votes) == 1 && (check_reserve_proofs(data,votes.public_address_created_reserve_proof,votes.reserve_proof,0) == 0 || memcmp(data,votes.total,strlen(data)) != 0))
+    {    
+      if (send_invalid_reserve_proof_to_block_verifiers(&votes) == 0)
       {
-        if (strncmp(invalid_reserve_proofs.reserve_proof[counter],database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF) == 0)
-        {
-          settings = 1;
-        }
-      }
-
-      // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
-      memset(data,0,sizeof(data));
-      if (settings == 0 && (check_reserve_proofs(data,database_multiple_documents_fields.value[0][0],database_multiple_documents_fields.value[0][3],0) == 0 || memcmp(data,database_multiple_documents_fields.value[0][2],strlen(data)) != 0))
-      {         
-        color_print("Found an invalid reserve proof","yellow");
-
-        // add the reserve proof to the invalid_reserve_proofs struct
-        pthread_rwlock_wrlock(&rwlock_reserve_proofs);
-        memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-        memcpy(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count],database_multiple_documents_fields.value[0][0],XCASH_WALLET_LENGTH);
-        memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],database_multiple_documents_fields.value[0][3],strnlen(database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF));
-        invalid_reserve_proofs.count++;
-        pthread_rwlock_unlock(&rwlock_reserve_proofs);
-
-        // send the reserve proof to all block verifiers
-        // create the message
-        memset(data,0,sizeof(data));
-        memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\",\r\n \"public_address_that_created_the_reserve_proof\": \"",137);
-        memcpy(data+strlen(data),invalid_reserve_proofs.public_address[invalid_reserve_proofs.count-1],strnlen(invalid_reserve_proofs.public_address[invalid_reserve_proofs.count-1],sizeof(data)));
-        memcpy(data+strlen(data),"\",\r\n \"reserve_proof\": \"",23);
-        memcpy(data+strlen(data),invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count-1],strnlen(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count-1],sizeof(data)));
-        memcpy(data+strlen(data),"\",\r\n}",5);
-
-        // sign_data
-        if (sign_data(data,0) == 0)
-        { 
-          CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR("Could not sign_data. This means the reserve proofs database might be unsynced, and you might have to sync the database.");
-        }
-
-        // send the message to all block verifiers
-        if (block_verifiers_send_data_socket((const char*)data) == 0)
-        {
-          CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR("Could not send data to the block verifiers");
-        }
+        RESET_INVALID_RESERVE_PROOFS;
+        continue;
       }
     }
     usleep(500000);
   }
-  pointer_reset(message);
-  pointer_reset_database_array;
+  pointer_reset_all;
   pthread_exit((void *)(intptr_t)1);
 
-  #undef pointer_reset_database_array
-  #undef CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR
+  #undef pointer_reset_all
 }
 
 
@@ -772,9 +906,68 @@ void* send_and_receive_data_socket_thread(void* parameters)
     memcpy(VRF_data.block_blob_signature[data->COUNT],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
     memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
   }
-  SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
+  close(client_socket);
+  freeaddrinfo(settings);
+  pthread_exit((void *)(intptr_t)1);
 
-  #undef CHECK_RESERVE_PROOFS_TIMER_THREAD_ERROR
+  #undef SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: remove_inactive_delegates
+Description: Removes any inactive delegates from the database
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void remove_inactive_delegates(int total_delegates, int total_inactive_delegates)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  long long int total_votes;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+
+  memset(data,0,sizeof(data));
+
+  // initialize the delegates struct
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"remove_inactive_delegates_timer_thread",data,current_date_and_time,current_UTC_date_and_time);
+  
+  memset(data,0,sizeof(data));
+
+  // organize the delegates
+  total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
+
+  for (count = 0, total_inactive_delegates = 0; count < total_delegates; count++)
+  {
+    sscanf(delegates[count].total_vote_count, "%lld", &total_votes);
+
+    // check if each delegate has not mined a block, and their vote count is under the MINIMUM_AMOUNT_REGISTER_DELEGATE
+    if (memcmp(delegates[count].block_producer_block_heights,"",1) == 0 && total_votes < MINIMUM_AMOUNT_REGISTER_DELEGATE)
+    {
+      // remove the delegate from the database
+      memset(data,0,sizeof(data));
+      memcpy(data,"{\"public_address\":\'",19);
+      memcpy(data+strlen(data),delegates[count].public_address,XCASH_WALLET_LENGTH);
+      memcpy(data+strlen(data),"\"}",2);
+      if (delete_document_from_collection(database_name,DATABASE_COLLECTION,data,1) == 1)
+      {
+        total_inactive_delegates++;
+      }
+    }
+  }
+
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+  pthread_exit((void *)(intptr_t)1);
+
+  #undef DATABASE_COLLECTION
 }
 
 
@@ -782,7 +975,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: remove_inactive_delegates_timer_thread
-Description: Removes any inactive delegates from the database at UTC 00:00
+Description: runs the remove_inactive_delegates function at UTC 00:00
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -790,20 +983,13 @@ void* remove_inactive_delegates_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE];
-  char buffer[BUFFER_SIZE];
-  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
+  int total_delegates = 0;
+  int total_inactive_delegates = 0;
   time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-  int count;
-  int count2;
-  int document_count;
-  long long int total_votes;
+  struct tm current_UTC_date_and_time;  
 
   // unused parameters
   (void)parameters;
-
-  // define macros
-  #define DATABASE_COLLECTION "delegates"
 
   for (;;)
   {
@@ -813,50 +999,20 @@ void* remove_inactive_delegates_timer_thread(void* parameters)
     {
       color_print("It is UTC 23:58\nRemoving all inactive delegates from the database","yellow");
 
-      // initialize the delegates struct
-      INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"remove_inactive_delegates_timer_thread",buffer,current_date_and_time,current_UTC_date_and_time);
+      remove_inactive_delegates(total_delegates,total_inactive_delegates);
 
-      // reset the variables
-      memset(data,0,sizeof(data));
-      memset(buffer,0,sizeof(buffer));
-
-      // organize the delegates
-      document_count = organize_delegates(delegates,DATABASE_COLLECTION);
-
-      for (count = 0, count2 = 0; count < document_count; count++)
-      {
-        sscanf(delegates[count].total_vote_count, "%lld", &total_votes);
-
-        // check if each delegate has not mined a block, and their vote count is under the MINIMUM_AMOUNT_REGISTER_DELEGATE
-        if (memcmp(delegates[count].block_producer_block_heights,"",1) == 0 && total_votes < MINIMUM_AMOUNT_REGISTER_DELEGATE)
-        {
-          // remove the delegate from the database
-          memset(data,0,sizeof(data));
-          memcpy(data,"{\"public_address\":\'",19);
-          memcpy(data+strlen(data),delegates[count].public_address,XCASH_WALLET_LENGTH);
-          memcpy(data+strlen(data),"\"}",2);
-          if (delete_document_from_collection(database_name,DATABASE_COLLECTION,data,1) == 1)
-          {
-            count2++;
-          }
-        }
-      }
       memset(data,0,sizeof(data));  
       print_start_message(current_date_and_time,current_UTC_date_and_time,"Inactive Delegates",data);      
       memcpy(data,"Amount of delegates: ",21);
-      snprintf(data+strlen(data),sizeof(data)-1,"%d",document_count);
+      snprintf(data+strlen(data),sizeof(data)-1,"%d",total_delegates);
       memcpy(data,"\nAmount of inactive delegates removed: ",39);
-      snprintf(data+strlen(data),sizeof(data)-1,"%d",count2);
+      snprintf(data+strlen(data),sizeof(data)-1,"%d",total_inactive_delegates);
       memcpy(data,"\n",1);
       color_print(data,"yellow");
-
-      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
     }
     sleep(10);
   }
   pthread_exit((void *)(intptr_t)1);
-
-  #undef DATABASE_COLLECTION
 }
 
 
