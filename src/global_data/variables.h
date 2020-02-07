@@ -41,6 +41,7 @@ extern pthread_rwlock_t rwlock_reserve_proofs;
 extern pthread_mutex_t lock;
 extern pthread_mutex_t database_lock;
 extern pthread_cond_t thread_settings_lock;
+extern pthread_mutex_t add_reserve_proof_lock;
 
 extern pthread_t server_threads[100];
 extern int epoll_fd;

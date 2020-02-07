@@ -8,7 +8,7 @@ Using define statements instead of constants for increased efficiency
 */
 
 // Test
-#define XCASH_DPOPS_TOTAL_TEST 416
+#define XCASH_DPOPS_TOTAL_TEST 429
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "521850" // The block height used for testing
 #define TEST_WALLET "XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3" // the wallet used for test
 #define RESET_ERROR_MESSAGES \

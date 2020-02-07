@@ -394,6 +394,11 @@ int check_reserve_proofs_timer_update_delegates_total_vote_count(const int CURRE
   }
 
   sscanf(data,"%zu", &block_verifiers_total_vote_count);
+  // check to make sure this does not underflow
+  if ((invalid_reserve_proofs.reserve_proof_amount[CURRENT_RESERVE_PROOF_COUNT] > 0) && (block_verifiers_total_vote_count < 0 + invalid_reserve_proofs.reserve_proof_amount[CURRENT_RESERVE_PROOF_COUNT]))
+  {
+    return 0;
+  }
   block_verifiers_total_vote_count-= invalid_reserve_proofs.reserve_proof_amount[CURRENT_RESERVE_PROOF_COUNT];
   memset(data,0,sizeof(data));
   snprintf(data,sizeof(data)-1,"%zu",block_verifiers_total_vote_count);  
@@ -463,7 +468,7 @@ int check_reserve_proofs_timer_update_delegates_score(const int CURRENT_RESERVE_
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: check_reserve_proofs_timer_get_database_data
+Name: check_reserve_proofs_timer_delete_reserve_proof
 Description: Gets the reserve proof data from the database as the block verifier has to use its own data to make sure its valid, since the reserve proof is already invalid
 Paramters:
   CURRENT_RESERVE_PROOF_COUNT - The current_reserve_proof_count

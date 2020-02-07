@@ -455,7 +455,10 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL)
  {
+   // since this function will modify the delegates total vote count, only add one reserve proof at a time
+   pthread_mutex_lock(&add_reserve_proof_lock);
    server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(client_socket,(const char*)buffer);
+   pthread_mutex_unlock(&add_reserve_proof_lock);
  } 
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL)
  {

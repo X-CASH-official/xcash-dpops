@@ -37,9 +37,10 @@ int delegate_server_functions_test(void)
   // Variables
   char data[BUFFER_SIZE];
   int count;
+  struct reserve_proof reserve_proof;
 
   // define macros
-  #define DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST 22
+  #define DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST 25
   #define TEST_RESERVE_PROOF_DELEGATES_REGISTER "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti" // the reserve proof used for testing the delegate regster function
   #define TEST_WALLET_DELEGATES_REGISTER "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP" // the wallet used for testing the delegate regster function
   #define TEST_SIGNATURE_ADD_RESERVE_PROOF "SigV1N2NWu1Yzg4aVrhJUjZVcRZ52CcgUghX7x5Fn9W5drC4g8B9tZn7q4yJEKbiJMRFeNRPmSPT3rBSVkJnFWAGK5PA3" // the signature used for testing the delegate regster function
@@ -87,6 +88,13 @@ int delegate_server_functions_test(void)
   memset(data,0,sizeof(data));
   count_test = 0;
   error_message.total = 0;
+
+  // initialize the reserve_proof struct
+  memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
+  memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
+  memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
+  memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
+  memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
  
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\ndelegate server functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
@@ -94,6 +102,37 @@ int delegate_server_functions_test(void)
   // run the test
   network_functions_test_error_settings = 2;
   delete_database(database_name,0);
+
+  // block_verifiers_add_reserve_proof_check_if_data_is_valid
+  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF "|",872);
+  if (block_verifiers_add_reserve_proof_check_if_data_is_valid(result_test,&reserve_proof) == 1)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid\033[0m\n");
+  }
+
+  // add_reserve_proof_remove_previous_vote
+  delete_database(database_name,0);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,1);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,1);
+  memcpy(result_test,"{\"public_address_created_reserve_proof\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\"}",141);
+  if (add_reserve_proof_remove_previous_vote((const char*)result_test) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\"}","total_vote_count",data_test,1) == 1 && strncmp(data_test,"0",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for add_reserve_proof_remove_previous_vote\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    color_print(data_test,"red");
+    fprintf(stderr,"\033[1;31mFAILED! Test for add_reserve_proof_remove_previous_vote\033[0m\n");
+  }
+
   // test server_receive_data_socket_node_to_block_verifiers_add_reserve_proof
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   
@@ -180,18 +219,73 @@ int delegate_server_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   memset(data,0,sizeof(data));
 
-  // server_receive_data_socket_node_to_block_verifiers_add_reserve_proof
-  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|","server_receive_data_socket_node_to_block_verifiers_add_reserve_proof","Could not verify the message");  
-  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
-  RESET_ERROR_MESSAGES;
+  // block_verifiers_add_reserve_proof_check_if_data_is_valid
+  memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
+  memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
+  memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
+  memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
+  memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
+  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|SigV1N2NWu1Yzg4aVrhJUjZVcRZ52CcgUghX7x5Fn9W5drC4g8B9tZn7q4yJEKbiJMRFeNRPmSPT3rBSVkJnFWAGK5PA1|",872);
+  if (block_verifiers_add_reserve_proof_check_if_data_is_valid(result_test,&reserve_proof) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking Could not verify the message\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking Could not verify the message\033[0m\n");
+  }
+  
+  memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
+  memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
+  memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
+  memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
+  memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
+  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|delegate_name_1|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF "|",872);
+  if (block_verifiers_add_reserve_proof_check_if_data_is_valid(result_test,&reserve_proof) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking for invalid data\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking for invalid data\033[0m\n");
+  }
+  
+  memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
+  memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
+  memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
+  memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
+  memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
+  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET "|" TEST_SIGNATURE_ADD_RESERVE_PROOF "|",872);
+  if (block_verifiers_add_reserve_proof_check_if_data_is_valid(result_test,&reserve_proof) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking for invalid reserve proof\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking for invalid reserve proof\033[0m\n");
+  }
+  
+  memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
+  memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
+  memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
+  memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
+  memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,1);
+  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF "|",872);
+  if (block_verifiers_add_reserve_proof_check_if_data_is_valid(result_test,&reserve_proof) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking for reserve proof is already in the database\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking for reserve proof is already in the database\033[0m\n");
+  }
 
-  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|XCA|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF_INVALID_DATA "|","server_receive_data_socket_node_to_block_verifiers_add_reserve_proof","Invalid data");  
-  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
-  RESET_ERROR_MESSAGES;
-
-  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|DATA|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF_INVALID_RESERVE_PROOF "|","server_receive_data_socket_node_to_block_verifiers_add_reserve_proof","The reserve proof is invalid");  
-  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
-  RESET_ERROR_MESSAGES;
+  
 
   // server_receive_data_socket_nodes_to_block_verifiers_register_delegates
   DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|192.168.2.0|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|","server_receive_data_socket_nodes_to_block_verifiers_register_delegates","Could not verify the message"); 
