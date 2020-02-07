@@ -1963,21 +1963,24 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
         continue;
       }
 
-      // send the message    
-      memset(data2,0,sizeof(data2));   
-      memcpy(data2,"Sending ",8);
-      memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
-      memcpy(data2+strlen(data2),"\n",1);
-      memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
-      memcpy(data2+strlen(data2)," on port ",9);
-      memset(data3,0,sizeof(data3));
-      snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
-      memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
-      memcpy(data2+strlen(data2),"\n",1);
-      memset(data3,0,sizeof(data3));
-      strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
-      memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
-      color_print(data2,"green");
+      // send the message  
+      if (test_settings == 0)
+      {  
+        memset(data2,0,sizeof(data2));   
+        memcpy(data2,"Sending ",8);
+        memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
+        memcpy(data2+strlen(data2),"\n",1);
+        memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
+        memcpy(data2+strlen(data2)," on port ",9);
+        memset(data3,0,sizeof(data3));
+        snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
+        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
+        memcpy(data2+strlen(data2),"\n",1);
+        memset(data3,0,sizeof(data3));
+        strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
+        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
+        color_print(data2,"green");
+      }
       
       for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
       {

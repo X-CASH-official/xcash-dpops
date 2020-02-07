@@ -96,7 +96,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   char reserve_proof[BUFFER_SIZE_RESERVE_PROOF];  
   char data3[BUFFER_SIZE];
   size_t count3;
-  int settings;
+  int settings = 1;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR(settings) \
