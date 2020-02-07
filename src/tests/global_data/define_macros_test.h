@@ -795,6 +795,15 @@ for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
   memset(delegates[count].public_key,0,strlen(delegates[count].public_key)); \
 }
 
+#define RESET_INVALID_RESERVE_PROOFS \
+for (count = 0; (int)count <= invalid_reserve_proofs.count; count++) \
+{ \
+  memset(invalid_reserve_proofs.public_address_voted_for[count],0,strlen(invalid_reserve_proofs.public_address_voted_for[count])); \
+  memset(invalid_reserve_proofs.public_address_created_reserve_proof[count],0,strlen(invalid_reserve_proofs.public_address_created_reserve_proof[count])); \
+  memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count])); \
+} \
+invalid_reserve_proofs.count = 0; \
+
 #define CHECK_SERVER_FUNCTIONS(FUNCTION_NAME,MESSAGE) \
 memset(result_test,0,sizeof(result_test)); \
 memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1); \

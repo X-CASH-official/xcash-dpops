@@ -180,21 +180,21 @@ int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
 {
   // Variables
   char data[BUFFER_SIZE];
-  char* message = (char*)calloc(524288000,sizeof(char)); // 500 MB
-  char* reserve_proofs[MAXIMUM_INVALID_RESERVE_PROOFS];
+  char* reserve_proofs[invalid_reserve_proofs.count];
   int count;
   int count2;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
+  crypto_hash_sha512_state state;
 
   #define RESET_RESERVE_PROOFS_ARRAY \
-  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++) \
+  for (count = 0; count < invalid_reserve_proofs.count; count++) \
   { \
     pointer_reset(reserve_proofs[count]); \
   }
 
   // initialize the reserve_proofs array 
-  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
+  for (count = 0; count < invalid_reserve_proofs.count; count++)
   {
     reserve_proofs[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
 
@@ -206,7 +206,7 @@ int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
       exit(0);
     }
-  } 
+  }
 
   // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
@@ -215,7 +215,7 @@ int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
   database_settings = 0;
 
   // copy all of the reserve proofs to the reserve_proofs array
-  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
+  for (count = 0; count < invalid_reserve_proofs.count; count++)
   {
     memcpy(reserve_proofs[count],invalid_reserve_proofs.reserve_proof[count],strnlen(invalid_reserve_proofs.reserve_proof[count],BUFFER_SIZE_RESERVE_PROOF));
   }
@@ -224,25 +224,21 @@ int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
   qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),organize_invalid_reserve_proofs_settings);
 
   // get the data hash of the invalid_reserve_proofs struct
-  memset(message,0,strlen(message));
   memset(data,0,sizeof(data));
   memset(block_verifiers_message,0,strlen(block_verifiers_message));
+  crypto_hash_sha512_init(&state);
   if (invalid_reserve_proofs.count > 0)
   {
-    for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
+    for (count = 0; count < invalid_reserve_proofs.count; count++)
     {
-      if (memcmp(reserve_proofs[count],"",1) != 0)
-      {
-        memcpy(message+strlen(message),reserve_proofs[count],strnlen(reserve_proofs[count],BUFFER_SIZE_RESERVE_PROOF));
-      }          
+      crypto_hash_sha512_update(&state,(const unsigned char*)reserve_proofs[count],(unsigned long long)strnlen(reserve_proofs[count],BUFFER_SIZE_RESERVE_PROOF));
     }
   }
   else
   {
-    memcpy(message,"XCASH",5);
-  }
-      
-  crypto_hash_sha512((unsigned char*)data,(const unsigned char*)message,(unsigned long long)strnlen(message,524288000));
+    crypto_hash_sha512_update(&state,(const unsigned char*)"XCASH",5);
+  }      
+  crypto_hash_sha512_final(&state, (unsigned char*)data);
 
   // convert the SHA512 data hash to a string
   for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
