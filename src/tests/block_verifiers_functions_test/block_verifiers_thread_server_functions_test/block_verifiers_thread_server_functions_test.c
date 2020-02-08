@@ -454,4 +454,7 @@ int block_verifiers_thread_server_functions_test(void)
   return count_test;
 
   #undef BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST
+  #undef RESERVE_PROOF_PUBLIC_ADDRESS_TEST
+  #undef RESERVE_PROOF_TEST
+  #undef VOTE_DATA_TEST
 }

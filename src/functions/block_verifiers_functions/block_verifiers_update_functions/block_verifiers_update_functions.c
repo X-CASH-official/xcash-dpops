@@ -16,6 +16,7 @@
 #include "structures.h"
 #include "variables.h"
 #include "initialize_and_reset_structs_define_macros.h"
+#include "define_macros_test.h"
 
 #include "blockchain_functions.h"
 #include "block_verifiers_functions.h"
@@ -304,7 +305,6 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memset(data,0,sizeof(data));
     if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data,1) == 0)
     {
-      color_print(message,"yellow");
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_verifier_total_rounds from the database");
     }
     sscanf(data, "%zu", &block_verifier_total_rounds);
@@ -388,6 +388,12 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
       }
     }
+
+    // only run once if the test are running
+    if (test_settings == 1)
+    {
+      break;
+    }
   }
   return 1;
 
@@ -427,11 +433,10 @@ int add_round_statistics(void)
   char message6[BUFFER_SIZE];
   size_t block_verifier_total_rounds_count = 0;
   size_t block_verifier_total_rounds_count2 = 0;
+  int block_verifier_online_percentage_count = 0;
+  int block_verifier_online_percentage_count2 = 0;
   size_t most_block_producer_total_rounds_count = 0;
   size_t most_block_producer_total_rounds_count2 = 0;
-  double total = 0;
-  double total2;
-  double total3;
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings;
   bson_t* document = NULL;  
@@ -483,7 +488,6 @@ int add_round_statistics(void)
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(data3,message_copy1,message_copy2 - message_copy1);
     sscanf(data3, "%zu", &block_verifier_total_rounds_count2);
-    sscanf(data3, "%lf", &total2);
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
 
@@ -494,18 +498,18 @@ int add_round_statistics(void)
       memcpy(block_verifier_total_rounds_delegates_name,delegates_name,strnlen(delegates_name,sizeof(block_verifier_total_rounds_delegates_name)));
     }
     
-    // get the block_verifier_online_total_rounds
-    memcpy(data2,", \"block_verifier_online_total_rounds\" : \"",42);
-    message_copy1 = strstr(data,data2) + 42;
+    // get the block_verifier_online_percentage
+    memcpy(data2,", \"block_verifier_online_percentage\" : \"",40);
+    message_copy1 = strstr(data,data2) + 40;
     message_copy2 = strstr(message_copy1,"\"");
     memcpy(data3,message_copy1,message_copy2 - message_copy1);
-    sscanf(data3, "%lf", &total3);
+    sscanf(data3, "%d", &block_verifier_online_percentage_count2);
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
 
-    if ((int)total2 != 0 && total3 / total2 > total)
+    if (block_verifier_online_percentage_count2 > block_verifier_online_percentage_count)
     {
-      total = total3 / total2;
+      block_verifier_online_percentage_count = block_verifier_online_percentage_count2;
       memset(best_block_verifier_online_percentage_delegate_name,0,sizeof(best_block_verifier_online_percentage_delegate_name));
       memcpy(best_block_verifier_online_percentage_delegate_name,delegates_name,strnlen(delegates_name,sizeof(best_block_verifier_online_percentage_delegate_name)));
     }
@@ -542,7 +546,7 @@ int add_round_statistics(void)
   memcpy(message3+strlen(message3),"\"}",2);
 
   memcpy(message4,"{\"best_block_verifier_online_percentage\":\"",42);
-  snprintf(message4+42,sizeof(message4)-43,"%.2lf",total);
+  snprintf(message4+42,sizeof(message4)-43,"%d",block_verifier_online_percentage_count);
   memcpy(message4+strlen(message4),"\"}",2);
 
   memcpy(message5,"{\"most_block_producer_total_rounds_delegate_name\":\"",51);
@@ -631,10 +635,17 @@ int calculate_main_nodes_roles(void)
 
   // get the reserve byte data
   memset(data2,0,sizeof(data2));
-  if (read_document_field_from_collection(database_name,data,data3,"reserve_bytes",data2,1) == 0)
+  if (test_settings == 0)
   {
-    CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
+    if (read_document_field_from_collection(database_name,data,data3,"reserve_bytes",data2,1) == 0)
+    {
+      CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
+    }
   }
+  else
+  {
+    memcpy(data2,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
+  }  
 
   // get the vrf_beta_string_data_round_part_3
   memset(data3,0,sizeof(data3));
@@ -652,7 +663,7 @@ int calculate_main_nodes_roles(void)
     for (counter = 0, settings = 0; counter < count3; counter++)
     {
       // check if this number has already been calculated
-      if (number[counter] == count2 % 100)
+      if (number[counter] == count2 % BLOCK_VERIFIERS_AMOUNT)
       {
         settings = 1;
       }
