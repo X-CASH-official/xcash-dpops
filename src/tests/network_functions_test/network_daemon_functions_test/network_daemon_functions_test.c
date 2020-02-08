@@ -12,6 +12,8 @@
 #include "network_functions.h"
 #include "server_functions.h"
 #include "string_functions.h"
+#include "insert_database_functions.h"
+#include "delete_database_functions.h"
 #include "VRF_functions.h"
 
 #include "variables_test.h"
@@ -36,10 +38,13 @@ int network_daemon_functions_test(void)
   // Variables
   char* transactions[5];
   char data[BUFFER_SIZE];
-  size_t count;
+  char data2[BUFFER_SIZE];
+  size_t count = 0;
+  int count2;
+  size_t block_height;
 
   // define macros
-  #define NETWORK_DAEMON_FUNCTIONS_TEST 9
+  #define NETWORK_DAEMON_FUNCTIONS_TEST 11
   #define TRANSACTIONS_AMOUNT 5
 
   // reset the variables
@@ -167,10 +172,97 @@ int network_daemon_functions_test(void)
     color_print("FAILED! Test for get_previous_block_information","red");
   }
 
-  // test the check_found_block function
-  check_found_block();
-  color_print("PASSED! Test for check_found_block","green");
-  count_test++;
+  // check_found_block
+  delete_database(database_name,0);
+  sscanf(current_block_height, "%zu", &block_height);
+  block_height--;
+  memset(data_test,0,sizeof(data_test));
+  snprintf(data_test,sizeof(data_test)-1,"%zu",block_height);
+
+  // convert the xcash wallet address to a hexadecimal string and insert this into the reserve bytes data
+  memset(data2,0,sizeof(data2));
+  for (count = 0, count2 = 0; count < XCASH_WALLET_LENGTH; count++, count2 += 2)
+  {
+    snprintf(data2+count2,(XCASH_WALLET_LENGTH*2)-1,"%02x",xcash_wallet_public_address[count] & 0xFF);
+  }
+
+  // get the reserve_bytes database for the block
+  count = ((block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+  memset(result_test,0,sizeof(result_test));
+  memcpy(result_test,"reserve_bytes_",14);
+  snprintf(result_test+14,sizeof(result_test)-15,"%zu",count);
+
+  // create the message
+  memcpy(data,"{\"block_height\":\"",17);
+  memcpy(data+strlen(data),data_test,strnlen(data_test,sizeof(data)));
+  memcpy(data+strlen(data),"\",\"reserve_bytes_data_hash\":\"data\",\"reserve_bytes\":\"",52);
+  memcpy(data+strlen(data),data2,XCASH_WALLET_LENGTH*2);
+  memcpy(data+strlen(data),"7c",2);
+  memcpy(data+strlen(data),data2,XCASH_WALLET_LENGTH*2);
+  memcpy(data+strlen(data),"\"}",2);
+  insert_document_into_collection_json(database_name,result_test,data,0);
+
+  if (check_found_block() == 2)
+  {   
+    color_print("PASSED! Test for check_found_block","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for check_found_block","red");
+  }
+
+
+
+  // check all errors for each test
+  // check_found_block
+  delete_database(database_name,0);
+  sscanf(current_block_height, "%zu", &block_height);
+  block_height--;
+  memset(data_test,0,sizeof(data_test));
+  snprintf(data_test,sizeof(data_test)-1,"%zu",block_height);
+
+  // convert the xcash wallet address to a hexadecimal string and insert this into the reserve bytes data
+  memset(data2,0,sizeof(data2));
+  for (count = 0, count2 = 0; count < XCASH_WALLET_LENGTH; count++, count2 += 2)
+  {
+    snprintf(data2+count2,(XCASH_WALLET_LENGTH*2)-1,"%02x",xcash_wallet_public_address[count] & 0xFF);
+  }
+
+  // get the reserve_bytes database for the block
+  count = ((block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+  memset(result_test,0,sizeof(result_test));
+  memcpy(result_test,"reserve_bytes_",14);
+  snprintf(result_test+14,sizeof(result_test)-15,"%zu",count);
+
+  // create the message
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"block_height\":\"",17);
+  memcpy(data+strlen(data),data_test,strnlen(data_test,sizeof(data)));
+  memcpy(data+strlen(data),"\",\"reserve_bytes_data_hash\":\"data\",\"reserve_bytes\":\"data\"}",58);
+  insert_document_into_collection_json(database_name,result_test,data,0);
+
+  if (check_found_block() == 1)
+  {   
+    color_print("PASSED! Test for check_found_block checking for that the block verifier did not find the previous block","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for check_found_block checking for that the block verifier did not find the previous block","red");
+  }
+
+  delete_database(database_name,0);
+  if (check_found_block() == 0)
+  {   
+    color_print("PASSED! Test for check_found_block checking for cant get the previous blocks reserve bytes","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for check_found_block checking for cant get the previous blocks reserve bytes","red");
+  }
+
   
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nnetwork daemon functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,NETWORK_DAEMON_FUNCTIONS_TEST-count_test,TEST_OUTLINE);

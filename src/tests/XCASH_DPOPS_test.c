@@ -82,6 +82,8 @@ void test(void)
   // set the database to the test database
   memset(database_name,0,sizeof(database_name));
   memcpy(database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);
+  memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
+  memcpy(shared_delegates_database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);
 
   // reset the test database
   delete_database(DATABASE_COLLECTION_TEST,0);
@@ -100,8 +102,8 @@ void test(void)
   color_print(data_test,"yellow");
   
   // run the tests
-  XCASH_DPOPS_total_passed_test += network_functions_test();
-  XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
+  //XCASH_DPOPS_total_passed_test += network_functions_test();
+  XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();
   /*XCASH_DPOPS_total_passed_test += blockchain_functions_test();
   XCASH_DPOPS_total_passed_test += database_test(); 
   XCASH_DPOPS_total_passed_test += insert_database_functions_test(); 

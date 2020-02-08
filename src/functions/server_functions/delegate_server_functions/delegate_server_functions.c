@@ -22,6 +22,7 @@
 #include "block_verifiers_synchronize_server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
 #include "database_functions.h"
+#include "shared_delegate_website_thread_server_functions.h"
 #include "insert_database_functions.h"
 #include "read_database_functions.h"
 #include "update_database_functions.h"
