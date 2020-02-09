@@ -266,6 +266,38 @@ size_t varint_decode(size_t varint)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_generated_supply
+Description: Gets the generated supply up to the given block height
+Parameters:
+  BLOCK_HEIGHT - The given block height
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+double get_generated_supply(const size_t BLOCK_HEIGHT)
+{
+  // Variables
+  double generated_supply = FIRST_BLOCK_MINING_REWARD + XCASH_PREMINE_TOTAL_SUPPLY;
+  size_t count;
+
+  for (count = 2; count < BLOCK_HEIGHT; count++)
+  { 
+    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    {
+      generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_EMMISION_FACTOR;
+    }
+    else
+    {
+      generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_DPOPS_EMMISION_FACTOR;
+    }
+  }
+  return generated_supply;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: network_block_string_to_blockchain_data
 Description: Converts a network_block_string string to the blockchain_data struct
 Parameters:
