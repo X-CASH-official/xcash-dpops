@@ -513,6 +513,10 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   {
     result->count = TOTAL_STATISTICS_DATABASE_FIELDS;
   }
+  else if (strstr(COLLECTION,"public_addresses_payments") != NULL)
+  {
+    result->count = TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS;
+  }
   else if (strstr(COLLECTION,"public_addresses") != NULL)
   {
     result->count = TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS;
@@ -676,6 +680,10 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   {
     result->database_fields_count = TOTAL_STATISTICS_DATABASE_FIELDS;
   }
+  else if (strstr(COLLECTION,"public_addresses_payments") != NULL)
+  {
+    result->database_fields_count = TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS;
+  }
   else if (strstr(COLLECTION,"public_addresses") != NULL)
   {
     result->database_fields_count = TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS;
@@ -685,7 +693,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     result->database_fields_count = TOTAL_BLOCKS_FOUND_DATABASE_FIELDS;
   }
 
-   // check if we need to create a database connection, or use the global database connection
+  // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
   {
     // set the collection

@@ -490,6 +490,41 @@ size_t string_count(const char* DATA, const char* STRING)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: parse_http_response
+Description: Parses a http response for the response body
+Parameters:
+  result - The data to parse, and will return the parsed data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int parse_http_response(char *result)
+{
+  // Variables
+  char* data;
+  char str[BUFFER_SIZE];
+
+  // reset the variables
+  memset(str,0,sizeof(str));
+
+  if (strstr(result,"[") != NULL)
+  {
+    data = strstr(result,"[");
+  }
+  else
+  {
+    data = strstr(result,"{");
+  }
+  memcpy(str,data,strnlen(data,sizeof(str)));
+  memset(result,0,strlen(result));
+  memcpy(result,str,strlen(str));
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: string_replace
 Description: String replace
 Parameters:

@@ -65,7 +65,6 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   struct tm current_UTC_date_and_time;
   size_t count = 0;
   size_t count2 = 0;
-  size_t counter = 0;
   size_t number = 0;
   size_t block_height = 0;
   double generated_supply;
@@ -152,19 +151,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   database_data.count++;
 
   // get the XCASH_DPOPS_circulating_percentage
-  generated_supply = FIRST_BLOCK_MINING_REWARD + XCASH_PREMINE_TOTAL_SUPPLY;
-  for (counter = 2; counter < block_height; counter++)
-  { 
-    if (counter < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
-    {
-      generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_EMMISION_FACTOR;
-    }
-    else
-    {
-      generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_DPOPS_EMMISION_FACTOR;
-    }
-  }  
-
+  generated_supply = get_generated_supply((const size_t)block_height);
   number = ((size_t)((((double)count2) / ((generated_supply - (XCASH_PREMINE_TOTAL_SUPPLY - XCASH_PREMINE_CIRCULATING_SUPPLY)) * XCASH_WALLET_DECIMAL_PLACES_AMOUNT)) * 100) | 0);
 
   memset(data,0,strlen(data));
@@ -622,7 +609,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     {      
       if (read_multiple_documents_all_fields_from_collection(database_name,data2,message,&database_multiple_documents_fields,1,counter,0,"",1) == 0)
       {
-        SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(0,"Could not get the delegates information");
+        SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(0,"Could not get the delegates voters list");
       }
 
       // copy the database_multiple_documents_fields struct to the votes struct

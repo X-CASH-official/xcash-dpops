@@ -32,7 +32,7 @@ Return: The number of passed blockchain test
 int blockchain_functions_test(void)
 { 
   // define macros
-  #define BLOCKCHAIN_TOTAL_TEST 31
+  #define BLOCKCHAIN_TOTAL_TEST 32
 
   #define INVALID_NETWORK_VERSION_CODE \
   memset(blockchain_data.network_version_data,0,strlen(blockchain_data.network_version_data)); \
@@ -180,6 +180,17 @@ int blockchain_functions_test(void)
   else
   {
     color_print("FAILED! Test for varint_encode","red");
+  }
+
+  // get_generated_supply
+  if (get_generated_supply(521850) - 77824360540.643250 <= (double)1.0)
+  {
+    color_print("PASSED! Test for get_generated_supply","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for get_generated_supply","red");
   }
 
   // run the network_block_string_to_blockchain_data test

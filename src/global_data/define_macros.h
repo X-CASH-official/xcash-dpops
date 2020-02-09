@@ -124,7 +124,8 @@ Using define statements instead of constants for increased efficiency
 #define TOTAL_DELEGATES_DATABASE_FIELDS 18 // The total delegates database fields
 #define TOTAL_STATISTICS_DATABASE_FIELDS 7 // The total statistics database fields
 #define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4 // The total public addresses database fields
-#define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5 // The total blocks found database fields
+#define TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS 5 // the total public addresses payments database fields
+#define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 4 // The total blocks found database fields
 
 // Shared delegates settings
 #define VOTER_INACTIVITY_COUNT "30" // the number of days to wait to remove an inactive delegates information from the database

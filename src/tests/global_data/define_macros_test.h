@@ -8,7 +8,7 @@ Using define statements instead of constants for increased efficiency
 */
 
 // Test
-#define XCASH_DPOPS_TOTAL_TEST 452
+#define XCASH_DPOPS_TOTAL_TEST 456
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "521850" // The block height used for testing
 #define TEST_WALLET "XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3" // the wallet used for test
 #define RESET_ERROR_MESSAGES \
@@ -616,6 +616,7 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS "XCA1va68ZVYVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rk16g7dYjbcKDwsAggp8Z1dNjPgcCzkcV7hDg99Wtk8nyUBBK4K7"
 #define CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT"
 #define CHECK_RESERVE_PROOF_TEST_AMOUNT "10"
+#define HTTP_RESPONSE_DATA "HTTP/1.1 200 OK\nConnection: close\nAccess-Control-Allow-Origin: *\nAccess-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept\nContent-Length: 329\nContent-Language: en\nContent-Type: application/json\nServer: XCASH_DPOPS version 1.0.0\nDate: Sun, 09 Feb 2020 02:16:07 GMT\n\n{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"current_delegate_rank\":\"2\",\"total_votes\":\"0\",\"online_percentage\":\"0\",\"total_blocks_found\":\"1\",\"total_xcash_from_blocks_found\":\"15\",\"total_payments\":\"1\",\"total_voters\":\"0\",\"fee\":\"0.000000\",\"minimum_amount\":\"0\"}"
 #define DATABASE_TEST 30
 #define DATABASE_NAME_TEST "XCASH_PROOF_OF_STAKE_TEST"
 #define DATABASE_COLLECTION_TEST "XCASH_PROOF_OF_STAKE_TEST_DATA"
@@ -959,9 +960,9 @@ memset(data_test,0,sizeof(data_test));
 #define DELEGATES_TEST_DATA "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
 #define SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA "GET /delegateswebsitegetstatistics HTTP/ " TEST_WALLET
 #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_TEST_DATA "GET /getdelegates HTTP/ " TEST_WALLET
-#define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_TEST_DATA "GET /getdelegatesstatistics?parameter1=" TEST_WALLET " HTTP/"
-#define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA "GET /getdelegatesinformation?parameter1=" TEST_WALLET " HTTP/"
-#define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA "GET /getdelegatesvoterslist?parameter1=" TEST_WALLET " HTTP/"
+#define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_TEST_DATA "GET /getdelegatesstatistics?parameter1=XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP HTTP/"
+#define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA "GET /getdelegatesinformation?parameter1=XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP HTTP/"
+#define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA "GET /getdelegatesvoterslist?parameter1=XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP HTTP/"
 #define SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_TEST_DATA "GET /getroundstatistics?parameter1=" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST " HTTP/ " TEST_WALLET
 
 #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA "GET /shareddelegateswebsitegetstatistics HTTP/ " TEST_WALLET

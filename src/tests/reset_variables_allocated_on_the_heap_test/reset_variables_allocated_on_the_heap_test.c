@@ -145,7 +145,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   size_t block_height;
 
   // define macros
-  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 132  
+  #define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 134
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
   #define GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA "{\r\n  \"id\": \"0\",\r\n  \"jsonrpc\": \"2.0\",\r\n  \"result\": {\r\n    \"blockhashing_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"blocktemplate_blob\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"difficulty\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"expected_reward\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"height\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"prev_hash\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"reserved_offset\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA,\r\n    \"status\": \"GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\",\r\n    \"untrusted\": GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA\r\n  }\r\n}"
   #define DATA1 "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
@@ -211,6 +211,8 @@ int reset_variables_allocated_on_the_heap_test(void)
   #define VARINT_ENCODE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   varint_encode(VARINT_DECODED_VALUE_1,result_test,sizeof(result_test));
+
+  #define GET_GENERATED_SUPPLY_CODE get_generated_supply(521850);
 
   #define NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_CODE \
   RESET_BLOCKCHAIN_DATA; \
@@ -417,6 +419,11 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
   string_count(result_test,"-");
+
+  #define PARSE_HTTP_RESPONSE_CODE \
+  memset(result_test,0,sizeof(result_test)); \
+  memcpy(result_test,HTTP_RESPONSE_DATA,sizeof(HTTP_RESPONSE_DATA)-1); \
+  parse_http_response(result_test);
 
   #define STRING_REPLACE_CODE \
   memset(result_test,0,sizeof(result_test)); \
@@ -794,20 +801,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   RESET_ERROR_MESSAGES; \
   get_delegates_online_status();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   #define DELEGATES_SERVER_FUNCTIONS_TEST_CODE send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test);
 
   #define SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_CODE \
@@ -1017,6 +1010,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   // run the test
   CHECK_RESET_VARIABLES_ON_THE_HEAP("varint_decode",VARINT_DECODE_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("varint_encode",VARINT_ENCODE_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("get_generated_supply",GET_GENERATED_SUPPLY_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("network_block_string_to_blockchain_data",NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("verify_network_block_data",VERIFY_NETWORK_BLOCK_DATA_CODE);
 
@@ -1115,6 +1109,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   CHECK_RESET_VARIABLES_ON_THE_HEAP("create_json_data_from_delegates_array",CREATE_JSON_DATA_FROM_DELEGATES_ARRAY_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("create_json_data_from_votes_array",CREATE_JSON_DATA_FROM_VOTES_ARRAY_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("string_count",STRING_COUNT_CODE);
+  CHECK_RESET_VARIABLES_ON_THE_HEAP("parse_http_response",PARSE_HTTP_RESPONSE_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("string_replace",STRING_REPLACE_CODE);
 
   CHECK_RESET_VARIABLES_ON_THE_HEAP("create_random_VRF_keys",CREATE_RANDOM_VRF_KEYS_CODE);

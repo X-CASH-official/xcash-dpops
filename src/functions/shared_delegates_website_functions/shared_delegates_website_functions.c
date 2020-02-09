@@ -61,6 +61,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   // Variables
   char data[BUFFER_SIZE];
   char message[BUFFER_SIZE];
+  char total_votes_data[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -70,7 +71,6 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   int total_blocks_found;
   int total_payments;
   int total_voters;
-  int total_votes;
   int current_delegate_rank;
   long long int block_reward_number;
   long long int total_xcash_from_found_blocks;
@@ -206,13 +206,13 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     total_payments = count_all_documents_in_collection(shared_delegates_database_name,"public_addresses_payments",1);
   }
 
-  // get the total voters and total votes
+  // get the total voters
   memcpy(message,"{\"public_address_voted_for\":\"",29);
   memcpy(message+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+127,"\"}",2);
 
   // check how many reserve proofs are for the public address
-  for (total_voters = 0, total_votes = 0, count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  for (total_voters = 0, count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   { 
     memset(data,0,strlen(data));
     memcpy(data,"reserve_proofs_",15);
@@ -225,16 +225,6 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     }
     total_voters += counter;
 
-    if (read_multiple_documents_all_fields_from_collection(database_name,data,message,&database_multiple_documents_fields2,1,counter,0,"",1) == 1)
-    {
-      for (count2 = 0; count2 < counter; count2++)
-      {
-        sscanf(database_multiple_documents_fields2.value[count2][2], "%zu", &number);
-        total_votes += number;
-      }
-    }
-    
-
     // reset the database_multiple_documents_fields struct
     for (count2 = 0; count2 < counter; count2++)
     {
@@ -246,6 +236,17 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     }
   }
   RESET_ERROR_MESSAGES;
+
+  // get the total votes
+  memset(total_votes_data,0,sizeof(total_votes_data));
+  memset(message,0,sizeof(message));
+  memcpy(message,"{\"public_address\":\"",19);
+  memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+117,"\"}",2);
+  if (read_document_field_from_collection(database_name,"delegates",message,"total_vote_count",total_votes_data,1) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
+  }
 
   // get the block_verifier_online_percentage
   memset(data,0,sizeof(data));
@@ -266,7 +267,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message+strlen(message),"\",\"current_delegate_rank\":\"",27);
   snprintf(message+strlen(message),sizeof(message),"%d",current_delegate_rank);
   memcpy(message+strlen(message),"\",\"total_votes\":\"",17);
-  snprintf(message+strlen(message),sizeof(message),"%d",total_votes);
+  memcpy(message+strlen(message),total_votes_data,strnlen(total_votes_data,sizeof(message)));
   memcpy(message+strlen(message),"\",\"online_percentage\":\"",23);
   memcpy(message+strlen(message),data,strnlen(data,sizeof(message)));
   memcpy(message+strlen(message),"\",\"total_blocks_found\":\"",24);
@@ -319,7 +320,6 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
 
   // define macros
   #define DATABASE_COLLECTION "blocks_found"
-  #define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 5
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(settings,MESSAGE) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_blocks_found",42); \
@@ -392,7 +392,6 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
 
   // define macros
   #define DATABASE_COLLECTION "public_addresses"
-  #define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(settings,MESSAGE) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_information",57); \
@@ -452,7 +451,6 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   return 1;
 
   #undef DATABASE_COLLECTION
-  #undef TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS
   #undef SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR
 }
 
@@ -553,6 +551,5 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   return 1;
 
   #undef DATABASE_COLLECTION
-  #undef TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS
   #undef SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR
 }
