@@ -221,6 +221,10 @@ int VRF_data_verify(const char* BLOCK_VERIFIERS_PUBLIC_KEY, const char* BLOCK_VE
   size_t count;
   size_t count2;
 
+  memset(public_key_data,0,sizeof(public_key_data));
+  memset(proof_data,0,sizeof(proof_data));
+  memset(beta_string_data,0,sizeof(beta_string_data));
+
   // convert the public key, proof and beta string to a string
   for (count = 0, count2 = 0; count < VRF_PUBLIC_KEY_LENGTH; count2++, count += 2)
   {

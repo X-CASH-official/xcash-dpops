@@ -593,7 +593,13 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--test",BUFFER_SIZE) == 0)
     {
-      test();
+      test(0);
+      database_reset;
+      exit(0);
+    }
+    if (strncmp(parameters[count],"--quick_test",BUFFER_SIZE) == 0)
+    {
+      test(1);
       database_reset;
       exit(0);
     }

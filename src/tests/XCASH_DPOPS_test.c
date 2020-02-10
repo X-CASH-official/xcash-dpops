@@ -65,12 +65,13 @@ Description: Run the test
 -----------------------------------------------------------------------------------------------------------
 */
 
-void test(void)
+void test(int settings)
 {
   // Variables
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int XCASH_DPOPS_total_passed_test = 0;
+  int total_test = XCASH_DPOPS_TOTAL_TEST;
 
   // initialize the variables
   memset(string2_test,0,sizeof(string2_test));
@@ -104,7 +105,7 @@ void test(void)
   
   // run the tests
   XCASH_DPOPS_total_passed_test += blockchain_functions_test();
-  /*XCASH_DPOPS_total_passed_test += database_test(); 
+  XCASH_DPOPS_total_passed_test += database_test(); 
   XCASH_DPOPS_total_passed_test += insert_database_functions_test(); 
   XCASH_DPOPS_total_passed_test += read_database_functions_test();
   XCASH_DPOPS_total_passed_test += update_database_functions_test();
@@ -127,8 +128,16 @@ void test(void)
   XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
   XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
   XCASH_DPOPS_total_passed_test += shared_delegate_website_functions_test();
-  XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();*/
-  //XCASH_DPOPS_total_passed_test += reset_variables_allocated_on_the_heap_test();
+  XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();
+  if (settings == 0)
+  {
+    XCASH_DPOPS_total_passed_test += reset_variables_allocated_on_the_heap_test();
+  }
+  else
+  {
+    total_test -= RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST;
+  }
+  
   //XCASH_DPOPS_total_passed_test += analysing_code_test();
 
   // reset the variables
@@ -142,7 +151,7 @@ void test(void)
   memcpy(data_test+strlen(data_test),"XCASH_DPOPS Test Results - Passed test: ",40);
   snprintf(data_test+strlen(data_test),sizeof(data_test)-1,"%d",XCASH_DPOPS_total_passed_test);
   memcpy(data_test+strlen(data_test),", Failed test: ",15);
-  snprintf(data_test+strlen(data_test),sizeof(data_test)-1,"%d",XCASH_DPOPS_TOTAL_TEST-XCASH_DPOPS_total_passed_test);
+  snprintf(data_test+strlen(data_test),sizeof(data_test)-1,"%d",total_test-XCASH_DPOPS_total_passed_test);
   color_print(data_test,"yellow");
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); 
   memset(data_test,0,sizeof(data_test));

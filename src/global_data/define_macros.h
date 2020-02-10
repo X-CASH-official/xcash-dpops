@@ -454,7 +454,8 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "Parameters\n\n" \
 "All parameters are optional, execept for --block_verifiers_secret_key\n\n" \
 "--parameters - Show a list of all valid parameters\n\n" \
-"--test - Run the test to make sure the program is compatible with your system\n\n" \
+"--test - Run the test to make sure the program is compatible with your system. This can take around 24 hours\n\n" \
+"--quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 1 hour\n\n" \
 "--block_verifiers_secret_key \"block_verifiers_secret_key\" - The block verifiers secret key. This must be the first parameter\n\n" \
 "--log_file \"log_file\" - Write all output to a log file with no colors\n\n" \
 "--log_file_color \"log_file\" - Write all output to a log file with colors\n\n" \

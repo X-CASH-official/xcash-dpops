@@ -134,7 +134,9 @@ Parameters
 --parameters - Show a list of all valid parameters
 All parameters are optional, execept for --block_verifiers_secret_key. **The --block_verifiers_secret_key must be the first parameter**
 
---test - Run the test to make sure the program is compatible with your system
+--test - Run the test to make sure the program is compatible with your system. This can take around 24 hours
+
+--quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 1 hour
 
 --block_verifiers_secret_key - The block verifiers secret key. This must be the first parameter
 
