@@ -615,16 +615,21 @@ int calculate_main_nodes_roles(void)
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
   
-  sscanf(current_block_height,"%zu", &count);
-  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
+  if (test_settings == 0)
   {
-    CALCULATE_MAIN_NODES_ROLES("Could not get the current block height");
-  }
-  count--;
-  snprintf(data2,sizeof(data2)-1,"%zu",count);
+    sscanf(current_block_height,"%zu", &count);
+    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT-1)
+    {
+      CALCULATE_MAIN_NODES_ROLES("Could not get the current block height");
+    }
+    count--;
+    snprintf(data2,sizeof(data2)-1,"%zu",count);
+  }  
 
   // calculate the database to get the reserve byte data
-  count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+  get_reserve_bytes_database(count,0);
+  count2 = count;
+  //count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memcpy(data,"reserve_bytes_",14);
   snprintf(data+14,sizeof(data)-15,"%d",count2);
 

@@ -37,7 +37,7 @@ int delegate_website_functions_test(void)
 
   // define macros
   #define DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST 18
-  #define DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA "{\"most_total_rounds_delegate_name\":\"delegate_name_5\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_2\",\"best_block_verifier_online_percentage\":\"100\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_4\",\"most_block_producer_total_rounds\":\"2\",\"current_block_height\":\"521855\",\"XCASH_DPOPS_round_number\":\"5\",\"total_votes\":\"380000000\",\"XCASH_DPOPS_circulating_percentage\":\"0\"}"
+  #define DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA "{\"most_total_rounds_delegate_name\":\"delegate_name_5\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_2\",\"best_block_verifier_online_percentage\":\"100\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_4\",\"most_block_producer_total_rounds\":\"2\",\"current_block_height\":\"521850\",\"XCASH_DPOPS_round_number\":\"5\",\"total_votes\":\"380000000\",\"XCASH_DPOPS_circulating_percentage\":\"0\"}"
   #define DELEGATE_WEBSITE_GET_DELEGATES_TEST_DATA "[{\"total_vote_count\":\"200000000\",\"delegate_name\":\"delegate_name_5\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"5\",\"block_verifier_online_percentage\":\"0\"},{\"total_vote_count\":\"100000000\",\"delegate_name\":\"delegate_name_4\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"4\",\"block_verifier_online_percentage\":\"25\"},{\"total_vote_count\":\"50000000\",\"delegate_name\":\"delegate_name_3\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"3\",\"block_verifier_online_percentage\":\"33\"},{\"total_vote_count\":\"20000000\",\"delegate_name\":\"delegate_name_2\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"2\",\"block_verifier_online_percentage\":\"100\"},{\"total_vote_count\":\"10000000\",\"delegate_name\":\"delegate_name_1\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"1\",\"block_verifier_online_percentage\":\"0\"}]"
   #define DELEGATE_WEBSITE_GET_DELEGATES_STATISTICS_TEST_DATA "{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"total_vote_count\":\"10000000\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"1\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"current_delegate_rank\":\"5\"}"
   #define DELEGATE_WEBSITE_GET_DELEGATES_INFORMATION_TEST_DATA "{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\"}"
@@ -75,12 +75,12 @@ int delegate_website_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   if (send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"",0) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA,sizeof(data_test)) == 0)
   {
-    color_print("PASSED! Test for server_receive_data_socket_get_public_address_information","green");
+    color_print("PASSED! Test for server_receive_data_socket_delegates_website_get_statistics","green");
     count_test++;
   }
   else
   {
-    color_print("FAILED! Test for server_receive_data_socket_get_public_address_information","red");
+    color_print("FAILED! Test for server_receive_data_socket_delegates_website_get_statistics","red");
   }
   RESET_ERROR_MESSAGES;
 

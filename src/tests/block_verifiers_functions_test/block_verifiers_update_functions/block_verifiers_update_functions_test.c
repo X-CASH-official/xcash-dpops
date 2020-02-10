@@ -45,7 +45,7 @@ int block_verifiers_update_functions_test(void)
   int count;
   
   // define macros
-  #define BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST 6
+  #define BLOCK_VERIFIERS_UPDATE_FUNCTIONS_TOTAL_TEST 6
 
   // reset the variables
   memset(result_test,0,sizeof(result_test));
@@ -56,7 +56,7 @@ int block_verifiers_update_functions_test(void)
   RESET_ERROR_MESSAGES;
  
   // write the start test message
-  fprintf(stderr,"\033[1;34m%s\nblock verifiers thread_server functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
+  fprintf(stderr,"\033[1;34m%s\nblock verifiers update functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,BLOCK_VERIFIERS_UPDATE_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
  
   // run the test
   // update_block_verifiers_list
@@ -228,8 +228,8 @@ int block_verifiers_update_functions_test(void)
   }  
 
   // write the end test message
-  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers thread_server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
+  fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers update functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_UPDATE_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
 
-  #undef BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST
+  #undef BLOCK_VERIFIERS_UPDATE_FUNCTIONS_TOTAL_TEST
 }

@@ -217,17 +217,24 @@ Return: Writes the correct code
 
 #define get_reserve_bytes_database(count,settings) \
 sscanf(current_block_height,"%zu", &count); \
-if (settings == 1) \
-{ \
-  count--; \
-} \
-if (count-1 == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) \
+if (test_settings == 1) \
 { \
   count = 1; \
 } \
 else \
 { \
-  count = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1; \
+  if (settings == 1) \
+  { \
+    count--; \
+  } \
+  if (count-1 == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) \
+  { \
+    count = 1; \
+  } \
+  else \
+  { \
+    count = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1; \
+  } \
 }
 
 

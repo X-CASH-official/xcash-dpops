@@ -65,7 +65,7 @@ int block_verifiers_thread_server_functions_test(void)
   INITIALIZE_NETWORK_DATA_NODES_TEST;
   INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST;
   insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}",0);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"521850\"}",0);
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
   RESET_INVALID_RESERVE_PROOFS;
@@ -258,7 +258,6 @@ int block_verifiers_thread_server_functions_test(void)
   }
   else
   {
-    color_print(invalid_reserve_proofs.reserve_proof[0],"yellow");
     color_print("FAILED! Test for send_invalid_reserve_proof_to_block_verifiers","red");
   }
 

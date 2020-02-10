@@ -118,10 +118,18 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   }
 
   // get the current block height
-  if (get_current_block_height(data,0) == 0)
+  if (test_settings == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR("Could not get the current block height");
+    if (get_current_block_height(data,0) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR("Could not get the current block height");
+    }
   }
+  else
+  {
+    memcpy(data,"521850",6);
+  }
+  
   memcpy(database_data.item[database_data.count],"current_block_height",20);
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
   database_data.count++;

@@ -1744,7 +1744,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   if (TRANSACTIONS_SETTINGS == 1 && blockchain_data.transaction_amount != 0 && verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,1,0) == 0)
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transactions");
-  }  
+  }
 
   pointer_reset_all;
   return 1;

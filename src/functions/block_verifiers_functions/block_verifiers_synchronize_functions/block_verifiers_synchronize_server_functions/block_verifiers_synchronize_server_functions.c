@@ -330,7 +330,14 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memcpy(data+strlen(data),"|}",2);
 
   // send the data
-  send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"");
+  if (test_settings == 0)
+  {
+    send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"");
+  }
+  else
+  {
+    send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
+  }  
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -393,9 +400,16 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   }
 
   // calculate how many blocks to send
-  sscanf(current_block_height,"%zu",&count2);
+  if (test_settings == 0)
+  {
+    sscanf(current_block_height,"%zu",&count2);
+  }
+  else
+  {
+    count2 = 521855;
+  }  
   sscanf(data,"%zu",&current_block_height_reserve_bytes);
-  if (current_block_height_reserve_bytes < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  if (test_settings == 0 && current_block_height_reserve_bytes < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Invalid block height");
   }
@@ -422,24 +436,22 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
     snprintf(data2+18,sizeof(data2)-19,"%zu",current_block_height_reserve_bytes);
     memcpy(data2+strlen(data2),"\"}",2);
   
-    count2 = ((current_block_height_reserve_bytes - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+    if (test_settings == 0)
+    {
+      count2 = ((current_block_height_reserve_bytes - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+    }
+    else
+    {
+      count2 = ((current_block_height_reserve_bytes - 521850) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+    }
+    
     memcpy(data,"reserve_bytes_",14);
     snprintf(data+14,sizeof(data)-15,"%zu",count2);
 
     // get the data hash
-    if (strstr(MESSAGE,xcash_wallet_public_address) == NULL)
+    if (read_document_field_from_collection(database_name,data,data2,"reserve_bytes_data_hash",message,1) == 0)
     {
-      if (read_document_field_from_collection(database_name,data,data2,"reserve_bytes_data_hash",message,1) == 0)
-      {
-        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
-      }
-    }
-    else
-    {
-      if (read_document_field_from_collection(database_name,DATABASE_COLLECTION_TEST,data2,"reserve_bytes_data_hash",message,1) == 0)
-      {
-        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
-      }
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
     }
     memcpy(message2+strlen(message2),message,strnlen(message,MAXIMUM_BUFFER_SIZE));
     memcpy(message2+strlen(message2),"|",1);
@@ -448,7 +460,14 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   memcpy(message2+strlen(message2),"}",1);
   
   // send the data
-  send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"");
+  if (test_settings == 0)
+  {
+    send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"");
+  }
+  else
+  {
+    send_data(CLIENT_SOCKET,(unsigned char*)message2,0,1,"");
+  }  
   pointer_reset(message2);
   return 1;
   
@@ -486,7 +505,15 @@ int server_receive_data_socket_node_to_block_verifiers_check_if_current_block_ve
     }    
   }
 
-  send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"");
+  // send the data
+  if (test_settings == 0)
+  {
+    send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"");
+  }
+  else
+  {
+    send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
+  }  
   return 1;
 }
 

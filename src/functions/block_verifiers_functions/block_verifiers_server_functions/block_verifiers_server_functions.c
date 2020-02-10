@@ -242,21 +242,10 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 
   // add the data to the database
   memcpy(data3,data,strlen(data)-2);
-  if (network_functions_test_error_settings == 1)
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data3,1) == 0)
   {
-    if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data3,1) == 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
-    }
-  }
-  else
-  {
-    if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data3,1) == 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
-    }
-  }
-  
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
+  }  
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -428,9 +417,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   }
 
   // check if the public_address is the correct main node
-  pthread_rwlock_rdlock(&rwlock);
   count = main_network_data_node_create_block;
-  pthread_rwlock_unlock(&rwlock);
 
   if ((count == 1 && memcmp(network_data_nodes_list.network_data_nodes_public_address[0],data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,data2,XCASH_WALLET_LENGTH) == 0))
   { 
