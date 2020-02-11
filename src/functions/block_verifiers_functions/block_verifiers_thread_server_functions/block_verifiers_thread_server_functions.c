@@ -979,20 +979,23 @@ void* send_and_receive_data_socket_thread(void* parameters)
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // send the message  
-  memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
-  memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
-  memcpy(str,"Sending ",8);
-  memcpy(str+8,&message[25],strlen(message) - strlen(strstr(message,"\",\r\n")) - 25);
-  memcpy(str+strlen(str),"\n",1);
-  memcpy(str+strlen(str),data->HOST,HOST_LENGTH);
-  memcpy(str+strlen(str)," on port ",9);
-  memcpy(str+strlen(str),buffer2,strnlen(buffer2,BUFFER_SIZE));
-  memcpy(str+strlen(str),"\n",1);
-  memset(data2,0,sizeof(data2));
-  strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
-  memcpy(str+strlen(str),data2,strnlen(data2,sizeof(str)));
-  color_print(str,"green");
-  memset(str,0,sizeof(str));
+  if (test_settings == 0)
+  {
+    memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
+    memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
+    memcpy(str,"Sending ",8);
+    memcpy(str+8,&message[25],strlen(message) - strlen(strstr(message,"\",\r\n")) - 25);
+    memcpy(str+strlen(str),"\n",1);
+    memcpy(str+strlen(str),data->HOST,HOST_LENGTH);
+    memcpy(str+strlen(str)," on port ",9);
+    memcpy(str+strlen(str),buffer2,strnlen(buffer2,BUFFER_SIZE));
+    memcpy(str+strlen(str),"\n",1);
+    memset(data2,0,sizeof(data2));
+    strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
+    memcpy(str+strlen(str),data2,strnlen(data2,sizeof(str)));
+    color_print(str,"green");
+    memset(str,0,sizeof(str));
+  }
  
   const int TOTAL = strnlen(message,BUFFER_SIZE);
 

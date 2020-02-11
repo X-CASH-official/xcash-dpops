@@ -37,6 +37,30 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: vrf_data_verify_timer
+Description: Runs the VRF_data_verify function using multiple threads
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* vrf_data_verify_timer(void* parameters)
+{
+  // unused parameters
+  (void)parameters;
+
+  // variables
+  int count;
+
+  for (count = 0; count < (BLOCK_VERIFIERS_TOTAL_AMOUNT * BLOCK_VERIFIERS_TOTAL_AMOUNT) / 4; count++)
+  {
+    VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
+  }
+  pthread_exit((void *)(intptr_t)1);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: optimizations_functions_test
 Description: Test the optimizations functions
 Return: The number of passed optimizations_functions test
@@ -47,18 +71,24 @@ int optimizations_functions_test(void)
 {
   // Variables
   struct reserve_proof reserve_proof;
+  struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_TOTAL_AMOUNT];
   time_t start;
   int count;
   long int total;
-   
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // threads
+  pthread_t thread_id[BLOCK_VERIFIERS_TOTAL_AMOUNT];  
   
   // define macros
   #define OPTIMIZATIONS_TOTAL_TEST 10
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
   #define VALIDATE_RESERVE_PROOFS_WALLET "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
   #define VALIDATE_RESERVE_PROOFS_RESERVE_PROOF "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti"
-  #define MAXIMUM_TIME_SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS 100
-  #define MAXIMUM_TIME_SEND_DATA_SOCKET 100
+  #define MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET 10
+  #define MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD 10
+  #define MAXIMUM_TIME_SEND_DATA_SOCKET 10
   #define MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET 100
   #define MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT 500
   #define MAXIMUM_TIME_VRF_DATA_VERIFY 100
@@ -99,6 +129,22 @@ int optimizations_functions_test(void)
   network_functions_test_error_settings = 2;
   delete_database(database_name,0);
   RESET_ERROR_MESSAGES;
+
+  // initialize the send_and_receive_data_socket_thread_parameters struct
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  {
+    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"data_network_node_create_block",30);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data_test);  
+      exit(0);
+    }
+  }
  
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\noptimizations functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,OPTIMIZATIONS_TOTAL_TEST,TEST_OUTLINE);
@@ -154,20 +200,55 @@ int optimizations_functions_test(void)
   if (send_invalid_reserve_proof_to_block_verifiers(&reserve_proof) == 1)
   {
     total = time(NULL) - start;
-    if (total <= MAXIMUM_TIME_SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS)
+    if (total <= MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET)
     {
-      fprintf(stderr,"\033[1;32mPASSED! Test for sending a message to all block verifiers using block_verifiers_send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS);
+      fprintf(stderr,"\033[1;32mPASSED! Test for sending a message to all block verifiers using block_verifiers_send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET);
       count_test++;
     }
     else
     {
-      fprintf(stderr,"\033[1;31mFAILED! Test for sending a message to all block verifiers using block_verifiers_send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS);
+      fprintf(stderr,"\033[1;31mFAILED! Test for sending a message to all block verifiers using block_verifiers_send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET);
     }
   }
   else
   {
-    fprintf(stderr,"\033[1;31mFAILED! Test for sending a message to all block verifiers using block_verifiers_send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS);
+    fprintf(stderr,"\033[1;31mFAILED! Test for sending a message to all block verifiers using block_verifiers_send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET);
   }
+
+
+
+  start = time(NULL);
+  memset(data_test,0,sizeof(data_test));
+  memcpy(data_test,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"" NETWORK_BLOCK "\",\r\n}",166417);
+  sign_data(data_test,0);
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  {      
+    memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
+    memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
+    memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,"127.0.0.1",9);
+    memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data_test,strnlen(data_test,BUFFER_SIZE));
+    send_and_receive_data_socket_thread_parameters[count].COUNT = count;
+    pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
+    if (count % (BLOCK_VERIFIERS_TOTAL_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_TOTAL_AMOUNT)
+    {
+      usleep(500000);
+    }
+  }
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  {
+    pthread_join(thread_id[count],NULL);
+  }
+  total = time(NULL) - start;
+  if (total <= MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for sending a message to all block verifiers using send_and_receive_data_socket_thread took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD);
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for sending a message to all block verifiers using send_and_receive_data_socket_thread took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD);
+  }
+
 
 
   start = time(NULL);
@@ -242,7 +323,7 @@ int optimizations_functions_test(void)
   memcpy(invalid_reserve_proofs.reserve_proof[19],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NbeQ6htDtJPees7GH3NHXKcrtJJ8VbqFWJFVLw8Dfrq28UFw51BvtKbU16YYjNJAeqAYsSVHg92toMYk4yY7HYUbZ65vgfn8wXbLELBXTKYQezErCAUBjwTDEGNdMk1QZF4tcLEmVUz4me8MaXts1D8ouHVqJQRAHv6KDHkMU143k5KrZbbkEMhijGDi9oGHRbUm2W4pLWMgzzZRPEQ7bP9eTRPHi2G2aa11pujWY4WaEPX12FyYbG2LJv18dvtejyiPTgXLVxPvRTNeP3aY7GwRRetePkxqJtJWXuXjp37yeeP4GJPaxeDzZhzzQ4T8JugtEHfCj8vs8j21Bx63K8SDTU3nQg7Ns6AoZg9rL2UCgA8W2FC7UmEb2ws85XJ8WfrTqzNpqoiweBGKgSG3wfbpzgMMKKz4obsEeTHZSfsKzwGRgMiEqkbTRSxdCPFi2tDWQdrWdvmaWm81iK42MSfud",537);
   invalid_reserve_proofs.count = 20;
 
-  start = time(NULL);
+  /*start = time(NULL);
   count = 0;
   while (time(NULL)-start < 265)
   {
@@ -259,14 +340,22 @@ int optimizations_functions_test(void)
   else
   {
     fprintf(stderr,"\033[1;31mFAILED! Test for validating reserve proofs took %ld seconds out of %d seconds\033[0m\n",total,MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT);
-  }
+  }*/
 
 
   start = time(NULL);
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT * BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  pthread_create(&thread_id[0], NULL, &vrf_data_verify_timer, NULL);
+  pthread_create(&thread_id[1], NULL, &vrf_data_verify_timer, NULL);
+  pthread_create(&thread_id[2], NULL, &vrf_data_verify_timer, NULL);
+  pthread_create(&thread_id[3], NULL, &vrf_data_verify_timer, NULL);
+  pthread_join(thread_id[0], NULL);
+  pthread_join(thread_id[1], NULL);
+  pthread_join(thread_id[2], NULL);
+  pthread_join(thread_id[3], NULL);
+  /*for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT * BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
-  }
+  }*/
   total = time(NULL) - start;
   if (total <= MAXIMUM_TIME_VRF_DATA_VERIFY)
   {
@@ -429,7 +518,8 @@ int optimizations_functions_test(void)
   #undef MESSAGE
   #undef VALIDATE_RESERVE_PROOFS_WALLET
   #undef VALIDATE_RESERVE_PROOFS_RESERVE_PROOF
-  #undef MAXIMUM_TIME_SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS
+  #undef MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET
+  #undef MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD
   #undef MAXIMUM_TIME_SEND_DATA_SOCKET
   #undef MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET
   #undef MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT
