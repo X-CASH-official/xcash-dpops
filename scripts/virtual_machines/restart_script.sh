@@ -23,11 +23,7 @@ if [ ! $data -le 0 ]; then
 fi
 
 # reset the database
-(echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_1.drop()"; echo "exit";) | "${MONGODB_DIR}"mongo
-(echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_2.drop()"; echo "exit";) | "${MONGODB_DIR}"mongo
-(echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_3.drop()"; echo "exit";) | "${MONGODB_DIR}"mongo
-(echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_4.drop()"; echo "exit";) | "${MONGODB_DIR}"mongo
-(echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_5.drop()"; echo "exit";) | "${MONGODB_DIR}"mongo
+(echo "use XCASH_PROOF_OF_STAKE"; echo "db.dropDatabase()"; echo "exit";) | "${MONGODB_DIR}"mongo
 
 # reset xcashd and xcash-wallet-rpc
 curl -X POST http://127.0.0.1:18281/stop_daemon -H 'Content-Type: application/json'
