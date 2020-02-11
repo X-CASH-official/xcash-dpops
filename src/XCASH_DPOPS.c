@@ -1174,7 +1174,7 @@ int main(int parameters_count, char* parameters[])
   memset(data,0,sizeof(data));
   if (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0)
   {
-    INITIALIZE_DATABASE_DATA(0);
+    INITIALIZE_DATABASE_DATA(6);
   }
 
   print_settings();  
