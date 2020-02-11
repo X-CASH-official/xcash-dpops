@@ -207,9 +207,10 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 
   /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
+  SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -527,9 +528,10 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
 
   /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
+  SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     if (MESSAGE_SETTINGS == 1)
     {
@@ -797,9 +799,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
 
   /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
-  SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
+  SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     memcpy(error_message.function[error_message.total],"send_data_socket",16);
     memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);

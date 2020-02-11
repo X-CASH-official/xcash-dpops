@@ -938,9 +938,10 @@ void* send_and_receive_data_socket_thread(void* parameters)
 
   /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
+  SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(client_socket, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   { 
     SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
   } 

@@ -92,6 +92,7 @@ int optimizations_functions_test(void)
   #define MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET 100
   #define MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT 500
   #define MAXIMUM_TIME_VRF_DATA_VERIFY 100
+  #define MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED 100
   #define MAXIMUM_TIME_NETWORK_BLOCK_PART_1 10
   #define MAXIMUM_TIME_NETWORK_BLOCK_PART_2 20
   #define MAXIMUM_TIME_NETWORK_BLOCK_PART_3 10
@@ -197,18 +198,12 @@ int optimizations_functions_test(void)
   memcpy(reserve_proof.reserve_proof_amount,"120000000",9);
   memcpy(reserve_proof.reserve_proof,"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5j1ey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed41JUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537);
   start = time(NULL);
-  if (send_invalid_reserve_proof_to_block_verifiers(&reserve_proof) == 1)
+  count = send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
+  total = time(NULL) - start;
+  if (count == 1 && total <= MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET)
   {
-    total = time(NULL) - start;
-    if (total <= MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET)
-    {
-      fprintf(stderr,"\033[1;32mPASSED! Test for sending a message to all block verifiers using block_verifiers_send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET);
-      count_test++;
-    }
-    else
-    {
-      fprintf(stderr,"\033[1;31mFAILED! Test for sending a message to all block verifiers using block_verifiers_send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET);
-    }
+    fprintf(stderr,"\033[1;32mPASSED! Test for sending a message to all block verifiers using block_verifiers_send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET);
+    count_test++;
   }
   else
   {
@@ -344,18 +339,10 @@ int optimizations_functions_test(void)
 
 
   start = time(NULL);
-  pthread_create(&thread_id[0], NULL, &vrf_data_verify_timer, NULL);
-  pthread_create(&thread_id[1], NULL, &vrf_data_verify_timer, NULL);
-  pthread_create(&thread_id[2], NULL, &vrf_data_verify_timer, NULL);
-  pthread_create(&thread_id[3], NULL, &vrf_data_verify_timer, NULL);
-  pthread_join(thread_id[0], NULL);
-  pthread_join(thread_id[1], NULL);
-  pthread_join(thread_id[2], NULL);
-  pthread_join(thread_id[3], NULL);
-  /*for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT * BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT * BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
-  }*/
+  }
   total = time(NULL) - start;
   if (total <= MAXIMUM_TIME_VRF_DATA_VERIFY)
   {
@@ -365,6 +352,27 @@ int optimizations_functions_test(void)
   else
   {
     fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY);
+  }
+
+
+  start = time(NULL);
+  pthread_create(&thread_id[0], NULL, &vrf_data_verify_timer, NULL);
+  pthread_create(&thread_id[1], NULL, &vrf_data_verify_timer, NULL);
+  pthread_create(&thread_id[2], NULL, &vrf_data_verify_timer, NULL);
+  pthread_create(&thread_id[3], NULL, &vrf_data_verify_timer, NULL);
+  pthread_join(thread_id[0], NULL);
+  pthread_join(thread_id[1], NULL);
+  pthread_join(thread_id[2], NULL);
+  pthread_join(thread_id[3], NULL);
+  total = time(NULL) - start;
+  if (total <= MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using multithreading took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using multithreading took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
   }
 
   
@@ -524,6 +532,7 @@ int optimizations_functions_test(void)
   #undef MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET
   #undef MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT
   #undef MAXIMUM_TIME_VRF_DATA_VERIFY
+  #undef MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED
   #undef MAXIMUM_TIME_NETWORK_BLOCK_PART_1
   #undef MAXIMUM_TIME_NETWORK_BLOCK_PART_2
   #undef MAXIMUM_TIME_NETWORK_BLOCK_PART_3

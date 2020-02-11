@@ -1739,7 +1739,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       vrf_data_verify_count = 0;
 
       // set the parameters
-      if (BLOCK_VERIFIERS_TOTAL % 4 == 0)
+      if (BLOCK_VERIFIERS_TOTAL % 4 == BLOCK_VERIFIERS_TOTAL_AMOUNT)
       {
         verify_network_block_data_vrf_data_verify_thread_parameters[0].block_verifier_total = BLOCK_VERIFIERS_TOTAL;
         verify_network_block_data_vrf_data_verify_thread_parameters[0].start = 0;
@@ -1766,7 +1766,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
         pthread_join(thread_id[2],NULL);
         pthread_join(thread_id[3],NULL);
       }
-      else if (BLOCK_VERIFIERS_TOTAL % 5 == 0)
+      else if (BLOCK_VERIFIERS_TOTAL % 5 == BLOCK_VERIFIERS_TOTAL_AMOUNT)
       {
         verify_network_block_data_vrf_data_verify_thread_parameters[0].block_verifier_total = BLOCK_VERIFIERS_TOTAL;
         verify_network_block_data_vrf_data_verify_thread_parameters[0].start = 0;

@@ -1909,9 +1909,9 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 
       /* Set the socket options for sending and receiving data
       SOL_SOCKET = socket level
-      SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
+      SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
       */
-      if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+      if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
       { 
         freeaddrinfo(settings);
         continue;
@@ -2002,7 +2002,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(1);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < block_verifiers_total_amount; count++)
