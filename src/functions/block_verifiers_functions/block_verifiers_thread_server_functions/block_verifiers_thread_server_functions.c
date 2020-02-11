@@ -20,6 +20,7 @@
 #include "structures.h"
 #include "variables.h"
 #include "initialize_and_reset_structs_define_macros.h"
+#include "define_macros_test.h"
 
 #include "block_verifiers_functions.h"
 #include "block_verifiers_synchronize_functions.h"
@@ -612,7 +613,7 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
   database_multiple_documents_fields.document_count = 0;
   database_multiple_documents_fields.database_fields_count = 0;
 
-  // reset the votes struct
+  // reset the reserve_proof struct
   memset(reserve_proof->block_verifier_public_address,0,sizeof(reserve_proof->block_verifier_public_address));
   memset(reserve_proof->public_address_created_reserve_proof,0,sizeof(reserve_proof->public_address_created_reserve_proof));
   memset(reserve_proof->public_address_voted_for,0,sizeof(reserve_proof->public_address_voted_for));
@@ -624,7 +625,8 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
   {
     memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1)); 
+    snprintf(data+15,sizeof(data)-16,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1));
+    RESET_ERROR_MESSAGES; 
   } while ((count = count_all_documents_in_collection(database_name,data,1)) <= 0);
 
   // select a random document in the collection
@@ -743,7 +745,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   (void)parameters;
 
   // define macros
-  #define RESET_INVALID_RESERVE_PROOFS \
+  #define RESET_INVALID_RESERVE_PROOFS_DATA \
   for (count = 0; count <= invalid_reserve_proofs.count; count++) \
   { \
     memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count])); \
@@ -773,14 +775,14 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       // create the data to send to the block verifiers
       if (check_reserve_proofs_timer_create_message(data2) == 0)
       {
-        RESET_INVALID_RESERVE_PROOFS;
+        RESET_INVALID_RESERVE_PROOFS_DATA;
         continue;
       }
 
       // send the message to all block verifiers
       if (block_verifiers_send_data_socket((const char*)data2) == 0)
       {
-        RESET_INVALID_RESERVE_PROOFS;
+        RESET_INVALID_RESERVE_PROOFS_DATA;
         continue;
       }
 
@@ -790,14 +792,14 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       // process the vote results
       if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
       {
-        RESET_INVALID_RESERVE_PROOFS;
+        RESET_INVALID_RESERVE_PROOFS_DATA;
         continue;
       }
 
       // update the database
       if (check_reserve_proofs_timer_update_database() == 0)
       {
-        RESET_INVALID_RESERVE_PROOFS;
+        RESET_INVALID_RESERVE_PROOFS_DATA;
         continue;
       }
       
@@ -808,7 +810,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       pthread_cond_broadcast(&thread_settings_lock);
       
       // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
-      RESET_INVALID_RESERVE_PROOFS;
+      RESET_INVALID_RESERVE_PROOFS_DATA;
     }
 
 
@@ -819,7 +821,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     {    
       if (send_invalid_reserve_proof_to_block_verifiers(&reserve_proof) == 0)
       {
-        RESET_INVALID_RESERVE_PROOFS;
+        RESET_INVALID_RESERVE_PROOFS_DATA;
         continue;
       }
     }

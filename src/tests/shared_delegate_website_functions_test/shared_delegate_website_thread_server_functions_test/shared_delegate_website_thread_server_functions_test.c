@@ -289,6 +289,7 @@ int shared_delegate_website_thread_server_functions_test(void)
   {
     color_print("FAILED! Test for calculate_block_reward_for_each_delegate checking for The delegate does not have enough voters to distribute the block rewards with","red");
   }
+  delete_database(database_name,0);
   RESET_ERROR_MESSAGES;
 
   POINTER_RESET_VOTERS_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE);

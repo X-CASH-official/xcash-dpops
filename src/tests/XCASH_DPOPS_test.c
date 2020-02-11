@@ -30,6 +30,7 @@
 #include "network_functions_test.h"
 #include "network_security_functions_test.h"
 #include "network_wallet_functions_test.h"
+#include "optimizations_functions_test.h"
 #include "organize_functions_test.h"
 #include "reset_variables_allocated_on_the_heap_test.h"
 #include "shared_delegate_website_functions_test.h"
@@ -104,7 +105,9 @@ void test(int settings)
   color_print(data_test,"yellow");
   
   // run the tests
-  XCASH_DPOPS_total_passed_test += blockchain_functions_test();
+  XCASH_DPOPS_total_passed_test += network_functions_test();
+  XCASH_DPOPS_total_passed_test += optimizations_functions_test();
+  /*XCASH_DPOPS_total_passed_test += blockchain_functions_test();
   XCASH_DPOPS_total_passed_test += database_test(); 
   XCASH_DPOPS_total_passed_test += insert_database_functions_test(); 
   XCASH_DPOPS_total_passed_test += read_database_functions_test();
@@ -128,7 +131,7 @@ void test(int settings)
   XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
   XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
   XCASH_DPOPS_total_passed_test += shared_delegate_website_functions_test();
-  XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();
+  XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();*/
   if (settings == 0)
   {
     XCASH_DPOPS_total_passed_test += reset_variables_allocated_on_the_heap_test();
@@ -137,13 +140,14 @@ void test(int settings)
   {
     total_test -= RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST;
   }
-  
-  //XCASH_DPOPS_total_passed_test += analysing_code_test();
 
   // reset the variables
   memset(string2_test,0,sizeof(string2_test));
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
+
+  // delete the database
+  delete_database(DATABASE_NAME_TEST,0);
 
   // write the end test message
   memcpy(data_test,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1);
