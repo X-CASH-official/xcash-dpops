@@ -668,7 +668,7 @@ int calculate_main_nodes_roles(void)
     for (counter = 0, settings = 0; counter < count3; counter++)
     {
       // check if this number has already been calculated
-      if (number[counter] == count2 % BLOCK_VERIFIERS_AMOUNT)
+      if (number[counter] == count2 % BLOCK_VERIFIERS_TOTAL_AMOUNT)
       {
         settings = 1;
       }
