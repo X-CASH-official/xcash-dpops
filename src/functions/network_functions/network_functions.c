@@ -699,15 +699,16 @@ Parameters:
   HOST - The host to send the message to
   PORT - The port to send the message through
   DATA - The message
+  DATA_TIMEOUT_SETTINGS - the timeout settings for sending the data
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_data_socket(const char* HOST, const int PORT, const char* DATA)
+int send_data_socket(const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS)
 { 
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
-  const struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
+  const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0};   
   
   // Variables  
   char buffer2[BUFFER_SIZE];

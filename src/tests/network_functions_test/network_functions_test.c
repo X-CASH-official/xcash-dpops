@@ -184,7 +184,7 @@ int network_functions_test(void)
   memset(message,0,sizeof(message));
   memcpy(message,MESSAGE,sizeof(MESSAGE)-1);
 
-  if (sign_data(message,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,message) == 1)
+  if (sign_data(message,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1)
   {
     sleep(10);
     if (network_functions_test_settings == 1)
@@ -253,7 +253,7 @@ int network_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   // send_data_socket
-  if (send_data_socket("",SEND_DATA_PORT,message) <= 0 && strstr(error_message.data[0],"Error invalid hostname of ") != NULL)
+  if (send_data_socket("",SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 && strstr(error_message.data[0],"Error invalid hostname of ") != NULL)
   {
     color_print("PASSED! Test for send_data_socket checking for invalid hostname","green");
     count_test++;

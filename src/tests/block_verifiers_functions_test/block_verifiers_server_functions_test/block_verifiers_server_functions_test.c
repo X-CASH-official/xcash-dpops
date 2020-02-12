@@ -53,7 +53,7 @@ int block_verifiers_server_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   RESET_INVALID_RESERVE_PROOFS;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test) == 1 && sleep(5) == 0 && strncmp(invalid_reserve_proofs.block_verifier_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && strncmp(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT",BUFFER_SIZE) == 0)
+  if (sign_data(data_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && sleep(5) == 0 && strncmp(invalid_reserve_proofs.block_verifier_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && strncmp(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_get_public_address_information","green");
     count_test++;
@@ -71,7 +71,7 @@ int block_verifiers_server_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   delete_database(database_name,0);
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test) == 1 && sleep(5) == 0 && count_documents_in_collection(database_name,"reserve_bytes_1","{\"block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}",0) == 1)
+  if (sign_data(data_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && sleep(5) == 0 && count_documents_in_collection(database_name,"reserve_bytes_1","{\"block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}",0) == 1)
   {
     color_print("PASSED! Test for server_receive_data_socket_main_network_data_node_to_block_verifier_start_block","green");
     count_test++;
@@ -99,7 +99,7 @@ int block_verifiers_server_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test) == 1 && sleep(5) == 0 && strncmp(VRF_data.block_blob,"DATA",BUFFER_SIZE) == 0)
+  if (sign_data(data_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && sleep(5) == 0 && strncmp(VRF_data.block_blob,"DATA",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_main_node_to_node_message_part_4","green");
     count_test++;

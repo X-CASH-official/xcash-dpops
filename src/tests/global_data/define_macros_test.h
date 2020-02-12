@@ -809,7 +809,7 @@ invalid_reserve_proofs.count = 0; \
 #define CHECK_SERVER_FUNCTIONS(FUNCTION_NAME,MESSAGE) \
 memset(result_test,0,sizeof(result_test)); \
 memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1); \
-if (sign_data(result_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test) == 1) \
+if (sign_data(result_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
 { \
   sleep(5); \
   if (error_message.total == 0) \
@@ -834,7 +834,7 @@ memset(result_test,0,sizeof(result_test)); \
 memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1); \
 if (STRING_REPLACE_SETTINGS == 1) \
 { \
-if (sign_data(result_test,0) == 1 && string_replace(result_test,sizeof(result_test),CURRENT_STRING,NEW_STRING) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test) == 1) \
+if (sign_data(result_test,0) == 1 && string_replace(result_test,sizeof(result_test),CURRENT_STRING,NEW_STRING) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
 { \
   sleep(5); \
   for (count = 0; count < error_message.total; count++) \
@@ -861,7 +861,7 @@ else \
 } \
 else \
 { \
-  if (sign_data(result_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test) == 1) \
+  if (sign_data(result_test,0) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
 { \
   sleep(5); \
   for (count = 0; count < error_message.total; count++) \
@@ -889,7 +889,7 @@ else \
 RESET_ERROR_MESSAGES;
 
 #define CHECK_WEBSITE_SERVER_FUNCTIONS(FUNCTION_NAME,MESSAGE) \
-if (send_data_socket("127.0.0.1",SEND_DATA_PORT,MESSAGE) == 1) \
+if (send_data_socket("127.0.0.1",SEND_DATA_PORT,MESSAGE,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
 { \
   sleep(5); \
   if (error_message.total == 0) \
@@ -911,7 +911,7 @@ RESET_ERROR_MESSAGES;
 
 #define CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR(DATA,FUNCTION_NAME,TEST) \
 memcpy(result_test,DATA,sizeof(DATA)-1); \
-send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test); \
+send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS); \
 sleep(5); \
 for (count = 0; count < error_message.total; count++) \
 { \

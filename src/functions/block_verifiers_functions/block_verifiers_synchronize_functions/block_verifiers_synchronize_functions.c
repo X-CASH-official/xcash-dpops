@@ -119,7 +119,7 @@ void sync_network_data_nodes_database(void)
   {
     if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      send_data_socket(network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data);
+      send_data_socket(network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
     }
   }
 
