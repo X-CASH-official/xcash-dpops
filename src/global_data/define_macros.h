@@ -77,11 +77,8 @@ Using define statements instead of constants for increased efficiency
 #define SEND_DATA_PORT 18283 // The port that is used by all nodes to send and receive data
 #define MAXIMUM_CONNECTIONS 1000 // The maximum connections a node can have at one time
 #define BLOCK_VERIFIERS_SETTINGS 2 // The time in seconds to wait to send data to the block verifiers
-#define BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS 5 // The time to wait to check if the block was created
-#define TOTAL_CONNECTION_TIME_SETTINGS 5 // The total time a client is given to connect to the server and send data
-#define SOCKET_CONNECTION_TIMEOUT_SETTINGS 5000 // The time in milliseconds, to wait before a connection is cancelled
-#define SOCKET_DATA_TIMEOUT_SETTINGS 5 // The time in between read calls where there is no data
-#define RECEIVE_DATA_TIMEOUT_SETTINGS 5 // The maximum amount of time to wait for the total data, once data has been read
+#define CONNECTION_TIMEOUT_SETTINGS 1 // the time in seconds for a connection to be created
+#define SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS 3 // The time to wait for sending or receving socket data
 #define SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function and to sync any of the databases
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data

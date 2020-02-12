@@ -345,7 +345,7 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   #define SEND_HTTP_REQUEST_CODE \
   memset(data_test,0,sizeof(data_test)); \
-  send_http_request(data_test,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",0);
+  send_http_request(data_test,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"get public address",0);
 
   #define SEND_DATA_SOCKET_CODE \
   memset(data_test,0,sizeof(data_test)); \
@@ -358,7 +358,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data_test,0,sizeof(data_test)); \
   memcpy(data_test,SEND_DATA_SOCKET_TEST_MESSAGE,sizeof(SEND_DATA_SOCKET_TEST_MESSAGE)-1); \
   sign_data(data_test,0); \
-  send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,(const char*)data_test,TOTAL_CONNECTION_TIME_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0);
+  send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,(const char*)data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"XCASH_PROOF_OF_STAKE_TEST_DATA",0);
 
   #define SIGN_DATA_USING_WALLET_SIGNING_KEY_CODE \
   memset(result_test,0,sizeof(result_test)); \
@@ -1314,7 +1314,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(data_test,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(data_test+60,result_test,strnlen(result_test,sizeof(data_test)));
   memcpy(data_test+strlen(data_test),"\"}}",3);  
-  send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",0);
+  send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"sign data",0);
   memset(data_test,0,sizeof(data_test));
   parse_json_data(data3,"signature",data_test,MAXIMUM_BUFFER_SIZE);
   memcpy(result_test+strlen(result_test),data_test,XCASH_SIGN_DATA_LENGTH);
@@ -1332,7 +1332,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(data_test,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(data_test+60,result_test,strnlen(result_test,sizeof(data_test)));
   memcpy(data_test+strlen(data_test),"\"}}",3);  
-  send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",0);
+  send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"sign data",0);
   memset(data_test,0,sizeof(data_test));
   parse_json_data(data3,"signature",data_test,MAXIMUM_BUFFER_SIZE);
   memcpy(result_test+strlen(result_test),data_test,XCASH_SIGN_DATA_LENGTH);
@@ -1348,7 +1348,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(data_test,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(data_test+60,result_test,strnlen(result_test,sizeof(data_test)));
   memcpy(data_test+strlen(data_test),"\"}}",3);  
-  send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",0);
+  send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"sign data",0);
   memset(data_test,0,sizeof(data_test));
   parse_json_data(data3,"signature",data_test,MAXIMUM_BUFFER_SIZE);
   memcpy(result_test+strlen(result_test),data_test,XCASH_SIGN_DATA_LENGTH);

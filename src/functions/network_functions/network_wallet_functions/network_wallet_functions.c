@@ -48,7 +48,7 @@ int get_public_address(const int MESSAGE_SETTINGS)
 
   memset(data,0,sizeof(data));
   
-  if (send_http_request(data,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,RECEIVE_DATA_TIMEOUT_SETTINGS,"get public address",MESSAGE_SETTINGS) <= 0)
+  if (send_http_request(data,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"get public address",MESSAGE_SETTINGS) <= 0)
   {  
     GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }
@@ -153,7 +153,7 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   memcpy(data+204,RESERVE_PROOF,RESERVE_PROOF_LENGTH);
   memcpy(data+204+RESERVE_PROOF_LENGTH,"\"}}",3);
 
-  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,RECEIVE_DATA_TIMEOUT_SETTINGS,"check reserve proof",HTTP_SETTINGS) <= 0)
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"check reserve proof",HTTP_SETTINGS) <= 0)
   {  
     return 0;
   }

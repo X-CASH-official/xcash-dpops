@@ -149,7 +149,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     memcpy(string+strlen(string),"\"}}",3);
     memset(result,0,strlen(result));
   
-    if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
+    if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
     {  
       SIGN_DATA_ERROR("Could not create the message");
     } 
@@ -584,7 +584,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
 
     memset(result,0,strnlen(result,BUFFER_SIZE));
 
-    if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,RECEIVE_DATA_TIMEOUT_SETTINGS,"verify data",HTTP_SETTINGS) <= 0)
+    if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"verify data",HTTP_SETTINGS) <= 0)
     {
       VERIFY_DATA_ERROR("Could not verify the data");
     }

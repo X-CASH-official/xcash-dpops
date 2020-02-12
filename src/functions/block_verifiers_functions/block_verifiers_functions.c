@@ -1424,6 +1424,7 @@ int block_verifiers_create_block_and_update_database(void)
   size_t count;
 
   // define macros
+  #define BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS 5 // The time to wait to check if the block was created
   #define BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"block_verifiers_create_block_and_update_database",48); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -1490,6 +1491,7 @@ int block_verifiers_create_block_and_update_database(void)
   }
   return 1;
 
+  #undef BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS
   #undef BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR
 }
 
@@ -1807,7 +1809,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   struct tm current_UTC_date_and_time;
   int epoll_fd_copy;
   struct epoll_event events[block_verifiers_total_amount];
-  struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};   
+  struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[block_verifiers_total_amount];
   int socket_settings;
   int total;
@@ -1936,7 +1938,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the sockets to connect
-  sleep(1);
+  sleep(CONNECTION_TIMEOUT_SETTINGS);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, block_verifiers_total_amount, 1);
@@ -2002,7 +2004,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  sleep(1);
+  sleep(CONNECTION_TIMEOUT_SETTINGS);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < block_verifiers_total_amount; count++)

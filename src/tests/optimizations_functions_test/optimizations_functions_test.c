@@ -274,7 +274,7 @@ int optimizations_functions_test(void)
     memset(result_test,0,sizeof(result_test));
     memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1);
     sign_data(result_test,0);
-    send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,result_test,RECEIVE_DATA_TIMEOUT_SETTINGS,"",0);
+    send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0);
   }
   total = time(NULL) - start;
   if (total <= MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET)

@@ -851,7 +851,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   // Variables  
   struct send_and_receive_data_socket_thread_parameters* data = (struct send_and_receive_data_socket_thread_parameters*)parameters;
   size_t HOST_LENGTH = strnlen(data->HOST,BUFFER_SIZE);
-  struct timeval SOCKET_TIMEOUT = {SOCKET_CONNECTION_TIMEOUT_SETTINGS, 0};  
+  struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};  
   char buffer[BUFFER_SIZE]; 
   char buffer2[BUFFER_SIZE];
   char str[BUFFER_SIZE];
@@ -955,7 +955,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   // connect to the socket
   if (connect(client_socket,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
-    count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
     if ((count != 1) || (count == 1 && getsockopt(client_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     {
       SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
@@ -1046,7 +1046,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
 
     // check for a timeout in receiving data
     count++;
-    if (count > (RECEIVE_DATA_TIMEOUT_SETTINGS * 5))
+    if (count > (SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS * 5))
     {
       SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
     }

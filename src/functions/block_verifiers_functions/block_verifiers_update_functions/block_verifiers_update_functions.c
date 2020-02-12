@@ -908,7 +908,7 @@ int get_delegates_online_status(void)
     freeaddrinfo(settings);
   }
 
-  sleep(TOTAL_CONNECTION_TIME_SETTINGS+1);
+  sleep(CONNECTION_TIMEOUT_SETTINGS);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, MAXIMUM_AMOUNT_OF_DELEGATES, 1);
@@ -956,6 +956,8 @@ int get_delegates_online_status(void)
       update_document_from_collection(database_name,DATABASE_COLLECTION,data2,data,1);  
     }
   }
+
+  sleep(CONNECTION_TIMEOUT_SETTINGS);
 
   // remove the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)

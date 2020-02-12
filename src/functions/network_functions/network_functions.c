@@ -52,7 +52,7 @@ Return: 0 if an error has occured, 1 if successfull
 int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], const size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS)
 {
   // Constants
-  const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0}; 
+  const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0}; 
   const size_t HTTP_SETTINGS_LENGTH = strnlen(HTTP_SETTINGS,BUFFER_SIZE);
   const size_t URL_LENGTH = strnlen(URL,BUFFER_SIZE);
   const size_t DATA_LENGTH = strlen(DATA);
@@ -233,7 +233,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // connect to the socket
   if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
-    count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
     if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     {        
       if (MESSAGE_SETTINGS == 1)
@@ -424,7 +424,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
 { 
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
-  const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
+  const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0};   
 
   // Variables 
   char buffer2[BUFFER_SIZE];
@@ -554,7 +554,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   // connect to the socket
   if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
-    count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
     if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     {        
       if (MESSAGE_SETTINGS == 1)
@@ -707,7 +707,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
 { 
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
-  const struct timeval SOCKET_TIMEOUT = {SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
+  const struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   
   // Variables  
   char buffer2[BUFFER_SIZE];
@@ -820,7 +820,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA)
   // connect to the socket
   if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
-    count = poll(&socket_file_descriptors,1,SOCKET_CONNECTION_TIMEOUT_SETTINGS);  
+    count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
     if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     { 
       if (network_functions_test_error_settings == 1)

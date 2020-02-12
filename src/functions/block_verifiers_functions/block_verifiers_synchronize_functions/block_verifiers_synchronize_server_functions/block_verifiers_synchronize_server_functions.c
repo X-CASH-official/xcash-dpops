@@ -306,7 +306,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memcpy(message+60,data,strnlen(data,sizeof(message)));
   memcpy(message+strlen(message),"\"}}",3);
 
-  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,RECEIVE_DATA_TIMEOUT_SETTINGS,"sign data",0) <= 0)
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"sign data",0) <= 0)
   {  
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not create the message");
   } 
