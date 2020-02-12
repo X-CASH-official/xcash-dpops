@@ -1612,7 +1612,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,10);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,8);
 
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1682,7 +1682,7 @@ int block_verifiers_create_block(void)
     }
     
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,16);
 
 
 
@@ -1707,7 +1707,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,40);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,24);
 
 
 
@@ -1747,7 +1747,7 @@ int block_verifiers_create_block(void)
     }    
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,45);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,48);
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
