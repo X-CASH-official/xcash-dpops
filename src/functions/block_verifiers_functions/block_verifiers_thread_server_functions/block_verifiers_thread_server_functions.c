@@ -534,6 +534,7 @@ int check_reserve_proofs_timer_update_database(void)
     memset(data,0,sizeof(data));
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
+    RESET_ERROR_MESSAGES;
 
     // get the data for the reserve proof from your own database, since you cant know if the data given was valid since the reserve proof is already invalid
     if (check_reserve_proofs_timer_get_database_data(count) == 0)

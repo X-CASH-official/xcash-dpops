@@ -82,15 +82,16 @@ int optimizations_functions_test(void)
   pthread_t thread_id[BLOCK_VERIFIERS_TOTAL_AMOUNT];  
   
   // define macros
-  #define OPTIMIZATIONS_TOTAL_TEST 10
+  #define OPTIMIZATIONS_TOTAL_TEST 11
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
   #define VALIDATE_RESERVE_PROOFS_WALLET "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
   #define VALIDATE_RESERVE_PROOFS_RESERVE_PROOF "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti"
   #define MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET 8
   #define MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD 8
-  #define MAXIMUM_TIME_SEND_DATA_SOCKET 8
+  #define MAXIMUM_TIME_SEND_DATA_SOCKET 100
   #define MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET 100
   #define MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT 500
+  #define MAXIMUM_TIME_RESERVE_PROOF_UPDATE_DATABASE 10
   #define MAXIMUM_TIME_VRF_DATA_VERIFY 24
   #define MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED 24
   #define MAXIMUM_TIME_NETWORK_BLOCK_PART_1 8
@@ -318,7 +319,7 @@ int optimizations_functions_test(void)
   memcpy(invalid_reserve_proofs.reserve_proof[19],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NbeQ6htDtJPees7GH3NHXKcrtJJ8VbqFWJFVLw8Dfrq28UFw51BvtKbU16YYjNJAeqAYsSVHg92toMYk4yY7HYUbZ65vgfn8wXbLELBXTKYQezErCAUBjwTDEGNdMk1QZF4tcLEmVUz4me8MaXts1D8ouHVqJQRAHv6KDHkMU143k5KrZbbkEMhijGDi9oGHRbUm2W4pLWMgzzZRPEQ7bP9eTRPHi2G2aa11pujWY4WaEPX12FyYbG2LJv18dvtejyiPTgXLVxPvRTNeP3aY7GwRRetePkxqJtJWXuXjp37yeeP4GJPaxeDzZhzzQ4T8JugtEHfCj8vs8j21Bx63K8SDTU3nQg7Ns6AoZg9rL2UCgA8W2FC7UmEb2ws85XJ8WfrTqzNpqoiweBGKgSG3wfbpzgMMKKz4obsEeTHZSfsKzwGRgMiEqkbTRSxdCPFi2tDWQdrWdvmaWm81iK42MSfud",537);
   invalid_reserve_proofs.count = 20;
 
-  start = time(NULL);
+  /*start = time(NULL);
   count = 0;
   while (time(NULL)-start < 265)
   {
@@ -335,6 +336,32 @@ int optimizations_functions_test(void)
   else
   {
     fprintf(stderr,"\033[1;31mFAILED! Test for validating reserve proofs took %ld seconds out of %d seconds\033[0m\n",total,MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT);
+  }*/
+
+
+  delete_database(database_name,0);
+  INITIALIZE_DATABASE_DATA(2);
+  RESET_INVALID_RESERVE_PROOFS;
+  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS * 0.10; count++)
+  {
+    memcpy(invalid_reserve_proofs.block_verifier_public_address[count],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
+    memcpy(invalid_reserve_proofs.public_address_voted_for[count],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
+    memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[count],"XCA1oPZcuxH1WeyMntcv1Mb28Nzc73UvMbck3VyBedN57gV1c9ikU6tBALSjCwigMs1XCDtTYND7vfELU31PQEBh6zs5MLxYek",XCASH_WALLET_LENGTH);
+    invalid_reserve_proofs.reserve_proof_amount[count] = 1000000000;
+    memcpy(invalid_reserve_proofs.reserve_proof[count],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NTiwbZLCstwWzpKy8J6J8M1uq9qf5PbWha7C68N8V7qshnzUP113UoSQuy78bpD5CeY2H3ViztSqDBFmmMiNu6uCQGkbu4NrZhZk2T7y7T1ixLCAxYfKRtd2pAAbuAWeBVCNzvmKB8YaneMgZ3mH113kXRg67xZRBtVcawf1CTYHCVuhpur8F6nAGxwFeNoRAdr6rnGwa1SUVdqrXypfmJJyzpPUGTSriAJqtRSBKJqAgQDPz4aV99aLMHHKWAv3eKaGAvBZ3obk2GuVBnHeUUEHAihQ5ECndKS4dw8YxMogdY9o8PvrhZgt2gnX4YrUiF5VbGBcBUsxbag1Ak9oZfTH2d1WeyMntcv1Mb28Nzc73UvMbck3VyBedN57gV1LS8WNV1SeHAFBiGgeBcuveGee9VZYQvGRfiWzkJf9JfYWoQ4dyxh13BrXpp3rF1nWv3UXxMrJJX8SRtQy5zrLAywENZ",538);
+  }
+  invalid_reserve_proofs.count = MAXIMUM_INVALID_RESERVE_PROOFS * 0.10;
+  start = time(NULL);
+  check_reserve_proofs_timer_update_database();
+  total = time(NULL) - start;
+  if (total <= MAXIMUM_TIME_RESERVE_PROOF_UPDATE_DATABASE)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for check_reserve_proofs_timer_update_database took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_RESERVE_PROOF_UPDATE_DATABASE);
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for check_reserve_proofs_timer_update_database took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_RESERVE_PROOF_UPDATE_DATABASE);
   }
 
 
@@ -531,6 +558,7 @@ int optimizations_functions_test(void)
   #undef MAXIMUM_TIME_SEND_DATA_SOCKET
   #undef MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET
   #undef MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT
+  #undef MAXIMUM_TIME_RESERVE_PROOF_UPDATE_DATABASE
   #undef MAXIMUM_TIME_VRF_DATA_VERIFY
   #undef MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED
   #undef MAXIMUM_TIME_NETWORK_BLOCK_PART_1
