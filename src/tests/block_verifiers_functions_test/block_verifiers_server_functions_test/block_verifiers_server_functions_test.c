@@ -35,6 +35,17 @@ int block_verifiers_server_functions_test(void)
   // Variables
   int count;
 
+  // define macros
+  #define RESET_INVALID_RESERVE_PROOFS_DATA \
+  for (count = 0; count < invalid_reserve_proofs.count; count++) \
+  { \
+    pointer_reset(invalid_reserve_proofs.block_verifier_public_address[count]); \
+    pointer_reset(invalid_reserve_proofs.public_address_created_reserve_proof[count]); \
+    pointer_reset(invalid_reserve_proofs.public_address_voted_for[count]); \
+    pointer_reset(invalid_reserve_proofs.reserve_proof[count]); \
+  } \
+  invalid_reserve_proofs.count = 0;
+
   // reset the variables
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
@@ -48,7 +59,7 @@ int block_verifiers_server_functions_test(void)
   // run the test
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && sleep(5) == 0 && strncmp(invalid_reserve_proofs.block_verifier_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && strncmp(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT",BUFFER_SIZE) == 0)
   {
@@ -60,6 +71,7 @@ int block_verifiers_server_functions_test(void)
     color_print("FAILED! Test for server_receive_data_socket_get_public_address_information","red");
   }
   RESET_ERROR_MESSAGES;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
 
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_TEST_DATA);
   main_network_data_node_create_block = 1;
@@ -130,4 +142,6 @@ int block_verifiers_server_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
+
+  #undef RESET_INVALID_RESERVE_PROOFS_DATA
 }

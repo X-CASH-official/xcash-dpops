@@ -47,6 +47,15 @@ int block_verifiers_thread_server_functions_test(void)
   #define RESERVE_PROOF_PUBLIC_ADDRESS_TEST "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
   #define RESERVE_PROOF_TEST "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB31qaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti"
   #define VOTE_DATA_TEST "\"vote_data\": \"59afe2f27423efdc1f5a7acc15fa5b76b6553b36886e9f32b0b7ab3baf5e77a0222a855957e5b9a6d4e174c8bd0b405c0eef42c6be1776e32f0f742aa1c125e5\""
+  #define RESET_INVALID_RESERVE_PROOFS_DATA \
+  for (count = 0; count < invalid_reserve_proofs.count; count++) \
+  { \
+    pointer_reset(invalid_reserve_proofs.block_verifier_public_address[count]); \
+    pointer_reset(invalid_reserve_proofs.public_address_created_reserve_proof[count]); \
+    pointer_reset(invalid_reserve_proofs.public_address_voted_for[count]); \
+    pointer_reset(invalid_reserve_proofs.reserve_proof[count]); \
+  } \
+  invalid_reserve_proofs.count = 0;
 
   // reset the variables
   memset(result_test,0,sizeof(result_test));
@@ -67,9 +76,16 @@ int block_verifiers_thread_server_functions_test(void)
   insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"521850\"}",0);
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
-  RESET_INVALID_RESERVE_PROOFS;
   RESET_ERROR_MESSAGES;
 
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  invalid_reserve_proofs.block_verifier_public_address[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],RESERVE_PROOF_PUBLIC_ADDRESS_TEST,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.reserve_proof[0],RESERVE_PROOF_TEST,sizeof(RESERVE_PROOF_TEST)-1);
@@ -92,7 +108,15 @@ int block_verifiers_thread_server_functions_test(void)
   // check_reserve_proofs_timer_get_database_data
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  invalid_reserve_proofs.block_verifier_public_address[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],TEST_WALLET,XCASH_WALLET_LENGTH);
@@ -115,7 +139,15 @@ int block_verifiers_thread_server_functions_test(void)
   // check_reserve_proofs_timer_update_delegates_total_vote_count
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  invalid_reserve_proofs.block_verifier_public_address[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
@@ -142,7 +174,11 @@ int block_verifiers_thread_server_functions_test(void)
   // check_reserve_proofs_timer_update_delegates_score
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
@@ -163,7 +199,15 @@ int block_verifiers_thread_server_functions_test(void)
   // check_reserve_proofs_timer_update_database
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  invalid_reserve_proofs.block_verifier_public_address[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
@@ -190,7 +234,7 @@ int block_verifiers_thread_server_functions_test(void)
   // select_random_unique_reserve_proof
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
   // initialize the reserve_proof struct
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
   memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
@@ -210,7 +254,7 @@ int block_verifiers_thread_server_functions_test(void)
   // send_invalid_reserve_proof_to_block_verifiers
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
   // initalize the previous current and next block verifiers list
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
@@ -263,7 +307,7 @@ int block_verifiers_thread_server_functions_test(void)
   // remove_inactive_delegates
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
   count = count_all_documents_in_collection(database_name,"delegates",1);
   remove_inactive_delegates(&total_delegates, &total_inactive_delegates);
   if (total_delegates == count && total_inactive_delegates == count)
@@ -282,7 +326,15 @@ int block_verifiers_thread_server_functions_test(void)
   // check_reserve_proofs_timer_get_database_data
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  invalid_reserve_proofs.block_verifier_public_address[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],TEST_WALLET,XCASH_WALLET_LENGTH);
@@ -305,7 +357,15 @@ int block_verifiers_thread_server_functions_test(void)
   // check_reserve_proofs_timer_update_delegates_total_vote_count
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  invalid_reserve_proofs.block_verifier_public_address[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
@@ -332,7 +392,11 @@ int block_verifiers_thread_server_functions_test(void)
   // check_reserve_proofs_timer_update_delegates_score
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.block_verifier_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
@@ -354,7 +418,15 @@ int block_verifiers_thread_server_functions_test(void)
   // check_reserve_proofs_timer_update_database
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],TEST_WALLET,XCASH_WALLET_LENGTH);
@@ -376,8 +448,15 @@ int block_verifiers_thread_server_functions_test(void)
   // select_random_unique_reserve_proof
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
   // initialize the reserve_proof struct
+  for (count = 0; count < 20; count++)
+  {
+    invalid_reserve_proofs.block_verifier_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.public_address_created_reserve_proof[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.public_address_voted_for[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.reserve_proof[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  }
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
   memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
   memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
@@ -417,8 +496,12 @@ int block_verifiers_thread_server_functions_test(void)
   // send_invalid_reserve_proof_to_block_verifiers
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
   // initialize the reserve_proof struct
+  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
   memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
   memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
@@ -440,6 +523,7 @@ int block_verifiers_thread_server_functions_test(void)
     color_print("FAILED! Test for send_invalid_reserve_proof_to_block_verifiers checking for an invalid reserve proof","red");
   }
 
+  RESET_INVALID_RESERVE_PROOFS_DATA;
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
     memset(network_data_nodes_list.network_data_nodes_public_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_public_address[count]));
@@ -450,8 +534,9 @@ int block_verifiers_thread_server_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers thread_server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-  
+
   #undef RESERVE_PROOF_PUBLIC_ADDRESS_TEST
   #undef RESERVE_PROOF_TEST
   #undef VOTE_DATA_TEST
+  #undef RESET_INVALID_RESERVE_PROOFS_DATA
 }

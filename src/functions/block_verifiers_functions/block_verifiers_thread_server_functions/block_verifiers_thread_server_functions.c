@@ -637,7 +637,7 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
   if (read_multiple_documents_all_fields_from_collection(database_name,data,"",&database_multiple_documents_fields,count,1,0,"",1) == 1)
   {
     // check if the reserve proof is unique 
-    for (count2 = 0; count2 <= invalid_reserve_proofs.count; count2++)
+    for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
     {
       if (strncmp(invalid_reserve_proofs.reserve_proof[count2],database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF) == 0)
       {
@@ -693,6 +693,10 @@ int send_invalid_reserve_proof_to_block_verifiers(struct reserve_proof* reserve_
   if (test_settings == 0)
   {
     pthread_rwlock_wrlock(&rwlock_reserve_proofs);
+    invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.public_address_created_reserve_proof[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.public_address_voted_for[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
     memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],xcash_wallet_public_address,XCASH_WALLET_LENGTH);
     memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof->reserve_proof,strnlen(reserve_proof->reserve_proof,sizeof(reserve_proof->reserve_proof)));
     invalid_reserve_proofs.count++;
@@ -747,18 +751,18 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
   // define macros
   #define RESET_INVALID_RESERVE_PROOFS_DATA \
-  for (count = 0; count <= invalid_reserve_proofs.count; count++) \
+  for (count = 0; count < invalid_reserve_proofs.count; count++) \
   { \
-    memset(invalid_reserve_proofs.block_verifier_public_address[count],0,strlen(invalid_reserve_proofs.block_verifier_public_address[count])); \
-    memset(invalid_reserve_proofs.public_address_created_reserve_proof[count],0,strlen(invalid_reserve_proofs.public_address_created_reserve_proof[count])); \
-    memset(invalid_reserve_proofs.public_address_voted_for[count],0,strlen(invalid_reserve_proofs.public_address_voted_for[count])); \
-    memset(invalid_reserve_proofs.reserve_proof[count],0,strlen(invalid_reserve_proofs.reserve_proof[count])); \
+    pointer_reset(invalid_reserve_proofs.block_verifier_public_address[count]); \
+    pointer_reset(invalid_reserve_proofs.public_address_created_reserve_proof[count]); \
+    pointer_reset(invalid_reserve_proofs.public_address_voted_for[count]); \
+    pointer_reset(invalid_reserve_proofs.reserve_proof[count]); \
   } \
   invalid_reserve_proofs.count = 0; \
   database_settings = 1; \
   pthread_cond_broadcast(&thread_settings_lock);
 
-  // initialize the reserve_proof struct
+  // reset the reserve_proof struct
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
   memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
   memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));

@@ -823,7 +823,7 @@ for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
   memset(delegates[count].public_key,0,strlen(delegates[count].public_key)); \
 }
 
-#define RESET_INVALID_RESERVE_PROOFS \
+#define R0ESET_INVALID_RESERVE_PROOFS \
 for (count = 0; (int)count <= invalid_reserve_proofs.count; count++) \
 { \
   memset(invalid_reserve_proofs.public_address_voted_for[count],0,strlen(invalid_reserve_proofs.public_address_voted_for[count])); \

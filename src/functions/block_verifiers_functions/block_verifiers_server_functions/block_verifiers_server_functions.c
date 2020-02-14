@@ -123,8 +123,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   }
 
   // check if the reserve proof is unique 
-  pthread_rwlock_wrlock(&rwlock_reserve_proofs);
-  for (count3 = 0, settings = 1; (int)count3 <= invalid_reserve_proofs.count; count3++)
+  for (count3 = 0, settings = 1; (int)count3 < invalid_reserve_proofs.count; count3++)
   {
     if (strncmp(invalid_reserve_proofs.reserve_proof[count3],reserve_proof,sizeof(reserve_proof)) == 0)
     {
@@ -139,13 +138,18 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
     if (check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) == 0)
     {
       // add the reserve proof to the invalid_reserve_proofs struct
+      pthread_rwlock_wrlock(&rwlock_reserve_proofs);
+      invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+      invalid_reserve_proofs.public_address_created_reserve_proof[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+      invalid_reserve_proofs.public_address_voted_for[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+      invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
       sscanf(data3,"%zu", &count3);     
       memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],public_address,XCASH_WALLET_LENGTH);
       memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
       invalid_reserve_proofs.count++;
+      pthread_rwlock_unlock(&rwlock_reserve_proofs);
     }
-  } 
-  pthread_rwlock_unlock(&rwlock_reserve_proofs);
+  }
   return 1;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR

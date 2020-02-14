@@ -76,9 +76,12 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 
   // define macros
   #define SEND_HTTP_REQUEST_ERROR(data_settings,socket_settings) \
-  memcpy(error_message.function[error_message.total],"send_http_request",17); \
-  memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
-  error_message.total++; \
+  if (test_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"send_http_request",17); \
+    memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
+    error_message.total++; \
+  } \
   freeaddrinfo(settings); \
   pointer_reset(message); \
   if (socket_settings == 1) \
@@ -308,9 +311,12 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
 
   // define macros
   #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR(data_settings,socket_settings) \
-  memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28); \
-  memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
-  error_message.total++; \
+  if (test_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28); \
+    memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
+    error_message.total++; \
+  } \
   freeaddrinfo(settings); \
   pointer_reset(message); \
   if (socket_settings == 1) \

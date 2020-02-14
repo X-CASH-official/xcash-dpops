@@ -98,6 +98,16 @@ int optimizations_functions_test(void)
   #define MAXIMUM_TIME_NETWORK_BLOCK_PART_4 24
   #define MAXIMUM_TIME_NETWORK_BLOCK_PART_5 8
 
+  #define RESET_INVALID_RESERVE_PROOFS_DATA \
+  for (count = 0; count < invalid_reserve_proofs.count; count++) \
+  { \
+    pointer_reset(invalid_reserve_proofs.block_verifier_public_address[count]); \
+    pointer_reset(invalid_reserve_proofs.public_address_created_reserve_proof[count]); \
+    pointer_reset(invalid_reserve_proofs.public_address_voted_for[count]); \
+    pointer_reset(invalid_reserve_proofs.reserve_proof[count]); \
+  } \
+  invalid_reserve_proofs.count = 0;
+
   #define RESET_NETWORK_BLOCK_ROUND \
   memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4)); \
   memset(VRF_data.vrf_secret_key_round_part_4,0,strlen((const char*)VRF_data.vrf_secret_key_round_part_4)); \
@@ -154,7 +164,7 @@ int optimizations_functions_test(void)
   // test sending 100 messages to the block verifiers
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
   // initalize the previous current and next block verifiers list
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
@@ -247,7 +257,14 @@ int optimizations_functions_test(void)
 
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
+  for (count = 0; count < 20; count++)
+  {
+    invalid_reserve_proofs.block_verifier_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.public_address_created_reserve_proof[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.public_address_voted_for[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.reserve_proof[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+  }
   // initialize the reserve_proof struct
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
   memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
@@ -298,9 +315,13 @@ int optimizations_functions_test(void)
 
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS;
+  RESET_INVALID_RESERVE_PROOFS_DATA;
   for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS * 0.10; count++)
   {
+    invalid_reserve_proofs.block_verifier_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.public_address_created_reserve_proof[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.public_address_voted_for[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    invalid_reserve_proofs.reserve_proof[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
     memcpy(invalid_reserve_proofs.block_verifier_public_address[count],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
     memcpy(invalid_reserve_proofs.public_address_voted_for[count],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH);
     memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[count],"XCA1oPZcuxH1WeyMntcv1Mb28Nzc73UvMbck3VyBedN57gV1c9ikU6tBALSjCwigMs1XCDtTYND7vfELU31PQEBh6zs5MLxYek",XCASH_WALLET_LENGTH);
@@ -320,6 +341,7 @@ int optimizations_functions_test(void)
   {
     fprintf(stderr,"\033[1;31mFAILED! Test for check_reserve_proofs_timer_update_database took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_RESERVE_PROOF_UPDATE_DATABASE);
   }
+  RESET_INVALID_RESERVE_PROOFS_DATA;
 
 
   start = time(NULL);
@@ -521,5 +543,6 @@ int optimizations_functions_test(void)
   #undef MAXIMUM_TIME_NETWORK_BLOCK_PART_3
   #undef MAXIMUM_TIME_NETWORK_BLOCK_PART_4
   #undef MAXIMUM_TIME_NETWORK_BLOCK_PART_5
+  #undef RESET_INVALID_RESERVE_PROOFS_DATA
   #undef RESET_NETWORK_BLOCK_ROUND
 }
