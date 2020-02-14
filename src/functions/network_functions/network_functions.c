@@ -75,7 +75,10 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   int network_socket;
 
   // define macros
-  #define SEND_HTTP_REQUEST_ERROR(socket_settings) \
+  #define SEND_HTTP_REQUEST_ERROR(data_settings,socket_settings) \
+  memcpy(error_message.function[error_message.total],"send_http_request",17); \
+  memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
+  error_message.total++; \
   freeaddrinfo(settings); \
   pointer_reset(message); \
   if (socket_settings == 1) \
@@ -178,7 +181,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
-    SEND_HTTP_REQUEST_ERROR(0);
+    SEND_HTTP_REQUEST_ERROR("Error invalid hostname",0);
   }
 
   /* Create the socket  
@@ -188,7 +191,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   */
   if ((network_socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
   { 
-    SEND_HTTP_REQUEST_ERROR(0);
+    SEND_HTTP_REQUEST_ERROR("Error creating socket",0);
   }
 
   /* Set the socket options for sending and receiving data
@@ -198,7 +201,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   */
   if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
-    SEND_HTTP_REQUEST_ERROR(1);
+    SEND_HTTP_REQUEST_ERROR("Error setting socket timeout",1);
   }  
 
   /* set the first poll structure to our socket
@@ -213,38 +216,38 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
     if ((count != 1) || (count == 1 && getsockopt(network_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     { 
-      SEND_HTTP_REQUEST_ERROR(1);
+      SEND_HTTP_REQUEST_ERROR("Error connecting to host",1);
     } 
   }
 
   // get the current socket settings
   if ((socket_settings = fcntl(network_socket, F_GETFL, NULL)) == -1)
   {
-    SEND_HTTP_REQUEST_ERROR(1);
+    SEND_HTTP_REQUEST_ERROR("Error getting socket settings",1);
   }
 
   // set the socket to blocking mode
   socket_settings &= (~O_NONBLOCK);
   if (fcntl(network_socket, F_SETFL, socket_settings) == -1)
   {
-    SEND_HTTP_REQUEST_ERROR(1);
+    SEND_HTTP_REQUEST_ERROR("Error setting socket settings",1);
   }
 
   if (send_data(network_socket,(unsigned char*)message,0,0,"") == 0)
   {
-    SEND_HTTP_REQUEST_ERROR(1);
+    SEND_HTTP_REQUEST_ERROR("Error sending data to host",1);
   }
    
   // get the result
   if ((receive_data_result = receive_data(network_socket,message,"{",1,DATA_TIMEOUT_SETTINGS)) < 2)
   {
-    SEND_HTTP_REQUEST_ERROR(1);
+    SEND_HTTP_REQUEST_ERROR("Error receiving data from host",1);
   }
 
   // check if the data recived is correct
   if (strstr(message,"{") == NULL && strstr(message,"error") == NULL)
   {
-    SEND_HTTP_REQUEST_ERROR(1);
+    SEND_HTTP_REQUEST_ERROR("Error receiving data from host",1);
   }
   
   // parse the HTTP request header from the result
@@ -304,7 +307,10 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   int network_socket;
 
   // define macros
-  #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR(socket_settings) \
+  #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR(data_settings,socket_settings) \
+  memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28); \
+  memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
+  error_message.total++; \
   freeaddrinfo(settings); \
   pointer_reset(message); \
   if (socket_settings == 1) \
@@ -363,7 +369,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(0);
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error invalid hostname",0);
   }
 
   /* Create the socket  
@@ -373,7 +379,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   */
   if ((network_socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
   { 
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(0);
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error creating socket",0);
   }
 
   /* Set the socket options for sending and receiving data
@@ -383,7 +389,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   */
   if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error setting socket timeout",1);
   }  
 
   /* set the first poll structure to our socket
@@ -398,35 +404,35 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
     if ((count != 1) || (count == 1 && getsockopt(network_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     { 
-      SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
+      SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error connecting to host",1);
     } 
   }
 
   // get the current socket settings
   if ((socket_settings = fcntl(network_socket, F_GETFL, NULL)) == -1)
   {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error getting socket settings",1);
   }
 
   // set the socket to blocking mode
   socket_settings &= (~O_NONBLOCK);
   if (fcntl(network_socket, F_SETFL, socket_settings) == -1)
   {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error setting socket settings",1);
   }
 
   memset(message,0,strlen(message));
   memcpy(message,DATA,strnlen(DATA,MAXIMUM_BUFFER_SIZE));
   if (send_data(network_socket,(unsigned char*)message,0,1,"") == 0)
   {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error sending data to host",1);
   }
     
   // get the result
   memset(result,0,strlen(result));
   if ((receive_data_result = receive_data(network_socket,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS)) < 2)
   {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host",1);
   }
   freeaddrinfo(settings);
   pointer_reset(message);

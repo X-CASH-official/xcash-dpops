@@ -87,9 +87,8 @@ int optimizations_functions_test(void)
   #define VALIDATE_RESERVE_PROOFS_RESERVE_PROOF "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti"
   #define MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET 8
   #define MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD 8
-  #define MAXIMUM_TIME_SEND_DATA_SOCKET 100
-  #define MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET 100
   #define MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT 500
+  #define MAXIMUM_TIME_VALIDATED_RESERVE_PROOFS 265
   #define MAXIMUM_TIME_RESERVE_PROOF_UPDATE_DATABASE 10
   #define MAXIMUM_TIME_VRF_DATA_VERIFY 24
   #define MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED 24
@@ -246,47 +245,6 @@ int optimizations_functions_test(void)
 
 
 
-  start = time(NULL);
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    memset(data_test,0,sizeof(data_test));
-    memset(result_test,0,sizeof(result_test));
-    memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1);
-    sign_data(result_test);
-    send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
-  }
-  total = time(NULL) - start;
-  if (total <= MAXIMUM_TIME_SEND_DATA_SOCKET)
-  {
-    fprintf(stderr,"\033[1;32mPASSED! Test for sending a message to all block verifiers using send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_DATA_SOCKET);
-    count_test++;
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31mFAILED! Test for sending a message to all block verifiers using send_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_DATA_SOCKET);
-  }
-
-
-  start = time(NULL);
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    memset(data_test,0,sizeof(data_test));
-    memset(result_test,0,sizeof(result_test));
-    memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1);
-    sign_data(result_test);
-    send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
-  }
-  total = time(NULL) - start;
-  if (total <= MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET)
-  {
-    fprintf(stderr,"\033[1;32mPASSED! Test for sending a message to all block verifiers using send_and_receive_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET);
-    count_test++;
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31mFAILED! Test for sending a message to all block verifiers using send_and_receive_data_socket took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET);
-  }
-
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
   RESET_INVALID_RESERVE_PROOFS;
@@ -320,7 +278,7 @@ int optimizations_functions_test(void)
 
   start = time(NULL);
   count = 0;
-  while (time(NULL)-start < 265)
+  while (time(NULL)-start < MAXIMUM_TIME_VALIDATED_RESERVE_PROOFS)
   {
     memset(data_test,0,sizeof(data_test));
     select_random_unique_reserve_proof(&reserve_proof);
@@ -329,7 +287,7 @@ int optimizations_functions_test(void)
   }
   if (count >= MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT)
   {
-    fprintf(stderr,"\033[1;32mPASSED! Test for validating reserve proofs took %ld seconds out of %d seconds\033[0m\n",total,MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT);
+    fprintf(stderr,"\033[1;32mPASSED! Test for validating reserve proofs. Validated %d reserve proofs (need at least %d) in %d seconds\033[0m\n",count,MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT,MAXIMUM_TIME_VALIDATED_RESERVE_PROOFS);
     count_test++;
   }
   else
@@ -553,9 +511,8 @@ int optimizations_functions_test(void)
   #undef VALIDATE_RESERVE_PROOFS_RESERVE_PROOF
   #undef MAXIMUM_TIME_BLOCK_VERIFIERS_SEND_DATA_SOCKET
   #undef MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD
-  #undef MAXIMUM_TIME_SEND_DATA_SOCKET
-  #undef MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET
   #undef MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT
+  #undef MAXIMUM_TIME_VALIDATED_RESERVE_PROOFS
   #undef MAXIMUM_TIME_RESERVE_PROOF_UPDATE_DATABASE
   #undef MAXIMUM_TIME_VRF_DATA_VERIFY
   #undef MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED

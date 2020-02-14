@@ -206,7 +206,7 @@ int network_functions_test(void)
   // check all errors for each test
   // send_http_request
   RESET_ERROR_MESSAGES;
-  if (send_http_request(data_test,"","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 && strstr(error_message.data[0],"Error invalid hostname of ") != NULL)
+  if (send_http_request(data_test,"","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 && strstr(error_message.data[0],"Error invalid hostname") != NULL)
   {
     color_print("PASSED! Test for send_http_request checking for invalid hostname","green");
     count_test++;
@@ -217,7 +217,7 @@ int network_functions_test(void)
   }
   RESET_ERROR_MESSAGES;
 
-  if (send_http_request(data_test,"127.0.0.1","/json_rpc",18289,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 && strstr(error_message.data[0],"Error connecting to 127.0.0.1") != NULL)
+  if (send_http_request(data_test,"127.0.0.1","/json_rpc",18289,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 && strstr(error_message.data[0],"Error connecting to host") != NULL)
   {
     color_print("PASSED! Test for send_http_request checking for Connection error","green");
     count_test++;
@@ -229,7 +229,7 @@ int network_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   // send_and_receive_data_socket
-  if (send_and_receive_data_socket(string,"",SEND_DATA_PORT,message,20) <= 0 && strstr(error_message.data[0],"Error invalid hostname of ") != NULL)
+  if (send_and_receive_data_socket(string,"",SEND_DATA_PORT,message,20) <= 0 && strstr(error_message.data[0],"Error invalid hostname") != NULL)
   {
     color_print("PASSED! Test for send_and_receive_data_socket checking for invalid hostname","green");
     count_test++;
@@ -240,7 +240,7 @@ int network_functions_test(void)
   }
   RESET_ERROR_MESSAGES;
 
-  if (send_and_receive_data_socket(string,"127.0.0.1",18289,message,20) <= 0 && strstr(error_message.data[0],"Error connecting to 127.0.0.1") != NULL)
+  if (send_and_receive_data_socket(string,"127.0.0.1",18289,message,20) <= 0 && strstr(error_message.data[0],"Error connecting to host") != NULL)
   {
     color_print("PASSED! Test for send_and_receive_data_socket checking for Connection error","green");
     count_test++;
@@ -252,7 +252,7 @@ int network_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   // send_data_socket
-  if (send_data_socket("",SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 && strstr(error_message.data[0],"Error invalid hostname of ") != NULL)
+  if (send_data_socket("",SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 && strstr(error_message.data[0],"Error invalid hostname") != NULL)
   {
     color_print("PASSED! Test for send_data_socket checking for invalid hostname","green");
     count_test++;

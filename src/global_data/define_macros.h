@@ -32,6 +32,7 @@ Using define statements instead of constants for increased efficiency
 #define NETWORK_VERSION "0d0d" // The network version
 #define TIMESTAMP_LENGTH 10 // The length of the timestamp
 #define BLOCK_HASH_LENGTH 64 // The length of the block hash
+#define TRANSACTION_HASH_LENGTH 64 // The length of the transaction hash
 #define STEALTH_ADDRESS_OUTPUT_LENGTH 64 // The length of the stealth address output
 #define TRANSACTION_PUBLIC_KEY_LENGTH 66 // The length of the transaction public key
 #define TRANSACTION_LENGTH 64 // The length of a transaction
@@ -611,7 +612,7 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "--parameters - Show a list of all valid parameters\n\n" \
 "--test - Run the test to make sure the program is compatible with your system. This can take around 24 hours\n\n" \
 "--quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 1 hour\n\n" \
-"--optimizations_test - Run the optimizations test only. This will check if your computer is fast enough for XCASH_DPOPS. This can take around 10 minutes\n\n
+"--optimizations_test - Run the optimizations test only. This will check if your computer is fast enough for XCASH_DPOPS. This can take around 10 minutes\n\n" \
 "--block_verifiers_secret_key \"block_verifiers_secret_key\" - The block verifiers secret key. This must be the first parameter\n\n" \
 "--debug - Show all incoming and outgoing messages from the server\n\n" \
 "--log_file \"log_file\" - Write all output to a log file with no colors\n\n" \
