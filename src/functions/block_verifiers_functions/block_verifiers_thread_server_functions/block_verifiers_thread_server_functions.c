@@ -826,7 +826,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         continue;
       }
     }
-    usleep(500000);
+    nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
   }
   pthread_exit((void *)(intptr_t)1);
 }
@@ -1051,7 +1051,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
     {
       SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
     }
-    usleep(200000);   
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);   
   }
 
   // verify the data
@@ -1207,7 +1207,7 @@ void* sync_network_data_nodes_database_timer_thread(void* parameters)
 
   for (;;)
   {
-    usleep(200000);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 0)
     {
@@ -1239,7 +1239,7 @@ void* sync_all_block_verifiers_list_timer_thread(void* parameters)
 
   for (;;)
   {
-    usleep(200000);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 2 && current_UTC_date_and_time.tm_sec == 0)
     {

@@ -564,7 +564,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
         memcpy(str+20,HOST,HOST_LENGTH);
         memcpy(str+20+HOST_LENGTH," on port ",9);
         memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-        memcpy(error_message.function[error_message.total],"send_http_request",17);
+        memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
         memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
         error_message.total++; 
       }   
@@ -1065,7 +1065,7 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
         return 1;
       }
     }
-    usleep(200000);   
+    nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);   
   }
   pointer_reset_all;
   return 2;

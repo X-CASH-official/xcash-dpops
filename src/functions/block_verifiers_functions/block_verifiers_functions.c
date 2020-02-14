@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
+#include <time.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -530,7 +531,7 @@ int start_current_round_start_blocks(void)
     }
     if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
     {
-      usleep(500000);
+      nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
     }
   }
 
@@ -810,7 +811,7 @@ int data_network_node_create_block(void)
       }
       if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
       {
-        usleep(500000);
+        nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
       }
     }
 
@@ -926,7 +927,7 @@ int data_network_node_create_block(void)
       }
       if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
       {
-        usleep(500000);
+        nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
       }
     }
 
@@ -1484,7 +1485,7 @@ int block_verifiers_create_block_and_update_database(void)
     {
       submit_block_template(data,0);
     }
-    usleep(200000);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
   return 1;
 

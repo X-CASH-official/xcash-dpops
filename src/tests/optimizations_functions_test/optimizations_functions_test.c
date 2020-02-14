@@ -227,7 +227,7 @@ int optimizations_functions_test(void)
     pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
     if (count % (BLOCK_VERIFIERS_TOTAL_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_TOTAL_AMOUNT)
     {
-      usleep(500000);
+      nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
     }
   }
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)

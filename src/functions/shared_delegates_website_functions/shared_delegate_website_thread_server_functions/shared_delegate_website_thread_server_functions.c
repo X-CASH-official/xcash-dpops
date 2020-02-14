@@ -406,7 +406,7 @@ void* block_height_timer_thread(void* parameters)
         BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not calculate the block reward for each delegate");
       }
     }
-    usleep(200000);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
   pthread_exit((void *)(intptr_t)1);
 
