@@ -72,6 +72,17 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
+  int network_socket;
+
+  // define macros
+  #define SEND_HTTP_REQUEST_ERROR(socket_settings) \
+  freeaddrinfo(settings); \
+  pointer_reset(message); \
+  if (socket_settings == 1) \
+  { \
+    close(network_socket); \
+  } \
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (message == NULL)
@@ -167,9 +178,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    return 0;
+    SEND_HTTP_REQUEST_ERROR(0);
   }
 
   /* Create the socket  
@@ -177,12 +186,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   SOCK_STREAM = TCP protocol
   SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
-  if (SOCKET == -1)
+  if ((network_socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
   { 
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    return 0;
+    SEND_HTTP_REQUEST_ERROR(0);
   }
 
   /* Set the socket options for sending and receiving data
@@ -190,78 +196,55 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_HTTP_REQUEST_ERROR(1);
   }  
 
   /* set the first poll structure to our socket
   POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
   */
-  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.fd = network_socket;
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
+  if (connect(network_socket,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
     count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
-    if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    if ((count != 1) || (count == 1 && getsockopt(network_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     { 
-      freeaddrinfo(settings);
-      pointer_reset(message);
-      close(SOCKET);
-      return 0;
+      SEND_HTTP_REQUEST_ERROR(1);
     } 
   }
 
   // get the current socket settings
-  socket_settings = fcntl(SOCKET, F_GETFL, NULL);
-  if (socket_settings == -1)
+  if ((socket_settings = fcntl(network_socket, F_GETFL, NULL)) == -1)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_HTTP_REQUEST_ERROR(1);
   }
 
   // set the socket to blocking mode
   socket_settings &= (~O_NONBLOCK);
-  if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
+  if (fcntl(network_socket, F_SETFL, socket_settings) == -1)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_HTTP_REQUEST_ERROR(1);
   }
 
-  if (send_data(SOCKET,(unsigned char*)message,0,0,"") == 0)
+  if (send_data(network_socket,(unsigned char*)message,0,0,"") == 0)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_HTTP_REQUEST_ERROR(1);
   }
    
   // get the result
-  receive_data_result = receive_data(SOCKET,message,"{",1,DATA_TIMEOUT_SETTINGS);
-  if (receive_data_result < 2)
+  if ((receive_data_result = receive_data(network_socket,message,"{",1,DATA_TIMEOUT_SETTINGS)) < 2)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_HTTP_REQUEST_ERROR(1);
   }
 
   // check if the data recived is correct
   if (strstr(message,"{") == NULL && strstr(message,"error") == NULL)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_HTTP_REQUEST_ERROR(1);
   }
   
   // parse the HTTP request header from the result
@@ -279,8 +262,10 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   }
   freeaddrinfo(settings);
   pointer_reset(message);
-  close(SOCKET);
+  close(network_socket);
   return 1;
+
+  #undef SEND_HTTP_REQUEST_ERROR
 }
 
 
@@ -316,6 +301,17 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
+  int network_socket;
+
+  // define macros
+  #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR(socket_settings) \
+  freeaddrinfo(settings); \
+  pointer_reset(message); \
+  if (socket_settings == 1) \
+  { \
+    close(network_socket); \
+  } \
+  return 0;
 
   // check if the memory needed was allocated on the heap successfully
   if (message == NULL)
@@ -367,9 +363,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    return 0;
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(0);
   }
 
   /* Create the socket  
@@ -377,12 +371,9 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   SOCK_STREAM = TCP protocol
   SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
-  if (SOCKET == -1)
+  if ((network_socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
   { 
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    return 0;
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(0);
   }
 
   /* Set the socket options for sending and receiving data
@@ -390,78 +381,59 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
   }  
 
   /* set the first poll structure to our socket
   POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
   */
-  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.fd = network_socket;
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
+  if (connect(network_socket,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
     count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
-    if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    if ((count != 1) || (count == 1 && getsockopt(network_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     { 
-      freeaddrinfo(settings);
-      pointer_reset(message);   
-      close(SOCKET);
-      return 0;
+      SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
     } 
   }
 
   // get the current socket settings
-  socket_settings = fcntl(SOCKET, F_GETFL, NULL);
-  if (socket_settings == -1)
+  if ((socket_settings = fcntl(network_socket, F_GETFL, NULL)) == -1)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
   }
 
   // set the socket to blocking mode
   socket_settings &= (~O_NONBLOCK);
-  if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
+  if (fcntl(network_socket, F_SETFL, socket_settings) == -1)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
   }
 
   memset(message,0,strlen(message));
   memcpy(message,DATA,strnlen(DATA,MAXIMUM_BUFFER_SIZE));
-  if (send_data(SOCKET,(unsigned char*)message,0,1,"") == 0)
+  if (send_data(network_socket,(unsigned char*)message,0,1,"") == 0)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
   }
     
   // get the result
   memset(result,0,strlen(result));
-  receive_data_result = receive_data(SOCKET,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS);
-  if (receive_data_result < 2)
+  if ((receive_data_result = receive_data(network_socket,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS)) < 2)
   {
-    freeaddrinfo(settings);
-    pointer_reset(message);
-    close(SOCKET);
-    return 0;
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR(1);
   }
-
   freeaddrinfo(settings);
   pointer_reset(message);
-  close(SOCKET);
+  close(network_socket);
   return 1;
+
+  #undef SEND_AND_RECEIVE_DATA_SOCKET_ERROR
 }
 
 
