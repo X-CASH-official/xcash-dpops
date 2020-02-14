@@ -90,6 +90,7 @@ int network_functions_test_error_settings; // 1 to display errors, 0 to not disp
 int network_functions_test_server_messages_settings; // 1 to display server messages, 0 to not display server messages when running the test
 int test_settings; // 1 when the test are running, 0 if not
 int vrf_data_verify_count; // holds the amount of block verifiers signatures that are verified for the current network block
+int debug_settings; // 1 to show all incoming and outgoing message from the server
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -149,6 +150,7 @@ void initialize_data(void)
   network_functions_test_settings = 0;
   network_functions_test_error_settings = 1;
   network_functions_test_server_messages_settings = 1;
+  debug_settings = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -603,6 +605,10 @@ int set_parameters(int parameters_count, char* parameters[])
       test(1);
       database_reset;
       exit(0);
+    }
+    if (strncmp(parameters[count],"--debug",BUFFER_SIZE) == 0)
+    {
+      debug_settings = 1;
     }
     if (strncmp(parameters[count],"--XCASH_DPOPS_delegates_IP_address",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {

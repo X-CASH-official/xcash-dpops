@@ -1462,9 +1462,6 @@ int block_verifiers_create_block_and_update_database(void)
     BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the new block to the database");
   }
 
-  // wait for the block verifiers to process the votes
-  color_print("Waiting for the block producer to submit the block to the network\n","blue");
-
   // while waiting for the block to be submitted, the network data nodes will make sure they are all synced with the same database data
   if (network_data_node_settings == 1)
   {
@@ -1593,6 +1590,8 @@ int block_verifiers_create_block(void)
       color_print("Your block verifier is the block producer\n","yellow");
     }
 
+    color_print("Part 1 - Create and send VRF data to all block verifiers","yellow");
+
     // create a random VRF public key and secret key
     if (block_verifiers_create_VRF_secret_key_and_VRF_public_key(data) == 0)
     {
@@ -1639,12 +1638,17 @@ int block_verifiers_create_block(void)
     // check if at least 67 of the block verifiers created the data
     if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      RESTART_ROUND("Less than the required amount of block verifiers created the data");
+      RESTART_ROUND("An invalid amount of block verifiers created valid VRF data");
     }
+    else
+    {
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_AMOUNT);
+    }  
 
   
 
     // at this point all block verifiers should have the all of the other block verifiers secret key, public key and random data
+    fprintf(stderr,"\033[1;33mPart 2 - Select VRF data and block producer creates the block and sends it to all block verifiers\033[0m\n\n");
 
     // create all of the VRF data
     if (block_verifiers_create_VRF_data() == 0)
@@ -1687,6 +1691,7 @@ int block_verifiers_create_block(void)
 
 
     // at this point all block verifiers should have the same VRF data and the network block
+    fprintf(stderr,"\033[1;33mPart 3 - Create reserve bytes data for the block using the selected VRF data and sign the block\033[0m\n\n");
 
     // check if the network block string was created from the correct block verifier
     if (memcmp(VRF_data.block_blob,"",1) == 0)
@@ -1713,6 +1718,8 @@ int block_verifiers_create_block(void)
 
     // at this point all block verifiers should have the same VRF data, network block string and all block verifiers signed data
 
+    color_print("Part 4 - Verify that a valid amount of block verifiers have signed the block and have the same created data and block","yellow");
+
     // process the data and add the block verifiers signatures to the block
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -1731,7 +1738,11 @@ int block_verifiers_create_block(void)
     // check if the network block string has at least 67 of the block verifiers network block signature
     if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      RESTART_ROUND("The network block string has less than the required amount of block verifiers network block signature");
+      RESTART_ROUND("An invalid amount of block verifiers have signed the block");
+    }
+    else
+    {
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_AMOUNT);
     }
 
     // create the vote results
@@ -1761,12 +1772,18 @@ int block_verifiers_create_block(void)
     // process the vote results
     if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      RESTART_ROUND("Invalid network block string data hash");
+      RESTART_ROUND("An invalid amount of block verifiers have the same created data and block");
+    }
+    else
+    {
+      fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_AMOUNT);
     }
 
 
 
     // at this point all block verifiers have the same network block string with all of the VRF data
+
+    color_print("Part 5 - Wait for block producer to submit block and update databases","yellow");
 
     // update the database and submit the block to the network
     if (block_verifiers_create_block_and_update_database() == 0)
@@ -1975,7 +1992,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       }
 
       // send the message  
-      if (test_settings == 0)
+      if (debug_settings == 1)
       {  
         memset(data2,0,sizeof(data2));   
         memcpy(data2,"Sending ",8);

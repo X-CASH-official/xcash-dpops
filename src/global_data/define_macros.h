@@ -612,6 +612,7 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "--test - Run the test to make sure the program is compatible with your system. This can take around 24 hours\n\n" \
 "--quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 1 hour\n\n" \
 "--block_verifiers_secret_key \"block_verifiers_secret_key\" - The block verifiers secret key. This must be the first parameter\n\n" \
+"--debug - Show all incoming and outgoing messages from the server\n\n" \
 "--log_file \"log_file\" - Write all output to a log file with no colors\n\n" \
 "--log_file_color \"log_file\" - Write all output to a log file with colors\n\n" \
 "--total_threads \"total_threads\" - The total threads to use, the maximum is 100 total threads.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \

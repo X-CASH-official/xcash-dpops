@@ -140,6 +140,8 @@ All parameters are optional, execept for --block_verifiers_secret_key. **The --b
 
 --block_verifiers_secret_key - The block verifiers secret key. This must be the first parameter
 
+--debug - Show all incoming and outgoing messages from the server
+
 --log_file "log_file" - Write all output to a log file with no colors
 
 --log_file_color "log_file" - Write all output to a log file with colors
