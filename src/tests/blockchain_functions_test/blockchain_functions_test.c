@@ -32,8 +32,6 @@ Return: The number of passed blockchain test
 int blockchain_functions_test(void)
 { 
   // define macros
-  #define BLOCKCHAIN_TOTAL_TEST 32
-
   #define INVALID_NETWORK_VERSION_CODE \
   memset(blockchain_data.network_version_data,0,strlen(blockchain_data.network_version_data)); \
   memcpy(blockchain_data.network_version_data,"0000",sizeof(NETWORK_VERSION)-1);
@@ -270,8 +268,7 @@ int blockchain_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nblockchain functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCKCHAIN_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef BLOCKCHAIN_TOTAL_TEST
+  
   #undef VERIFY_NETWORK_BLOCK_DATA_ERROR
   #undef INVALID_NETWORK_VERSION_CODE
   #undef INVALID_TIMESTAMP_CODE

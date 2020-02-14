@@ -35,7 +35,6 @@ Return: The number of passed network_security functions test
 int network_security_functions_test(void)
 {  
   // define macros
-  #define NETWORK_SECURITY_FUNCTIONS_TEST 44
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
   #define DATA "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA_2\",\r\n}"
   
@@ -475,7 +474,6 @@ int network_security_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nnetwork security functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,NETWORK_SECURITY_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef NETWORK_SECURITY_FUNCTIONS_TEST
+  
   #undef MESSAGE
 }

@@ -6,6 +6,7 @@
 #include "define_macro_functions.h"
 #include "define_macros.h"
 #include "structures.h"
+#include "define_macros_test.h"
 
 #include "file_functions.h"
 #include "thread_functions.h"
@@ -35,7 +36,6 @@ int file_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define FILE_FUNCTIONS_TOTAL_TEST 6
   #define NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY "nodes_public_address_list_copy.txt"
   #define MESSAGE "XCASH_PROOF_OF_STAKE_TEST_DATA"
 
@@ -127,8 +127,7 @@ int file_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nfile functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,FILE_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef FILE_FUNCTIONS_TOTAL_TEST
+  
   #undef NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY
   #undef MESSAGE
 }

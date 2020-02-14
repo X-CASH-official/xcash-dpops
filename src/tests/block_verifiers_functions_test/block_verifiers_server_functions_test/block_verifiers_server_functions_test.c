@@ -35,9 +35,6 @@ int block_verifiers_server_functions_test(void)
   // Variables
   int count;
 
-  // define macros
-  #define BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST 18
-
   // reset the variables
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
@@ -133,6 +130,4 @@ int block_verifiers_server_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST
 }

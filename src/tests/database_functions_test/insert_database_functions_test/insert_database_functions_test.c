@@ -32,7 +32,6 @@ int insert_database_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define INSERT_DATABASE_FUNCTIONS_TEST 6
   #define DATA_COUNT 5
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
   #define MESSAGE_SETTINGS "{\"message_settings\": \"XCASH_DPOPS_DATA\"}"

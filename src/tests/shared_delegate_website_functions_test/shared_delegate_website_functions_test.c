@@ -37,7 +37,6 @@ int shared_delegate_website_functions_test(void)
   int count;
 
   // define macros
-  #define SHARED_DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST 10
   #define GET_BLOCKS_FOUND_TEST_DATA_RESULTS "[{\"block_height\":\"521850\",\"block_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\"},{\"block_height\":\"440850\",\"block_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"block_date_and_time\":\"10\",\"block_reward\":\"10\"}]"
   #define GET_PUBLIC_ADDRESS_INFORMATION_DATA_RESULTS "{\"public_address\":\"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}"
   #define GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_DATA_RESULTS "[{\"public_address\":\"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"},{\"public_address\":\"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}]"
@@ -165,8 +164,7 @@ int shared_delegate_website_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nshared_delegate website functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,SHARED_DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef SHARED_DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST
+  
   #undef GET_BLOCKS_FOUND_TEST_DATA_RESULTS
   #undef GET_PUBLIC_ADDRESS_INFORMATION_DATA_RESULTS
   #undef GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_DATA_RESULTS

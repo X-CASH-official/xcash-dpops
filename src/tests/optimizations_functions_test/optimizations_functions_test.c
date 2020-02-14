@@ -82,7 +82,6 @@ int optimizations_functions_test(void)
   pthread_t thread_id[BLOCK_VERIFIERS_TOTAL_AMOUNT];  
   
   // define macros
-  #define OPTIMIZATIONS_TOTAL_TEST 11
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
   #define VALIDATE_RESERVE_PROOFS_WALLET "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
   #define VALIDATE_RESERVE_PROOFS_RESERVE_PROOF "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti"
@@ -548,8 +547,7 @@ int optimizations_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\noptimizations functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,OPTIMIZATIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef OPTIMIZATIONS_TOTAL_TEST
+  
   #undef MESSAGE
   #undef VALIDATE_RESERVE_PROOFS_WALLET
   #undef VALIDATE_RESERVE_PROOFS_RESERVE_PROOF

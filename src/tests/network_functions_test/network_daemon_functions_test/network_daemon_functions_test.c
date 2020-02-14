@@ -7,6 +7,7 @@
 #include "define_macro_functions.h"
 #include "define_macros.h"
 #include "variables.h"
+#include "define_macros_test.h"
 
 #include "network_daemon_functions.h"
 #include "network_functions.h"
@@ -44,7 +45,6 @@ int network_daemon_functions_test(void)
   size_t block_height;
 
   // define macros
-  #define NETWORK_DAEMON_FUNCTIONS_TEST 11
   #define TRANSACTIONS_AMOUNT 5
 
   // reset the variables
@@ -267,7 +267,6 @@ int network_daemon_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nnetwork daemon functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,NETWORK_DAEMON_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef NETWORK_DAEMON_FUNCTIONS_TEST
+  
   #undef TRANSACTIONS_AMOUNT
 }

@@ -44,10 +44,7 @@ int shared_delegate_website_thread_server_functions_test(void)
   struct tm current_UTC_date_and_time;
   int count = 0;
   size_t block_height;
-
-  // define macros
-  #define SHARED_DELEGATE_WEBSITE_THREAD_SERVER_FUNCTIONS_TOTAL_TEST 10
-
+  
   // initialize the voters struct
   INITIALIZE_VOTERS_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,"shared_delegate_website_thread_server_functions_test",data,current_date_and_time,current_UTC_date_and_time);
 
@@ -297,6 +294,4 @@ int shared_delegate_website_thread_server_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nshared_delegate website thread server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,SHARED_DELEGATE_WEBSITE_THREAD_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef SHARED_DELEGATE_WEBSITE_THREAD_SERVER_FUNCTIONS_TOTAL_TEST
 }

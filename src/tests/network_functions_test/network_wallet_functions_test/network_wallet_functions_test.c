@@ -34,9 +34,6 @@ Return: The number of passed network_wallet functions test
 
 int network_wallet_functions_test(void)
 { 
-  // define macros
-  #define NETWORK_WALLET_FUNCTIONS_TEST 2
-
   // reset the variables
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
@@ -71,9 +68,4 @@ int network_wallet_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nnetwork wallet functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,NETWORK_WALLET_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef NETWORK_WALLET_FUNCTIONS_TEST
-  #undef CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS
-  #undef CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF
-  #undef CHECK_RESERVE_PROOF_TEST_AMOUNT
 }

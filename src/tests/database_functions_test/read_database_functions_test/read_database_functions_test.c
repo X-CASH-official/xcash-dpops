@@ -38,7 +38,6 @@ int read_database_functions_test(void)
   struct database_multiple_documents_fields database_multiple_documents_fields;
 
   // define macros
-  #define READ_DATABASE_FUNCTIONS_TEST 21
   #define DATABASE_FIELDS_COUNT 7
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
   #define RESET_DATABASE_DATA \
@@ -604,8 +603,7 @@ int read_database_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nread database functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,READ_DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef READ_DATABASE_FUNCTIONS_TEST
+  
   #undef DATABASE_FIELDS_COUNT
   #undef MESSAGE
   #undef RESET_DATABASE_DATA

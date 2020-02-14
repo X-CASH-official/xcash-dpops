@@ -37,9 +37,6 @@ int block_verifiers_synchronize_check_functions_test(void)
 {
   // Variables
   int count;
-  
-  // define macros
-  #define BLOCK_VERIFIERS_SYNCHRONIZE_CHECK_FUNCTIONS_TOTAL_TEST 8
 
   // reset the variables
   memset(result_test,0,sizeof(result_test));
@@ -151,6 +148,4 @@ int block_verifiers_synchronize_check_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers synchronize check functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_SYNCHRONIZE_CHECK_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef BLOCK_VERIFIERS_SYNCHRONIZE_CHECK_FUNCTIONS_TOTAL_TEST
 }

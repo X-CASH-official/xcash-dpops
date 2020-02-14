@@ -8,7 +8,6 @@ Using define statements instead of constants for increased efficiency
 */
 
 // Test
-#define XCASH_DPOPS_TOTAL_TEST 468
 #define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "521850" // The block height used for testing
 #define TEST_WALLET "XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3" // the wallet used for test
 #define RESET_ERROR_MESSAGES \
@@ -617,8 +616,6 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT"
 #define CHECK_RESERVE_PROOF_TEST_AMOUNT "10"
 #define HTTP_RESPONSE_DATA "HTTP/1.1 200 OK\nConnection: close\nAccess-Control-Allow-Origin: *\nAccess-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept\nContent-Length: 329\nContent-Language: en\nContent-Type: application/json\nServer: XCASH_DPOPS version 1.0.0\nDate: Sun, 09 Feb 2020 02:16:07 GMT\n\n{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"current_delegate_rank\":\"2\",\"total_votes\":\"0\",\"online_percentage\":\"0\",\"total_blocks_found\":\"1\",\"total_xcash_from_blocks_found\":\"15\",\"total_payments\":\"1\",\"total_voters\":\"0\",\"fee\":\"0.000000\",\"minimum_amount\":\"0\"}"
-#define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 134
-#define DATABASE_TEST 30
 #define DATABASE_NAME_TEST "XCASH_PROOF_OF_STAKE_TEST"
 #define DATABASE_COLLECTION_TEST "XCASH_PROOF_OF_STAKE_TEST_DATA"
 #define DATABASE_COLLECTION_STATISTICS_TEST_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
@@ -628,6 +625,35 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define ORGANIZE_DELEGATES_TEST_DATA_2 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"5\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
 #define ORGANIZE_DELEGATES_TEST_DATA_3 "{\"public_address\":\"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12\",\"total_vote_count\":\"10\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
 #define RESERVE_BYTES_TEST_DATA "{\"block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}"
+
+#define XCASH_DPOPS_TOTAL_TEST 468
+#define BLOCKCHAIN_TOTAL_TEST 32
+#define DATABASE_FUNCTIONS_TEST 6
+#define INSERT_DATABASE_FUNCTIONS_TEST 6
+#define READ_DATABASE_FUNCTIONS_TEST 21
+#define UPDATE_DATABASE_FUNCTIONS_TEST 8
+#define DELETE_DATABASE_FUNCTIONS_TEST 8
+#define COUNT_DATABASE_FUNCTIONS_TEST 7
+#define FILE_FUNCTIONS_TOTAL_TEST 6
+#define NETWORK_DAEMON_FUNCTIONS_TEST 11
+#define NETWORK_FUNCTIONS_TEST 11
+#define NETWORK_SECURITY_FUNCTIONS_TEST 44
+#define NETWORK_WALLET_FUNCTIONS_TEST 2
+#define OPTIMIZATIONS_TOTAL_TEST 11
+#define ORGANIZE_FUNCTIONS_TOTAL_TEST 4
+#define STRING_FUNCTIONS_TOTAL_TEST 10
+#define VRF_TOTAL_TEST 8
+#define BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST 18
+#define BLOCK_VERIFIERS_SYNCHRONIZE_CHECK_FUNCTIONS_TOTAL_TEST 8
+#define BLOCK_VERIFIERS_SYNCHRONIZE_SERVER_FUNCTIONS_TOTAL_TEST 22
+#define BLOCK_VERIFIERS_SYNCHRONIZE_FUNCTIONS_TOTAL_TEST 8
+#define BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST 14
+#define BLOCK_VERIFIERS_UPDATE_FUNCTIONS_TOTAL_TEST 6
+#define DELEGATE_SERVER_FUNCTIONS_TOTAL_TEST 25
+#define DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST 18
+#define SHARED_DELEGATE_WEBSITE_THREAD_SERVER_FUNCTIONS_TOTAL_TEST 10
+#define SHARED_DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST 10
+#define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 134
 
 #define INITIALIZE_NETWORK_DATA_NODES_TEST \
 for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++) \

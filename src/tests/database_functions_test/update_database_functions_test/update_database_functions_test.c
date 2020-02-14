@@ -33,7 +33,6 @@ int update_database_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define UPDATE_DATABASE_FUNCTIONS_TEST 8
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
   #define MESSAGE_SETTINGS "{\"message_settings\": \"XCASH_DPOPS_DATA\"}"
 
@@ -160,7 +159,6 @@ int update_database_functions_test(void)
   fprintf(stderr,"\033[1;33m\n\n%s\nupdate database functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,UPDATE_DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
   
-  #undef UPDATE_DATABASE_FUNCTIONS_TEST
   #undef MESSAGE
   #undef MESSAGE_SETTINGS
 }

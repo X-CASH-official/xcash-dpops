@@ -32,7 +32,6 @@ int delete_database_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define DELETE_DATABASE_FUNCTIONS_TEST 8
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
 
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
@@ -170,6 +169,5 @@ int delete_database_functions_test(void)
   fprintf(stderr,"\033[1;33m\n\n%s\ndelete database functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,DELETE_DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
   
-  #undef DELETE_DATABASE_FUNCTIONS_TEST
   #undef MESSAGE
 }

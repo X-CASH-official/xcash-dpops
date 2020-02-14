@@ -606,6 +606,12 @@ int set_parameters(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
+    if (strncmp(parameters[count],"--optimizations_test",BUFFER_SIZE) == 0)
+    {
+      test(2);
+      database_reset;
+      exit(0);
+    }
     if (strncmp(parameters[count],"--debug",BUFFER_SIZE) == 0)
     {
       debug_settings = 1;

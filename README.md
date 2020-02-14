@@ -138,6 +138,8 @@ All parameters are optional, execept for --block_verifiers_secret_key. **The --b
 
 --quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 1 hour
 
+--optimizations_test - Run the optimizations test only. This will check if your computer is fast enough for XCASH_DPOPS. This can take around 10 minutes
+
 --block_verifiers_secret_key - The block verifiers secret key. This must be the first parameter
 
 --debug - Show all incoming and outgoing messages from the server

@@ -29,7 +29,6 @@ Return: The number of passed string_functions test
 int string_functions_test(void)
 {
   // define macros
-  #define STRING_FUNCTIONS_TOTAL_TEST 10
   #define DATABASE_DATA 14
   #define MESSAGE "{\r\n \"message_settings_1\": \"XCASH_DPOPS_TEST_DATA_1\",\r\n \"message_settings_2\": \"XCASH_DPOPS_TEST_DATA_2\",\r\n}"
   #define CREATE_JSON_DATA_FROM_DATABASE_DOCUMENT_ARRAY_TEST_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\",\"most_VRF_node_public_and_private_key_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_public_and_private_key_total_rounds\":\"5\",\"most_VRF_node_random_data_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_VRF_node_random_data_total_rounds\":\"10\",\"total_XCASH_proof_of_stake_rounds\":\"15\",\"total_coins_in_proof_of_stake\":\"5\",\"total_circulating_supply_percentage_in_proof_of_stake\":\"10\"}"
@@ -393,8 +392,7 @@ int string_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nstring functions functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,STRING_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef STRING_FUNCTIONS_TOTAL_TEST
+  
   #undef DATABASE_DATA
   #undef MESSAGE
   #undef DATA1

@@ -44,7 +44,6 @@ int block_verifiers_thread_server_functions_test(void)
   int total_inactive_delegates = 0;
   
   // define macros
-  #define BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST 14
   #define RESERVE_PROOF_PUBLIC_ADDRESS_TEST "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
   #define RESERVE_PROOF_TEST "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB31qaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti"
   #define VOTE_DATA_TEST "\"vote_data\": \"59afe2f27423efdc1f5a7acc15fa5b76b6553b36886e9f32b0b7ab3baf5e77a0222a855957e5b9a6d4e174c8bd0b405c0eef42c6be1776e32f0f742aa1c125e5\""
@@ -451,8 +450,7 @@ int block_verifiers_thread_server_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers thread_server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef BLOCK_VERIFIERS_THREAD_SERVER_FUNCTIONS_TOTAL_TEST
+  
   #undef RESERVE_PROOF_PUBLIC_ADDRESS_TEST
   #undef RESERVE_PROOF_TEST
   #undef VOTE_DATA_TEST

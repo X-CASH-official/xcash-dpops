@@ -41,7 +41,6 @@ int database_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define DATABASE_FUNCTIONS_TEST 6
   #define MESSAGE "{\"message_settings\" : \"XCASH_DPOPS_TEST_DATA\" }"
   #define DATA_HASH "1e3c10c2d5396ac7dcce22ad7488db8c6d9ba6ec07660283f5e2198cba6507c8a136536e8c4ee16f43cf04a19fa84b5575b34e3186426b2b6db3101e9e25abd9FAILED"
 
@@ -148,6 +147,6 @@ int database_test(void)
   fprintf(stderr,"\033[1;33m\n\n%s\ndatabase functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
   
-  #undef DATABASE_FUNCTIONS_TEST
   #undef MESSAGE
+  #undef DATA_HASH
 }

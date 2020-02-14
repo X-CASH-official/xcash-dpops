@@ -70,7 +70,6 @@ int network_functions_test(void)
   pthread_t thread_id;
 
   // define macros
-  #define NETWORK_FUNCTIONS_TEST 11
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
 
@@ -267,8 +266,7 @@ int network_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nnetwork functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,NETWORK_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef NETWORK_FUNCTIONS_TEST
+  
   #undef GET_PUBLIC_ADDRESS_DATA
   #undef MESSAGE
 }

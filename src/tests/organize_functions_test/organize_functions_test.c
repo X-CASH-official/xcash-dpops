@@ -30,9 +30,6 @@ Return: The number of passed organize_functions test
 
 int organize_functions_test(void)
 {
-  // define macros
-  #define ORGANIZE_FUNCTIONS_TOTAL_TEST 4
-  
   // variables
   char reserve_proofs[2][BUFFER_SIZE_RESERVE_PROOF] = {"RESERVE_PROOF_TEST_DATA_2","RESERVE_PROOF_TEST_DATA"};
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
@@ -227,6 +224,4 @@ int organize_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\norganize functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,ORGANIZE_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
-
-  #undef ORGANIZE_FUNCTIONS_TOTAL_TEST
 }
