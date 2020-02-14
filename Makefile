@@ -53,6 +53,7 @@ COMPILERFLAGS ?= -Wall -Wextra -Wstrict-prototypes -Wcast-qual -Wfloat-equal -Wu
 # Set the compiler and linker flags for the different options
 debug: COMPILERFLAGS += -g -fno-stack-protector
 release: COMPILERFLAGS += -O3
+optimized: COMPILERFLAGS += -march=native -O3
 analyze: COMPILERFLAGS += -g -fsanitize=address -fno-omit-frame-pointer -fsanitize=leak -fsanitize=undefined -fsanitize=shift -fsanitize=bounds -fsanitize=shift-base -fsanitize=integer-divide-by-zero -fsanitize=unreachable -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fsanitize=bounds -fsanitize=bounds-strict -fsanitize=alignment -fsanitize=object-size -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fsanitize=nonnull-attribute -fsanitize=returns-nonnull-attribute -fsanitize=bool -fsanitize=enum -fsanitize=vptr
 analyze: LDFLAGS += -fsanitize=address -fno-omit-frame-pointer -fsanitize=leak -fsanitize=undefined -fsanitize=shift -fsanitize=bounds -fsanitize=shift-base -fsanitize=integer-divide-by-zero -fsanitize=unreachable -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fsanitize=bounds -fsanitize=bounds-strict -fsanitize=alignment -fsanitize=object-size -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fsanitize=nonnull-attribute -fsanitize=returns-nonnull-attribute -fsanitize=bool -fsanitize=enum -fsanitize=vptr
 analyzethreads: COMPILERFLAGS += -g -fsanitize=thread -fno-omit-frame-pointer -fsanitize=undefined -fsanitize=shift -fsanitize=bounds -fsanitize=shift-base -fsanitize=integer-divide-by-zero -fsanitize=unreachable -fsanitize=vla-bound -fsanitize=null -fsanitize=return -fsanitize=signed-integer-overflow -fsanitize=bounds -fsanitize=bounds-strict -fsanitize=alignment -fsanitize=object-size -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fsanitize=nonnull-attribute -fsanitize=returns-nonnull-attribute -fsanitize=bool -fsanitize=enum -fsanitize=vptr
@@ -82,6 +83,7 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 # Set the options to do the same thing, since the only difference is the compiler flags
 debug: $(BUILD_DIR)/$(TARGET_BINARY)
 release: $(BUILD_DIR)/$(TARGET_BINARY)
+optimized: $(BUILD_DIR)/$(TARGET_BINARY)
 analyze: $(BUILD_DIR)/$(TARGET_BINARY)
 analyzethreads: $(BUILD_DIR)/$(TARGET_BINARY)
 
