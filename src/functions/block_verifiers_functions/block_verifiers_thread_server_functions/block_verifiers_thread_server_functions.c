@@ -77,8 +77,8 @@ void* current_block_height_timer_thread(void* parameters)
   // unused parameters
   (void)parameters;
 
-  /*sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,0);
-  get_current_block_height(current_block_height,0);
+  /*sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time);
+  get_current_block_height(current_block_height);
   if (start_new_round() == 0)
   {
     print_error_message(current_date_and_time,current_UTC_date_and_time,data);
@@ -95,13 +95,13 @@ void* current_block_height_timer_thread(void* parameters)
   } while (current_UTC_date_and_time.tm_mday != 28 || current_UTC_date_and_time.tm_hour != 16 || current_UTC_date_and_time.tm_min != 56);*/
   
   // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
-  get_current_block_height(current_block_height,0);
-  get_previous_block_hash(previous_block_hash,0);
+  get_current_block_height(current_block_height);
+  get_previous_block_hash(previous_block_hash);
   sscanf(current_block_height,"%zu", &count);
   while (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
-    get_current_block_height(current_block_height,0);
-    get_previous_block_hash(previous_block_hash,0);
+    get_current_block_height(current_block_height);
+    get_previous_block_hash(previous_block_hash);
     sscanf(current_block_height,"%zu", &count);
     sleep(1);
   }
@@ -137,8 +137,8 @@ void* current_block_height_timer_thread(void* parameters)
         continue;
       }
 
-      get_current_block_height(current_block_height,0);
-      get_previous_block_hash(previous_block_hash,0);
+      get_current_block_height(current_block_height);
+      get_previous_block_hash(previous_block_hash);
       block_verifier_settings = start_new_round();
       if (block_verifier_settings == 0)
       {
@@ -261,7 +261,7 @@ int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
   memcpy(block_verifiers_message+strlen(block_verifiers_message),"\",\r\n}",5); 
 
   // sign_data
-  if (sign_data(block_verifiers_message,0) == 0)
+  if (sign_data(block_verifiers_message) == 0)
   { 
     RESET_RESERVE_PROOFS_ARRAY
     return 0;
@@ -709,7 +709,7 @@ int send_invalid_reserve_proof_to_block_verifiers(struct reserve_proof* reserve_
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     return 0;
   }
@@ -818,7 +818,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
     // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
     memset(data,0,sizeof(data));
-    if (select_random_unique_reserve_proof(&reserve_proof) == 1 && (check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof,0) == 0 || memcmp(data,reserve_proof.reserve_proof_amount,strlen(data)) != 0))
+    if (select_random_unique_reserve_proof(&reserve_proof) == 1 && (check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof) == 0 || memcmp(data,reserve_proof.reserve_proof_amount,strlen(data)) != 0))
     {    
       if (send_invalid_reserve_proof_to_block_verifiers(&reserve_proof) == 0)
       {
@@ -1055,7 +1055,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   }
 
   // verify the data
-  if (verify_data(data2,0,1) == 0)
+  if (verify_data(data2,1) == 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
   }

@@ -62,7 +62,7 @@ int network_security_functions_test(void)
   memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1);
 
   // test the sign_data function
-  if (sign_data(result_test,0) == 1)
+  if (sign_data(result_test) == 1)
   {   
     color_print("PASSED! Test for sign_data using the wallet signing key","green");
     count_test++;
@@ -73,7 +73,7 @@ int network_security_functions_test(void)
   }
 
   // test the verify_data function
-  if (verify_data(result_test,0,1) == 1)
+  if (verify_data(result_test,1) == 1)
   {   
     color_print("PASSED! Test for verify_data using the wallet signing key","green");
     count_test++;
@@ -88,7 +88,7 @@ int network_security_functions_test(void)
   memcpy(result_test,DATA,sizeof(DATA)-1);
 
   // test the sign_data function
-  if (sign_data(result_test,0) == 1)
+  if (sign_data(result_test) == 1)
   {   
     color_print("PASSED! Test for sign_data using the ECDSA block verifier signing key","green");
     count_test++;
@@ -99,7 +99,7 @@ int network_security_functions_test(void)
   }
 
   // test the verify_data function
-  if (verify_data(result_test,0,1) == 1)
+  if (verify_data(result_test,1) == 1)
   {   
     color_print("PASSED! Test for verify_data using the ECDSA block verifier signing key","green");
     count_test++;

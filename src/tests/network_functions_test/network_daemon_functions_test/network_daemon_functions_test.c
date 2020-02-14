@@ -80,7 +80,7 @@ int network_daemon_functions_test(void)
   }
 
   // test the get_block_template function
-  if (get_block_template(data_test,0) == 1)
+  if (get_block_template(data_test) == 1)
   {   
     color_print("PASSED! Test for get_block_template","green");
     count_test++;
@@ -91,7 +91,7 @@ int network_daemon_functions_test(void)
   }
 
   // test the submit_block_template function
-  if (submit_block_template("XCASH_DPOPS",0) == 1)
+  if (submit_block_template("XCASH_DPOPS") == 1)
   {   
     color_print("PASSED! Test for submit_block_template","green");
     count_test++;
@@ -103,7 +103,7 @@ int network_daemon_functions_test(void)
 
   // test the get_current_block_height
   memset(data_test,0,sizeof(data_test));
-  if (get_current_block_height(data_test,0) == 1)
+  if (get_current_block_height(data_test) == 1)
   {   
     color_print("PASSED! Test for get_current_block_height","green");
     count_test++;
@@ -120,7 +120,7 @@ int network_daemon_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   snprintf(data_test,sizeof(data_test)-1,"%zu",count);
   network_functions_test_error_settings = 0;
-  get_block_reserve_byte_data_hash(result_test,data_test,0);
+  get_block_reserve_byte_data_hash(result_test,data_test);
   network_functions_test_error_settings = 1;
   color_print("PASSED! Test for get_block_reserve_byte_data_hash","green");
   count_test++;
@@ -131,7 +131,7 @@ int network_daemon_functions_test(void)
   memcpy(transactions[2],"72f97600db9d7522a2a39fc690d25e1cc9a17535064b08f81bd7424a51bba931",64);
   memcpy(transactions[3],"b180489867776c7e39c07ddb0d88609dac6f748dec554e2d96b6a168785bdb44",64);
   memcpy(transactions[4],"",1);
-  if (verify_blockchain_network_transactions(transactions,TRANSACTIONS_AMOUNT,0,0) == 1)
+  if (verify_blockchain_network_transactions(transactions,TRANSACTIONS_AMOUNT,0) == 1)
   {   
     color_print("PASSED! Test for verifying transactions","green");
     count_test++;
@@ -148,7 +148,7 @@ int network_daemon_functions_test(void)
 
   // test the get_previous_block_hash function
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_previous_block_hash(data_test,0) == 1)
+  if (get_previous_block_hash(data_test) == 1)
   {   
     color_print("PASSED! Test for get_previous_block_hash","green");
     count_test++;

@@ -216,7 +216,7 @@ int optimizations_functions_test(void)
   start = time(NULL);
   memset(data_test,0,sizeof(data_test));
   memcpy(data_test,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"" NETWORK_BLOCK "\",\r\n}",166417);
-  sign_data(data_test,0);
+  sign_data(data_test);
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {      
     memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
@@ -253,7 +253,7 @@ int optimizations_functions_test(void)
     memset(data_test,0,sizeof(data_test));
     memset(result_test,0,sizeof(result_test));
     memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1);
-    sign_data(result_test,0);
+    sign_data(result_test);
     send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   }
   total = time(NULL) - start;
@@ -274,8 +274,8 @@ int optimizations_functions_test(void)
     memset(data_test,0,sizeof(data_test));
     memset(result_test,0,sizeof(result_test));
     memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1);
-    sign_data(result_test,0);
-    send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0);
+    sign_data(result_test);
+    send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   }
   total = time(NULL) - start;
   if (total <= MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET)
@@ -319,13 +319,13 @@ int optimizations_functions_test(void)
   memcpy(invalid_reserve_proofs.reserve_proof[19],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NbeQ6htDtJPees7GH3NHXKcrtJJ8VbqFWJFVLw8Dfrq28UFw51BvtKbU16YYjNJAeqAYsSVHg92toMYk4yY7HYUbZ65vgfn8wXbLELBXTKYQezErCAUBjwTDEGNdMk1QZF4tcLEmVUz4me8MaXts1D8ouHVqJQRAHv6KDHkMU143k5KrZbbkEMhijGDi9oGHRbUm2W4pLWMgzzZRPEQ7bP9eTRPHi2G2aa11pujWY4WaEPX12FyYbG2LJv18dvtejyiPTgXLVxPvRTNeP3aY7GwRRetePkxqJtJWXuXjp37yeeP4GJPaxeDzZhzzQ4T8JugtEHfCj8vs8j21Bx63K8SDTU3nQg7Ns6AoZg9rL2UCgA8W2FC7UmEb2ws85XJ8WfrTqzNpqoiweBGKgSG3wfbpzgMMKKz4obsEeTHZSfsKzwGRgMiEqkbTRSxdCPFi2tDWQdrWdvmaWm81iK42MSfud",537);
   invalid_reserve_proofs.count = 20;
 
-  /*start = time(NULL);
+  start = time(NULL);
   count = 0;
   while (time(NULL)-start < 265)
   {
     memset(data_test,0,sizeof(data_test));
     select_random_unique_reserve_proof(&reserve_proof);
-    check_reserve_proofs(data_test,VALIDATE_RESERVE_PROOFS_WALLET,VALIDATE_RESERVE_PROOFS_RESERVE_PROOF,0);
+    check_reserve_proofs(data_test,VALIDATE_RESERVE_PROOFS_WALLET,VALIDATE_RESERVE_PROOFS_RESERVE_PROOF);
     count++;
   }
   if (count >= MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT)
@@ -336,7 +336,7 @@ int optimizations_functions_test(void)
   else
   {
     fprintf(stderr,"\033[1;31mFAILED! Test for validating reserve proofs took %ld seconds out of %d seconds\033[0m\n",total,MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT);
-  }*/
+  }
 
 
   delete_database(database_name,0);
@@ -408,7 +408,7 @@ int optimizations_functions_test(void)
 
   memset(data_test,0,sizeof(data_test));
   block_verifiers_create_VRF_secret_key_and_VRF_public_key(data_test);
-  sign_data(data_test,0);
+  sign_data(data_test);
   block_verifiers_send_data_socket((const char*)data_test);
 
   total = time(NULL) - start;
@@ -442,12 +442,12 @@ int optimizations_functions_test(void)
   }
   block_verifiers_create_VRF_data();
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
-  get_block_template(VRF_data.block_blob,0);
+  get_block_template(VRF_data.block_blob);
   memset(data_test,0,sizeof(data_test));
   memcpy(data_test,"{\r\n \"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"",97);
   memcpy(data_test+97,VRF_data.block_blob,strnlen(VRF_data.block_blob,BUFFER_SIZE));
   memcpy(data_test+strlen(data_test),"\",\r\n}",5);
-  sign_data(data_test,0);
+  sign_data(data_test);
   block_verifiers_send_data_socket((const char*)data_test);
 
   total = time(NULL) - start;
@@ -469,7 +469,7 @@ int optimizations_functions_test(void)
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
   memcpy(VRF_data.block_blob,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
   block_verifiers_create_block_signature(data_test);
-  sign_data(data_test,0);
+  sign_data(data_test);
 
   total = time(NULL) - start;
   if (total < MAXIMUM_TIME_NETWORK_BLOCK_PART_3)
@@ -505,7 +505,7 @@ int optimizations_functions_test(void)
   memset(data_test,0,strlen(data_test));
   CREATE_BLOCK_DATA;
   blockchain_data_to_network_block_string(data_test,BLOCK_VERIFIERS_TOTAL_AMOUNT);
-  sign_data(data_test,0);
+  sign_data(data_test);
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT * BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);

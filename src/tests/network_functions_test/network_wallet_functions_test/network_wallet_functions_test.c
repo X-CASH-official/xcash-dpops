@@ -46,7 +46,7 @@ int network_wallet_functions_test(void)
 
   // test the get_public_address function
   memset(xcash_wallet_public_address,0,strnlen(xcash_wallet_public_address,BUFFER_SIZE));
-  if (get_public_address(0) == 1)
+  if (get_public_address() == 1)
   {   
     color_print("PASSED! Test for get_public_address","green");
     count_test++;
@@ -58,7 +58,7 @@ int network_wallet_functions_test(void)
 
   // test the check_reserve_proofs function
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (check_reserve_proofs(data_test,CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS,CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF,0) == 1 && memcmp(data_test,CHECK_RESERVE_PROOF_TEST_AMOUNT,2) == 0)
+  if (check_reserve_proofs(data_test,CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS,CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF) == 1 && memcmp(data_test,CHECK_RESERVE_PROOF_TEST_AMOUNT,2) == 0)
   {   
     color_print("PASSED! Test for check_reserve_proofs","green");
     count_test++;

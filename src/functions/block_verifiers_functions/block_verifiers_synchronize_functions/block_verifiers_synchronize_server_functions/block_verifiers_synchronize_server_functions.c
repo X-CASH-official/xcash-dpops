@@ -110,7 +110,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   memcpy(data+strlen(data),"\",\r\n}",5);
   
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data");
   }
@@ -184,7 +184,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   memcpy(data+strlen(data),"\",\r\n}",5);
   
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data");
   }
@@ -224,7 +224,7 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
   memset(public_address,0,sizeof(public_address));
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
+  if (verify_data(MESSAGE,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not verify the message");
   }
@@ -306,7 +306,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memcpy(message+60,data,strnlen(data,sizeof(message)));
   memcpy(message+strlen(message),"\"}}",3);
 
-  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"sign data",0) <= 0)
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
   {  
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not create the message");
   } 
@@ -610,7 +610,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
   
   // sign_data
-  if (sign_data(message,0) == 0)
+  if (sign_data(message) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data");
   }
@@ -696,7 +696,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
   }
@@ -808,7 +808,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memcpy(message+strlen(message),"}",1);
   
   // sign_data
-  if (sign_data(message,0) == 0)
+  if (sign_data(message) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not sign data");
   }
@@ -894,7 +894,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
   }
@@ -966,7 +966,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   }
   
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
   }
@@ -1051,7 +1051,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
   }
@@ -1124,7 +1124,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   }
   
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
   }
@@ -1206,7 +1206,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
   }

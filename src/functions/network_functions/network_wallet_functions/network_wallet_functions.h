@@ -7,7 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int get_public_address(const int MESSAGE_SETTINGS);
+int get_public_address(void);
 int send_payment(const char* PUBLIC_ADDRESS, const char* TOTAL, char *tx_hash, char *tx_key);
-int check_reserve_proofs(char *result, const char* public_address, const char* reserve_proof, const int HTTP_SETTINGS);
+int check_reserve_proofs(char *result, const char* public_address, const char* reserve_proof);
 #endif

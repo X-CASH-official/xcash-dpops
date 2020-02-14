@@ -29,12 +29,11 @@ Name: sign_data
 Description: Signs data with your XCA address, for sending data securely
 Parameters:
   message - The sign_data
-  MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sign_data(char *message, const int HTTP_SETTINGS)
+int sign_data(char *message)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
@@ -149,7 +148,7 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     memcpy(string+strlen(string),"\"}}",3);
     memset(result,0,strlen(result));
   
-    if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"sign data",HTTP_SETTINGS) <= 0)
+    if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
     {  
       SIGN_DATA_ERROR("Could not create the message");
     } 
@@ -182,7 +181,6 @@ int sign_data(char *message, const int HTTP_SETTINGS)
     memcpy(message+strlen(message),"\",\r\n}",5);
     pthread_rwlock_unlock(&rwlock);
   }
-
   pointer_reset_all;
   return 1;
 
@@ -197,13 +195,12 @@ Name: verify_data
 Description: Verifies signed data, for receiving data securely
 Parameters:
   message - The signed data
-  HTTP_SETTINGS - The http settings
   VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS - 1 to verify the current_round_part and the current_round_part_backup_node, otherwise 0
 Return: 0 if the signed data is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS)
+int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CURRENT_ROUND_PART_BACKUP_NODE_SETTINGS)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
@@ -584,7 +581,7 @@ int verify_data(const char* MESSAGE, const int HTTP_SETTINGS, const int VERIFY_C
 
     memset(result,0,strnlen(result,BUFFER_SIZE));
 
-    if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"verify data",HTTP_SETTINGS) <= 0)
+    if (send_http_request(result,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,string,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
     {
       VERIFY_DATA_ERROR("Could not verify the data");
     }

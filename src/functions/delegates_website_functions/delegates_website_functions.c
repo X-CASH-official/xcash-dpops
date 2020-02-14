@@ -120,7 +120,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   // get the current block height
   if (test_settings == 0)
   {
-    if (get_current_block_height(data,0) == 0)
+    if (get_current_block_height(data) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR("Could not get the current block height");
     }

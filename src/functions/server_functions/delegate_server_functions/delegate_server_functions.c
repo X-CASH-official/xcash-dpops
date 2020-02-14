@@ -80,7 +80,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
   memset(data3,0,sizeof(data3));
 
   // verify the message  
-  if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != VOTE_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
+  if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != VOTE_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   { 
     return 0;
   }
@@ -138,7 +138,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
 
   // check if the reserve proof is valid and the spent amount is 0
   memset(data2,0,sizeof(data2));
-  if (check_reserve_proofs(data2,reserve_proof->public_address_created_reserve_proof,reserve_proof->reserve_proof,0) == 0)
+  if (check_reserve_proofs(data2,reserve_proof->public_address_created_reserve_proof,reserve_proof->reserve_proof) == 0)
   {
     return 0;
   }
@@ -472,7 +472,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != REGISTER_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
+  if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != REGISTER_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Could not verify the message");
   }
@@ -631,7 +631,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   memset(delegate_public_address,0,sizeof(delegate_public_address));
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != REMOVE_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
+  if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != REMOVE_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not verify the message");
   }
@@ -779,7 +779,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   memset(value,0,sizeof(value));
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0 || string_count(MESSAGE,"|") != UPDATE_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
+  if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != UPDATE_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Could not verify the message");
   }

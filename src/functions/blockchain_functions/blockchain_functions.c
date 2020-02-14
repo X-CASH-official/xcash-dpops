@@ -426,7 +426,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   // get the current block height
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
-    if (get_current_block_height(block_height, 0) == 0)
+    if (get_current_block_height(block_height) == 0)
     {
       NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR("Could not get the current block height, Invalid unlock_block");
     }
@@ -1416,7 +1416,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   // unlock_block
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
-    if (get_current_block_height(block_height,0) == 0)
+    if (get_current_block_height(block_height) == 0)
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Could not get the current block height");
     }
@@ -1833,7 +1833,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // transactions
-  if (TRANSACTIONS_SETTINGS == 1 && blockchain_data.transaction_amount != 0 && verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,1,0) == 0)
+  if (TRANSACTIONS_SETTINGS == 1 && blockchain_data.transaction_amount != 0 && verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,1) == 0)
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transactions");
   }  

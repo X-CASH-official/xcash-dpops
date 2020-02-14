@@ -54,7 +54,7 @@ for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(data,0,strlen(data)); \
     memset(data2,0,sizeof(data2)); \
-    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 0 || verify_data(data,0,0) == 0) \
+    if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0 || verify_data(data,0) == 0) \
     { \
       memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18); \
       synced_block_verifiers.vote_settings_connection_timeout++; \
@@ -234,7 +234,7 @@ int sync_check_reserve_proofs_database(int settings)
     memcpy(message+strlen(message),"}",1);
 
     // sign_data
-    if (sign_data(message,0) == 0)
+    if (sign_data(message) == 0)
     { 
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
     }
@@ -383,7 +383,7 @@ void sync_check_majority_reserve_proofs_database(void)
   memcpy(message+strlen(message),"}",1);
 
   // sign_data
-  if (sign_data(message,0) == 0)
+  if (sign_data(message) == 0)
   { 
     SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
   }
@@ -503,7 +503,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
     memcpy(message+strlen(message),"}",1);
 
     // sign_data
-    if (sign_data(message,0) == 0)
+    if (sign_data(message) == 0)
     { 
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
     }
@@ -660,7 +660,7 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
   memcpy(message+strlen(message),"}",1);
 
   // sign_data
-  if (sign_data(message,0) == 0)
+  if (sign_data(message) == 0)
   { 
     SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
   }
@@ -757,7 +757,7 @@ int sync_check_delegates_database(int settings)
     memcpy(message+243,"\",\r\n}",5);
 
     // sign_data
-    if (sign_data(message,0) == 0)
+    if (sign_data(message) == 0)
     { 
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sign_data");
     }
@@ -890,7 +890,7 @@ void sync_check_majority_delegates_database(void)
   memcpy(message+243,"\",\r\n}",5);
 
   // sign_data
-  if (sign_data(message,0) == 0)
+  if (sign_data(message) == 0)
   { 
     SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR("Could not sign_data");
   }
@@ -988,7 +988,7 @@ int sync_check_statistics_database(int settings)
     memcpy(message+244,"\",\r\n}",5);
 
     // sign_data
-    if (sign_data(message,0) == 0)
+    if (sign_data(message) == 0)
     { 
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sign_data");
     }
@@ -1121,7 +1121,7 @@ void sync_check_majority_statistics_database(void)
   memcpy(message+244,"\",\r\n}",5);
 
   // sign_data
-  if (sign_data(message,0) == 0)
+  if (sign_data(message) == 0)
   { 
     SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR("Could not sign_data");
   }

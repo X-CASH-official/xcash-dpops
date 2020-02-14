@@ -73,7 +73,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list","green");
     count_test++;
@@ -87,7 +87,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list","green");
     count_test++;
@@ -106,7 +106,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}",0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update","green");
     count_test++;
@@ -129,7 +129,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521855\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}",0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,"{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"521850\",\r\n}",113);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,sizeof(GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,sizeof(GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash checking for receiving multiple blocks","green");
     count_test++;
@@ -152,7 +152,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521855\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}",0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,"{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"521855\",\r\n}",113);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,GET_RESERVE_BYTES_DATABASE_HASH_LIVE_SYNCING_TEST_DATA,sizeof(GET_RESERVE_BYTES_DATABASE_HASH_LIVE_SYNCING_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,GET_RESERVE_BYTES_DATABASE_HASH_LIVE_SYNCING_TEST_DATA,sizeof(GET_RESERVE_BYTES_DATABASE_HASH_LIVE_SYNCING_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash checking for live syncing","green");
     count_test++;
@@ -168,7 +168,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   network_functions_test_error_settings = 2;
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,"0}",2) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,"0}",2) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier","green");
     count_test++;
@@ -185,7 +185,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,RESERVE_PROOFS_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(RESERVE_PROOFS_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_PROOFS_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(RESERVE_PROOFS_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update","green");
     count_test++;
@@ -202,7 +202,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update","green");
     count_test++;
@@ -219,7 +219,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}",0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA_RESULTS,sizeof(RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA_RESULTS)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA_RESULTS,sizeof(RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA_RESULTS)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update","green");
     count_test++;
@@ -236,7 +236,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}",0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update","green");
     count_test++;
@@ -253,7 +253,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1,0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,DELEGATES_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(DELEGATES_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,DELEGATES_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(DELEGATES_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update","green");
     count_test++;
@@ -270,7 +270,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1,0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update","green");
     count_test++;
@@ -287,7 +287,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,STATISTICS_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(STATISTICS_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,STATISTICS_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(STATISTICS_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update","green");
     count_test++;
@@ -304,7 +304,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test,0) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 1 && memcmp(result_test,STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update","green");
     count_test++;

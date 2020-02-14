@@ -58,7 +58,7 @@ Return: 0 if an error has occured, 1 if successfull
 int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, char* MESSAGE)
 {
   // verify the message
-  if (verify_data(MESSAGE,0,1) == 0)
+  if (verify_data(MESSAGE,1) == 0)
   { 
     return 0;
   }
@@ -111,7 +111,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   memset(data3,0,sizeof(data3));
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
+  if (verify_data(MESSAGE,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not verify the message");
   }
@@ -136,7 +136,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   {
     // check if the reserve proof is valid
     memset(data3,0,sizeof(data3));
-    if (check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof,0) == 0)
+    if (check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) == 0)
     {
       // add the reserve proof to the invalid_reserve_proofs struct
       sscanf(data3,"%zu", &count3);     
@@ -185,7 +185,7 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR("Could not sign_data");
   }
@@ -229,7 +229,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   memset(data3,0,sizeof(data3));
 
   // verify the message
-  if (verify_data(MESSAGE,0,0) == 0)
+  if (verify_data(MESSAGE,0) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not verify the message");
   }
@@ -281,7 +281,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   memset(data2,0,sizeof(data2));
 
   // verify the data
-  if (verify_data(MESSAGE,0,1) == 0 || memcmp(current_round_part_backup_node,"2",1) != 0 || main_network_data_node_create_block != 1)
+  if (verify_data(MESSAGE,1) == 0 || memcmp(current_round_part_backup_node,"2",1) != 0 || main_network_data_node_create_block != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not verify data");
   }
@@ -305,7 +305,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
-  if (sign_data(data,0) == 0)
+  if (sign_data(data) == 0)
   { 
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not sign_data");
   }
@@ -347,7 +347,7 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
   memset(data2,0,sizeof(data2));
 
   // verify the data
-  if (verify_data(MESSAGE,0,1) == 0 || memcmp(current_round_part_backup_node,"2",1) != 0 || main_network_data_node_create_block != 1)
+  if (verify_data(MESSAGE,1) == 0 || memcmp(current_round_part_backup_node,"2",1) != 0 || main_network_data_node_create_block != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK("Could not verify data");
   }
@@ -405,7 +405,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
   // verify the data
-  if (verify_data(MESSAGE,0,1) == 0)
+  if (verify_data(MESSAGE,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data");
   }
@@ -468,7 +468,7 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   memset(data2,0,sizeof(data2));
 
   // verify the data
-  if (verify_data(MESSAGE,0,1) == 0)
+  if (verify_data(MESSAGE,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not verify data");
   }
@@ -534,7 +534,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   memset(vrf_secret_key,0,sizeof(vrf_secret_key));
 
   // verify the data
-  if (verify_data(MESSAGE,0,1) == 0)
+  if (verify_data(MESSAGE,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not verify data");
   }
@@ -608,7 +608,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   memset(data2,0,sizeof(data2));
 
   // verify the data
-  if (verify_data(MESSAGE,0,1) == 0)
+  if (verify_data(MESSAGE,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not verify data");
   }

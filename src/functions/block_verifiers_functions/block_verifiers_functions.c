@@ -114,7 +114,7 @@ int start_new_round(void)
   memset(data2,0,sizeof(data2));
 
   // start a new round
-  if (get_current_block_height(current_block_height,0) == 0)
+  if (get_current_block_height(current_block_height) == 0)
   {
     START_NEW_ROUND_ERROR("Could not get the current block height");
   }
@@ -336,7 +336,7 @@ int start_blocks_create_data(char* message, char* network_block_string)
   memset(data3,0,sizeof(data3));
 
   // get a block template
-  if (get_block_template(data,0) == 0)
+  if (get_block_template(data) == 0)
   {
     START_BLOCKS_CREATE_DATA_ERROR("Could not get a block template");
   }
@@ -428,7 +428,7 @@ int start_blocks_create_data(char* message, char* network_block_string)
   memcpy(message+strlen(message),"\",\r\n}",5);
   
   // sign_data
-  if (sign_data(message,0) == 0)
+  if (sign_data(message) == 0)
   { 
     START_BLOCKS_CREATE_DATA_ERROR("Could not sign_data");
   }
@@ -545,7 +545,7 @@ int start_current_round_start_blocks(void)
   }
 
   // have the main network data node submit the block to the network  
-  if (submit_block_template(data2,0) == 0)
+  if (submit_block_template(data2) == 0)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\"block_height\":\"",17);
@@ -647,7 +647,7 @@ int data_network_node_create_block(void)
     
     // get a block template
     memset(data,0,sizeof(data));
-    if (get_block_template(data,0) == 0)
+    if (get_block_template(data) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not get a block template");
     }
@@ -790,7 +790,7 @@ int data_network_node_create_block(void)
     memcpy(data3+strlen(data3),"\",\r\n}",5);
   
     // sign_data
-    if (sign_data(data3,0) == 0)
+    if (sign_data(data3) == 0)
     { 
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
     }
@@ -907,7 +907,7 @@ int data_network_node_create_block(void)
     memcpy(data3+strlen(data3),"\",\r\n}",5);
   
     // sign_data
-    if (sign_data(data3,0) == 0)
+    if (sign_data(data3) == 0)
     { 
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Could not sign_data");
     }
@@ -942,7 +942,7 @@ int data_network_node_create_block(void)
     }
 
     // submit the block to the network
-    if (submit_block_template(data,0) == 0)
+    if (submit_block_template(data) == 0)
     {
       memset(data2,0,sizeof(data2));
       memcpy(data2,"{\"block_height\":\"",17);
@@ -1475,7 +1475,7 @@ int block_verifiers_create_block_and_update_database(void)
   // since the block is valid, it will get added to the network, let the block producer try to submit the block first, then loop through all of the network data nodes to make sure it was submitted
   if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
-    submit_block_template(data,0);
+    submit_block_template(data);
   }
   sleep(BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS);
 
@@ -1483,7 +1483,7 @@ int block_verifiers_create_block_and_update_database(void)
   {
     if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
-      submit_block_template(data,0);
+      submit_block_template(data);
     }
     nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
@@ -1600,7 +1600,7 @@ int block_verifiers_create_block(void)
     }
 
     // sign_data
-    if (sign_data(data,0) == 0)
+    if (sign_data(data) == 0)
     { 
       RESTART_ROUND("Could not sign_data");
     }
@@ -1662,7 +1662,7 @@ int block_verifiers_create_block(void)
     // create the block template and send it to all block verifiers if the block verifier is the block producer
     if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
-      if (get_block_template(VRF_data.block_blob,0) == 0)
+      if (get_block_template(VRF_data.block_blob) == 0)
       {
         RESTART_ROUND("Could not get a block template");
       }  
@@ -1674,7 +1674,7 @@ int block_verifiers_create_block(void)
       memcpy(data+strlen(data),"\",\r\n}",5);
 
       // sign_data
-      if (sign_data(data,0) == 0)
+      if (sign_data(data) == 0)
       { 
         RESTART_ROUND("Could not sign_data");
       }
@@ -1701,7 +1701,7 @@ int block_verifiers_create_block(void)
     }
 
     // create the block verifiers block signature
-    if (block_verifiers_create_block_signature(data) == 0 || sign_data(data,0) == 0)
+    if (block_verifiers_create_block_signature(data) == 0 || sign_data(data) == 0)
     {
       RESTART_ROUND("Could not sign_data");
     }
@@ -1753,7 +1753,7 @@ int block_verifiers_create_block(void)
     }
 
     // sign_data
-    if (sign_data(data,0) == 0)
+    if (sign_data(data) == 0)
     { 
       RESTART_ROUND("Could not sign_data");
     }    

@@ -43,13 +43,11 @@ Parameters:
   HTTP_HEADERS_LENGTH - The length of the HTTP headers
   DATA - The request data. If sending a GET request, the data is appended to the url. If sending a POST request, the data is sent in the request body
   DATA_TIMEOUT_SETTINGS - The timeout settings for reading the data
-  TITLE - A summary of the data sent in the POST request. This text gets printed to the console
-  MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], const size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS)
+int send_http_request(char *result, const char* HOST, const char* URL, const int PORT, const char* HTTP_SETTINGS, const char* HTTP_HEADERS[], const size_t HTTP_HEADERS_LENGTH, const char* DATA, const int DATA_TIMEOUT_SETTINGS)
 {
   // Constants
   const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0}; 
@@ -135,9 +133,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // convert the port to a string  
   snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
 
-  // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
-
   // set up the addrinfo
   memset(&serv_addr, 0, sizeof(serv_addr));
   if (string_count(HOST,".") == 3)
@@ -172,15 +167,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {  
-      memset(str,0,sizeof(str));
-      memcpy(str,"Error invalid hostname of ",26);
-      memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;  
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     return 0;
@@ -194,12 +180,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   const int SOCKET = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
   if (SOCKET == -1)
   { 
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
-      error_message.total++;
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     return 0;
@@ -212,12 +192,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   */
   if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
-      error_message.total++;       
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
@@ -235,18 +209,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {    
     count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
     if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    {        
-      if (MESSAGE_SETTINGS == 1)
-      {
-        memset(str,0,sizeof(str));
-        memcpy(str,"Error connecting to ",20);
-        memcpy(str+20,HOST,HOST_LENGTH);
-        memcpy(str+20+HOST_LENGTH," on port ",9);
-        memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-        memcpy(error_message.function[error_message.total],"send_http_request",17);
-        memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-        error_message.total++; 
-      }
+    { 
       freeaddrinfo(settings);
       pointer_reset(message);
       close(SOCKET);
@@ -258,17 +221,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   socket_settings = fcntl(SOCKET, F_GETFL, NULL);
   if (socket_settings == -1)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memset(str,0,sizeof(str));
-      memcpy(str,"Error connecting to ",20);
-      memcpy(str+20,HOST,HOST_LENGTH);
-      memcpy(str+20+HOST_LENGTH," on port ",9);
-      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;  
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
@@ -279,47 +231,14 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   socket_settings &= (~O_NONBLOCK);
   if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memset(str,0,sizeof(str));
-      memcpy(str,"Error connecting to ",20);
-      memcpy(str+20,HOST,HOST_LENGTH);
-      memcpy(str+20+HOST_LENGTH," on port ",9);
-      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;  
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
   }
 
-  if (MESSAGE_SETTINGS == 1)
-  {
-    memset(str,0,sizeof(str));
-    memcpy(str,"Connected to ",13);
-    memcpy(str+13,HOST,HOST_LENGTH);
-    memcpy(str+13+HOST_LENGTH," on port ",9);
-    memcpy(str+22+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-    color_print(str,"green"); 
-    fprintf(stderr,"Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
-  }
-  
   if (send_data(SOCKET,(unsigned char*)message,0,0,"") == 0)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memset(str,0,sizeof(str));
-      memcpy(str,"Error sending data to ",22);
-      memcpy(str+22,HOST,HOST_LENGTH);
-      memcpy(str+22+HOST_LENGTH," on port ",9);
-      memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;  
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
@@ -330,25 +249,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   receive_data_result = receive_data(SOCKET,message,"{",1,DATA_TIMEOUT_SETTINGS);
   if (receive_data_result < 2)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memset(str,0,sizeof(str));
-      memcpy(str,"Error receiving data from ",26);
-      memcpy(str+26,HOST,HOST_LENGTH);
-      memcpy(str+26+HOST_LENGTH," on port ",9);
-      memcpy(str+35+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      if (receive_data_result == 1)
-      {
-        memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a timeout issue",28);
-      }
-      else if (receive_data_result == 0)
-      { 
-        memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a potential buffer overflow issue",46);
-      }
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;  
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
@@ -358,30 +258,10 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // check if the data recived is correct
   if (strstr(message,"{") == NULL && strstr(message,"error") == NULL)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memset(str,0,sizeof(str));
-      memcpy(str,"Error receiving data from ",26);
-      memcpy(str+26,HOST,HOST_LENGTH);
-      memcpy(str+26+HOST_LENGTH," on port ",9);
-      memcpy(str+35+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;  
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
-  }
-  if (MESSAGE_SETTINGS == 1)
-  {
-    memset(str,0,sizeof(str));
-    memcpy(str,"Received data from ",19);
-    memcpy(str+19,HOST,HOST_LENGTH);
-    memcpy(str+19+HOST_LENGTH," on port ",9);
-    memcpy(str+28+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-    color_print(str,"green"); 
   }
   
   // parse the HTTP request header from the result
@@ -414,16 +294,13 @@ Parameters:
   PORT - The port to send the message through
   DATA - The message
   DATA_TIMEOUT_SETTINGS - the timeout settings for reading the data
-  TITLE - A summary of the data sent to the host. This text gets printed to the console
-  MESSAGE_SETTINGS - 1 to print the messages, otherwise 0. This is used for the testing flag to not print any success or error messages
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_and_receive_data_socket(char *result, const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS, const char* TITLE, const int MESSAGE_SETTINGS)
+int send_and_receive_data_socket(char *result, const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS)
 { 
   // Constants
-  const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
   const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0};   
 
   // Variables 
@@ -455,9 +332,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
 
   // convert the port to a string  
   snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
-
-  // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,sizeof(buffer2));
 
   // set up the addrinfo
   memset(&serv_addr, 0, sizeof(serv_addr));
@@ -493,15 +367,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {       
-      memset(str,0,sizeof(str));
-      memcpy(str,"Error invalid hostname of ",26);
-      memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;  
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     return 0;
@@ -515,12 +380,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   const int SOCKET = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
   if (SOCKET == -1)
   { 
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
-      error_message.total++;
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     return 0;
@@ -533,12 +392,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   */
   if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(error_message.function[error_message.total],"send_http_request",17);
-      memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
-      error_message.total++;       
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
@@ -556,18 +409,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   {    
     count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
     if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    {        
-      if (MESSAGE_SETTINGS == 1)
-      {
-        memset(str,0,sizeof(str));
-        memcpy(str,"Error connecting to ",20);
-        memcpy(str+20,HOST,HOST_LENGTH);
-        memcpy(str+20+HOST_LENGTH," on port ",9);
-        memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-        memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-        memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-        error_message.total++; 
-      }   
+    { 
       freeaddrinfo(settings);
       pointer_reset(message);   
       close(SOCKET);
@@ -579,16 +421,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   socket_settings = fcntl(SOCKET, F_GETFL, NULL);
   if (socket_settings == -1)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(str,"Error connecting to ",20);
-      memcpy(str+20,HOST,HOST_LENGTH);
-      memcpy(str+20+HOST_LENGTH," on port ",9);
-      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
@@ -599,46 +431,16 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   socket_settings &= (~O_NONBLOCK);
   if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(str,"Error connecting to ",20);
-      memcpy(str+20,HOST,HOST_LENGTH);
-      memcpy(str+20+HOST_LENGTH," on port ",9);
-      memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++; 
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
   }
 
-  if (MESSAGE_SETTINGS == 1)
-  {
-    memcpy(str,"Connected to ",13);
-    memcpy(str+13,HOST,HOST_LENGTH);
-    memcpy(str+13+HOST_LENGTH," on port ",9);
-    memcpy(str+22+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-    color_print(str,"green"); 
-    fprintf(stderr,"Sending %s to %s on port %s\r\n",TITLE,HOST,buffer2);
-  }
-  
   memset(message,0,strlen(message));
   memcpy(message,DATA,strnlen(DATA,MAXIMUM_BUFFER_SIZE));
   if (send_data(SOCKET,(unsigned char*)message,0,1,"") == 0)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(str,"Error sending data to ",22);
-      memcpy(str+22,HOST,HOST_LENGTH);
-      memcpy(str+22+HOST_LENGTH," on port ",9);
-      memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
@@ -650,37 +452,10 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   receive_data_result = receive_data(SOCKET,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS);
   if (receive_data_result < 2)
   {
-    if (MESSAGE_SETTINGS == 1)
-    {
-      memcpy(str,"Error receiving data from ",26);
-      memcpy(str+26,HOST,HOST_LENGTH);
-      memcpy(str+26+HOST_LENGTH," on port ",9);
-      memcpy(str+35+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-      if (receive_data_result == 1)
-      {
-        memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a timeout issue",28);
-      }
-      else if (receive_data_result == 0)
-      {   
-        memcpy(str+35+HOST_LENGTH+BUFFER2_LENGTH,", because of a potential buffer overflow issue",46);
-      }
-      memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28);
-      memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-      error_message.total++;
-    }
     freeaddrinfo(settings);
     pointer_reset(message);
     close(SOCKET);
     return 0;
-  }
-     
-  if (MESSAGE_SETTINGS == 1)
-  {
-    memcpy(str,"Received data from ",19);
-    memcpy(str+19,HOST,HOST_LENGTH);
-    memcpy(str+19+HOST_LENGTH," on port ",9);
-    memcpy(str+28+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-    color_print(str,"green");
   }
 
   freeaddrinfo(settings);

@@ -460,13 +460,13 @@ void get_delegates_data(void)
   memset(data,0,sizeof(data));
 
   // get the wallets public address
-  if (get_public_address(0) == 0)
+  if (get_public_address() == 0)
   { 
     GET_DELEGATES_DATA_ERROR("Could not get the wallets public address");
   }
 
   // get the current block height
-  if (get_current_block_height(current_block_height,0) == 0)
+  if (get_current_block_height(current_block_height) == 0)
   {
     GET_DELEGATES_DATA_ERROR("Could not get the current block height");
   }
@@ -482,7 +482,7 @@ void get_delegates_data(void)
   }
 
   // get the previous block hash
-  if (get_previous_block_hash(previous_block_hash,0) == 0)
+  if (get_previous_block_hash(previous_block_hash) == 0)
   {
     GET_DELEGATES_DATA_ERROR("Could not get the previous block hash");
   }
@@ -932,17 +932,17 @@ void database_sync_check(void)
       memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}",95);
 
       // sign_data
-      if (sign_data(data,0) == 0)
+      if (sign_data(data) == 0)
       { 
         DATABASE_SYNC_CHECK_ERROR("Could not sign the data");
       }
 
-      if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS,"",0) == 0)
+      if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
       {
         continue;
       }
 
-      if (verify_data(data2,0,0) == 0)
+      if (verify_data(data2,0) == 0)
       {
         continue;
      }
