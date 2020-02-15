@@ -414,14 +414,14 @@ int optimizations_functions_test(void)
     pthread_join(thread_id[count],NULL);
   }
   total = time(NULL) - start;
-  if (total <= MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED)
+  if (total <= 100)
   {
-    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using 2 threads took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
+    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using 2 threads took %ld seconds out of %d seconds\033[0m\n",total,100);
     count_test++;
   }
   else
   {
-    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using 2 threads took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
+    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using 2 threads took %ld seconds out of %d seconds\033[0m\n",total,100);
   }
 
 
@@ -440,14 +440,14 @@ int optimizations_functions_test(void)
     pthread_join(thread_id[count],NULL);
   }
   total = time(NULL) - start;
-  if (total <= MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED)
+  if (total <= 100)
   {
-    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using 1 thread took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
+    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using 1 thread took %ld seconds out of %d seconds\033[0m\n",total,100);
     count_test++;
   }
   else
   {
-    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using 1 thread took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
+    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using 1 thread took %ld seconds out of %d seconds\033[0m\n",total,100);
   }
 
   
