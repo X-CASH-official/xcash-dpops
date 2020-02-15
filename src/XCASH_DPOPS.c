@@ -65,6 +65,8 @@ pthread_rwlock_t rwlock;
 pthread_rwlock_t rwlock_reserve_proofs;
 pthread_mutex_t lock;
 pthread_mutex_t database_lock;
+pthread_mutex_t verify_network_block_lock;
+pthread_mutex_t vote_lock;
 pthread_cond_t thread_settings_lock;
 pthread_mutex_t add_reserve_proof_lock;
 
@@ -156,6 +158,8 @@ void initialize_data(void)
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
   pthread_mutex_init(&lock, NULL);
   pthread_mutex_init(&database_lock, NULL);
+  pthread_mutex_init(&verify_network_block_lock, NULL);
+  pthread_mutex_init(&vote_lock, NULL);
   pthread_cond_init(&thread_settings_lock,NULL);
   pthread_mutex_init(&add_reserve_proof_lock, NULL);
 
@@ -1187,7 +1191,7 @@ int main(int parameters_count, char* parameters[])
   memset(data,0,sizeof(data));
   if (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0)
   {
-    INITIALIZE_DATABASE_DATA(6);
+    INITIALIZE_DATABASE_DATA(3);
   }
 
   print_settings();  

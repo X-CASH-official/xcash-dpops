@@ -64,13 +64,18 @@ Using define statements instead of constants for increased efficiency
 // XCASH DPOPS
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 5 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 5 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_AMOUNT 10 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 10 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 1000 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 5000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define MINIMUM_AMOUNT_RESERVE_PROOF 1000000 // The minimum amount to create a reserve proof
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 20000000000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet
+#define START_TIME_NETWORK_BLOCK_PART_2 10 // the start time of part 2 of the network block round
+#define START_TIME_NETWORK_BLOCK_PART_3 25 // the start time of part 3 of the network block round
+#define START_TIME_NETWORK_BLOCK_PART_4 35 // the start time of part 4 of the network block round
+#define SEND_DATA_TIME_NETWORK_BLOCK_PART_4 45 // the send data time of part 4 of the network block round
+#define START_TIME_NETWORK_BLOCK_PART_5 55 // the start time of part 5 of the network block round
 
 // Network
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port

@@ -92,15 +92,15 @@ XCASH DPOPS will only run on a Linux/Unix OS at this time. We recommend installi
  
 **Minimum System Requirements:**  
 Operating System: Ubuntu 18.04 (or higher)  
-CPU: 4 threads  
+CPU: 4 threads, with at least 2.0GHZ or more for each thread  
 RAM: 8GB  
 Hard drive: 50GB (with 18 GB of space needed per year)  
 Bandwidth Transfer: 500GB per month  
-Bandwidth Speed: 100 Mbps
+Bandwidth Speed: 50 Mbps
  
 **Recommended System Requirements:**  
 Operating System: Ubuntu 18.04 (or higher)  
-CPU: 8 threads  
+CPU: 8 threads, with at least 2.0GHZ or more for each thread  
 RAM: 16GB  
 Hard drive: 100GB (with 18 GB of space needed per year)  
 Bandwidth Transfer: 2TB per month  

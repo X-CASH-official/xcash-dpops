@@ -484,6 +484,7 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   }
 
   // process the vote data
+  pthread_mutex_lock(&vote_lock);
   if (memcmp(data,"valid",5) == 0 && memcmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0)
   {
     current_round_part_vote_data.vote_results_valid++;
@@ -492,6 +493,7 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   {
     current_round_part_vote_data.vote_results_invalid++;
   }
+  pthread_mutex_unlock(&vote_lock);
   return 1;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR

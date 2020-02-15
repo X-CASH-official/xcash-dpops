@@ -1612,7 +1612,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,8);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_NETWORK_BLOCK_PART_2);
 
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1639,11 +1639,12 @@ int block_verifiers_create_block(void)
     // check if at least 67 of the block verifiers created the data
     if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
       RESTART_ROUND("An invalid amount of block verifiers created valid VRF data");
     }
     else
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_AMOUNT);
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
     }  
 
   
@@ -1687,7 +1688,7 @@ int block_verifiers_create_block(void)
     }
     
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,16);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_NETWORK_BLOCK_PART_3);
 
 
 
@@ -1713,7 +1714,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,24);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_NETWORK_BLOCK_PART_4);
 
 
 
@@ -1739,11 +1740,12 @@ int block_verifiers_create_block(void)
     // check if the network block string has at least 67 of the block verifiers network block signature
     if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
       RESTART_ROUND("An invalid amount of block verifiers have signed the block");
     }
     else
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_AMOUNT);
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
     }
 
     // create the vote results
@@ -1759,7 +1761,7 @@ int block_verifiers_create_block(void)
     }    
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,48);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,SEND_DATA_TIME_NETWORK_BLOCK_PART_4);
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
@@ -1768,16 +1770,17 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,55);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_NETWORK_BLOCK_PART_5);
 
     // process the vote results
     if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
+      fprintf(stderr,"\033[1;31m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
       RESTART_ROUND("An invalid amount of block verifiers have the same created data and block");
     }
     else
     {
-      fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_AMOUNT);
+      fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
     }
 
 
@@ -1956,7 +1959,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the sockets to connect
-  sleep(CONNECTION_TIMEOUT_SETTINGS);
+  sleep(CONNECTION_TIMEOUT_SETTINGS+BLOCK_VERIFIERS_SETTINGS);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, block_verifiers_total_amount, 1);
