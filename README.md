@@ -136,7 +136,7 @@ All parameters are optional, execept for --block_verifiers_secret_key. **The --b
 
 --test - Run the test to make sure the program is compatible with your system. This can take around 24 hours
 
---quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 1 hour
+--quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 20 minutes
 
 --optimizations_test - Run the optimizations test only. This will check if your computer is fast enough for XCASH_DPOPS. This can take around 10 minutes
 
@@ -536,6 +536,11 @@ To view logs for the XCASH_Daemon systemd service
  
 ## Running X-CASH Proof of stake test
 It is recomeneded to run the X-CASH Proof of stake test before you run the main program. The test will ensure that your system is compatbile, and that you have setup your system correctly.
+
+There are 3 different testing modes that can be run: 
+--test = This will run all of the test. This will take around 24 hours.
+--quick_test = This will run all of the test, execpt for the longest test. This is the recomended test to run. This will take around 1 hour.
+--optimizations_test = This will only run the optimizations test. This will check if your computer is quick enough to run XCASH_DPOPS. This test will take around 10 minutes.
  
 To run the X-CASH Proof of stake test, make sure to have already started the XCASH Daemon, XCASH Wallet and MongoDB systemd services, and to have stopped the XCASH DPOPS systemd service if it was already running. 
 

@@ -594,6 +594,7 @@ int calculate_main_nodes_roles(void)
   int main_nodes_count;
   int number[DATA_HASH_LENGTH/2];
   int settings;
+  int total_block_verifiers;
 
   // define macros
   #define CALCULATE_MAIN_NODES_ROLES(settings) \
@@ -614,6 +615,15 @@ int calculate_main_nodes_roles(void)
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
+
+  if (test_settings == 0)
+  {
+    total_block_verifiers = BLOCK_VERIFIERS_AMOUNT;
+  }
+  else
+  {
+    total_block_verifiers = BLOCK_VERIFIERS_TOTAL_AMOUNT;
+  }  
   
   if (test_settings == 0)
   {
@@ -668,7 +678,7 @@ int calculate_main_nodes_roles(void)
     for (counter = 0, settings = 0; counter < count3; counter++)
     {
       // check if this number has already been calculated
-      if (number[counter] == count2 % BLOCK_VERIFIERS_TOTAL_AMOUNT)
+      if (number[counter] == count2 % total_block_verifiers)
       {
         settings = 1;
       }
@@ -676,7 +686,7 @@ int calculate_main_nodes_roles(void)
     // if it is not in the range of 01 - C8 or it has already been calculated then skip the byte
     if (count2 != 0 && count2 <= 200 && settings == 0)
     {
-      count2 = count2 % BLOCK_VERIFIERS_AMOUNT;
+      count2 = count2 % total_block_verifiers;
       if (main_nodes_count == 0)
       {
         // calculate the block_producer
