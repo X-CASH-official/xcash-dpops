@@ -966,7 +966,11 @@ void database_sync_check(void)
 
       sscanf(data,"%ld", &current_time);
 
-      if (time(NULL) - current_time > BLOCK_VERIFIERS_SETTINGS)
+      color_print(data2,"yellow");
+      fprintf(stderr,"%ld",time(NULL));
+
+
+      if (labs(time(NULL) - current_time) > BLOCK_VERIFIERS_SETTINGS)
       {
         DATABASE_SYNC_CHECK_ERROR("Invalid current time");
       }
@@ -1191,7 +1195,7 @@ int main(int parameters_count, char* parameters[])
   memset(data,0,sizeof(data));
   if (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0)
   {
-    INITIALIZE_DATABASE_DATA(3);
+    INITIALIZE_DATABASE_DATA(0);
   }
 
   print_settings();  

@@ -190,7 +190,7 @@ int optimizations_functions_test(void)
     memcpy(previous_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
     memcpy(current_block_verifiers_list.block_verifiers_name[count],"delegate_1",10);
     memcpy(current_block_verifiers_list.block_verifiers_public_address[count],TEST_WALLET,XCASH_WALLET_LENGTH);
-    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],"127.0.0.1",9);
+    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],"9.2.65.55",9);
     memcpy(current_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
     memcpy(next_block_verifiers_list.block_verifiers_name[count],"delegate_1",10);
     memcpy(next_block_verifiers_list.block_verifiers_public_address[count],TEST_WALLET,XCASH_WALLET_LENGTH);
