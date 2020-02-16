@@ -33,6 +33,7 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 
 ## Table of Contents  
 [System Requirements](#system-requirements)  
+[Synchronizing the Time](#synchronizing-the-time)  
 [Dependencies](#dependencies)  
 [Recommendations For the XCASH Wallet](#recommendations-for-the-xcash-wallet)  
 [XCASH_DPOPS Parameters](#xcash_dpops-parameters)  
@@ -105,6 +106,29 @@ RAM: 16GB
 Hard drive: 100GB (with 18 GB of space needed per year)  
 Bandwidth Transfer: 2TB per month  
 Bandwidth Speed: 500 Mbps
+
+
+## Synchronizing the Time
+XCASH_DPOPS uses the system time to be able to know what part of the round it is and what data to send or receive. It is important that your system time is accurate otherwise the program will most likely not work. All XCASH_DPOPS delegates must be synced within 2 seconds of each other. A check is included when you start the program to make sure that your system time is within two seconds of the main network data node, but it is important to check your server manually to see if your time is synced.
+
+Note you can use any timezone you want, the timezones do not affect the synchronization.
+
+To check if your system time is synced properly run  
+`timedatectl`
+
+Make sure that `System clock synchronized` is `yes`
+
+If it is `no` then run  
+```
+timedatectl set-ntp true
+systemctl restart systemd-timesyncd
+```
+
+Then run  
+`timedatectl`
+
+Make sure that `System clock synchronized` is `yes`
+
  
  
 ## Dependencies
