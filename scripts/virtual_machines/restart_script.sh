@@ -1,5 +1,3 @@
-# Save in /root/Installed-Programs/scripts/restart_script.sh
-# Create a launcher on the desktop for it with the command /root/Installed-Programs/scripts/restart_script.sh and dont run it in a terminal
 #!/bin/bash
  
 # Set the script to exit if any command fails
@@ -17,7 +15,7 @@ XCASH_DPOPS_BLOCK_HEIGHT=521850
 # reset the blockchain height
 data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
 data="${data:66:6}"
-data=$(($data-$XCASH_DPOPS_BLOCK_HEIGHT))
+data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
 if [ ! $data -le 0 ]; then
   ${XCASH_DIR}xcash-blockchain-import --data-dir ${XCASH_BLOCKCHAIN_DIR} --pop-blocks ${data}
 fi
@@ -32,8 +30,8 @@ curl -X POST http://127.0.0.1:18285/json_rpc -d '{"jsonrpc":"2.0","id":"0","meth
 sleep 20s
 pkill -f xcashd
 pkill -f xcash-wallet-rpc
-if [ $IP_ADDRESS == $MAIN_NODES_IP_ADDRESS ]; then
-  xfce4-terminal -e "bash -c \"${XCASH_DIR}xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --confirm-external-bind --data-dir ${XCASH_BLOCKCHAIN_DIR}; bash\"" -T "xcashd" &
+if [ "$IP_ADDRESS" == $MAIN_NODES_IP_ADDRESS ]; then
+  xfce4-terminal -e "bash -c \"${XCASH_DIR}xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --confirm-external-bind --data-dir ${XCASH_BLOCKCHAIN_DIR}; bash\"" -T "xcashdmain" &
 else
   xfce4-terminal -e "bash -c \"${XCASH_DIR}xcashd --allow-local-ip --add-exclusive-node ${MAIN_NODES_IP_ADDRESS} --data-dir ${XCASH_BLOCKCHAIN_DIR}; bash\"" -T "xcashd" &
 fi
