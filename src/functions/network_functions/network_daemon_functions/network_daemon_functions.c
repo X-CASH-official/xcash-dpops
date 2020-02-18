@@ -96,6 +96,7 @@ int get_block_template(char *result)
   // Variables
   char message[BUFFER_SIZE];
   char data[BUFFER_SIZE];
+  int count;
 
   // define macros
   #define GET_BLOCK_TEMPLATE_ERROR(settings) \
@@ -112,15 +113,20 @@ int get_block_template(char *result)
   memcpy(message+84,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+84+XCASH_WALLET_LENGTH,"\",\"reserve_size\":128}",21);
 
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
-  {  
-    GET_BLOCK_TEMPLATE_ERROR("Could not create the block template");
-  }
-  
-  if (parse_json_data(data,"blocktemplate_blob",result, BUFFER_SIZE) == 0)
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"blocktemplate_blob",result, BUFFER_SIZE) == 0)
   {
-    GET_BLOCK_TEMPLATE_ERROR("Could not create the block template");
+    memset(data,0,sizeof(data));
+    memset(result,0,strlen(result));
+
+    // use a random seed node as the connection
+    get_random_network_data_node(count);
+
+    if (send_http_request(data,network_data_nodes_list.network_data_nodes_IP_address[count],"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"blocktemplate_blob",result, BUFFER_SIZE) == 0)
+    {
+      GET_BLOCK_TEMPLATE_ERROR("Could not create the block template");
+    }
   }
+  color_print(data,"yellow");
   return 1;
   
   #undef GET_BLOCK_TEMPLATE_ERROR
@@ -324,6 +330,7 @@ int get_current_block_height(char *result)
 
   // Variables
   char data[BUFFER_SIZE];
+  int count;
 
   // define macros
   #define GET_CURRENT_BLOCK_HEIGHT_ERROR(settings) \
@@ -334,14 +341,18 @@ int get_current_block_height(char *result)
 
   memset(data,0,sizeof(data));
 
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",result, BUFFER_SIZE) == 0)
   {  
-    GET_CURRENT_BLOCK_HEIGHT_ERROR("Could not get the current block height");
-  }
-  
-  if (parse_json_data(data,"count",result, BUFFER_SIZE) == 0)
-  {
-    GET_CURRENT_BLOCK_HEIGHT_ERROR("Could not get the current block height");
+    memset(data,0,sizeof(data));
+    memset(result,0,strlen(result));
+
+    // use a random seed node as the connection
+    get_random_network_data_node(count);
+
+    if (send_http_request(data,network_data_nodes_list.network_data_nodes_IP_address[count],"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",result, BUFFER_SIZE) == 0)
+    {
+      GET_CURRENT_BLOCK_HEIGHT_ERROR("Could not get the current block height");
+    }
   }
   return 1;
 
@@ -368,6 +379,7 @@ int get_previous_block_hash(char *result)
 
   // Variables
   char data[BUFFER_SIZE];
+  int count;
 
   // define macros
   #define GET_PREVIOUS_BLOCK_HASH_ERROR(settings) \
@@ -381,7 +393,16 @@ int get_previous_block_hash(char *result)
 
   if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_last_block_header\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"hash",result, BUFFER_SIZE) == 0)
   {
-    GET_PREVIOUS_BLOCK_HASH_ERROR("Could not get the previous block hash");
+    memset(data,0,sizeof(data));
+    memset(result,0,strlen(result));
+
+    // use a random seed node as the connection
+    get_random_network_data_node(count);
+
+    if (send_http_request(data,network_data_nodes_list.network_data_nodes_IP_address[count],"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_last_block_header\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"hash",result, BUFFER_SIZE) == 0)
+    {
+      GET_PREVIOUS_BLOCK_HASH_ERROR("Could not get the previous block hash");
+    }
   }
   return 1;
 
@@ -412,6 +433,7 @@ int get_previous_block_information(char *block_hash, char *block_reward, char *b
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   size_t block_height;
+  int count;
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -428,14 +450,20 @@ int get_previous_block_information(char *block_hash, char *block_reward, char *b
 
   // get the previous block information
   memset(data2,0,sizeof(data2));
-  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
-  { 
-    return 0;
-  }
-
-  if (parse_json_data(data2,"hash",block_hash,BUFFER_SIZE) == 0 || parse_json_data(data2,"reward",block_reward,BUFFER_SIZE) == 0 || parse_json_data(data2,"timestamp",block_date_and_time,BUFFER_SIZE) == 0)
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data2,"hash",block_hash,BUFFER_SIZE) == 0 || parse_json_data(data2,"reward",block_reward,BUFFER_SIZE) == 0 || parse_json_data(data2,"timestamp",block_date_and_time,BUFFER_SIZE) == 0)
   {
-    return 0;
+    memset(data2,0,sizeof(data2));
+    memset(block_hash,0,strlen(block_hash));
+    memset(block_reward,0,strlen(block_reward));
+    memset(block_date_and_time,0,strlen(block_date_and_time));
+
+    // use a random seed node as the connection
+    get_random_network_data_node(count);
+
+    if (send_http_request(data2,network_data_nodes_list.network_data_nodes_IP_address[count],"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data2,"hash",block_hash,BUFFER_SIZE) == 0 || parse_json_data(data2,"reward",block_reward,BUFFER_SIZE) == 0 || parse_json_data(data2,"timestamp",block_date_and_time,BUFFER_SIZE) == 0)
+    {
+      return 0;
+    }
   }
   return 1;
 }
