@@ -1740,13 +1740,13 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       vrf_data_verify_count = 0;
 
       // start the amount of threads depending on what the best multiple is for the BLOCK_VERIFIERS_TOTAL
-      if (BLOCK_VERIFIERS_TOTAL % 5 == 0)
-      {
-        count2 = 5;
-      }
-      else if (BLOCK_VERIFIERS_TOTAL % 4 == 0)
+      if (BLOCK_VERIFIERS_TOTAL % 4 == 0)
       {
         count2 = 4;
+      }
+      else if (BLOCK_VERIFIERS_TOTAL % 5 == 0)
+      {
+        count2 = 5;
       }
       else if (BLOCK_VERIFIERS_TOTAL % 2 == 0)
       {

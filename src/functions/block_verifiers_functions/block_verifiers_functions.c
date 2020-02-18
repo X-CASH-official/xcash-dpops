@@ -2054,7 +2054,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, block_verifiers_total_amount, 0);
-  fprintf(stderr,"%d\n",number);
 
   for (count = 0; count < number; count++)
   {
