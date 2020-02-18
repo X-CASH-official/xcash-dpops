@@ -2053,7 +2053,8 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   sleep(BLOCK_VERIFIERS_SETTINGS);
 
   // get the total amount of sockets that are ready
-  number = epoll_wait(epoll_fd_copy, events, block_verifiers_total_amount, 1);
+  number = epoll_wait(epoll_fd_copy, events, block_verifiers_total_amount, 0);
+  fprintf(stderr,"%d\n",number);
 
   for (count = 0; count < number; count++)
   {
@@ -2109,14 +2110,14 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) < 0)
         {           
-          count++;
+          break;
         }
       }
     }    
   }
 
   // wait for all of the data to be sent to the connected sockets
-  sleep(CONNECTION_TIMEOUT_SETTINGS);
+  sleep(BLOCK_VERIFIERS_SETTINGS);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < block_verifiers_total_amount; count++)

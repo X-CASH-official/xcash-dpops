@@ -921,7 +921,7 @@ int get_delegates_online_status(void)
   sleep(CONNECTION_TIMEOUT_SETTINGS);
 
   // get the total amount of sockets that are ready
-  number = epoll_wait(epoll_fd_copy, events, MAXIMUM_AMOUNT_OF_DELEGATES, 1);
+  number = epoll_wait(epoll_fd_copy, events, MAXIMUM_AMOUNT_OF_DELEGATES, 0);
 
   for (count = 0; count < number; count++)
   {
