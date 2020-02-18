@@ -966,10 +966,6 @@ void database_sync_check(void)
 
       sscanf(data,"%ld", &current_time);
 
-      color_print(data2,"yellow");
-      fprintf(stderr,"%ld",time(NULL));
-
-
       if (labs(time(NULL) - current_time) > BLOCK_VERIFIERS_SETTINGS)
       {
         DATABASE_SYNC_CHECK_ERROR("Invalid current time");

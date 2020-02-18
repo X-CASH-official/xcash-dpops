@@ -142,38 +142,41 @@ Description: Prints all of the functions and error messages
 */
 
 #define print_error_message(current_date_and_time,current_UTC_date_and_time,buffer) \
-memset(buffer,0,sizeof(buffer)); \
-memcpy(buffer,"\n\n",2); \
-memcpy(buffer+2,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
-memcpy(buffer+strlen(buffer),"\n",1); \
-memcpy(buffer+strlen(buffer),error_message.function[0],strlen(error_message.function[0])); \
-memcpy(buffer+strlen(buffer),": Error",7); \
-color_print(buffer,"red"); \
-get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
-memset(buffer,0,sizeof(buffer)); \
-strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC",&current_UTC_date_and_time); \
-color_print(buffer,"red"); \
-memset(buffer,0,sizeof(buffer)); \
-memcpy(buffer,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
-memcpy(buffer+strlen(buffer),"\nFunction Calls:\n",17); \
-for (error_message_count = 0; error_message_count < error_message.total; error_message_count++) \
+if (error_message.total != 0) \
 { \
-  memcpy(buffer+strlen(buffer),"#",1); \
-  sprintf(buffer+strlen(buffer),"%d",error_message_count+1); \
-  memcpy(buffer+strlen(buffer)," ",1); \
-  memcpy(buffer+strlen(buffer),error_message.function[error_message_count],strnlen(error_message.function[error_message_count],sizeof(buffer))); \
-  memcpy(buffer+strlen(buffer),": ",2); \
-  memcpy(buffer+strlen(buffer),error_message.data[error_message_count],strnlen(error_message.data[error_message_count],sizeof(buffer))); \
+  memset(buffer,0,sizeof(buffer)); \
+  memcpy(buffer,"\n\n",2); \
+  memcpy(buffer+2,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
   memcpy(buffer+strlen(buffer),"\n",1); \
-} \
-color_print(buffer,"red"); \
-for (error_message_count = 0; error_message_count < TOTAL_DELEGATES_DATABASE_FIELDS; error_message_count++) \
-{ \
-  memset(error_message.function[error_message_count],0,strlen(error_message.function[error_message_count])); \
-  memset(error_message.data[error_message_count],0,strlen(error_message.data[error_message_count])); \
-} \
-memset(buffer,0,sizeof(buffer)); \
-error_message.total = 0;
+  memcpy(buffer+strlen(buffer),error_message.function[0],strlen(error_message.function[0])); \
+  memcpy(buffer+strlen(buffer),": Error",7); \
+  color_print(buffer,"red"); \
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
+  memset(buffer,0,sizeof(buffer)); \
+  strftime(buffer,sizeof(buffer),"%a %d %b %Y %H:%M:%S UTC",&current_UTC_date_and_time); \
+  color_print(buffer,"red"); \
+  memset(buffer,0,sizeof(buffer)); \
+  memcpy(buffer,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
+  memcpy(buffer+strlen(buffer),"\nFunction Calls:\n",17); \
+  for (error_message_count = 0; error_message_count < error_message.total; error_message_count++) \
+  { \
+    memcpy(buffer+strlen(buffer),"#",1); \
+    sprintf(buffer+strlen(buffer),"%d",error_message_count+1); \
+    memcpy(buffer+strlen(buffer)," ",1); \
+    memcpy(buffer+strlen(buffer),error_message.function[error_message_count],strnlen(error_message.function[error_message_count],sizeof(buffer))); \
+    memcpy(buffer+strlen(buffer),": ",2); \
+    memcpy(buffer+strlen(buffer),error_message.data[error_message_count],strnlen(error_message.data[error_message_count],sizeof(buffer))); \
+    memcpy(buffer+strlen(buffer),"\n",1); \
+  } \
+  color_print(buffer,"red"); \
+  for (error_message_count = 0; error_message_count < TOTAL_DELEGATES_DATABASE_FIELDS; error_message_count++) \
+  { \
+    memset(error_message.function[error_message_count],0,strlen(error_message.function[error_message_count])); \
+    memset(error_message.data[error_message_count],0,strlen(error_message.data[error_message_count])); \
+  } \
+  memset(buffer,0,sizeof(buffer)); \
+  error_message.total = 0; \
+}
 
 
 

@@ -1497,6 +1497,89 @@ int block_verifiers_create_block_and_update_database(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: print_block_producer
+Description: Prints the block producers name
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void print_block_producer(void)
+{
+  // Variables
+  int count;
+
+  if (memcmp(current_round_part_backup_node,"0",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,BUFFER_SIZE) == 0)
+      {
+        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        break;
+      }
+    }
+  }
+  else if (memcmp(current_round_part_backup_node,"1",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,BUFFER_SIZE) == 0)
+      {
+        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        break;
+      }
+    }
+  }
+  else if (memcmp(current_round_part_backup_node,"2",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,BUFFER_SIZE) == 0)
+      {
+        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        break;
+      }
+    }
+  }
+  else if (memcmp(current_round_part_backup_node,"3",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,BUFFER_SIZE) == 0)
+      {
+        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        break;
+      }
+    }
+  }
+  else if (memcmp(current_round_part_backup_node,"4",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,BUFFER_SIZE) == 0)
+      {
+        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        break;
+      }
+    }
+  }
+  else if (memcmp(current_round_part_backup_node,"5",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,BUFFER_SIZE) == 0)
+      {
+        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        break;
+      }
+    }
+  }
+  return;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: block_verifiers_create_block
 Description: Runs the round where the block verifiers will create the block
 Return: 0 if an error has occured, 1 if successfull
@@ -1586,10 +1669,7 @@ int block_verifiers_create_block(void)
 
   start:
 
-    if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
-    {
-      color_print("Your block verifier is the block producer\n","yellow");
-    }
+    print_block_producer();
 
     color_print("Part 1 - Create and send VRF data to all block verifiers","yellow");
 
@@ -1959,7 +2039,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the sockets to connect
-  sleep(CONNECTION_TIMEOUT_SETTINGS+BLOCK_VERIFIERS_SETTINGS);
+  sleep(BLOCK_VERIFIERS_SETTINGS);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, block_verifiers_total_amount, 1);
