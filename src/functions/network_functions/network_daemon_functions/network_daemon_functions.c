@@ -126,7 +126,6 @@ int get_block_template(char *result)
       GET_BLOCK_TEMPLATE_ERROR("Could not create the block template");
     }
   }
-  color_print(data,"yellow");
   return 1;
   
   #undef GET_BLOCK_TEMPLATE_ERROR

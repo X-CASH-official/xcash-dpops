@@ -1162,10 +1162,6 @@ int main(int parameters_count, char* parameters[])
 
   initialize_data();
 
-  get_current_block_height(data);
-  color_print(data,"green");
-  exit(0);
-
   // write the message
   color_print("XCASH DPOPS - Version 1.0.0\n","green");
 
