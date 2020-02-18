@@ -171,7 +171,7 @@ int start_new_round(void)
     color_print("Waiting for all block verifiers to sync the databases\n","blue");
 
     // check if the block verifiers current reserve bytes database is synced
-    if (sync_check_reserve_bytes_database(3,2) == 2)
+    if ((settings = sync_check_reserve_bytes_database(3,2)) == 2)
     {
       sleep(5);
       check_if_databases_are_synced(3,1);
@@ -182,7 +182,7 @@ int start_new_round(void)
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);
       START_NEW_ROUND_ERROR("Error calculating the next block producer.\nYour block verifier will wait until the next round\n");
     }
-    if (block_verifiers_create_block() == 0)
+    if (block_verifiers_create_block((const int)settings) == 0)
     {
       START_NEW_ROUND_ERROR("Your block verifier will wait until the next round\n");
     }
@@ -1582,11 +1582,13 @@ void print_block_producer(void)
 -----------------------------------------------------------------------------------------------------------
 Name: block_verifiers_create_block
 Description: Runs the round where the block verifiers will create the block
+Parameters:
+  PREVIOUS_BLOCK_HASH_SETTINGS - 2 if the block verifier needs to refresh the previous block hash
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int block_verifiers_create_block(void)
+int block_verifiers_create_block(const int PREVIOUS_BLOCK_HASH_SETTINGS)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -1666,6 +1668,15 @@ int block_verifiers_create_block(void)
   
   // wait for all block verifiers to sync
   sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);
+
+  if (PREVIOUS_BLOCK_HASH_SETTINGS == 2)
+  {
+    // refresh the previous block hash since you had to sync the reserve bytes
+    if (get_previous_block_hash(previous_block_hash) == 0)
+    {
+      RESTART_ROUND("Could not get the previous block hash");
+    }
+  }
 
   start:
 
