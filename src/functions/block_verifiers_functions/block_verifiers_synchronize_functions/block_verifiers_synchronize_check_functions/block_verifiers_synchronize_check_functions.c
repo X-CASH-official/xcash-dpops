@@ -554,7 +554,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
   }
 
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
-  if (settings != 3)
+  if ((settings == 1 && reserve_bytes_start_settings != 2) || (settings == 2))
   {
     sync_check_majority_reserve_bytes_database(reserve_bytes_start_settings);
   }

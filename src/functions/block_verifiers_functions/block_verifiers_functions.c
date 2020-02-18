@@ -171,9 +171,9 @@ int start_new_round(void)
     color_print("Waiting for all block verifiers to sync the databases\n","blue");
 
     // check if the block verifiers current reserve bytes database is synced
-    if ((settings = sync_check_reserve_bytes_database(3,2)) == 2)
+    if ((settings = sync_check_reserve_bytes_database(1,2)) == 2)
     {
-      sleep(5);
+      color_print("The database are not synced, syncing them","yellow");
       check_if_databases_are_synced(3,1);
     }
 
@@ -1671,7 +1671,7 @@ int block_verifiers_create_block(const int PREVIOUS_BLOCK_HASH_SETTINGS)
 
   if (PREVIOUS_BLOCK_HASH_SETTINGS == 2)
   {
-    // refresh the previous block hash since you had to sync the reserve bytes
+    // refresh the previous block hash since the block verifier had to sync the reserve bytes database
     if (get_previous_block_hash(previous_block_hash) == 0)
     {
       RESTART_ROUND("Could not get the previous block hash");
