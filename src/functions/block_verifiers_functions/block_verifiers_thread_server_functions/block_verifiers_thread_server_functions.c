@@ -689,6 +689,8 @@ int send_invalid_reserve_proof_to_block_verifiers(struct reserve_proof* reserve_
     color_print("Found an invalid reserve proof","yellow");
   }
 
+  color_print(reserve_proof->reserve_proof,"green");
+
   // add the reserve proof to the invalid_reserve_proofs struct
   if (test_settings == 0)
   {
