@@ -937,8 +937,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   SOCK_STREAM = TCP protocol
   SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  client_socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
-  if (client_socket == -1)
+  if ((client_socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
   { 
     SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(1);
   }
@@ -970,8 +969,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   }
 
   // get the current socket settings
-  socket_settings = fcntl(client_socket, F_GETFL, NULL);
-  if (socket_settings == -1)
+  if ((socket_settings = fcntl(client_socket, F_GETFL, NULL)) == -1)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_THREAD_ERROR(0);
   }

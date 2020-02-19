@@ -1948,11 +1948,13 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   total = strnlen(data,BUFFER_SIZE);
   
   // create the epoll file descriptor
-  epoll_fd_copy = epoll_create1(0);
-  if (epoll_fd_copy < 0)
+  if ((epoll_fd_copy = epoll_create1(0)) < 0)
   {
     BLOCK_VERIFIERS_SEND_DATA_SOCKET("Error creating the epoll file descriptor");
   }
+
+  // convert the port to a string
+  snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
   
   for (count = 0; count < block_verifiers_total_amount; count++)
   {
@@ -1966,11 +1968,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     block_verifiers_send_data_socket[count].settings = 0;
 
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {   
-      // convert the port to a string
-      memset(data2,0,sizeof(data2));  
-      snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
-
+    {
       // set up the addrinfo
       memset(&serv_addr, 0, sizeof(serv_addr));
       if (string_count(block_verifiers_send_data_socket[count].IP_address,".") == 3)
@@ -2014,8 +2012,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       SOCK_STREAM = TCP protocol
       SOCK_NONBLOCK = Non blocking socket, so it will be able to use a custom timeout
       */
-      block_verifiers_send_data_socket[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
-      if (block_verifiers_send_data_socket[count].socket == -1)
+      if ((block_verifiers_send_data_socket[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
       {
         freeaddrinfo(settings);
         continue;

@@ -826,11 +826,13 @@ int get_delegates_online_status(void)
   total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
   
   // create the epoll file descriptor
-  epoll_fd_copy = epoll_create1(0);
-  if (epoll_fd_copy < 0)
+  if ((epoll_fd_copy = epoll_create1(0)) < 0)
   {
     GET_DELEGATES_ONLINE_STATUS_ERROR("Error creating the epoll file descriptor");
   }
+
+  // convert the port to a string
+  snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
 
   // create the delegates_online_status struct for each delegate
   for (count = 0; count < total_delegates; count++)
@@ -847,9 +849,6 @@ int get_delegates_online_status(void)
       total_delegates_online++;
       continue;
     }
-
-    // convert the port to a string  
-    snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
 
     // set up the addrinfo
     memset(&serv_addr, 0, sizeof(serv_addr));
@@ -894,8 +893,7 @@ int get_delegates_online_status(void)
     SOCK_STREAM = TCP protocol
     SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
     */
-    delegates_online_status[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
-    if (delegates_online_status[count].socket == -1)
+    if ((delegates_online_status[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
     {
       freeaddrinfo(settings);
       continue;
