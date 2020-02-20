@@ -504,6 +504,13 @@ EOF
 )"
 }
 
+function setup_lxc_container_profile()
+{
+  if [ "$container" == "lxc" ]; then
+    sudo sed '/mesg n/d' -i "${HOME}"/.profile
+  fi
+}
+
 function get_wallet_settings()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Create a New Wallet to Collect Block Rewards (YES): ${END_COLOR_PRINT}"
@@ -1032,7 +1039,9 @@ function install_xcash_dpops()
 
   update_systemd_service_files
   create_systemd_service_files
-  install_firewall
+  if [ ! "$container" == "lxc" ]; then
+    install_firewall
+  fi
   echo
   echo
 }
@@ -1147,6 +1156,7 @@ function build_shared_delegates_website()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building shared delegates website${END_COLOR_PRINT}"
   cd "${SHARED_DELEGATES_WEBSITE_DIR}"
+  . "${HOME}"/.profile
   ng build --prod --aot &>/dev/null
   cd dist
   for f in *.js; do uglifyjs "$f" --compress --mangle --output "{$f}min"; rm "$f"; mv "{$f}min" "$f"; done
@@ -1720,6 +1730,9 @@ function test_update()
 
 # Check for a compatible OS
 check_ubuntu_version
+
+# Setup profile if running from an LXC container
+setup_lxc_container_profile
 
 # Get the installation settings
 installation_settings
