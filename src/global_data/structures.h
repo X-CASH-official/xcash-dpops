@@ -37,7 +37,7 @@ struct synced_block_verifiers {
     char synced_block_verifiers_public_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
     char synced_block_verifiers_public_key[BLOCK_VERIFIERS_TOTAL_AMOUNT][VRF_PUBLIC_KEY_LENGTH+1]; // The block verifiers public key
     char synced_block_verifiers_IP_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
-    char vote_settings[BLOCK_VERIFIERS_TOTAL_AMOUNT][BUFFER_SIZE]; // The block verifiers vote
+    char vote_settings[BLOCK_VERIFIERS_TOTAL_AMOUNT][20]; // The block verifiers vote, either true, false or connection_timeout
     int vote_settings_true; // The amount of block verifiers that voted true    
     int vote_settings_false; // The amount of block verifiers that voted false
     int vote_settings_connection_timeout; // The amount of block verifiers that had a connection timeout
