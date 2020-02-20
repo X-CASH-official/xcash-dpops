@@ -762,7 +762,7 @@ First check if LXD is already installed on your server
 `lxd --version`
 
 If it does output a version, then uninstall it  
-`sudo apt remove --purge lxd lxd-client`
+`sudo apt remove -y --purge lxd lxd-client`
 
 Then install LXD  
 `sudo snap install lxd`
@@ -789,6 +789,9 @@ To delete the container (Note the container must be stopped first)
 
 To open a terminal inside the container  
 `lxc exec container -- bash`
+
+If you already have the blockchain locally installed, and need to add it to the container you can run  
+`lxc file push -r ~/.X-CASH ~/.X-CASH`
 
 To exit the terminal  
 `exit`
