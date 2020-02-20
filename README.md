@@ -70,14 +70,11 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 *  [Update](#update)  
 *  [Remove](#remove)
   
-[Docker Automatic Installation Process](#docker-automatic-installation-process)
-*  [Install Docker](#install-docker)  
-*  [Download XCASH_DPOPS Docker Image](#download-xcash_dpops-docker-image)  
-*  [Create Docker Container](#create-docker-container)  
+[How to Setup an LXC container](#how-to-setup-an-lxc-container)
+*  [Install LXC](#install-lxc)    
+*  [Create LXC Container](#create-lxc-container)  
 *  [Configure the Container](#configure-the-container)  
-*  [Start and Stop Programs in the Container](#start-and-stop-programs-in-the-container)  
-*  [View Logs](#view-logs)  
-*  [Update the Containerm](#update-the-container)  
+*  [Install XCASH DPOPS in the Container](#install-xcash-dpops-in-the-container) 
  
 [How to Setup A Private Test](#how-to-setup-a-private-test)  
 [How to Debug the Code on a Server](#how-to-debug-the-code-on-a-server)
@@ -751,113 +748,72 @@ NPM
 
 
 
-## Docker Automatic Installation Process
-This will allow you to donwload a prebuilt docker image with the XCASH_DPOPS installed
+## How to Setup an LXC Container
+You can also run XCASH DPOPS inside of a container, using LXC containers. This will allow you to keep the main system clean and separated from the XCASH_DPOPS system.
 
-It is recommended to install the firewall on your system (not inside the docker container)  
+It is recommended to install the firewall on your system (not inside the LXC container)  
 Follow the [How To Setup the Firewall](#how-to-setup-the-firewall)  part of the readme first.
 
-### Install Docker  
-```
-sudo apt update
-sudo apt install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt update
-sudo apt install -y docker-ce
-sudo usermod -aG docker $USER
-```
 
-### Download XCASH_DPOPS Docker Image
-After this you will need to pull a [XCASH_DPOPS_image](https://hub.docker.com/r/xnetwork/xcash_dpops)  
-`docker pull xnetwork/xcash_dpops:TAG`
+### Install LXC  
+We will use LXD to manage LXC containers as this is a more user friendly tool for LXC containers. LXD might already be installed on some Ubuntu servers, but it is recommend to uninstall this version of LXD and install LXD using a snap. This is because the LXD that comes installed on some servers will not be up to date and can only be updated to minor releases.
 
-[Supported tags](https://hub.docker.com/r/xnetwork/xcash_dpops/tags) use the following syntax:
+First check if LXD is already installed on your server  
+`lxd --version`
 
-PRODUCTIONTYPE_ LINUXDISTRO_LINUXDISTROVERSION
+If it does output a version, then uninstall it  
+`sudo apt remove --purge lxd lxd-client`
 
-For example: mainnet_ubuntu_18.04  
+Then install LXD  
+`sudo snap install lxd`
 
-Now list all of the images installed, and save the IMAGE_ID for the image you just downloaded  
-`docker images`
-
-### Create Docker Container
-
-Now create a new container from the image you just downloaded 
-```
-docker run --name=XCASH_DPOPS -i -t -d --network host IMAGE_ID /bin/bash
-```
-
-From this point the docker container has been created and has already been started. If you need to start the container you can run  
-`docker start XCASH_DPOPS`
-
-and to stop the container run  
+Then run the configuration for LXD and press enter to get the default selection to the configuration questions  
+`lxd init`
 
 
-The docker container will remain running until stopped. You can enter and exit a container and it will still run unless stoped. At any time if you want enter the docker container you can run  
-```
-docker exec -e USER="root" -u root -t -i --privileged XCASH_DPOPS /bin/bash -c "source ~/.profile; /bin/bash"
-```
+### Create LXC Container
 
-To exit the container type  
+Now create a new container  
+`lxc init --profile default ubuntu:18.04 container`
+
+This will download the Ubuntu 18.04 LXC image if it is not already downloaded.
+
+To start the container  
+`lxc start container`
+
+To stop the container  
+`lxc stop container`
+
+To delete the container (Note the container must be stopped first)  
+`lxc delete container`
+
+To open a terminal inside the container  
+`lxc exec container -- bash`
+
+To exit the terminal  
 `exit`
 
-To stop the container run  
-`docker stop XCASH_DPOPS`
+To list all running containers  
+`lxc list`
 
-To list all running containers run  
-`docker ps -a`
-
-To remove the container run  
-`docker rm container XCASH_DPOPS`
 
 ### Configure the Container
 
-Once you have a bash prompt inside of the container, you will need to either create a new wallet and block verifier key, or import them. To do this run the docker configuration script
+Now you need to setup port forwarding on the container so other block verifiers can access XCASH_DPOPS inside the container. You will need to forward TCP ports 18280, 18281 and 18283 for the public IP of the server to the containers private IP address.
+
+First get the containers private IP address (the IPV4 address)  
+`lxc list`
+
+Then forward the ports to the containers private IP address  
 ```
-bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/docker_configuration.sh)"
-```
-
-### Start and Stop Programs in the Container
-
-Note: systemd is not enabled in docker containers. Instead the docker container uses screen with an auto restart script and log files
-
-To start or stop the processes use the docker configuration script and run it in start programs or stop programs mode
-
-You can also start or stop an individual process using screen (just replace the password and remove the shared delegate flags if you are going to run a solo node
-```
-screen -dmS MongoDB ~/x-network/mongodb-*/bin/mongod --logpath /root/x-network/logs/MongoDB_log.txt --logappend
-screen -dmS XCASH_Daemon ~/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0
-screen -dmS XCASH_Wallet ~/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/XCASH_DPOPS_WALLET --password WALLET_PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
-screen -dmS XCASH_DPOPS ~/x-network/XCASH_DPOPS/build/XCASH_DPOPS --log_file ~/x-network/logs/XCASH_DPOPS_log.txt --shared_delegates_website --fee DPOPS_FEE --minimum_amount DPOPS_MINIMUM_AMOUNT
+lxc config device add container container_XCASH_DPOPS_18280 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18280 connect=tcp:PRIVATE_IP_OF_CONTAINER:18280 proxy_protocol=true
+lxc config device add container container_XCASH_DPOPS_18281 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18281 connect=tcp:PRIVATE_IP_OF_CONTAINER:18281 proxy_protocol=true
+lxc config device add container container_XCASH_DPOPS_18283 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18283 connect=tcp:PRIVATE_IP_OF_CONTAINER:18283 proxy_protocol=true
 ```
 
-To stop the following process using screen:
-```
-screen -XS "MongoDB" quit
-screen -XS "XCASH_Daemon" quit
-screen -XS "XCASH_Wallet" quit
-screen -XS "XCASH_DPOPS" quit
-```
+### Install XCASH_DPOPS in the Container
 
-### View Logs
-
-To view the log files run the following commands  
-MongoDB  
-`tail -f -n 100 ~/x-network/logs/MongoDB_log.txt`
-
-XCASH_Daemon  
-`tail -f -n 100 ~/x-network/logs/XCASH_Daemon_log.txt`
-
-XCASH_DPOPS  
-`tail -f -n 100 ~/x-network/logs/XCASH_DPOPS_log.txt`
-
-
-### Update the Container
-
-To keep the system up to date use the docker configuration script and run it in update mode
-
-You can also delete the container, **(Make sure to backup your wallet and block verifier key)** pull the latest docker version of the container, create a new container and import your wallet and block verifier key.
+LXC allows for systemd to run inside the containers. Refer to the [Auto Installation Process](#auto-installation-process) to proceed with using the autoinstaller to install XCASH_DPOPS inside the LXC container.
 
 
 
