@@ -171,7 +171,7 @@ int start_new_round(void)
     color_print("Waiting for all block verifiers to sync the databases\n","blue");
 
     // check if the block verifiers current reserve bytes database is synced
-    if ((settings = sync_check_reserve_bytes_database(1,2)) == 2)
+    if (sync_check_reserve_bytes_database(1,2) == 2)
     {
       color_print("The database are not synced, syncing them","yellow");
       check_if_databases_are_synced(3,1);
@@ -187,7 +187,7 @@ int start_new_round(void)
         START_NEW_ROUND_ERROR("Error calculating the next block producer.\nYour block verifier will wait until the next round\n");
       }
     }
-    if (block_verifiers_create_block((const int)settings) == 0)
+    if (block_verifiers_create_block() == 0)
     {
       START_NEW_ROUND_ERROR("Your block verifier will wait until the next round\n");
     }
@@ -1594,13 +1594,11 @@ void print_block_producer(void)
 -----------------------------------------------------------------------------------------------------------
 Name: block_verifiers_create_block
 Description: Runs the round where the block verifiers will create the block
-Parameters:
-  PREVIOUS_BLOCK_HASH_SETTINGS - 2 if the block verifier needs to refresh the previous block hash
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int block_verifiers_create_block(const int PREVIOUS_BLOCK_HASH_SETTINGS)
+int block_verifiers_create_block(void)
 {
   // Variables
   char data[BUFFER_SIZE];

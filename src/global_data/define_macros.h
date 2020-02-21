@@ -78,6 +78,7 @@ Using define statements instead of constants for increased efficiency
 #define START_TIME_NETWORK_BLOCK_PART_5 55 // the start time of part 5 of the network block round
 #define START_TIME_INVALID_RESERVE_PROOFS_PART_2 25 // the start time of part 2 of the invalid reserve proofs
 #define INVALID_RESERVE_PROOFS_SETTINGS 2 // The time in seconds to wait to in between invalid reserve proof checks
+#define INVALID_RESERVE_PROOFS_SETTINGS_REGISTRATION_MODE 1 // The time in seconds to wait to in between invalid reserve proof checks when the registration mode is running
 
 // Network
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port

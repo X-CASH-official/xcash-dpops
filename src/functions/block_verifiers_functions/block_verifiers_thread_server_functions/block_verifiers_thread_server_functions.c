@@ -866,7 +866,14 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     { 
       send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
     }
-    sleep(INVALID_RESERVE_PROOFS_SETTINGS);
+    if (registration_settings == 1)
+    {
+      sleep(INVALID_RESERVE_PROOFS_SETTINGS_REGISTRATION_MODE);
+    }
+    else
+    {
+      sleep(INVALID_RESERVE_PROOFS_SETTINGS);
+    }    
   }
 }
 

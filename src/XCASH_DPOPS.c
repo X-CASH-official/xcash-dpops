@@ -94,6 +94,7 @@ int network_functions_test_server_messages_settings; // 1 to display server mess
 int test_settings; // 1 when the test are running, 0 if not
 int vrf_data_verify_count; // holds the amount of block verifiers signatures that are verified for the current network block
 int debug_settings; // 1 to show all incoming and outgoing message from the server
+int registration_settings; // 1 when the registration mode is running, 0 when it is not
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -154,6 +155,7 @@ void initialize_data(void)
   network_functions_test_error_settings = 1;
   network_functions_test_server_messages_settings = 1;
   debug_settings = 0;
+  registration_settings = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -1217,7 +1219,7 @@ void start_registration_mode(void)
   struct tm current_UTC_date_and_time;
 
   // threads
-  pthread_t thread_id[2];
+  pthread_t thread_id[3];
 
   // define macros
   #define START_REGISTRATION_MODE_ERROR(settings) \
@@ -1231,7 +1233,9 @@ void start_registration_mode(void)
   mongoc_cleanup(); \
   exit(0);
 
-   memset(data,0,sizeof(data));
+  memset(data,0,sizeof(data));
+
+  registration_settings = 1;
 
   // start the sync_network_data_nodes_database_timer_thread
   if (network_data_node_settings == 1)
@@ -1249,6 +1253,14 @@ void start_registration_mode(void)
   }
 
   color_print("Started the sync all block verifiers list timer thread","green");
+
+  for (;;)
+  {
+    // start the reserve proofs timer
+    pthread_create(&thread_id[2], NULL, &check_reserve_proofs_timer_thread, NULL);
+    pthread_join(thread_id[2],NULL);
+    sleep(1);
+  }
   return;
 
   #undef START_REGISTRATION_MODE_ERROR
