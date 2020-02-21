@@ -53,9 +53,12 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
   #define COUNT_DOCUMENTS_IN_COLLECTION_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"count_documents_in_collection",29); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (strncmp(settings,"The database collection does not exist",BUFFER_SIZE) != 0)) \
+  { \
+    memcpy(error_message.function[error_message.total],"count_documents_in_collection",29); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   database_reset_all; \
   return -1;
 
@@ -127,9 +130,12 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
   #define COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"count_documents_in_collection",29); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (strncmp(settings,"The database collection does not exist",BUFFER_SIZE) != 0)) \
+  { \
+    memcpy(error_message.function[error_message.total],"count_all_documents_in_collection",33); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   database_reset_all; \
   return -1;
 

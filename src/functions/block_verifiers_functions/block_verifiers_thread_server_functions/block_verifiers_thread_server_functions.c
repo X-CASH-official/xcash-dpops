@@ -112,7 +112,11 @@ void* current_block_height_timer_thread(void* parameters)
     if ((settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 0) || (settings == 1 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0))
     {
       if (settings == 0)
-      {        
+      {      
+        // start the reserve proofs timer
+        //pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
+        //pthread_detach(thread_id);  
+
         block_verifier_settings = start_new_round();
         if (block_verifier_settings == 0)
         {
@@ -139,6 +143,11 @@ void* current_block_height_timer_thread(void* parameters)
 
       get_current_block_height(current_block_height);
       get_previous_block_hash(previous_block_hash);
+
+      // start the reserve proofs timer
+      //pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
+      //pthread_detach(thread_id);  
+
       block_verifier_settings = start_new_round();
       if (block_verifier_settings == 0)
       {
@@ -158,7 +167,7 @@ void* current_block_height_timer_thread(void* parameters)
         memcpy(data2+14,current_block_height,strnlen(current_block_height,sizeof(data2)));
         memcpy(data2+strlen(data2)," Has Been Created Successfully\n",31);
         color_print(data2,"green");
-      }      
+      }  
     }
     sleep(1);
   }
@@ -504,6 +513,12 @@ void check_reserve_proofs_timer_delete_reserve_proof(const int CURRENT_RESERVE_P
       delete_document_from_collection(database_name,data,data2,1);
     }
   }
+
+  // reset the error messages since there just going to contain The database collection does not exist if not all reserve proof databases are being used
+  pthread_rwlock_wrlock(&rwlock_reserve_proofs);
+  RESET_ERROR_MESSAGES;
+  pthread_rwlock_unlock(&rwlock_reserve_proofs);
+
   return;
 }
 
@@ -534,7 +549,9 @@ int check_reserve_proofs_timer_update_database(void)
     memset(data,0,sizeof(data));
     memset(data2,0,sizeof(data2));
     memset(data3,0,sizeof(data3));
+    pthread_rwlock_wrlock(&rwlock_reserve_proofs);
     RESET_ERROR_MESSAGES;
+    pthread_rwlock_unlock(&rwlock_reserve_proofs);
 
     // get the data for the reserve proof from your own database, since you cant know if the data given was valid since the reserve proof is already invalid
     if (check_reserve_proofs_timer_get_database_data(count) == 0)
@@ -548,11 +565,11 @@ int check_reserve_proofs_timer_update_database(void)
       continue;
     }
 
-    // update all of the delegates scores
+    /*// update all of the delegates scores
     if (check_reserve_proofs_timer_update_delegates_score(count) == 0)
     {
       continue;
-    }
+    }*/
 
     // delete the reserve proof from the database
     check_reserve_proofs_timer_delete_reserve_proof(count);
@@ -583,6 +600,7 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
   char data[BUFFER_SIZE];
   int count;
   int count2;
+  int counter;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -627,8 +645,10 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
     memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
     snprintf(data+15,sizeof(data)-16,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1));
-    RESET_ERROR_MESSAGES; 
   } while ((count = count_all_documents_in_collection(database_name,data,1)) <= 0);
+  pthread_rwlock_wrlock(&rwlock_reserve_proofs);
+  RESET_ERROR_MESSAGES; 
+  pthread_rwlock_unlock(&rwlock_reserve_proofs);
 
   // select a random document in the collection
   count = (rand() % count) + 1;
@@ -636,8 +656,12 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
   // get a random document from the collection
   if (read_multiple_documents_all_fields_from_collection(database_name,data,"",&database_multiple_documents_fields,count,1,0,"",1) == 1)
   {
-    // check if the reserve proof is unique 
-    for (count2 = 0; count2 < invalid_reserve_proofs.count; count2++)
+    // check if the reserve proof is unique
+    pthread_rwlock_wrlock(&rwlock_reserve_proofs);
+    counter = invalid_reserve_proofs.count;
+    pthread_rwlock_unlock(&rwlock_reserve_proofs);
+
+    for (count2 = 0; count2 < counter; count2++)
     {
       if (strncmp(invalid_reserve_proofs.reserve_proof[count2],database_multiple_documents_fields.value[0][3],BUFFER_SIZE_RESERVE_PROOF) == 0)
       {
@@ -762,7 +786,10 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   } \
   invalid_reserve_proofs.count = 0; \
   database_settings = 1; \
-  pthread_cond_broadcast(&thread_settings_lock);
+  pthread_cond_broadcast(&thread_settings_lock); \
+  color_print("Stoping the check reserve proofs timer thread","yellow"); \
+  fprintf(stderr,"\n"); \
+  pthread_exit((void *)(intptr_t)1);
 
   // reset the reserve_proof struct
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
@@ -774,67 +801,73 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
+  fprintf(stderr,"\n");
+  color_print("Started the check reserve proofs timer thread","green");
+  color_print("Part 1 - Randomly select reserve proofs and check if they are valid","yellow");
+
   for (;;)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec == 25 && invalid_reserve_proofs.count > 0)
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4)
     {
+      color_print("Part 2 - Send all invalid reserve proofs to all block verifiers","yellow");
+
+      // check if there was any invalid reserve proofs found
+      if (invalid_reserve_proofs.count <= 0)
+      {
+        color_print("No invalid reserve proofs were found","yellow");
+        RESET_INVALID_RESERVE_PROOFS_DATA;
+      }
+
       // create the data to send to the block verifiers
       if (check_reserve_proofs_timer_create_message(data2) == 0)
       {
         RESET_INVALID_RESERVE_PROOFS_DATA;
-        continue;
       }
 
       // send the message to all block verifiers
       if (block_verifiers_send_data_socket((const char*)data2) == 0)
       {
         RESET_INVALID_RESERVE_PROOFS_DATA;
-        continue;
       }
 
       // wait for the block verifiers to process the votes
-      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,40);
+      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_INVALID_RESERVE_PROOFS_PART_2);
+
+      color_print("Part 3 - Check if the valid amount of block verifiers had the same invalid reserve proofs","yellow");
 
       // process the vote results
       if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
       {
+        fprintf(stderr,"\033[1;31m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
         RESET_INVALID_RESERVE_PROOFS_DATA;
-        continue;
       }
+      else
+      {
+        fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+      }      
+
+      color_print("Part 4 - Remove the invalid reserve proofs from the database","yellow");
 
       // update the database
       if (check_reserve_proofs_timer_update_database() == 0)
       {
         RESET_INVALID_RESERVE_PROOFS_DATA;
-        continue;
       }
-      
-      // set the database to accept new data
-      database_settings = 1;
-
-      // reset any thread that was waiting for the database
-      pthread_cond_broadcast(&thread_settings_lock);
       
       // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
       RESET_INVALID_RESERVE_PROOFS_DATA;
     }
 
-
-
+    
     // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
     memset(data,0,sizeof(data));
     if (select_random_unique_reserve_proof(&reserve_proof) == 1 && (check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof) == 0 || memcmp(data,reserve_proof.reserve_proof_amount,strlen(data)) != 0))
-    {    
-      if (send_invalid_reserve_proof_to_block_verifiers(&reserve_proof) == 0)
-      {
-        RESET_INVALID_RESERVE_PROOFS_DATA;
-        continue;
-      }
+    { 
+      send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
     }
-    nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
+    sleep(INVALID_RESERVE_PROOFS_SETTINGS);
   }
-  pthread_exit((void *)(intptr_t)1);
 }
 
 

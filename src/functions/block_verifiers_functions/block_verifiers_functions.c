@@ -179,8 +179,13 @@ int start_new_round(void)
 
     if (calculate_main_nodes_roles() == 0)
     {
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);
-      START_NEW_ROUND_ERROR("Error calculating the next block producer.\nYour block verifier will wait until the next round\n");
+      // sync the database and try again
+      check_if_databases_are_synced(3,1);
+      if (calculate_main_nodes_roles() == 0)
+      {
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data);
+        START_NEW_ROUND_ERROR("Error calculating the next block producer.\nYour block verifier will wait until the next round\n");
+      }
     }
     if (block_verifiers_create_block((const int)settings) == 0)
     {
@@ -855,7 +860,7 @@ int data_network_node_create_block(void)
     // verify the block
     memset(data3,0,sizeof(data3));
     snprintf(data3,sizeof(data3)-1,"%zu",count);
-    if (verify_network_block_data(1,1,1,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
+    if (verify_network_block_data(1,1,0,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
     {
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
     }
@@ -1359,7 +1364,7 @@ int block_verifiers_create_vote_results(char* message)
   }
 
   // verify the block
-  if (verify_network_block_data(1,1,1,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
+  if (verify_network_block_data(1,1,0,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
   {
     BLOCK_VERIFIERS_CREATE_VOTE_RESULTS_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
   }
@@ -1424,6 +1429,9 @@ int block_verifiers_create_block_and_update_database(void)
   struct tm current_UTC_date_and_time;
   size_t count;
 
+  // threads
+  pthread_t thread_id;
+
   // define macros
   #define BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS 5 // The time to wait to check if the block was created
   #define BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR(settings) \
@@ -1469,6 +1477,10 @@ int block_verifiers_create_block_and_update_database(void)
     color_print("Your block verifier is a network data node, checking to make sure all network data nodes databases are synced","yellow");
     sync_network_data_nodes_database();
   }
+  
+  // start the reserve proofs timer
+  pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
+  pthread_detach(thread_id);
 
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
 
@@ -1669,13 +1681,9 @@ int block_verifiers_create_block(const int PREVIOUS_BLOCK_HASH_SETTINGS)
   // wait for all block verifiers to sync
   sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);
 
-  if (PREVIOUS_BLOCK_HASH_SETTINGS == 2)
+  if (get_previous_block_hash(previous_block_hash) == 0)
   {
-    // refresh the previous block hash since the block verifier had to sync the reserve bytes database
-    if (get_previous_block_hash(previous_block_hash) == 0)
-    {
-      RESTART_ROUND("Could not get the previous block hash");
-    }
+    RESTART_ROUND("Could not get the previous block hash");
   }
 
   start:
@@ -2113,7 +2121,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(CONNECTION_TIMEOUT_SETTINGS);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < block_verifiers_total_amount; count++)

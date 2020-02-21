@@ -81,6 +81,7 @@ void test(int settings)
   network_functions_test_error_settings = 1;
   network_functions_test_server_messages_settings = 0;
   test_settings = 1;
+  debug_settings = 1;
 
   // set the database to the test database
   memset(database_name,0,sizeof(database_name));

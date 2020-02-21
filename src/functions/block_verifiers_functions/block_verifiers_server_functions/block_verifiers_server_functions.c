@@ -100,9 +100,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs",84); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(block_verifiers_public_address,0,sizeof(block_verifiers_public_address));
@@ -174,9 +177,12 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time",93); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not update the delegates information}",0,0,""); \
   return 0;
 
@@ -223,9 +229,12 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   // define macros
   #define DATABASE_COLLECTION "reserve_bytes_1"
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_start_block",79); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -276,9 +285,12 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -342,9 +354,12 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block",84); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -398,9 +413,12 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_node_to_node_message_part_4",59); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -463,9 +481,12 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_node",39); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -526,9 +547,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data",70); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(public_address,0,sizeof(public_address));
@@ -605,9 +629,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",82); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));

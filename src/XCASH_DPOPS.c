@@ -1177,14 +1177,6 @@ void start_timer_threads(void)
   
   color_print("Started the remove inactive delegates timer thread","green");*/
 
-  /*// start the check_reserve_proofs_timer_thread
-  if (pthread_create(&thread_id[2], NULL, &check_reserve_proofs_timer_thread, NULL) != 0 && pthread_detach(thread_id[2]) != 0)
-  {
-    START_TIMER_THREADS_ERROR("Could not start the check_reserve_proofs_timer_thread");
-  }
-
-  color_print("Started the check reserve proofs timer thread","green");*/
-
   /*// start the block height timer thread
   if (shared_delegates_website == 1)
   {

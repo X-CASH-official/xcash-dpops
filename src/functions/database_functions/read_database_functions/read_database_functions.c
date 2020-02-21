@@ -61,9 +61,12 @@ int read_document_from_collection(const char* DATABASE, const char* COLLECTION, 
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
   #define READ_DOCUMENT_FROM_COLLECTION_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"read_document_from_collection",29); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (strncmp(settings,"The database collection does not exist",BUFFER_SIZE) != 0)) \
+  { \
+    memcpy(error_message.function[error_message.total],"read_document_from_collection",29); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   database_reset_all; \
   return 0;
 
@@ -171,9 +174,12 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
   #define READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (strncmp(settings,"The database collection does not exist",BUFFER_SIZE) != 0)) \
+  { \
+    memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   pointer_reset_all; \
   database_reset_all; \
   return 0;
@@ -479,9 +485,12 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
   #define READ_DOCUMENT_ALL_FIELDS_FROM_COLLECTION_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"read_document_all_fields_from_collection",40); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (strncmp(settings,"The database collection does not exist",BUFFER_SIZE) != 0)) \
+  { \
+    memcpy(error_message.function[error_message.total],"read_document_all_fields_from_collection",40); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   pointer_reset(data); \
   database_reset_all; \
   return 0;
@@ -646,9 +655,12 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
   }
   #define READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"read_multiple_documents_all_fields_from_collection",50); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (strncmp(settings,"The database collection does not exist",BUFFER_SIZE) != 0)) \
+  { \
+    memcpy(error_message.function[error_message.total],"read_multiple_documents_all_fields_from_collection",50); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   pointer_reset(data); \
   database_reset_all; \
   return 0;

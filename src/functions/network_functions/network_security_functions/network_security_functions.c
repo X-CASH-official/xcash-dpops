@@ -230,7 +230,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
 
   // define macros
   #define VERIFY_DATA_ERROR(settings) \
-  if (network_functions_test_error_settings == 1) \
+  if (network_functions_test_error_settings == 1 && debug_settings == 1) \
   { \
   memcpy(error_message.function[error_message.total],"verify_data",11); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -529,7 +529,6 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
         }
         else
         {
-          color_print(MESSAGE,"yellow");
           VERIFY_DATA_ERROR("Could not find the public key to verify the message");
         }
       }
@@ -629,10 +628,13 @@ int validate_data(const char* MESSAGE)
 
   // define macros  
   #define VALIDATE_DATA_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"validate_data",13); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));

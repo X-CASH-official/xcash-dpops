@@ -524,6 +524,10 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       {
         color_print("A Consensus could not be reached for trying to sync the reserve bytes database, syncing from a random network data node","red");
       }
+      if (reserve_bytes_start_settings == 2)
+      {
+        return 2;
+      }
       settings = 2;
     }
     else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)

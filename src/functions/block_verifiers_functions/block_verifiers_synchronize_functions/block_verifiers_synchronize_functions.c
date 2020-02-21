@@ -432,7 +432,7 @@ int get_synced_block_verifiers(void)
   return 0;
 
   // reset the block_verifiers_IP_addresses 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     memset(synced_block_verifiers.synced_block_verifiers_IP_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_IP_address[count]));
     memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count]));
