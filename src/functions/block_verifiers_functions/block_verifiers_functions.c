@@ -2090,7 +2090,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       }
 
       // send the message  
-      if (debug_settings == 1)
+      if (debug_settings == 1 && test_settings == 0)
       {  
         memset(data2,0,sizeof(data2));   
         memcpy(data2,"Sending ",8);

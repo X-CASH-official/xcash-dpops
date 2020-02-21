@@ -337,7 +337,7 @@ int socket_thread(int client_socket)
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // dont display the message if the message came from the test wallet, or your own wallet
-  if (debug_settings == 1)
+  if (debug_settings == 1 && test_settings == 0)
   {  
     memcpy(message,"Received ",9);
     memcpy(message+9,data2,strnlen(data2,sizeof(message)));

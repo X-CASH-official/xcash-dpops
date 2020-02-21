@@ -150,14 +150,14 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   memcpy(data+204,RESERVE_PROOF,RESERVE_PROOF_LENGTH);
   memcpy(data+204+RESERVE_PROOF_LENGTH,"\"}}",3);
 
-  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || strstr(data2,"\"good\"") == NULL || strstr(data2,"\"spent\"") != NULL)
-  {  
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || strstr(data2,"\"good\"") == NULL || strstr(data2,"\"spent\"") == NULL)
+  { 
     return -1;
   }
 
   // check if the reserve proof is valid
   if (strstr(data2,"\"good\": true") == NULL || strstr(data2,"\"spent\": 0") == NULL)
-  {  
+  { 
     return 0;
   }
 

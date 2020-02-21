@@ -708,13 +708,6 @@ int send_invalid_reserve_proof_to_block_verifiers(struct reserve_proof* reserve_
 
   memset(data,0,sizeof(data));
 
-  if (test_settings == 0)
-  {
-    color_print("Found an invalid reserve proof","yellow");
-  }
-
-  color_print(reserve_proof->reserve_proof,"green");
-
   // add the reserve proof to the invalid_reserve_proofs struct
   if (test_settings == 0)
   {
@@ -1025,7 +1018,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // send the message  
-  if (test_settings == 0)
+  if (debug_settings == 1 && test_settings == 0)
   {
     memcpy(message,data->DATA,strnlen(data->DATA,BUFFER_SIZE));
     memcpy(message+strlen(message),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);

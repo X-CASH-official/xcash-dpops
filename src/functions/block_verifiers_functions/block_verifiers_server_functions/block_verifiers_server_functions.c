@@ -138,7 +138,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   {
     // check if the reserve proof is valid
     memset(data3,0,sizeof(data3));
-    if (check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) == 0)
+    if ((test_settings == 0 && check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) == 0) || (test_settings == 1 && check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) <= 0))
     {
       // add the reserve proof to the invalid_reserve_proofs struct
       pthread_rwlock_wrlock(&rwlock_reserve_proofs);
