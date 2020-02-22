@@ -855,6 +855,14 @@ void print_settings(void)
     {
       memcpy(data+strlen(data),"\nLog file Settings: YES\nLog File Color Output: YES",50);
     } 
+  }
+  if (debug_settings == 1)
+  {
+    memcpy(data+strlen(data),"\nDebug Settings: YES",20);
+  }
+  else
+  {
+    memcpy(data+strlen(data),"\nDebug Settings: NO",19);
   } 
   memcpy(data+strlen(data),"\nDelegates Server IP Address: ",30);
   if (memcmp(XCASH_DPOPS_delegates_IP_address,"",1) == 0)
