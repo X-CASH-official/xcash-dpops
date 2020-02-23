@@ -33,6 +33,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
 {
   // Variables
   char str[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
   char* str1;
   char* str2;
   size_t start; 
@@ -50,6 +51,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   // reset the variables
   memset(result,0,strlen(result));
   memset(str,0,sizeof(str));
+  memset(message,0,sizeof(message));
 
   memcpy(str,"\"",1);
   memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
@@ -96,22 +98,23 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     }
 
     // copy the field's data
-    memcpy(result,&str1[start],LENGTH);
+    memcpy(message,&str1[start],LENGTH);
 
     // remove all the formating from the result, if it is not a database document
-    if (strstr(result,"username") == NULL && strstr(result,"total_vote_count") == NULL && strstr(result,"public_address_created_reserve_proof") == NULL && strstr(result,"reserve_bytes_data_hash") == NULL)
+    if (strstr(message,"username") == NULL && strstr(message,"total_vote_count") == NULL && strstr(message,"public_address_created_reserve_proof") == NULL && strstr(message,"reserve_bytes_data_hash") == NULL)
     {
-      string_replace(result,RESULT_TOTAL_LENGTH, "\"", "");
-      string_replace(result,RESULT_TOTAL_LENGTH, ",", "");
-      string_replace(result,RESULT_TOTAL_LENGTH, "[", "");
-      string_replace(result,RESULT_TOTAL_LENGTH, "]", "");
-      string_replace(result,RESULT_TOTAL_LENGTH, "{", "");
-      string_replace(result,RESULT_TOTAL_LENGTH, "}", "");
+      string_replace(message,RESULT_TOTAL_LENGTH, "\"", "");
+      string_replace(message,RESULT_TOTAL_LENGTH, ",", "");
+      string_replace(message,RESULT_TOTAL_LENGTH, "[", "");
+      string_replace(message,RESULT_TOTAL_LENGTH, "]", "");
+      string_replace(message,RESULT_TOTAL_LENGTH, "{", "");
+      string_replace(message,RESULT_TOTAL_LENGTH, "}", "");
     }
     else
     {
-      string_replace(result,RESULT_TOTAL_LENGTH,"\"{\"","{\"");
+      string_replace(message,RESULT_TOTAL_LENGTH,"\"{\"","{\"");
     }
+    memcpy(result,message,strnlen(message,RESULT_TOTAL_LENGTH));
   }
   else
   {
