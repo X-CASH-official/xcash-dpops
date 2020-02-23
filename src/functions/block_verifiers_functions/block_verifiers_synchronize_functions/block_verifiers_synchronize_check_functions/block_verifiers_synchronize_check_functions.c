@@ -53,7 +53,7 @@ for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
   { \
     memset(data,0,strlen(data)); \
-    memset(data2,0,sizeof(data2)); \
+    memset(data2,0,strlen(data2)); \
     if (send_and_receive_data_socket(data,synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0 || verify_data(data,0) == 0) \
     { \
       memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18); \
@@ -88,15 +88,15 @@ Name: check_if_databases_are_synced
 Description: Checks if the databases are synced, and if not syncs the databases
 Paramters:
   SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
-  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
+  RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int check_if_databases_are_synced(const int SETTINGS, const int reserve_bytes_start_settings)
+int check_if_databases_are_synced(const int SETTINGS, const int RESERVE_BYTES_START_SETTINGS)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
@@ -124,7 +124,7 @@ int check_if_databases_are_synced(const int SETTINGS, const int reserve_bytes_st
   }
 
   // check if your reserve bytes database is synced
-  if (sync_check_reserve_bytes_database(SETTINGS, reserve_bytes_start_settings) == 0)
+  if (sync_check_reserve_bytes_database(SETTINGS, RESERVE_BYTES_START_SETTINGS) == 0)
   {    
     CHECK_IF_DATABASES_ARE_SYNCED_ERROR("Could not check if the reserve bytes database is updated. This means you might need to sync the reserve bytes database.");
   }
@@ -165,7 +165,7 @@ int sync_check_reserve_proofs_database(int settings)
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count;
+  int count;
 
   // define macros  
   #define SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR(settings) \
@@ -181,7 +181,6 @@ int sync_check_reserve_proofs_database(int settings)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -217,13 +216,13 @@ int sync_check_reserve_proofs_database(int settings)
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memcpy(message+strlen(message),"\"reserve_proofs_data_hash_",26);
-      snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
+      snprintf(message+strlen(message),sizeof(message)-1,"%d",count);
       memcpy(message+strlen(message),"\": \"",4);
       // get the database data hash for the reserve proofs database
       memset(data,0,strlen(data));
       memset(data2,0,strlen(data2));  
       memcpy(data2,"reserve_proofs_",15);  
-      snprintf(data2+15,sizeof(data2)-16,"%zu",count);
+      snprintf(data2+15,sizeof(data2)-16,"%d",count);
       if (get_database_data_hash(data,database_name,data2) == 0)
       {
         SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -317,7 +316,7 @@ void sync_check_majority_reserve_proofs_database(void)
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count;
+  int count;
 
   // define macros  
   #define SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR(settings) \
@@ -366,13 +365,13 @@ void sync_check_majority_reserve_proofs_database(void)
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memcpy(message+strlen(message),"\"reserve_proofs_data_hash_",26);
-    snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
+    snprintf(message+strlen(message),sizeof(message)-1,"%d",count);
     memcpy(message+strlen(message),"\": \"",4);
     // get the database data hash for the reserve proofs database
     memset(data,0,strlen(data));
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_proofs_",15);  
-    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
+    snprintf(data2+15,sizeof(data2)-16,"%d",count);
     if (get_database_data_hash(data,database_name,data2) == 0)
     {
       SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -417,12 +416,12 @@ Name: sync_check_reserve_bytes_database
 Description: Checks if the block verifier needs to sync the reserve bytes database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
-  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database, 2 to only check if the current reserve bytes database needs to be synced
+  RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database, 2 to only check if the current reserve bytes database needs to be synced
 Return: 0 if an error has occured, 1 if successfull, 2 to indicate the reserve bytes needs to be synced
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_start_settings)
+int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETTINGS)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -524,7 +523,7 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
       {
         color_print("A Consensus could not be reached for trying to sync the reserve bytes database, syncing from a random network data node","red");
       }
-      if (reserve_bytes_start_settings == 2)
+      if (RESERVE_BYTES_START_SETTINGS == 2)
       {
         return 2;
       }
@@ -532,14 +531,14 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
     }
     else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      if (reserve_bytes_start_settings == 2)
+      if (RESERVE_BYTES_START_SETTINGS == 2)
       {
         return 2;
       }
       color_print("The reserve bytes database is not synced, syncing from a random block verifier","red");
 
       // get the data
-      if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings,"") == 0)
+      if (sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,"") == 0)
       {
         SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
       }
@@ -551,16 +550,16 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
     {
       color_print("Syncing from a random network data node","white");
     }
-    if (sync_reserve_bytes_database(settings, reserve_bytes_start_settings,"") == 0)
+    if (sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,"") == 0)
     {
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
     }
   }
 
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
-  if ((settings == 1 && reserve_bytes_start_settings != 2) || (settings == 2))
+  if ((settings == 1 && RESERVE_BYTES_START_SETTINGS != 2) || (settings == 2))
   {
-    sync_check_majority_reserve_bytes_database(reserve_bytes_start_settings);
+    sync_check_majority_reserve_bytes_database(RESERVE_BYTES_START_SETTINGS);
   }
 
   if (test_settings == 0)
@@ -581,11 +580,11 @@ int sync_check_reserve_bytes_database(int settings, const int reserve_bytes_star
 Name: sync_check_majority_reserve_bytes_database
 Description: Checks if the block verifiers reserve bytes database is in the majority and if not syncs the reserve bytes database from the main network data node
 Paramters:
-  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
+  RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 -----------------------------------------------------------------------------------------------------------
 */
 
-void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_settings)
+void sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SETTINGS)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -681,7 +680,7 @@ void sync_check_majority_reserve_bytes_database(const int reserve_bytes_start_se
       color_print("The database is not in the majority, syncing from a random network data node","red");
     }
     get_random_network_data_node(count);
-    sync_reserve_bytes_database(count+3,reserve_bytes_start_settings,""); 
+    sync_reserve_bytes_database(count+3,RESERVE_BYTES_START_SETTINGS,""); 
   }
   
   pointer_reset(data);
@@ -706,11 +705,11 @@ int sync_check_delegates_database(int settings)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE]; 
-  char message[BUFFER_SIZE];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA]; 
+  char message[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count;
+  int count;
 
   // define macros 
   #define DATABASE_COLLECTION "delegates"
@@ -841,11 +840,11 @@ void sync_check_majority_delegates_database(void)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE]; 
-  char message[BUFFER_SIZE];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA]; 
+  char message[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count;
+  int count;
 
   // define macros 
   #define DATABASE_COLLECTION "delegates"
@@ -937,11 +936,11 @@ int sync_check_statistics_database(int settings)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE]; 
-  char message[BUFFER_SIZE];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA]; 
+  char message[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count;
+  int count;
 
   // define macros 
   #define DATABASE_COLLECTION "statistics"
@@ -1072,11 +1071,11 @@ void sync_check_majority_statistics_database(void)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE]; 
-  char message[BUFFER_SIZE];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA]; 
+  char message[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count;
+  int count;
 
   // define macros 
   #define DATABASE_COLLECTION "statistics"
