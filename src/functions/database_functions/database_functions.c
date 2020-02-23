@@ -457,7 +457,6 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
     // combine all of the database data hashes
     memset(data,0,strlen(data));
-    memcpy(data,data_hash,strnlen(data_hash,MAXIMUM_BUFFER_SIZE));
     memset(data_hash,0,strlen(data_hash));
     memset(string,0,strlen((char*)string));    
     crypto_hash_sha512(string,(const unsigned char*)data3,strnlen(data3,MAXIMUM_BUFFER_SIZE));

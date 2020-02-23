@@ -160,7 +160,7 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_reserve_proofs_database(int settings)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data[DATA_HASH_LENGTH+1];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -172,21 +172,11 @@ int sync_check_reserve_proofs_database(int settings)
   memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
 
   memset(data2,0,sizeof(data2));
+  memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    exit(0);
-  }
 
   if (test_settings == 0)
   {
@@ -292,8 +282,6 @@ int sync_check_reserve_proofs_database(int settings)
   {
     color_print("The reserve proofs database is synced","green");
   }
-  
-  pointer_reset(data);
   return 1;
   
   #undef SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR  
@@ -311,7 +299,7 @@ Description: Checks if the block verifiers reserve proofs database is in the maj
 void sync_check_majority_reserve_proofs_database(void)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data[DATA_HASH_LENGTH+1];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -323,22 +311,12 @@ void sync_check_majority_reserve_proofs_database(void)
   memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data); \
   return;
 
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    exit(0);
-  }
-  
   if (test_settings == 0)
   {
     color_print("Checking if the database is in the majority","yellow");
@@ -401,8 +379,6 @@ void sync_check_majority_reserve_proofs_database(void)
     get_random_network_data_node(count);
     sync_reserve_proofs_database(count+3,"");    
   }
-  
-  pointer_reset(data);
   return;
   
   #undef SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR  
@@ -424,7 +400,7 @@ Return: 0 if an error has occured, 1 if successfull, 2 to indicate the reserve b
 int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETTINGS)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data[DATA_HASH_LENGTH+1];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -437,21 +413,11 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
   memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
   
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    exit(0);
-  }
 
   if (test_settings == 0)
   {
@@ -565,8 +531,6 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
   {
     color_print("The reserve bytes database is synced","green");
   }
-  
-  pointer_reset(data);
   return 1;
   
   #undef SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR  
@@ -586,7 +550,7 @@ Paramters:
 void sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SETTINGS)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data[DATA_HASH_LENGTH+1];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -599,21 +563,11 @@ void sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SE
   memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data); \
   return;
   
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    exit(0);
-  }
 
   if (test_settings == 0)
   {
@@ -680,8 +634,6 @@ void sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SE
     get_random_network_data_node(count);
     sync_reserve_bytes_database(count+3,RESERVE_BYTES_START_SETTINGS,""); 
   }
-  
-  pointer_reset(data);
   return;
   
   #undef SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR  
@@ -702,7 +654,7 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_delegates_database(int settings)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data[DATA_HASH_LENGTH+1];
   char data2[SMALL_BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
@@ -715,21 +667,11 @@ int sync_check_delegates_database(int settings)
   memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
-
+  
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    exit(0);
-  }
 
   if (test_settings == 0)
   {
@@ -816,8 +758,6 @@ int sync_check_delegates_database(int settings)
   {
     color_print("The delegates database is synced","green");
   }
-  
-  pointer_reset(data);
   return 1;
 
   #undef DATABASE_COLLECTION  
@@ -836,7 +776,7 @@ Description: Checks if the block verifiers delegates database is in the majority
 void sync_check_majority_delegates_database(void)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data[DATA_HASH_LENGTH+1];
   char data2[SMALL_BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
@@ -849,21 +789,11 @@ void sync_check_majority_delegates_database(void)
   memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data); \
   return;
 
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    exit(0);
-  }
 
   if (test_settings == 0)
   {
@@ -908,8 +838,6 @@ void sync_check_majority_delegates_database(void)
     get_random_network_data_node(count);
     sync_delegates_database(count+3,"");   
   }
-  
-  pointer_reset(data);
   return;
 
   #undef DATABASE_COLLECTION  
@@ -931,7 +859,7 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_statistics_database(int settings)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data[DATA_HASH_LENGTH+1];
   char data2[SMALL_BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
@@ -944,21 +872,11 @@ int sync_check_statistics_database(int settings)
   memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data); \
   return 0;
 
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    exit(0);
-  }
 
   if (test_settings == 0)
   {
@@ -1045,8 +963,6 @@ int sync_check_statistics_database(int settings)
   {
     color_print("The statistics database is synced","green");
   }
-  
-  pointer_reset(data);
   return 1;
 
   #undef DATABASE_COLLECTION  
@@ -1065,7 +981,7 @@ Description: Checks if the block verifiers statistics database is in the majorit
 void sync_check_majority_statistics_database(void)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data[DATA_HASH_LENGTH+1];
   char data2[SMALL_BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
@@ -1078,21 +994,11 @@ void sync_check_majority_statistics_database(void)
   memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data); \
   return;
 
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    exit(0);
-  }
 
   if (test_settings == 0)
   { 
@@ -1137,8 +1043,6 @@ void sync_check_majority_statistics_database(void)
     get_random_network_data_node(count);
     sync_statistics_database(count+3,"");     
   }
-  
-  pointer_reset(data);
   return;
 
   #undef DATABASE_COLLECTION  
