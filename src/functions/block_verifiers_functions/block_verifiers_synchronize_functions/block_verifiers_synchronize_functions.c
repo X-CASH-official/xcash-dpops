@@ -594,7 +594,7 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
   free(data); \
   data = NULL; \
   free(data3); \
-  data3 = NULL; \
+  data3 = NULL;
 
   #define SYNC_CHECK_RESERVE_PROOFS_SPECIFIC_DATABASE_ERROR(message) \
   memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_specific_database",43); \

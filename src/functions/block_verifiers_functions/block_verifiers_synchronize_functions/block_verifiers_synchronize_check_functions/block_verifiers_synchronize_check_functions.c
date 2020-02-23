@@ -446,7 +446,6 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -609,7 +608,6 @@ void sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SE
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -726,7 +724,6 @@ int sync_check_delegates_database(int settings)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -861,7 +858,6 @@ void sync_check_majority_delegates_database(void)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -957,7 +953,6 @@ int sync_check_statistics_database(int settings)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -1092,7 +1087,6 @@ void sync_check_majority_statistics_database(void)
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
   {
-    pointer_reset(data);
     memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;

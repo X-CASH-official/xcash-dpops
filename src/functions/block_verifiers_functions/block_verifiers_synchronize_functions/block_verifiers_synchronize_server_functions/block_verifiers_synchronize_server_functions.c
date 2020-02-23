@@ -61,7 +61,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
 {
   // Variables
   char data[BUFFER_SIZE];
-  size_t count2;
+  int count;
   int total_delegates = 0;
 
   // define macros
@@ -75,20 +75,20 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   memcpy(data+strlen(data),"\",\r\n \"",6); \
   memcpy(data+strlen(data),(settings),sizeof((settings))-1); \
   memcpy(data+strlen(data),"\": \"",4); \
-  for (count2 = 0; (int)count2 < total_delegates; count2++) \
+  for (count = 0; count < total_delegates; count++) \
   { \
-    memcpy(data+strlen(data),(block_verifiers_data)[count2],strnlen((block_verifiers_data)[count2],sizeof(data))); \
+    memcpy(data+strlen(data),(block_verifiers_data)[count],strnlen((block_verifiers_data)[count],sizeof(data))); \
     memcpy(data+strlen(data),"|",1); \
   }
 
   memset(data,0,sizeof(data));
 
   // get the delegate amount
-  for (count2 = 0; (int)count2 < BLOCK_VERIFIERS_TOTAL_AMOUNT; count2++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
-    if (strlen(current_block_verifiers_list.block_verifiers_public_address[count2]) != XCASH_WALLET_LENGTH)
+    if (strlen(current_block_verifiers_list.block_verifiers_public_address[count]) != XCASH_WALLET_LENGTH)
     {
-      total_delegates = count2;
+      total_delegates = count;
       break;
     }
   } 
@@ -140,7 +140,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   // Variables
   char data[BUFFER_SIZE];
   int total_delegates = 0;
-  size_t count;
+  int count;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
@@ -164,19 +164,19 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
 
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"",129);
-  for (count = 0; (int)count < total_delegates; count++)
+  for (count = 0; count < total_delegates; count++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_public_key_list\": \"",41);
-  for (count = 0; (int)count < total_delegates; count++)
+  for (count = 0; count < total_delegates; count++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_key[count],VRF_PUBLIC_KEY_LENGTH);
     memcpy(data+strlen(data),"|",1);
   }
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_IP_address_list\": \"",41);
-  for (count = 0; (int)count < total_delegates; count++)
+  for (count = 0; count < total_delegates; count++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(data)));
     memcpy(data+strlen(data),"|",1);
@@ -212,7 +212,8 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
 {
   // Variables
   int count;
-  char public_address[BUFFER_SIZE];
+  char data_hash[DATA_HASH_LENGTH+1];
+  char public_address[XCASH_WALLET_LENGTH+1];
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR(settings) \
@@ -221,6 +222,7 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
   error_message.total++; \
   return 0;
 
+  memset(data_hash,0,sizeof(data_hash));
   memset(public_address,0,sizeof(public_address));
 
   // verify the message
@@ -238,12 +240,11 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
     if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0)
-    {      
-      memset(public_address,0,sizeof(public_address));
-      parse_json_data(MESSAGE,"data_hash",public_address,DATA_HASH_LENGTH);
-      if (strlen(public_address) == DATA_HASH_LENGTH)
+    { 
+      parse_json_data(MESSAGE,"data_hash",data_hash,DATA_HASH_LENGTH);
+      if (strlen(data_hash) == DATA_HASH_LENGTH)
       {
-        memcpy(network_data_nodes_database_data[count],public_address,DATA_HASH_LENGTH);
+        memcpy(network_data_nodes_database_data[count],data_hash,DATA_HASH_LENGTH);
       }      
       break;
     }
@@ -273,8 +274,10 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
 
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char message[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
 
   // define macros
   #define DATABASE_COLLECTION "reserve_bytes"
@@ -282,11 +285,21 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  pointer_reset(data2); \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the reserve bytes data hash}",0,0,""); \
   return 0;
 
+  // check if the memory needed was allocated on the heap successfully
+  if (data2 == NULL)
+  {
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
+    exit(0);
+  }
+
   memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
 
   // get the database data hash for the reserve bytes database
@@ -301,7 +314,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memcpy(data+200,"|",1);
   
   // sign_data
-  memset(data2,0,sizeof(data2));
+  memset(data2,0,strlen(data2));
   memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(message+60,data,strnlen(data,sizeof(message)));
   memcpy(message+strlen(message),"\"}}",3);
@@ -311,7 +324,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not create the message");
   } 
 
-  memset(message,0,sizeof(message));
+  memset(message,0,strlen(message));
 
   if (parse_json_data(data2,"signature",message,sizeof(message)) == 0)
   {
@@ -338,6 +351,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   {
     send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
   }  
+  pointer_reset(data2);
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -429,9 +443,9 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   for (count = 0; count < reserve_bytes_blocks_amount; count++, current_block_height_reserve_bytes++)
   {
     // create the message
-    memset(data,0,sizeof(data));
-    memset(data2,0,sizeof(data2));
-    memset(message,0,sizeof(message));
+    memset(data,0,strlen(data));
+    memset(data2,0,strlen(data2));
+    memset(message,0,strlen(message));
     memcpy(data2,"{\"block_height\": \"",18);
     snprintf(data2+18,sizeof(data2)-19,"%zu",current_block_height_reserve_bytes);
     memcpy(data2+strlen(data2),"\"}",2);
@@ -499,7 +513,7 @@ int server_receive_data_socket_node_to_block_verifiers_check_if_current_block_ve
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
-      memset(data,0,sizeof(data));
+      memset(data,0,2);
       memcpy(data,"1}",2);
       break;
     }    
@@ -525,7 +539,7 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proo
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -537,7 +551,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   char reserve_proofs_database[BUFFER_SIZE];
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  size_t count;
+  int count;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
@@ -558,7 +572,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // get the database data hash for the reserve proofs database
-  memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,database_name,"reserve_proofs") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -567,30 +580,28 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   // create the message
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
-    memset(message,0,strlen(message));
     memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\",\r\n \"reserve_proofs_database_1\": \"true\",\r\n \"reserve_proofs_database_2\": \"true\",\r\n \"reserve_proofs_database_3\": \"true\",\r\n \"reserve_proofs_database_4\": \"true\",\r\n \"reserve_proofs_database_5\": \"true\",\r\n \"reserve_proofs_database_6\": \"true\",\r\n \"reserve_proofs_database_7\": \"true\",\r\n \"reserve_proofs_database_8\": \"true\",\r\n \"reserve_proofs_database_9\": \"true\",\r\n \"reserve_proofs_database_10\": \"true\",\r\n \"reserve_proofs_database_11\": \"true\",\r\n \"reserve_proofs_database_12\": \"true\",\r\n \"reserve_proofs_database_13\": \"true\",\r\n \"reserve_proofs_database_14\": \"true\",\r\n \"reserve_proofs_database_15\": \"true\",\r\n \"reserve_proofs_database_16\": \"true\",\r\n \"reserve_proofs_database_17\": \"true\",\r\n \"reserve_proofs_database_18\": \"true\",\r\n \"reserve_proofs_database_19\": \"true\",\r\n \"reserve_proofs_database_20\": \"true\",\r\n \"reserve_proofs_database_21\": \"true\",\r\n \"reserve_proofs_database_22\": \"true\",\r\n \"reserve_proofs_database_23\": \"true\",\r\n \"reserve_proofs_database_24\": \"true\",\r\n \"reserve_proofs_database_25\": \"true\",\r\n \"reserve_proofs_database_26\": \"true\",\r\n \"reserve_proofs_database_27\": \"true\",\r\n \"reserve_proofs_database_28\": \"true\",\r\n \"reserve_proofs_database_29\": \"true\",\r\n \"reserve_proofs_database_30\": \"true\",\r\n \"reserve_proofs_database_31\": \"true\",\r\n \"reserve_proofs_database_32\": \"true\",\r\n \"reserve_proofs_database_33\": \"true\",\r\n \"reserve_proofs_database_34\": \"true\",\r\n \"reserve_proofs_database_35\": \"true\",\r\n \"reserve_proofs_database_36\": \"true\",\r\n \"reserve_proofs_database_37\": \"true\",\r\n \"reserve_proofs_database_38\": \"true\",\r\n \"reserve_proofs_database_39\": \"true\",\r\n \"reserve_proofs_database_40\": \"true\",\r\n \"reserve_proofs_database_41\": \"true\",\r\n \"reserve_proofs_database_42\": \"true\",\r\n \"reserve_proofs_database_43\": \"true\",\r\n \"reserve_proofs_database_44\": \"true\",\r\n \"reserve_proofs_database_45\": \"true\",\r\n \"reserve_proofs_database_46\": \"true\",\r\n \"reserve_proofs_database_47\": \"true\",\r\n \"reserve_proofs_database_48\": \"true\",\r\n \"reserve_proofs_database_49\": \"true\",\r\n \"reserve_proofs_database_50\": \"true\",\r\n}",2140);
   }
   else
   {
-    memset(message,0,sizeof(message));
     memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\",\r\n ",150);
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memcpy(message+strlen(message),"\"reserve_proofs_database_",25);
-      snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);
+      snprintf(message+strlen(message),sizeof(message)-1,"%d",count);
       memcpy(message+strlen(message),"\": \"",4);      
       memset(data2,0,strlen(data2));  
       memcpy(data2,"reserve_proofs_data_hash_",25);  
-      snprintf(data2+25,sizeof(data2)-26,"%zu",count); 
+      snprintf(data2+25,sizeof(data2)-26,"%d",count); 
       // parse the message
       if (parse_json_data(MESSAGE,data2,data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
       {
         SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
       }
       // get the database data hash for the reserve proofs database
-      memset(data2,0,sizeof(data2));  
+      memset(data2,0,strlen(data2));  
       memcpy(data2,"reserve_proofs_",15);  
-      snprintf(data2+15,sizeof(data2)-16,"%zu",count);
+      snprintf(data2+15,sizeof(data2)-16,"%d",count);
       if (get_database_data_hash(reserve_proofs_database,database_name,data2) == 0)
       {
         SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -630,7 +641,7 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proo
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -683,7 +694,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // get the database data for the reserve proofs database
-  memset(data2,0,strlen(data2));
   if (get_database_data(data2,database_name,data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -719,7 +729,7 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_byte
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -756,7 +766,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   get_reserve_bytes_database(current_reserve_bytes_database,0);
 
   // get the database data hash for the reserve bytes database
-  memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,database_name,"reserve_bytes") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
@@ -765,12 +774,10 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // create the message
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
-    memset(message,0,strlen(message));
     memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n ",147);
   }
   else
   {
-    memset(message,0,sizeof(message));
     memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n ",148);
   }
   
@@ -788,7 +795,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
       SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
     }
     // get the database data hash for the reserve proofs database
-    memset(data2,0,sizeof(data2));  
+    memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_bytes_",14);  
     snprintf(data2+14,sizeof(data2)-15,"%zu",count);
     if (get_database_data_hash(reserve_bytes_database,database_name,data2) == 0)
@@ -828,7 +835,7 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_byte
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -881,7 +888,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // get the database data for the reserve bytes database
-  memset(data2,0,strlen(data2));
   if (get_database_data(data2,database_name,data,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
@@ -917,7 +923,7 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_da
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -925,8 +931,8 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[DATA_HASH_LENGTH+1];
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -940,14 +946,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   memset(data2,0,sizeof(data2));
 
   // get the database data hash for the delegates database
-  memset(data2,0,strlen(data2));
   if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the delegates database");
   }
 
   // parse the message
-  memset(data,0,sizeof(data));
   if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
@@ -956,12 +960,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   // create the message
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
-    memset(data,0,sizeof(data));
+    memset(data,0,strlen(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"true\",\r\n}",135);
   }
   else
   {
-    memset(data,0,sizeof(data));
+    memset(data,0,strlen(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"false\",\r\n}",136);
   }
   
@@ -988,7 +992,6 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_da
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1038,14 +1041,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   }
 
   // get the database data for the reserve bytes database
-  memset(data2,0,strlen(data2));
   if (get_database_data(data2,database_name,DATABASE_COLLECTION,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the delegates database");
   }
 
   // create the message
-  memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"delegates_database\": \"",129);
   memcpy(data+129,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
@@ -1075,7 +1076,7 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_d
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1083,8 +1084,8 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[DATA_HASH_LENGTH+1];
 
   // define macros
   #define DATABASE_COLLECTION "statistics"
@@ -1098,14 +1099,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   memset(data2,0,sizeof(data2));
 
   // get the database data hash for the statistics database
-  memset(data2,0,sizeof(data2));
   if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the statistics database");
   }
 
   // parse the message
-  memset(data,0,sizeof(data));
   if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
@@ -1114,12 +1113,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   // create the message
   if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
-    memset(data,0,sizeof(data));
+    memset(data,0,strlen(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"true\",\r\n}",137);
   }
   else
   {
-    memset(data,0,sizeof(data));
+    memset(data,0,strlen(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"false\",\r\n}",138);
   }
   
@@ -1145,7 +1144,6 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_d
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  message - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1193,14 +1191,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   }
 
   // get the database data for the reserve bytes database
-  memset(data2,0,strlen(data2));
   if (get_database_data(data2,database_name,DATABASE_COLLECTION,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the statistics database");
   }
 
   // create the message
-  memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"statistics_database\": \"",131);
   memcpy(data+131,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
