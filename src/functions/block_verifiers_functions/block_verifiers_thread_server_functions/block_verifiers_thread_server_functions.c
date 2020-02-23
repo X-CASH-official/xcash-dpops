@@ -63,8 +63,7 @@ Return: NULL
 void* current_block_height_timer_thread(void* parameters)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
@@ -72,26 +71,14 @@ void* current_block_height_timer_thread(void* parameters)
   int block_verifier_settings;
   
   memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
 
   // unused parameters
   (void)parameters;
 
-  /*sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time);
-  get_current_block_height(current_block_height);
-  if (start_new_round() == 0)
-  {
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data);
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;32mNetwork Block %s Has Been Created Successfully\033[0m\n",current_block_height);
-  }*/
-
   /*do
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    sleep(60);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);  
   } while (current_UTC_date_and_time.tm_mday != 28 || current_UTC_date_and_time.tm_hour != 16 || current_UTC_date_and_time.tm_min != 56);*/
   
   // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
@@ -112,11 +99,7 @@ void* current_block_height_timer_thread(void* parameters)
     if ((settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 0) || (settings == 1 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0))
     {
       if (settings == 0)
-      {      
-        // start the reserve proofs timer
-        //pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
-        //pthread_detach(thread_id);  
-
+      { 
         block_verifier_settings = start_new_round();
         if (block_verifier_settings == 0)
         {
@@ -124,18 +107,18 @@ void* current_block_height_timer_thread(void* parameters)
         }
         else if (block_verifier_settings == 1)
         {
-          memset(data2,0,sizeof(data2));
-          memcpy(data2,"Your delegate is not a block verifier for network block ",56);
-          memcpy(data2+56,current_block_height,strnlen(current_block_height,sizeof(data2)));
-          color_print(data2,"red");
+          memset(data,0,strlen(data));
+          memcpy(data,"Your delegate is not a block verifier for network block ",56);
+          memcpy(data+56,current_block_height,strnlen(current_block_height,sizeof(data)));
+          color_print(data,"red");
         }
         else
         {
-          memset(data2,0,sizeof(data2));
-          memcpy(data2,"Network Block ",14);
-          memcpy(data2+14,current_block_height,strnlen(current_block_height,sizeof(data2)));
-          memcpy(data2+strlen(data2)," Has Been Created Successfully\n",31);
-          color_print(data2,"green");
+          memset(data,0,strlen(data));
+          memcpy(data,"Network Block ",14);
+          memcpy(data+14,current_block_height,strnlen(current_block_height,sizeof(data)));
+          memcpy(data+strlen(data)," Has Been Created Successfully\n",31);
+          color_print(data,"green");
         }
         settings = 1;
         continue;
@@ -144,10 +127,6 @@ void* current_block_height_timer_thread(void* parameters)
       get_current_block_height(current_block_height);
       get_previous_block_hash(previous_block_hash);
 
-      // start the reserve proofs timer
-      //pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
-      //pthread_detach(thread_id);  
-
       block_verifier_settings = start_new_round();
       if (block_verifier_settings == 0)
       {
@@ -155,18 +134,18 @@ void* current_block_height_timer_thread(void* parameters)
       }
       else if (block_verifier_settings == 1)
       {
-        memset(data2,0,sizeof(data2));
-        memcpy(data2,"Your delegate is not a block verifier for network block ",56);
-        memcpy(data2+56,current_block_height,strnlen(current_block_height,sizeof(data2)));
-        color_print(data2,"red");
+        memset(data,0,strlen(data));
+        memcpy(data,"Your delegate is not a block verifier for network block ",56);
+        memcpy(data+56,current_block_height,strnlen(current_block_height,sizeof(data)));
+        color_print(data,"red");
       }
       else
       {
-        memset(data2,0,sizeof(data2));
-        memcpy(data2,"Network Block ",14);
-        memcpy(data2+14,current_block_height,strnlen(current_block_height,sizeof(data2)));
-        memcpy(data2+strlen(data2)," Has Been Created Successfully\n",31);
-        color_print(data2,"green");
+        memset(data,0,strlen(data));
+        memcpy(data,"Network Block ",14);
+        memcpy(data+14,current_block_height,strnlen(current_block_height,sizeof(data)));
+        memcpy(data+strlen(data)," Has Been Created Successfully\n",31);
+        color_print(data,"green");
       }  
     }
     sleep(1);
@@ -189,7 +168,7 @@ Return: 0 if an error has occured, 1 if successfull
 int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[DATA_HASH_LENGTH+1];
   char* reserve_proofs[invalid_reserve_proofs.count];
   int count;
   int count2;
@@ -296,9 +275,9 @@ Return: 0 if an error has occured, 1 if successfull
 int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF_COUNT)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[100];
+  char data2[XCASH_WALLET_LENGTH+1];
+  char data3[BUFFER_SIZE_RESERVE_PROOF+BUFFER_SIZE_NETWORK_BLOCK_DATA];
   int count;
   size_t block_verifiers_total_vote_count;
 
@@ -316,8 +295,8 @@ int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF
     // check if the reserve proof is in the database
     if (count_all_documents_in_collection(database_name,data,1) > 0)
     {
-      memset(data2,0,sizeof(data2));
-      memset(data3,0,sizeof(data3));
+      memset(data2,0,strlen(data2));
+      memset(data3,0,strlen(data3));
       memcpy(data3,"{\"reserve_proof\":\"",18);
       memcpy(data3+18,invalid_reserve_proofs.reserve_proof[CURRENT_RESERVE_PROOF_COUNT],strnlen(invalid_reserve_proofs.reserve_proof[CURRENT_RESERVE_PROOF_COUNT],sizeof(data3)));
       memcpy(data3+strlen(data3),"\"}",2); 
@@ -327,7 +306,7 @@ int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF
       invalid_reserve_proofs.reserve_proof_amount[CURRENT_RESERVE_PROOF_COUNT] = 0;      
           
       // get the data from the database for the reserve proof. If the data is not in the database then skip that reserve proof when updating the database
-      memset(data2,0,sizeof(data2));
+      memset(data2,0,strlen(data2));
       if (read_document_field_from_collection(database_name,data,data3,"public_address_created_reserve_proof",data2,1) == 1)
       {
         memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[CURRENT_RESERVE_PROOF_COUNT],data2,strnlen(data2,XCASH_WALLET_LENGTH));
@@ -337,7 +316,7 @@ int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF
         return 0;
       }
 
-      memset(data2,0,sizeof(data2));
+      memset(data2,0,strlen(data2));
       if (read_document_field_from_collection(database_name,data,data3,"public_address_voted_for",data2,1) == 1)
       {
         memcpy(invalid_reserve_proofs.public_address_voted_for[CURRENT_RESERVE_PROOF_COUNT],data2,strnlen(data2,XCASH_WALLET_LENGTH));
@@ -347,7 +326,7 @@ int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF
         return 0;
       }
 
-      memset(data2,0,sizeof(data2));
+      memset(data2,0,strlen(data2));
       if (read_document_field_from_collection(database_name,data,data3,"total",data2,1) == 1)
       {
         sscanf(data2,"%zu", &block_verifiers_total_vote_count);
@@ -385,9 +364,9 @@ Return: 0 if an error has occured, 1 if successfull
 int check_reserve_proofs_timer_update_delegates_total_vote_count(const int CURRENT_RESERVE_PROOF_COUNT)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data3[BUFFER_SIZE_RESERVE_PROOF+BUFFER_SIZE_NETWORK_BLOCK_DATA];
   size_t block_verifiers_total_vote_count;
 
   memset(data,0,sizeof(data));
@@ -410,7 +389,7 @@ int check_reserve_proofs_timer_update_delegates_total_vote_count(const int CURRE
     return 0;
   }
   block_verifiers_total_vote_count-= invalid_reserve_proofs.reserve_proof_amount[CURRENT_RESERVE_PROOF_COUNT];
-  memset(data,0,sizeof(data));
+  memset(data,0,strlen(data));
   snprintf(data,sizeof(data)-1,"%zu",block_verifiers_total_vote_count);  
 
   memcpy(data2,"{\"total_vote_count\":\"",21);
@@ -439,9 +418,9 @@ Return: 0 if an error has occured, 1 if successfull
 int check_reserve_proofs_timer_update_delegates_score(const int CURRENT_RESERVE_PROOF_COUNT)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data3[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   size_t block_verifiers_score;
 
   memset(data,0,sizeof(data));
@@ -449,7 +428,6 @@ int check_reserve_proofs_timer_update_delegates_score(const int CURRENT_RESERVE_
   memset(data3,0,sizeof(data3));
 
   // create the message
-  memset(data,0,sizeof(data));
   memcpy(data,"{\"public_address\":\"",19);
   memcpy(data+19,invalid_reserve_proofs.block_verifier_public_address[CURRENT_RESERVE_PROOF_COUNT],strnlen(invalid_reserve_proofs.block_verifier_public_address[CURRENT_RESERVE_PROOF_COUNT],sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
@@ -462,7 +440,7 @@ int check_reserve_proofs_timer_update_delegates_score(const int CURRENT_RESERVE_
   sscanf(data2, "%zu", &block_verifiers_score);
   block_verifiers_score++;
 
-  memset(data2,0,sizeof(data2));
+  memset(data2,0,strlen(data2));
   memcpy(data2,"{\"block_verifier_score\":\"",25);
   snprintf(data2+25,sizeof(data2)-26,"%zu",block_verifiers_score);
   memcpy(data2+strlen(data2),"\"}",2);
@@ -488,23 +466,21 @@ Paramters:
 void check_reserve_proofs_timer_delete_reserve_proof(const int CURRENT_RESERVE_PROOF_COUNT)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[100];
+  char data2[BUFFER_SIZE_RESERVE_PROOF+BUFFER_SIZE_NETWORK_BLOCK_DATA];
   int count;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
 
   // get the data for the reserve proof from your own database, since you cant know if the data given was valid since the reserve proof is already invalid
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
-    memset(data,0,sizeof(data));
+    memset(data,0,strlen(data));
     memcpy(data,"reserve_proofs_",15);
     snprintf(data+15,sizeof(data)-16,"%d",count);
 
-    memset(data2,0,sizeof(data2));
+    memset(data2,0,strlen(data2));
     memcpy(data2,"{\"reserve_proof\":\"",18);
     memcpy(data2+18,invalid_reserve_proofs.reserve_proof[CURRENT_RESERVE_PROOF_COUNT],strnlen(invalid_reserve_proofs.reserve_proof[CURRENT_RESERVE_PROOF_COUNT],sizeof(data2)));
     memcpy(data2+strlen(data2),"\"}",2);
@@ -535,20 +511,10 @@ Return: 0 if an error has occured, 1 if successfull
 int check_reserve_proofs_timer_update_database(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
   int count;
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
 
   for (count = 0; count < invalid_reserve_proofs.count; count++)
   {
-    memset(data,0,sizeof(data));
-    memset(data2,0,sizeof(data2));
-    memset(data3,0,sizeof(data3));
     pthread_rwlock_wrlock(&rwlock_reserve_proofs);
     RESET_ERROR_MESSAGES;
     pthread_rwlock_unlock(&rwlock_reserve_proofs);
@@ -597,7 +563,7 @@ Return: 0 if the reserve proof is not unique, 1 if it is unique and needs to be 
 int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[100];
   int count;
   int count2;
   int counter;
@@ -704,7 +670,7 @@ Return: 0 if an error has occured, 1 if successfull
 int send_invalid_reserve_proof_to_block_verifiers(struct reserve_proof* reserve_proof)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
 
   memset(data,0,sizeof(data));
 
@@ -724,7 +690,6 @@ int send_invalid_reserve_proof_to_block_verifiers(struct reserve_proof* reserve_
 
   // send the reserve proof to all block verifiers
   // create the message
-  memset(data,0,sizeof(data));
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\",\r\n \"public_address_that_created_the_reserve_proof\": \"",137);
   memcpy(data+strlen(data),reserve_proof->public_address_created_reserve_proof,strnlen(reserve_proof->public_address_created_reserve_proof,sizeof(data)));
   memcpy(data+strlen(data),"\",\r\n \"reserve_proof\": \"",23);
@@ -758,8 +723,8 @@ Return: NULL
 void* check_reserve_proofs_timer_thread(void* parameters)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[MAXIMUM_NUMBER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -854,7 +819,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
     
     // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
-    memset(data,0,sizeof(data));
+    memset(data,0,strlen(data));
     if (select_random_unique_reserve_proof(&reserve_proof) == 1 && (check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof) == 0 || memcmp(data,reserve_proof.reserve_proof_amount,strlen(data)) != 0))
     { 
       send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
@@ -893,7 +858,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   size_t HOST_LENGTH = strnlen(data->HOST,BUFFER_SIZE);
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};  
   char buffer[BUFFER_SIZE]; 
-  char buffer2[BUFFER_SIZE];
+  char buffer2[MAXIMUM_NUMBER_SIZE];
   char str[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
@@ -955,7 +920,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   }
   
   // convert the hostname if used, to an IP address
-  memset(str,0,sizeof(str));
+  memset(str,0,strlen(str));
   memcpy(str,data->HOST,strnlen(data->HOST,sizeof(str)));
   string_replace(str,sizeof(str),"http://","");
   string_replace(str,sizeof(str),"https://","");
@@ -1029,11 +994,11 @@ void* send_and_receive_data_socket_thread(void* parameters)
     memcpy(str+strlen(str)," on port ",9);
     memcpy(str+strlen(str),buffer2,strnlen(buffer2,BUFFER_SIZE));
     memcpy(str+strlen(str),"\n",1);
-    memset(data2,0,sizeof(data2));
+    memset(data2,0,strlen(data2));
     strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
     memcpy(str+strlen(str),data2,strnlen(data2,sizeof(str)));
     color_print(str,"green");
-    memset(str,0,sizeof(str));
+    memset(str,0,strlen(str));
   }
  
   const int TOTAL = strnlen(message,BUFFER_SIZE);
@@ -1052,10 +1017,10 @@ void* send_and_receive_data_socket_thread(void* parameters)
   }
 
   // receive the data
-  memset(message,0,sizeof(message));
+  memset(message,0,strlen(message));
   for (;;)
   { 
-    memset(&buffer, 0, sizeof(buffer));
+    memset(buffer, 0, strlen(buffer));
     // check the size of the data that were about to receive. If it is over BUFFER_SIZE then dont accept it, since it will cause a buffer overflow
     if (((int)recvfrom(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) - (int)strnlen(message,sizeof(buffer)) && (int)strnlen(message,sizeof(buffer)) > 0) || ((int)recvfrom(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= (int)sizeof(buffer) && (int)strnlen(message,sizeof(buffer)) == 0))
     {
@@ -1076,7 +1041,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
       if (strstr(message,SOCKET_END_STRING) != NULL)
       {
         // remove SOCKET_END_STRING from the message
-        memset(data2,0,sizeof(data2));
+        memset(data2,0,strlen(data2));
         memcpy(data2,message,strnlen(message,BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1));
       }
       break;
@@ -1098,7 +1063,7 @@ void* send_and_receive_data_socket_thread(void* parameters)
   }
 
   // parse the message
-  memset(message,0,sizeof(message));
+  memset(message,0,strlen(message));
   memset(VRF_data.block_blob_signature[data->COUNT],0,strnlen(VRF_data.block_blob_signature[data->COUNT],BUFFER_SIZE));
   memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],0,strnlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[data->COUNT],BUFFER_SIZE));
   if (parse_json_data(data2,"block_blob_signature",message,sizeof(message)) == 1 && strlen(message) == VRF_PROOF_LENGTH+VRF_BETA_LENGTH)
@@ -1133,7 +1098,7 @@ Paramters:
 void remove_inactive_delegates(int *total_delegates, int *total_inactive_delegates)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -1147,8 +1112,6 @@ void remove_inactive_delegates(int *total_delegates, int *total_inactive_delegat
 
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"remove_inactive_delegates_timer_thread",data,current_date_and_time,current_UTC_date_and_time);
-  
-  memset(data,0,sizeof(data));
 
   // organize the delegates
   *total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
@@ -1161,7 +1124,7 @@ void remove_inactive_delegates(int *total_delegates, int *total_inactive_delegat
     if (memcmp(delegates[count].block_producer_block_heights,"",1) == 0 && total_votes < MINIMUM_AMOUNT_REGISTER_DELEGATE)
     {
       // remove the delegate from the database
-      memset(data,0,sizeof(data));
+      memset(data,0,strlen(data));
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+strlen(data),delegates[count].public_address,XCASH_WALLET_LENGTH);
       memcpy(data+strlen(data),"\"}",2);
@@ -1190,7 +1153,7 @@ Description: runs the remove_inactive_delegates function at UTC 00:00
 void* remove_inactive_delegates_timer_thread(void* parameters)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   int total_delegates = 0;
   int total_inactive_delegates = 0;
   time_t current_date_and_time;
@@ -1198,6 +1161,8 @@ void* remove_inactive_delegates_timer_thread(void* parameters)
 
   // unused parameters
   (void)parameters;
+
+  memset(data,0,sizeof(data)); 
 
   for (;;)
   {
@@ -1209,7 +1174,7 @@ void* remove_inactive_delegates_timer_thread(void* parameters)
 
       remove_inactive_delegates(&total_delegates,&total_inactive_delegates);
 
-      memset(data,0,sizeof(data));  
+      memset(data,0,strlen(data));  
       print_start_message(current_date_and_time,current_UTC_date_and_time,"Inactive Delegates",data);      
       memcpy(data,"Amount of delegates: ",21);
       snprintf(data+strlen(data),sizeof(data)-1,"%d",total_delegates);

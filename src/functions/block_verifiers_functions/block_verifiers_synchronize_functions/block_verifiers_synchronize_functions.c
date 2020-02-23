@@ -56,7 +56,7 @@ Description: Sync all of the network data nodes to the same database data
 void sync_network_data_nodes_database(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -201,9 +201,9 @@ int sync_all_block_verifiers_list(void)
   char data2[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  size_t count;
-  size_t count2;
+  char data3[BUFFER_SIZE];
+  int count;
+  int count2;
   int total_delegates = 0;
 
   // define macros
@@ -215,7 +215,7 @@ int sync_all_block_verifiers_list(void)
   { \
     SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not parse the message"); \
   } \
-  for (count = 0, count2 = 0; (int)count < total_delegates; count++) \
+  for (count = 0, count2 = 0; count < total_delegates; count++) \
   { \
     memcpy((block_verifiers_data)[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2); \
     count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1; \
@@ -227,7 +227,6 @@ int sync_all_block_verifiers_list(void)
   error_message.total++; \
   database_settings = 1; \
   pthread_cond_broadcast(&thread_settings_lock); \
-  pointer_reset(data3); \
   return 0;
 
   // set the database to not accept any new data
@@ -235,7 +234,7 @@ int sync_all_block_verifiers_list(void)
 
   memset(message,0,sizeof(message));
   memset(data2,0,sizeof(data2));
-  memset(data3,0,strlen(data3));
+  memset(data3,0,sizeof(data3));
 
   // reset the previous current and next block verifiers list
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
@@ -270,7 +269,7 @@ int sync_all_block_verifiers_list(void)
       color_print("Connecting to a random network data node to get a list of previous, current and next block verifiers","white");
     }
     
-    memset(data2,0,sizeof(data2));
+    memset(data2,0,strlen(data2));
     memset(data3,0,strlen(data3));
 
     // send the message to a random network data node
@@ -291,12 +290,12 @@ int sync_all_block_verifiers_list(void)
       memcpy(data3+strlen(data3),data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
      color_print(data3,"white");
     }
-    memset(data2,0,sizeof(data2));
+    memset(data2,0,strlen(data2));
     memset(data3,0,strlen(data3));
 
     if (send_and_receive_data_socket(data3,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
     {
-      memset(data2,0,sizeof(data2));
+      memset(data2,0,strlen(data2));
       memcpy(data2,"Could not receive data from network data node ",46);
       memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
       color_print(data2,"red");
@@ -351,7 +350,7 @@ int sync_all_block_verifiers_list(void)
     }
 
     // copy the database_multiple_documents_fields to the next, current and previous block verifiers list
-    for (count = 0; (int)count < total_delegates; count++)
+    for (count = 0; count < total_delegates; count++)
     {
        memcpy(previous_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
        memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));
@@ -380,7 +379,6 @@ int sync_all_block_verifiers_list(void)
   // reset any thread that was waiting for the database
   pthread_cond_broadcast(&thread_settings_lock);
 
-  pointer_reset(data3);
   return 1;
 
   #undef DATABASE_COLLECTION  
@@ -403,12 +401,12 @@ int get_synced_block_verifiers(void)
 {
   // Variables
   char data[BUFFER_SIZE];
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count;
-  size_t count2;
-  size_t total_delegates = 0;
+  int count;
+  int count2;
+  int total_delegates = 0;
 
   // define macros
   #define GET_SYNCED_BLOCK_VERIFIERS_DATA "{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}"
@@ -428,7 +426,6 @@ int get_synced_block_verifiers(void)
   memcpy(error_message.function[error_message.total],"get_synced_block_verifiers",26); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data2); \
   return 0;
 
   // reset the block_verifiers_IP_addresses 
@@ -448,7 +445,7 @@ int get_synced_block_verifiers(void)
   }
 
   memset(data,0,sizeof(data));
-  memset(data2,0,strlen(data2));
+  memset(data2,0,sizeof(data2));
 
   // send the message to a random network data node
   do
@@ -468,7 +465,7 @@ int get_synced_block_verifiers(void)
     memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
     color_print(data,"white");
   }
-  memset(data,0,sizeof(data));
+  memset(data,0,strlen(data));
   memset(data2,0,strlen(data2));
 
   if (send_and_receive_data_socket(data2,network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,GET_SYNCED_BLOCK_VERIFIERS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
@@ -492,8 +489,6 @@ int get_synced_block_verifiers(void)
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_public_address_list",synced_block_verifiers.synced_block_verifiers_public_address);
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_public_key_list",synced_block_verifiers.synced_block_verifiers_public_key);
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_IP_address_list",synced_block_verifiers.synced_block_verifiers_IP_address);
-  
-  pointer_reset(data2);
   return 1;
 
   #undef GET_SYNCED_BLOCK_VERIFIERS_DATA
@@ -518,8 +513,8 @@ Return: 0 if an error has occured, 1 if successfull
 void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES_IP_ADDRESS, char *block_verifiers_ip_address)
 {
   // Variables
-  size_t count;
-  size_t count2;
+  int count;
+  int count2;
   
   if (memcmp(DELEGATES_IP_ADDRESS,"",1) == 0)
   {
@@ -583,11 +578,11 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
   char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count2;
+  int count;
   
   // define macros
   #define pointer_reset_all \
@@ -621,23 +616,25 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
     exit(0);
   }
 
-  for (count2 = 1; count2 <= TOTAL_RESERVE_PROOFS_DATABASES; count2++)
+  memset(data2,0,sizeof(data2));
+
+  for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     if (test_settings == 0)
     {
       memset(data,0,strlen(data));
       memcpy(data,"Checking if reserve_proofs_",27);
-      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%d",count);
       memcpy(data+strlen(data)," is synced",10);
       color_print(data,"white");
     }
 
     // parse the database_data
     memset(data,0,strlen(data));
-    memset(data2,0,sizeof(data2));
+    memset(data2,0,strlen(data2));
     memset(data3,0,strlen(data3));
     memcpy(data2,"reserve_proofs_database_",24);
-    snprintf(data2+24,sizeof(data2)-25,"%zu",count2);
+    snprintf(data2+24,sizeof(data2)-25,"%d",count);
 
     if (parse_json_data(DATABASE_DATA,data2,data,MAXIMUM_BUFFER_SIZE) == 0)
     {
@@ -651,7 +648,7 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       {
         memset(data,0,strlen(data));
         memcpy(data,"reserve_proofs_",15);
-        snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
+        snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%d",count);
         memcpy(data+strlen(data)," is not synced, downloading it from ",36);
         memcpy(data+strlen(data),BLOCK_VERIFIERS_IP_ADDRESS,strnlen(BLOCK_VERIFIERS_IP_ADDRESS,MAXIMUM_BUFFER_SIZE));
         color_print(data,"red");
@@ -660,7 +657,7 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       // create the message
       memset(data2,0,sizeof(data2));
       memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_proofs_",133);
-      snprintf(data2+133,sizeof(data2)-134,"%zu",count2);
+      snprintf(data2+133,sizeof(data2)-134,"%d",count);
       memcpy(data2+strlen(data2),"\",\r\n}",5);
 
       // sign_data
@@ -694,9 +691,9 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       }
 
       // add the data to the database
-      memset(data2,0,sizeof(data2));
+      memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);
-      snprintf(data2+15,sizeof(data2)-16,"%zu",count2);
+      snprintf(data2+15,sizeof(data2)-16,"%d",count);
 
       // delete the collection from the database
       delete_collection_from_database(database_name,data2,1);
@@ -708,7 +705,7 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
-      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
+      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%d",count);
       memcpy(data+strlen(data)," has been synced successfully\n",31);
       color_print(data,"green");
     }
@@ -718,7 +715,7 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       {
         memset(data,0,strlen(data));
         memcpy(data,"reserve_proofs_",15);
-        snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",count2);
+        snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%d",count);
         memcpy(data+strlen(data)," is already synced\n",19);
         color_print(data,"green");
       }
@@ -751,7 +748,7 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
   char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -787,6 +784,8 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
     print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
     exit(0);
   }
+
+  memset(data2,0,sizeof(data2));
 
   for (; starting_reserve_bytes_database <= CURRENT_RESERVE_BYTES_DATABASE; starting_reserve_bytes_database++)
   {
@@ -825,7 +824,7 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       }
 
       // create the message
-      memset(data2,0,sizeof(data2));
+      memset(data2,0,strlen(data2));
       memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"reserve_bytes_",131);
       snprintf(data2+131,sizeof(data2)-132,"%zu",starting_reserve_bytes_database);
       memcpy(data2+strlen(data2),"\",\r\n}",5);
@@ -861,7 +860,7 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       }
 
       // add the data to the database
-      memset(data2,0,sizeof(data2));
+      memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);
       snprintf(data2+14,sizeof(data2)-15,"%zu",starting_reserve_bytes_database);
 
@@ -919,8 +918,8 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
-  char block_verifiers_ip_address[BUFFER_SIZE];
-  size_t count = 0;
+  char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
+  int count;
   
   // define macros
   #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message,data_settings) \
@@ -977,13 +976,13 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memcpy(data3+strlen(data3),"\"reserve_proofs_data_hash_",26);
-    snprintf(data3+strlen(data3),MAXIMUM_BUFFER_SIZE-1,"%zu",count);
+    snprintf(data3+strlen(data3),MAXIMUM_BUFFER_SIZE-1,"%d",count);
     memcpy(data3+strlen(data3),"\": \"",4);
     // get the database data hash for the reserve proofs database
-    memset(data,0,sizeof(data));
-    memset(data2,0,sizeof(data2));  
+    memset(data,0,strlen(data));
+    memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_proofs_",15);  
-    snprintf(data2+15,sizeof(data2)-16,"%zu",count);
+    snprintf(data2+15,sizeof(data2)-16,"%d",count);
     if (get_database_data_hash(data,database_name,data2) == 0)
     {
       SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
@@ -1042,8 +1041,8 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
-  char block_verifiers_ip_address[BUFFER_SIZE];
-  size_t count = 0;
+  char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
+  size_t count;
   size_t count2;
   size_t current_reserve_bytes_database;
   
@@ -1185,13 +1184,13 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
-  char block_verifiers_ip_address[BUFFER_SIZE];
+  char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count = 0;
   
   // define macros
   #define DATABASE_COLLECTION "delegates"
+  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
   #define SYNC_DELEGATES_DATABASE_ERROR(message,data_settings) \
   if ((data_settings) == 0) \
   { \
@@ -1249,10 +1248,8 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
 
   // create the message
-  memset(data2,0,sizeof(data2));
-  memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"",113);
-  snprintf(data2+113,sizeof(data2)-114,"%zu",count);
-  memcpy(data2+strlen(data2),"\",\r\n}",5);
+  memset(data2,0,strlen(data2));
+  memcpy(data2,MESSAGE,sizeof(MESSAGE)-1);
 
   // sign_data
   if (sign_data(data2) == 0)
@@ -1272,7 +1269,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
 
   // parse the message
-  memset(data2,0,sizeof(data2));
+  memset(data2,0,strlen(data2));
   if (parse_json_data(data,"delegates_database",data2,sizeof(data2)) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
@@ -1289,7 +1286,8 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   pointer_reset(data);
   return 1;
 
-  #undef DATABASE_COLLECTION  
+  #undef DATABASE_COLLECTION
+  #undef MESSAGE
   #undef SYNC_DELEGATES_DATABASE_ERROR   
 }
 
@@ -1312,13 +1310,13 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
   char database_data[BUFFER_SIZE];
-  char block_verifiers_ip_address[BUFFER_SIZE];
+  char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count = 0;
   
   // define macros
   #define DATABASE_COLLECTION "statistics"
+  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
   #define SYNC_STATISTICS_DATABASE_ERROR(message,data_settings) \
   if ((data_settings) == 0) \
   { \
@@ -1376,10 +1374,8 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
 
   // create the message
-  memset(data2,0,sizeof(data2));
-  memcpy(data2,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"file\": \"",114);
-  snprintf(data2+114,sizeof(data2)-115,"%zu",count);
-  memcpy(data2+strlen(data2),"\",\r\n}",5);
+  memset(data2,0,strlen(data2));
+  memcpy(data2,MESSAGE,sizeof(MESSAGE)-1);
 
   // sign_data
   if (sign_data(data2) == 0)
@@ -1399,7 +1395,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
 
   // parse the message
-  memset(data2,0,sizeof(data2));
+  memset(data2,0,strlen(data2));
   if (parse_json_data(data,"statistics_database",data2,sizeof(data2)) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
@@ -1416,6 +1412,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   pointer_reset(data);
   return 1;
 
-  #undef DATABASE_COLLECTION  
+  #undef DATABASE_COLLECTION
+  #undef MESSAGE
   #undef SYNC_STATISTICS_DATABASE_ERROR   
 }

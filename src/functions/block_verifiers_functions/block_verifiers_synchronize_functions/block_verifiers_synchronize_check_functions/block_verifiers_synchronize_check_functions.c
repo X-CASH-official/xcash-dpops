@@ -703,8 +703,8 @@ int sync_check_delegates_database(int settings)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA]; 
-  char message[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[SMALL_BUFFER_SIZE]; 
+  char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -837,8 +837,8 @@ void sync_check_majority_delegates_database(void)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA]; 
-  char message[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[SMALL_BUFFER_SIZE]; 
+  char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -932,8 +932,8 @@ int sync_check_statistics_database(int settings)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA]; 
-  char message[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[SMALL_BUFFER_SIZE]; 
+  char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -1066,8 +1066,8 @@ void sync_check_majority_statistics_database(void)
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA]; 
-  char message[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[SMALL_BUFFER_SIZE]; 
+  char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;

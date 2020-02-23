@@ -172,7 +172,7 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(const int CLIENT_SOCKET)
 {
   // Variables
-  char data[200];
+  char data[SMALL_BUFFER_SIZE];
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR(settings) \

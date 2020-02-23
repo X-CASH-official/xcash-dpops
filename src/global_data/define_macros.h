@@ -95,6 +95,7 @@ Using define statements instead of constants for increased efficiency
 
 // Lengths
 #define BUFFER_SIZE 200000
+#define SMALL_BUFFER_SIZE 2000
 #define BUFFER_SIZE_RESERVE_PROOF 35000
 #define BUFFER_SIZE_NETWORK_BLOCK_DATA 500
 #define BUFFER_SIZE_NETWORK_BLOCK_TRANSACTIONS_DATA 100

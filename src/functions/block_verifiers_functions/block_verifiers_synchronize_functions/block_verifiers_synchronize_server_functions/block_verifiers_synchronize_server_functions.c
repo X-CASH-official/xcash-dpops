@@ -931,7 +931,7 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data[SMALL_BUFFER_SIZE];
   char data2[DATA_HASH_LENGTH+1];
 
   // define macros
@@ -1084,7 +1084,7 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data[SMALL_BUFFER_SIZE];
   char data2[DATA_HASH_LENGTH+1];
 
   // define macros
