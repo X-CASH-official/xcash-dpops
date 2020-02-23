@@ -61,8 +61,8 @@ int update_block_verifiers_list(void)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
-  size_t count;
-  size_t count2;
+  int count;
+  int count2;
   int settings = 0;
   int total_delegates = 0;
 
@@ -218,9 +218,7 @@ Return: 0 if an error has occured, 1 if successfull
 int update_databases(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   size_t count;
 
   // define macros
@@ -231,8 +229,6 @@ int update_databases(void)
   return 0;
 
   memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
   
   // get the previous block height
   sscanf(current_block_height, "%zu", &count);
@@ -275,7 +271,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
-  size_t count;
+  int count;
   size_t number;
   size_t block_verifier_total_rounds;
   size_t block_verifier_online_total_rounds;
@@ -425,12 +421,12 @@ int add_round_statistics(void)
   char block_verifier_total_rounds_delegates_name[BUFFER_SIZE];
   char best_block_verifier_online_percentage_delegate_name[BUFFER_SIZE];
   char most_block_producer_total_rounds_delegate_name[BUFFER_SIZE];
-  char message1[BUFFER_SIZE];
-  char message2[BUFFER_SIZE];
-  char message3[BUFFER_SIZE];
-  char message4[BUFFER_SIZE];
-  char message5[BUFFER_SIZE];
-  char message6[BUFFER_SIZE];
+  char message1[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char message2[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char message3[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char message4[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char message5[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char message6[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   size_t block_verifier_total_rounds_count = 0;
   size_t block_verifier_total_rounds_count2 = 0;
   int block_verifier_online_percentage_count = 0;
@@ -789,8 +785,8 @@ Return: 0 if an error has occured, otherwise the amount of online delegates
 int get_delegates_online_status(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
