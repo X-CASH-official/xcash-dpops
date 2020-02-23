@@ -1089,7 +1089,7 @@ memset(data_test,0,sizeof(data_test));
   The purpose of this message is for the nodes to verify what the other nodes received from the main node.
  
   message_settings - The type of the message
-  vote_settings - Valid or Invalid if the data was not verified.
+  vote_settings - valid or invalid if the data was not verified.
   vote_data - The SHA2-512 data that the node received.
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.

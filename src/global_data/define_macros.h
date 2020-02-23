@@ -79,6 +79,7 @@ Using define statements instead of constants for increased efficiency
 #define START_TIME_INVALID_RESERVE_PROOFS_PART_2 25 // the start time of part 2 of the invalid reserve proofs
 #define INVALID_RESERVE_PROOFS_SETTINGS 2 // The time in seconds to wait to in between invalid reserve proof checks
 #define INVALID_RESERVE_PROOFS_SETTINGS_REGISTRATION_MODE 1 // The time in seconds to wait to in between invalid reserve proof checks when the registration mode is running
+#define MAXIMUM_NUMBER_SIZE 20 // The maximum amount of bytes a number could take up in X-CASH
 
 // Network
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port

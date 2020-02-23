@@ -83,7 +83,7 @@ int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, char* ME
 Name: server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS message
 Parameters:
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -94,7 +94,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   char block_verifiers_public_address[XCASH_WALLET_LENGTH+1];
   char public_address[XCASH_WALLET_LENGTH+1];
   char reserve_proof[BUFFER_SIZE_RESERVE_PROOF];  
-  char data3[BUFFER_SIZE];
+  char data3[MAXIMUM_NUMBER_SIZE];
   size_t count3;
   int settings = 1;
 
@@ -137,7 +137,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   if (settings == 1)
   {
     // check if the reserve proof is valid
-    memset(data3,0,sizeof(data3));
     if ((test_settings == 0 && check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) == 0) || (test_settings == 1 && check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) <= 0))
     {
       // add the reserve proof to the invalid_reserve_proofs struct
@@ -173,7 +172,7 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(const int CLIENT_SOCKET)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[200];
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR(settings) \
@@ -189,7 +188,6 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   memset(data,0,sizeof(data));
   
   // create the message
-  memset(data,0,strlen(data));
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_time\": \"",112);
   snprintf(data+112,sizeof(data)-113,"%ld",time(NULL));
   memcpy(data+strlen(data),"\",\r\n}",5);
@@ -214,7 +212,7 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
 Name: server_receive_data_socket_main_network_data_node_to_block_verifier_start_block
 Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK message
 Parameters:
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -224,7 +222,6 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
 
   // define macros
   #define DATABASE_COLLECTION "reserve_bytes_1"
@@ -239,7 +236,6 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
-  memset(data3,0,sizeof(data3));
 
   // verify the message
   if (verify_data(MESSAGE,0) == 0)
@@ -248,14 +244,14 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"database_data",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"reserve_bytes_data_hash",data2,sizeof(data2)) == 0)
+  if (parse_json_data(MESSAGE,"database_data",data,sizeof(data)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not parse the data");
   }
 
   // add the data to the database
-  memcpy(data3,data,strlen(data)-2);
-  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data3,1) == 0)
+  memcpy(data2,data,strlen(data)-2);
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data2,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
   }  
@@ -272,7 +268,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 Name: server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block
 Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK message
 Parameters:
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -340,7 +336,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
 Name: server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK message
 Parameters:
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -348,8 +344,8 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block(const char* MESSAGE)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[VRF_PROOF_LENGTH+VRF_BETA_LENGTH+1];
+  char data2[XCASH_WALLET_LENGTH+1];
   int count;
 
   // define macros
@@ -399,7 +395,7 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
 Name: server_receive_data_socket_main_node_to_node_message_part_4
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_4_OF_ROUND message
 Parameters:
-  message - The message
+  MESSAGE - The message
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -408,7 +404,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
 {
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data2[XCASH_WALLET_LENGTH+1];
   int count;
 
   // define macros
@@ -476,8 +472,8 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_node_to_node(const char* MESSAGE)
 {
   // Variables
-  char data[BUFFER_SIZE]; 
-  char data2[BUFFER_SIZE];
+  char data[10]; 
+  char data2[DATA_HASH_LENGTH+1];
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR(settings) \
@@ -535,15 +531,15 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const char* MESSAGE)
 {
   // Variables  
-  char public_address[BUFFER_SIZE];
-  char vrf_secret_key_data[BUFFER_SIZE];
-  char vrf_public_key_data[BUFFER_SIZE];
-  char random_data[BUFFER_SIZE];
+  char public_address[XCASH_WALLET_LENGTH+1];
+  char vrf_secret_key_data[VRF_SECRET_KEY_LENGTH+1];
+  char vrf_public_key_data[VRF_PUBLIC_KEY_LENGTH+1];
+  char random_data[RANDOM_STRING_LENGTH+1];
   char data[BUFFER_SIZE];
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
-  size_t count;
-  size_t counter;
+  int count;
+  int counter;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR(settings) \
@@ -578,7 +574,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   // convert the VRF secret key string to a VRF secret key
   for (counter = 0, count = 0; counter < VRF_SECRET_KEY_LENGTH; count++, counter += 2)
   {
-    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memset(data,0,strlen(data));
     memcpy(data,&vrf_secret_key_data[counter],2);
     vrf_secret_key[count] = (int)strtol(data, NULL, 16);
   } 
@@ -586,7 +582,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   // convert the VRF public key string to a VRF public key
   for (counter = 0, count = 0; counter < VRF_PUBLIC_KEY_LENGTH; count++, counter += 2)
   {
-    memset(data,0,strnlen(data,BUFFER_SIZE));
+    memset(data,0,strlen(data));
     memcpy(data,&vrf_public_key_data[counter],2);
     vrf_public_key[count] = (int)strtol(data, NULL, 16);
   } 
@@ -623,9 +619,9 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature(const char* MESSAGE)
 {
   // Variables
-  char data[BUFFER_SIZE]; 
-  char data2[BUFFER_SIZE];
-  size_t count;
+  char data[VRF_PROOF_LENGTH+VRF_BETA_LENGTH+1]; 
+  char data2[XCASH_WALLET_LENGTH+1];
+  int count;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR(settings) \
