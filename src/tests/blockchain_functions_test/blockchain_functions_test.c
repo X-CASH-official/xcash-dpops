@@ -129,22 +129,22 @@ int blockchain_functions_test(void)
   fprintf(stderr,"\033[1;34m%s\nblockchain functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,BLOCKCHAIN_TOTAL_TEST,TEST_OUTLINE);
 
   // run the varint_decode test
-  if (varint_decode(VARINT_ENCODED_VALUE_1) == VARINT_DECODED_VALUE_1 ||
-      varint_decode(VARINT_ENCODED_VALUE_2) == VARINT_DECODED_VALUE_2 ||
-      varint_decode(VARINT_ENCODED_VALUE_3) == VARINT_DECODED_VALUE_3 ||
-      varint_decode(VARINT_ENCODED_VALUE_4) == VARINT_DECODED_VALUE_4 ||
-      varint_decode(VARINT_ENCODED_VALUE_5) == VARINT_DECODED_VALUE_5 ||
-      varint_decode(VARINT_ENCODED_VALUE_6) == VARINT_DECODED_VALUE_6 ||
-      varint_decode(VARINT_ENCODED_VALUE_7) == VARINT_DECODED_VALUE_7 ||
-      varint_decode(VARINT_ENCODED_VALUE_8) == VARINT_DECODED_VALUE_8 ||
-      varint_decode(VARINT_ENCODED_VALUE_9) == VARINT_DECODED_VALUE_9 ||
-      varint_decode(VARINT_ENCODED_VALUE_10) == VARINT_DECODED_VALUE_10 ||
-      varint_decode(VARINT_ENCODED_VALUE_11) == VARINT_DECODED_VALUE_11 ||
-      varint_decode(VARINT_ENCODED_VALUE_12) == VARINT_DECODED_VALUE_12 ||
-      varint_decode(VARINT_ENCODED_VALUE_13) == VARINT_DECODED_VALUE_13 ||
-      varint_decode(VARINT_ENCODED_VALUE_14) == VARINT_DECODED_VALUE_14 ||
-      varint_decode(VARINT_ENCODED_VALUE_15) == VARINT_DECODED_VALUE_15 ||
-      varint_decode(VARINT_ENCODED_VALUE_16) == VARINT_DECODED_VALUE_16)
+  if (varint_decode(VARINT_ENCODED_VALUE_RANDOM_VALUE) == VARINT_DECODED_VALUE_RANDOM_VALUE ||
+      varint_decode(VARINT_ENCODED_VALUE_NO_ENCODING_OR_DECODING) == VARINT_DECODED_VALUE_NO_ENCODING_OR_DECODING ||
+      varint_decode(VARINT_ENCODED_VALUE_START_1_BYTE) == VARINT_DECODED_VALUE_START_1_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_END_1_BYTE) == VARINT_DECODED_VALUE_END_1_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_START_2_BYTE) == VARINT_DECODED_VALUE_START_2_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_END_2_BYTE) == VARINT_DECODED_VALUE_END_2_BYTE||
+      varint_decode(VARINT_ENCODED_VALUE_START_3_BYTE) == VARINT_DECODED_VALUE_START_3_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_END_3_BYTE) == VARINT_DECODED_VALUE_END_3_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_START_4_BYTE) == VARINT_DECODED_VALUE_START_4_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_END_4_BYTE) == VARINT_DECODED_VALUE_END_4_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_START_5_BYTE) == VARINT_DECODED_VALUE_START_5_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_END_5_BYTE) == VARINT_DECODED_VALUE_END_5_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_START_6_BYTE) == VARINT_DECODED_VALUE_START_6_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_END_6_BYTE) == VARINT_DECODED_VALUE_END_6_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_START_7_BYTE) == VARINT_DECODED_VALUE_START_7_BYTE ||
+      varint_decode(VARINT_ENCODED_VALUE_END_7_BYTE) == VARINT_DECODED_VALUE_END_7_BYTE)
   {
     color_print("PASSED! Test for varint_decode","green");
     count_test++;
@@ -155,22 +155,22 @@ int blockchain_functions_test(void)
   }
 
   // run the varint_encode test
-  if ((varint_encode(VARINT_DECODED_VALUE_1,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_1,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_2,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_2,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_3,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_3,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_4,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_4,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_5,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_5,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_6,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_6,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_7,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_7,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_8,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_8,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_9,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_9,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_10,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_10,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_11,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_11,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_12,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_12,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_13,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_13,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_14,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_14,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_15,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_15,BUFFER_SIZE) == 0) ||
-      (varint_encode(VARINT_DECODED_VALUE_16,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_16,BUFFER_SIZE) == 0))
+  if ((varint_encode(VARINT_DECODED_VALUE_RANDOM_VALUE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_RANDOM_VALUE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_NO_ENCODING_OR_DECODING,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_NO_ENCODING_OR_DECODING,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_START_1_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_START_1_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_END_1_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_END_1_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_START_2_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_START_2_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_END_2_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_END_2_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_START_3_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_START_3_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_END_3_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_END_3_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_START_4_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_START_4_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_END_4_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_END_4_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_START_5_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_START_5_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_END_5_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_END_5_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_START_6_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_START_6_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_END_6_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_END_6_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_START_7_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_START_7_BYTE,BUFFER_SIZE) == 0) ||
+      (varint_encode(VARINT_DECODED_VALUE_END_7_BYTE,data_test,BUFFER_SIZE) == 1 && strncmp(data_test,VARINT_ENCODED_VALUE_TEXT_END_7_BYTE,BUFFER_SIZE) == 0))
   {
     color_print("PASSED! Test for varint_encode","green");
     count_test++;
@@ -272,7 +272,7 @@ int blockchain_functions_test(void)
   #undef VERIFY_NETWORK_BLOCK_DATA_ERROR
   #undef INVALID_NETWORK_VERSION_CODE
   #undef INVALID_TIMESTAMP_CODE
-  #undef INVALID_NETWORK_BLOCK_NONCE_CODE
+  #undef INVALID_NETWORK_BLOCK_NONCE_CODe
   #undef INVALID_BLOCK_REWARD_TRANSACTION_VERSION_CODE
   #undef INVALID_UNLOCK_BLOCK_CODE
   #undef INVALID_BLOCK_REWARD_INPUT_CODE

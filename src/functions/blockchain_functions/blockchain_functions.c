@@ -8,6 +8,7 @@
 #include "define_macros.h"
 #include "variables.h"
 #include "structures.h"
+#include "define_macros_test.h"
 
 #include "blockchain_functions.h"
 #include "string_functions.h"
@@ -330,49 +331,24 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   const size_t DATA_LENGTH = strnlen(DATA,BUFFER_SIZE);
 
   // Variables
-  char* block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char buffer[1024];
+  char block_height[MAXIMUM_NUMBER_SIZE];
+  char data2[BUFFER_SIZE];
   char* data3;
   char* message_copy1;
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
   size_t count3;
   size_t number;
 
   // define macros
-  #define pointer_reset_all \
-  free(block_height); \
-  block_height = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"network_block_string_to_blockchain_data",39); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0; 
 
-  // check if the memory needed was allocated on the heap successfully
-  if (block_height == NULL || data2 == NULL)
-  {
-    if (block_height != NULL)
-    {
-      pointer_reset(block_height);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"network_block_string_to_blockchain_data",39);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  }  
+  memset(block_height,0,sizeof(block_height));
+  memset(data2,0,sizeof(data2));
 
   RESET_BLOCKCHAIN_DATA;
 
@@ -437,7 +413,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
     sscanf(BLOCK_HEIGHT, "%zu", &number);
   }
   
-  if ((number + UNLOCK_BLOCK_AMOUNT) > 2097091)
+  if ((number + UNLOCK_BLOCK_AMOUNT) > (VARINT_DECODED_VALUE_END_2_BYTE-UNLOCK_BLOCK_AMOUNT))
   {
     blockchain_data.unlock_block_data_length = 8;
   }
@@ -472,7 +448,7 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
   memcpy(blockchain_data.vin_type_data,&DATA[count-blockchain_data.vin_type_data_length],blockchain_data.vin_type_data_length);
 
   // block_height
-  if (number > 2097151)
+  if (number > VARINT_DECODED_VALUE_END_2_BYTE)
   {
     blockchain_data.block_height_data_length = 8;
   }
@@ -845,11 +821,8 @@ int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_
     }
     memcpy(blockchain_data.transactions[number],&DATA[count-TRANSACTION_LENGTH],TRANSACTION_LENGTH);
   }
-
-  pointer_reset_all;
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef NETWORK_BLOCK_STRING_TO_BLOCKCHAIN_DATA_ERROR
 }
 
@@ -1194,38 +1167,13 @@ Return: 0 if an error has occured or it is not verified, 1 if successfull
 int add_data_hash_to_network_block_string(char* network_block_string, char *network_block_string_data_hash)
 {
   // Variables
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char buffer[1024];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-  size_t count;
-  size_t count2;
+  char data[BUFFER_SIZE];
+  char data2[DATA_HASH_LENGTH+1];
+  int count;
+  int count2;
 
-  // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL || data2 == NULL)
-  {
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    memcpy(error_message.function[error_message.total],"insert_data_hash_into_network_block_string",42);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  } 
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // get the data hash of the network block string
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)network_block_string,(unsigned long long)strnlen(network_block_string,BUFFER_SIZE));
@@ -1253,14 +1201,9 @@ int add_data_hash_to_network_block_string(char* network_block_string, char *netw
     memcpy(error_message.function[error_message.total],"add_data_hash_to_network_block_string",37);
     memcpy(error_message.data[error_message.total],"Could not add the data hash to the network block string",55);
     error_message.total++;
-    pointer_reset_all;
     return 0; 
   }
-
-  pointer_reset_all;
-  return 1; 
-
-  #undef pointer_reset_all
+  return 1;
 }
 
 
@@ -1316,16 +1259,13 @@ Return: 0 if an error has occured or it is not verified, 1 if successfull
 int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const int TRANSACTIONS_SETTINGS, const char* BLOCK_HEIGHT, char* PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES, const int BLOCK_VERIFIERS_TOTAL)
 {
   // Variables
-  char* block_height = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char* network_block_string = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char block_height[MAXIMUM_NUMBER_SIZE];
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char network_block_string[BUFFER_SIZE];
   char current_block_verifiers_public_address[(VRF_PUBLIC_KEY_LENGTH*2)+1];
-  char buffer[1024];
   char* message_copy1;
   struct verify_network_block_data_vrf_data_verify_thread_parameters verify_network_block_data_vrf_data_verify_thread_parameters[VRF_DATA_VERIFY_MAXIMUM_THREADS];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   int counter = 0;
   size_t count;
   size_t count2;
@@ -1336,49 +1276,16 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   pthread_t thread_id[VRF_DATA_VERIFY_MAXIMUM_THREADS]; 
 
   // define macros
-  #define pointer_reset_all \
-  free(block_height); \
-  block_height = NULL; \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL; \
-  free(network_block_string); \
-  network_block_string = NULL;
-
   #define VERIFY_NETWORK_BLOCK_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"verify_network_block_data",25); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0; 
 
-  // check if the memory needed was allocated on the heap successfully
-  if (block_height == NULL || data == NULL || data2 == NULL || network_block_string == NULL)
-  {   
-    if (block_height != NULL)
-    {
-      pointer_reset(block_height);
-    }
-    if (data != NULL)
-    {
-      pointer_reset(data);
-    }
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (network_block_string != NULL)
-    {
-      pointer_reset(network_block_string);
-    }
-    memcpy(error_message.function[error_message.total],"verify_network_block_data",25);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  }  
-
+  memset(block_height,0,sizeof(block_height));
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(network_block_string,0,sizeof(network_block_string));
   memset(current_block_verifiers_public_address,0,sizeof(current_block_verifiers_public_address));
 
   // network_version
@@ -1426,8 +1333,8 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   else
   {
     sscanf(BLOCK_HEIGHT, "%zu", &number);    
-  }  
-  if ((blockchain_data.unlock_block <= 2097091 && blockchain_data.unlock_block_data_length != 6) || (blockchain_data.unlock_block > 2097091 && blockchain_data.unlock_block_data_length != 8) || blockchain_data.unlock_block != (number + UNLOCK_BLOCK_AMOUNT))
+  }
+  if ((blockchain_data.unlock_block <= (VARINT_DECODED_VALUE_END_2_BYTE-UNLOCK_BLOCK_AMOUNT) && blockchain_data.unlock_block_data_length != 6) || (blockchain_data.unlock_block > (VARINT_DECODED_VALUE_END_2_BYTE-UNLOCK_BLOCK_AMOUNT) && blockchain_data.unlock_block_data_length != 8) || blockchain_data.unlock_block != (number + UNLOCK_BLOCK_AMOUNT))
   { 
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid unlock_block");
   }
@@ -1447,14 +1354,14 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   // block_height
   if (memcmp(BLOCK_HEIGHT,"0",1) == 0)
   {
-    if ((blockchain_data.block_height <= 2097151 && blockchain_data.block_height_data_length != 6) || (blockchain_data.block_height > 2097151 && blockchain_data.block_height_data_length != 8) || blockchain_data.block_height != number)
+    if ((blockchain_data.block_height <= VARINT_DECODED_VALUE_END_2_BYTE && blockchain_data.block_height_data_length != 6) || (blockchain_data.block_height > VARINT_DECODED_VALUE_END_2_BYTE && blockchain_data.block_height_data_length != 8) || blockchain_data.block_height != number)
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_height");
     }
   }
   else
   {
-    if ((blockchain_data.block_height <= 2097151 && blockchain_data.block_height_data_length != 6) || (blockchain_data.block_height > 2097151 && blockchain_data.block_height_data_length != 8))
+    if ((blockchain_data.block_height <= VARINT_DECODED_VALUE_END_2_BYTE && blockchain_data.block_height_data_length != 6) || (blockchain_data.block_height > VARINT_DECODED_VALUE_END_2_BYTE && blockchain_data.block_height_data_length != 8))
     {
       VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_height");
     }
@@ -1468,7 +1375,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // block_reward
-  if ((blockchain_data.block_reward <= 34359738367 && blockchain_data.block_reward_data_length != 10) || (blockchain_data.block_reward > 34359738367 && blockchain_data.block_reward <= 4398046511104 && blockchain_data.block_reward_data_length != 12) || (blockchain_data.block_reward > 4398046511104 && blockchain_data.block_reward <= 562949953421312 && blockchain_data.block_reward_data_length != 14) || (blockchain_data.block_reward > 562949953421312 && blockchain_data.block_reward <= 72057594037927936 && blockchain_data.block_reward_data_length != 16) || (blockchain_data.block_reward > 72057594037927936 && blockchain_data.block_reward_data_length != 18))
+  if ((blockchain_data.block_reward <= VARINT_DECODED_VALUE_END_4_BYTE && blockchain_data.block_reward_data_length != 10) || (blockchain_data.block_reward > VARINT_DECODED_VALUE_END_4_BYTE && blockchain_data.block_reward <= VARINT_DECODED_VALUE_START_6_BYTE && blockchain_data.block_reward_data_length != 12) || (blockchain_data.block_reward > VARINT_DECODED_VALUE_START_6_BYTE && blockchain_data.block_reward <= VARINT_DECODED_VALUE_START_7_BYTE && blockchain_data.block_reward_data_length != 14) || (blockchain_data.block_reward > VARINT_DECODED_VALUE_START_7_BYTE && blockchain_data.block_reward <= VARINT_DECODED_VALUE_END_7_BYTE+1 && blockchain_data.block_reward_data_length != 16) || (blockchain_data.block_reward > VARINT_DECODED_VALUE_END_7_BYTE+1 && blockchain_data.block_reward_data_length != 18))
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid block_reward");
   }
@@ -1784,7 +1691,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // transaction_amount
-  if ((blockchain_data.transaction_amount <= 255 && blockchain_data.transaction_amount_data_length != 2) || (blockchain_data.transaction_amount > 255 && blockchain_data.transaction_amount <= 16383 && blockchain_data.transaction_amount_data_length != 4) || (blockchain_data.transaction_amount > 16383 && blockchain_data.transaction_amount_data_length != 6))
+  if ((blockchain_data.transaction_amount <= 255 && blockchain_data.transaction_amount_data_length != 2) || (blockchain_data.transaction_amount > 255 && blockchain_data.transaction_amount <= VARINT_DECODED_VALUE_END_1_BYTE && blockchain_data.transaction_amount_data_length != 4) || (blockchain_data.transaction_amount > VARINT_DECODED_VALUE_END_1_BYTE && blockchain_data.transaction_amount_data_length != 6))
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transaction_amount");
   }
@@ -1793,12 +1700,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   if (TRANSACTIONS_SETTINGS == 1 && blockchain_data.transaction_amount != 0 && verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,1) == 0)
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transactions");
-  }  
-
-  pointer_reset_all;
+  } 
   return 1;
 
-  #undef pointer_reset_all
   #undef VERIFY_NETWORK_BLOCK_DATA_ERROR
 }
 
