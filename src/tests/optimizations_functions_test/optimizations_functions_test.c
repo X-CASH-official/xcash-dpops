@@ -554,9 +554,18 @@ int optimizations_functions_test(void)
   CREATE_BLOCK_DATA;
   blockchain_data_to_network_block_string(data_test,BLOCK_VERIFIERS_TOTAL_AMOUNT);
   sign_data(data_test);
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT * BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  for (count = 0; count < 4; count++)
   {
-    VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
+    verify_network_block_data_vrf_data_verify_thread_parameters[count].total_amount_of_threads = 4;
+    verify_network_block_data_vrf_data_verify_thread_parameters[count].block_verifier_total = 100;
+    verify_network_block_data_vrf_data_verify_thread_parameters[count].start = count;
+    memset(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,0,sizeof(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string));
+    memcpy(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
+    pthread_create(&thread_id[count], NULL, &vrf_data_verify_timer,&verify_network_block_data_vrf_data_verify_thread_parameters[count]);
+  }
+  for (count = 0; count < 4; count++)
+  {
+    pthread_join(thread_id[count],NULL);
   }
   total = time(NULL) - start;
   if (total < MAXIMUM_TIME_NETWORK_BLOCK_PART_4)

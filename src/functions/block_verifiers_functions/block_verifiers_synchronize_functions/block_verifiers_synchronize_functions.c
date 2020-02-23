@@ -701,7 +701,7 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE,1);
+      insert_multiple_documents_into_collection_json(database_name,data2,data,strlen(data),1);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
@@ -870,7 +870,7 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE,1);
+      insert_multiple_documents_into_collection_json(database_name,data2,data,strlen(data),1);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
@@ -1281,7 +1281,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE,1);
+  insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,strlen(data),1);
 
   pointer_reset(data);
   return 1;

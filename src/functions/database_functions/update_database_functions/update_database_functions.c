@@ -40,10 +40,7 @@ Return: 0 if an error has occured, 1 if successfull
 int update_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const char* FIELD_NAME_AND_DATA, const int THREAD_SETTINGS)
 {
   // Variables
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char buffer[1024];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
+  char data2[BUFFER_SIZE];
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
@@ -63,21 +60,12 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   memcpy(error_message.function[error_message.total],"update_document_from_collection",31); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data2); \
   database_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data2 == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"update_document_from_collection",31);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  } 
+  memset(data2,0,sizeof(data2));
 
-   // check if we need to create a database connection, or use the global database connection
+  // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
   {
     // set the collection
@@ -88,7 +76,6 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
-      pointer_reset(data2);
       return 0;
     }
     // set the collection
@@ -122,8 +109,6 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   {
     UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("Could not update the document in the database collection");
   }
-
-  pointer_reset(data2);
   database_reset_all;
   return 1;
 
@@ -149,10 +134,7 @@ Return: 0 if an error has occured, 1 if successfull
 int update_all_documents_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS)
 {
   // Variables
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char buffer[1024];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
+  char data2[BUFFER_SIZE];
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
@@ -172,21 +154,12 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   memcpy(error_message.function[error_message.total],"update_all_documents_from_collection",36); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset(data2); \
   database_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data2 == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"update_all_documents_from_collection",36);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  } 
+  memset(data2,0,sizeof(data2));
 
-   // check if we need to create a database connection, or use the global database connection
+  // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
   {
     // set the collection
@@ -197,7 +170,6 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
-      pointer_reset(data2);
       return 0;
     }
     // set the collection
@@ -232,8 +204,6 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   {
     UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR("Could not update the document in the database collection");
   }
-
-  pointer_reset(data2);
   database_reset_all;
   return 1;
 

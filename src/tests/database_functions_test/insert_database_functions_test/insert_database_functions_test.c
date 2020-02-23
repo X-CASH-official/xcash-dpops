@@ -74,7 +74,7 @@ int insert_database_functions_test(void)
   memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
   memcpy(data_test+strlen(data_test),",",1);
   memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
-  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data_test,BUFFER_SIZE,0) == 1)
+  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data_test,sizeof(data_test),0) == 1)
   {
     color_print("PASSED! Test for insert_multiple_documents_into_collection_json","green");
     count_test++;
@@ -120,7 +120,7 @@ int insert_database_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   // insert_multiple_documents_into_collection_json
-  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"data",BUFFER_SIZE,0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"data",5,0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for insert_multiple_documents_into_collection_json checking for Could not convert the data into a database document","green");
     count_test++;

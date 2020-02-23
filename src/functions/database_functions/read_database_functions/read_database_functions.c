@@ -144,13 +144,10 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
 
   // Variables
   char* message;
-  char buffer[1024];
-  char* data2 = (char*)calloc(BUFFER_SIZE,sizeof(char)); 
-  char* settings = (char*)calloc(BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
+  char settings[BUFFER_SIZE];
   char* message_copy1;
   char* message_copy2;
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
@@ -159,12 +156,6 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   int count = 0;
 
   // define macros
-  #define pointer_reset_all \
-  free(data2); \
-  data2 = NULL; \
-  free(settings); \
-  settings = NULL; 
-
   #define database_reset_all \
   bson_destroy(document); \
   mongoc_cursor_destroy(document_settings); \
@@ -180,27 +171,11 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
     error_message.total++; \
   } \
-  pointer_reset_all; \
   database_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data2 == NULL || settings == NULL)
-  {
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (settings != NULL)
-    {
-      pointer_reset(settings);
-    }
-    memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  } 
+  memset(data2,0,sizeof(data2));
+  memset(settings,0,sizeof(settings));
 
   // check if we need to create a database connection, or use the global database connection
   if (THREAD_SETTINGS == 0)
@@ -213,7 +188,6 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
-      pointer_reset_all;
       return 0;
     }
     // set the collection
@@ -266,12 +240,9 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   {
     READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR("Could not read the document field from the database collection");
   }
-
-  pointer_reset_all; 
   database_reset_all; 
   return 1;
-
-  #undef pointer_reset_all
+  
   #undef database_reset_all
   #undef READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR
 }
@@ -464,10 +435,7 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
 
   // Variables
   char* message;
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char buffer[1024];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
+  char data[BUFFER_SIZE];
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
@@ -491,19 +459,10 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
     error_message.total++; \
   } \
-  pointer_reset(data); \
   database_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"read_document_all_fields_from_collection",40);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  } 
+  memset(data,0,sizeof(data));
 
   // set the database_fields_count
   if (strstr(COLLECTION,"reserve_bytes") != NULL)
@@ -546,7 +505,6 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
-      pointer_reset(data);
       return 0;
     }
     // set the collection
@@ -590,8 +548,6 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     READ_DOCUMENT_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not read all of the document fields from the database collection");
   }
   
-
-  pointer_reset(data);
   database_reset_all;
   return 1;
 
@@ -631,10 +587,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
 
   // Variables
   char* message;
-  char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  char buffer[1024];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
+  char data[BUFFER_SIZE];
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   mongoc_cursor_t* document_settings = NULL;
@@ -661,19 +614,10 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
     error_message.total++; \
   } \
-  pointer_reset(data); \
   database_reset_all; \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"read_multiple_documents_all_fields_from_collection",50);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  }
+  memset(data,0,sizeof(data));
 
   // set the database_fields_count
   if (strstr(COLLECTION,"reserve_bytes") != NULL)
@@ -716,7 +660,6 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
     if (!database_client_thread)
     {
-      pointer_reset(data);
       return 0;
     }
     // set the collection
@@ -780,8 +723,6 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   {
     READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not read all of the fields for all of the documents in the database collection");
   }
-
-  pointer_reset(data);
   database_reset_all;
   return 1;
 

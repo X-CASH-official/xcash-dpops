@@ -111,10 +111,13 @@ Return: 0 if an error has occured, 1 if successfull
 
 int insert_multiple_documents_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const size_t DATA_TOTAL_LENGTH, const int THREAD_SETTINGS)
 {
+  // Constants
+  const size_t MAXIMUM_AMOUNT = DATA_TOTAL_LENGTH >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : DATA_TOTAL_LENGTH+SMALL_BUFFER_SIZE;
+
   // Variables
   char buffer[1024];
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
+  char* data3 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
   char* datacopy = data2; 
   time_t current_date_and_time;
@@ -183,7 +186,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   }
 
   // create a copy of the data since were going to be changing where the data is referencing
-  append_string(data2,DATA,DATA_TOTAL_LENGTH);
+  append_string(data2,DATA,MAXIMUM_AMOUNT);
 
   // count how many documents are in the data
   count = string_count(DATA,"},{") + 1;
@@ -194,13 +197,13 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     if ((count2+1) != count)
     {
       memset(data3,0,strlen(data3));
-      memcpy(data3,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE) - strnlen(strstr(data2,"},{"),MAXIMUM_BUFFER_SIZE)+1);
+      memcpy(data3,data2,strnlen(data2,MAXIMUM_AMOUNT) - strnlen(strstr(data2,"},{"),MAXIMUM_AMOUNT)+1);
       data2 = strstr(data2,"},{") + 2;     
     }
     else
     {
       memset(data3,0,strlen(data3));
-      memcpy(data3,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
+      memcpy(data3,data2,strnlen(data2,MAXIMUM_AMOUNT));
     }
 
     bson_t* document = bson_new_from_json((const uint8_t *)data3, -1, &error);

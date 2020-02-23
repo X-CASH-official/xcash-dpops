@@ -343,14 +343,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   memcpy(data+strlen(data),"|}",2);
 
   // send the data
-  if (test_settings == 0)
-  {
-    send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"");
-  }
-  else
-  {
-    send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
-  }  
+  test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
   pointer_reset(data2);
   return 1;
 
@@ -421,7 +414,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   else
   {
     count2 = 521855;
-  }  
+  }
   sscanf(data,"%zu",&current_block_height_reserve_bytes);
   if (test_settings == 0 && current_block_height_reserve_bytes < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
@@ -449,16 +442,9 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
     memcpy(data2,"{\"block_height\": \"",18);
     snprintf(data2+18,sizeof(data2)-19,"%zu",current_block_height_reserve_bytes);
     memcpy(data2+strlen(data2),"\"}",2);
+
+    count2 = test_settings == 0 ? ((current_block_height_reserve_bytes - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1 : ((current_block_height_reserve_bytes - 521850) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   
-    if (test_settings == 0)
-    {
-      count2 = ((current_block_height_reserve_bytes - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-    }
-    else
-    {
-      count2 = ((current_block_height_reserve_bytes - 521850) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
-    }
-    
     memcpy(data,"reserve_bytes_",14);
     snprintf(data+14,sizeof(data)-15,"%zu",count2);
 
@@ -474,14 +460,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   memcpy(message2+strlen(message2),"}",1);
   
   // send the data
-  if (test_settings == 0)
-  {
-    send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"");
-  }
-  else
-  {
-    send_data(CLIENT_SOCKET,(unsigned char*)message2,0,1,"");
-  }  
+  test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)message2,0,1,"");
   pointer_reset(message2);
   return 1;
   
@@ -503,7 +482,7 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(const int CLIENT_SOCKET)
 {  
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   int count;
 
   memset(data,0,sizeof(data));
@@ -520,14 +499,7 @@ int server_receive_data_socket_node_to_block_verifiers_check_if_current_block_ve
   }
 
   // send the data
-  if (test_settings == 0)
-  {
-    send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"");
-  }
-  else
-  {
-    send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
-  }  
+  test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
   return 1;
 }
 
