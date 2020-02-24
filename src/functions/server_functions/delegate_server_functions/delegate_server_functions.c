@@ -68,9 +68,9 @@ Return: 0 if an error has occured or if the vote is invalid, 1 if successfull
 int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE, struct reserve_proof* reserve_proof)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char data2[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char data3[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
   int count;
   int count2;
   size_t reserve_proof_amount;
@@ -188,11 +188,11 @@ Return: 0 if an error has occured, 1 if successfull
 int add_reserve_proof_remove_previous_vote(const char* PUBLIC_ADDRESS_CREATE_RESERVE_PROOF_DATA)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
-  char message2[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char data2[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char data3[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char message[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char message2[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
   int count;
   int count2;
   int count3;
@@ -284,13 +284,13 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char delegates_public_address[BUFFER_SIZE];
-  char public_address[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
-  char message2[BUFFER_SIZE];
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char delegates_public_address[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char public_address[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char message[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char message2[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char data[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char data2[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
+  char data3[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
   struct reserve_proof reserve_proof;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -440,14 +440,14 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char delegate_name[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char delegate_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   char delegate_public_address[XCASH_WALLET_LENGTH+1];
   char delegate_public_key[VRF_PUBLIC_KEY_LENGTH+1];
   unsigned char delegate_public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
   char delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
-  size_t count;
-  size_t count2;
+  int count;
+  int count2;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -614,6 +614,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
 {
   // Variables
   char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   char delegate_public_address[XCASH_WALLET_LENGTH+1];
   size_t count;
   size_t count2;
@@ -628,6 +629,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   return 0;
 
   memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
   memset(delegate_public_address,0,sizeof(delegate_public_address));
 
   // verify the message
@@ -665,12 +667,12 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   }
 
   // check if the delegate has already mined a block
-  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data,"block_producer_block_heights",delegate_public_address,1) == 0)
+  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data,"block_producer_block_heights",data2,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("Could not check if the delegate has already mined a block");
   }
   
-  if (memcmp(delegate_public_address,"",1) != 0)
+  if (memcmp(data2,"",1) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate has already mined a block");
   }
@@ -730,11 +732,7 @@ int check_for_valid_fee_structure(const char* MESSAGE)
   }
 
   sscanf(MESSAGE,"%lf",&number);
-  if (number < 0 || number > 100)
-  {
-    return 0;
-  }
-  return 1;
+  return number < 0 || number > 100 ? 0 : 1;
 }
 
 
@@ -753,14 +751,14 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[4096];
+  char data2[4096];
   char delegate_public_address[XCASH_WALLET_LENGTH+1];
   unsigned char delegate_public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
-  char item[BUFFER_SIZE];
-  char value[BUFFER_SIZE];
-  size_t count;
-  size_t count2;
+  char item[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char value[4096];
+  int count;
+  int count2;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"

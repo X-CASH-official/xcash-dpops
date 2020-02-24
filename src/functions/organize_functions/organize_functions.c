@@ -56,18 +56,7 @@ int organize_delegates_settings(const void* DELEGATES1, const void* DELEGATES2)
   {
     sscanf(delegates1->total_vote_count, "%lld", &count);
     sscanf(delegates2->total_vote_count, "%lld", &count2);
-    if (count2 == count)
-    {
-      settings = 0;
-    }
-    else if (count2 - count < 0)
-    {
-      return -1;
-    }
-    else if (count2 - count > 0)
-    {
-      return 1;
-    }
+    return count2 == count ? 0 : count2 - count < 0 ? -1 : 1;
   }
   return settings;
 }
@@ -88,11 +77,11 @@ Return: 0 if an error has occured, otherwise the amount of delegates in the stru
 int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECTION)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[4096];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time; 
-  size_t count = 0;
-  size_t count2 = 0;
+  int count = 0;
+  int count2 = 0;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count = 0;
 
@@ -114,9 +103,9 @@ int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECT
   document_count = count_all_documents_in_collection(database_name,DATABASE_COLLECTION,1);
 
   // initialize the database_multiple_documents_fields struct 
-  for (count = 0; (int)count < document_count; count++)
+  for (count = 0; count < document_count; count++)
   {
-    for (count2 = 0; (int)count2 < TOTAL_DELEGATES_DATABASE_FIELDS+1; count2++)
+    for (count2 = 0; count2 < TOTAL_DELEGATES_DATABASE_FIELDS+1; count2++)
     {
        // allocate more for the about and the block_producer_block_heights
        if (count2+2 == TOTAL_DELEGATES_DATABASE_FIELDS)
@@ -155,7 +144,7 @@ int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECT
   }
 
   // convert the database_multiple_documents_fields to delegates struct
-  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  for (count = 0; count < (int)database_multiple_documents_fields.document_count; count++)
   {
     memcpy(delegates[count].public_address,database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].total_vote_count,database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],BUFFER_SIZE_NETWORK_BLOCK_DATA));

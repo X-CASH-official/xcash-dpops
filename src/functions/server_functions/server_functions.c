@@ -56,16 +56,13 @@ Return: 0 if an error has occured, 1 if successfull
 
 int create_server(const int MESSAGE_SETTINGS)
 {
-  // Constants
-  const int SOCKET_OPTION = 1; 
-
   // Variables
-  char buffer[BUFFER_SIZE];
-  char data[BUFFER_SIZE];
+  char buffer[MAXIMUM_NUMBER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   struct sockaddr_in addr; 
-  size_t count;
+  int count;
   int settings;
 
   // define macros
@@ -75,10 +72,7 @@ int create_server(const int MESSAGE_SETTINGS)
   memcpy(error_message.function[error_message.total],"create_server",13); \
   memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
   error_message.total++; \
-  exit(0);  
-
-  // set the main process to ignore if forked processes return a value or not, since the timeout for the total connection time is run on a different thread
-  signal(SIGCHLD, SIG_IGN);
+  exit(0); 
   
   memset(buffer,0,sizeof(buffer));
   memset(data,0,sizeof(data));
@@ -92,8 +86,7 @@ int create_server(const int MESSAGE_SETTINGS)
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
   */
-  server_socket = socket(AF_INET, SOCK_STREAM, 0);
-  if (server_socket == -1)
+  if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
   {
     SERVER_ERROR("Error creating the socket");
   }
@@ -103,7 +96,7 @@ int create_server(const int MESSAGE_SETTINGS)
   SO_REUSEADDR = allows for reuse of the same address, so one can shutdown and restart the program without errors
   SO_REUSEPORT = allows for reuse of the same port, so one can shutdown and restart the program without errors
   */
-  if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &SOCKET_OPTION,sizeof(int)) != 0)
+  if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &(int){1},sizeof(int)) != 0)
   {
     SERVER_ERROR("Error setting socket options");
   } 
@@ -165,8 +158,7 @@ int create_server(const int MESSAGE_SETTINGS)
   }
 
   // create the epoll file descriptor
-  epoll_fd = epoll_create1(0);
-  if (epoll_fd < 0)
+  if ((epoll_fd = epoll_create1(0)) < 0)
   {
     SERVER_ERROR("Error creating the server");
   }
@@ -183,7 +175,7 @@ int create_server(const int MESSAGE_SETTINGS)
     SERVER_ERROR("Error creating the server");
   }
 
-  for (count = 0; (int)count < total_threads-1; count++)
+  for (count = 0; count < total_threads-1; count++)
   {
     if (pthread_create(&server_threads[count], NULL, socket_receive_data_thread, NULL) < 0 || pthread_detach(server_threads[count]) != 0)
     {
@@ -256,7 +248,6 @@ int socket_thread(int client_socket)
   char client_address[BUFFER_SIZE]; 
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  int receive_data_result; 
   struct sockaddr_in addr;
   socklen_t addrlength = sizeof(addr);
   
@@ -269,8 +260,7 @@ int socket_thread(int client_socket)
   snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
 
   // receive the data
-  receive_data_result = receive_data(client_socket,buffer,SOCKET_END_STRING,1,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
-  if (receive_data_result < 2)
+  if (receive_data(client_socket,buffer,SOCKET_END_STRING,1,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) < 2)
   {
     pointer_reset(buffer);
     return 0;
@@ -528,7 +518,7 @@ int socket_thread(int client_socket)
    {
      print_error_message(current_date_and_time,current_UTC_date_and_time,data2);
    }
- }
+}
 pointer_reset(buffer);
 return 1;
 }
@@ -640,8 +630,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   }
   memcpy(data2+strlen(data2),buffer,strnlen(buffer,sizeof(data2)));
   
-  file_size = read_file(data,data2);
-  if (file_size == 0)
+  if ((file_size = read_file(data,data2)) == 0)
   {
     if (shared_delegates_website == 1)
     {
