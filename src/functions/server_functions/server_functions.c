@@ -597,17 +597,15 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  unsigned char* data = (unsigned char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(unsigned char));
   char data2[BUFFER_SIZE];
   char buffer[BUFFER_SIZE];
   long file_size;
-  int settings = 0;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR \
-  memcpy(data,"{\"Error\":\"Could not get the file\"}",34); \
-  send_data(CLIENT_SOCKET,data,strlen((const char*)data),400,"application/json"); \
-  pointer_reset(data); \
+  memset(data2,0,strlen(data2)); \
+  memcpy(data2,"{\"Error\":\"Could not get the file\"}",34); \
+  send_data(CLIENT_SOCKET,(unsigned char*)data2,strlen((const char*)data2),400,"application/json"); \
   return 0;
 
   memset(data2,0,sizeof(data2));
@@ -629,27 +627,30 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
     memcpy(data2,"../delegates_website/",21);
   }
   memcpy(data2+strlen(data2),buffer,strnlen(buffer,sizeof(data2)));
+
+  // get the file size
+  if ((file_size = get_file_size(data2)) == 0)
+  {
+    if ((file_size = shared_delegates_website == 1 ? get_file_size("../shared_delegates_website/index.html") : get_file_size("../delegates_website/index.html")) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
+    }
+  }
+  const size_t MAXIMUM_AMOUNT = file_size >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : file_size+SMALL_BUFFER_SIZE;
+  unsigned char* data = (unsigned char*)calloc(MAXIMUM_AMOUNT,sizeof(unsigned char));
   
   if ((file_size = read_file(data,data2)) == 0)
   {
-    if (shared_delegates_website == 1)
+    if ((file_size = shared_delegates_website == 1 ? read_file(data,"../shared_delegates_website/index.html") : read_file(data,"../delegates_website/index.html")) == 0)
     {
-      file_size = read_file(data,"../shared_delegates_website/index.html");
-    }
-    if (delegates_website == 1)
-    {
-      file_size = read_file(data,"../delegates_website/index.html");
-    }    
-    settings = 1;
-    if (file_size == 0)
-    {
+      pointer_reset(data);
       SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
     }
   }
 
   memset(data2,0,sizeof(data2));
 
-  if (strstr(MESSAGE,".html") != NULL || settings == 1)
+  if (strstr(MESSAGE,".html") != NULL)
   {
     memcpy(data2,"text/html; charset=utf-8",24);
   }
@@ -675,6 +676,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   }
   else
   {
+    pointer_reset(data);
     SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
   }
 
