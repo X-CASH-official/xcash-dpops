@@ -71,8 +71,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     start = strnlen(str,sizeof(str));
     
     // get the pointers location to the start of the field
-    str1 = strstr(DATA,str);
-    if (str1 == NULL)
+    if ((str1 = strstr(DATA,str)) == NULL)
     {
        // an error has occured, get the error message
        str1 = strstr(DATA,"\"message\": ");
@@ -84,8 +83,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     }
 
     // get the end location of the data
-    str2 = strstr(str1,"\r\n");
-    if (str2 == NULL)
+    if ((str2 = strstr(str1,"\r\n")) == NULL)
     {
       PARSE_JSON_DATA_ERROR;
     }
@@ -266,7 +264,7 @@ Return: 0 if an error has occured, 1 if successfull
 int create_json_data_from_delegates_array(struct delegates* delegates, char *result, const char* DOCUMENT_FIELDS)
 {
   // Variables
-  size_t count = 0;
+  int count = 0;
   
   memset(result,0,strlen(result));
   memcpy(result,"[",1); 
@@ -402,7 +400,7 @@ Return: 0 if an error has occured, 1 if successfull
 int create_json_data_from_votes_array(struct votes* votes, char *result, const char* DOCUMENT_FIELDS)
 {
   // Variables
-  size_t count = 0;
+  int count = 0;
   
   memset(result,0,strlen(result));
   memcpy(result,"[",1); 
@@ -458,9 +456,12 @@ Return: The number of occurences of the substring in the string, otherwise 0 if 
 
 size_t string_count(const char* DATA, const char* STRING)
 {  
+  // Constants
+  const size_t MAXIMUM_AMOUNT = strlen(DATA) >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : strlen(DATA)+SMALL_BUFFER_SIZE;
+
   // Variables
   char buffer[1024];
-  char* datacopy1 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
+  char* datacopy1 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char)); 
   // since were going to be changing where datacopy1 is referencing, we need to create a copy to pointer_reset
   char* datacopy2 = datacopy1; 
   time_t current_date_and_time;
@@ -478,7 +479,7 @@ size_t string_count(const char* DATA, const char* STRING)
   }
 
   // get the occurences of the string 
-  memcpy(datacopy1,DATA,strnlen(DATA,MAXIMUM_BUFFER_SIZE));
+  memcpy(datacopy1,DATA,strnlen(DATA,MAXIMUM_AMOUNT));
   while((datacopy1 = strstr(datacopy1, STRING)) != NULL)
   {
     count++;
@@ -510,14 +511,7 @@ int parse_http_response(char *result)
   // reset the variables
   memset(str,0,sizeof(str));
 
-  if (strstr(result,"[") != NULL)
-  {
-    data = strstr(result,"[");
-  }
-  else
-  {
-    data = strstr(result,"{");
-  }
+  data = strstr(result,"[") != NULL ? strstr(result,"[") : strstr(result,"{");
   memcpy(str,data,strnlen(data,sizeof(str)));
   memset(result,0,strlen(result));
   memcpy(result,str,strlen(str));
@@ -532,6 +526,7 @@ Name: string_replace
 Description: String replace
 Parameters:
   data - The string to replace the data
+  DATA_TOTAL_LENGTH - The maximum size of data
   STR1 - The string to be replaced
   STR2 - The string to replace the other string
 Return: 0 if an error has occured, 1 if successfull
@@ -540,13 +535,16 @@ Return: 0 if an error has occured, 1 if successfull
 
 int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1, const char* STR2)
 {  
+  // Constants
+  const size_t MAXIMUM_AMOUNT = DATA_TOTAL_LENGTH >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : DATA_TOTAL_LENGTH+SMALL_BUFFER_SIZE;
+
   // check if the str to replace exist in the string
   if (strstr(data,STR1) != NULL)
   { 
     // Variables
     char buffer[1024];
-    char* datacopy = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-    char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    char* datacopy = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
+    char* data2 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
     char* string;
     time_t current_date_and_time;
     struct tm current_UTC_date_and_time;
@@ -583,7 +581,7 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
     } 
 
     // copy the string to data2
-    memcpy(data2,data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+    memcpy(data2,data,strnlen(data,MAXIMUM_AMOUNT));
 
     // get the occurences of STR1   
     total = string_count(data2,STR1);
@@ -593,8 +591,8 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
     {
       // reset the variables
       memset(datacopy,0,strlen(datacopy));
-      data_length = strnlen(data2,MAXIMUM_BUFFER_SIZE);
-      start = data_length - strnlen(strstr(data2,STR1),MAXIMUM_BUFFER_SIZE);
+      data_length = strnlen(data2,MAXIMUM_AMOUNT);
+      start = data_length - strnlen(strstr(data2,STR1),MAXIMUM_AMOUNT);
    
       // get a pointer to where the rest of the data2 string should be copied to
       string = strstr(data2,STR1)+strnlen(STR1,BUFFER_SIZE);
@@ -604,7 +602,7 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
       // copy STR2 to the new string
       memcpy(datacopy+strlen(datacopy),REPLACE_STRING,sizeof(REPLACE_STRING)-1);
       // copy the bytes after STR1 to the new string
-      memcpy(datacopy+strlen(datacopy),string,strnlen(string,MAXIMUM_BUFFER_SIZE));
+      memcpy(datacopy+strlen(datacopy),string,strnlen(string,MAXIMUM_AMOUNT));
       // copy the new string to the string pointer
       memset(data2,0,data_length);
       memcpy(data2,datacopy,strlen(datacopy));
@@ -614,9 +612,9 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
     {
       // reset the variables
       memset(datacopy,0,strlen(datacopy));
-      data_length = strnlen(data2,MAXIMUM_BUFFER_SIZE);
-      str2_length = strnlen(STR2,MAXIMUM_BUFFER_SIZE);
-      start = data_length - strnlen(strstr(data2,REPLACE_STRING),MAXIMUM_BUFFER_SIZE);
+      data_length = strnlen(data2,MAXIMUM_AMOUNT);
+      str2_length = strnlen(STR2,MAXIMUM_AMOUNT);
+      start = data_length - strnlen(strstr(data2,REPLACE_STRING),MAXIMUM_AMOUNT);
    
       // get a pointer to where the rest of the data string should be copied to
       string = strstr(data2,REPLACE_STRING)+(sizeof(REPLACE_STRING)-1);
@@ -626,7 +624,7 @@ int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1,
       // copy STR2 to the new string
       memcpy(datacopy+start,STR2,str2_length);
       // copy the bytes after REPLACE_STRING to the new string
-      memcpy(datacopy+start+str2_length,string,strnlen(string,MAXIMUM_BUFFER_SIZE));
+      memcpy(datacopy+start+str2_length,string,strnlen(string,MAXIMUM_AMOUNT));
       // copy the new string to the string pointer
       memset(data2,0,data_length);
       memcpy(data2,datacopy,strlen(datacopy));
@@ -661,11 +659,7 @@ Return: 0 if the string is not valid, 1 if the string is valid
 
 int check_for_invalid_strings(const char* MESSAGE)
 {
-  if (strstr(MESSAGE,"\"") == NULL && strstr(MESSAGE,",") == NULL && strstr(MESSAGE,":") == NULL)
-  {
-    return 1;
-  }
-  return 0;
+  return strstr(MESSAGE,"\"") == NULL && strstr(MESSAGE,",") == NULL && strstr(MESSAGE,":") == NULL ? 1 : 0;
 }
 
 
@@ -684,9 +678,12 @@ Return: 0 if an error has occured, 1 if successfull
 
 int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM)
 {  
+  // Constants
+  const size_t MAXIMUM_AMOUNT = strlen(RESERVE_BYTES) >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : strlen(RESERVE_BYTES)+SMALL_BUFFER_SIZE;
+
   // Variables
   char buffer[1024];
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   // since were going to be changing where data is referencing, we need to create a copy to pointer_reset
   char* datacopy = data; 
   time_t current_date_and_time;
@@ -703,7 +700,7 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
     exit(0);
   }
 
-  memcpy(data,RESERVE_BYTES,strnlen(RESERVE_BYTES,MAXIMUM_BUFFER_SIZE));
+  memcpy(data,RESERVE_BYTES,strnlen(RESERVE_BYTES,MAXIMUM_AMOUNT));
 
   // error check
   if (ITEM > (int)string_count(RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_STRING))
@@ -717,7 +714,7 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
     data = strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING) + strlen(BLOCKCHAIN_DATA_SEGMENT_STRING);
   }  
   memset(result,0,strlen(result));
-  memcpy(result,data,strnlen(data,MAXIMUM_BUFFER_SIZE) - strnlen(strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING),MAXIMUM_BUFFER_SIZE));
+  memcpy(result,data,strnlen(data,MAXIMUM_AMOUNT) - strnlen(strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING),MAXIMUM_AMOUNT));
 
   pointer_reset(datacopy);
   return 1;
@@ -739,14 +736,14 @@ Return: 0 if an error has occured, 1 if successfull
 
 int random_string(char *result, const size_t LENGTH)
 {  
-  // Variables
-  char data[BUFFER_SIZE];
-  size_t count;
-
   // define macros
   #define STRING "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" 
   #define MINIMUM 0
   #define MAXIMUM 61
+  
+  // Variables
+  char data[sizeof(STRING)];
+  size_t count;
   
   memset(data,0,sizeof(data));
   memcpy(data,STRING,sizeof(STRING)-1);

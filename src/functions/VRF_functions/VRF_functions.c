@@ -32,7 +32,7 @@ int create_random_VRF_keys(unsigned char *VRF_public_key, unsigned char *VRF_sec
 {  
   // Variables
   unsigned char data[crypto_vrf_SEEDBYTES];
-  size_t count;
+  int count;
 
   // define macros
   #define MINIMUM 1
@@ -43,7 +43,7 @@ int create_random_VRF_keys(unsigned char *VRF_public_key, unsigned char *VRF_sec
     memset(VRF_public_key,0,strlen((char*)VRF_public_key));
     memset(VRF_secret_key,0,strlen((char*)VRF_secret_key));
 
-    for (count = 0; count < crypto_vrf_SEEDBYTES; count++)
+    for (count = 0; count < (int)crypto_vrf_SEEDBYTES; count++)
     {
       data[count] = ((rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM);
     }
@@ -75,8 +75,8 @@ void generate_key()
   unsigned char vrf_public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
   char vrf_secret_key[VRF_SECRET_KEY_LENGTH+1];
   char vrf_public_key[VRF_PUBLIC_KEY_LENGTH+1];
-  size_t count;
-  size_t count2; 
+  int count;
+  int count2; 
 
   memset(vrf_secret_key,0,sizeof(vrf_secret_key)); 
   memset(vrf_public_key,0,sizeof(vrf_public_key)); 
@@ -90,11 +90,11 @@ void generate_key()
   }
 
   // convert the VRF data to a string
-  for (count2 = 0, count = 0; count2 < crypto_vrf_SECRETKEYBYTES; count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < (int)crypto_vrf_SECRETKEYBYTES; count2++, count += 2)
   {
     snprintf(vrf_secret_key+count,VRF_SECRET_KEY_LENGTH-1,"%02x",vrf_secret_key_data[count2] & 0xFF);
   }
-  for (count2 = 0, count = 0; count2 < crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < (int)crypto_vrf_PUBLICKEYBYTES; count2++, count += 2)
   {
     snprintf(vrf_public_key+count,VRF_PUBLIC_KEY_LENGTH-1,"%02x",vrf_public_key_data[count2] & 0xFF);
   }
@@ -126,8 +126,8 @@ Return: 0 if an error has occured, 1 if successfull
 int sign_network_block_string(char *data, const char* MESSAGE)
 {
   // Variables
-  char beta_string[BUFFER_SIZE];
-  char proof[BUFFER_SIZE];
+  char beta_string[VRF_BETA_LENGTH+1];
+  char proof[VRF_PROOF_LENGTH+1];
 
   // define macros
   #define SIGN_NETWORK_BLOCK_STRING_ERROR(settings) \
@@ -171,8 +171,8 @@ int VRF_sign_data(char *beta_string, char *proof, const char* data)
   // Variables
   unsigned char proof_data[crypto_vrf_PROOFBYTES+1];
   unsigned char beta_string_data[crypto_vrf_OUTPUTBYTES+1];
-  size_t count;
-  size_t count2;
+  int count;
+  int count2;
 
   memset(beta_string,0,strlen(beta_string));
   memset(proof,0,strlen(proof));
@@ -186,11 +186,11 @@ int VRF_sign_data(char *beta_string, char *proof, const char* data)
   }
 
   // convert the data to a string
-  for (count2 = 0, count = 0; count2 < crypto_vrf_PROOFBYTES; count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < (int)crypto_vrf_PROOFBYTES; count2++, count += 2)
   {
     snprintf(proof+count,VRF_PROOF_LENGTH,"%02x",proof_data[count2] & 0xFF);
   }
-  for (count2 = 0, count = 0; count2 < crypto_vrf_OUTPUTBYTES; count2++, count += 2)
+  for (count2 = 0, count = 0; count2 < (int)crypto_vrf_OUTPUTBYTES; count2++, count += 2)
   {
     snprintf(beta_string+count,VRF_BETA_LENGTH,"%02x",beta_string_data[count2] & 0xFF);
   }
@@ -214,12 +214,12 @@ Return: 0 if an error has occured, 1 if successfull
 int VRF_data_verify(const char* BLOCK_VERIFIERS_PUBLIC_KEY, const char* BLOCK_VERIFIERS_DATA_SIGNATURE, const char* DATA)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[3];
   unsigned char public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
   unsigned char proof_data[crypto_vrf_PROOFBYTES+1];
   unsigned char beta_string_data[crypto_vrf_OUTPUTBYTES+1];
-  size_t count;
-  size_t count2;
+  int count;
+  int count2;
 
   memset(public_key_data,0,sizeof(public_key_data));
   memset(proof_data,0,sizeof(proof_data));
