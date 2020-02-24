@@ -302,8 +302,6 @@ void sync_check_majority_reserve_proofs_database(void)
   char data[DATA_HASH_LENGTH+1];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   int count;
 
   // define macros  
@@ -553,8 +551,6 @@ void sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SE
   char data[DATA_HASH_LENGTH+1];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   size_t count;
   size_t current_reserve_bytes_database;
 
@@ -779,8 +775,6 @@ void sync_check_majority_delegates_database(void)
   char data[DATA_HASH_LENGTH+1];
   char data2[SMALL_BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   int count;
 
   // define macros 
@@ -984,8 +978,6 @@ void sync_check_majority_statistics_database(void)
   char data[DATA_HASH_LENGTH+1];
   char data2[SMALL_BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   int count;
 
   // define macros 

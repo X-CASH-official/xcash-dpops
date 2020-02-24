@@ -59,7 +59,7 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT_SOCKET)
 {
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
+  char data[BUFFER_SIZE];
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -80,22 +80,15 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_delegates_website_get_statistics",59); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  memset(data,0,strnlen(data,MAXIMUM_BUFFER_SIZE)); \
+  memset(data,0,strlen(data)); \
   memcpy(data,"{\"Error\":\"Could not get statistics\"}",36); \
   send_data(CLIENT_SOCKET,(unsigned char*)data,strlen(data),400,"application/json"); \
-  pointer_reset(data); \
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count); \
   return 400;
-  
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
 
   memset(buffer,0,sizeof(buffer));
+  memset(data,0,sizeof(data));
 
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_delegates_website_get_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
@@ -138,7 +131,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   sscanf(data,"%zu", &block_height);
   count = block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT;  
   memset(data,0,strlen(data));
-  snprintf(data,MAXIMUM_BUFFER_SIZE,"%zu",count);
+  snprintf(data,sizeof(data)-1,"%zu",count);
 
   memcpy(database_data.item[database_data.count],"XCASH_DPOPS_round_number",24);
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
@@ -152,7 +145,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   }
 
   memset(data,0,strlen(data));
-  snprintf(data,MAXIMUM_BUFFER_SIZE,"%zu",count2);
+  snprintf(data,sizeof(data)-1,"%zu",count2);
 
   memcpy(database_data.item[database_data.count],"total_votes",11);
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
@@ -163,7 +156,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   number = ((size_t)((((double)count2) / ((generated_supply - (XCASH_PREMINE_TOTAL_SUPPLY - XCASH_PREMINE_CIRCULATING_SUPPLY)) * XCASH_WALLET_DECIMAL_PLACES_AMOUNT)) * 100) | 0);
 
   memset(data,0,strlen(data));
-  snprintf(data,MAXIMUM_BUFFER_SIZE,"%zu",number);
+  snprintf(data,sizeof(data)-1,"%zu",number);
 
   memcpy(database_data.item[database_data.count],"XCASH_DPOPS_circulating_percentage",34);
   memcpy(database_data.value[database_data.count],data,strnlen(data,BUFFER_SIZE));
@@ -180,7 +173,6 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
 
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
-  pointer_reset(data); 
   network_functions_test_settings = 0; 
   return 200;
 
@@ -209,7 +201,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
-  size_t count = 0;
+  int count = 0;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -219,7 +211,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates",40); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
@@ -275,13 +267,13 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET, const char* DATA)
 {
   // Variables
-  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char message[BUFFER_SIZE];
   char buffer[1024];
   char data2[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count = 0;
-  size_t count2 = 0;
+  int count = 0;
+  int count2 = 0;
   struct database_document_fields database_data;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   int document_count = 0;
@@ -294,22 +286,15 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_statistics",51); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
-  pointer_reset(message); \
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count); \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL)
-  {
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
   memset(buffer,0,sizeof(buffer));
+  memset(message,0,sizeof(message));
 
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
@@ -369,8 +354,8 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     count2++;
   }
 
-  memset(data2,0,sizeof(data2));
-  snprintf(data2, sizeof(data2), "%zu", count2);
+  memset(data2,0,strlen(data2));
+  snprintf(data2, sizeof(data2), "%d", count2);
   memcpy(database_data.item[TOTAL_DELEGATES_DATABASE_FIELDS],"current_delegate_rank",21);
   memcpy(database_data.value[TOTAL_DELEGATES_DATABASE_FIELDS],data2,strnlen(data2,BUFFER_SIZE));
   database_data.count++;  
@@ -383,8 +368,6 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR("Could not create json data");
   }
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
-  
-  pointer_reset(message);
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
   return 1;
@@ -411,7 +394,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
 {
   // Variables
   char data2[BUFFER_SIZE];
-  char* message = (char*)calloc(BUFFER_SIZE,sizeof(char));  
+  char message[BUFFER_SIZE];
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -426,22 +409,15 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_information",52); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
-  pointer_reset(message); \
   POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count); \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL)
-  {
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
   memset(buffer,0,sizeof(buffer));
   memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
 
   // initialize the database_document_fields struct 
   INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS,"server_receive_data_socket_get_delegates_information",buffer,current_date_and_time,current_UTC_date_and_time);
@@ -488,7 +464,6 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
   
   POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
-  pointer_reset(message);
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -529,7 +504,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_voters_list",52); \
   memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
   error_message.total++; \
-  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates voters list\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   pointer_reset(message); \
@@ -567,7 +542,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     memcpy(message,"{\"delegate_name\":\"",18);
     memcpy(message+18,data2,DATA_LENGTH);
     memcpy(message+18+DATA_LENGTH,"\"}",2);
-    memset(data2,0,sizeof(data2));
+    memset(data2,0,strlen(data2));
 
     if (read_document_field_from_collection(database_name,"delegates",message,"public_address",data2,1) == 0)
     {
@@ -584,7 +559,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   // check how many reserve proofs are for the public address
   for (count = 1, document_count = 0; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   { 
-    memset(data2,0,sizeof(data2));
+    memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
     counter = count_documents_in_collection(database_name,data2,message,1);
@@ -608,7 +583,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   // get all of the reserve proofs for the public address
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   { 
-    memset(data2,0,sizeof(data2));
+    memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
 
@@ -669,7 +644,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
   // Variables
   char message[BUFFER_SIZE];  
   char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];  
+  char data3[SMALL_BUFFER_SIZE];  
   size_t count = 0;
 
   // define macros
@@ -677,7 +652,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_round_statistics",47); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the round statistics\"}",46); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   return 0;
@@ -717,7 +692,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
     SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR("Could not get the rounds statistics");
   }
 
-  memset(data2,0,sizeof(data2));
+  memset(data2,0,strlen(data2));
 
   if (read_document_field_from_collection(database_name,data3,message,"reserve_bytes",data2,1) == 0)
   {
@@ -725,7 +700,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
   }
 
   // create a json string out of the database array of item and value
-  memset(message,0,sizeof(message));
+  memset(message,0,strlen(message));
   memcpy(message,"{\"reserve_bytes\":\"",18);
   memcpy(message+18,data2,strnlen(data2,sizeof(message)));
   memcpy(message+strlen(message),"\"}",2);
