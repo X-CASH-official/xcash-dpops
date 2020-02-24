@@ -59,12 +59,11 @@ Return: 0 if an error has occured, else the block reward
 long long int add_block_to_blocks_found(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char block_height[BUFFER_SIZE];
-  char block_hash[BUFFER_SIZE];  
-  char block_reward[BUFFER_SIZE];
-  char block_date_and_time[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char block_height[MAXIMUM_NUMBER_SIZE];
+  char block_hash[65];  
+  char block_reward[MAXIMUM_NUMBER_SIZE];
+  char block_date_and_time[100];
   long long int number;
   long long int block_reward_number = 0;
 
@@ -78,7 +77,6 @@ long long int add_block_to_blocks_found(void)
   return 0;
 
   memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
   memset(block_height,0,sizeof(block_height));
   memset(block_hash,0,sizeof(block_hash));
   memset(block_reward,0,sizeof(block_reward));
@@ -263,9 +261,9 @@ Return: 0 if an error has occured, 1 if successfull
 int calculate_block_reward_for_each_delegate(long long int block_reward)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -297,15 +295,13 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   memcpy(data+127,"\"}",2); 
 
   // check if the delegate has the maximum amount of voters
-  total_voters = get_delegates_total_voters_count(xcash_wallet_public_address);
-  if (total_voters < 1)
+  if ((total_voters = get_delegates_total_voters_count(xcash_wallet_public_address)) < 1)
   {
     CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("The delegate does not have enough voters to distribute the block rewards with");
   }
   
   // get the total votes for the delegate and a list of all of the voters
-  total_votes = get_delegates_total_voters(voters);
-  if (total_votes == -1)
+  if ((total_votes = get_delegates_total_voters(voters)) == -1)
   {
     total_votes = 0;
   }
@@ -430,11 +426,11 @@ Return: 0 if an error has occured, otherwise the transaction total
 long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC_ADDRESS,const char* CURRENT_TOTAL,const char* TOTAL)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
-  char payment_tx_hash[BUFFER_SIZE];
-  char payment_tx_key[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
+  char payment_tx_hash[SMALL_BUFFER_SIZE];
+  char payment_tx_key[SMALL_BUFFER_SIZE];
   long long int number;
   long long int updated_total; 
 
@@ -523,9 +519,9 @@ Return: 0 if an error has occured, 1 if successfull
 int payment_timer_update_inactivity_count(const char* PUBLIC_ADDRESS,const char* CURRENT_TOTAL,const char* INACTIVITY_COUNT)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
   long long int inactivity_count;
   long long int maximum_inactivity_count;
 
@@ -594,13 +590,13 @@ Description: Sends all of the delegates payments once a day at a random time, or
 void* payment_timer_thread(void* parameters)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  size_t count;
-  size_t counter; 
+  int count;
+  int counter; 
   long long int number;
   long long int amount_of_payments = 0;
   long long int total_amount = 0;
@@ -636,9 +632,8 @@ void* payment_timer_thread(void* parameters)
       // reset the amount of payments and total amount
       amount_of_payments = 0;
       total_amount = 0;
-
-      document_count = count_all_documents_in_collection(shared_delegates_database_name,"public_addresses",1);
-      if (document_count <= 0)
+      
+      if ((document_count = count_all_documents_in_collection(shared_delegates_database_name,"public_addresses",1)) <= 0)
       {
         PAYMENT_TIMER_THREAD_ERROR("The database is empty",1);
       }
@@ -652,7 +647,7 @@ void* payment_timer_thread(void* parameters)
       }
 
       // loop through each delegate
-      for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+      for (count = 0; count < (int)database_multiple_documents_fields.document_count; count++)
       {
         // check if the current_total is over the minimum amount
         sscanf(database_multiple_documents_fields.value[count][1], "%lld", &number);

@@ -86,7 +86,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66); \
   memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
   error_message.total++; \
-  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   if ((settings) == 0) \
   { \
@@ -309,12 +309,11 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
 {
   // Variables
-  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count = 0;
-  int counter = 0;
+  size_t counter = 0;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count = 0;
 
@@ -325,10 +324,9 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_blocks_found",42); \
   memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
   error_message.total++; \
-  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
-  memcpy(message,"{\"Error\":\"Could not get the delegates blocks found\"}",52); \
-  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
-  pointer_reset(message); \
+  memset(buffer,0,strlen(buffer)); \
+  memcpy(buffer,"{\"Error\":\"Could not get the delegates blocks found\"}",52); \
+  send_data(CLIENT_SOCKET,(unsigned char*)buffer,strlen(buffer),400,"application/json"); \
   if ((settings) == 0) \
   { \
     POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
@@ -352,9 +350,26 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0,"Could not get the delegates blocks found data");
   }
+
+  // count how many bytes to allocate for the json data
+  for (count = 0, counter = BUFFER_SIZE; count < document_count; count++)
+  {
+    counter += 16; // 16 is for quotes for the items and values
+    counter += strlen(database_multiple_documents_fields.item[count][0]);
+    counter += strlen(database_multiple_documents_fields.item[count][1]);
+    counter += strlen(database_multiple_documents_fields.item[count][2]);
+    counter += strlen(database_multiple_documents_fields.item[count][3]);
+    counter += strlen(database_multiple_documents_fields.value[count][0]);
+    counter += strlen(database_multiple_documents_fields.value[count][1]);
+    counter += strlen(database_multiple_documents_fields.value[count][2]);
+    counter += strlen(database_multiple_documents_fields.value[count][3]);
+  }
+
+  char* message = (char*)calloc(counter,sizeof(char)); 
   
   if (create_json_data_from_database_multiple_documents_array(&database_multiple_documents_fields,message,"") == 0)
   {
+    pointer_reset(message);
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0,"Could not create the json data");
   }  
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
@@ -383,8 +398,8 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_get_public_address_information(const int CLIENT_SOCKET, const char* DATA)
 {
   // Variables
-  char data2[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count = 0;
@@ -397,7 +412,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_information",57); \
   memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
   error_message.total++; \
-  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
+  memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   if ((settings) == 0) \
@@ -471,11 +486,11 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
 {
   // Variables
   char data2[BUFFER_SIZE];
-  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
+  char data3[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count = 0;
-  int counter = 0;
+  size_t counter = 0;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count = 0;
 
@@ -487,24 +502,17 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_public_address_payment_information",65); \
   memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
   error_message.total++; \
-  memset(message,0,strnlen(message,MAXIMUM_BUFFER_SIZE)); \
-  memcpy(message,"{\"Error\":\"Could not get the public addresses information\"}",58); \
-  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
-  pointer_reset(message); \
+  memset(data2,0,strlen(data2)); \
+  memcpy(data2,"{\"Error\":\"Could not get the public addresses information\"}",58); \
+  send_data(CLIENT_SOCKET,(unsigned char*)data2,strlen(data2),400,"application/json"); \
   if ((settings) == 0) \
   { \
     POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS); \
   } \
   return 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (message == NULL)
-  {
-    color_print("Could not allocate the memory needed on the heap","red");
-    exit(0);
-  }
-
   memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // get the parameter1
   memcpy(data2,&DATA[55],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-55);
@@ -516,13 +524,13 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   }
   
   // check if the data is a public address or a delegate name
-  memcpy(message,"{\"",2);
-  memcpy(message+2,"public_address\":\"",17);
-  memcpy(message+19,data2,XCASH_WALLET_LENGTH);
-  memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
+  memcpy(data3,"{\"",2);
+  memcpy(data3+2,"public_address\":\"",17);
+  memcpy(data3+19,data2,XCASH_WALLET_LENGTH);
+  memcpy(data3+19+XCASH_WALLET_LENGTH,"\"}",2);
   
   // check if there is any data in the database that matches the message
-  document_count = count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,message,1);
+  document_count = count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,data3,1);
   if (document_count <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"There is no payment data for the public address");
@@ -535,12 +543,29 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0,"Could not get the payment data for the public address");
   }
+
+  // count how many bytes to allocate for the json data
+  for (count = 0, counter = BUFFER_SIZE; count < document_count; count++)
+  {
+    counter += 20; // 20 is for quotes for the items and values
+    counter += strlen(database_multiple_documents_fields.item[count][0]);
+    counter += strlen(database_multiple_documents_fields.item[count][1]);
+    counter += strlen(database_multiple_documents_fields.item[count][2]);
+    counter += strlen(database_multiple_documents_fields.item[count][3]);
+    counter += strlen(database_multiple_documents_fields.item[count][4]);
+    counter += strlen(database_multiple_documents_fields.value[count][0]);
+    counter += strlen(database_multiple_documents_fields.value[count][1]);
+    counter += strlen(database_multiple_documents_fields.value[count][2]);
+    counter += strlen(database_multiple_documents_fields.value[count][3]);
+    counter += strlen(database_multiple_documents_fields.value[count][4]);
+  }
   
-  memset(message,0,strlen(message));
+  char* message = (char*)calloc(counter,sizeof(char)); 
 
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_multiple_documents_array(&database_multiple_documents_fields,message,"") == 0)
   {
+    pointer_reset(message);
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0,"Could not create the json data");
   }
 
