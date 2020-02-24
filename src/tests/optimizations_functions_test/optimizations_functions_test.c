@@ -296,25 +296,6 @@ int optimizations_functions_test(void)
   memcpy(invalid_reserve_proofs.reserve_proof[19],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NbeQ6htDtJPees7GH3NHXKcrtJJ8VbqFWJFVLw8Dfrq28UFw51BvtKbU16YYjNJAeqAYsSVHg92toMYk4yY7HYUbZ65vgfn8wXbLELBXTKYQezErCAUBjwTDEGNdMk1QZF4tcLEmVUz4me8MaXts1D8ouHVqJQRAHv6KDHkMU143k5KrZbbkEMhijGDi9oGHRbUm2W4pLWMgzzZRPEQ7bP9eTRPHi2G2aa11pujWY4WaEPX12FyYbG2LJv18dvtejyiPTgXLVxPvRTNeP3aY7GwRRetePkxqJtJWXuXjp37yeeP4GJPaxeDzZhzzQ4T8JugtEHfCj8vs8j21Bx63K8SDTU3nQg7Ns6AoZg9rL2UCgA8W2FC7UmEb2ws85XJ8WfrTqzNpqoiweBGKgSG3wfbpzgMMKKz4obsEeTHZSfsKzwGRgMiEqkbTRSxdCPFi2tDWQdrWdvmaWm81iK42MSfud",537);
   invalid_reserve_proofs.count = 20;
 
-  start = time(NULL);
-  count = 0;
-  while (time(NULL)-start < MAXIMUM_TIME_VALIDATED_RESERVE_PROOFS)
-  {
-    memset(data_test,0,sizeof(data_test));
-    select_random_unique_reserve_proof(&reserve_proof);
-    check_reserve_proofs(data_test,VALIDATE_RESERVE_PROOFS_WALLET,VALIDATE_RESERVE_PROOFS_RESERVE_PROOF);
-    count++;
-  }
-  if (count >= MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT)
-  {
-    fprintf(stderr,"\033[1;32mPASSED! Test for validating reserve proofs. Validated %d reserve proofs (need at least %d) in %d seconds\033[0m\n",count,MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT,MAXIMUM_TIME_VALIDATED_RESERVE_PROOFS);
-    count_test++;
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31mFAILED! Test for validating reserve proofs took %ld seconds out of %d seconds\033[0m\n",total,MINIMUM_VALIDATED_RESERVE_PROOF_AMOUNT);
-  }
-
 
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);

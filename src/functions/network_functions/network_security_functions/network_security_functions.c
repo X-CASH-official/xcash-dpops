@@ -38,14 +38,15 @@ int sign_data(char *message)
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+  const size_t MAXIMUM_AMOUNT = strlen(message) >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : strlen(message)+SMALL_BUFFER_SIZE;
 
   // Variables
   char random_data[RANDOM_STRING_LENGTH+1];
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   char proof[VRF_PROOF_LENGTH+1];
   char beta_string[VRF_BETA_LENGTH+1];
-  char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
-  char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
+  char* result = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
+  char* string = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
@@ -109,7 +110,7 @@ int sign_data(char *message)
   pthread_rwlock_unlock(&rwlock);
 
   // format the message
-  if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
+  if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
   {
     SIGN_DATA_ERROR("Could not create the message");
   }
@@ -144,7 +145,7 @@ int sign_data(char *message)
   {
     // sign_data
     memcpy(string,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
-    memcpy(string+60,result,strnlen(result,MAXIMUM_BUFFER_SIZE));
+    memcpy(string+60,result,strnlen(result,MAXIMUM_AMOUNT));
     memcpy(string+strlen(string),"\"}}",3);
     memset(result,0,strlen(result));
   
@@ -153,7 +154,7 @@ int sign_data(char *message)
       SIGN_DATA_ERROR("Could not create the message");
     } 
 
-    if (parse_json_data(data,"signature",result,MAXIMUM_BUFFER_SIZE) == 0)
+    if (parse_json_data(data,"signature",result,MAXIMUM_AMOUNT) == 0)
     {
       SIGN_DATA_ERROR("Could not create the message");
     }
@@ -205,6 +206,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+  const size_t MAXIMUM_AMOUNT = strlen(MESSAGE) >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : strlen(MESSAGE)+SMALL_BUFFER_SIZE;
   
   // Variables
   char message_settings[BUFFER_SIZE];
@@ -219,9 +221,9 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   unsigned char public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
   unsigned char proof_data[crypto_vrf_PROOFBYTES+1];
   unsigned char beta_string_data[crypto_vrf_OUTPUTBYTES+1];
-  char* result = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
+  char* result = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   char data[BUFFER_SIZE];
-  char* string = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
+  char* string = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t message_length;
@@ -454,7 +456,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       message_length = strlen(MESSAGE) - 320;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
-      if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
+      if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
       {
         VERIFY_DATA_ERROR("Invalid message");
       }   
@@ -464,7 +466,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       message_length = strlen(MESSAGE) - 125;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
-      if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
+      if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
       {
         VERIFY_DATA_ERROR("Invalid message");
       }   
@@ -477,7 +479,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       message_length = strlen(MESSAGE) - 320;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
-      if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
+      if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
       {
         VERIFY_DATA_ERROR("Invalid message");
       }   
@@ -487,7 +489,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       message_length = strlen(MESSAGE) - 125;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
-      if (string_replace(result,MAXIMUM_BUFFER_SIZE,"\"","\\\"") == 0)
+      if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
       {
         VERIFY_DATA_ERROR("Invalid message");
       }   

@@ -34,7 +34,7 @@ int get_public_address(void)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
 
   // define macros
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
@@ -90,8 +90,8 @@ int send_payment(const char* PUBLIC_ADDRESS, const char* TOTAL, char *tx_hash, c
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char data[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char message[SMALL_BUFFER_SIZE];
 
   memset(data,0,sizeof(data));
   memset(message,0,sizeof(message));
@@ -138,7 +138,7 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
 
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];  
+  char data2[SMALL_BUFFER_SIZE];  
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));

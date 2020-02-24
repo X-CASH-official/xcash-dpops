@@ -54,14 +54,14 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   const size_t HTTP_SETTINGS_LENGTH = strnlen(HTTP_SETTINGS,BUFFER_SIZE);
   const size_t URL_LENGTH = strnlen(URL,BUFFER_SIZE);
   const size_t DATA_LENGTH = strlen(DATA);
-  const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE); 
+  const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
+  const size_t MAXIMUM_AMOUNT = DATA_LENGTH >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : DATA_LENGTH+BUFFER_SIZE;
 
   // Variables
-  char response[BUFFER_SIZE];
   char buffer2[BUFFER_SIZE];
   char* post_request_data;
   char str[BUFFER_SIZE]; 
-  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count; 
@@ -96,11 +96,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     memcpy(error_message.function[error_message.total],"send_http_request",17);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer2);  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,str);  
     exit(0);
   }
-
-  memset(response,0,sizeof(response));
   memset(buffer2,0,sizeof(buffer2));
   memset(str,0,sizeof(str));
 
@@ -144,8 +142,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
   {
     memcpy(message+counter,DATA,DATA_LENGTH);
-  }  
-  memset(&response, 0, sizeof(response));
+  }
 
   // convert the port to a string  
   snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
@@ -292,12 +289,13 @@ Return: 0 if an error has occured, 1 if successfull
 int send_and_receive_data_socket(char *result, const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS)
 { 
   // Constants
-  const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0};   
+  const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0}; 
+  const size_t MAXIMUM_AMOUNT = strlen(DATA) >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : strlen(DATA)+BUFFER_SIZE;
 
   // Variables 
-  char buffer2[BUFFER_SIZE];
-  char str[BUFFER_SIZE];
-  char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); 
+  char buffer2[MAXIMUM_NUMBER_SIZE];
+  char str[SMALL_BUFFER_SIZE];
+  char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char)); 
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int receive_data_result;
@@ -331,7 +329,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     memcpy(error_message.function[error_message.total],"send_http_request",17);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer2);  
+    print_error_message(current_date_and_time,current_UTC_date_and_time,str);  
     exit(0);
   }
 
@@ -428,7 +426,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   }
 
   memset(message,0,strlen(message));
-  memcpy(message,DATA,strnlen(DATA,MAXIMUM_BUFFER_SIZE));
+  memcpy(message,DATA,strnlen(DATA,MAXIMUM_AMOUNT));
   if (send_data(network_socket,(unsigned char*)message,0,1,"") == 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error sending data to host",1);
@@ -467,12 +465,13 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
 { 
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
-  const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0};   
+  const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0};
+  const size_t MAXIMUM_AMOUNT = strlen(DATA) >= BUFFER_SIZE ? BUFFER_SIZE : strlen(DATA)+BUFFER_SIZE;
   
   // Variables  
-  char buffer2[BUFFER_SIZE];
-  char str[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
+  char buffer2[MAXIMUM_NUMBER_SIZE];
+  char str[SMALL_BUFFER_SIZE];
+  char message[MAXIMUM_AMOUNT];
   struct pollfd socket_file_descriptors;
   int socket_settings;
   int count;
@@ -660,6 +659,9 @@ Return: 0 if an error has occured, 1 if successfull
 
 int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, const int MESSAGE_SETTINGS, const char* MESSAGE_DATA_SETTINGS)
 {
+  // Constants
+  const size_t MAXIMUM_AMOUNT = DATA_LENGTH >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : DATA_LENGTH+BUFFER_SIZE;
+
   // Variables
   size_t count;
   time_t current_date_and_time;
@@ -680,7 +682,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     // prepend the HTTP headers to the message
 
     // Variables
-    char* message = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
     char current_date_and_time_data[BUFFER_SIZE];
 
     memset(current_date_and_time_data,0,sizeof(current_date_and_time_data));
@@ -691,7 +693,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     strftime(current_date_and_time_data,sizeof(current_date_and_time_data),"%a, %d %b %Y %H:%M:%S GMT",&current_UTC_date_and_time);
 
     memcpy(message,"HTTP/1.1 ",9);
-    snprintf(message+9,MAXIMUM_BUFFER_SIZE-9,"%d",MESSAGE_SETTINGS);
+    snprintf(message+9,MAXIMUM_AMOUNT-9,"%d",MESSAGE_SETTINGS);
     if (MESSAGE_SETTINGS == 200)
     {
       memcpy(message+strlen(message)," OK",3);
@@ -705,11 +707,11 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
       memcpy(message+strlen(message)," Not Found",10);
     }
     memcpy(message+strlen(message),"\r\nConnection: close\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept\r\nContent-Length: ",147);
-    snprintf(message+strlen(message),MAXIMUM_BUFFER_SIZE,"%ld",DATA_LENGTH);
+    snprintf(message+strlen(message),MAXIMUM_AMOUNT,"%ld",DATA_LENGTH);
     memcpy(message+strlen(message),"\r\nContent-Language: en\r\nContent-Type: ",38);
-    memcpy(message+strlen(message),MESSAGE_DATA_SETTINGS,strnlen(MESSAGE_DATA_SETTINGS,MAXIMUM_BUFFER_SIZE));
+    memcpy(message+strlen(message),MESSAGE_DATA_SETTINGS,strnlen(MESSAGE_DATA_SETTINGS,MAXIMUM_AMOUNT));
     memcpy(message+strlen(message),"\r\nServer: XCASH_DPOPS version 1.0.0\r\nDate: ",43);
-    memcpy(message+strlen(message),current_date_and_time_data,strnlen(current_date_and_time_data,MAXIMUM_BUFFER_SIZE));
+    memcpy(message+strlen(message),current_date_and_time_data,strnlen(current_date_and_time_data,MAXIMUM_AMOUNT));
     memcpy(message+strlen(message),HTTP_SOCKET_END_STRING,sizeof(HTTP_SOCKET_END_STRING)-1);
     count = strlen(message);
     memcpy(message+count,data,DATA_LENGTH);

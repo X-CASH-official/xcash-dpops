@@ -108,7 +108,7 @@ int block_verifiers_server_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA)-1);
-  if (sign_data(data_test) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && sleep(5) == 0 && strncmp(VRF_data.block_blob,"DATA",BUFFER_SIZE) == 0)
+  if (sign_data(data_test) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && sleep(5) == 0 && strncmp(VRF_data.block_blob,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_main_node_to_node_message_part_4","green");
     count_test++;

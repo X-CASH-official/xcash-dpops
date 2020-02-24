@@ -36,8 +36,8 @@ int check_if_blockchain_is_fully_synced(void)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char message[BUFFER_SIZE];
-  char data[BUFFER_SIZE];
+  char message[MAXIMUM_NUMBER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   size_t count;
   size_t count2;
 
@@ -94,8 +94,8 @@ int get_block_template(char *result)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char message[BUFFER_SIZE];
-  char data[BUFFER_SIZE];
+  char message[SMALL_BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
 
   // define macros
   #define GET_BLOCK_TEMPLATE_ERROR(settings) \
@@ -148,8 +148,8 @@ int submit_block_template(const char* DATA)
   const size_t DATA_LENGTH = strnlen(DATA,BUFFER_SIZE);
 
   // Variables
-  char data[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char message[SMALL_BUFFER_SIZE];
   
   memset(data,0,sizeof(data));
   memset(message,0,sizeof(message));
@@ -325,7 +325,7 @@ int get_current_block_height(char *result)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
 
   // define macros
   #define GET_CURRENT_BLOCK_HEIGHT_ERROR(settings) \
@@ -371,7 +371,7 @@ int get_previous_block_hash(char *result)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
 
   // define macros
   #define GET_PREVIOUS_BLOCK_HASH_ERROR(settings) \
@@ -468,8 +468,8 @@ Return: 0 if an error has occured, 1 if you did not find the previous block on t
 int check_found_block(void)
 { 
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
   char result[BUFFER_SIZE];
   size_t block_height;
   size_t count;
