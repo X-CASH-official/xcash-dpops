@@ -61,6 +61,17 @@ int file_functions_test(void)
     count_test++;
   }
 
+  // get the file size
+  if (get_file_size(NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == sizeof(MESSAGE)-1)
+  {
+    color_print("PASSED! Test for getting the file size","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for getting the file size","red");
+  }
+
   // append and read the file
   if (append_file("|",NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || append_file(data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || read_file((unsigned char*)result_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || memcmp(result_test,"XCASH_PROOF_OF_STAKE_TEST_DATA|XCASH_PROOF_OF_STAKE_TEST_DATA",61) != 0)
   {

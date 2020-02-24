@@ -11,6 +11,38 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_file_size
+Description: Gets the file size
+Parameters:
+  file_name - The file name
+Return: 0 if an error has occured, otherwise the file length
+-----------------------------------------------------------------------------------------------------------
+*/
+
+long get_file_size(const char* FILE_NAME)
+{
+  // Variables
+  FILE* file;
+  long file_size = 0;
+
+  // check if the file exist
+  if ((file = fopen(FILE_NAME,"rb")) != NULL)
+  {
+    // the file exist, get the file size
+    fseek(file, 0, SEEK_END);
+    if ((file_size = ftell(file)) == -1)
+    {
+      file_size = 0;
+    }
+    fclose(file);
+  }
+  return file_size;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: read_file
 Description: Reads the file
 Parameters:
@@ -27,13 +59,11 @@ long read_file(unsigned char *result, const char* FILE_NAME)
   long file_size;
 
   // check if the file exist
-  file = fopen(FILE_NAME,"rb");
-  if (file != NULL)
+  if ((file = fopen(FILE_NAME,"rb")) != NULL)
   {
     // the file exist, read the data in the result
     fseek(file, 0, SEEK_END);
-    file_size = ftell(file);
-    if (file_size == -1)
+    if ((file_size = ftell(file)) == -1)
     {
       fclose(file);
       return 0;
@@ -53,6 +83,8 @@ long read_file(unsigned char *result, const char* FILE_NAME)
   return file_size;
 }
 
+
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: write_file
@@ -70,8 +102,7 @@ int write_file(const char* DATA, const char* FILE_NAME)
   FILE* file;
   int settings = 0;
 
-  file = fopen(FILE_NAME,"w");
-  if (file != NULL)
+  if ((file = fopen(FILE_NAME,"w")) != NULL)
   {
     fprintf(file,"%s",DATA);
     fclose(file);
@@ -99,8 +130,7 @@ int append_file(const char* DATA, const char* FILE_NAME)
   FILE* file;
   int settings = 0;
 
-  file = fopen(FILE_NAME,"a");
-  if (file != NULL)
+  if ((file = fopen(FILE_NAME,"a")) != NULL)
   {
     fprintf(file,"%s",DATA);
     fclose(file);
