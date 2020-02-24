@@ -43,17 +43,17 @@ memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count
 memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count)); \
 memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data,0,strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data)); \
 memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_round_part_4,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_secret_key_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_public_key_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_4,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_data_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_4,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_proof_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_4,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_4,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_beta_string_round_part_4)); \
-memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round_part_4)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_secret_key,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_secret_key)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_public_key_data)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_public_key,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_public_key)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_proof_data,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_proof_data)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_proof,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_proof)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_beta_string,0,strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_beta_string)); \
+memset(blockchain_data.blockchain_reserve_bytes.vrf_data_round,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_data_round)); \
 memset(blockchain_data.blockchain_reserve_bytes.vrf_data,0,strlen(blockchain_data.blockchain_reserve_bytes.vrf_data)); \
 memset(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,0,strlen(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data)); \
 for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++) \

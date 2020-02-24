@@ -88,15 +88,15 @@ int blockchain_functions_test(void)
 
   #define INVALID_BLOCK_PRODUCER_BACKUP_NODES_NAMES_CODE blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data_length = 1;
 
-  #define INVALID_VRF_SECRET_KEY_ROUND_PART_4_CODE blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_length_round_part_4 = 1;
+  #define INVALID_VRF_SECRET_KEY_CODE blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data_length = 1;
 
-  #define INVALID_VRF_PUBLIC_KEY_ROUND_PART_4_CODE blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length_round_part_4 = 1;
+  #define INVALID_VRF_PUBLIC_KEY_CODE blockchain_data.blockchain_reserve_bytes.vrf_public_key_data_length = 1;
 
-  #define INVALID_VRF_ALPHA_STRING_ROUND_PART_4_CODE blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length_round_part_4 = 1;
+  #define INVALID_VRF_ALPHA_STRING_CODE blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length = 1;
 
-  #define INVALID_VRF_PROOF_ROUND_PART_4_CODE blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length_round_part_4 = 1;
+  #define INVALID_VRF_PROOF_CODE blockchain_data.blockchain_reserve_bytes.vrf_proof_data_length = 1;
 
-  #define INVALID_VRF_BETA_STRING_ROUND_PART_4_CODE blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length_round_part_4 = 1;
+  #define INVALID_VRF_BETA_STRING_CODE blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data_length = 1;
 
   #define INVALID_RINGCT_VERSION_CODE \
   memset(blockchain_data.ringct_version_data,0,strlen(blockchain_data.ringct_version_data)); \
@@ -257,11 +257,11 @@ int blockchain_functions_test(void)
   VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_BLOCK_PRODUCER_PUBLIC_ADDRESS_CODE,"Invalid block_producer_public_address");
   VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_BLOCK_PRODUCER_NODE_BACKUP_COUNT_CODE,"Invalid block_producer_node_backup_count");
   VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_BLOCK_PRODUCER_BACKUP_NODES_NAMES_CODE,"Invalid block_producer_backup_nodes_names");
-  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_SECRET_KEY_ROUND_PART_4_CODE,"Invalid vrf_secret_key_round_part_4");
-  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_PUBLIC_KEY_ROUND_PART_4_CODE,"Invalid vrf_public_key_round_part_4");
-  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_ALPHA_STRING_ROUND_PART_4_CODE,"Invalid vrf_alpha_string_round_part_4");
-  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_PROOF_ROUND_PART_4_CODE,"Invalid vrf_proof_round_part_4");
-  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_BETA_STRING_ROUND_PART_4_CODE,"Invalid vrf_beta_string_round_part_4");
+  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_SECRET_KEY_CODE,"Invalid vrf_secret_key");
+  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_PUBLIC_KEY_CODE,"Invalid vrf_public_key");
+  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_ALPHA_STRING_CODE,"Invalid vrf_alpha_string");
+  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_PROOF_CODE,"Invalid vrf_proof");
+  VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_VRF_BETA_STRING_CODE,"Invalid vrf_beta_string");
   VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_RINGCT_VERSION_CODE,"Invalid ringct_version");
   VERIFY_NETWORK_BLOCK_DATA_ERROR(INVALID_TRANSACTION_AMOUNT_CODE,"Invalid transaction_amount");
 
@@ -289,10 +289,10 @@ int blockchain_functions_test(void)
   #undef INVALID_BLOCK_PRODUCER_PUBLIC_ADDRESS_CODE
   #undef INVALID_BLOCK_PRODUCER_NODE_BACKUP_COUNT_CODE
   #undef INVALID_BLOCK_PRODUCER_BACKUP_NODES_NAMES_CODE
-  #undef INVALID_VRF_SECRET_KEY_ROUND_PART_4_CODE
-  #undef INVALID_VRF_PUBLIC_KEY_ROUND_PART_4_CODE
-  #undef INVALID_VRF_ALPHA_STRING_ROUND_PART_4_CODE
-  #undef INVALID_VRF_PROOF_ROUND_PART_4_CODE
-  #undef INVALID_VRF_BETA_STRING_ROUND_PART_4_CODE
+  #undef INVALID_VRF_SECRET_KEY_CODE
+  #undef INVALID_VRF_PUBLIC_KEY_CODE
+  #undef INVALID_VRF_ALPHA_STRING_CODE
+  #undef INVALID_VRF_PROOF_CODE
+  #undef INVALID_VRF_BETA_STRING_CODE
   #undef INVALID_RINGCT_VERSION_CODE
 }

@@ -112,16 +112,16 @@ int optimizations_functions_test(void)
   invalid_reserve_proofs.count = 0;
 
   #define RESET_NETWORK_BLOCK_ROUND \
-  memset(VRF_data.vrf_secret_key_data_round_part_4,0,strlen(VRF_data.vrf_secret_key_data_round_part_4)); \
-  memset(VRF_data.vrf_secret_key_round_part_4,0,strlen((const char*)VRF_data.vrf_secret_key_round_part_4)); \
-  memset(VRF_data.vrf_public_key_data_round_part_4,0,strlen(VRF_data.vrf_public_key_data_round_part_4)); \
-  memset(VRF_data.vrf_public_key_round_part_4,0,strlen((const char*)VRF_data.vrf_public_key_round_part_4)); \
-  memset(VRF_data.vrf_alpha_string_data_round_part_4,0,strlen(VRF_data.vrf_alpha_string_data_round_part_4)); \
-  memset(VRF_data.vrf_alpha_string_round_part_4,0,strlen((const char*)VRF_data.vrf_alpha_string_round_part_4)); \
-  memset(VRF_data.vrf_proof_data_round_part_4,0,strlen(VRF_data.vrf_proof_data_round_part_4)); \
-  memset(VRF_data.vrf_proof_round_part_4,0,strlen((const char*)VRF_data.vrf_proof_round_part_4)); \
-  memset(VRF_data.vrf_beta_string_data_round_part_4,0,strlen(VRF_data.vrf_beta_string_data_round_part_4)); \
-  memset(VRF_data.vrf_beta_string_round_part_4,0,strlen((const char*)VRF_data.vrf_beta_string_round_part_4)); \
+  memset(VRF_data.vrf_secret_key_data,0,strlen(VRF_data.vrf_secret_key_data)); \
+  memset(VRF_data.vrf_secret_key,0,strlen((const char*)VRF_data.vrf_secret_key)); \
+  memset(VRF_data.vrf_public_key_data,0,strlen(VRF_data.vrf_public_key_data)); \
+  memset(VRF_data.vrf_public_key,0,strlen((const char*)VRF_data.vrf_public_key)); \
+  memset(VRF_data.vrf_alpha_string_data,0,strlen(VRF_data.vrf_alpha_string_data)); \
+  memset(VRF_data.vrf_alpha_string,0,strlen((const char*)VRF_data.vrf_alpha_string)); \
+  memset(VRF_data.vrf_proof_data,0,strlen(VRF_data.vrf_proof_data)); \
+  memset(VRF_data.vrf_proof,0,strlen((const char*)VRF_data.vrf_proof)); \
+  memset(VRF_data.vrf_beta_string_data,0,strlen(VRF_data.vrf_beta_string_data)); \
+  memset(VRF_data.vrf_beta_string,0,strlen((const char*)VRF_data.vrf_beta_string)); \
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob)); \
   memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash)); \
   memset(current_round_part_vote_data.current_vote_results,0,sizeof(current_round_part_vote_data.current_vote_results)); \
