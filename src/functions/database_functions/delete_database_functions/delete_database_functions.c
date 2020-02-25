@@ -67,8 +67,7 @@ int delete_document_from_collection(const char* DATABASE, const char* COLLECTION
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return 0;
     }
@@ -76,8 +75,7 @@ int delete_document_from_collection(const char* DATABASE, const char* COLLECTION
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
 
-  document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
-  if (!document)
+  if (!(document = bson_new_from_json((const uint8_t *)DATA, -1, &error)))
   {
     DELETE_DOCUMENT_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
@@ -133,8 +131,7 @@ int delete_collection_from_database(const char* DATABASE, const char* COLLECTION
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return 0;
     }
@@ -194,8 +191,7 @@ int delete_database(const char* DATABASE, const int THREAD_SETTINGS)
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return 0;
     }

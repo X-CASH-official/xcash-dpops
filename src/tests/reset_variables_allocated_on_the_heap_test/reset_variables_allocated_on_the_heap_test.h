@@ -7,6 +7,6 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-size_t get_program_memory_usage(char* process_id_file);
+size_t get_program_memory_usage(const char* PROCESS_ID_FILE);
 int reset_variables_allocated_on_the_heap_test(void);
 #endif

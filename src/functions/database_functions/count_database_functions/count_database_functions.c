@@ -70,8 +70,7 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return -1;
     }
@@ -85,8 +84,7 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
     COUNT_DOCUMENTS_IN_COLLECTION_ERROR("The database collection does not exist");
   }
 
-  document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
-  if (!document)
+  if (!(document = bson_new_from_json((const uint8_t *)DATA, -1, &error)))
   {
     COUNT_DOCUMENTS_IN_COLLECTION_ERROR("Could not convert the data into a database document");
   }
@@ -147,8 +145,7 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return -1;
     }
@@ -162,8 +159,7 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
     COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR("The database collection does not exist");
   }
 
-  document = bson_new();
-  if (!document)
+  if (!(document = bson_new()))
   {
     COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR("Could not convert the data into a database document");
   }

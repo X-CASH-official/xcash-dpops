@@ -54,13 +54,11 @@ int create_database_connection(void)
   return 0;
 
   // create a connection to the database
-  uri = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error);
-  if (!uri)
+  if (!(uri = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error)))
   {
     return 0;
   }
-  database_client = mongoc_client_new_from_uri(uri);
-  if (!database_client)
+  if (!(database_client = mongoc_client_new_from_uri(uri)))
   {
     CREATE_DATABASE_CONNECTION_ERROR("Could not create a database connection");
   }
@@ -112,8 +110,7 @@ int check_if_database_collection_exist(const char* DATABASE, const char* COLLECT
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return 0;
     }
@@ -186,8 +183,7 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return 0;
     }
@@ -195,25 +191,13 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
 
-  document = bson_new();
-  if (!document)
+  if (!(document = bson_new()))
   {
     GET_DATABASE_DATA_ERROR("Could not convert the data into a database document");
   }
 
   // sort the documents
-  if (strstr(COLLECTION,"reserve_proofs") != NULL)
-  {
-    document_options = BCON_NEW("sort", "{", "total", BCON_INT32(-1), "}");
-  }
-  else if (strstr(COLLECTION,"reserve_bytes") != NULL)
-  {
-    document_options = BCON_NEW("sort", "{", "block_height", BCON_INT32(1), "}");
-  }
-  else if (strstr(COLLECTION,"delegates") != NULL)
-  {
-    document_options = BCON_NEW("sort", "{", "total_vote_count", BCON_INT32(-1), "}");
-  }
+  document_options = strstr(COLLECTION,"reserve_proofs") != NULL ? BCON_NEW("sort", "{", "total", BCON_INT32(-1), "}") : strstr(COLLECTION,"reserve_bytes") != NULL ? BCON_NEW("sort", "{", "block_height", BCON_INT32(1), "}") : strstr(COLLECTION,"delegates") != NULL ? BCON_NEW("sort", "{", "total_vote_count", BCON_INT32(-1), "}") : NULL;
 
   memset(database_data,0,strlen(database_data));
 

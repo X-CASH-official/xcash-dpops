@@ -107,12 +107,7 @@ int send_payment(const char* PUBLIC_ADDRESS, const char* TOTAL, char *tx_hash, c
   {  
     return 0;
   }
-  
-  if (parse_json_data(data,"tx_hash_list",tx_hash,BUFFER_SIZE) == 0 || parse_json_data(data,"tx_key_list",tx_key,BUFFER_SIZE) == 0)
-  {
-    return 0;
-  }
-  return 1;
+  return parse_json_data(data,"tx_hash_list",tx_hash,BUFFER_SIZE) == 0 || parse_json_data(data,"tx_key_list",tx_key,BUFFER_SIZE) == 0 ? 0 : 1;
 }
 
 
@@ -160,11 +155,5 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   { 
     return 0;
   }
-
-  // parse the message
-  if (parse_json_data(data2,"total",result, BUFFER_SIZE) == 0)
-  {
-    return -1;
-  }
-  return 1;
+  return parse_json_data(data2,"total",result, BUFFER_SIZE) == 0 ? -1 : 1;
 }

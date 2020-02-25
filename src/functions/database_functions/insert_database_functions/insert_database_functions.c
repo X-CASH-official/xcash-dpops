@@ -67,8 +67,7 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return 0;
     }
@@ -76,8 +75,7 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
     collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
   }
 
-  document = bson_new_from_json((const uint8_t *)DATA, -1, &error);
-  if (!document)
+  if (!(document = bson_new_from_json((const uint8_t *)DATA, -1, &error)))
   {
     INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR("Could not convert the data into a database document");
   }
@@ -175,8 +173,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       pointer_reset_all;
       return 0;

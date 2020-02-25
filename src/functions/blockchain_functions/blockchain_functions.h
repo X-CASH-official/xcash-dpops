@@ -12,7 +12,7 @@ size_t varint_decode(size_t varint);
 double get_generated_supply(const size_t BLOCK_HEIGHT);
 int network_block_string_to_blockchain_data(const char* DATA, const char* BLOCK_HEIGHT, const int BLOCK_VERIFIERS_TOTAL);
 int blockchain_data_to_network_block_string(char *result, const int BLOCK_VERIFIERS_TOTAL);
-int add_data_hash_to_network_block_string(char* network_block_string, char *network_block_string_data_hash);
+int add_data_hash_to_network_block_string(const char* NETWORK_BLOCK_STRING, char *network_block_string_data_hash);
 void* verify_network_block_data_vrf_data_verify_thread(void* parameters);
 int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const int TRANSACTIONS_SETTINGS, const char* BLOCK_HEIGHT, char* PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES, const int BLOCK_VERIFIERS_TOTAL);
 

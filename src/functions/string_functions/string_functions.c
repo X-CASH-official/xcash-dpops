@@ -141,7 +141,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int create_json_data_from_database_document_array(struct database_document_fields* database_data, char *result, const char* DOCUMENT_FIELDS)
+int create_json_data_from_database_document_array(const struct database_document_fields* database_data, char *result, const char* DOCUMENT_FIELDS)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -199,7 +199,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int create_json_data_from_database_multiple_documents_array(struct database_multiple_documents_fields* database_data, char *result, const char* DOCUMENT_FIELDS)
+int create_json_data_from_database_multiple_documents_array(const struct database_multiple_documents_fields* database_data, char *result, const char* DOCUMENT_FIELDS)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -261,7 +261,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int create_json_data_from_delegates_array(struct delegates* delegates, char *result, const char* DOCUMENT_FIELDS)
+int create_json_data_from_delegates_array(const struct delegates* delegates, char *result, const char* DOCUMENT_FIELDS)
 {
   // Variables
   int count = 0;
@@ -397,7 +397,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int create_json_data_from_votes_array(struct votes* votes, char *result, const char* DOCUMENT_FIELDS)
+int create_json_data_from_votes_array(const struct votes* votes, char *result, const char* DOCUMENT_FIELDS)
 {
   // Variables
   int count = 0;

@@ -128,29 +128,11 @@ int varint_encode(long long int number, char *result, const size_t RESULT_TOTAL_
    } 
    if (count % BITS_IN_BYTE == 0)
    {
-     if (count == 0)
-     {
-       // clear the binary bit to 0
-       binary_numbers[count2] &= ~(1 << (count % BITS_IN_BYTE));      
-     }
-     else
-     {
-       // set the binary bit to 1
-       binary_numbers[count2] |= 1 << (count % BITS_IN_BYTE);
-     }
+     binary_numbers[count2] = count == 0 ? binary_numbers[count2] & ~(1 << (count % BITS_IN_BYTE)) : binary_numbers[count2] | 1 << (count % BITS_IN_BYTE);
    }
    else
    {
-     if (memcmp(data + (count - (count2+1)),"1",1) == 0)
-     {
-       // set the binary bit to 1
-       binary_numbers[count2] |= 1 << (count % BITS_IN_BYTE);
-     }
-     else
-     {
-       // clear the binary bit to 0
-       binary_numbers[count2] &= ~(1 << (count % BITS_IN_BYTE));
-     }     
+     binary_numbers[count2] = memcmp(data + (count - (count2+1)),"1",1) == 0 ? binary_numbers[count2] | 1 << (count % BITS_IN_BYTE) : binary_numbers[count2] & ~(1 << (count % BITS_IN_BYTE));  
    }
  }
 
@@ -298,15 +280,8 @@ double get_generated_supply(const size_t BLOCK_HEIGHT)
   size_t count;
 
   for (count = 2; count < BLOCK_HEIGHT; count++)
-  { 
-    if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
-    {
-      generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_EMMISION_FACTOR;
-    }
-    else
-    {
-      generated_supply += (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_DPOPS_EMMISION_FACTOR;
-    }
+  {
+    generated_supply = count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT ? generated_supply + (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_EMMISION_FACTOR : generated_supply + (XCASH_TOTAL_SUPPLY - generated_supply) / XCASH_DPOPS_EMMISION_FACTOR;
   }
   return generated_supply;
 }
@@ -1164,7 +1139,7 @@ Return: 0 if an error has occured or it is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int add_data_hash_to_network_block_string(char* network_block_string, char *network_block_string_data_hash)
+int add_data_hash_to_network_block_string(const char* NETWORK_BLOCK_STRING, char *network_block_string_data_hash)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -1176,7 +1151,7 @@ int add_data_hash_to_network_block_string(char* network_block_string, char *netw
   memset(data2,0,sizeof(data2));
 
   // get the data hash of the network block string
-  crypto_hash_sha512((unsigned char*)data,(const unsigned char*)network_block_string,(unsigned long long)strnlen(network_block_string,BUFFER_SIZE));
+  crypto_hash_sha512((unsigned char*)data,(const unsigned char*)NETWORK_BLOCK_STRING,(unsigned long long)strnlen(NETWORK_BLOCK_STRING,BUFFER_SIZE));
 
   // convert the SHA512 data hash to a string
   for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
@@ -1190,10 +1165,10 @@ int add_data_hash_to_network_block_string(char* network_block_string, char *netw
 
   // add the data hash to the network block string
   memset(data,0,strnlen(data,BUFFER_SIZE));
-  memcpy(data,&network_block_string[(strnlen(network_block_string,BUFFER_SIZE)) - (strnlen(strstr(network_block_string,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_START)-1))],((strnlen(network_block_string,BUFFER_SIZE)) - (strnlen(strstr(network_block_string,BLOCKCHAIN_RESERVED_BYTES_END),BUFFER_SIZE) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_END)-1))) - ((strnlen(network_block_string,BUFFER_SIZE)) - (strnlen(strstr(network_block_string,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_START)-1))) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_END)-1));
+  memcpy(data,&NETWORK_BLOCK_STRING[(strnlen(NETWORK_BLOCK_STRING,BUFFER_SIZE)) - (strnlen(strstr(NETWORK_BLOCK_STRING,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_START)-1))],((strnlen(NETWORK_BLOCK_STRING,BUFFER_SIZE)) - (strnlen(strstr(NETWORK_BLOCK_STRING,BLOCKCHAIN_RESERVED_BYTES_END),BUFFER_SIZE) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_END)-1))) - ((strnlen(NETWORK_BLOCK_STRING,BUFFER_SIZE)) - (strnlen(strstr(NETWORK_BLOCK_STRING,BLOCKCHAIN_RESERVED_BYTES_START),BUFFER_SIZE) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_START)-1))) - (sizeof(BLOCKCHAIN_RESERVED_BYTES_END)-1));
 
   memset(network_block_string_data_hash,0,strnlen(network_block_string_data_hash,BUFFER_SIZE));
-  memcpy(network_block_string_data_hash,network_block_string,strnlen(network_block_string,BUFFER_SIZE));
+  memcpy(network_block_string_data_hash,NETWORK_BLOCK_STRING,strnlen(NETWORK_BLOCK_STRING,BUFFER_SIZE));
   
   // replace the reserve bytes with the network block string data hash
   if (string_replace(network_block_string_data_hash,BUFFER_SIZE,data,data2) == 0)
@@ -1301,13 +1276,10 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // previous_block_hash
-  if (PREVIOUS_BLOCK_HASH_SETTINGS == 1)
-  {    
-    if (blockchain_data.previous_block_hash_data_length != BLOCK_HASH_LENGTH || memcmp(blockchain_data.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH) != 0)
-    {
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid previous block hash");
-    } 
-  }
+  if (PREVIOUS_BLOCK_HASH_SETTINGS == 1 && (blockchain_data.previous_block_hash_data_length != BLOCK_HASH_LENGTH || memcmp(blockchain_data.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH) != 0))
+  {
+    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid previous block hash");
+  } 
   
   // nonce
   if (blockchain_data.nonce_data_length != sizeof(BLOCK_PRODUCER_NETWORK_BLOCK_NONCE)-1 || (memcmp(blockchain_data.nonce_data,BLOCK_PRODUCER_NETWORK_BLOCK_NONCE,sizeof(BLOCK_PRODUCER_NETWORK_BLOCK_NONCE)-1) != 0 && memcmp(blockchain_data.nonce_data,CONSENSUS_NODE_NETWORK_BLOCK_NONCE,sizeof(BLOCK_PRODUCER_NETWORK_BLOCK_NONCE)-1) != 0))
@@ -1572,13 +1544,10 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // previous_block_hash
-  if (PREVIOUS_BLOCK_HASH_SETTINGS == 1)
-  {
-    if (blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length != BLOCK_HASH_LENGTH || memcmp(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH) != 0)
-    { 
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid previous block hash");
-    }
-  }    
+  if (PREVIOUS_BLOCK_HASH_SETTINGS == 1 && (blockchain_data.blockchain_reserve_bytes.previous_block_hash_data_length != BLOCK_HASH_LENGTH || memcmp(blockchain_data.blockchain_reserve_bytes.previous_block_hash_data,previous_block_hash,BLOCK_HASH_LENGTH) != 0))
+  { 
+    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid previous block hash");
+  }  
 
   // block_validation_node_signature
   if (BLOCK_VALIDATION_SIGNATURES_SETTINGS == 1)
@@ -1647,22 +1616,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       vrf_data_verify_count = 0;
 
       // start the amount of threads depending on what the best multiple is for the BLOCK_VERIFIERS_TOTAL
-      if (BLOCK_VERIFIERS_TOTAL % 4 == 0 || test_settings == 1)
-      {
-        count2 = 4;
-      }
-      else if (BLOCK_VERIFIERS_TOTAL % 5 == 0)
-      {
-        count2 = 5;
-      }
-      else if (BLOCK_VERIFIERS_TOTAL % 2 == 0)
-      {
-        count2 = 2;
-      }
-      else
-      {
-        count2 = 1;
-      }
+      count2 = BLOCK_VERIFIERS_TOTAL % 4 == 0 || test_settings == 1 ? 4 : BLOCK_VERIFIERS_TOTAL % 5 == 0 ? 5 : BLOCK_VERIFIERS_TOTAL % 2 == 0 ? 2 : 1;
 
       for (count = 0; count < count2; count++)
       {

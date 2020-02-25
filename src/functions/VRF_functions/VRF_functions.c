@@ -245,9 +245,5 @@ int VRF_data_verify(const char* BLOCK_VERIFIERS_PUBLIC_KEY, const char* BLOCK_VE
     beta_string_data[count2] = (int)strtol(data, NULL, 16);
   }
 
-  if (crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)DATA,(unsigned long long)strlen((const char*)DATA)) != 0)
-  {
-   return 0;
-  }
-  return 1;
+  return crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)DATA,(unsigned long long)strlen((const char*)DATA)) != 0 ? 0 : 1;
 }

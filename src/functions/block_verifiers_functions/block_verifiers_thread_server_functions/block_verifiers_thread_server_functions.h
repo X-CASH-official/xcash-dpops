@@ -15,7 +15,7 @@ int check_reserve_proofs_timer_update_delegates_score(const int CURRENT_RESERVE_
 void check_reserve_proofs_timer_delete_reserve_proof(const int CURRENT_RESERVE_PROOF_COUNT);
 int check_reserve_proofs_timer_update_database(void);
 int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof);
-int send_invalid_reserve_proof_to_block_verifiers(struct reserve_proof* reserve_proof);
+int send_invalid_reserve_proof_to_block_verifiers(const struct reserve_proof* reserve_proof);
 void* check_reserve_proofs_timer_thread(void* parameters);
 void* send_and_receive_data_socket_thread(void* parameters);
 void remove_inactive_delegates(int *total_delegates, int *total_inactive_delegates);

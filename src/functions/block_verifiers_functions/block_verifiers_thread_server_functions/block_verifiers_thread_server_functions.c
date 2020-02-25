@@ -99,9 +99,8 @@ void* current_block_height_timer_thread(void* parameters)
     if ((settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 0) || (settings == 1 && current_UTC_date_and_time.tm_min % BLOCK_TIME == 0))
     {
       if (settings == 0)
-      { 
-        block_verifier_settings = start_new_round();
-        if (block_verifier_settings == 0)
+      {
+        if ((block_verifier_settings = start_new_round()) == 0)
         {
           print_error_message(current_date_and_time,current_UTC_date_and_time,data);
         }
@@ -127,8 +126,7 @@ void* current_block_height_timer_thread(void* parameters)
       get_current_block_height(current_block_height);
       get_previous_block_hash(previous_block_hash);
 
-      block_verifier_settings = start_new_round();
-      if (block_verifier_settings == 0)
+      if ((block_verifier_settings = start_new_round()) == 0)
       {
         print_error_message(current_date_and_time,current_UTC_date_and_time,data);
       }
@@ -336,17 +334,12 @@ int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF
       {
         return 0;
       }
-
       break;
     }                  
   }
 
   // check if the reserve proof was found in the database and if not skip that reserve proof when updating the database
-  if (count > TOTAL_RESERVE_PROOFS_DATABASES)
-  {
-    return 0;
-  } 
-  return 1;
+  return count > TOTAL_RESERVE_PROOFS_DATABASES ? 0 : 1;
 }
 
 
@@ -667,7 +660,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_invalid_reserve_proof_to_block_verifiers(struct reserve_proof* reserve_proof)
+int send_invalid_reserve_proof_to_block_verifiers(const struct reserve_proof* reserve_proof)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];

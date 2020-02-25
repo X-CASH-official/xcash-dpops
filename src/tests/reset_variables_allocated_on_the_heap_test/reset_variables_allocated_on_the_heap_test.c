@@ -63,7 +63,7 @@ Return: 0 if an error has occured, otherwise the programs memory usage in KB
 -----------------------------------------------------------------------------------------------------------
 */
 
-size_t get_program_memory_usage(char* process_id_file)
+size_t get_program_memory_usage(const char* PROCESS_ID_FILE)
 {
   // Variables
   FILE* file;
@@ -77,8 +77,7 @@ size_t get_program_memory_usage(char* process_id_file)
   }
 
   // read the current system memory usage
-  file = fopen(process_id_file,"r");
-  if (file != NULL)
+  if ((file = fopen(PROCESS_ID_FILE,"r")) != NULL)
   {
     while(fgets(data,BUFFER_SIZE,file) != NULL)
     {

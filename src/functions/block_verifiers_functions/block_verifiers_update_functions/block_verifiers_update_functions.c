@@ -149,8 +149,7 @@ int update_block_verifiers_list(void)
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
-  total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
-  if (total_delegates == 0)
+  if ((total_delegates = organize_delegates(delegates,DATABASE_COLLECTION)) == 0)
   {
     POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
     UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
@@ -181,15 +180,7 @@ int update_block_verifiers_list(void)
       }
     }
   }
-
-  if (settings > (BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT))
-  {
-    settings = 1;
-  }
-  else
-  {
-    settings = 2;
-  } 
+  settings = settings > (BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT) ? 1 : 2;
 
   // set the database to accept data
   database_settings = 1;
@@ -612,15 +603,7 @@ int calculate_main_nodes_roles(void)
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
-  if (test_settings == 0)
-  {
-    total_block_verifiers = BLOCK_VERIFIERS_AMOUNT;
-  }
-  else
-  {
-    total_block_verifiers = BLOCK_VERIFIERS_TOTAL_AMOUNT;
-  }  
-  
+  total_block_verifiers = test_settings == 0 ? BLOCK_VERIFIERS_AMOUNT : BLOCK_VERIFIERS_TOTAL_AMOUNT;
   if (test_settings == 0)
   {
     sscanf(current_block_height,"%zu", &count);

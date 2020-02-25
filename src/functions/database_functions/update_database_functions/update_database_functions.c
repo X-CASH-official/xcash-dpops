@@ -73,8 +73,7 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return 0;
     }
@@ -88,8 +87,7 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
     UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("The database collection does not exist");
   }
   
-  update = bson_new_from_json((const uint8_t *)DATA, -1, &error);
-  if (!update)
+  if (!(update = bson_new_from_json((const uint8_t *)DATA, -1, &error)))
   {
     UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
@@ -99,8 +97,7 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   memcpy(data2+8,FIELD_NAME_AND_DATA,FIELD_NAME_AND_DATA_LENGTH);
   memcpy(data2+8+FIELD_NAME_AND_DATA_LENGTH,"}}",2);
 
-  update_settings = bson_new_from_json((const uint8_t *)data2, -1, &error);
-  if (!update_settings)
+  if (!(update_settings = bson_new_from_json((const uint8_t *)data2, -1, &error)))
   {
     UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
@@ -167,8 +164,7 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   }
   else
   {
-    database_client_thread = mongoc_client_pool_pop(database_client_thread_pool);
-    if (!database_client_thread)
+    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
     {
       return 0;
     }
@@ -183,8 +179,7 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   }
   
   // set the document to empty so it will get each document in the collection  
-  update = bson_new();
-  if (!update)
+  if (!(update = bson_new()))
   {
     UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
@@ -194,8 +189,7 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   memcpy(data2+8,DATA,DATA_LENGTH);
   memcpy(data2+8+DATA_LENGTH,"}}",2);
 
-  update_settings = bson_new_from_json((const uint8_t *)data2, -1, &error);
-  if (!update_settings)
+  if (!(update_settings = bson_new_from_json((const uint8_t *)data2, -1, &error)))
   {
     UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }

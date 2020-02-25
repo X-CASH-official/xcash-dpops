@@ -52,24 +52,14 @@ int check_if_blockchain_is_fully_synced(void)
   memset(message,0,sizeof(message));
   memset(data,0,sizeof(data));
 
-  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,MESSAGE,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
+  if (send_http_request(data,"127.0.0.1","/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,MESSAGE,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"target_height",message,BUFFER_SIZE) == 0)
   {  
-    return 0;
-  }
-  
-  if (parse_json_data(data,"target_height",message,BUFFER_SIZE) == 0)
-  {
     return 0;
   }
 
   sscanf(current_block_height,"%zu",&count);
   sscanf(message,"%zu",&count2);
-
-  if (count < count2)
-  {
-    return 0;
-  }
-  return 1;
+  return count < count2 ? 0 : 1;
   
   #undef MESSAGE
   #undef CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR
@@ -514,9 +504,5 @@ int check_found_block(void)
   }
 
   // check if the block verifier was the block producer for the previous block
-  if (string_count(result,data) == 2)
-  {
-    return 2;
-  }
-  return 1;
+  return string_count(result,data) == 2 ? 2 : 1;
 }

@@ -126,8 +126,7 @@ int start_new_round(void)
   get_delegates_online_status();
 
   // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
-  settings = update_block_verifiers_list();
-  if (settings == 0)
+  if ((settings = update_block_verifiers_list()) == 0)
   {
     START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
   }

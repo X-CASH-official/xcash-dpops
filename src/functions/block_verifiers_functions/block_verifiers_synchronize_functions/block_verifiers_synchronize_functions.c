@@ -338,8 +338,7 @@ int sync_all_block_verifiers_list(void)
     INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"sync_all_block_verifiers_list",data2,current_date_and_time,current_UTC_date_and_time);
 
     // organize the delegates
-    total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
-    if (total_delegates == 0)
+    if ((total_delegates = organize_delegates(delegates,DATABASE_COLLECTION)) == 0)
     {
       POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
       SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
@@ -1100,15 +1099,7 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
   memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_data_hash\": \"",137);
   memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
   memcpy(data3+strlen(data3),"\",\r\n ",5);
-
-  if (reserve_bytes_start_settings == 0)
-  {
-    count = 1;
-  }
-  else
-  {
-    count = current_reserve_bytes_database;
-  }  
+  count = reserve_bytes_start_settings == 0 ? 1 : current_reserve_bytes_database;
 
   for (; count <= current_reserve_bytes_database; count++)
   {
@@ -1146,14 +1137,7 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not verify data from ",1);
   }
 
-  if (reserve_bytes_start_settings == 0)
-  {
-    count2 = 1;
-  }
-  else
-  {
-    count2 = current_reserve_bytes_database;
-  }  
+  count2 = reserve_bytes_start_settings == 0 ? 1 : current_reserve_bytes_database;
 
   // check if the block verifier needs to sync any of the reserve bytes databases and sync them if needed
   if (sync_check_reserve_bytes_specific_database(database_data,(const char*)block_verifiers_ip_address,count2,(const size_t)current_reserve_bytes_database) == 0)
