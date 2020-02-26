@@ -155,11 +155,11 @@ Parameters
 --parameters - Show a list of all valid parameters
 All parameters are optional, execept for --block_verifiers_secret_key. **The --block_verifiers_secret_key must be the first parameter**
 
---test - Run the test to make sure the program is compatible with your system. This can take around 24 hours
+--test - Run the test to make sure the program is compatible with your system. This can take around 24 hours. Pass this parameter last.
 
---quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 20 minutes
+--quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 10 minutes. Pass this parameter last.
 
---optimizations_test - Run the optimizations test only. This will check if your computer is fast enough for XCASH_DPOPS. This can take around 10 minutes
+--optimizations_test - Run the optimizations test only. This will check if your computer is fast enough for XCASH_DPOPS. This can take around 2 minutes. Pass this parameter last.
 
 --block_verifiers_secret_key - The block verifiers secret key. This must be the first parameter
 
