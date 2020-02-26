@@ -577,7 +577,6 @@ int calculate_main_nodes_roles(void)
   int count2;
   int count3;
   int counter;
-  int random_network_data_node;
   int main_nodes_count;
   int number[DATA_HASH_LENGTH/2];
   int settings;
@@ -710,18 +709,18 @@ int calculate_main_nodes_roles(void)
     {
       color_print("The main nodes calculation process has run out of bytes to read.\nnetwork data nodes will be the block producer and backup block producers","yellow");
 
-      memset(main_nodes_list.block_producer_public_address,0,strlen((main_nodes_list.block_producer_public_address));
-      memset(main_nodes_list.block_producer_IP_address,0,strlen((main_nodes_list.block_producer_IP_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_1_public_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_1_IP_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_2_public_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_2_IP_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_3_public_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_3_IP_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_4_public_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_4_IP_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_5_public_address));
-      memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,strlen((main_nodes_list.block_producer_backup_block_verifier_5_IP_address));
+      memset(main_nodes_list.block_producer_public_address,0,strlen(main_nodes_list.block_producer_public_address));
+      memset(main_nodes_list.block_producer_IP_address,0,strlen(main_nodes_list.block_producer_IP_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_1_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_1_public_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_1_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_1_IP_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_2_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_2_public_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_2_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_2_IP_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_3_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_3_public_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_3_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_3_IP_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_4_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_4_public_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_4_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_4_IP_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_5_public_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_5_public_address));
+      memset(main_nodes_list.block_producer_backup_block_verifier_5_IP_address,0,strlen(main_nodes_list.block_producer_backup_block_verifier_5_IP_address));
 
       memcpy(main_nodes_list.block_producer_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,sizeof(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS)-1);
       memcpy(main_nodes_list.block_producer_IP_address,NETWORK_DATA_NODE_1_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_1_IP_ADDRESS)-1);

@@ -460,11 +460,8 @@ int start_current_round_start_blocks(void)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
-  size_t count; 
-
-  // threads
-  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
-
+  size_t count;
+  
   // define macros
   #define DATABASE_COLLECTION "reserve_bytes_1"
 
