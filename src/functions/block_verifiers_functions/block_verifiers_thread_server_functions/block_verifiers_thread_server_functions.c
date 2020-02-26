@@ -305,35 +305,26 @@ int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF
           
       // get the data from the database for the reserve proof. If the data is not in the database then skip that reserve proof when updating the database
       memset(data2,0,strlen(data2));
-      if (read_document_field_from_collection(database_name,data,data3,"public_address_created_reserve_proof",data2,1) == 1)
-      {
-        memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[CURRENT_RESERVE_PROOF_COUNT],data2,strnlen(data2,XCASH_WALLET_LENGTH));
-      }
-      else
+      if (read_document_field_from_collection(database_name,data,data3,"public_address_created_reserve_proof",data2,1) == 0)
       {
         return 0;
       }
+      memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[CURRENT_RESERVE_PROOF_COUNT],data2,strnlen(data2,XCASH_WALLET_LENGTH));
 
       memset(data2,0,strlen(data2));
-      if (read_document_field_from_collection(database_name,data,data3,"public_address_voted_for",data2,1) == 1)
-      {
-        memcpy(invalid_reserve_proofs.public_address_voted_for[CURRENT_RESERVE_PROOF_COUNT],data2,strnlen(data2,XCASH_WALLET_LENGTH));
-      }
-      else
+      if (read_document_field_from_collection(database_name,data,data3,"public_address_voted_for",data2,1) == 0)
       {
         return 0;
       }
+      memcpy(invalid_reserve_proofs.public_address_voted_for[CURRENT_RESERVE_PROOF_COUNT],data2,strnlen(data2,XCASH_WALLET_LENGTH));
 
       memset(data2,0,strlen(data2));
-      if (read_document_field_from_collection(database_name,data,data3,"total",data2,1) == 1)
-      {
-        sscanf(data2,"%zu", &block_verifiers_total_vote_count);
-        invalid_reserve_proofs.reserve_proof_amount[CURRENT_RESERVE_PROOF_COUNT] = block_verifiers_total_vote_count;
-      }
-      else
+      if (read_document_field_from_collection(database_name,data,data3,"total",data2,1) == 0)
       {
         return 0;
       }
+      sscanf(data2,"%zu", &block_verifiers_total_vote_count);
+      invalid_reserve_proofs.reserve_proof_amount[CURRENT_RESERVE_PROOF_COUNT] = block_verifiers_total_vote_count;
       break;
     }                  
   }

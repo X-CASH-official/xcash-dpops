@@ -128,10 +128,18 @@ Description: Initializes the global variables
 void initialize_data(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   size_t count = 0;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
+
+  // define macros
+  #define INITIALIZE_DATA_ERROR \
+  memcpy(error_message.function[error_message.total],"initialize_data",15); \
+  memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48); \
+  error_message.total++; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  exit(0);
 
   memset(data,0,sizeof(data));
 
@@ -143,6 +151,7 @@ void initialize_data(void)
   memset(secret_key_data,0,sizeof(secret_key_data));
   memset(log_file,0,sizeof(log_file));
   memset(XCASH_DPOPS_delegates_IP_address,0,sizeof(XCASH_DPOPS_delegates_IP_address));
+  memcpy(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9);
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
   memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
@@ -171,6 +180,11 @@ void initialize_data(void)
   {
     error_message.function[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
     error_message.data[count] = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
+
+    if (error_message.function[count] == NULL || error_message.data[count] == NULL)
+    {
+      INITIALIZE_DATA_ERROR;
+    }
   }
   error_message.total = 0;
 
@@ -248,11 +262,7 @@ void initialize_data(void)
   // check if the memory needed was allocated on the heap successfully
   if (VRF_data.vrf_public_key_data == NULL || VRF_data.vrf_public_key == NULL || VRF_data.vrf_alpha_string_data == NULL || VRF_data.vrf_alpha_string == NULL || VRF_data.vrf_proof_data == NULL || VRF_data.vrf_proof == NULL || VRF_data.vrf_beta_string_data == NULL || VRF_data.vrf_beta_string == NULL || VRF_data.block_blob == NULL)
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-    exit(0);
+    INITIALIZE_DATA_ERROR;
   }
 
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
@@ -267,11 +277,7 @@ void initialize_data(void)
     // check if the memory needed was allocated on the heap successfully
     if (VRF_data.block_blob_signature[count] == NULL || VRF_data.block_verifiers_random_data[count] == NULL)
     {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
+      INITIALIZE_DATA_ERROR;
     }
   }
 
@@ -319,11 +325,7 @@ void initialize_data(void)
   // check if the memory needed was allocated on the heap successfully
   if (blockchain_data.network_version_data == NULL || blockchain_data.timestamp_data == NULL || blockchain_data.previous_block_hash_data == NULL || blockchain_data.nonce_data == NULL || blockchain_data.block_reward_transaction_version_data == NULL || blockchain_data.unlock_block_data == NULL || blockchain_data.block_reward_input_data == NULL || blockchain_data.vin_type_data == NULL || blockchain_data.block_height_data == NULL || blockchain_data.block_reward_output_data == NULL || blockchain_data.block_reward_data == NULL || blockchain_data.stealth_address_output_tag_data == NULL || blockchain_data.stealth_address_output_data == NULL || blockchain_data.extra_bytes_size_data == NULL || blockchain_data.transaction_public_key_tag_data == NULL || blockchain_data.transaction_public_key_data == NULL || blockchain_data.extra_nonce_tag_data == NULL || blockchain_data.reserve_bytes_size_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_public_address == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names_data == NULL || blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_public_key == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_alpha_string == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_proof == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string_data == NULL || blockchain_data.blockchain_reserve_bytes.vrf_beta_string == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data_round == NULL || blockchain_data.blockchain_reserve_bytes.vrf_data == NULL || blockchain_data.blockchain_reserve_bytes.previous_block_hash_data == NULL)
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-    exit(0);
+    INITIALIZE_DATA_ERROR;
   }
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
@@ -341,11 +343,7 @@ void initialize_data(void)
     // check if the memory needed was allocated on the heap successfully
     if (blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.next_block_verifiers_public_address[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_secret_key[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key_data[count] == NULL || blockchain_data.blockchain_reserve_bytes.block_verifiers_vrf_public_key[count] == NULL)
     {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
+      INITIALIZE_DATA_ERROR;
     }
   }
   blockchain_data.ringct_version_data = (char*)calloc(BUFFER_SIZE_NETWORK_BLOCK_DATA,sizeof(char));
@@ -357,24 +355,13 @@ void initialize_data(void)
     // check if the memory needed was allocated on the heap successfully
     if (blockchain_data.transactions[count] == NULL)
     {
-      memcpy(error_message.function[error_message.total],"main",4);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
+      INITIALIZE_DATA_ERROR;
     }
   }
-
-  /*// initialize the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
-  for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS; count++)
-  {
-    invalid_reserve_proofs.block_verifier_public_address[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    invalid_reserve_proofs.public_address_created_reserve_proof[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    invalid_reserve_proofs.public_address_voted_for[count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-    invalid_reserve_proofs.reserve_proof[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char)); 
-  }*/
   invalid_reserve_proofs.count = 0;
   return;
+
+  #undef INITIALIZE_DATA_ERROR
 }
 
 
@@ -389,9 +376,19 @@ Description: Create a database connection
 void create_overall_database_connection(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
+
+  #define CREATE_OVERALL_DATABASE_CONNECTION_ERROR \
+  memcpy(error_message.function[error_message.total],"create_overall_database_connection",34); \
+  memcpy(error_message.data[error_message.total],"Could not create a connection for the database",46); \
+  error_message.total++; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  mongoc_client_destroy(database_client); \
+  mongoc_uri_destroy(uri_thread_pool); \
+  mongoc_cleanup(); \
+  exit(0);
 
   memset(data,0,sizeof(data));
 
@@ -399,41 +396,13 @@ void create_overall_database_connection(void)
   mongoc_init();
 
   // create a connection to the database
-  if (create_database_connection() == 0)
+  if (create_database_connection() == 0 || !(uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error)) || !(database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool)))
   {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not create a connection for the database",46);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
-    mongoc_cleanup();
-    exit(0);
-  }
-
-  // create a pool of connections for the database
-  uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error);
-  if (!uri_thread_pool)
-  {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not create a pool of connections for the database",55);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data);
-    mongoc_client_destroy(database_client);
-    mongoc_cleanup();
-    exit(0);
-  }
-  database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool);
-  if (!database_client_thread_pool)
-  {
-    memcpy(error_message.function[error_message.total],"main",4);
-    memcpy(error_message.data[error_message.total],"Could not create a thread pool for the database",47);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data); 
-    mongoc_client_destroy(database_client);
-    mongoc_uri_destroy(uri_thread_pool);
-    mongoc_cleanup();
-    exit(0);
+    CREATE_OVERALL_DATABASE_CONNECTION_ERROR;
   }
   return;
+
+  #undef CREATE_OVERALL_DATABASE_CONNECTION_ERROR
 }
 
 
@@ -448,7 +417,7 @@ Description: Gets the delegates data
 void get_delegates_data(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
@@ -529,8 +498,8 @@ int set_parameters(int parameters_count, char* parameters[])
   exit(0);
 
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
   size_t count = 0;
   size_t count2 = 0;
   size_t count3 = 0;
@@ -625,6 +594,7 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--XCASH_DPOPS_delegates_IP_address",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
+      memset(XCASH_DPOPS_delegates_IP_address,0,strlen(XCASH_DPOPS_delegates_IP_address));
       memcpy(XCASH_DPOPS_delegates_IP_address,parameters[count+1],strnlen(parameters[count+1],sizeof(XCASH_DPOPS_delegates_IP_address)));
     }
     if (strncmp(parameters[count],"--xcash_wallet_port",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
@@ -809,7 +779,7 @@ Description: Prints the delegates settings
 void print_settings(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
 
   memset(data,0,sizeof(data));
 
@@ -832,47 +802,19 @@ void print_settings(void)
   else
   {
     memcpy(data+strlen(data),"\nShared Delegate Settings: NO",29);
-  }  
-  if (delegates_website == 1)
-  {
-    memcpy(data+strlen(data),"\nDelegate Settings: YES",23);
   }
-  else
-  {
-    memcpy(data+strlen(data),"\nDelegate Settings: NO",22);
-  }  
+  delegates_website == 1 ? memcpy(data+strlen(data),"\nDelegate Settings: YES",23) : memcpy(data+strlen(data),"\nDelegate Settings: NO",22);
   if (log_file_settings == 0)
   {
     memcpy(data+strlen(data),"\nLog file Settings: NO",22);
   }
   else
   {
-    if (log_file_settings == 1)
-    {
-      memcpy(data+strlen(data),"\nLog file Settings: YES\nLog File Color Output: NO",49);
-    }
-    else
-    {
-      memcpy(data+strlen(data),"\nLog file Settings: YES\nLog File Color Output: YES",50);
-    } 
+    log_file_settings == 1 ? memcpy(data+strlen(data),"\nLog file Settings: YES\nLog File Color Output: NO",49) : memcpy(data+strlen(data),"\nLog file Settings: YES\nLog File Color Output: YES",50);
   }
-  if (debug_settings == 1)
-  {
-    memcpy(data+strlen(data),"\nDebug Settings: YES",20);
-  }
-  else
-  {
-    memcpy(data+strlen(data),"\nDebug Settings: NO",19);
-  } 
+  debug_settings == 1 ? memcpy(data+strlen(data),"\nDebug Settings: YES",20) : memcpy(data+strlen(data),"\nDebug Settings: NO",19);
   memcpy(data+strlen(data),"\nDelegates Server IP Address: ",30);
-  if (memcmp(XCASH_DPOPS_delegates_IP_address,"",1) == 0)
-  {
-    memcpy(data+strlen(data),"0.0.0.0",7);
-  }
-  else
-  {
-    memcpy(data+strlen(data),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data)));
-  }
+  memcmp(XCASH_DPOPS_delegates_IP_address,"",1) == 0 ? memcpy(data+strlen(data),"0.0.0.0",7) : memcpy(data+strlen(data),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data)));
   memcpy(data+strlen(data),"\nDelegates Server Port: 18283\nXCASH Wallet Port: ",49);
   snprintf(data+strlen(data),sizeof(data)-1,"%d",xcash_wallet_port);
   memcpy(data+strlen(data),"\nTotal Threads: ",16);
@@ -894,8 +836,8 @@ Return: -1 if an error has occured, 0 if no network data nodes are online, 1 if 
 int get_network_data_nodes_online_status(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[MAXIMUM_NUMBER_SIZE];
   int epoll_fd_copy;
   struct epoll_event events[NETWORK_DATA_NODES_AMOUNT];
   int count;
@@ -1112,7 +1054,7 @@ void database_sync_check(void)
       if (verify_data(data2,0) == 0)
       {
         continue;
-     }
+      }
 
       // parse the message
       memset(data,0,sizeof(data));
@@ -1148,7 +1090,7 @@ Description: Starts the timer threads
 void start_timer_threads(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
@@ -1222,7 +1164,7 @@ Description: Starts the registration mode used when the registration period is o
 void start_registration_mode(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
@@ -1293,7 +1235,7 @@ int main(int parameters_count, char* parameters[])
   srand(time(NULL));
 
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   
@@ -1337,14 +1279,15 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
-  create_overall_database_connection();
-
-  get_delegates_data();
-
   if (set_parameters(parameters_count, parameters) == 2)
   {
+    create_overall_database_connection();
+    get_delegates_data();
     goto disable_synchronizing_databases_and_starting_timers;
   }
+
+  create_overall_database_connection();
+  get_delegates_data();
 
   // check if it should create the default database data
   memset(data,0,sizeof(data));

@@ -1909,25 +1909,19 @@ Return: 0 if an error has occured, 1 if successfull
 
 int block_verifiers_send_data_socket(const char* MESSAGE)
 {
+  // Constants
+  const int TOTAL_BLOCK_VERIFIERS = test_settings == 0 ? BLOCK_VERIFIERS_AMOUNT : BLOCK_VERIFIERS_TOTAL_AMOUNT; 
+
   // Variables
-  int block_verifiers_total_amount = 0;
-  if (test_settings == 0)
-  {
-    block_verifiers_total_amount = BLOCK_VERIFIERS_AMOUNT;
-  }
-  else
-  {
-    block_verifiers_total_amount = BLOCK_VERIFIERS_TOTAL_AMOUNT;
-  }
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int epoll_fd_copy;
-  struct epoll_event events[block_verifiers_total_amount];
+  struct epoll_event events[TOTAL_BLOCK_VERIFIERS];
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
-  struct block_verifiers_send_data_socket block_verifiers_send_data_socket[block_verifiers_total_amount];
+  struct block_verifiers_send_data_socket block_verifiers_send_data_socket[TOTAL_BLOCK_VERIFIERS];
   int socket_settings;
   int total;
   int sent;
@@ -1961,7 +1955,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   // convert the port to a string
   snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
   
-  for (count = 0; count < block_verifiers_total_amount; count++)
+  for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {
     // Variables
     struct addrinfo serv_addr;
@@ -2055,7 +2049,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   sleep(BLOCK_VERIFIERS_SETTINGS);
 
   // get the total amount of sockets that are ready
-  number = epoll_wait(epoll_fd_copy, events, block_verifiers_total_amount, 0);
+  number = epoll_wait(epoll_fd_copy, events, TOTAL_BLOCK_VERIFIERS, 0);
 
   for (count = 0; count < number; count++)
   {
@@ -2063,7 +2057,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     if (events[count].events & EPOLLIN || events[count].events & EPOLLOUT)
     {
       // set the settings of the delegate to 1
-      for (count2 = 0; count2 < block_verifiers_total_amount; count2++)
+      for (count2 = 0; count2 < TOTAL_BLOCK_VERIFIERS; count2++)
       {
         if (events[count].data.fd == block_verifiers_send_data_socket[count2].socket)
         {
@@ -2076,7 +2070,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
-  for (count = 0; count < block_verifiers_total_amount; count++)
+  for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
@@ -2121,7 +2115,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   sleep(CONNECTION_TIMEOUT_SETTINGS);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
-  for (count = 0; count < block_verifiers_total_amount; count++)
+  for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {
     epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
     close(block_verifiers_send_data_socket[count].socket);
