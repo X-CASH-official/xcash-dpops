@@ -172,10 +172,10 @@ All parameters are optional, execept for --block_verifiers_secret_key. **The --b
 --total_threads "total_threads" - The total threads to use, the maximum is 100 total threads.
 If this parameter is not specified, the default is the number of threads the CPU has.
 
---XCASH_DPOPS_delegates_IP_address \"delegates IP address\" - The delegates IP address (IPV4 only) to create the server on.
+--XCASH_DPOPS_delegates_IP_address "delegates IP address" - The delegates IP address (IPV4 only) to create the server on.
 If this parameter is not specified, the default is 0.0.0.0 (all available networking interfaces).
 
---xcash_wallet_port \"xcash_wallet_port\" - The xcash wallet port.
+--xcash_wallet_port "xcash_wallet_port" - The xcash wallet port.
 If this parameter is not specified, the default port is 18285.
 
 --database_name - The name of the database.
@@ -770,6 +770,8 @@ Then install LXD
 Then run the configuration for LXD and press enter to get the default selection to the configuration questions  
 `lxd init`
 
+When it ask for the size of the new loop device, dont use the default answer, instead specify 80-90% of your disk space, this way your containers wont have an artifical low disk space limit and can use most of your disk space.
+
 
 ### Create LXC Container
 
@@ -791,7 +793,7 @@ To open a terminal inside the container
 `lxc exec container -- bash`
 
 If you already have the blockchain locally installed, and need to add it to the container you can run  
-`lxc file push -r ~/.X-CASH ~/.X-CASH`
+`lxc file push -r /root/.X-CASH/ container/root/`
 
 To exit the terminal  
 `exit`
