@@ -804,15 +804,7 @@ int receive_data(const int SOCKET, char *message, const char* STRING, const int 
       // there is data, and this is the final data
       append_string(data,buffer,MAXIMUM_BUFFER_SIZE);
       // if the final message has the SOCKET_END_STRING in the message, remove it
-      if (strstr(data,SOCKET_END_STRING) != NULL)
-      {
-        // remove SOCKET_END_STRING from the message
-        memcpy(message,data,strnlen(data,MAXIMUM_BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1));
-      }
-      else
-      {
-        memcpy(message,data,strnlen(data,MAXIMUM_BUFFER_SIZE));
-      }      
+      strstr(data,SOCKET_END_STRING) != NULL ? memcpy(message,data,strnlen(data,MAXIMUM_BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1)) : memcpy(message,data,strnlen(data,MAXIMUM_BUFFER_SIZE));
       break;
     }
 

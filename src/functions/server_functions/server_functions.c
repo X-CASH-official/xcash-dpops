@@ -116,14 +116,7 @@ int create_server(const int MESSAGE_SETTINGS)
   use htons to convert the port from host byte order to network byte order short
   */
   addr.sin_family = AF_INET;
-  if (memcmp(XCASH_DPOPS_delegates_IP_address,"",1) == 0)
-  {
-    addr.sin_addr.s_addr = INADDR_ANY;
-  }
-  else
-  {
-    addr.sin_addr.s_addr = inet_addr(XCASH_DPOPS_delegates_IP_address);
-  }
+  addr.sin_addr.s_addr = memcmp(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9) == 0 ? INADDR_ANY : inet_addr(XCASH_DPOPS_delegates_IP_address);
   addr.sin_port = htons(SEND_DATA_PORT);
  
   // connect to 0.0.0.0
