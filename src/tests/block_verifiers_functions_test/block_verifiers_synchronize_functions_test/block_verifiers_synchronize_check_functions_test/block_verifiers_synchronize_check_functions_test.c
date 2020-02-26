@@ -138,6 +138,46 @@ int block_verifiers_synchronize_check_functions_test(void)
     color_print("FAILED! Test for sync_check_statistics_database from a random network data node","red");
   }
 
+  if (sync_check_majority_reserve_proofs_database() == 1)
+  {
+    color_print("PASSED! Test for sync_check_majority_reserve_proofs_database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_majority_reserve_proofs_database","red");
+  }
+
+  if (sync_check_majority_reserve_bytes_database(1) == 1)
+  {
+    color_print("PASSED! Test for sync_check_majority_reserve_bytes_database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_majority_reserve_bytes_database","red");
+  }
+
+  if (sync_check_majority_delegates_database() == 1)
+  {
+    color_print("PASSED! Test for sync_check_majority_delegates_database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_majority_delegates_database","red");
+  }
+
+  if (sync_check_majority_statistics_database() == 1)
+  {
+    color_print("PASSED! Test for sync_check_majority_statistics_database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_majority_statistics_database","red");
+  }
+
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
     memset(network_data_nodes_list.network_data_nodes_public_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_public_address[count]));

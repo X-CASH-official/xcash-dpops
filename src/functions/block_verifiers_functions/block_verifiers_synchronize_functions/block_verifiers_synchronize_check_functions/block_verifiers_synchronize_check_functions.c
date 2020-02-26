@@ -293,13 +293,14 @@ int sync_check_reserve_proofs_database(int settings)
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_majority_reserve_proofs_database
 Description: Checks if the block verifiers reserve proofs database is in the majority and if not syncs the reserve proofs database from the main network data node
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-void sync_check_majority_reserve_proofs_database(void)
+int sync_check_majority_reserve_proofs_database(void)
 {
   // Variables
-  char data[DATA_HASH_LENGTH+1];
+  char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   int count;
@@ -309,7 +310,7 @@ void sync_check_majority_reserve_proofs_database(void)
   memcpy(error_message.function[error_message.total],"sync_check_reserve_proofs_database",34); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  return;
+  return 0;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -377,7 +378,7 @@ void sync_check_majority_reserve_proofs_database(void)
     get_random_network_data_node(count);
     sync_reserve_proofs_database(count+3,"");    
   }
-  return;
+  return 1;
   
   #undef SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR  
 }
@@ -542,13 +543,14 @@ Name: sync_check_majority_reserve_bytes_database
 Description: Checks if the block verifiers reserve bytes database is in the majority and if not syncs the reserve bytes database from the main network data node
 Paramters:
   RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-void sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SETTINGS)
+int sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SETTINGS)
 {
   // Variables
-  char data[DATA_HASH_LENGTH+1];
+  char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   size_t count;
@@ -559,7 +561,7 @@ void sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SE
   memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_database",33); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  return;
+  return 0;
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -630,7 +632,7 @@ void sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SE
     get_random_network_data_node(count);
     sync_reserve_bytes_database(count+3,RESERVE_BYTES_START_SETTINGS,""); 
   }
-  return;
+  return 1;
   
   #undef SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR  
 }
@@ -766,14 +768,15 @@ int sync_check_delegates_database(int settings)
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_majority_delegates_database
 Description: Checks if the block verifiers delegates database is in the majority and if not syncs the delegates database from the main network data node
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-void sync_check_majority_delegates_database(void)
+int sync_check_majority_delegates_database(void)
 {
   // Variables
-  char data[DATA_HASH_LENGTH+1];
-  char data2[SMALL_BUFFER_SIZE]; 
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
   int count;
 
@@ -783,7 +786,7 @@ void sync_check_majority_delegates_database(void)
   memcpy(error_message.function[error_message.total],"sync_check_delegates_database",29); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  return;
+  return 0;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -832,7 +835,7 @@ void sync_check_majority_delegates_database(void)
     get_random_network_data_node(count);
     sync_delegates_database(count+3,"");   
   }
-  return;
+  return 1;
 
   #undef DATABASE_COLLECTION  
   #undef SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR  
@@ -969,14 +972,15 @@ int sync_check_statistics_database(int settings)
 -----------------------------------------------------------------------------------------------------------
 Name: sync_check_majority_statistics_database
 Description: Checks if the block verifiers statistics database is in the majority and if not syncs the statistics database from the main network data node
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-void sync_check_majority_statistics_database(void)
+int sync_check_majority_statistics_database(void)
 {
   // Variables
-  char data[DATA_HASH_LENGTH+1];
-  char data2[SMALL_BUFFER_SIZE]; 
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
   int count;
 
@@ -986,7 +990,7 @@ void sync_check_majority_statistics_database(void)
   memcpy(error_message.function[error_message.total],"sync_check_statistics_database",30); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  return;
+  return 0;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1035,7 +1039,7 @@ void sync_check_majority_statistics_database(void)
     get_random_network_data_node(count);
     sync_statistics_database(count+3,"");     
   }
-  return;
+  return 1;
 
   #undef DATABASE_COLLECTION  
   #undef SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR  

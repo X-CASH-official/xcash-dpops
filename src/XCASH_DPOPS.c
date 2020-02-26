@@ -572,18 +572,21 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--test",BUFFER_SIZE) == 0)
     {
+      get_delegates_data();
       test(0);
       database_reset;
       exit(0);
     }
     if (strncmp(parameters[count],"--quick_test",BUFFER_SIZE) == 0)
     {
+      get_delegates_data();
       test(1);
       database_reset;
       exit(0);
     }
     if (strncmp(parameters[count],"--optimizations_test",BUFFER_SIZE) == 0)
     {
+      get_delegates_data();
       test(2);
       database_reset;
       exit(0);
@@ -1279,21 +1282,21 @@ int main(int parameters_count, char* parameters[])
     exit(0);
   }
 
+  create_overall_database_connection();
+
   if (set_parameters(parameters_count, parameters) == 2)
   {
-    create_overall_database_connection();
     get_delegates_data();
     goto disable_synchronizing_databases_and_starting_timers;
   }
 
-  create_overall_database_connection();
   get_delegates_data();
 
   // check if it should create the default database data
   memset(data,0,sizeof(data));
   if (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0)
   {
-    INITIALIZE_DATABASE_DATA(0);
+    INITIALIZE_DATABASE_DATA(6);
   }
 
   print_settings();  
