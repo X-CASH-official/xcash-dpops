@@ -447,7 +447,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   
     memcpy(data,"reserve_bytes_",14);
     snprintf(data+14,sizeof(data)-15,"%zu",count2);
-
+    
     // get the data hash
     if (read_document_field_from_collection(database_name,data,data2,"reserve_bytes_data_hash",message,1) == 0)
     {

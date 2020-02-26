@@ -521,23 +521,7 @@ int start_current_round_start_blocks(void)
 
   // send the database data to all block verifiers
   sleep(BLOCK_VERIFIERS_SETTINGS);
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-    {    
-      memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
-      memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
-      memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
-      memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data,strnlen(data,BUFFER_SIZE));
-      send_and_receive_data_socket_thread_parameters[count].COUNT = count;
-      pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
-      pthread_detach(thread_id[count]);
-    }
-    if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
-    {
-      nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
-    }
-  }
+  block_verifiers_send_data_socket((const char*)data);
 
   color_print("Waiting for the block producer to submit the block to the network\n","blue");
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
@@ -1374,7 +1358,7 @@ int block_verifiers_create_vote_results(char* message)
   {		 
     BLOCK_VERIFIERS_CREATE_VOTE_RESULTS_ERROR("Could not convert the blockchain_data to a network_block_string");	
   }
-
+  
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
   memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
 

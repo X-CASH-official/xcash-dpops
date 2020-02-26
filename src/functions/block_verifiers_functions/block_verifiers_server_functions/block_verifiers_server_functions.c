@@ -502,7 +502,14 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
 
   // process the vote data
   pthread_mutex_lock(&vote_lock);
-  memcmp(data,"valid",5) == 0 && memcmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0 ? current_round_part_vote_data.vote_results_valid++ : current_round_part_vote_data.vote_results_invalid++;
+  if (memcmp(data,"valid",5) == 0 && memcmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0)
+  {
+    current_round_part_vote_data.vote_results_valid++;
+  }
+  else
+  {
+    current_round_part_vote_data.vote_results_invalid++;
+  }
   pthread_mutex_unlock(&vote_lock);
   return 1;
   

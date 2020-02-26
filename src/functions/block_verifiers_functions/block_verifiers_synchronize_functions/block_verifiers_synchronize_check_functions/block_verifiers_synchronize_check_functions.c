@@ -160,7 +160,7 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_reserve_proofs_database(int settings)
 {
   // Variables
-  char data[DATA_HASH_LENGTH+1];
+  char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -399,7 +399,7 @@ Return: 0 if an error has occured, 1 if successfull, 2 to indicate the reserve b
 int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETTINGS)
 {
   // Variables
-  char data[DATA_HASH_LENGTH+1];
+  char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE]; 
   char message[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -652,8 +652,8 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_delegates_database(int settings)
 {
   // Variables
-  char data[DATA_HASH_LENGTH+1];
-  char data2[SMALL_BUFFER_SIZE]; 
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -856,8 +856,8 @@ Return: 0 if an error has occured, 1 if successfull
 int sync_check_statistics_database(int settings)
 {
   // Variables
-  char data[DATA_HASH_LENGTH+1];
-  char data2[SMALL_BUFFER_SIZE]; 
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE]; 
   char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
