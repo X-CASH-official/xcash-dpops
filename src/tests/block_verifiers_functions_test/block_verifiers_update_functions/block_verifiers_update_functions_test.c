@@ -74,15 +74,15 @@ int block_verifiers_update_functions_test(void)
   }
   memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
   memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_2",10);
   memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_3",10);
   memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,1);
   update_block_verifiers_list();
@@ -114,7 +114,7 @@ int block_verifiers_update_functions_test(void)
   }
   memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
   memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memset(data_test,0,sizeof(data_test));
   memset(result_test,0,sizeof(result_test));
@@ -196,7 +196,7 @@ int block_verifiers_update_functions_test(void)
     snprintf(data+15,BUFFER_SIZE-16,"%d",count);
     memcpy(current_block_verifiers_list.block_verifiers_name[count],"delegate_name_1",15);
     memcpy(current_block_verifiers_list.block_verifiers_public_address[count],data,strnlen(data,sizeof(current_block_verifiers_list.block_verifiers_name[count])));
-    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],"127.0.0.1",9);
+    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,9);
     memcpy(current_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   }
   if (calculate_main_nodes_roles() == 1 && strncmp(main_nodes_list.block_producer_public_address,"public_address_92",sizeof(main_nodes_list.block_producer_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,"public_address_0",sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,"public_address_27",sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,"public_address_97",sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,"public_address_49",sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,"public_address_61",sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address)) == 0)

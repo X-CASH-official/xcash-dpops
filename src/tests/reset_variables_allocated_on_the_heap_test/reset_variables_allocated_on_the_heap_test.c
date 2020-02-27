@@ -354,20 +354,20 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   #define SEND_HTTP_REQUEST_CODE \
   memset(data_test,0,sizeof(data_test)); \
-  send_http_request(data_test,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_http_request(data_test,XCASH_DPOPS_delegates_IP_address,"/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SEND_DATA_SOCKET_CODE \
   memset(data_test,0,sizeof(data_test)); \
   memcpy(data_test,SEND_DATA_SOCKET_TEST_MESSAGE,sizeof(SEND_DATA_SOCKET_TEST_MESSAGE)-1); \
   sign_data(data_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SEND_AND_RECEIVE_DATA_SOCKET_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memset(data_test,0,sizeof(data_test)); \
   memcpy(data_test,SEND_DATA_SOCKET_TEST_MESSAGE,sizeof(SEND_DATA_SOCKET_TEST_MESSAGE)-1); \
   sign_data(data_test); \
-  send_and_receive_data_socket(result_test,"127.0.0.1",SEND_DATA_PORT,(const char*)data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_and_receive_data_socket(result_test,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,(const char*)data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SIGN_DATA_USING_WALLET_SIGNING_KEY_CODE \
   memset(result_test,0,sizeof(result_test)); \
@@ -474,63 +474,63 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
-  #define SYNC_RESERVE_PROOFS_DATABASE_CODE sync_reserve_proofs_database(0,"127.0.0.1");
+  #define SYNC_RESERVE_PROOFS_DATABASE_CODE sync_reserve_proofs_database(0,XCASH_DPOPS_delegates_IP_address);
 
-  #define SYNC_RESERVE_BYTES_DATABASE_CODE sync_reserve_bytes_database(0,1,"127.0.0.1");
+  #define SYNC_RESERVE_BYTES_DATABASE_CODE sync_reserve_bytes_database(0,1,XCASH_DPOPS_delegates_IP_address);
 
-  #define SYNC_DELEGATES_DATABASE_CODE sync_delegates_database(0,"127.0.0.1");
+  #define SYNC_DELEGATES_DATABASE_CODE sync_delegates_database(0,XCASH_DPOPS_delegates_IP_address);
 
-  #define SYNC_STATISTICS_DATABASE_CODE sync_statistics_database(0,"127.0.0.1");
+  #define SYNC_STATISTICS_DATABASE_CODE sync_statistics_database(0,XCASH_DPOPS_delegates_IP_address);
 
   #define SYNC_ALL_BLOCK_VERIFIERS_LIST_FOR_BLOCK_VERIFIERS_CODE sync_all_block_verifiers_list();
 
@@ -540,85 +540,85 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1); \
   sign_data(result_test); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define CHECK_RESERVE_PROOFS_TIMER_CREATE_MESSAGE_CODE \
   memset(data_test,0,sizeof(data_test)); \
@@ -748,15 +748,15 @@ int reset_variables_allocated_on_the_heap_test(void)
   } \
   memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
   memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
   memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
   memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_2",10); \
   memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
   memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
   memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_3",10); \
   memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
   memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
   insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,1); \
   update_block_verifiers_list();
@@ -779,7 +779,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   } \
   memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
   memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH); \
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
   memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
   add_block_verifiers_round_statistics(XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST);
 
@@ -817,7 +817,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     snprintf(data_test+15,BUFFER_SIZE-16,"%zu",count); \
     memcpy(current_block_verifiers_list.block_verifiers_name[count],"delegate_name_1",15); \
     memcpy(current_block_verifiers_list.block_verifiers_public_address[count],data_test,strnlen(data_test,sizeof(current_block_verifiers_list.block_verifiers_name[count]))); \
-    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],"127.0.0.1",9); \
+    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,9); \
     memcpy(current_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
   } \
   calculate_main_nodes_roles();
@@ -829,57 +829,57 @@ int reset_variables_allocated_on_the_heap_test(void)
   RESET_ERROR_MESSAGES; \
   get_delegates_online_status();
 
-  #define DELEGATES_SERVER_FUNCTIONS_TEST_CODE send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  #define DELEGATES_SERVER_FUNCTIONS_TEST_CODE send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_CODE \
   memset(result_test,0,sizeof(result_test)); \
   memcpy(result_test,SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_TEST_DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define ADD_BLOCK_TO_BLOCKS_FOUND_CODE \
   sscanf(current_block_height, "%zu", &block_height); \
@@ -1296,15 +1296,15 @@ int reset_variables_allocated_on_the_heap_test(void)
   }
   memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
   memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
   memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
   memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   // initialize the reserve_proof struct
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
@@ -1359,7 +1359,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(data_test,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(data_test+60,result_test,strnlen(result_test,sizeof(data_test)));
   memcpy(data_test+strlen(data_test),"\"}}",3);  
-  send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_http_request(data3,XCASH_DPOPS_delegates_IP_address,"/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   memset(data_test,0,sizeof(data_test));
   parse_json_data(data3,"signature",data_test,MAXIMUM_BUFFER_SIZE);
   memcpy(result_test+strlen(result_test),data_test,XCASH_SIGN_DATA_LENGTH);
@@ -1377,7 +1377,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(data_test,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(data_test+60,result_test,strnlen(result_test,sizeof(data_test)));
   memcpy(data_test+strlen(data_test),"\"}}",3);  
-  send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_http_request(data3,XCASH_DPOPS_delegates_IP_address,"/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   memset(data_test,0,sizeof(data_test));
   parse_json_data(data3,"signature",data_test,MAXIMUM_BUFFER_SIZE);
   memcpy(result_test+strlen(result_test),data_test,XCASH_SIGN_DATA_LENGTH);
@@ -1393,7 +1393,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(data_test,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(data_test+60,result_test,strnlen(result_test,sizeof(data_test)));
   memcpy(data_test+strlen(data_test),"\"}}",3);  
-  send_http_request(data3,"127.0.0.1","/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_http_request(data3,XCASH_DPOPS_delegates_IP_address,"/json_rpc",XCASH_WALLET_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   memset(data_test,0,sizeof(data_test));
   parse_json_data(data3,"signature",data_test,MAXIMUM_BUFFER_SIZE);
   memcpy(result_test+strlen(result_test),data_test,XCASH_SIGN_DATA_LENGTH);

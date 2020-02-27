@@ -662,15 +662,15 @@ for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++) \
   memset(network_data_nodes_list.network_data_nodes_IP_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_IP_address[count])); \
 } \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],"127.0.0.1",9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],"127.0.0.1",9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[2],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[2],"127.0.0.1",9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[2],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[3],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[3],"127.0.0.1",9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[3],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[4],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],"127.0.0.1",9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],XCASH_DPOPS_delegates_IP_address,9); \
 
 #define INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST \
 for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++) \
@@ -690,27 +690,27 @@ for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++) \
 } \
 memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
 memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(previous_block_verifiers_list.block_verifiers_name[1],"delegate_1",10); \
 memcpy(previous_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(previous_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9); \
+memcpy(previous_block_verifiers_list.block_verifiers_IP_address[1],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(previous_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
 memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(current_block_verifiers_list.block_verifiers_name[1],"delegate_1",10); \
 memcpy(current_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(current_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9); \
+memcpy(current_block_verifiers_list.block_verifiers_IP_address[1],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(current_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
 memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9); \
+memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(next_block_verifiers_list.block_verifiers_name[1],"delegate_1",10); \
 memcpy(next_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(next_block_verifiers_list.block_verifiers_IP_address[1],"127.0.0.1",9); \
+memcpy(next_block_verifiers_list.block_verifiers_IP_address[1],XCASH_DPOPS_delegates_IP_address,9); \
 memcpy(next_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
 
 
@@ -835,7 +835,7 @@ invalid_reserve_proofs.count = 0; \
 #define CHECK_SERVER_FUNCTIONS(FUNCTION_NAME,MESSAGE) \
 memset(result_test,0,sizeof(result_test)); \
 memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1); \
-if (sign_data(result_test) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
+if (sign_data(result_test) == 1 && send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
 { \
   sleep(5); \
   if (error_message.total == 0) \
@@ -860,7 +860,7 @@ memset(result_test,0,sizeof(result_test)); \
 memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1); \
 if (STRING_REPLACE_SETTINGS == 1) \
 { \
-if (sign_data(result_test) == 1 && string_replace(result_test,sizeof(result_test),CURRENT_STRING,NEW_STRING) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
+if (sign_data(result_test) == 1 && string_replace(result_test,sizeof(result_test),CURRENT_STRING,NEW_STRING) == 1 && send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
 { \
   sleep(5); \
   for (count = 0; count < error_message.total; count++) \
@@ -887,7 +887,7 @@ else \
 } \
 else \
 { \
-  if (sign_data(result_test) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
+  if (sign_data(result_test) == 1 && send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
 { \
   sleep(5); \
   for (count = 0; count < error_message.total; count++) \
@@ -915,7 +915,7 @@ else \
 RESET_ERROR_MESSAGES;
 
 #define CHECK_WEBSITE_SERVER_FUNCTIONS(FUNCTION_NAME,MESSAGE) \
-if (send_data_socket("127.0.0.1",SEND_DATA_PORT,MESSAGE,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
+if (send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,MESSAGE,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
 { \
   sleep(5); \
   if (error_message.total == 0) \
@@ -937,7 +937,7 @@ RESET_ERROR_MESSAGES;
 
 #define CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR(DATA,FUNCTION_NAME,TEST) \
 memcpy(result_test,DATA,sizeof(DATA)-1); \
-send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS); \
+send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS); \
 sleep(5); \
 for (count = 0; count < error_message.total; count++) \
 { \

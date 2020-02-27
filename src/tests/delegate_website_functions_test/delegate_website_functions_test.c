@@ -72,7 +72,7 @@ int delegate_website_functions_test(void)
  
   // run the test
   memset(data_test,0,sizeof(data_test));
-  if (send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA,sizeof(data_test)) == 0)
+  if (send_and_receive_data_socket(data_test,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA,sizeof(data_test)) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_delegates_website_get_statistics","green");
     count_test++;
@@ -84,7 +84,7 @@ int delegate_website_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   memset(data_test,0,sizeof(data_test));
-  if (send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_DELEGATES_TEST_DATA,sizeof(data_test)) == 0)
+  if (send_and_receive_data_socket(data_test,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_DELEGATES_TEST_DATA,sizeof(data_test)) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_get_delegates","green");
     count_test++;
@@ -96,7 +96,7 @@ int delegate_website_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   memset(data_test,0,sizeof(data_test));
-  if (send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_DELEGATES_STATISTICS_TEST_DATA,sizeof(data_test)) == 0)
+  if (send_and_receive_data_socket(data_test,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_DELEGATES_STATISTICS_TEST_DATA,sizeof(data_test)) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_get_delegates_statistics","green");
     count_test++;
@@ -108,7 +108,7 @@ int delegate_website_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   memset(data_test,0,sizeof(data_test));
-  if (send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_DELEGATES_INFORMATION_TEST_DATA,sizeof(data_test)) == 0)
+  if (send_and_receive_data_socket(data_test,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_DELEGATES_INFORMATION_TEST_DATA,sizeof(data_test)) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_get_delegates_information","green");
     count_test++;
@@ -120,7 +120,7 @@ int delegate_website_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   memset(data_test,0,sizeof(data_test));
-  if (send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_DELEGATES_VOTERS_LIST_TEST_DATA,sizeof(data_test)) == 0)
+  if (send_and_receive_data_socket(data_test,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_DELEGATES_VOTERS_LIST_TEST_DATA,sizeof(data_test)) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_get_delegates_voters_list","green");
     count_test++;
@@ -132,7 +132,7 @@ int delegate_website_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   memset(data_test,0,sizeof(data_test));
-  if (send_and_receive_data_socket(data_test,"127.0.0.1",SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_ROUND_STATISTICS_TEST_DATA,sizeof(data_test)) == 0)
+  if (send_and_receive_data_socket(data_test,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_ROUND_STATISTICS_TEST_DATA,sizeof(data_test)) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_get_round_statistics","green");
     count_test++;

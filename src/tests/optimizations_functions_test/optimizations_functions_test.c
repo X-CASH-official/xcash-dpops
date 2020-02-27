@@ -186,7 +186,7 @@ int optimizations_functions_test(void)
 
     memcpy(previous_block_verifiers_list.block_verifiers_name[count],"delegate_1",10);
     memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],TEST_WALLET,XCASH_WALLET_LENGTH);
-    memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],"127.0.0.1",9);
+    memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,9);
     memcpy(previous_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
     memcpy(current_block_verifiers_list.block_verifiers_name[count],"delegate_1",10);
     memcpy(current_block_verifiers_list.block_verifiers_public_address[count],TEST_WALLET,XCASH_WALLET_LENGTH);
@@ -194,7 +194,7 @@ int optimizations_functions_test(void)
     memcpy(current_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
     memcpy(next_block_verifiers_list.block_verifiers_name[count],"delegate_1",10);
     memcpy(next_block_verifiers_list.block_verifiers_public_address[count],TEST_WALLET,XCASH_WALLET_LENGTH);
-    memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],"127.0.0.1",9);
+    memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,9);
     memcpy(next_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   }
   
@@ -232,7 +232,7 @@ int optimizations_functions_test(void)
   {      
     memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
     memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
-    memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,"127.0.0.1",9);
+    memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,XCASH_DPOPS_delegates_IP_address,9);
     memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data_test,strnlen(data_test,BUFFER_SIZE));
     send_and_receive_data_socket_thread_parameters[count].COUNT = count;
     pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);

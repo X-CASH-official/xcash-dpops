@@ -58,7 +58,7 @@ int delegate_server_functions_test(void)
  
   #define DELEGATES_SERVER_FUNCTIONS_TEST_ERROR(DATA,FUNCTION_NAME,TEST) \
   memcpy(result_test,DATA,sizeof(DATA)-1); \
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS); \
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS); \
   sleep(5); \
   for (count = 0; count < error_message.total; count++) \
   { \
@@ -136,7 +136,7 @@ int delegate_server_functions_test(void)
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   
   memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF "|",872);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   sleep(5);
   if (count_documents_in_collection(database_name,"reserve_proofs_1","{\"reserve_proof\":\"" TEST_RESERVE_PROOF_DELEGATES_REGISTER "\"}",0) == 1)
   {
@@ -154,7 +154,7 @@ int delegate_server_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   memset(data,0,sizeof(data));
   memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_2|192.168.2.0|a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REGISTER "|",329);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   sleep(5);
   if (count_documents_in_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\"}",0) == 1)
   {
@@ -174,7 +174,7 @@ int delegate_server_functions_test(void)
   delete_database(database_name,0);
   insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"public_key\":\"" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "\"}",0);
   memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|about|data|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_UPDATE "|",245);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   sleep(5);
   memset(result_test,0,sizeof(result_test));
   if (read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\"}","about",result_test,0) == 1 && strncmp(result_test,"data",sizeof(result_test)) == 0)
@@ -195,7 +195,7 @@ int delegate_server_functions_test(void)
   delete_database(database_name,0);
   insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "\"}",0);
   memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REMOVE "|",234);
-  send_data_socket("127.0.0.1",SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   sleep(5);
   memset(result_test,0,sizeof(result_test));
   if (count_documents_in_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\"}",0) == 0)

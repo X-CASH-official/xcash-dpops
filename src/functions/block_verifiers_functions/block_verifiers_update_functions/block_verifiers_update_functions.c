@@ -412,12 +412,12 @@ int add_round_statistics(void)
   char block_verifier_total_rounds_delegates_name[BUFFER_SIZE];
   char best_block_verifier_online_percentage_delegate_name[BUFFER_SIZE];
   char most_block_producer_total_rounds_delegate_name[BUFFER_SIZE];
-  char message1[BUFFER_SIZE_NETWORK_BLOCK_DATA];
-  char message2[BUFFER_SIZE_NETWORK_BLOCK_DATA];
-  char message3[BUFFER_SIZE_NETWORK_BLOCK_DATA];
-  char message4[BUFFER_SIZE_NETWORK_BLOCK_DATA];
-  char message5[BUFFER_SIZE_NETWORK_BLOCK_DATA];
-  char message6[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char message1[SMALL_BUFFER_SIZE];
+  char message2[SMALL_BUFFER_SIZE];
+  char message3[SMALL_BUFFER_SIZE];
+  char message4[SMALL_BUFFER_SIZE];
+  char message5[SMALL_BUFFER_SIZE];
+  char message6[SMALL_BUFFER_SIZE];
   size_t block_verifier_total_rounds_count = 0;
   size_t block_verifier_total_rounds_count2 = 0;
   int block_verifier_online_percentage_count = 0;

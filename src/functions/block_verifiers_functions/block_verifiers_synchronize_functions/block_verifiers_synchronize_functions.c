@@ -747,7 +747,7 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
 {
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char data2[SMALL_BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   char* data3 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;

@@ -273,15 +273,15 @@ int block_verifiers_thread_server_functions_test(void)
   }
   memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
   memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
   memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
   memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],"127.0.0.1",9);
+  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
   memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   // initialize the reserve_proof struct
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));

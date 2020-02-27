@@ -31,9 +31,12 @@ Return: 0 if an error has occured, 1 if successfull
 
 int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, const size_t RESULT_TOTAL_LENGTH)
 {
+  // Constants
+  const size_t MAXIMUM_AMOUNT = RESULT_TOTAL_LENGTH >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : RESULT_TOTAL_LENGTH+BUFFER_SIZE;
+
   // Variables
   char str[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
+  char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char)); 
   char* str1;
   char* str2;
   size_t start; 
@@ -45,13 +48,13 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   memcpy(error_message.function[error_message.total],"parse_json_data",15); \
   memcpy(error_message.data[error_message.total],"Could not parse the message",27); \
   error_message.total++; \
+  pointer_reset(message); \
   } \
   return 0;
 
   // reset the variables
   memset(result,0,strlen(result));
   memset(str,0,sizeof(str));
-  memset(message,0,sizeof(message));
 
   memcpy(str,"\"",1);
   memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
@@ -117,7 +120,8 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   else
   {
     PARSE_JSON_DATA_ERROR;
-  }  
+  }
+  pointer_reset(message);
   return 1;
 
   #undef PARSE_JSON_DATA_ERROR
@@ -742,7 +746,7 @@ int random_string(char *result, const size_t LENGTH)
   #define MAXIMUM 61
   
   // Variables
-  char data[sizeof(STRING)];
+  char data[100];
   size_t count;
   
   memset(data,0,sizeof(data));

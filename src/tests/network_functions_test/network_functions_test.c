@@ -96,7 +96,7 @@ int network_functions_test(void)
   pthread_rwlock_unlock(&rwlock);
 
   // test send_http_request
-  if (send_http_request(data_test,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
+  if (send_http_request(data_test,XCASH_DPOPS_delegates_IP_address,"/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
   {  
     color_print("FAILED! Test for send_data","red");
     color_print("FAILED! Test for receive_data","red");
@@ -134,7 +134,7 @@ int network_functions_test(void)
       color_print("FAILED! Test for send_and_receive_data_socket","red");
     }
     memset(string,0,sizeof(string));
-    if (send_and_receive_data_socket(string,"127.0.0.1",SEND_DATA_PORT,message,20) <= 0)
+    if (send_and_receive_data_socket(string,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,message,20) <= 0)
     {
       color_print("FAILED! Test for create_server","red");
       color_print("FAILED! Test for send_and_receive_data_socket","red");
@@ -183,7 +183,7 @@ int network_functions_test(void)
   memset(message,0,sizeof(message));
   memcpy(message,MESSAGE,sizeof(MESSAGE)-1);
 
-  if (sign_data(message) == 1 && send_data_socket("127.0.0.1",SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1)
+  if (sign_data(message) == 1 && send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1)
   {
     sleep(10);
     if (network_functions_test_settings == 1)
@@ -217,7 +217,7 @@ int network_functions_test(void)
   }
   RESET_ERROR_MESSAGES;
 
-  if (send_http_request(data_test,"127.0.0.1","/json_rpc",18289,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 && strstr(error_message.data[0],"Error connecting to host") != NULL)
+  if (send_http_request(data_test,XCASH_DPOPS_delegates_IP_address,"/json_rpc",18289,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 && strstr(error_message.data[0],"Error connecting to host") != NULL)
   {
     color_print("PASSED! Test for send_http_request checking for Connection error","green");
     count_test++;
@@ -240,7 +240,7 @@ int network_functions_test(void)
   }
   RESET_ERROR_MESSAGES;
 
-  if (send_and_receive_data_socket(string,"127.0.0.1",18289,message,20) <= 0 && strstr(error_message.data[0],"Error connecting to host") != NULL)
+  if (send_and_receive_data_socket(string,XCASH_DPOPS_delegates_IP_address,18289,message,20) <= 0 && strstr(error_message.data[0],"Error connecting to host") != NULL)
   {
     color_print("PASSED! Test for send_and_receive_data_socket checking for Connection error","green");
     count_test++;

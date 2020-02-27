@@ -42,7 +42,7 @@ int sign_data(char *message)
 
   // Variables
   char random_data[RANDOM_STRING_LENGTH+1];
-  char data[SMALL_BUFFER_SIZE];
+  char data[BUFFER_SIZE];
   char proof[VRF_PROOF_LENGTH+1];
   char beta_string[VRF_BETA_LENGTH+1];
   char* result = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
