@@ -77,6 +77,7 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 *  [Install XCASH DPOPS in the Container](#install-xcash-dpops-in-the-container) 
  
 [How to Setup A Private Test](#how-to-setup-a-private-test)  
+[How to Setup A Private Test Using LXC Containers](#how-to-setup-a-private-test-using-lxc-containers)  
 [How to Debug the Code on a Server](#how-to-debug-the-code-on-a-server)
 *  [Allow X11 Forwarding on the server](#allow-x11-forwarding-on-the-server)  
 *  [Install GDB and vscode](#install-gdb-and-vscode)
@@ -825,9 +826,9 @@ LXC allows for systemd to run inside the containers. Refer to the [Auto Installa
 ## How to Setup a Private Test
 This will allow you to run your own private test setup of the DPOPS consensus for debugging purposes.
 
-First, you will need at a minimum 4 servers or virtual machines. You can use any amount greater than or equal to 4, but its mandatory to use 4 to properly test the DBFT part of the consensus. It is recommended to use the autoinstaller to setup these 4 machines
+First, you will need at a minimum 5 servers or virtual machines. You can use any amount greater than or equal to 5, but its mandatory to use 5 to properly test the DBFT part of the consensus. It is recommended to use the autoinstaller to setup these 5 machines
 
-Once you have the 4 machines setup, you will need a fully synced copy of the blockchain on each server.
+Once you have the 5 machines setup, you will need a fully synced copy of the blockchain on each server.
 
 Now you need to make the following code adjustments to work with your setup and to make a testnet copy of the official blockchain, this way you can mine blocks on it with your machines.
 
@@ -837,34 +838,7 @@ Now you need to make the following code adjustments to work with your setup and 
 Remove all seed nodes and add 2 of your servers IP addresses to `const std::vector<std::string> m_seed_nodes_list`
 
 **src/p2p/net_node.inl**  
-Remove all seed nodes and add 2 of your servers IP addresses to  
-```
-template<class t_payload_net_handler>
-  std::set<std::string> node_server<t_payload_net_handler>::get_seed_nodes(cryptonote::network_type nettype) const
-  {
-    std::set<std::string> full_addrs;
-    if (nettype == cryptonote::TESTNET)
-    {
-      full_addrs.insert("testnetseed1.x-cash.org:28280");
-      full_addrs.insert("testnetseed2.x-cash.org:28280");
-    }
-    else if (nettype == cryptonote::STAGENET)
-    {
-    }
-    else if (nettype == cryptonote::FAKECHAIN)
-    {
-    }
-    else
-    {
-      full_addrs.insert("delegates.xcash.foundation:18280");
-      full_addrs.insert("europe1.xcash.foundation:18280");
-      full_addrs.insert("europe2.xcash.foundation:18280");
-      full_addrs.insert("europe3.xcash.foundation:18280");
-      full_addrs.insert("asia1.xcash.foundation:18280");
-    }
-    return full_addrs;
-  }
-```
+Remove all seed nodes and add 2 of your servers IP addresses 
 
 **src/cryptonote_config.h**  
 Change the block height to the current block height of your blockchain
@@ -988,6 +962,8 @@ Now you can disable the reserve proofs checker since there is no penalties in a 
   color_print("Started the check reserve proofs timer thread","green");
 ```
 
+You will also need to change the number for the INITIALIZE_DATABASE_DATA, view the comments above this line in the code to see what number to change it to, but 6 is for 5 nodes.
+
 At this point you can run the test setup. Make sure to run the main server (NETWORK_DATA_NODE_1_PUBLIC_ADDRESS) first, then run all of the other network data nodes. Once those are done syncing run all other servers. 
 
 Start all of the servers right after 0 seconds of a divisible by 5 minute (0,5,10 etc) this way the block creation process will start at the next divisible by 5 minute and will give your nodes enough time to sync and start up (although this usually only takes a minute)
@@ -995,6 +971,89 @@ Start all of the servers right after 0 seconds of a divisible by 5 minute (0,5,1
 Also make sure you run xcashd with the `--block-verifier` flag
 
 If your computer system does not have internet access, make sure to run the xcashd on the NETWORK_DATA_NODE_1 system with `./xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --confirm-external-bind --restricted-rpc --block-verifier` andd run the other systems with `./xcashd --allow-local-ip --add-exclusive-node IP_OF_MAIN_SERVER --block-verifier`
+
+
+
+## How to Setup a Private Test Using LXC Containers
+
+You can also use 5 LXC containers to setup a private test. You can share the host's folder for X-CASH and XCASH_DPOPS this way you only need to edit one code for it to refresh on all containers. You cant share the actual blockchain though so you will need each container to have its own copy of the blockchain.
+
+**Note this will only work on a Linux host that is using a wired connection**
+
+First make the changes above to the code at [How to Setup A Private Test](#how-to-setup-a-private-test)  
+
+Next folow the steps at [Install LXC](#install-lxc) to install LXD
+
+Then create a gui profile for LXD  
+`lxc profile create gui`
+
+Then create a file called GUI and pass this file to LXD. You can try either GUI as the first one is for older versions and the second one is for the latest version of LXD
+
+Credit of this profile goes to [https://blog.simos.info/wp-content/uploads/2018/06/lxdguiprofile.txt](https://blog.simos.info/wp-content/uploads/2018/06/lxdguiprofile.txt) located in this tutorial [https://blog.simos.info/how-to-easily-run-graphics-accelerated-gui-apps-in-lxd-containers-on-your-ubuntu-desktop/](https://blog.simos.info/how-to-easily-run-graphics-accelerated-gui-apps-in-lxd-containers-on-your-ubuntu-desktop/)
+
+This is the latest GUI profile. Again credit goes to [https://blog.simos.info/running-x11-software-in-lxd-containers/](https://blog.simos.info/running-x11-software-in-lxd-containers/)
+
+Once you have copied the profiles content to the GUI file, remove the packages part of the profile. We will not be using the cloud-init to install the packages, since we cant know when the packages will be done, and we will be installing them using `lxc exec` instead.
+
+Then cat the file to the gui profile  
+`cat GUI | lxc profile edit gui`
+
+Then initialize 5 containers, with the necessary packages to run X-CASH and XCASH_DPOPS and to be able to run GUI apps like vscode  
+
+`lxc lanch --profile default --profile gui ubuntu:18.04 container1`
+
+This will create and start the container, and will also download the ubuntu 18.04 image if it is not already downloaded on your system. Wait about 20 seconds for LXD to assign the container an IP address (you can check using `lxc list` and make sure it shows an internal IP address assigned to it) then run the following commands
+
+```
+lxc exec container1 -- apt update -y
+lxc exec container1 -- apt install -y x11-apps mesa-utils pulseaudio
+lxc exec container1 -- bash -c "wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -"
+lxc exec container1 -- add-apt-repository -y "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+lxc exec container1 -- apt update -y
+lxc exec container1 -- apt install -y code
+lxc exec container1 -- sudo --login --user ubuntu code --install-extension ms-vscode.cpptools
+lxc exec container1 -- sudo --login --user ubuntu apt install -y gdb
+lxc exec container1 -- sudo --login --user ubuntu bash
+```
+
+After this you should have a terminal open inside the container. You now need install XCASH_DPOPS using the autoinstaller in each container.
+
+Then exit out of the container by typing `exit`
+
+Now you will need to add 5 internal IP addresses to your host and then route all of them to each containers internal IP address.
+
+You need to make sure that your not adding IP addresses that are already being used on the network, so make sure to check that in the router.
+
+Once you have 5 IP addresses that are not currently being used, you can temporarily assign them to the host machine using
+`sudo ip addr add IP_ADDRESS/32 dev NETWORK_INTERFACE`
+
+You can get the network interface by running `ip addr` and look for the interface that says `<BROADCAST,MULTICAST,UP,LOWER_UP>`
+
+**Note this will only add these IP addresses to the host for as long as the machine is running. If you reboot or shutdown you will need to run the ip addr command again on the next startup**
+
+Now you will need to route these IP addresses to each containers internal IP address  
+```
+lxc config device add container container_XCASH_DPOPS_18280 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18280 connect=tcp:PRIVATE_IP_OF_CONTAINER:18280 proxy_protocol=true
+lxc config device add container container_XCASH_DPOPS_18281 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18281 connect=tcp:PRIVATE_IP_OF_CONTAINER:18281 proxy_protocol=true
+lxc config device add container container_XCASH_DPOPS_18283 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18283 connect=tcp:PRIVATE_IP_OF_CONTAINER:18283 proxy_protocol=true
+```
+
+On older versions of LXD you might need to leave out the `proxy_protocol=true`
+
+Next you need to add the host's X-CASH and XCASH_DPOPS directories to the containers  
+```
+lxc config device add container1 container1_XCASH disk source=/PATH_TO_HOST_X-CASH path=/root/x-network/X-CASH
+lxc config device add container1 container1_XCASH_DPOPS disk source=/PATH_TO_HOST_XCASH_DPOPS path=/root/x-network/XCASH_DPOPS
+```
+
+Now you need to add the blockchain to each container from the host  
+`lxc file push -r /$HOME/.X-CASH/ container/root/`
+
+At this point you should be able to login to each container  
+`lxc exec container1 -- sudo --login --user ubuntu bash`
+
+Then start the mongodb, xcashd and xcash-wallet-rpc and then type `code` to start vscode
+
 
 
 
