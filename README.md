@@ -74,7 +74,7 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 *  [Install LXC](#install-lxc)    
 *  [Create LXC Container](#create-lxc-container)  
 *  [Configure the Container](#configure-the-container)  
-*  [Install XCASH DPOPS in the Container](#install-xcash-dpops-in-the-container) 
+*  [Install XCASH DPOPS in the Container](#install-xcash_dpops-in-the-container) 
  
 [How to Setup A Private Test](#how-to-setup-a-private-test)  
 [How to Setup A Private Test Using LXC Containers](#how-to-setup-a-private-test-using-lxc-containers)  
@@ -678,7 +678,7 @@ Once the wallet is fully synchronized run the following:
 
 
 ## How to Setup a Domain Name Instead of an IP Address
-The XCASH DPOPS system needs a IP Address when registering a delegate to be able to let other delegates know where to send messages to. One can instead setup a domain name (**without the www.**) and register this instead of an IP address. The possible benefits of using a domain name over an IP address could be:
+The XCASH DPOPS system needs a IP Address when registering a delegate to be able to let other delegates know where to send messages to. One can instead setup a domain name (**without the www**) and register this instead of an IP address. The possible benefits of using a domain name over an IP address could be:
 
 * One can change IP's from their domain page if they change servers instead of having to update that info in the DPOPS database.
 * It would probably be more recognizable if there was a problem, since in the XCASH_DPOPS logs and the XCASH_Daemon logs it will print the source and destination of messages.
