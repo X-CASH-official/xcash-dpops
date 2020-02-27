@@ -31,7 +31,7 @@ sleep 20s
 pkill -f xcashd
 pkill -f xcash-wallet-rpc
 if [ "$IP_ADDRESS" == $MAIN_NODES_IP_ADDRESS ]; then
-  xfce4-terminal -e "bash -c \"${XCASH_DIR}xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --confirm-external-bind --data-dir ${XCASH_BLOCKCHAIN_DIR}; bash\"" -T "xcashdmain" &
+  xfce4-terminal -e "bash -c \"${XCASH_DIR}xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --confirm-external-bind --data-dir ${XCASH_BLOCKCHAIN_DIR}; bash\"" -T "xcashd" &
 else
   xfce4-terminal -e "bash -c \"${XCASH_DIR}xcashd --allow-local-ip --add-exclusive-node ${MAIN_NODES_IP_ADDRESS} --data-dir ${XCASH_BLOCKCHAIN_DIR}; bash\"" -T "xcashd" &
 fi

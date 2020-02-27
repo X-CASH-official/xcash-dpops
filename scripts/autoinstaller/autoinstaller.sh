@@ -26,12 +26,12 @@ BLOCK_VERIFIERS_SECRET_KEY_LENGTH=128
 BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH=64
 DPOPS_FEE=0
 DPOPS_MINIMUM_AMOUNT=0
-XCASH_DPOPS_BLOCK_HEIGHT=449850
+XCASH_DPOPS_BLOCK_HEIGHT=521850
 
 # Latest versions
-MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.2"
-MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.15.3"
-NODEJS_LATEST_VERSION="node-v13.5.0-linux-x64"
+MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.3"
+MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.16.2"
+NODEJS_LATEST_VERSION="node-v13.9.0-linux-x64"
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/X-CASH.git"
@@ -70,7 +70,7 @@ SYSTEMD_SERVICE_FILE_XCASH_WALLET=""
 CPU_THREADS=$(nproc)
 RAM=$(awk '/MemTotal/ { printf "%d \n", $2/1024/1024 }' /proc/meminfo)
 RAM_CPU_RATIO=$((RAM / CPU_THREADS))
-RAM_CPU_RATIO_ALL_CPU_THREADS=4
+RAM_CPU_RATIO_ALL_CPU_THREADS=100
 
 # Regex
 regex_XCASH_DPOPS_INSTALLATION_DIR="(^\/(.*?)\/$)|(^$)" # anything that starts with / and ends with / and does not contain a space
@@ -1157,7 +1157,7 @@ function build_shared_delegates_website()
   echo -ne "${COLOR_PRINT_YELLOW}Building shared delegates website${END_COLOR_PRINT}"
   cd "${SHARED_DELEGATES_WEBSITE_DIR}"
   . "${HOME}"/.profile
-  ng build --prod --aot &>/dev/null
+  npm run build &>/dev/null
   cd dist
   for f in *.js; do uglifyjs "$f" --compress --mangle --output "{$f}min"; rm "$f"; mv "{$f}min" "$f"; done
   if [ -d "$XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR" ]; then
@@ -1329,6 +1329,7 @@ function update_shared_delegates_website()
     git reset --hard HEAD --quiet
     git pull --quiet
     npm update &>/dev/null
+    . "${HOME}"/.profile
     ng build --prod --aot &>/dev/null
     cd dist
     for f in *.js; do uglifyjs "$f" --compress --mangle --output "{$f}min"; rm "$f"; mv "{$f}min" "$f"; done
