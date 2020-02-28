@@ -644,7 +644,7 @@ function get_current_xcash_wallet_data()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
 
-  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address delegates.xcash.foundation:18281 --trusted-daemon
+  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
   sleep 10s
   
    while
@@ -657,7 +657,7 @@ function get_current_xcash_wallet_data()
   SPEND_KEY=$(curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"spend_key"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g")
   VIEW_KEY=$(curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"view_key"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g")
   MNEMONIC_SEED=$(curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"mnemonic"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g")
-  CURRENT_XCASH_WALLET_INFORMATION="${COLOR_PRINT_GREEN}############################################################\n                 X-CASH Wallet Data  \n############################################################${END_COLOR_PRINT}\n\n${COLOR_PRINT_YELLOW}Public Address: $PUBLIC_ADDRESS\nMnemonic Seed: $MNEMONIC_SEED\nSpend Key: $SPEND_KEY\nView Key: $VIEW_KEY\nWallet Password: $WALLET_PASSWORD${END_COLOR_PRINT}"
+  CURRENT_XCASH_WALLET_INFORMATION="${COLOR_PRINT_GREEN}############################################################\n                 X-CASH Wallet Data  \n############################################################${END_COLOR_PRINT}\n\n${COLOR_PRINT_YELLOW}Public Address: $PUBLIC_ADDRESS\nMnemonic Seed: $MNEMONIC_SEED\nSpend Key: $SPEND_KEY\nView Key: $VIEW_KEY\nWallet Password: $WALLET_PASSWORD\nBlock Verifiers Public Key: $BLOCK_VERIFIER_PUBLIC_KEY\nBlock Verifiers Secret Key: $BLOCK_VERIFIER_SECRET_KEY${END_COLOR_PRINT}"
 
   curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"stop_wallet"}' -H 'Content-Type: application/json' &>/dev/null
   sleep 10s
@@ -944,8 +944,8 @@ function install_mongodb()
   wget -q ${MONGODB_URL}
   tar -xf mongodb-linux-x86_64-*.tgz &>/dev/null
   sudo rm mongodb-linux-x86_64-*.tgz &>/dev/null
-  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
-  sudo echo -ne '$PATH' >> "${HOME}"/.profile
+  echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
+  echo -ne '$PATH' >> "${HOME}"/.profile
   . "${HOME}"/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Installing MongoDB${END_COLOR_PRINT}"
   echo
@@ -1052,7 +1052,7 @@ function sync_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}      Syncing X-CASH Wallet (This Might Take A While)${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
-  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address delegates.xcash.foundation:18281 --trusted-daemon
+  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
   
    while
     data=$(curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json') 
@@ -1069,7 +1069,7 @@ function create_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}      Creating X-CASH Wallet (This Might Take A While)  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address delegates.xcash.foundation:18281 &>/dev/null
+  echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
   echo
   echo
 }
@@ -1077,9 +1077,9 @@ function create_xcash_wallet()
 function import_xcash_wallet()
 {
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}                   Importing X-CASH Wallet ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address delegates.xcash.foundation:18281 &>/dev/null
+  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
   echo
   echo
 }
@@ -1100,8 +1100,8 @@ function install_nodejs()
   wget -q ${NODEJS_URL}
   tar -xf node*.tar.xz &>/dev/null
   sudo rm node*.tar.xz &>/dev/null
-  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
-  sudo echo -ne '$PATH' >> "${HOME}"/.profile
+  echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
+  echo -ne '$PATH' >> "${HOME}"/.profile
   . "${HOME}"/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Installing Node.js${END_COLOR_PRINT}"
   echo
@@ -1357,8 +1357,8 @@ function update_mongodb()
   sudo systemctl daemon-reload
   sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
-  sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
-  sudo echo -ne '$PATH' >> "${HOME}"/.profile
+  echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
+  echo -ne '$PATH' >> "${HOME}"/.profile
   . "${HOME}"/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating MongoDB${END_COLOR_PRINT}"
   echo
@@ -1396,8 +1396,8 @@ function update_nodejs()
   sudo sed '/node-v/d' -i "${HOME}"/.profile
   sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
-  sudo echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
-  sudo echo -ne '$PATH' >> "${HOME}"/.profile
+  echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
+  echo -ne '$PATH' >> "${HOME}"/.profile
   . "${HOME}"/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NodeJS${END_COLOR_PRINT}"
   echo
@@ -1701,11 +1701,11 @@ function test_update()
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
-  data=$(($data-$XCASH_DPOPS_BLOCK_HEIGHT))
+  data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
   systemctl stop XCASH_Daemon
   sleep 30s
   if [ $data -ne 0 ]; then
-    ${XCASH_DIR}build/release/bin/xcash-blockchain-import --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --pop-blocks ${data} &>/dev/null
+    "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Blockchain${END_COLOR_PRINT}"
   echo
