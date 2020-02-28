@@ -505,10 +505,10 @@ int set_parameters(int parameters_count, char* parameters[])
   // Variables
   char data[SMALL_BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
-  size_t count = 0;
+  size_t count;
   size_t count2 = 0;
-  size_t count3 = 0;
-  size_t counter = 0;
+  size_t count3;
+  size_t counter;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 

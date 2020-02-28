@@ -512,7 +512,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   struct tm current_UTC_date_and_time;
   char buffer[1024];
   int count = 0;
-  int count2 = 0;
+  int count2;
   size_t counter = 0;
   int total_delegates;
 

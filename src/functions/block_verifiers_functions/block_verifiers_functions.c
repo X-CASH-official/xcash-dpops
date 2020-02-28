@@ -64,7 +64,6 @@ int start_new_round(void)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
-  int settings;
 
   // define macros
   #define START_NEW_ROUND_ERROR(settings) \
@@ -72,20 +71,6 @@ int start_new_round(void)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
-
-  #define RESTART_XCASH_DAEMON(settings) \
-  if ((settings) == 0) \
-  { \
-    system("systemctl stop XCASH_Daemon_Block_Verifier"); \
-    sleep(10); \
-    system("systemctl start XCASH_Daemon"); \
-  } \
-  else if ((settings) == 1) \
-  { \
-    system("systemctl stop XCASH_Daemon"); \
-    sleep(10); \
-    system("systemctl start XCASH_Daemon_Block_Verifier"); \
-  } \
 
   #define RESET_VARIABLES \
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
@@ -126,7 +111,7 @@ int start_new_round(void)
   get_delegates_online_status();
 
   // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
-  if ((settings = update_block_verifiers_list()) == 0)
+  if (update_block_verifiers_list() == 0)
   {
     START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
   }
@@ -194,7 +179,6 @@ int start_new_round(void)
   return 2;
 
   #undef START_NEW_ROUND_ERROR
-  #undef RESTART_XCASH_DAEMON
   #undef RESET_VARIABLES
 }
 

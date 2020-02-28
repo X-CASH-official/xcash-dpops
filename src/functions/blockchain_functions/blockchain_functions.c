@@ -706,7 +706,7 @@ int blockchain_data_to_network_block_string(char *result, const int BLOCK_VERIFI
   // Variables
   size_t count = 0;
   size_t count2 = 0;
-  size_t counter = 0;
+  size_t counter;
 
   // define macros  
   #define BLOCKCHAIN_RESERVED_BYTES_LENGTH_TEXT "7c424c4f434b434841494e5f52455345525645445f42595445535f4c454e4754487c"

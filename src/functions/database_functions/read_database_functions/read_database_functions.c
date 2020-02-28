@@ -224,12 +224,16 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
       READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR("Could not read the document field from the database collection");
     }
     message_copy1 = strstr(data2,settings) + strnlen(settings,BUFFER_SIZE);
-    message_copy2 = strstr(message_copy1,"\"");
-    memset(result,0,strlen(result));
-    if (message_copy1 == NULL || message_copy2 == NULL)
+    if (message_copy1 == NULL)
     {
       READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR("Could not read the document field from the database collection");
     }
+    message_copy2 = strstr(message_copy1,"\"");
+    if (message_copy2 == NULL)
+    {
+      READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR("Could not read the document field from the database collection");
+    }
+    memset(result,0,strlen(result));
     memcpy(result,message_copy1,message_copy2 - message_copy1); 
   }
   else

@@ -598,8 +598,8 @@ void* payment_timer_thread(void* parameters)
   int count;
   int counter; 
   long long int number;
-  long long int amount_of_payments = 0;
-  long long int total_amount = 0;
+  long long int amount_of_payments;
+  long long int total_amount;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count;
 

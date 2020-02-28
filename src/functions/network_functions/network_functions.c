@@ -65,8 +65,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count; 
-  int counter = 0; 
-  size_t receive_data_result; 
+  int counter = 0;  
   struct pollfd socket_file_descriptors;
   int socket_settings;
   struct addrinfo serv_addr;
@@ -239,7 +238,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   }
    
   // get the result
-  if ((receive_data_result = receive_data(network_socket,message,"{",1,DATA_TIMEOUT_SETTINGS)) < 2)
+  if (receive_data(network_socket,message,"{",1,DATA_TIMEOUT_SETTINGS) < 2)
   {
     SEND_HTTP_REQUEST_ERROR("Error receiving data from host",1);
   }
@@ -298,7 +297,6 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
   char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char)); 
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  int receive_data_result;
   struct pollfd socket_file_descriptors;
   int socket_settings;
   int count;
@@ -434,7 +432,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     
   // get the result
   memset(result,0,strlen(result));
-  if ((receive_data_result = receive_data(network_socket,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS)) < 2)
+  if (receive_data(network_socket,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS) < 2)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host",1);
   }
