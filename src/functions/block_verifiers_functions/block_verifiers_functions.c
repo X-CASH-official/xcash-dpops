@@ -459,23 +459,14 @@ int start_current_round_start_blocks(void)
   char data2[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
-  size_t count;
   
   // define macros
   #define DATABASE_COLLECTION "reserve_bytes_1"
-
-  #define pointer_reset_all \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA); \
-  }
 
   #define START_CURRENT_ROUND_START_BLOCKS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  pointer_reset_all; \
   return 0;
   
   memset(data,0,sizeof(data));
@@ -493,22 +484,6 @@ int start_current_round_start_blocks(void)
   } 
 
   color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
-
-  // initialize the send_and_receive_data_socket_thread_parameters struct
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"start_current_round_start_blocks",32);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-      exit(0);
-    }
-  }
   
   // create the data
   if (start_blocks_create_data(data,data2) == 0)
@@ -522,12 +497,6 @@ int start_current_round_start_blocks(void)
 
   color_print("Waiting for the block producer to submit the block to the network\n","blue");
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
-
-  // reset the send_and_receive_data_socket_thread_parameters struct
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA);
-  }
 
   // have the main network data node submit the block to the network  
   if (submit_block_template(data2) == 0)
@@ -543,7 +512,6 @@ int start_current_round_start_blocks(void)
   return 1;
 
   #undef DATABASE_COLLECTION
-  #undef pointer_reset_all 
   #undef START_CURRENT_ROUND_START_BLOCKS_ERROR
 }
 
@@ -565,27 +533,16 @@ int data_network_node_create_block(void)
   char data3[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_AMOUNT];
   size_t count; 
   size_t count2; 
 
-  // threads
-  pthread_t thread_id[BLOCK_VERIFIERS_AMOUNT];
-
   // define macros
-  #define pointer_reset_all \
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
-  { \
-    pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA); \
-  }
-
   #define DATA_NETWORK_NODE_CREATE_BLOCK_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"data_network_node_create_block",30); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   memset(data,0,sizeof(data)); \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  pointer_reset_all; \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -613,22 +570,6 @@ int data_network_node_create_block(void)
   if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
   {    
     color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
-
-    // initialize the send_and_receive_data_socket_thread_parameters struct
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-      // check if the memory needed was allocated on the heap successfully
-      if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
-      {
-        memcpy(error_message.function[error_message.total],"data_network_node_create_block",30);
-        memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-        error_message.total++;
-        print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-        exit(0);
-      }
-    }
     
     // get a block template
     memset(data,0,sizeof(data));
@@ -782,25 +723,9 @@ int data_network_node_create_block(void)
 
     // send the network block string to all block verifiers and add the block verifier signature to the blockchain data struct
     sleep(BLOCK_VERIFIERS_SETTINGS);
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {      
-      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-      {  
-        memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
-        memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
-        memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
-        memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,BUFFER_SIZE));
-        send_and_receive_data_socket_thread_parameters[count].COUNT = count;
-        pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
-        pthread_detach(thread_id[count]);
-      }
-      if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
-      {
-        nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
-      }
-    }
+    block_verifiers_send_data_socket((const char*)data3);
 
-    sleep(10);
+    sleep(MAIN_NETWORK_DATA_NODE_SEND_BLOCK_SETTINGS);
 
     for (count = 0, count2 = 1; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
@@ -898,33 +823,11 @@ int data_network_node_create_block(void)
     }
 
     // send the database data to all block verifiers
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-      {    
-        memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
-        memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
-        memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(send_and_receive_data_socket_thread_parameters[count].HOST)));
-        memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data3,strnlen(data3,BUFFER_SIZE));
-        send_and_receive_data_socket_thread_parameters[count].COUNT = count;
-        pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
-        pthread_detach(thread_id[count]);
-      }
-      if (count % (BLOCK_VERIFIERS_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_AMOUNT)
-      {
-        nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
-      }
-    }
+    block_verifiers_send_data_socket((const char*)data3);
 
     color_print("Waiting for the block producer to submit the block to the network\n","blue");
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
-
-    // reset the send_and_receive_data_socket_thread_parameters struct
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      pointer_reset(send_and_receive_data_socket_thread_parameters[count].DATA);
-    }
 
     // submit the block to the network
     if (submit_block_template(data) == 0)
@@ -951,7 +854,6 @@ int data_network_node_create_block(void)
   
   return 1;
 
-  #undef pointer_reset_all  
   #undef DATA_NETWORK_NODE_CREATE_BLOCK_ERROR
   #undef SEND_DATA_SOCKET_THREAD
 }
@@ -1667,7 +1569,7 @@ int block_verifiers_create_block(void)
   start:
 
     print_block_producer();
-
+    
     color_print("Part 1 - Create and send VRF data to all block verifiers","yellow");
 
     // create a random VRF public key and secret key

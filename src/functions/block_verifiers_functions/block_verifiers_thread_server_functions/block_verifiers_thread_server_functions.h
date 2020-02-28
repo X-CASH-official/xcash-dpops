@@ -17,7 +17,6 @@ int check_reserve_proofs_timer_update_database(void);
 int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof);
 int send_invalid_reserve_proof_to_block_verifiers(const struct reserve_proof* reserve_proof);
 void* check_reserve_proofs_timer_thread(void* parameters);
-void* send_and_receive_data_socket_thread(void* parameters);
 void remove_inactive_delegates(int *total_delegates, int *total_inactive_delegates);
 void* remove_inactive_delegates_timer_thread(void* parameters);
 void* sync_network_data_nodes_database_timer_thread(void* parameters);

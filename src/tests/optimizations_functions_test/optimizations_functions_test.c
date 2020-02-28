@@ -224,40 +224,6 @@ int optimizations_functions_test(void)
 
 
 
-  start = time(NULL);
-  memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\r\n \"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\",\r\n \"block_blob\": \"" NETWORK_BLOCK "\",\r\n}",166417);
-  sign_data(data_test);
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {      
-    memset(send_and_receive_data_socket_thread_parameters[count].HOST,0,sizeof(send_and_receive_data_socket_thread_parameters[count].HOST));
-    memset(send_and_receive_data_socket_thread_parameters[count].DATA,0,strlen(send_and_receive_data_socket_thread_parameters[count].DATA));
-    memcpy(send_and_receive_data_socket_thread_parameters[count].HOST,XCASH_DPOPS_delegates_IP_address,9);
-    memcpy(send_and_receive_data_socket_thread_parameters[count].DATA,data_test,strnlen(data_test,BUFFER_SIZE));
-    send_and_receive_data_socket_thread_parameters[count].COUNT = count;
-    pthread_create(&thread_id[count], NULL, &send_and_receive_data_socket_thread,&send_and_receive_data_socket_thread_parameters[count]);
-    if (count % (BLOCK_VERIFIERS_TOTAL_AMOUNT / 4) == 0 && count != 0 && count != BLOCK_VERIFIERS_TOTAL_AMOUNT)
-    {
-      nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);
-    }
-  }
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    pthread_join(thread_id[count],NULL);
-  }
-  total = time(NULL) - start;
-  if (total <= MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD)
-  {
-    fprintf(stderr,"\033[1;32mPASSED! Test for sending a message to all block verifiers using send_and_receive_data_socket_thread took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD);
-    count_test++;
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31mFAILED! Test for sending a message to all block verifiers using send_and_receive_data_socket_thread took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_SEND_AND_RECEIVE_DATA_SOCKET_THREAD);
-  }
-
-
-
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(2);
   RESET_INVALID_RESERVE_PROOFS_DATA;

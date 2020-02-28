@@ -84,8 +84,8 @@ int get_block_template(char *result)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char message[SMALL_BUFFER_SIZE];
-  char data[SMALL_BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  char data[BUFFER_SIZE];
 
   // define macros
   #define GET_BLOCK_TEMPLATE_ERROR(settings) \
