@@ -644,6 +644,8 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "--synchronize_database_from_network_data_node - Synchronize the database from a network data node.\n\n" \
 "--synchronize_database_from_specific_delegate DELEGATES_IP_ADDRESS - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nIt should only be used in specific circumstances.\n\n" \
 "--disable_synchronizing_databases_and_starting_timers - Disables synchronizing the databases and starting the timers. Used for testing.\n\n" \
+"--registration_mode - Runs the registration mode only\n\n" \
+"--start_time \"day\" \"hour\" \"minute\" - Starts the current block height timer at a specific time. The day is the day of the month (1-31), the hour is the hour in UTC (0-23) the minute is the minute (0-59)\n\n" \
 "--test_data_add - Add test data to the databases\n\n" \
 "--test_data_remove - Remove test data from the databases\n\n"
 #endif

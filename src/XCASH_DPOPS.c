@@ -95,6 +95,10 @@ int test_settings; // 1 when the test are running, 0 if not
 int vrf_data_verify_count; // holds the amount of block verifiers signatures that are verified for the current network block
 int debug_settings; // 1 to show all incoming and outgoing message from the server
 int registration_settings; // 1 when the registration mode is running, 0 when it is not
+int block_height_start_time; // 1 to start the current_block_height_timer_thread at a specific time, 0 if not
+int block_height_start_time_day; // The minute to start the current_block_height_timer_thread
+int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
+int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -165,6 +169,7 @@ void initialize_data(void)
   network_functions_test_server_messages_settings = 1;
   debug_settings = 0;
   registration_settings = 0;
+  block_height_start_time = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -730,6 +735,17 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       return 2;
     }
+    if (strncmp(parameters[count],"--registration_mode",BUFFER_SIZE) == 0)
+    {
+      return 3;
+    }
+    if (strncmp(parameters[count],"--start_time",BUFFER_SIZE) == 0)
+    {
+      block_height_start_time = 1;
+      sscanf(parameters[count+1], "%d", &block_height_start_time_day);
+      sscanf(parameters[count+2], "%d", &block_height_start_time_hour);
+      sscanf(parameters[count+3], "%d", &block_height_start_time_minute);
+    }
     if (strncmp(parameters[count],"--delegates_website",BUFFER_SIZE) == 0)
     {
       delegates_website = 1;
@@ -1212,7 +1228,7 @@ void start_registration_mode(void)
     // start the reserve proofs timer
     pthread_create(&thread_id[2], NULL, &check_reserve_proofs_timer_thread, NULL);
     pthread_join(thread_id[2],NULL);
-    sleep(1);
+    sleep(60);
   }
   return;
 
@@ -1288,6 +1304,10 @@ int main(int parameters_count, char* parameters[])
   {
     get_delegates_data();
     goto disable_synchronizing_databases_and_starting_timers;
+  }
+  else if (set_parameters(parameters_count, parameters) == 3)
+  {
+    start_registration_mode();
   }
 
   get_delegates_data();

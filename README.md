@@ -204,6 +204,10 @@ It should only be used in specific circumstances.
 
 --disable_synchronizing_databases_and_starting_timers - Disables synchronizing the databases and starting the timers. Used for testing.
 
+--registration_mode - Runs the registration mode only
+
+--start_time "day" "hour" "minute" - Starts the current block height timer at a specific time. The day is the day of the month (1-31), the hour is the hour in UTC (0-23) the minute is the minute (0-59)
+
 --test_data_add - Add test data to the databases
 
 --test_data_remove - Remove test data from the databases

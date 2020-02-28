@@ -68,7 +68,11 @@ extern int network_functions_test_server_messages_settings; // 1 to display serv
 extern int test_settings; // 1 when the test are running, 0 if not
 extern int vrf_data_verify_count; // holds the amount of block verifiers signatures that are verified for the current network block
 extern int debug_settings; // 1 to show all incoming and outgoing message from the server
-int registration_settings; // 1 when the registration mode is running, 0 when it is not
+extern int registration_settings; // 1 when the registration mode is running, 0 when it is not
+extern int block_height_start_time; // 1 to start the current_block_height_timer_thread at a specific time, 0 if not
+extern int block_height_start_time_day; // The minute to start the current_block_height_timer_thread
+extern int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
+extern int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
 
 extern int delegates_website; // 1 if the running the delegates websites, 0 if not
 extern int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
