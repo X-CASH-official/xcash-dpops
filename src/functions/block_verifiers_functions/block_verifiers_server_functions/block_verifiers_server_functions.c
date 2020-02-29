@@ -293,7 +293,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   memset(data2,0,sizeof(data2));
 
   // verify the data
-  if (verify_data(MESSAGE,1) == 0 || memcmp(current_round_part_backup_node,"2",1) != 0 || main_network_data_node_create_block != 1)
+  if (verify_data(MESSAGE,1) == 0 || memcmp(current_round_part_backup_node,"1",1) != 0 || main_network_data_node_create_block != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not verify data");
   }
@@ -362,7 +362,7 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
   memset(data2,0,sizeof(data2));
 
   // verify the data
-  if (verify_data(MESSAGE,1) == 0 || memcmp(current_round_part_backup_node,"2",1) != 0 || main_network_data_node_create_block != 1)
+  if (verify_data(MESSAGE,1) == 0 || memcmp(current_round_part_backup_node,"1",1) != 0 || main_network_data_node_create_block != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK("Could not verify data");
   }

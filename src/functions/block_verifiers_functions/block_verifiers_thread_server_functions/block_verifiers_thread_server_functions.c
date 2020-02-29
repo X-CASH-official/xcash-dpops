@@ -778,7 +778,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       }
 
       // wait for the block verifiers to process the votes
-      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_INVALID_RESERVE_PROOFS_PART_2);
+      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2);
 
       color_print("Part 3 - Check if the valid amount of block verifiers had the same invalid reserve proofs","yellow");
 
@@ -812,14 +812,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     { 
       send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
     }
-    if (registration_settings == 1)
-    {
-      sleep(INVALID_RESERVE_PROOFS_SETTINGS_REGISTRATION_MODE);
-    }
-    else
-    {
-      sleep(INVALID_RESERVE_PROOFS_SETTINGS);
-    }    
+    sleep(INVALID_RESERVE_PROOFS_SETTINGS);
   }
 }
 

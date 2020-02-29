@@ -95,6 +95,19 @@ int start_new_round(void)
   memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash)); \
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
+  #define SYNCHRONIZE_DATABASES \
+  color_print("Syncing the block verifiers list","yellow"); \
+  sync_all_block_verifiers_list(); \
+  color_print("Syncing the reserve proofs database","yellow"); \
+  sync_reserve_proofs_database(2,""); \
+  color_print("Syncing the reserve bytes database","yellow"); \
+  sync_reserve_bytes_database(2,1,""); \
+  color_print("Syncing the delegates database","yellow"); \
+  sync_delegates_database(2,""); \
+  color_print("Syncing the statistics database","yellow"); \
+  sync_statistics_database(2,""); \
+  color_print("Successfully synced all databases","yellow");
+
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
@@ -151,25 +164,30 @@ int start_new_round(void)
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
     memcpy(current_round_part_backup_node,"0",1);
 
+    color_print("Waiting for all network data nodes to sync the databases\n","blue");
+
+    // all network data nodes will sync and make sure they have the same database, before the block verifiers sync from them
+    if (network_data_node_settings == 1)
+    {
+      color_print("Your block verifier is a network data node, checking to make sure all network data nodes databases are synced","yellow");
+      sync_network_data_nodes_database();
+    }
+
+    sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);
+
     // wait for all block verifiers to sync the database
     color_print("Waiting for all block verifiers to sync the databases\n","blue");
 
-    // check if the block verifiers current reserve bytes database is synced
-    if (sync_check_reserve_bytes_database(1,2) == 2)
+    if (network_data_node_settings != 1)
     {
-      color_print("The database are not synced, syncing them","yellow");
-      check_if_databases_are_synced(3,1);
+      color_print("Your block verifier is not a network data node, checking to make sure the databases are synced","yellow");
+      SYNCHRONIZE_DATABASES;
     }
 
     if (calculate_main_nodes_roles() == 0)
     {
-      // sync the database and try again
-      check_if_databases_are_synced(3,1);
-      if (calculate_main_nodes_roles() == 0)
-      {
-        print_error_message(current_date_and_time,current_UTC_date_and_time,data);
-        START_NEW_ROUND_ERROR("Error calculating the next block producer.\nYour block verifier will wait until the next round\n");
-      }
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);
+      START_NEW_ROUND_ERROR("Error calculating the next block producer.\nYour block verifier will wait until the next round\n");
     }
     if (block_verifiers_create_block() == 0)
     {
@@ -180,6 +198,7 @@ int start_new_round(void)
 
   #undef START_NEW_ROUND_ERROR
   #undef RESET_VARIABLES
+  #undef SYNCHRONIZE_DATABASES
 }
 
 
@@ -480,7 +499,7 @@ int start_current_round_start_blocks(void)
   block_verifiers_send_data_socket((const char*)data);
 
   color_print("Waiting for the block producer to submit the block to the network\n","blue");
-  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
 
   // have the main network data node submit the block to the network  
   if (submit_block_template(data2) == 0)
@@ -552,7 +571,7 @@ int data_network_node_create_block_data(char *message)
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"2",1);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"1",1);
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1",99);
 
@@ -833,7 +852,7 @@ int data_network_node_create_block(void)
   main_network_data_node_create_block = 1;
 
   // wait for the block verifiers to process the votes
-  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,4);
+  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1));
 
   // set the current_round_part
   memset(current_round_part,0,sizeof(current_round_part));
@@ -841,7 +860,7 @@ int data_network_node_create_block(void)
 
   // set the current_round_part_backup_node
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-  memcpy(current_round_part_backup_node,"2",1);
+  memcpy(current_round_part_backup_node,"1",1);
 
   // check if the block verifier is the main network data node
   if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
@@ -897,7 +916,7 @@ int data_network_node_create_block(void)
 
     color_print("Waiting for the block producer to submit the block to the network\n","blue");
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
 
     // submit the block to the network
     if (submit_block_template(data2) == 0)
@@ -1422,19 +1441,12 @@ int block_verifiers_create_block_and_update_database(void)
   {
     BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the new block to the database");
   }
-
-  // while waiting for the block to be submitted, the network data nodes will make sure they are all synced with the same database data
-  if (network_data_node_settings == 1)
-  {
-    color_print("Your block verifier is a network data node, checking to make sure all network data nodes databases are synced","yellow");
-    sync_network_data_nodes_database();
-  }
   
   // start the reserve proofs timer
   pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
   pthread_detach(thread_id);
 
-  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
 
   // since the block is valid, it will get added to the network, let the block producer try to submit the block first, then loop through all of the network data nodes to make sure it was submitted
   if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
@@ -1606,17 +1618,6 @@ int block_verifiers_create_block(void)
   } \
   else if (memcmp(current_round_part_backup_node,"1",1) == 0) \
   { \
-    memset(current_round_part,0,sizeof(current_round_part)); \
-    memcpy(current_round_part,"1",1); \
-    memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"2",1); \
-    memcpy(data,"Restarting the round with backup block producer 2 for block ",60); \
-    memcpy(data+60,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
-    print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2); \
-    color_print("\n","white"); \
-  } \
-  else if (memcmp(current_round_part_backup_node,"2",1) == 0) \
-  { \
     return data_network_node_create_block(); \
   } \
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,0); \
@@ -1629,7 +1630,7 @@ int block_verifiers_create_block(void)
   main_network_data_node_create_block = 0;
   
   // wait for all block verifiers to sync
-  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,1);
+  sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_NETWORK_BLOCK_ROUND);
 
   if (get_previous_block_hash(previous_block_hash) == 0)
   {
@@ -1661,7 +1662,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_NETWORK_BLOCK_PART_2);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_NETWORK_BLOCK_PART_2);
 
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1737,7 +1738,7 @@ int block_verifiers_create_block(void)
     }
     
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_NETWORK_BLOCK_PART_3);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_NETWORK_BLOCK_PART_3);
 
 
 
@@ -1763,7 +1764,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_NETWORK_BLOCK_PART_4);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_NETWORK_BLOCK_PART_4);
 
 
 
@@ -1810,7 +1811,7 @@ int block_verifiers_create_block(void)
     }    
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,SEND_DATA_TIME_NETWORK_BLOCK_PART_4);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,SEND_DATA_TIME_SECONDS_NETWORK_BLOCK_PART_4);
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
@@ -1819,7 +1820,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_NETWORK_BLOCK_PART_5);
+    sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_NETWORK_BLOCK_PART_5);
 
     // process the vote results
     if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
