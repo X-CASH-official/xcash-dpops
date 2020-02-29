@@ -70,7 +70,7 @@ SYSTEMD_SERVICE_FILE_XCASH_WALLET=""
 CPU_THREADS=$(nproc)
 RAM=$(awk '/MemTotal/ { printf "%d \n", $2/1024/1024 }' /proc/meminfo)
 RAM_CPU_RATIO=$((RAM / CPU_THREADS))
-RAM_CPU_RATIO_ALL_CPU_THREADS=100
+RAM_CPU_RATIO_ALL_CPU_THREADS=4
 
 # Regex
 regex_XCASH_DPOPS_INSTALLATION_DIR="(^\/(.*?)\/$)|(^$)" # anything that starts with / and ends with / and does not contain a space

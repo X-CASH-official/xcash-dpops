@@ -77,9 +77,6 @@ void sync_network_data_nodes_database(void)
   sync_statistics_database(settings,""); \
   color_print("Successfully synced all databases","yellow");
 
-  // set the database to not accept any new data
-  //database_settings = 0;
-
   memset(data,0,sizeof(data));
 
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
@@ -124,7 +121,7 @@ void sync_network_data_nodes_database(void)
   }
 
   // wait for the network data nodes to process the data
-  sleep(10);
+  sleep(NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS);
 
   // check if there is a consensus between the databases and sync if the network data node is not in the majority
   for (count = 0, sync_network_data_nodes_database_count_total = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)

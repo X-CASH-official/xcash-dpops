@@ -418,8 +418,6 @@ int start_blocks_create_data(char* message, char* network_block_string)
   memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
 
-  sync_database_threads;
-
   // add the network block string to the database
   if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data2,1) == 0)
   {
@@ -784,8 +782,6 @@ int data_network_node_verify_block_data(char *message, char *network_block_strin
   memcpy(data2+strlen(data2),"\",\"reserve_bytes\":\"",19);
   memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
-
-  sync_database_threads;
 
   // add the network block string to the database
   memset(data3,0,sizeof(data3));
@@ -1430,8 +1426,6 @@ int block_verifiers_create_block_and_update_database(void)
   memcpy(data2+strlen(data2),"\",\"reserve_bytes\":\"",19);
   memcpy(data2+strlen(data2),VRF_data.block_blob,strnlen(VRF_data.block_blob,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
-
-  sync_database_threads;
 
   // add the network block string to the database
   get_reserve_bytes_database(count,0);

@@ -202,9 +202,6 @@ int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
   // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
 
-  // set the database to not accept any new data
-  database_settings = 0;
-
   // copy all of the reserve proofs to the reserve_proofs array
   for (count = 0; count < invalid_reserve_proofs.count; count++)
   {
@@ -730,8 +727,8 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     pointer_reset(invalid_reserve_proofs.public_address_voted_for[count]); \
     pointer_reset(invalid_reserve_proofs.reserve_proof[count]); \
   } \
-  invalid_reserve_proofs.count = 0; \
   database_settings = 1; \
+  invalid_reserve_proofs.count = 0; \
   pthread_cond_broadcast(&thread_settings_lock); \
   color_print("Stoping the check reserve proofs timer thread","yellow"); \
   fprintf(stderr,"\n"); \
@@ -756,6 +753,9 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4)
     {
+      // set the database to not accept data
+      database_settings = 0;
+
       color_print("Part 2 - Send all invalid reserve proofs to all block verifiers","yellow");
 
       // check if there was any invalid reserve proofs found
@@ -800,6 +800,9 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       {
         RESET_INVALID_RESERVE_PROOFS_DATA;
       }
+
+      // set the database to accept data
+      database_settings = 1;
       
       // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
       RESET_INVALID_RESERVE_PROOFS_DATA;

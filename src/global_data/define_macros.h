@@ -90,6 +90,7 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_CONNECTIONS 1000 // The maximum connections a node can have at one time
 #define BLOCK_VERIFIERS_SETTINGS 3 // The time in seconds to wait to send data to the block verifiers
 #define MAIN_NETWORK_DATA_NODE_SEND_BLOCK_SETTINGS 20 // The time in seconds that the main network data node waits for the block verifiers signatures
+#define NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS 10 // the time in seconds that the network data nodes wait to see if the database is synced
 #define CONNECTION_TIMEOUT_SETTINGS 1 // the time in seconds for a connection to be created
 #define SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS 3 // The time to wait for sending or receving socket data
 #define SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function and to sync any of the databases

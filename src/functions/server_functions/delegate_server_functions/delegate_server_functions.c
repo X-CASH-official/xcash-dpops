@@ -574,7 +574,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(data+strlen(data),"\"}",2);
 
   // add the delegate to the database
-  sync_database_threads;
   if (memcmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(delegate_name,"delegate_name_1",XCASH_WALLET_LENGTH) == 0 && memcmp(delegate_public_key,NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH) == 0)
   {
     if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data,1) == 0)
@@ -678,7 +677,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   }
 
   // remove the delegate from the database
-  sync_database_threads;
   if (delete_document_from_collection(database_name,DATABASE_COLLECTION,data,1) == 0)
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE_ERROR("The delegate could not be removed from the database");
@@ -828,8 +826,6 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   memcpy(data2+strlen(data2),"\":\"",3);
   memcpy(data2+strlen(data2),value,strnlen(value,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
-
-  sync_database_threads;
 
   // update the delegate in the database
   if (update_document_from_collection(database_name,DATABASE_COLLECTION,data,data2,1) == 0)

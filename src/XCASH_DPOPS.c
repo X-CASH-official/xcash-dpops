@@ -170,6 +170,7 @@ void initialize_data(void)
   debug_settings = 0;
   registration_settings = 0;
   block_height_start_time = 0;
+  database_settings = 1;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
