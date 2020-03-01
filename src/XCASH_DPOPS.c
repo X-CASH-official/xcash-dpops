@@ -868,6 +868,7 @@ int get_network_data_nodes_online_status(void)
   int number;
   int network_data_nodes_settings = 0;
   int network_data_nodes_sockets[NETWORK_DATA_NODES_AMOUNT];
+  char* str1;
 
   // define macros
   #define GET_NETWORK_DATA_NODES_ONLINE_STATUS_ERROR(message) \
@@ -929,9 +930,15 @@ int get_network_data_nodes_online_status(void)
     // convert the hostname if used, to an IP address
     memset(data,0,sizeof(data));
     memcpy(data,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data)));
-    string_replace(data,sizeof(data),"http://","");
-    string_replace(data,sizeof(data),"https://","");
-    string_replace(data,sizeof(data),"www.","");
+    str1 = string_replace(data,"http://","");
+    memset(data,0,strlen(data));
+    memcpy(data,str1,strnlen(str1,sizeof(data)));
+    str1 = string_replace(data,"https://","");
+    memset(data,0,strlen(data));
+    memcpy(data,str1,strnlen(str1,sizeof(data)));
+    str1 = string_replace(data,"www.","");
+    memset(data,0,strlen(data));
+    memcpy(data,str1,strnlen(str1,sizeof(data)));
     if (getaddrinfo(data, data2, &serv_addr, &settings) != 0)
     {  
       freeaddrinfo(settings);

@@ -860,57 +860,61 @@ memset(result_test,0,sizeof(result_test)); \
 memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1); \
 if (STRING_REPLACE_SETTINGS == 1) \
 { \
-if (sign_data(result_test) == 1 && string_replace(result_test,sizeof(result_test),CURRENT_STRING,NEW_STRING) == 1 && send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
-{ \
-  sleep(5); \
-  for (count = 0; count < error_message.total; count++) \
-{ \
-  if (strncmp(error_message.data[count],TEST,BUFFER_SIZE) == 0) \
+  if (sign_data(result_test) == 1) \
   { \
-    break; \
-  } \
-} \
-if (count != error_message.total) \
-{ \
-    fprintf(stderr,"\033[1;32mPASSED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
-    count_test++; \
+    str1 = string_replace(result_test,CURRENT_STRING,NEW_STRING); \
+    memset(result_test,0,strlen(result_test)); \
+    memcpy(result_test,str1,strnlen(str1,sizeof(result_test))); \
+    send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS); \
+    sleep(5); \
+    for (count = 0; count < error_message.total; count++) \
+    { \
+      if (strncmp(error_message.data[count],TEST,BUFFER_SIZE) == 0) \
+      { \
+        break; \
+      } \
+    } \
+    if (count != error_message.total) \
+    { \
+      fprintf(stderr,"\033[1;32mPASSED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
+      count_test++; \
+    } \
+    else \
+    { \
+      fprintf(stderr,"\033[1;31mFAILED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
+    } \
   } \
   else \
   { \
     fprintf(stderr,"\033[1;31mFAILED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
   } \
-} \
-else \
-{ \
-  fprintf(stderr,"\033[1;31mFAILED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
-} \
 } \
 else \
 { \
   if (sign_data(result_test) == 1 && send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1) \
-{ \
-  sleep(5); \
-  for (count = 0; count < error_message.total; count++) \
-{ \
-  if (strncmp(error_message.data[count],TEST,BUFFER_SIZE) == 0) \
   { \
-    break; \
-  } \
-} \
-if (count != error_message.total) \
-{ \
-    fprintf(stderr,"\033[1;32mPASSED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
-    count_test++; \
+    sleep(5); \
+    for (count = 0; count < error_message.total; count++) \
+    { \
+      if (strncmp(error_message.data[count],TEST,BUFFER_SIZE) == 0) \
+      { \
+        break; \
+      } \
+    } \
+    if (count != error_message.total) \
+    { \
+      fprintf(stderr,"\033[1;32mPASSED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
+      count_test++; \
+    } \
+    else \
+    { \
+      fprintf(stderr,"\033[1;31mFAILED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
+    } \
   } \
   else \
   { \
     fprintf(stderr,"\033[1;31mFAILED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
   } \
-} \
-else \
-{ \
-  fprintf(stderr,"\033[1;31mFAILED! Test for %s checking for %s\033[0m\n",FUNCTION_NAME,TEST); \
-} \
 } \
 RESET_ERROR_MESSAGES;
 

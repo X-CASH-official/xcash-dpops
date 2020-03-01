@@ -442,6 +442,7 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   bson_error_t error;
   bson_t* document = NULL; 
   int count = 0;
+  char* str1;
 
   // define macros
   #define database_reset_all \
@@ -528,7 +529,9 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
     memcpy(data,message,strnlen(message,BUFFER_SIZE));
     bson_free(message);
     
-    string_replace(data,BUFFER_SIZE," }, ",", ");
+    str1 = string_replace(data," }, ",", ");
+    memset(data,0,strlen(data));
+    memcpy(data,str1,strnlen(str1,sizeof(data)));   
 
     count = 1;
   }
@@ -594,6 +597,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   bson_t* document_options = NULL;
   size_t count = 1;
   size_t counter = 0;
+  char* str1;
 
   // define macros
   #define database_reset_all \
@@ -688,7 +692,9 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
       memset(data,0,strnlen(data,BUFFER_SIZE));
       memcpy(data,message,strnlen(message,BUFFER_SIZE));
       bson_free(message); 
-      string_replace(data,BUFFER_SIZE," }, ",", ");
+      str1 = string_replace(data," }, ",", ");
+      memset(data,0,strlen(data));
+      memcpy(data,str1,strnlen(str1,sizeof(data)));      
 
       // parse the json data    
       if (database_multiple_documents_parse_json_data(data,result,counter) == 0)

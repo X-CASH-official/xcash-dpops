@@ -763,6 +763,7 @@ int get_delegates_online_status(void)
   int number;
   int total_delegates = 0;
   int total_delegates_online = 0;
+  char* str1;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -840,9 +841,15 @@ int get_delegates_online_status(void)
     // convert the hostname if used, to an IP address
     memset(data,0,sizeof(data));
     memcpy(data,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(data)));
-    string_replace(data,sizeof(data),"http://","");
-    string_replace(data,sizeof(data),"https://","");
-    string_replace(data,sizeof(data),"www.","");
+    str1 = string_replace(data,"http://","");
+    memset(data,0,strlen(data));
+    memcpy(data,str1,strnlen(str1,sizeof(data)));
+    str1 = string_replace(data,"https://","");
+    memset(data,0,strlen(data));
+    memcpy(data,str1,strnlen(str1,sizeof(data)));
+    str1 = string_replace(data,"www.","");
+    memset(data,0,strlen(data));
+    memcpy(data,str1,strnlen(str1,sizeof(data)));
     if (getaddrinfo(data, data2, &serv_addr, &settings) != 0)
     {  
       freeaddrinfo(settings);

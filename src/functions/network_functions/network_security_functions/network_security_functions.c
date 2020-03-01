@@ -35,6 +35,7 @@ Return: 0 if an error has occured, 1 if successfull
 
 int sign_data(char *message)
 {
+  color_print("starting sign data","green");
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
@@ -47,6 +48,7 @@ int sign_data(char *message)
   char beta_string[VRF_BETA_LENGTH+1];
   char* result = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   char* string = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
+  char* str1;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
@@ -109,11 +111,13 @@ int sign_data(char *message)
   memcpy(result+strlen(result),"\",\r\n}",5);
   pthread_rwlock_unlock(&rwlock);
 
+  color_print("string_replace start","green");
+
   // format the message
-  if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
-  {
-    SIGN_DATA_ERROR("Could not create the message");
-  }
+  str1 = string_replace(result,"\"","\\\"");
+  memset(result,0,strlen(result));
+  memcpy(result,str1,strnlen(str1,MAXIMUM_AMOUNT));
+  color_print("string_replace end","green");
   
   if (strstr(message,"XCASH_PROOF_OF_STAKE_TEST_DATA_2") != NULL || (strstr(message,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST") == NULL && strstr(message,"XCASH_PROOF_OF_STAKE_TEST_DATA") == NULL && strstr(message,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") == NULL))
   {
@@ -218,6 +222,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   char public_key[VRF_PUBLIC_KEY_LENGTH+1];
   char proof[VRF_PROOF_LENGTH+1];
   char beta_string[VRF_BETA_LENGTH+1];
+  char* str1;
   unsigned char public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
   unsigned char proof_data[crypto_vrf_PROOFBYTES+1];
   unsigned char beta_string_data[crypto_vrf_OUTPUTBYTES+1];
@@ -456,20 +461,18 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       message_length = strlen(MESSAGE) - 320;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
-      if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
-      {
-        VERIFY_DATA_ERROR("Invalid message");
-      }   
+      str1 = string_replace(result,"\"","\\\"");
+      memset(result,0,strlen(result));
+      memcpy(result,str1,strnlen(str1,MAXIMUM_AMOUNT));
     }
     else
     {      
       message_length = strlen(MESSAGE) - 125;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
-      if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
-      {
-        VERIFY_DATA_ERROR("Invalid message");
-      }   
+      str1 = string_replace(result,"\"","\\\"");
+      memset(result,0,strlen(result));
+      memcpy(result,str1,strnlen(str1,MAXIMUM_AMOUNT));
     }
   }
   else
@@ -479,20 +482,18 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       message_length = strlen(MESSAGE) - 320;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
-      if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
-      {
-        VERIFY_DATA_ERROR("Invalid message");
-      }   
+      str1 = string_replace(result,"\"","\\\"");
+      memset(result,0,strlen(result));
+      memcpy(result,str1,strnlen(str1,MAXIMUM_AMOUNT));   
     }
     else
     {      
       message_length = strlen(MESSAGE) - 125;
       memcpy(result,MESSAGE,message_length);
       memcpy(result+message_length,"}",1);  
-      if (string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"") == 0)
-      {
-        VERIFY_DATA_ERROR("Invalid message");
-      }   
+      str1 = string_replace(result,"\"","\\\"");
+      memset(result,0,strlen(result));
+      memcpy(result,str1,strnlen(str1,MAXIMUM_AMOUNT));  
     }
   }
 

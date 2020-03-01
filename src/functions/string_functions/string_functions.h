@@ -16,7 +16,7 @@ int create_json_data_from_votes_array(const struct votes* votes, char *result, c
 size_t string_count(const char* DATA, const char* STRING);
 int parse_http_response(char *result);
 int check_for_invalid_strings(const char* MESSAGE);
-int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1, const char* STR2);
+char* string_replace (const char *str, const char *sub, const char *rep);
 int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM);
 int random_string(char *result, const size_t LENGTH);
 #endif

@@ -32,6 +32,7 @@ Return: The number of passed block_verifiers_synchronize_server_functions test
 int block_verifiers_synchronize_server_functions_test(void)
 {
   // Variables
+  char* str1;
   int count;
 
   // define macros

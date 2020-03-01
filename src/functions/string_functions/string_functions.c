@@ -104,16 +104,35 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     // remove all the formating from the result, if it is not a database document
     if (strstr(message,"username") == NULL && strstr(message,"total_vote_count") == NULL && strstr(message,"public_address_created_reserve_proof") == NULL && strstr(message,"reserve_bytes_data_hash") == NULL)
     {
-      string_replace(message,RESULT_TOTAL_LENGTH, "\"", "");
-      string_replace(message,RESULT_TOTAL_LENGTH, ",", "");
-      string_replace(message,RESULT_TOTAL_LENGTH, "[", "");
-      string_replace(message,RESULT_TOTAL_LENGTH, "]", "");
-      string_replace(message,RESULT_TOTAL_LENGTH, "{", "");
-      string_replace(message,RESULT_TOTAL_LENGTH, "}", "");
+      str1 = string_replace(message,"\"","");
+      memset(message,0,strlen(message));
+      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
+
+      str1 = string_replace(message,",","");
+      memset(message,0,strlen(message));
+      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
+
+      str1 = string_replace(message,"[","");
+      memset(message,0,strlen(message));
+      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
+
+      str1 = string_replace(message,"]","");
+      memset(message,0,strlen(message));
+      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
+
+      str1 = string_replace(message,"{","");
+      memset(message,0,strlen(message));
+      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
+
+      str1 = string_replace(message,"}","");
+      memset(message,0,strlen(message));
+      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
     }
     else
     {
-      string_replace(message,RESULT_TOTAL_LENGTH,"\"{\"","{\"");
+      str1 = string_replace(message,"\"{\"","{\"");
+      memset(message,0,strlen(message));
+      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
     }
     memcpy(result,message,strnlen(message,RESULT_TOTAL_LENGTH));
   }
@@ -529,124 +548,43 @@ int parse_http_response(char *result)
 Name: string_replace
 Description: String replace
 Parameters:
-  data - The string to replace the data
+  str - The string to replace the data
   DATA_TOTAL_LENGTH - The maximum size of data
-  STR1 - The string to be replaced
-  STR2 - The string to replace the other string
-Return: 0 if an error has occured, 1 if successfull
+  sub - The string to be replaced
+  rep - The string to replace the other string
+Return: The result string
 -----------------------------------------------------------------------------------------------------------
 */
 
-int string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1, const char* STR2)
+char* string_replace(const char *str, const char *sub, const char *rep)
 {  
-  // Constants
-  const size_t MAXIMUM_AMOUNT = DATA_TOTAL_LENGTH >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : DATA_TOTAL_LENGTH+BUFFER_SIZE;
-
-  // check if the str to replace exist in the string
-  if (strstr(data,STR1) != NULL)
-  { 
-    // Variables
-    char buffer[1024];
-    char* datacopy = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
-    char* data2 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
-    char* string;
-    time_t current_date_and_time;
-    struct tm current_UTC_date_and_time;
-    size_t data_length;
-    size_t str2_length;
-    size_t start;
-    size_t total = 0;
-    size_t count = 0; 
-
-    // define macros
-    #define REPLACE_STRING "|REPLACE_STRING|" 
-    #define pointer_reset_all \
-    free(datacopy); \
-    datacopy = NULL; \
-    free(data2); \
-    data2 = NULL;
-
-    // check if the memory needed was allocated on the heap successfully
-    if (datacopy == NULL || data2 == NULL)
-    {
-      if (datacopy != NULL)
-      {
-        pointer_reset(datacopy);
-      }
-      if (data2 != NULL)
-      {
-        pointer_reset(data2);
-      }
-      memcpy(error_message.function[error_message.total],"string_replace",14);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-      exit(0);
-    } 
-
-    // copy the string to data2
-    memcpy(data2,data,strnlen(data,MAXIMUM_AMOUNT));
-
-    // get the occurences of STR1   
-    total = string_count(data2,STR1);
-
-    // replace the string with the REPLACE_STRING
-    for (count = 0; count < total; count++)
-    {
-      // reset the variables
-      memset(datacopy,0,strlen(datacopy));
-      data_length = strnlen(data2,MAXIMUM_AMOUNT);
-      start = data_length - strnlen(strstr(data2,STR1),MAXIMUM_AMOUNT);
-   
-      // get a pointer to where the rest of the data2 string should be copied to
-      string = strstr(data2,STR1)+strnlen(STR1,BUFFER_SIZE);
-           
-      // copy the bytes before STR1 to the new string
-      memcpy(datacopy,data2,start);
-      // copy STR2 to the new string
-      memcpy(datacopy+strlen(datacopy),REPLACE_STRING,sizeof(REPLACE_STRING)-1);
-      // copy the bytes after STR1 to the new string
-      memcpy(datacopy+strlen(datacopy),string,strnlen(string,MAXIMUM_AMOUNT));
-      // copy the new string to the string pointer
-      memset(data2,0,data_length);
-      memcpy(data2,datacopy,strlen(datacopy));
+    size_t slen = strlen(sub);
+    size_t rlen = strlen(rep);
+    size_t size = strlen(str) + 1;
+    size_t diff = rlen - slen;
+    size_t capacity = (diff>0 && slen) ? 2 * size : size;
+    char *buf = malloc(capacity);
+    char *find, *b = buf;
+    
+    if (b == NULL) return NULL;
+    if (slen == 0) return memcpy(b, str, size);
+  
+    while((find = strstr(str, sub))) {
+        if ((size += diff) > capacity) {
+            char *ptr = realloc(buf, capacity = 2 * size);
+            if (ptr == NULL) {free(buf); return NULL;}
+            b = ptr + (b - buf);
+            buf = ptr;
+        }
+        memcpy(b, str, find - str); /* copy up to occurrence */
+        b += find - str;
+        memcpy(b, rep, rlen);       /* add replacement */
+        b += rlen;
+        str = find + slen;
     }
-    // replace the REPLACE_STRING with STR2
-    for (count = 0; count < total; count++)
-    {
-      // reset the variables
-      memset(datacopy,0,strlen(datacopy));
-      data_length = strnlen(data2,MAXIMUM_AMOUNT);
-      str2_length = strnlen(STR2,MAXIMUM_AMOUNT);
-      start = data_length - strnlen(strstr(data2,REPLACE_STRING),MAXIMUM_AMOUNT);
-   
-      // get a pointer to where the rest of the data string should be copied to
-      string = strstr(data2,REPLACE_STRING)+(sizeof(REPLACE_STRING)-1);
-           
-      // copy the bytes before REPLACE_STRING to the new string
-      memcpy(datacopy,data2,start);
-      // copy STR2 to the new string
-      memcpy(datacopy+start,STR2,str2_length);
-      // copy the bytes after REPLACE_STRING to the new string
-      memcpy(datacopy+start+str2_length,string,strnlen(string,MAXIMUM_AMOUNT));
-      // copy the new string to the string pointer
-      memset(data2,0,data_length);
-      memcpy(data2,datacopy,strlen(datacopy));
-    }
-
-    // copy data2 to the string
-    memset(data,0,strlen(data));
-    memcpy(data,data2,strnlen(data2,DATA_TOTAL_LENGTH));
-    pointer_reset_all;
-    return 1;
-  }
-  else
-  {
-    return 0;
-  } 
-
-  #undef REPLACE_STRING
-  #undef pointer_reset_all
+    memcpy(b, str, size - (b - buf));
+    b = realloc(buf, size);         /* trim to size */
+    return b ? b : buf;
 }
 
 

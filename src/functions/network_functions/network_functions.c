@@ -72,6 +72,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
   int network_socket;
+  char* str1;
 
   // define macros
   #define SEND_HTTP_REQUEST_ERROR(data_settings,socket_settings) \
@@ -175,9 +176,15 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // convert the hostname if used, to an IP address
   memset(str,0,sizeof(str));
   memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
+  str1 = string_replace(str,"http://","");
+  memset(str,0,strlen(str));
+  memcpy(str,str1,strnlen(str1,sizeof(str)));
+  str1 = string_replace(str,"https://","");
+  memset(str,0,strlen(str));
+  memcpy(str,str1,strnlen(str1,sizeof(str)));
+  str1 = string_replace(str,"www.","");
+  memset(str,0,strlen(str));
+  memcpy(str,str1,strnlen(str1,sizeof(str)));
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
     SEND_HTTP_REQUEST_ERROR("Error invalid hostname",0);
@@ -305,6 +312,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
   int network_socket;
+  char* str1;
 
   // define macros
   #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR(data_settings,socket_settings) \
@@ -367,9 +375,15 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   // convert the hostname if used, to an IP address
   memset(str,0,sizeof(str));
   memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
+  str1 = string_replace(str,"http://","");
+  memset(str,0,strlen(str));
+  memcpy(str,str1,strnlen(str1,sizeof(str)));
+  str1 = string_replace(str,"https://","");
+  memset(str,0,strlen(str));
+  memcpy(str,str1,strnlen(str1,sizeof(str)));
+  str1 = string_replace(str,"www.","");
+  memset(str,0,strlen(str));
+  memcpy(str,str1,strnlen(str1,sizeof(str)));
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error invalid hostname",0);
@@ -477,6 +491,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
+  char* str1;
 
   // define macros
   #define SEND_DATA_SOCKET_ERROR(message) \
@@ -525,9 +540,16 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   // convert the hostname if used, to an IP address
   memset(str,0,sizeof(str));
   memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
+
+  str1 = string_replace(str,"http://","");
+  memset(str,0,strlen(str));
+  memcpy(str,str1,strnlen(str1,sizeof(str)));
+  str1 = string_replace(str,"https://","");
+  memset(str,0,strlen(str));
+  memcpy(str,str1,strnlen(str1,sizeof(str)));
+  str1 = string_replace(str,"www.","");
+  memset(str,0,strlen(str));
+  memcpy(str,str1,strnlen(str1,sizeof(str)));
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {     
     memset(str,0,sizeof(str));
@@ -784,12 +806,10 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
     if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) == NULL))
     {
       // there is data, but this is not the final data
-      color_print("got data","green");
       memcpy(message+strlen(message),buffer,strlen(buffer));
     }
     if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) != NULL || (strstr(buffer,HTTP_SOCKET_END_STRING) != NULL && (strstr(message,"Server: XCASH_DPOPS") != NULL || strstr(buffer,"Server: XCASH_DPOPS") != NULL)) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) != NULL) ) )
     {
-      color_print("final data","green");
       // there is data, and this is the final data
       memcpy(message+strlen(message),buffer,strlen(buffer));
 

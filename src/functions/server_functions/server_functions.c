@@ -593,6 +593,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   char data2[BUFFER_SIZE];
   char buffer[BUFFER_SIZE];
   long file_size;
+  char* str1;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR \
@@ -608,8 +609,12 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   memcpy(buffer,&MESSAGE[(strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5],(strlen(MESSAGE) - strlen(strstr(MESSAGE," HTTP/"))) - ((strlen(MESSAGE) - strlen(strstr(MESSAGE,"GET /")))+5));
  
   // remove any invalid request from the url
-  string_replace(buffer,sizeof(buffer),"../","");
-  string_replace(buffer,sizeof(buffer),"%",""); 
+  str1 = string_replace(buffer,"../","");
+  memset(buffer,0,strlen(buffer));
+  memcpy(buffer,str1,strnlen(str1,sizeof(buffer)));
+  str1 = string_replace(buffer,"%",""); 
+  memset(buffer,0,strlen(buffer));
+  memcpy(buffer,str1,strnlen(str1,sizeof(buffer)));
   
   if (shared_delegates_website == 1)
   {

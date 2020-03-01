@@ -1019,6 +1019,7 @@ int add_data_hash_to_network_block_string(const char* NETWORK_BLOCK_STRING, char
   char data2[DATA_HASH_LENGTH+1];
   int count;
   int count2;
+  char* str1;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1044,13 +1045,9 @@ int add_data_hash_to_network_block_string(const char* NETWORK_BLOCK_STRING, char
   memcpy(network_block_string_data_hash,NETWORK_BLOCK_STRING,strnlen(NETWORK_BLOCK_STRING,BUFFER_SIZE));
   
   // replace the reserve bytes with the network block string data hash
-  if (string_replace(network_block_string_data_hash,BUFFER_SIZE,data,data2) == 0)
-  {
-    memcpy(error_message.function[error_message.total],"add_data_hash_to_network_block_string",37);
-    memcpy(error_message.data[error_message.total],"Could not add the data hash to the network block string",55);
-    error_message.total++;
-    return 0; 
-  }
+  str1 = string_replace(network_block_string_data_hash,data,data2);
+  memset(network_block_string_data_hash,0,strlen(network_block_string_data_hash));
+  memcpy(network_block_string_data_hash,str1,strnlen(str1,BUFFER_SIZE));
   return 1;
 }
 
@@ -1119,6 +1116,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   size_t count2;
   size_t count3;
   size_t number;
+  char* str1;
 
   // threads
   pthread_t thread_id[VRF_DATA_VERIFY_MAXIMUM_THREADS]; 
@@ -1434,8 +1432,10 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       }  
 
       // replace the main network data nodes block validation signature with the GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA
-      string_replace(network_block_string,BUFFER_SIZE,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[0],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA);
-
+      str1 = string_replace(network_block_string,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[0],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA);
+      memset(network_block_string,0,strlen(network_block_string));
+      memcpy(network_block_string,str1,strnlen(str1,sizeof(network_block_string)));
+ 
       for (count2 = 0; (int)count2 < BLOCK_VERIFIERS_TOTAL; count2++)
       {
         if (memcmp(current_block_verifiers_list.block_verifiers_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,sizeof(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS)-1) == 0)
@@ -1475,7 +1475,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
       // replace the block validation signatures with the GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA
       for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
       { 
-        string_replace(network_block_string,BUFFER_SIZE,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA);
+        str1 = string_replace(network_block_string,blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA);
+        memset(network_block_string,0,strlen(network_block_string));
+        memcpy(network_block_string,str1,strnlen(str1,sizeof(network_block_string)));
       }
       
       // check if at least 67 of the next block verifiers in the previous block signed the data in the current block

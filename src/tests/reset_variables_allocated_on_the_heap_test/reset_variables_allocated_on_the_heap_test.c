@@ -69,6 +69,7 @@ size_t get_program_memory_usage(const char* PROCESS_ID_FILE)
   FILE* file;
   char* data = (char*)calloc(BUFFER_SIZE,sizeof(char));
   size_t programs_memory_usage = 0;
+  char* str1;
 
   if (data == NULL)
   {
@@ -83,11 +84,21 @@ size_t get_program_memory_usage(const char* PROCESS_ID_FILE)
     {
       if (strstr(data,"VmSize:") != NULL)
       {
-        string_replace(data,BUFFER_SIZE,"VmSize:","");
-        string_replace(data,BUFFER_SIZE,"\t","");
-        string_replace(data,BUFFER_SIZE," ","");
-        string_replace(data,BUFFER_SIZE,"kB","");
-        string_replace(data,BUFFER_SIZE,"\n","");
+        str1 = string_replace(data,"VmSize:","");
+        memset(data,0,strlen(data));
+        memcpy(data,str1,strnlen(str1,BUFFER_SIZE));
+        str1 = string_replace(data,"\t","");
+        memset(data,0,strlen(data));
+        memcpy(data,str1,strnlen(str1,BUFFER_SIZE));
+        str1 = string_replace(data," ","");
+        memset(data,0,strlen(data));
+        memcpy(data,str1,strnlen(str1,BUFFER_SIZE));
+        str1 = string_replace(data,"kB","");
+        memset(data,0,strlen(data));
+        memcpy(data,str1,strnlen(str1,BUFFER_SIZE));
+        str1 = string_replace(data,"\n","");
+        memset(data,0,strlen(data));
+        memcpy(data,str1,strnlen(str1,BUFFER_SIZE));
         sscanf(data, "%zu", &programs_memory_usage);
       }
       memset(data,0,strnlen(data,BUFFER_SIZE));
@@ -140,6 +151,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   unsigned char vrf_beta[crypto_vrf_OUTPUTBYTES];
   char* transactions[5];
   size_t block_height;
+  char* str1;
 
   // define macros
   #define GET_PUBLIC_ADDRESS_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_address\"}"
@@ -433,8 +445,10 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   #define STRING_REPLACE_CODE \
   memset(result_test,0,sizeof(result_test)); \
-  memcpy(result_test,"{\r\n \"MESSAGE\": \"string_replace_test\",\r\n}",40);
-  string_replace(result_test,sizeof(result_test),"string_replace_test","string_replace");
+  memcpy(result_test,"{\r\n \"MESSAGE\": \"string_replace_test\",\r\n}",40); \
+  str1 = string_replace(result_test,"string_replace_test","string_replace"); \
+  memset(result_test,0,strlen(result_test)); \
+  memcpy(result_test,str1,strnlen(str1,sizeof(result_test)));
 
   #define CREATE_RANDOM_VRF_KEYS_CODE create_random_VRF_keys((unsigned char*)vrf_public_key,(unsigned char*)vrf_secret_key);
 
