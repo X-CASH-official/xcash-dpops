@@ -107,7 +107,7 @@ Bandwidth Speed: 500 Mbps
 
 
 ## Synchronizing the Time
-XCASH_DPOPS uses the system time to be able to know what part of the round it is and what data to send or receive. It is important that your system time is accurate otherwise the program will most likely not work. All XCASH_DPOPS delegates must be synced within 2 seconds of each other. A check is included when you start the program to make sure that your system time is within two seconds of the main network data node, but it is important to check your server manually to see if your time is synced.
+XCASH_DPOPS uses the system time to be able to know what part of the round it is and what data to send or receive. It is important that your system time is accurate otherwise the program will most likely not work. All XCASH_DPOPS delegates must be synced within 3 seconds of each other. A check is included when you start the program to make sure that your system time is within 3 seconds of the main network data node, but it is important to check your server manually to see if your time is synced.
 
 Note you can use any timezone you want, the timezones do not affect the synchronization.
 
