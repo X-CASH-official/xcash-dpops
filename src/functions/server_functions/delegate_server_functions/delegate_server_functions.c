@@ -446,6 +446,8 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   char delegate_public_key[VRF_PUBLIC_KEY_LENGTH+1];
   unsigned char delegate_public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
   char delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count;
   int count2;
 
@@ -464,6 +466,16 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memset(delegate_public_key,0,sizeof(delegate_public_key));
   memset(delegate_public_key_data,0,sizeof(delegate_public_key_data));
   memset(delegates_IP_address,0,sizeof(delegates_IP_address));
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+  // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME < START_TIME_MINUTE_NETWORK_BLOCK_ROUND)
+  {
+    send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are after the first two minutes of each round",0,0,"");
+    return 0;
+  }
 
   // check if the maximum amount of delegates has been registered
   if (count_all_documents_in_collection(database_name,DATABASE_COLLECTION,1) >= MAXIMUM_AMOUNT_OF_DELEGATES)
@@ -615,6 +627,8 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char delegate_public_address[XCASH_WALLET_LENGTH+1];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
 
@@ -630,6 +644,16 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(delegate_public_address,0,sizeof(delegate_public_address));
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+  // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME < START_TIME_MINUTE_NETWORK_BLOCK_ROUND)
+  {
+    send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are after the first two minutes of each round",0,0,"");
+    return 0;
+  }
 
   // verify the message
   if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != REMOVE_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
@@ -755,6 +779,8 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   unsigned char delegate_public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
   char item[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   char value[4096];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count;
   int count2;
 
@@ -773,6 +799,16 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   memset(delegate_public_key_data,0,sizeof(delegate_public_key_data));
   memset(item,0,sizeof(item));
   memset(value,0,sizeof(value));
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+  // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME < START_TIME_MINUTE_NETWORK_BLOCK_ROUND)
+  {
+    send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are after the first two minutes of each round",0,0,"");
+    return 0;
+  }
 
   // verify the message
   if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != UPDATE_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
