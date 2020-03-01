@@ -14,6 +14,7 @@
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
+#include "define_macros_test.h"
 #include "structures.h"
 #include "variables.h"
 
@@ -24,6 +25,7 @@
 #include "block_verifiers_synchronize_functions.h"
 #include "block_verifiers_thread_server_functions.h"
 #include "block_verifiers_update_functions.h"
+#include "count_database_functions.h"
 #include "insert_database_functions.h"
 #include "read_database_functions.h"
 #include "update_database_functions.h"
@@ -165,6 +167,17 @@ int start_new_round(void)
 
     // wait for all block verifiers to sync the database
     color_print("Waiting for all block verifiers to sync the databases\n","blue");
+
+    // check if it should create the default database data
+    memset(data,0,sizeof(data));
+    if ((read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","username",data,0) == 0) || (read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","username",data,0) == 1 && count_all_documents_in_collection(database_name,"delegates",1) < NETWORK_DATA_NODES_AMOUNT))
+    {
+      delete_collection_from_database(database_name,"reserve_proofs_1",1);
+      delete_collection_from_database(database_name,"delegates",1);
+      delete_collection_from_database(database_name,"statistics",1);
+      RESET_ERROR_MESSAGES;
+      INITIALIZE_DATABASE_DATA(0);
+    }
 
     if (network_data_node_settings != 1)
     {

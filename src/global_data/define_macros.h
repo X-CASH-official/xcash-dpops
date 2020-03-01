@@ -600,7 +600,7 @@ insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_C
 insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_5_FOR_5_BLOCK_VERIFIERS,0); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0); \
 } \
-sleep(10);
+sleep(BLOCK_VERIFIERS_SETTINGS);
 
 #define INITIALIZE_NETWORK_DATA_NODES \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[0],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH); \
