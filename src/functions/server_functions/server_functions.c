@@ -253,7 +253,7 @@ int socket_thread(int client_socket)
   snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
 
   // receive the data
-  if (receive_data(client_socket,buffer,SOCKET_END_STRING,1,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) < 2)
+  if (receive_data(client_socket,buffer,MAXIMUM_BUFFER_SIZE,1,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) < 2)
   {
     pointer_reset(buffer);
     return 0;

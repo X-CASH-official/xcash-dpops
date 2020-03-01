@@ -365,7 +365,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data_test,0,sizeof(data_test)); \
   memcpy(data_test,SEND_DATA_SOCKET_TEST_MESSAGE,sizeof(SEND_DATA_SOCKET_TEST_MESSAGE)-1); \
   sign_data(data_test); \
-  send_and_receive_data_socket(result_test,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,(const char*)data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,(const char*)data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
 
   #define SIGN_DATA_USING_WALLET_SIGNING_KEY_CODE \
   memset(result_test,0,sizeof(result_test)); \

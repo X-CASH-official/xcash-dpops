@@ -824,6 +824,8 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
+  color_print(MESSAGE,"yellow");
+
   // define macros
   #define pointer_reset_all \
   free(data); \

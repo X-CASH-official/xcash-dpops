@@ -238,7 +238,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   }
    
   // get the result
-  if (receive_data(network_socket,message,"{",1,DATA_TIMEOUT_SETTINGS) < 2)
+  if (receive_data(network_socket,message,MAXIMUM_AMOUNT,1,DATA_TIMEOUT_SETTINGS) < 2)
   {
     SEND_HTTP_REQUEST_ERROR("Error receiving data from host",1);
   }
@@ -277,6 +277,7 @@ Name: send_and_receive_data_socket
 Description: Send a message through a socket and receives data
 Parameters:
   result - The result from the host
+  RESULT_LENGTH - The maximum size of result
   HOST - The host to send the message to
   PORT - The port to send the message through
   DATA - The message
@@ -285,7 +286,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_and_receive_data_socket(char *result, const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS)
+int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS)
 { 
   // Constants
   const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0}; 
@@ -432,7 +433,7 @@ int send_and_receive_data_socket(char *result, const char* HOST, const int PORT,
     
   // get the result
   memset(result,0,strlen(result));
-  if (receive_data(network_socket,result,SOCKET_END_STRING,1,DATA_TIMEOUT_SETTINGS) < 2)
+  if (receive_data(network_socket,result,RESULT_LENGTH,1,DATA_TIMEOUT_SETTINGS) < 2)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host",1);
   }
@@ -758,68 +759,53 @@ Description: Receives data from a socket
 Parameters:
   SOCKET - The socket
   message - Where the data is stored
-  STRING - The end string to know the socket is done receving data
+  LENGTH - The maximum size of message
   SOCKET_TIMEOUT_SETTINGS - 1 if a socket_timeout is needed, otherwise 0
   SOCKET_TIMEOUT - The length of the socket_timeout
 Return: 0 if an error would have occured from a buffer overflow, 1 if a timeout has occured, 2 if successful
 -----------------------------------------------------------------------------------------------------------
 */
 
-int receive_data(const int SOCKET, char *message, const char* STRING, const int RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS, const int RECEIVE_DATA_SOCKET_TIMEOUT)
+int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS, const int RECEIVE_DATA_SOCKET_TIMEOUT)
 {
   // Variables
-  int count = 0;
-  char* buffer = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char buffer[BUFFER_SIZE];
+  time_t start = time(NULL);
 
-  // define macros
-  #define pointer_reset_all \
-  free(buffer); \
-  buffer = NULL; \
-  free(data); \
-  data = NULL;
+  memset(buffer,0,sizeof(buffer));
+  memset(message,0,strlen(message));
 
-  memset(message, 0, strlen(message)); 
-  memset(data,0,strlen(data));
   for (;;)
   { 
-    memset(buffer, 0, strlen(buffer));
-    // check the size of the data that were about to receive. If the total data plus the data were about to receive is over 50 MB then dont accept it, since it will cause a buffer overflow
-    if (((int)recvfrom(SOCKET, buffer, MAXIMUM_BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE - (int)strlen(data) && (int)strlen(data) > 0) || ((int)recvfrom(SOCKET, buffer, MAXIMUM_BUFFER_SIZE, MSG_DONTWAIT | MSG_PEEK, NULL, NULL) >= MAXIMUM_BUFFER_SIZE && strlen(data) == 0))
-    {
-      pointer_reset_all;
-      return 0;
-    }    
-    // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data
-    recvfrom(SOCKET, buffer, MAXIMUM_BUFFER_SIZE, MSG_DONTWAIT, NULL, NULL);  
-    if (buffer[0] != '\0' && (strstr(buffer,STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL))
+    memset(buffer,0,strlen(buffer));
+
+    // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data 
+    recvfrom(SOCKET, buffer, sizeof(buffer)-1, MSG_DONTWAIT, NULL, NULL);
+    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) == NULL))
     {
       // there is data, but this is not the final data
-      append_string(data,buffer,MAXIMUM_BUFFER_SIZE);
+      color_print("got data","green");
+      memcpy(message+strlen(message),buffer,strlen(buffer));
     }
-    if (buffer[0] != '\0' && (strstr(buffer,STRING) != NULL || strstr(buffer,HTTP_SOCKET_END_STRING) != NULL))
+    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) != NULL || (strstr(buffer,HTTP_SOCKET_END_STRING) != NULL && (strstr(message,"Server: XCASH_DPOPS") != NULL || strstr(buffer,"Server: XCASH_DPOPS") != NULL)) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) != NULL) ) )
     {
+      color_print("final data","green");
       // there is data, and this is the final data
-      append_string(data,buffer,MAXIMUM_BUFFER_SIZE);
+      memcpy(message+strlen(message),buffer,strlen(buffer));
+
       // if the final message has the SOCKET_END_STRING in the message, remove it
-      strstr(data,SOCKET_END_STRING) != NULL ? memcpy(message,data,strnlen(data,MAXIMUM_BUFFER_SIZE) - (sizeof(SOCKET_END_STRING)-1)) : memcpy(message,data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+      if (strstr(buffer,SOCKET_END_STRING) != NULL)
+      {
+        message[strlen(message)-(sizeof(SOCKET_END_STRING)-1)] = '\0';
+      }
       break;
     }
 
     // check for a timeout in receiving data
-    if (RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS == 1)
+    if (RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS == 1 && time(NULL) - start > 30)
     {
-      count++;
-      if (count > (RECEIVE_DATA_SOCKET_TIMEOUT * 5))
-      {
-        pointer_reset_all;
-        return 1;
-      }
+      return 1;
     }
-    nanosleep((const struct timespec[]){{0, 500000000L}}, NULL);   
   }
-  pointer_reset_all;
   return 2;
-
-  #undef pointer_reset_all
 }

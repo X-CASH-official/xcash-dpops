@@ -134,7 +134,7 @@ int network_functions_test(void)
       color_print("FAILED! Test for send_and_receive_data_socket","red");
     }
     memset(string,0,sizeof(string));
-    if (send_and_receive_data_socket(string,XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,message,20) <= 0)
+    if (send_and_receive_data_socket(string,sizeof(string),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,message,20) <= 0)
     {
       color_print("FAILED! Test for create_server","red");
       color_print("FAILED! Test for send_and_receive_data_socket","red");
@@ -229,7 +229,7 @@ int network_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   // send_and_receive_data_socket
-  if (send_and_receive_data_socket(string,"",SEND_DATA_PORT,message,20) <= 0 && strstr(error_message.data[0],"Error invalid hostname") != NULL)
+  if (send_and_receive_data_socket(string,sizeof(string),"",SEND_DATA_PORT,message,20) <= 0 && strstr(error_message.data[0],"Error invalid hostname") != NULL)
   {
     color_print("PASSED! Test for send_and_receive_data_socket checking for invalid hostname","green");
     count_test++;
@@ -240,7 +240,7 @@ int network_functions_test(void)
   }
   RESET_ERROR_MESSAGES;
 
-  if (send_and_receive_data_socket(string,XCASH_DPOPS_delegates_IP_address,18289,message,20) <= 0 && strstr(error_message.data[0],"Error connecting to host") != NULL)
+  if (send_and_receive_data_socket(string,sizeof(string),XCASH_DPOPS_delegates_IP_address,18289,message,20) <= 0 && strstr(error_message.data[0],"Error connecting to host") != NULL)
   {
     color_print("PASSED! Test for send_and_receive_data_socket checking for Connection error","green");
     count_test++;

@@ -294,12 +294,6 @@ struct delegates_online_status {
 };
 
  // Thread functions
- struct send_and_receive_data_socket_thread_parameters {
-    char HOST[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The IP address to send the message to
-    char* DATA; // The message
-    int COUNT; // The block verifier that received the message
-};
-
  struct socket_thread_parameters {
     int client_socket;  // The client socket
     char client_address[BUFFER_SIZE];  // The client address

@@ -73,13 +73,10 @@ int optimizations_functions_test(void)
 {
   // Variables
   struct reserve_proof reserve_proof;
-  struct send_and_receive_data_socket_thread_parameters send_and_receive_data_socket_thread_parameters[BLOCK_VERIFIERS_TOTAL_AMOUNT];
   struct verify_network_block_data_vrf_data_verify_thread_parameters verify_network_block_data_vrf_data_verify_thread_parameters[5];
   time_t start;
   int count;
   long int total;
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
 
   // threads
   pthread_t thread_id[BLOCK_VERIFIERS_TOTAL_AMOUNT];  
@@ -142,22 +139,6 @@ int optimizations_functions_test(void)
   network_functions_test_error_settings = 2;
   delete_database(database_name,0);
   RESET_ERROR_MESSAGES;
-
-  // initialize the send_and_receive_data_socket_thread_parameters struct
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    send_and_receive_data_socket_thread_parameters[count].DATA = (char*)calloc(BUFFER_SIZE,sizeof(char));
-
-    // check if the memory needed was allocated on the heap successfully
-    if (send_and_receive_data_socket_thread_parameters[count].DATA == NULL)
-    {
-      memcpy(error_message.function[error_message.total],"data_network_node_create_block",30);
-      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-      error_message.total++;
-      print_error_message(current_date_and_time,current_UTC_date_and_time,data_test);  
-      exit(0);
-    }
-  }
  
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\noptimizations functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,OPTIMIZATIONS_TOTAL_TEST,TEST_OUTLINE);
