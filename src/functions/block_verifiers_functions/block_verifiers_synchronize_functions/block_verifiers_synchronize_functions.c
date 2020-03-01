@@ -1179,13 +1179,13 @@ Name: sync_reserve_bytes_database
 Description: Syncs the reserve bytes database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
-  reserve_bytes_start_settings - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
+  RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
   DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_settings, const char* DELEGATES_IP_ADDRESS)
+int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETTINGS, const char* DELEGATES_IP_ADDRESS)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -1248,10 +1248,12 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
 
   // create the message
   memset(data3,0,strlen(data3));
-  memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_data_hash\": \"",137);
+  memcpy(data3,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_settings\": \"",136);
+  snprintf(data3+strlen(data3),sizeof(data3)-138,"%d",RESERVE_BYTES_START_SETTINGS);
+  memcpy(data3+strlen(data3),"\",\r\n \"reserve_bytes_data_hash\": \"",33);
   memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
   memcpy(data3+strlen(data3),"\",\r\n ",5);
-  count = reserve_bytes_start_settings == 0 ? 1 : current_reserve_bytes_database;
+  count = RESERVE_BYTES_START_SETTINGS == 0 ? 1 : current_reserve_bytes_database;
 
   for (; count <= current_reserve_bytes_database; count++)
   {
@@ -1289,7 +1291,7 @@ int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_sett
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not verify data from ",1);
   }
 
-  count2 = reserve_bytes_start_settings == 0 ? 1 : current_reserve_bytes_database;
+  count2 = RESERVE_BYTES_START_SETTINGS == 0 ? 1 : current_reserve_bytes_database;
 
   // check if the block verifier needs to sync any of the reserve bytes databases and sync them if needed
   if (sync_check_reserve_bytes_specific_database(database_data,(const char*)block_verifiers_ip_address,count2,(const size_t)current_reserve_bytes_database) == 0)

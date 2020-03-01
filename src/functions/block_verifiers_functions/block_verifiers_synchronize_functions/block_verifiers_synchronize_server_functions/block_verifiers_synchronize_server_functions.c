@@ -719,6 +719,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   char reserve_bytes_database[BUFFER_SIZE];
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count;
   size_t current_reserve_bytes_database;
 
@@ -733,6 +734,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memset(reserve_bytes_database,0,sizeof(reserve_bytes_database));
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
@@ -741,7 +743,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"reserve_bytes_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
+  if (parse_json_data(MESSAGE,"reserve_bytes_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH || parse_json_data(MESSAGE,"reserve_bytes_settings",data3,sizeof(data3)) == 0 || (memcmp(data3,"0",1) != 0 &&memcmp(data3,"1",1) != 0))
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
   }
@@ -758,7 +760,10 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // create the message
   memcmp(data,data2,DATA_HASH_LENGTH) == 0 ? memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n ",147) : memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n ",148);
     
-  for (count = 1; count <= current_reserve_bytes_database; count++)
+  // check if the block verifier wanted to sync all reserve bytes databases or just the current reserve bytes database
+  count = memcmp(data3,"0",1) == 0 ? 1 : current_reserve_bytes_database;
+  
+  for (; count <= current_reserve_bytes_database; count++)
   {
     memcpy(message+strlen(message),"\"reserve_bytes_database_",24);
     snprintf(message+strlen(message),sizeof(message)-1,"%zu",count);

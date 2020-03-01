@@ -442,7 +442,7 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
     }
 
     // create the message
-    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_data_hash\": \"",137);
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_settings\": \"0\",\r\n \"reserve_bytes_data_hash\": \"",170);
     memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
     memcpy(message+strlen(message),"\",\r\n ",5);
 
@@ -589,7 +589,7 @@ int sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SET
   }
 
   // create the message
-  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_data_hash\": \"",137);
+  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\",\r\n \"reserve_bytes_settings\": \"0\",\r\n \"reserve_bytes_data_hash\": \"",170);
   memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
   memcpy(message+strlen(message),"\",\r\n ",5);
 

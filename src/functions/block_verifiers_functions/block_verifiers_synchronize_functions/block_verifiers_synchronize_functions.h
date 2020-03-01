@@ -14,7 +14,7 @@ void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES
 int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const char* BLOCK_VERIFIERS_IP_ADDRESS);
 int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const char* BLOCK_VERIFIERS_IP_ADDRESS, size_t starting_reserve_bytes_database, const size_t CURRENT_RESERVE_BYTES_DATABASE);
 int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS);
-int sync_reserve_bytes_database(int settings, const int reserve_bytes_start_settings, const char* DELEGATES_IP_ADDRESS);
+int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETTINGS, const char* DELEGATES_IP_ADDRESS);
 int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS);
 int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS);
 #endif
