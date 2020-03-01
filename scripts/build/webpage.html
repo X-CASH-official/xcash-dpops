@@ -320,7 +320,7 @@ async function STEP_8_CPP_CHECK_UBUNTU_1804()
 async function STEP_9_XCASH_DPOPS_TEST_UBUNTU_1804()
 {  
   const data = await get_data("http://88.99.148.237/build/ubuntu-18.04/STEP_9_XCASH_DPOPS_TEST.txt");
-  if (data.includes("STEP_9_XCASH_DPOPS_TEST_ERROR") || !data.includes("X-CASH proof of stake test results - Passed test: 155, Failed test: 0"))
+  if (data.includes("STEP_9_XCASH_DPOPS_TEST_ERROR") || !data.includes("X-CASH proof of stake test results - Passed test: 345, Failed test: 0"))
   {
     document.getElementById("ubuntu1804buildstep9").textContent = "FAILED";
     document.getElementById("ubuntu1804buildstep9").classList.toggle("testfailed");

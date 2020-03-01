@@ -283,8 +283,9 @@ function STEP_2_DELEGATES_WEBSITE()
 {
   echo -e "Updating Delegates Website\n" >> "${LOGFILE_STEP_2_DELEGATES_WEBSITE}" 2>&1 || return 1
   cd "${DELEGATES_WEBSITE_DIR}" || return 1
+  source ~/.profile
   npm update >> "${LOGFILE_STEP_2_DELEGATES_WEBSITE}" 2>&1 || return 1
-  ng build --prod --aot >> "${LOGFILE_STEP_2_DELEGATES_WEBSITE}" 2>&1 || return 1
+  npm run build >> "${LOGFILE_STEP_2_DELEGATES_WEBSITE}" 2>&1 || return 1
   cd dist || return 1
   for f in *.js; do uglifyjs "$f" --compress --mangle --output "{$f}min"; rm "$f"; mv "{$f}min" "$f"; done || return 1
   if [ -d "$XCASH_DPOPS_DELEGATE_FOLDER_DIR" ]; then
@@ -301,8 +302,9 @@ function STEP_3_SHARED_DELEGATES_WEBSITE()
 {
   echo -e "Updating Shared Delegates Website\n" >> "${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE}" 2>&1 || return 1
   cd "${SHARED_DELEGATES_WEBSITE_DIR}" || return 1
+  source ~/.profile
   npm update >> "${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE}" 2>&1 || return 1
-  ng build --prod --aot >> "${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE}" 2>&1 || return 1
+  npm run build >> "${LOGFILE_STEP_3_SHARED_DELEGATES_WEBSITE}" 2>&1 || return 1
   cd dist || exit
   for f in *.js; do uglifyjs "$f" --compress --mangle --output "{$f}min"; rm "$f"; mv "{$f}min" "$f"; done
   if [ -d "$XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR" ]; then
@@ -379,7 +381,7 @@ function STEP_9_XCASH_DPOPS_TEST()
 {
   echo -e "XCASH_DPOPS Test\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
   cd "${XCASH_DPOPS_DIR}" || return 1
-  build/XCASH_DPOPS --test >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
+  build/XCASH_DPOPS --block_verifiers_secret_key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a --quick_test >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
   echo -e "\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
 }
 
