@@ -1145,14 +1145,6 @@ void start_timer_threads(void)
   
   color_print("Started the current block height timer thread","green");
 
-  /*// start the remove_inactive_delegates_timer_thread
-  if (pthread_create(&thread_id[1], NULL, &remove_inactive_delegates_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
-  {
-    START_TIMER_THREADS_ERROR("Could not start the current_block_height_timer_thread");
-  }
-  
-  color_print("Started the remove inactive delegates timer thread","green");*/
-
   /*// start the block height timer thread
   if (shared_delegates_website == 1)
   {

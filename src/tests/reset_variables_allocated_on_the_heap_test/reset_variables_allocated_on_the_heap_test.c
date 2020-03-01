@@ -128,8 +128,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   size_t counter;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  int total_delegates = 0;
-  int total_inactive_delegates = 0;
   struct reserve_proof reserve_proof;
   struct database_document_fields database_data;
   struct database_multiple_documents_fields database_multiple_documents_fields;
@@ -706,13 +704,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   select_random_unique_reserve_proof(&reserve_proof);
 
   #define SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS_CODE send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
-
-  #define REMOVE_INACTIVE_DELEGATES_CODE \
-  delete_database(database_name,0); \
-  INITIALIZE_DATABASE_DATA(2); \
-  RESET_INVALID_RESERVE_PROOFS_DATA; \
-  count = count_all_documents_in_collection(database_name,"delegates",1); \
-  remove_inactive_delegates(&total_delegates, &total_inactive_delegates);
 
   #define BLOCK_VERIFIERS_ADD_RESERVE_PROOF_CHECK_IF_DATA_IS_VALID_CODE \
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address)); \
@@ -1318,8 +1309,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(reserve_proof.reserve_proof_amount,"120000000",9);
   memcpy(reserve_proof.reserve_proof,"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5j1ey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed41JUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("send_invalid_reserve_proof_to_block_verifiers",SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS_CODE);
-  CHECK_RESET_VARIABLES_ON_THE_HEAP("remove_inactive_delegates",REMOVE_INACTIVE_DELEGATES_CODE);
-
+  
   delete_database(database_name,0);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("block_verifiers_add_reserve_proof_check_if_data_is_valid",BLOCK_VERIFIERS_ADD_RESERVE_PROOF_CHECK_IF_DATA_IS_VALID_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("add_reserve_proof_remove_previous_vote",ADD_RESERVE_PROOF_REMOVE_PREVIOUS_VOTE_CODE);

@@ -825,13 +825,10 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 -----------------------------------------------------------------------------------------------------------
 Name: remove_inactive_delegates
 Description: Removes any inactive delegates from the database
-Paramters:
-  total_delegates - The total delegates
-  total_inactive_delegates - The total inactive delegates
 -----------------------------------------------------------------------------------------------------------
 */
 
-void remove_inactive_delegates(int *total_delegates, int *total_inactive_delegates)
+void remove_inactive_delegates(void)
 {
   // Variables
   char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
@@ -840,6 +837,7 @@ void remove_inactive_delegates(int *total_delegates, int *total_inactive_delegat
   struct tm current_UTC_date_and_time;
   int count;
   long long int total_votes;
+  int total_delegates;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -850,9 +848,9 @@ void remove_inactive_delegates(int *total_delegates, int *total_inactive_delegat
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"remove_inactive_delegates_timer_thread",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
-  *total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
+  total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
 
-  for (count = 0, *total_inactive_delegates = 0; count < *total_delegates; count++)
+  for (count = 0; count < total_delegates; count++)
   {
     sscanf(delegates[count].total_vote_count, "%lld", &total_votes);
 
@@ -864,64 +862,14 @@ void remove_inactive_delegates(int *total_delegates, int *total_inactive_delegat
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+strlen(data),delegates[count].public_address,XCASH_WALLET_LENGTH);
       memcpy(data+strlen(data),"\"}",2);
-      if (delete_document_from_collection(database_name,DATABASE_COLLECTION,data,1) == 1)
-      {
-        (*total_inactive_delegates)++;
-      }
+      delete_document_from_collection(database_name,DATABASE_COLLECTION,data,1);
     }
   }
-
+  RESET_ERROR_MESSAGES;
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   return;
 
   #undef DATABASE_COLLECTION
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: remove_inactive_delegates_timer_thread
-Description: runs the remove_inactive_delegates function at UTC 00:00
------------------------------------------------------------------------------------------------------------
-*/
-
-void* remove_inactive_delegates_timer_thread(void* parameters)
-{
-  // Variables
-  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
-  int total_delegates = 0;
-  int total_inactive_delegates = 0;
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;  
-
-  // unused parameters
-  (void)parameters;
-
-  memset(data,0,sizeof(data)); 
-
-  for (;;)
-  {
-    // check if it is UTC 23:58
-    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_hour == 23 && current_UTC_date_and_time.tm_min == 58)
-    {
-      color_print("It is UTC 23:58\nRemoving all inactive delegates from the database","yellow");
-
-      remove_inactive_delegates(&total_delegates,&total_inactive_delegates);
-
-      memset(data,0,strlen(data));  
-      print_start_message(current_date_and_time,current_UTC_date_and_time,"Inactive Delegates",data);      
-      memcpy(data,"Amount of delegates: ",21);
-      snprintf(data+strlen(data),sizeof(data)-1,"%d",total_delegates);
-      memcpy(data,"\nAmount of inactive delegates removed: ",39);
-      snprintf(data+strlen(data),sizeof(data)-1,"%d",total_inactive_delegates);
-      memcpy(data,"\n",1);
-      color_print(data,"yellow");
-    }
-    sleep(10);
-  }
-  pthread_exit((void *)(intptr_t)1);
 }
 
 

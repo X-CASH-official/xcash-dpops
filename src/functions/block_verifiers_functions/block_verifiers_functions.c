@@ -154,6 +154,14 @@ int start_new_round(void)
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
     memcpy(current_round_part_backup_node,"0",1);
 
+    // check if it is time to remove the inactive delegates
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time.tm_hour == 23 && current_UTC_date_and_time.tm_min < BLOCK_TIME)
+    {
+      color_print("Removing inactive delegates\n","yellow");
+      remove_inactive_delegates();
+    }
+
     color_print("Waiting for all network data nodes to sync the databases\n","blue");
 
     // all network data nodes will sync and make sure they have the same database, before the block verifiers sync from them
@@ -190,8 +198,7 @@ int start_new_round(void)
       sync_delegates_database(2,"");
       color_print("Syncing the statistics database","yellow");
       sync_statistics_database(2,"");
-      color_print("Successfully synced all databases","yellow");
-      fprintf(stderr,"\n");
+      color_print("Successfully synced all databases\n","yellow");
     }
 
     if (calculate_main_nodes_roles() == 0)

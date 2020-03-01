@@ -40,8 +40,6 @@ int block_verifiers_thread_server_functions_test(void)
   // Variables
   struct reserve_proof reserve_proof;
   int count;
-  int total_delegates = 0;
-  int total_inactive_delegates = 0;
   
   // define macros
   #define RESERVE_PROOF_PUBLIC_ADDRESS_TEST "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
@@ -303,23 +301,6 @@ int block_verifiers_thread_server_functions_test(void)
   {
     color_print("FAILED! Test for send_invalid_reserve_proof_to_block_verifiers","red");
   }
-
-  // remove_inactive_delegates
-  delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
-  RESET_INVALID_RESERVE_PROOFS_DATA;
-  count = count_all_documents_in_collection(database_name,"delegates",1);
-  remove_inactive_delegates(&total_delegates, &total_inactive_delegates);
-  if (total_delegates == count && total_inactive_delegates == count)
-  {
-    color_print("PASSED! Test for remove_inactive_delegates","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for remove_inactive_delegates","red");
-  }
-
 
 
   // check all errors for each test
