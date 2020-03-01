@@ -94,19 +94,7 @@ int start_new_round(void)
   memset(VRF_data.vrf_beta_string,0,strlen((const char*)VRF_data.vrf_beta_string)); \
   memset(VRF_data.reserve_bytes_data_hash,0,strlen(VRF_data.reserve_bytes_data_hash)); \
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
-
-  #define SYNCHRONIZE_DATABASES \
-  color_print("Syncing the block verifiers list","yellow"); \
-  sync_all_block_verifiers_list(); \
-  color_print("Syncing the reserve proofs database","yellow"); \
-  sync_reserve_proofs_database(2,""); \
-  color_print("Syncing the reserve bytes database","yellow"); \
-  sync_reserve_bytes_database(2,1,""); \
-  color_print("Syncing the delegates database","yellow"); \
-  sync_delegates_database(2,""); \
-  color_print("Syncing the statistics database","yellow"); \
-  sync_statistics_database(2,""); \
-  color_print("Successfully synced all databases","yellow");
+  
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -173,7 +161,7 @@ int start_new_round(void)
       sync_network_data_nodes_database();
     }
 
-    sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE,START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);
 
     // wait for all block verifiers to sync the database
     color_print("Waiting for all block verifiers to sync the databases\n","blue");
@@ -181,7 +169,16 @@ int start_new_round(void)
     if (network_data_node_settings != 1)
     {
       color_print("Your block verifier is not a network data node, checking to make sure the databases are synced","yellow");
-      SYNCHRONIZE_DATABASES;
+      color_print("Syncing the reserve proofs database","yellow");
+      sync_reserve_proofs_database(2,"");
+      color_print("Syncing the reserve bytes database","yellow");
+      sync_reserve_bytes_database(2,1,"");
+      color_print("Syncing the delegates database","yellow");
+      sync_delegates_database(2,"");
+      color_print("Syncing the statistics database","yellow");
+      sync_statistics_database(2,"");
+      color_print("Successfully synced all databases","yellow");
+      fprintf(stderr,"\n");
     }
 
     if (calculate_main_nodes_roles() == 0)
@@ -198,7 +195,6 @@ int start_new_round(void)
 
   #undef START_NEW_ROUND_ERROR
   #undef RESET_VARIABLES
-  #undef SYNCHRONIZE_DATABASES
 }
 
 

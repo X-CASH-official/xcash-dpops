@@ -71,7 +71,8 @@ Using define statements instead of constants for increased efficiency
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define MINIMUM_AMOUNT_RESERVE_PROOF 1000000 // The minimum amount to create a reserve proof
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 20000000000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet
-#define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time that the block verifiers synchronize the database each round
+#define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
+#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 20 // the start time in seconds that the block verifiers synchronize the database each round
 #define START_TIME_MINUTE_NETWORK_BLOCK_ROUND 2 // the start time that the block verifiers start to create the network block
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 50 // The time to submit the network block
 #define START_TIME_SECONDS_NETWORK_BLOCK_PART_2 10 // the start time of part 2 of the network block round
@@ -197,6 +198,7 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 // Network data nodes test
 #define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
 #define NETWORK_DATA_NODES_VALID_AMOUNT 3 // The amount of network data nodes need to reach a consensus on the database data
+#define NETWORK_DATA_NODES_VALID_AMOUNT_PERCENTAGE 0.60 // The percentage of network data nodes need to reach a consensus on the database data
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
 #define NETWORK_DATA_NODE_1_IP_ADDRESS "192.168.1.201"
 #define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS "XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B"

@@ -57,128 +57,283 @@ void sync_network_data_nodes_database(void)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
+  char database_data_hash_majority[DATA_HASH_LENGTH+1];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
-  int count2;
-  int count3;
-  int sync_network_data_nodes_database_count;
-  int sync_network_data_nodes_database_count_total;
+  int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT] = {-1,-1,-1,-1,-1};
+  double network_data_nodes_valid_count;
 
-  // define macros
-  #define SYNC_DATABASES(settings) \
-  color_print("Syncing the reserve bytes database","yellow"); \
-  sync_reserve_bytes_database(settings,1,""); \
-  color_print("Syncing the reserve proofs database","yellow"); \
-  sync_reserve_proofs_database(settings,""); \
-  color_print("Syncing the delegates database","yellow"); \
-  sync_delegates_database(settings,""); \
-  color_print("Syncing the statistics database","yellow"); \
-  sync_statistics_database(settings,""); \
-  color_print("Successfully synced all databases","yellow");
+  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,20);
 
   memset(data,0,sizeof(data));
+  memset(database_data_hash_majority,0,sizeof(database_data_hash_majority));
 
-  print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
-  memset(data,0,sizeof(data));
+  // set the database to not accept any data
+  database_settings = 0;
+
+  // reset the struct network_data_nodes_sync_database_list
+  memset(network_data_nodes_sync_database_list.network_data_node_1_public_address,0,sizeof(network_data_nodes_sync_database_list.network_data_node_1_public_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_1_IP_address,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_1_IP_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash));
+  memset(network_data_nodes_sync_database_list.network_data_node_2_public_address,0,sizeof(network_data_nodes_sync_database_list.network_data_node_2_public_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_2_IP_address,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_2_IP_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash));
+  memset(network_data_nodes_sync_database_list.network_data_node_3_public_address,0,sizeof(network_data_nodes_sync_database_list.network_data_node_3_public_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_3_IP_address,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_3_IP_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash));
+  memset(network_data_nodes_sync_database_list.network_data_node_4_public_address,0,sizeof(network_data_nodes_sync_database_list.network_data_node_4_public_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_4_IP_address,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_4_IP_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash));
+  memset(network_data_nodes_sync_database_list.network_data_node_5_public_address,0,sizeof(network_data_nodes_sync_database_list.network_data_node_5_public_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_5_IP_address,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_5_IP_address));
+  memset(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash));
+  memcpy(network_data_nodes_sync_database_list.network_data_node_1_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,sizeof(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS)-1);
+  memcpy(network_data_nodes_sync_database_list.network_data_nodes_1_IP_address,NETWORK_DATA_NODE_1_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_1_IP_ADDRESS)-1);
+  memcpy(network_data_nodes_sync_database_list.network_data_node_2_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,sizeof(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS)-1);
+  memcpy(network_data_nodes_sync_database_list.network_data_nodes_2_IP_address,NETWORK_DATA_NODE_2_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_2_IP_ADDRESS)-1);
+  memcpy(network_data_nodes_sync_database_list.network_data_node_3_public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,sizeof(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS)-1);
+  memcpy(network_data_nodes_sync_database_list.network_data_nodes_3_IP_address,NETWORK_DATA_NODE_3_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_3_IP_ADDRESS)-1);
+  memcpy(network_data_nodes_sync_database_list.network_data_node_4_public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,sizeof(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS)-1);
+  memcpy(network_data_nodes_sync_database_list.network_data_nodes_4_IP_address,NETWORK_DATA_NODE_4_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_4_IP_ADDRESS)-1);
+  memcpy(network_data_nodes_sync_database_list.network_data_node_5_public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,sizeof(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS)-1);
+  memcpy(network_data_nodes_sync_database_list.network_data_nodes_5_IP_address,NETWORK_DATA_NODE_5_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_5_IP_ADDRESS)-1);
   
-  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
+  
+  // get the database data hash and send it to all other network data nodes
+  if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
   {
-    memset(network_data_nodes_database_data[count],0,sizeof(network_data_nodes_database_data[count]));
-  }
-
-  // get the database data hash for all of the databases
-  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-  {
-    if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,database_name,"ALL") == 0)
     {
-      if (get_database_data_hash(network_data_nodes_database_data[count],database_name,"ALL") == 0)
-      {
-        return;
-      }
-      // create the message
-      memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash\": \"",104);
-      memcpy(data+strlen(data),network_data_nodes_database_data[count],DATA_HASH_LENGTH);
-      memcpy(data+strlen(data),"\",\r\n}",5);
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
     }
+    // create the message
+    memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash\": \"",104);
+    memcpy(data+strlen(data),network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,DATA_HASH_LENGTH);
+    memcpy(data+strlen(data),"\",\r\n}",5);
+
+    // sign_data
+    if (sign_data(data) == 0)
+    { 
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
+    }
+
+    send_data_socket(NETWORK_DATA_NODE_2_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_3_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_4_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_5_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   }
-
-  // sign_data
-  if (sign_data(data) == 0)
-  { 
-    return;
-  }
-
-  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,0);
-
-  // get the database data hashes from all of the other network data nodes  
-  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  else if (memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
   {
-    if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,database_name,"ALL") == 0)
     {
-      send_data_socket(network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
     }
+    // create the message
+    memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash\": \"",104);
+    memcpy(data+strlen(data),network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,DATA_HASH_LENGTH);
+    memcpy(data+strlen(data),"\",\r\n}",5);
+
+    // sign_data
+    if (sign_data(data) == 0)
+    { 
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
+    }
+
+    send_data_socket(NETWORK_DATA_NODE_1_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_3_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_4_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_5_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  }
+  else if (memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  {
+    if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,database_name,"ALL") == 0)
+    {
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
+    }
+    // create the message
+    memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash\": \"",104);
+    memcpy(data+strlen(data),network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,DATA_HASH_LENGTH);
+    memcpy(data+strlen(data),"\",\r\n}",5);
+
+    // sign_data
+    if (sign_data(data) == 0)
+    { 
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
+    }
+
+    send_data_socket(NETWORK_DATA_NODE_1_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_2_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_4_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_5_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  }
+  else if (memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  {
+    if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,database_name,"ALL") == 0)
+    {
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
+    }
+    // create the message
+    memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash\": \"",104);
+    memcpy(data+strlen(data),network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,DATA_HASH_LENGTH);
+    memcpy(data+strlen(data),"\",\r\n}",5);
+
+    // sign_data
+    if (sign_data(data) == 0)
+    { 
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
+    }
+
+    send_data_socket(NETWORK_DATA_NODE_1_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_2_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_3_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_5_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  }
+  else if (memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  {
+    if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,database_name,"ALL") == 0)
+    {
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
+    }
+    // create the message
+    memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash\": \"",104);
+    memcpy(data+strlen(data),network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,DATA_HASH_LENGTH);
+    memcpy(data+strlen(data),"\",\r\n}",5);
+
+    // sign_data
+    if (sign_data(data) == 0)
+    { 
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      return;
+    }
+
+    send_data_socket(NETWORK_DATA_NODE_1_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_2_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_3_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+    send_data_socket(NETWORK_DATA_NODE_4_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   }
 
   // wait for the network data nodes to process the data
   sleep(NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS);
 
-  // check if there is a consensus between the databases and sync if the network data node is not in the majority
-  for (count = 0, sync_network_data_nodes_database_count_total = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-  {
-    for (count2 = 0, count3 = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
-    {
-      if (memcmp(network_data_nodes_database_data[count],network_data_nodes_database_data[count2],DATA_HASH_LENGTH) == 0)
-      {
-        count3++;
-      }
-    }
-    if (count3 >= sync_network_data_nodes_database_count_total)
-    {
-      sync_network_data_nodes_database_count_total = count3;
-      sync_network_data_nodes_database_count = count;
-    }
-  }
+  // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
+  network_data_nodes_sync_databases_settings = 0;
 
-  if (sync_network_data_nodes_database_count_total < NETWORK_DATA_NODES_VALID_AMOUNT)
+  // check if a consensus was reached and get the majority database data hash
+  network_data_nodes_valid_count = 0;
+  count = 0;
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (count > NETWORK_DATA_NODES_VALID_AMOUNT-1) {memcpy(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,DATA_HASH_LENGTH); synced_network_data_nodes[0] = 0;}
+  
+  count = 0;
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (count > NETWORK_DATA_NODES_VALID_AMOUNT-1) {memcpy(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,DATA_HASH_LENGTH); synced_network_data_nodes[1] = 1;}
+
+  count = 0;
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (count > NETWORK_DATA_NODES_VALID_AMOUNT-1) {memcpy(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,DATA_HASH_LENGTH); synced_network_data_nodes[2] = 2;}
+
+  count = 0;
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (count > NETWORK_DATA_NODES_VALID_AMOUNT-1) {memcpy(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,DATA_HASH_LENGTH); synced_network_data_nodes[3] = 3;}
+
+  count = 0;
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
+  if (count > NETWORK_DATA_NODES_VALID_AMOUNT-1) {memcpy(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,DATA_HASH_LENGTH); synced_network_data_nodes[4] = 4;}
+
+  if (network_data_nodes_valid_count / (NETWORK_DATA_NODES_AMOUNT*(NETWORK_DATA_NODES_AMOUNT-1)) < NETWORK_DATA_NODES_VALID_AMOUNT_PERCENTAGE)
   {
-    // sync from the main network data node, since a majority could not be reached
+    // a consensus could not be reached, sync from the main network data node
     color_print("A majority could not be reached between network data nodes for the database sync. Syncing the database from the main network data node","yellow");
-    SYNC_DATABASES(3);
-  }
-  else
-  {
-    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
-      if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-      {
-        if (memcmp(network_data_nodes_database_data[sync_network_data_nodes_database_count],network_data_nodes_database_data[count],DATA_HASH_LENGTH) != 0)
-        {
-          color_print("The database is not synced with the majority of network data nodes, syncing the database from a random network data node that is in the majority","yellow");
-          // sync from a random network data node that is in the majority
-          do
-          {
-            count2 = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT)) + 3;
-          } while (memcmp(network_data_nodes_database_data[sync_network_data_nodes_database_count],network_data_nodes_database_data[count2],DATA_HASH_LENGTH) != 0 && memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
-          SYNC_DATABASES(count2);
-        }
-        else
-        {
-          color_print("A majority has been reached and the block verifier is already synced with the majority","yellow");
-          return;
-        }        
-      }
-    }    
+      sleep(BLOCK_VERIFIERS_SETTINGS);
+      database_settings = 1;
+      pthread_cond_broadcast(&thread_settings_lock);
+      color_print("Syncing the reserve proofs database","yellow");
+      sync_reserve_proofs_database(0,NETWORK_DATA_NODE_1_IP_ADDRESS);
+      color_print("Syncing the reserve bytes database","yellow");
+      sync_reserve_bytes_database(0,1,NETWORK_DATA_NODE_1_IP_ADDRESS);
+      color_print("Syncing the delegates database","yellow");
+      sync_delegates_database(0,NETWORK_DATA_NODE_1_IP_ADDRESS);
+      color_print("Syncing the statistics database","yellow");
+      sync_statistics_database(0,NETWORK_DATA_NODE_1_IP_ADDRESS);
+      color_print("Successfully synced all databases","yellow");
+    }
+    database_settings = 1;
+    pthread_cond_broadcast(&thread_settings_lock);
+    network_data_nodes_sync_databases_settings = 1;    
+    return;
   }
 
-  // set the database to accept data
+  // check if the network data node is in the majority
+  if ((memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,DATA_HASH_LENGTH) == 0) || (memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,DATA_HASH_LENGTH) == 0) || (memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,DATA_HASH_LENGTH) == 0) ||(memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,DATA_HASH_LENGTH) == 0) || (memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,DATA_HASH_LENGTH) == 0))
+  {
+    // the network data node is in the majority
+    color_print("A majority has been reached and the block verifier is already synced with the majority","yellow");
+    network_data_nodes_sync_databases_settings = 1;
+    database_settings = 1;
+    pthread_cond_broadcast(&thread_settings_lock);
+    return;
+  }
+
+  // the network data node is not in the majority, sync the database from a network data node that is in the majority
+  color_print("The database is not synced with the majority of network data nodes, syncing the database from a random network data node that is in the majority","yellow");
+  do
+  {
+    count = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT));
+  } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || synced_network_data_nodes[count] == -1);
+  
+  sleep(BLOCK_VERIFIERS_SETTINGS);
   database_settings = 1;
-
-  // reset any thread that was waiting for the database
   pthread_cond_broadcast(&thread_settings_lock);
-  return;
+  color_print("Syncing the reserve proofs database","yellow");
+  sync_reserve_proofs_database(0,network_data_nodes_list.network_data_nodes_IP_address[count]);
+  color_print("Syncing the reserve bytes database","yellow");
+  sync_reserve_bytes_database(0,1,network_data_nodes_list.network_data_nodes_IP_address[count]);
+  color_print("Syncing the delegates database","yellow");
+  sync_delegates_database(0,network_data_nodes_list.network_data_nodes_IP_address[count]);
+  color_print("Syncing the statistics database","yellow");
+  sync_statistics_database(0,network_data_nodes_list.network_data_nodes_IP_address[count]);
+  color_print("Successfully synced all databases","yellow");
 
-  #undef SYNC_DATABASES
+  network_data_nodes_sync_databases_settings = 1;
+  return;
 }
 
 
@@ -1239,7 +1394,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
      
   memset(data,0,strlen(data));
-  if (send_and_receive_data_socket(data,block_verifiers_ip_address,SEND_DATA_PORT,data2,SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
+  if (send_and_receive_data_socket(data,block_verifiers_ip_address,SEND_DATA_PORT,data2,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
   {
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
   }

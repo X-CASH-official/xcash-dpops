@@ -34,6 +34,7 @@ extern struct VRF_data VRF_data; // The list of all of the VRF data to send to t
 extern struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
 extern struct error_message error_message; // holds all of the error messages and the functions for an error.
 extern struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
+extern struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
 extern char current_round_part[2]; // The current round part (1-4)
 extern char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 extern pthread_rwlock_t rwlock;
@@ -50,12 +51,12 @@ extern int epoll_fd;
 extern struct epoll_event events_copy;
 extern int server_socket;
 
-extern char network_data_nodes_database_data[NETWORK_DATA_NODES_AMOUNT][DATA_HASH_LENGTH+1];
 extern char current_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The current block height
 extern char previous_block_hash[BLOCK_HASH_LENGTH+1]; // The current block height
 extern int error_message_count; // The error message count
 extern int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
 extern int database_settings; // 1 if the database can have documents added to it, 0 if not
+extern int network_data_nodes_sync_databases_settings; // 1 if a block verifier can sync from a network data node, 0 if not
 extern int log_file_settings; // 0 to use the terminal, 1 to use a log file, 2 to use a log file with color output
 extern char log_file[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The log file
 extern char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The  block verifiers IP address to run the server on

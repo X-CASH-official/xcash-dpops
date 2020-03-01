@@ -69,6 +69,24 @@ struct current_round_part_vote_data {
     int vote_results_invalid; // The current part of the round vote count for a invalid vote.
 };
 
+struct network_data_nodes_sync_database_list {
+    char network_data_node_1_public_address[XCASH_WALLET_LENGTH+1];
+    char network_data_nodes_1_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
+    char network_data_nodes_1_database_data_hash[DATA_HASH_LENGTH+1];
+    char network_data_node_2_public_address[XCASH_WALLET_LENGTH+1];
+    char network_data_nodes_2_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
+    char network_data_nodes_2_database_data_hash[DATA_HASH_LENGTH+1];
+    char network_data_node_3_public_address[XCASH_WALLET_LENGTH+1];
+    char network_data_nodes_3_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
+    char network_data_nodes_3_database_data_hash[DATA_HASH_LENGTH+1];
+    char network_data_node_4_public_address[XCASH_WALLET_LENGTH+1];
+    char network_data_nodes_4_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
+    char network_data_nodes_4_database_data_hash[DATA_HASH_LENGTH+1];
+    char network_data_node_5_public_address[XCASH_WALLET_LENGTH+1];
+    char network_data_nodes_5_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
+    char network_data_nodes_5_database_data_hash[DATA_HASH_LENGTH+1];
+};
+
 struct VRF_data { 
     char* vrf_secret_key_data; // The VRF secret key text for round part 4
     unsigned char* vrf_secret_key; // The VRF secret key for round part 4

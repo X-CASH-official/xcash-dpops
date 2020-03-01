@@ -11,6 +11,7 @@
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
+#include "define_macros_test.h"
 #include "structures.h"
 #include "variables.h"
 
@@ -21,6 +22,7 @@
 #include "block_verifiers_thread_server_functions.h"
 #include "block_verifiers_update_functions.h"
 #include "database_functions.h"
+#include "count_database_functions.h"
 #include "insert_database_functions.h"
 #include "read_database_functions.h"
 #include "delete_database_functions.h"
@@ -60,6 +62,7 @@ struct VRF_data VRF_data; // The list of all of the VRF data to send to the bloc
 struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
 struct error_message error_message; // holds all of the error messages and the functions for an error.
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
+struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
 char current_round_part[2]; // The current round part (1-4)
 char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 pthread_rwlock_t rwlock;
@@ -76,12 +79,12 @@ int epoll_fd;
 struct epoll_event events_copy;
 int server_socket;
 
-char network_data_nodes_database_data[NETWORK_DATA_NODES_AMOUNT][DATA_HASH_LENGTH+1];
 char current_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The current block height
 char previous_block_hash[BLOCK_HASH_LENGTH+1]; // The current block height
 int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
 int database_settings; // 1 if the database can have documents added to it, 0 if not
+int network_data_nodes_sync_databases_settings; // 1 if a block verifier can sync from a network data node, 0 if not
 int log_file_settings; // 0 to use the terminal, 1 to use a log file, 2 to use a log file with color output
 char log_file[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The log file
 char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The  block verifiers IP address to run the server on
@@ -171,6 +174,7 @@ void initialize_data(void)
   registration_settings = 0;
   block_height_start_time = 0;
   database_settings = 1;
+  network_data_nodes_sync_databases_settings = 1;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -1315,8 +1319,12 @@ int main(int parameters_count, char* parameters[])
 
   // check if it should create the default database data
   memset(data,0,sizeof(data));
-  if (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0)
+  if ((read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0) || (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 1 && count_all_documents_in_collection(database_name,"delegates",1) < NETWORK_DATA_NODES_AMOUNT))
   {
+    delete_collection_from_database(database_name,"reserve_proofs_1",1);
+    delete_collection_from_database(database_name,"delegates",1);
+    delete_collection_from_database(database_name,"statistics",1);
+    RESET_ERROR_MESSAGES;
     INITIALIZE_DATABASE_DATA(0);
   }
 

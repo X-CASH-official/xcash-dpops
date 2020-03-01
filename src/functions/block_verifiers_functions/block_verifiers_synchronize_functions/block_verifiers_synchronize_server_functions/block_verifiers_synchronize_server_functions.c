@@ -211,7 +211,6 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check(const char* MESSAGE)
 {
   // Variables
-  int count;
   char data_hash[DATA_HASH_LENGTH+1];
   char public_address[XCASH_WALLET_LENGTH+1];
 
@@ -232,22 +231,30 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
+  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash",data_hash,DATA_HASH_LENGTH) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
   }
 
-  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
   {
-    if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0)
-    { 
-      parse_json_data(MESSAGE,"data_hash",data_hash,DATA_HASH_LENGTH);
-      if (strlen(data_hash) == DATA_HASH_LENGTH)
-      {
-        memcpy(network_data_nodes_database_data[count],data_hash,DATA_HASH_LENGTH);
-      }      
-      break;
-    }
+    memcpy(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,data_hash,DATA_HASH_LENGTH);
+  }
+  else if (memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
+  {
+    memcpy(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,data_hash,DATA_HASH_LENGTH);
+  }
+  else if (memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
+  {
+    memcpy(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,data_hash,DATA_HASH_LENGTH);
+  }
+  else if (memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
+  {
+    memcpy(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,data_hash,DATA_HASH_LENGTH);
+  }
+  else if (memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
+  {
+    memcpy(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,data_hash,DATA_HASH_LENGTH);
   }
   return 1;
   
@@ -537,6 +544,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
+  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
+  if (network_data_nodes_sync_databases_settings == 0)
+  {
+    return 0;
+  }
+
   // parse the message
   if (parse_json_data(MESSAGE,"reserve_proofs_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
@@ -721,6 +734,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
+  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
+  if (network_data_nodes_sync_databases_settings == 0)
+  {
+    return 0;
+  }
+
   // parse the message
   if (parse_json_data(MESSAGE,"reserve_bytes_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
@@ -737,7 +756,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // create the message
-  memcmp(data,data2,DATA_HASH_LENGTH) == 0 ?  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n ",147) : memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n ",148);
+  memcmp(data,data2,DATA_HASH_LENGTH) == 0 ? memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n ",147) : memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n ",148);
     
   for (count = 1; count <= current_reserve_bytes_database; count++)
   {
@@ -973,6 +992,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
 
   memset(buffer,0,sizeof(buffer));
 
+  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
+  if (network_data_nodes_sync_databases_settings == 0)
+  {
+    return 0;
+  }
+
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
   {
@@ -1122,6 +1147,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   error_message.total++; \
   pointer_reset_all; \
   return 0;
+
+  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
+  if (network_data_nodes_sync_databases_settings == 0)
+  {
+    return 0;
+  }
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
