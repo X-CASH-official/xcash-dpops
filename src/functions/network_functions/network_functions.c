@@ -806,12 +806,12 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
     if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) == NULL))
     {
       // there is data, but this is not the final data
-      memcpy(message+strlen(message),buffer,strlen(buffer));
+      append_string(message,buffer,LENGTH);
     }
     if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) != NULL || (strstr(buffer,HTTP_SOCKET_END_STRING) != NULL && (strstr(message,"Server: XCASH_DPOPS") != NULL || strstr(buffer,"Server: XCASH_DPOPS") != NULL)) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) != NULL) ) )
     {
       // there is data, and this is the final data
-      memcpy(message+strlen(message),buffer,strlen(buffer));
+      append_string(message,buffer,LENGTH);
 
       // if the final message has the SOCKET_END_STRING in the message, remove it
       if (strstr(buffer,SOCKET_END_STRING) != NULL)
@@ -822,7 +822,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
     }
 
     // check for a timeout in receiving data
-    if (RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS == 1 && time(NULL) - start > 30)
+    if (RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS == 1 && time(NULL) - start > RECEIVE_DATA_SOCKET_TIMEOUT)
     {
       return 1;
     }
