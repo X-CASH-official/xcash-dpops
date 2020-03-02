@@ -63,8 +63,6 @@ void sync_network_data_nodes_database(void)
   int count;
   double network_data_nodes_valid_count;
 
-  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,20);
-
   memset(data,0,sizeof(data));
   memset(database_data_hash_majority,0,sizeof(database_data_hash_majority));
 
@@ -105,6 +103,9 @@ void sync_network_data_nodes_database(void)
   memcpy(network_data_nodes_sync_database_list.network_data_nodes_5_IP_address,NETWORK_DATA_NODE_5_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_5_IP_ADDRESS)-1);
   
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
+
+  // wait so all network data nodes start at the same time, this way one is not reseting the variables as another one is sending them data
+  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,20);
   
   // get the database data hash and send it to all other network data nodes
   if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
@@ -723,10 +724,11 @@ void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES
       {
         count = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT));
       } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || synced_network_data_nodes[count] == -1);
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     }
     else
     {
-      memcpy(block_verifiers_ip_address,DELEGATES_IP_ADDRESS,strnlen(DELEGATES_IP_ADDRESS,BUFFER_SIZE));
+      memcpy(block_verifiers_ip_address,DELEGATES_IP_ADDRESS,strnlen(DELEGATES_IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     }
   }
   return;
