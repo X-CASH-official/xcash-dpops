@@ -1411,6 +1411,7 @@ int block_verifiers_create_block_and_update_database(void)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
+  size_t count2;
 
   // threads
   pthread_t thread_id;
@@ -1456,14 +1457,14 @@ int block_verifiers_create_block_and_update_database(void)
   pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
   pthread_detach(thread_id);
 
-  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);  
 
-  // since the block is valid, it will get added to the network, let the block producer try to submit the block first, then loop through all of the network data nodes to make sure it was submitted
+  // let the block producer try to submit the block first, then loop through all of the network data nodes to make sure it was submitted
   if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
     submit_block_template(data);
   }
-  sleep(BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS);
+  sleep(BLOCK_VERIFIERS_SETTINGS);
 
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
@@ -1471,8 +1472,19 @@ int block_verifiers_create_block_and_update_database(void)
     {
       submit_block_template(data);
     }
-    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
+  sleep(BLOCK_VERIFIERS_SETTINGS);
+
+  // check if the block was submited
+  sscanf(current_block_height,"%zu", &count);
+  memset(data3,0,strlen(data3));
+  get_current_block_height(data3);
+  sscanf(data3,"%zu", &count2);
+  
+  if (count2 - count != 1)
+  {
+    BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the new block to the network");
+  }  
   return 1;
 
   #undef BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS
