@@ -1330,7 +1330,7 @@ function update_shared_delegates_website()
     git pull --quiet
     npm update &>/dev/null
     . "${HOME}"/.profile
-    ng build --prod --aot &>/dev/null
+    npm run build &>/dev/null
     cd dist
     for f in *.js; do uglifyjs "$f" --compress --mangle --output "{$f}min"; rm "$f"; mv "{$f}min" "$f"; done
     if [ -d "$XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR" ]; then
