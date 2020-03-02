@@ -183,7 +183,7 @@ int sync_check_reserve_proofs_database(int settings)
     print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the reserve proofs database is synced",data2);
   }
 
-  if (get_synced_block_verifiers() == 0)
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
   {
     SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not get the synced block verifiers");
   }
@@ -321,7 +321,7 @@ int sync_check_majority_reserve_proofs_database(void)
     color_print("Checking if the database is in the majority","yellow");
   }
 
-  if (get_synced_block_verifiers() == 0)
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
   {
     SYNC_CHECK_MAJORITY_RESERVE_PROOFS_DATABASE_ERROR("Could not get the synced block verifiers");
   }
@@ -423,7 +423,7 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
     print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the reserve bytes database is synced",data2);
   }
 
-  if (get_synced_block_verifiers() == 0)
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
   {
     SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not get the synced block verifiers");
   }
@@ -572,7 +572,7 @@ int sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SET
     color_print("Checking if the database is in the majority","yellow");
   }
 
-  if (get_synced_block_verifiers() == 0)
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
   {
     SYNC_CHECK_MAJORITY_RESERVE_BYTES_DATABASE_ERROR("Could not get the synced block verifiers");
   }
@@ -676,7 +676,7 @@ int sync_check_delegates_database(int settings)
     print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the delegates database is synced",data2);
   }
 
-  if (get_synced_block_verifiers() == 0)
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
   {
     SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not get the synced block verifiers");
   }
@@ -797,7 +797,7 @@ int sync_check_majority_delegates_database(void)
     color_print("Checking if the database is in the majority","yellow");
   }
 
-  if (get_synced_block_verifiers() == 0)
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
   {
     SYNC_CHECK_MAJORITY_DELEGATES_DATABASE_ERROR("Could not get the synced block verifiers");
   }
@@ -880,7 +880,7 @@ int sync_check_statistics_database(int settings)
     print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the statistics database is synced",data2);
   }
 
-  if (get_synced_block_verifiers() == 0)
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
   {
     SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not get the synced block verifiers");
   }
@@ -1001,7 +1001,7 @@ int sync_check_majority_statistics_database(void)
     color_print("Checking if the database is in the majority","yellow");
   }
 
-  if (get_synced_block_verifiers() == 0)
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
   {
     SYNC_CHECK_MAJORITY_STATISTICS_DATABASE_ERROR("Could not get the synced block verifiers");
   }

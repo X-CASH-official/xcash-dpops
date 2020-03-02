@@ -35,7 +35,6 @@ Return: 0 if an error has occured, 1 if successfull
 
 int sign_data(char *message)
 {
-  color_print("starting sign data","green");
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
@@ -111,13 +110,10 @@ int sign_data(char *message)
   memcpy(result+strlen(result),"\",\r\n}",5);
   pthread_rwlock_unlock(&rwlock);
 
-  color_print("string_replace start","green");
-
   // format the message
   str1 = string_replace(result,"\"","\\\"");
   memset(result,0,strlen(result));
   memcpy(result,str1,strnlen(str1,MAXIMUM_AMOUNT));
-  color_print("string_replace end","green");
   
   if (strstr(message,"XCASH_PROOF_OF_STAKE_TEST_DATA_2") != NULL || (strstr(message,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST") == NULL && strstr(message,"XCASH_PROOF_OF_STAKE_TEST_DATA") == NULL && strstr(message,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") == NULL && strstr(message,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") == NULL))
   {

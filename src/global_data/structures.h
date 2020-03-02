@@ -41,6 +41,7 @@ struct synced_block_verifiers {
     int vote_settings_true; // The amount of block verifiers that voted true    
     int vote_settings_false; // The amount of block verifiers that voted false
     int vote_settings_connection_timeout; // The amount of block verifiers that had a connection timeout
+    time_t last_refresh_time_of_synced_block_verifiers; // the last refresh time of the synced block verifiers
 };
 
 struct main_nodes_list {

@@ -99,6 +99,8 @@ Using define statements instead of constants for increased efficiency
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 #define XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING "}\r\n}" // End string for the xcash daemon or xcash wallet
+#define GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS BLOCK_TIME * 60 // The time in seconds to refresh the synced block verifiers
+
 // Lengths
 #define BUFFER_SIZE 200000
 #define SMALL_BUFFER_SIZE 2000

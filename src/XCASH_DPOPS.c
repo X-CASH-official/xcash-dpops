@@ -223,7 +223,8 @@ void initialize_data(void)
     memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count]));
   }
   synced_block_verifiers.vote_settings_true = 0;
-  synced_block_verifiers.vote_settings_false = 0; 
+  synced_block_verifiers.vote_settings_false = 0;
+  synced_block_verifiers.last_refresh_time_of_synced_block_verifiers = 0;
 
   // initialize the main_nodes_list struct 
   memset(main_nodes_list.block_producer_public_address,0,sizeof(main_nodes_list.block_producer_public_address));

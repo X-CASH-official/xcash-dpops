@@ -640,6 +640,8 @@ int get_synced_block_verifiers(void)
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_public_address_list",synced_block_verifiers.synced_block_verifiers_public_address);
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_public_key_list",synced_block_verifiers.synced_block_verifiers_public_key);
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_IP_address_list",synced_block_verifiers.synced_block_verifiers_IP_address);
+  synced_block_verifiers.last_refresh_time_of_synced_block_verifiers = time(NULL);
+  
   return 1;
 
   #undef GET_SYNCED_BLOCK_VERIFIERS_DATA
