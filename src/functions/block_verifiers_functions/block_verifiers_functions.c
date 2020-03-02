@@ -453,6 +453,9 @@ int start_blocks_create_data(char* message, char* network_block_string)
   { 
     START_BLOCKS_CREATE_DATA_ERROR("Could not sign_data");
   }
+
+  // clear the VRF_data.block_blob so at the start of the next round, the main network data node does not try to update the databases
+  memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
   return 1;
 
   #undef DATABASE_COLLECTION
