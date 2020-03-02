@@ -150,7 +150,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
       memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
       invalid_reserve_proofs.count++;
       pthread_rwlock_unlock(&rwlock_reserve_proofs);
-    }
+    }    
   }
   return 1;
   

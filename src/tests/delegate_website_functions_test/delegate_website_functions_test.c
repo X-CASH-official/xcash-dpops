@@ -175,14 +175,6 @@ int delegate_website_functions_test(void)
   CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_TEST_DATA,"server_receive_data_socket_get_delegates_information","Could not get the delegates information");  
   RESET_ERROR_MESSAGES;
 
-  // server_receive_data_socket_get_delegates_voters_list
-  CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR("GET /getdelegatesvoterslist?parameter1= HTTP/","server_receive_data_socket_get_delegates_voters_list","Invalid parameters");  
-  RESET_ERROR_MESSAGES;
-  
-  CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR("GET /getdelegatesvoterslist?parameter1=delegate_name_1 HTTP/","server_receive_data_socket_get_delegates_voters_list","Could not find a registered delegate with the information provided");  
-  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
-  RESET_ERROR_MESSAGES;
-
   CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR(SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_TEST_DATA,"server_receive_data_socket_get_delegates_voters_list","There are no reserve proofs for the delegate");  
   delete_database(database_name,0);
   RESET_ERROR_MESSAGES;

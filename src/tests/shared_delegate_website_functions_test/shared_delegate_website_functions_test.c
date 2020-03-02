@@ -47,6 +47,7 @@ int shared_delegate_website_functions_test(void)
   memcpy(shared_delegates_database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);
   delete_database(database_name,0);
   shared_delegates_website = 1;
+  delegates_website = 0;
   insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}",0);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
   insert_document_into_collection_json(database_name,"blocks_found","{\"block_height\":\"521850\",\"block_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\"}",0);
@@ -147,15 +148,7 @@ int shared_delegate_website_functions_test(void)
   CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR(SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_TEST_DATA,"server_receive_data_socket_get_blocks_found","The delegate has not found any blocks");  
   RESET_ERROR_MESSAGES;
 
-  // server_receive_data_socket_get_public_address_information
-  CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR("GET /getpublicaddressinformation?public_address= HTTP/","server_receive_data_socket_get_public_address_information","Invalid parameters");  
-  RESET_ERROR_MESSAGES;
-
   CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR(SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_TEST_DATA,"server_receive_data_socket_get_public_address_information","The public address could not be found in the database for the delegate");  
-  RESET_ERROR_MESSAGES;
-
-  // server_receive_data_socket_get_public_address_payment_information
-  CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR("GET /getpublicaddresspaymentinformation?public_address= HTTP/","server_receive_data_socket_get_public_address_payment_information","Invalid parameters");  
   RESET_ERROR_MESSAGES;
 
   CHECK_WEBSITE_SERVER_FUNCTIONS_ERROR(SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_TEST_DATA,"server_receive_data_socket_get_public_address_payment_information","There is no payment data for the public address");  

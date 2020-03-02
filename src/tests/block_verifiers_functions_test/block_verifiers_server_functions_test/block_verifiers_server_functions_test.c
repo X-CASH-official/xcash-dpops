@@ -96,7 +96,7 @@ int block_verifiers_server_functions_test(void)
   
   // set the current_round_part and current_round_part_backup_node
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-  memcpy(current_round_part_backup_node,"2",1);
+  memcpy(current_round_part_backup_node,"1",1);
   main_network_data_node_create_block = 1;
   memset(network_data_nodes_list.network_data_nodes_public_address[0],0,sizeof(network_data_nodes_list.network_data_nodes_public_address[0]));
   memcpy(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH);

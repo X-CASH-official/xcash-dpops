@@ -792,6 +792,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
 {
   // Variables
   char buffer[BUFFER_SIZE];
+  char* str1;
   time_t start = time(NULL);
 
   memset(buffer,0,sizeof(buffer));
@@ -799,16 +800,16 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
 
   for (;;)
   { 
-    memset(buffer,0,strlen(buffer));
+    memset(buffer,0,sizeof(buffer));
 
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data 
     recvfrom(SOCKET, buffer, sizeof(buffer)-1, MSG_DONTWAIT, NULL, NULL);
-    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) == NULL))
+    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING) == NULL))
     {
       // there is data, but this is not the final data
       append_string(message,buffer,LENGTH);
     }
-    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) != NULL || (strstr(buffer,HTTP_SOCKET_END_STRING) != NULL && (strstr(message,"Server: XCASH_DPOPS") != NULL || strstr(buffer,"Server: XCASH_DPOPS") != NULL)) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) != NULL) ) )
+    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) != NULL || (strstr(buffer,HTTP_SOCKET_END_STRING) != NULL && (strstr(message,"Server: XCASH_DPOPS") != NULL || strstr(buffer,"Server: XCASH_DPOPS") != NULL)) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) != NULL) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING) != NULL) ) )
     {
       // there is data, and this is the final data
       append_string(message,buffer,LENGTH);
@@ -816,7 +817,9 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       // if the final message has the SOCKET_END_STRING in the message, remove it
       if (strstr(buffer,SOCKET_END_STRING) != NULL)
       {
-        message[strlen(message)-(sizeof(SOCKET_END_STRING)-1)] = '\0';
+        str1 = string_replace(message,SOCKET_END_STRING,"");
+        memset(message,0,strlen(message));
+        memcpy(message,str1,strnlen(str1,LENGTH));
       }
       break;
     }

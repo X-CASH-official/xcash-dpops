@@ -627,6 +627,7 @@ int validate_data(const char* MESSAGE)
 
   // define macros  
   #define VALIDATE_DATA_ERROR(settings) \
+  color_print(MESSAGE,"yellow"); \
   if (debug_settings == 1) \
   { \
   memcpy(error_message.function[error_message.total],"validate_data",13); \
@@ -920,30 +921,31 @@ int validate_data(const char* MESSAGE)
   {
     if (memcmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0)
     {
-      if (strlen(&MESSAGE[39]) > XCASH_WALLET_LENGTH)
+      if (strlen(&MESSAGE[39]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[39]," HTTP/") == NULL)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       }      
     }
     else if (memcmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
     {
-      if (strlen(&MESSAGE[40]) > XCASH_WALLET_LENGTH)
+      if (strlen(&MESSAGE[40]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[40]," HTTP/") == NULL)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       } 
     }
     else if (memcmp(MESSAGE,"GET /getdelegatesvoterslist?parameter1=",39) == 0)
     {
-      if (strlen(&MESSAGE[39]) > XCASH_WALLET_LENGTH)
+      if (strlen(&MESSAGE[39]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[39]," HTTP/") == NULL)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       } 
     }
     else if (memcmp(MESSAGE,"GET /getroundstatistics?parameter1=",35) == 0)
     {
-      for (count = 35; count < (int)strlen(MESSAGE); count++)
+      memcpy(data,&MESSAGE[35],(strnlen(MESSAGE,sizeof(data)) - strnlen(strstr(MESSAGE," HTTP/"),sizeof(data)))-35);
+      for (count = 35; count < (int)strlen(data); count++)
       {
-        if (memcmp(&MESSAGE[count],"0",1) != 0 && memcmp(&MESSAGE[count],"1",1) != 0 && memcmp(&MESSAGE[count],"2",1) != 0 && memcmp(&MESSAGE[count],"3",1) != 0 && memcmp(&MESSAGE[count],"4",1) != 0 && memcmp(&MESSAGE[count],"5",1) != 0 && memcmp(&MESSAGE[count],"6",1) != 0 && memcmp(&MESSAGE[count],"7",1) != 0 && memcmp(&MESSAGE[count],"8",1) != 0 && memcmp(&MESSAGE[count],"9",1) != 0)
+        if (memcmp(&data[count],"0",1) != 0 && memcmp(&data[count],"1",1) != 0 && memcmp(&data[count],"2",1) != 0 && memcmp(&data[count],"3",1) != 0 && memcmp(&data[count],"4",1) != 0 && memcmp(&data[count],"5",1) != 0 && memcmp(&data[count],"6",1) != 0 && memcmp(&data[count],"7",1) != 0 && memcmp(&data[count],"8",1) != 0 && memcmp(&data[count],"9",1) != 0)
         {
           VALIDATE_DATA_ERROR("Invalid message");
         }
@@ -958,24 +960,28 @@ int validate_data(const char* MESSAGE)
   {
     if (memcmp(MESSAGE,"GET /getpublicaddressinformation?public_address=",48) == 0)
     {
-      if (strlen(&MESSAGE[48]) != XCASH_WALLET_LENGTH || memcmp(&MESSAGE[48],XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+      if (strlen(&MESSAGE[40]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[40]," HTTP/") == NULL)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       } 
     }
     else if (memcmp(MESSAGE,"GET /getpublicaddresspaymentinformation?public_address=",55) == 0)
     {
-      if (strlen(&MESSAGE[55]) != XCASH_WALLET_LENGTH || memcmp(&MESSAGE[55],XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+      if (strlen(&MESSAGE[55]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[55]," HTTP/") == NULL)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       }
     }
     else if (memcmp(MESSAGE,"GET /getdelegatesvoterslist?parameter1=",39) == 0)
     {
-      if (strlen(&MESSAGE[39]) > XCASH_WALLET_LENGTH)
+      if (strlen(&MESSAGE[39]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[39]," HTTP/") == NULL)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       } 
+    }
+    else if (strstr(MESSAGE,"GET /shareddelegateswebsitegetstatistics") != NULL || strstr(MESSAGE,"GET /getblocksfound") != NULL)
+    {
+     
     }
     else
     {
