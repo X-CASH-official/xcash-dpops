@@ -1077,7 +1077,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   
   // define macros
   #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0) \
+  if ((data_settings) == 0 || memcmp(DELEGATES_IP_ADDRESS,"",1) != 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
@@ -1202,7 +1202,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   
   // define macros
   #define SYNC_RESERVE_BYTES_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0) \
+  if ((data_settings) == 0 || memcmp(DELEGATES_IP_ADDRESS,"",1) != 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
@@ -1333,7 +1333,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   #define DATABASE_COLLECTION "delegates"
   #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
   #define SYNC_DELEGATES_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0) \
+  if ((data_settings) == 0 || memcmp(DELEGATES_IP_ADDRESS,"",1) != 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_delegates_database",23); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
@@ -1459,7 +1459,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   #define DATABASE_COLLECTION "statistics"
   #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
   #define SYNC_STATISTICS_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0) \
+  if ((data_settings) == 0 || memcmp(DELEGATES_IP_ADDRESS,"",1) != 0) \
   { \
     memcpy(error_message.function[error_message.total],"sync_statistics_database",24); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
