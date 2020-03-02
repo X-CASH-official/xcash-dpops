@@ -102,6 +102,7 @@ int block_height_start_time; // 1 to start the current_block_height_timer_thread
 int block_height_start_time_day; // The minute to start the current_block_height_timer_thread
 int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
 int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
+int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not

@@ -61,7 +61,6 @@ void sync_network_data_nodes_database(void)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
-  int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT] = {-1,-1,-1,-1,-1};
   double network_data_nodes_valid_count;
 
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,20);
@@ -71,6 +70,12 @@ void sync_network_data_nodes_database(void)
 
   // set the database to not accept any data
   database_settings = 0;
+
+  // reset the synced_network_data_nodes
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    synced_network_data_nodes[count] = -1;
+  }
 
   // reset the struct network_data_nodes_sync_database_list
   memset(network_data_nodes_sync_database_list.network_data_node_1_public_address,0,sizeof(network_data_nodes_sync_database_list.network_data_node_1_public_address));
@@ -322,14 +327,16 @@ void sync_network_data_nodes_database(void)
   sleep(BLOCK_VERIFIERS_SETTINGS);
   database_settings = 1;
   pthread_cond_broadcast(&thread_settings_lock);
+
+  // sync the databses from one of the synced network data nodes
   color_print("Syncing the reserve proofs database","yellow");
-  sync_reserve_proofs_database(0,network_data_nodes_list.network_data_nodes_IP_address[count]);
+  sync_reserve_proofs_database(0,"synced_network_data_nodes");
   color_print("Syncing the reserve bytes database","yellow");
-  sync_reserve_bytes_database(0,1,network_data_nodes_list.network_data_nodes_IP_address[count]);
+  sync_reserve_bytes_database(0,1,"synced_network_data_nodes");
   color_print("Syncing the delegates database","yellow");
-  sync_delegates_database(0,network_data_nodes_list.network_data_nodes_IP_address[count]);
+  sync_delegates_database(0,"synced_network_data_nodes");
   color_print("Syncing the statistics database","yellow");
-  sync_statistics_database(0,network_data_nodes_list.network_data_nodes_IP_address[count]);
+  sync_statistics_database(0,"synced_network_data_nodes");
   color_print("Successfully synced all databases","yellow");
 
   network_data_nodes_sync_databases_settings = 1;
@@ -709,7 +716,18 @@ void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES
   }
   else
   {
-    memcpy(block_verifiers_ip_address,DELEGATES_IP_ADDRESS,strnlen(DELEGATES_IP_ADDRESS,BUFFER_SIZE));
+    if (memcmp(DELEGATES_IP_ADDRESS,"synced_network_data_nodes",25) == 0)
+    {
+      // get a random network data node that is a synced network data node
+      do
+      {
+        count = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT));
+      } while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || synced_network_data_nodes[count] == -1);
+    }
+    else
+    {
+      memcpy(block_verifiers_ip_address,DELEGATES_IP_ADDRESS,strnlen(DELEGATES_IP_ADDRESS,BUFFER_SIZE));
+    }
   }
   return;
 }
@@ -1060,7 +1078,7 @@ Name: sync_reserve_proofs_database
 Description: Syncs the reserve proofs database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
-  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
+  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, or if it is "synced_network_data_nodes" then it will sync from a random synced network data node, otherwise an empty string
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1077,7 +1095,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   
   // define macros
   #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0 || memcmp(DELEGATES_IP_ADDRESS,"",1) != 0) \
+  if ((data_settings) == 0 || (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0 && memcmp(DELEGATES_IP_ADDRESS,"synced_network_data_nodes",1) != 0)) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
@@ -1202,7 +1220,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   
   // define macros
   #define SYNC_RESERVE_BYTES_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0 || memcmp(DELEGATES_IP_ADDRESS,"",1) != 0) \
+  if ((data_settings) == 0 || (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0 && memcmp(DELEGATES_IP_ADDRESS,"synced_network_data_nodes",1) != 0)) \
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
@@ -1333,7 +1351,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   #define DATABASE_COLLECTION "delegates"
   #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
   #define SYNC_DELEGATES_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0 || memcmp(DELEGATES_IP_ADDRESS,"",1) != 0) \
+  if ((data_settings) == 0 || (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0 && memcmp(DELEGATES_IP_ADDRESS,"synced_network_data_nodes",1) != 0)) \
   { \
     memcpy(error_message.function[error_message.total],"sync_delegates_database",23); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
@@ -1459,7 +1477,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   #define DATABASE_COLLECTION "statistics"
   #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
   #define SYNC_STATISTICS_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0 || memcmp(DELEGATES_IP_ADDRESS,"",1) != 0) \
+  if ((data_settings) == 0 || (memcmp(DELEGATES_IP_ADDRESS,"",1) != 0 && memcmp(DELEGATES_IP_ADDRESS,"synced_network_data_nodes",1) != 0)) \
   { \
     memcpy(error_message.function[error_message.total],"sync_statistics_database",24); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
