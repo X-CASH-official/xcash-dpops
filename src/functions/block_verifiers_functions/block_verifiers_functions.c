@@ -148,7 +148,7 @@ int start_new_round(void)
 
     RESET_VARIABLES;
     
-    // reset the current_round_part and current_round_part_backup_node
+    // reset the current_round_part and current_round_part_backup_node after the databases have been updated for the previous rounds statistics
     memset(current_round_part,0,sizeof(current_round_part));
     memcpy(current_round_part,"1",1);
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));

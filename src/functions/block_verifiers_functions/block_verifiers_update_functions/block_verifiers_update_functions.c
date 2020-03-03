@@ -603,9 +603,8 @@ int calculate_main_nodes_roles(void)
   }  
 
   // calculate the database to get the reserve byte data
-  get_reserve_bytes_database(count,0);
+  get_reserve_bytes_database(count,1);
   count2 = count;
-  //count2 = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memcpy(data,"reserve_bytes_",14);
   snprintf(data+14,sizeof(data)-15,"%d",count2);
 

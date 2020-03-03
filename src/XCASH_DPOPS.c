@@ -1289,7 +1289,7 @@ int main(int parameters_count, char* parameters[])
   initialize_data();
 
   // write the message
-  color_print("XCASH DPOPS - Version 1.0.0\n","green");
+  color_print(XCASH_DPOPS_CURRENT_VERSION,"green");
 
   // check if they want to display the parameters
   if (parameters_count == 2 && strncmp(parameters[1],"--parameters",BUFFER_SIZE) == 0)
