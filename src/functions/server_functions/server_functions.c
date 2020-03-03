@@ -618,18 +618,18 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   
   if (shared_delegates_website == 1)
   {
-    memcpy(data2,"../shared_delegates_website/",28);
+    memcpy(data2,"../delegates-pool-website/",26);
   }
   if (delegates_website == 1)
   {
-    memcpy(data2,"../delegates_website/",21);
+    memcpy(data2,"../delegates-explorer/",22);
   }
   memcpy(data2+strlen(data2),buffer,strnlen(buffer,sizeof(data2)));
 
   // get the file size
   if ((file_size = get_file_size(data2)) == 0)
   {
-    if ((file_size = shared_delegates_website == 1 ? get_file_size("../shared_delegates_website/index.html") : get_file_size("../delegates_website/index.html")) == 0)
+    if ((file_size = shared_delegates_website == 1 ? get_file_size("../delegates-pool-website/index.html") : get_file_size("../delegates-explorer/index.html")) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
     }
@@ -639,7 +639,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   
   if ((file_size = read_file(data,data2)) == 0)
   {
-    if ((file_size = shared_delegates_website == 1 ? read_file(data,"../shared_delegates_website/index.html") : read_file(data,"../delegates_website/index.html")) == 0)
+    if ((file_size = shared_delegates_website == 1 ? read_file(data,"../delegates-pool-website/index.html") : read_file(data,"../delegates-explorer/index.html")) == 0)
     {
       pointer_reset(data);
       SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;

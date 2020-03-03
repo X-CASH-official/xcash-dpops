@@ -26,7 +26,9 @@ X-CASH DPOPS is a variation of DPOS and DBFT that uses verifiable random functio
  
 This program allows one to run a DPOPS node, a shared delegates website, and a delegates website.
 
-**If you plan on running a [shared delegates website](https://github.com/X-CASH-official/XCASH_DPOPS_shared_delegates_website) or a [delegates website](https://github.com/X-CASH-official/XCASH_DPOPS_delegates_website), you will need to run the website on the same system as the DPOPS node**
+**If you plan on running a [shared delegates website](https://github.com/X-CASH-official/delegates-pool-website) or a [delegates website](https://github.com/X-CASH-official/delegates-explorer), you will need to run the website on the same system as the DPOPS node**
+
+**If planning on running a solo delegate, it is optional to install the [delegates-supervisor](https://github.com/X-CASH-official/delegates-supervisor.git) to easily keep track of your statistics
 
 **By running a DPOPS node (solo or shared) you will need the computer to be online and running at all times**
 
@@ -142,7 +144,7 @@ The following table summarizes the tools and libraries required to run XCASH DPO
 | Git                                          | any           | `git`                     |
 | MongoDB                                      | 4.0.3         |  install from binaries    |
 | MongoDB C Driver (includes BSON libary)      | 1.13.1        |  build from source        |
-| XCASH                                        | latest version         |  [download the latest release](https://github.com/X-CASH-official/X-CASH/releases) or [build from source](https://github.com/X-CASH-official/X-CASH#compiling-x-cash-from-source)       |
+| XCASH                                        | latest version         |  [download the latest release](https://github.com/X-CASH-official/xcash-core/releases) or [build from source](https://github.com/X-CASH-official/xcash-core#compiling-x-cash-from-source)       |
  
  
 ## Recommendations For the XCASH Wallet
@@ -285,7 +287,7 @@ After you have built the MongoDB C driver from source, you will need to run
 ### Cloning the Repository
 ```
 cd ~/x-network 
-git clone https://github.com/X-CASH-official/XCASH_DPOPS.git
+git clone https://github.com/X-CASH-official/xcash-dpops.git
 ``` 
  
  
@@ -294,7 +296,7 @@ git clone https://github.com/X-CASH-official/XCASH_DPOPS.git
 XCASH_DPOPS uses a Make file.
  
 After cloning the repository, navigate to the folder  
-`cd ~/x-network/XCASH_DPOPS`
+`cd ~/x-network/xcash-dpops`
  
 Then use the make file to build the binary file  
 `make clean ; make release -j $(nproc)`
@@ -306,7 +308,7 @@ Then use the make file to build the binary file
 Edit the below systemd files to your paths
 
 Copy all of the service files in the systemd folder to `/lib/systemd/system/`  
-`cp -a ~/x-network/XCASH_DPOPS/scripts/systemd/* /lib/systemd/system/`
+`cp -a ~/x-network/xcash-dpops/scripts/systemd/* /lib/systemd/system/`
 
 Reload systemd  
 `systemctl daemon-reload`
@@ -372,7 +374,7 @@ Description=XCASH Daemon systemd file
 Type=forking
 User=root
 PIDFile=/root/x-network/systemdpid/xcash_daemon.pid
-ExecStart=/root/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile /root/x-network/systemdpid/xcash_daemon.pid
+ExecStart=/root/x-network/xcash-core/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile /root/x-network/systemdpid/xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -402,7 +404,7 @@ Description=XCASH Wallet
 [Service]
 Type=simple
 User=root
-ExecStart=/root/x-network/X-CASH/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+ExecStart=/root/x-network/xcash-core/build/release/bin/xcash-wallet-rpc --wallet-file /root/x-network/xcash_wallets/WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
 Restart=always
  
 [Install]
@@ -428,8 +430,8 @@ Description=XCASH DPOPS
 Type=simple
 LimitNOFILE=64000
 User=root
-WorkingDirectory=/root/x-network/XCASH_DPOPS/build/
-ExecStart=/root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --block_verifiers_secret_key BLOCK_VERIFIERS_SECRET_KEY
+WorkingDirectory=/root/x-network/xcash-dpops/build/
+ExecStart=/root/x-network/xcash-dpops/build/XCASH_DPOPS --block_verifiers_secret_key BLOCK_VERIFIERS_SECRET_KEY
 Restart=always
  
 [Install]
@@ -467,7 +469,7 @@ Description=firewall
 Type=oneshot
 RemainAfterExit=yes
 User=root
-ExecStart=/root/x-network/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+ExecStart=/root/x-network/xcash-dpops/scripts/firewall/firewall_script.sh
  
 [Install]
 WantedBy=multi-user.target
@@ -489,7 +491,7 @@ We will need to setup a firewall for our DPOPS node. The goal of settings up the
 The firewall is configured for a solo node setup. To configure the firewall for a shared delegates website or delegates website:
  
 Open the firewall script  
-`nano ~/x-network/XCASH_DPOPS/scripts/firewall/firewall_script.sh`
+`nano ~/x-network/xcash-dpops/scripts/firewall/firewall_script.sh`
  
 Uncomment these 3 lines (by removing the `#`) if running a shared delegates website or delegates website  
 `# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP`
@@ -502,8 +504,8 @@ If you want to run the shared delegates website or delegates website using HTTPS
  
 Now we need to run the firewall script and activate it  
 ```
-chmod +x ~/x-network/XCASH_DPOPS/scripts/firewall/firewall_script.sh
-~/x-network/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+chmod +x ~/x-network/xcash-dpops/scripts/firewall/firewall_script.sh
+~/x-network/xcash-dpops/scripts/firewall/firewall_script.sh
 iptables-save > /etc/network/iptables.up.rules
 iptables-apply -t 60
 ```
@@ -592,25 +594,15 @@ Make sure to stop the XCASH_DPOPS service, if it is running
 `systemctl stop XCASH_DPOPS`
 
 Generate a public and secret key pair for signing and verifying the block verifier messages, and for signing and verifying the blocks reserve bytes  
-`~/x-network/XCASH_DPOPS/build/XCASH_DPOPS --generate_key`
+`~/x-network/xcash-dpops/build/XCASH_DPOPS --generate_key`
 
 Put the secret key in the `BLOCK_VERIFIERS_SECRET_KEY` in 
 ```
-~/x-network/XCASH_DPOPS/src/global_data/block_verifiers_sign_and_verify_messages.h
+~/x-network/xcash-dpops/src/global_data/block_verifiers_sign_and_verify_messages.h
 ```
 
 Rebuild XCASH_DPOPS  
 `make clean ; make debug -j $(nproc)`
-
-Make sure that when updating the repository the `block_verifiers_sign_and_verify_messages.h` does not update  
-```
-git update-index --skip-worktree ~/x-network/XCASH_DPOPS/src/global_data/block_verifiers_sign_and_verify_messages.h
-```
-
-You can always undo this change by running 
-```  
-git update-index --no-skip-worktree ~/x-network/XCASH_DPOPS/src/global_data/block_verifiers_sign_and_verify_messages.h
-```
 
 Make sure to stop the XCASH Wallet service, if it is running  
 `systemctl stop XCASH_Wallet`
@@ -704,7 +696,7 @@ To Install, run the autoinstaller script, and choose Install at the menu.
 
 Since the XCASH_DPOPS repository will probably not be downloaded yet onto your system, you can run directly from the github by running  
 ```
-bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/autoinstaller/autoinstaller.sh)"
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh)"
 ```
 
 You can then press enter for the default settings, or input custom settings. The autoinstaller will then install everything automatically for you.
@@ -727,9 +719,9 @@ Generate a New Password or Use an Existing Password:
 It is recommend to run the autoinstaller in update mode. The autoinstaller will update you automatically to the latest versions of:  
 ```
 System Packages that are related X-CASH or XCASH_DPOPS
-X-CASH
-XCASH_DPOPS
-XCASH_DPOPS_shared_delegates_website
+xcash-core
+xcash-dpops
+delegates-pool-website
 MongoDB
 Mongo C Driver
 NodeJS
@@ -742,9 +734,9 @@ NPM
 The autoinstaller can also remove XCASH_DPOPS. It will remove the following items:
 ```
 System Packages that are related X-CASH or XCASH_DPOPS
-X-CASH
-XCASH_DPOPS
-XCASH_DPOPS_shared_delegates_website
+xcash-core
+xcash-dpops
+delegates-pool-website
 MongoDB
 Mongo C Driver
 NodeJS
@@ -836,7 +828,7 @@ Once you have the 5 machines setup, you will need a fully synced copy of the blo
 
 Now you need to make the following code adjustments to work with your setup and to make a testnet copy of the official blockchain, this way you can mine blocks on it with your machines.
 
-**X-CASH**
+**xcash-core**
 
 **src/p2p/net_node.h**  
 Remove all seed nodes and add 2 of your servers IP addresses to `const std::vector<std::string> m_seed_nodes_list`
@@ -886,7 +878,7 @@ network_data_nodes_list.network_data_nodes_IP_address[4] = NETWORK_DATA_NODE_IP_
 
 Under `namespace config` change a few bytes in the `boost::uuids::uuid const NETWORK_ID`
 
-**XCASH_DPOPS**
+**xcash-dpops**
 
 Change the block height to the current block height of your blockchain
 `#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake`

@@ -5,8 +5,8 @@ Description=XCASH DPOPS
 Type=simple
 LimitNOFILE=64000
 User=root
-WorkingDirectory=/root/x-network/XCASH_DPOPS/build
-ExecStart=/root/x-network/XCASH_DPOPS/build/XCASH_DPOPS --block_verifiers_secret_key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a
+WorkingDirectory=/root/x-network/xcash-dpops/build
+ExecStart=/root/x-network/xcash-dpops/build/XCASH_DPOPS --block_verifiers_secret_key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a
 Restart=always
  
 [Install]

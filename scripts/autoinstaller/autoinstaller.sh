@@ -34,15 +34,15 @@ MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.16.2"
 NODEJS_LATEST_VERSION="node-v13.9.0-linux-x64"
 
 # Settings
-XCASH_URL="https://github.com/X-CASH-official/X-CASH.git"
+XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
 XCASH_DIR=""
 XCASH_WALLET_DIR=""
 XCASH_SYSTEMPID_DIR=""
 XCASH_LOGS_DIR=""
-XCASH_DPOPS_URL="https://github.com/X-CASH-official/XCASH_DPOPS.git"
+XCASH_DPOPS_URL="https://github.com/X-CASH-official/xcash-dpops.git"
 XCASH_DPOPS_DIR=""
 XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=""
-SHARED_DELEGATES_WEBSITE_URL="https://github.com/X-CASH-official/XCASH_DPOPS_shared_delegates_website.git"
+SHARED_DELEGATES_WEBSITE_URL="https://github.com/X-CASH-official/delegates-pool-website.git"
 SHARED_DELEGATES_WEBSITE_DIR=""
 NODEJS_URL="https://nodejs.org/dist/${NODEJS_LATEST_VERSION:5:7}/${NODEJS_LATEST_VERSION}.tar.xz"
 NODEJS_DIR=""
@@ -154,13 +154,13 @@ function get_mongodb_installation_directory()
 
 function update_global_variables()
 {
-  XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}X-CASH/
+  XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
   XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/
   XCASH_SYSTEMPID_DIR=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/
   XCASH_LOGS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}logs/
-  XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS/
-  XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_DIR}shared_delegates_website/
-  SHARED_DELEGATES_WEBSITE_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_shared_delegates_website/
+  XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-dpops/
+  XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_DIR}delegates-pool-website/
+  SHARED_DELEGATES_WEBSITE_DIR=${XCASH_DPOPS_INSTALLATION_DIR}delegates-pool-website/
   NODEJS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}${NODEJS_LATEST_VERSION}/
   MONGODB_DIR=${XCASH_DPOPS_INSTALLATION_DIR}${MONGODB_LATEST_VERSION}/
 }
@@ -1198,16 +1198,16 @@ function install_shared_delegates_website()
 function get_installation_directory()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting Installation Directories${END_COLOR_PRINT}"
-  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "XCASH_DPOPS" -exec dirname {} \;)/
+  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "xcash-dpops" -exec dirname {} \;)/
   XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name ".X-CASH" -print)/
   WALLET_PASSWORD=$(cat /lib/systemd/system/XCASH_Wallet.service | awk '/password/ {print $5}')
-  XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}X-CASH/
+  XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
   XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/
   XCASH_SYSTEMPID_DIR=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/
   XCASH_LOGS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}logs/
-  XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS/
-  XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_DIR}shared_delegates_website/
-  SHARED_DELEGATES_WEBSITE_DIR=${XCASH_DPOPS_INSTALLATION_DIR}XCASH_DPOPS_shared_delegates_website/
+  XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-dpops/
+  XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_DIR}delegates-pool-website/
+  SHARED_DELEGATES_WEBSITE_DIR=${XCASH_DPOPS_INSTALLATION_DIR}delegates-pool-website/
   NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "node-*-linux-x64" -print)/
   MONGODB_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -path "*/data/db" -print)/
   MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -print)/
@@ -1219,11 +1219,11 @@ function get_installation_directory()
   if [ "$XCASH_DPOPS_INSTALLATION_DIR" == "/" ]; then
     echo -e "${COLOR_PRINT_RED}Can not find the installation directory, Please run the auto installer in installation mode${END_COLOR_PRINT}"
   fi
-  if [ "$XCASH_DIR" == "X-CASH/" ]; then
+  if [ "$XCASH_DIR" == "xcash-core/" ]; then
     echo -e "${COLOR_PRINT_RED}Can not find X-CASH${END_COLOR_PRINT}"
     install_xcash
   fi
-  if [ "$XCASH_DPOPS_DIR" == "XCASH_DPOPS/" ]; then
+  if [ "$XCASH_DPOPS_DIR" == "xcash-dpops/" ]; then
     echo -e "${COLOR_PRINT_RED}Can not find XCASH_DPOPS${END_COLOR_PRINT}"
     download_xcash_dpops
     build_xcash_dpops

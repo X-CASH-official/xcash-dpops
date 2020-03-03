@@ -5,7 +5,7 @@ Description=XCASH Daemon systemd file
 Type=forking
 User=root
 PIDFile=/root/x-network/systemdpid/xcash_daemon.pid
-ExecStart=/root/x-network/X-CASH/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile /root/x-network/systemdpid/xcash_daemon.pid
+ExecStart=/root/x-network/xcash-core/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/x-network/logs/XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile /root/x-network/systemdpid/xcash_daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
