@@ -103,7 +103,7 @@ function get_installation_settings()
 
   # Check if XCASH_DPOPS is not installed, if the user choose to update or uninstall
   if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ]; then
-    data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "XCASH_DPOPS" -print | wc -l)
+    data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is not installed. Please install XCASH_DPOPS before running update or uninstall${END_COLOR_PRINT}"
       exit 1
