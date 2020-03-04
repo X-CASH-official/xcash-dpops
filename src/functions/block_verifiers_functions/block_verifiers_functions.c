@@ -67,6 +67,9 @@ int start_new_round(void)
   struct tm current_UTC_date_and_time;
   size_t count;
 
+   // threads
+  pthread_t thread_id;
+
   // define macros
   #define START_NEW_ROUND_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"start_new_round",15); \
@@ -106,9 +109,14 @@ int start_new_round(void)
   {
     START_NEW_ROUND_ERROR("Could not get the current block height");
   }
-  memcpy(data,"A new round is starting for block ",34);
-  memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
-  print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
+  
+  // check if it is running in registration mode only
+  if (registration_settings != 1)
+  {
+    memcpy(data,"A new round is starting for block ",34);
+    memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+    print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2); 
+  }
 
   // get the delegates online status
   get_delegates_online_status();
@@ -122,7 +130,7 @@ int start_new_round(void)
   // get the current block height
   sscanf(current_block_height,"%zu", &count);
   
-  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && registration_settings == 0)
   {
     // this is the first block of the network
     color_print("The current block is the first block on the network, meaning that the main network node will create this block","yellow");
@@ -139,7 +147,7 @@ int start_new_round(void)
   else
   {
     // this is a X-CASH proof of stake block so this is not the start blocks of the network
-    if (memcmp(VRF_data.block_blob,"",1) != 0)
+    if (memcmp(VRF_data.block_blob,"",1) != 0 && registration_settings == 0)
     {
       // update all of the databases 
       color_print("Updating the previous rounds data in the databases","blue");
@@ -199,6 +207,17 @@ int start_new_round(void)
       color_print("Syncing the statistics database","yellow");
       sync_statistics_database(2,"");
       color_print("Successfully synced all databases\n","yellow");
+    }
+
+    // check if it is running in registration mode only
+    if (registration_settings == 1)
+    {
+      sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_NETWORK_BLOCK_ROUND);
+      // start the reserve proofs timer
+      pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
+      pthread_detach(thread_id);
+      sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS); 
+      return 2;
     }
 
     if (calculate_main_nodes_roles() == 0)

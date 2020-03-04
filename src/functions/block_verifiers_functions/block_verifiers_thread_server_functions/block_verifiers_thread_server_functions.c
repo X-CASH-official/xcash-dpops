@@ -117,11 +117,14 @@ void* current_block_height_timer_thread(void* parameters)
         }
         else
         {
-          memset(data,0,strlen(data));
-          memcpy(data,"Network Block ",14);
-          memcpy(data+14,current_block_height,strnlen(current_block_height,sizeof(data)));
-          memcpy(data+strlen(data)," Has Been Created Successfully\n",31);
-          color_print(data,"green");
+          if (registration_settings == 0)
+          {
+            memset(data,0,strlen(data));
+            memcpy(data,"Network Block ",14);
+            memcpy(data+14,current_block_height,strnlen(current_block_height,sizeof(data)));
+            memcpy(data+strlen(data)," Has Been Created Successfully\n",31);
+            color_print(data,"green");
+          }
         }
         settings = 1;
         continue;
@@ -870,73 +873,4 @@ void remove_inactive_delegates(void)
   return;
 
   #undef DATABASE_COLLECTION
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: sync_network_data_nodes_database_timer_thread
-Description: Makes sure that all of the network data nodes have the same synced database every BLOCK_TIME interval
-Return: NULL
------------------------------------------------------------------------------------------------------------
-*/
-
-void* sync_network_data_nodes_database_timer_thread(void* parameters)
-{
-  // Variables
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-
-  // unused parameters
-  (void)parameters;
-
-  for (;;)
-  {
-    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
-    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 0)
-    {
-      sync_network_data_nodes_database();
-      sleep(1);
-    }
-  }
-  pthread_exit((void *)(intptr_t)1);
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: sync_all_block_verifiers_list_timer_thread
-Description: Updates the block verifiers list every BLOCK_TIME interval
-Return: NULL
------------------------------------------------------------------------------------------------------------
-*/
-
-void* sync_all_block_verifiers_list_timer_thread(void* parameters)
-{
-  // Variables
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-
-  // unused parameters
-  (void)parameters;
-
-  for (;;)
-  {
-    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
-    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 2 && current_UTC_date_and_time.tm_sec == 0)
-    {
-      // if the block verifier is not a network data node then it needs to run the timer after the networm data nodes, since it loads the block verifiers list from the network data nodes
-      if (network_data_node_settings == 0)
-      {
-        sleep(60);
-      }
-      sync_all_block_verifiers_list();
-      sleep(1);
-    }
-  }
-  pthread_exit((void *)(intptr_t)1);
 }

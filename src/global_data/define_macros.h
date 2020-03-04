@@ -73,7 +73,7 @@ Using define statements instead of constants for increased efficiency
 #define MINIMUM_AMOUNT_RESERVE_PROOF 1000000 // The minimum amount to create a reserve proof
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 20000000000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
-#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 20 // the start time in seconds that the block verifiers synchronize the database each round
+#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 30 // the start time in seconds that the block verifiers synchronize the database each round
 #define START_TIME_MINUTE_NETWORK_BLOCK_ROUND 2 // the start time that the block verifiers start to create the network block
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 50 // The time to submit the network block
 #define START_TIME_SECONDS_NETWORK_BLOCK_PART_2 10 // the start time of part 2 of the network block round
@@ -653,8 +653,8 @@ if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_
 "--generate_key - Generate a public and private key for signing and verifying messages between block verifiers" \
 "--synchronize_database_from_network_data_node - Synchronize the database from a network data node.\n\n" \
 "--synchronize_database_from_specific_delegate DELEGATES_IP_ADDRESS - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nIt should only be used in specific circumstances.\n\n" \
-"--disable_synchronizing_databases_and_starting_timers - Disables synchronizing the databases and starting the timers. Used for testing.\n\n" \
-"--registration_mode - Runs the registration mode only\n\n" \
+"--disable_synchronizing_databases_and_starting_timers - Disables synchronizing the databases and starting the timers. Used for testing. Pass this parameter last.\n\n" \
+"--registration_mode - Runs the registration mode only Pass this parameter last.\n\n" \
 "--start_time \"day\" \"hour\" \"minute\" - Starts the current block height timer at a specific time. The day is the day of the month (1-31), the hour is the hour in UTC (0-23) the minute is the minute (0-59)\n\n" \
 "--test_data_add - Add test data to the databases\n\n" \
 "--test_data_remove - Remove test data from the databases\n\n"

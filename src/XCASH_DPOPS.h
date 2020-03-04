@@ -15,6 +15,5 @@ void print_settings(void);
 void database_sync_check(void);
 int get_network_data_nodes_online_status(void);
 void start_timer_threads(void);
-void start_registration_mode(void);
 int main(int parameters_count, char* parameters[]);
 #endif

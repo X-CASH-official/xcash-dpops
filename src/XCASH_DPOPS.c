@@ -744,6 +744,7 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--registration_mode",BUFFER_SIZE) == 0)
     {
+      registration_settings = 1;
       return 3;
     }
     if (strncmp(parameters[count],"--start_time",BUFFER_SIZE) == 0)
@@ -1154,7 +1155,7 @@ void start_timer_threads(void)
   
   color_print("Started the current block height timer thread","green");
 
-  /*// start the block height timer thread
+  // start the block height timer thread
   if (shared_delegates_website == 1)
   {
     if (pthread_create(&thread_id[3], NULL, &block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[3]) != 0)
@@ -1171,74 +1172,10 @@ void start_timer_threads(void)
     }
   
     color_print("Started the payment_timer_thread","green");
-  }*/
+  }
   return;
 
   #undef START_TIMER_THREADS_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: start_registration_mode
-Description: Starts the registration mode used when the registration period is opened, but the blockchain is not mining XCASH_DPOPS blocks yet
------------------------------------------------------------------------------------------------------------
-*/
-
-void start_registration_mode(void)
-{
-  // Variables
-  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-
-  // threads
-  pthread_t thread_id[3];
-
-  // define macros
-  #define START_REGISTRATION_MODE_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"start_registration_mode",23); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  mongoc_client_destroy(database_client); \
-  mongoc_client_pool_destroy(database_client_thread_pool); \
-  mongoc_uri_destroy(uri_thread_pool); \
-  mongoc_cleanup(); \
-  exit(0);
-
-  memset(data,0,sizeof(data));
-
-  registration_settings = 1;
-
-  // start the sync_network_data_nodes_database_timer_thread
-  if (network_data_node_settings == 1)
-  {
-    if (pthread_create(&thread_id[0], NULL, &sync_network_data_nodes_database_timer_thread, NULL) != 0 && pthread_detach(thread_id[0]) != 0)
-    {
-      START_REGISTRATION_MODE_ERROR("Could not start the sync network data nodes database timer thread");
-    }
-    color_print("Started the sync network data nodes database timer thread","green");
-  }
- 
-  if (pthread_create(&thread_id[1], NULL, &sync_all_block_verifiers_list_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
-  {
-    START_REGISTRATION_MODE_ERROR("Could not start the sync all block verifiers list timer thread");
-  }
-
-  color_print("Started the sync all block verifiers list timer thread","green");
-
-  for (;;)
-  {
-    // start the reserve proofs timer
-    pthread_create(&thread_id[2], NULL, &check_reserve_proofs_timer_thread, NULL);
-    pthread_join(thread_id[2],NULL);
-    sleep(60);
-  }
-  return;
-
-  #undef START_REGISTRATION_MODE_ERROR
 }
 
 
@@ -1263,6 +1200,7 @@ int main(int parameters_count, char* parameters[])
   char data[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
+  int settings;
   
   // define macros
   #define MESSAGE "{\"username\":\"XCASH\"}"
@@ -1306,15 +1244,7 @@ int main(int parameters_count, char* parameters[])
 
   create_overall_database_connection();
 
-  if (set_parameters(parameters_count, parameters) == 2)
-  {
-    get_delegates_data();
-    goto disable_synchronizing_databases_and_starting_timers;
-  }
-  else if (set_parameters(parameters_count, parameters) == 3)
-  {
-    start_registration_mode();
-  }
+  settings = set_parameters(parameters_count, parameters);
 
   get_delegates_data();
 
@@ -1334,7 +1264,10 @@ int main(int parameters_count, char* parameters[])
   // check if the block verifier is a network data node
   CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;     
  
-  database_sync_check();  
+  if (settings != 2)
+  {
+    database_sync_check();
+  }
   
   // start the server
   if (create_server(1) == 0)
@@ -1342,51 +1275,10 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not start the server");
   }
 
-  /*// wait for enough block verifiers to start the block verification process
-  for (;;)
+  if (settings != 2)
   {
-    sleep(60);
-    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 0)
-    {
-      if (get_delegates_online_status() >= BLOCK_VERIFIERS_VALID_AMOUNT)
-      {
-        break;
-      }
-    }
-  }*/
-
-  start_timer_threads();
-
-  // start registration only mode
-  // start_registration_mode();
-
-  for (;;)
-  {
-    sleep(10);
+    start_timer_threads();
   }
-
-  disable_synchronizing_databases_and_starting_timers:
-
-  // start the server
-  if (create_server(1) == 0)
-  {
-    MAIN_ERROR("Could not start the server");
-  }
-
-  /*// wait for enough block verifiers to start the block verification process
-  for (;;)
-  {
-    sleep(60);
-    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time->tm_min % BLOCK_TIME == 0)
-    {
-      if (get_delegates_online_status() >= BLOCK_VERIFIERS_VALID_AMOUNT)
-      {
-        break;
-      }
-    }
-  }*/  
 
   for (;;)
   {
