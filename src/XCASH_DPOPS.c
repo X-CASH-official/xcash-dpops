@@ -1256,7 +1256,7 @@ int main(int parameters_count, char* parameters[])
     delete_collection_from_database(database_name,"delegates",1);
     delete_collection_from_database(database_name,"statistics",1);
     RESET_ERROR_MESSAGES;
-    INITIALIZE_DATABASE_DATA(0);
+    INITIALIZE_DATABASE_DATA(6);
   }
 
   print_settings();  
