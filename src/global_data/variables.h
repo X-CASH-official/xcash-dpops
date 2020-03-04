@@ -75,6 +75,8 @@ extern int block_height_start_time_day; // The minute to start the current_block
 extern int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
 extern int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
 extern int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
+extern int production_settings; // 0 for production, 1 for test
+extern int production_settings_database_data_settings; // The initialize the database settings
 
 extern int delegates_website; // 1 if the running the delegates websites, 0 if not
 extern int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not

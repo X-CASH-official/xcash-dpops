@@ -103,6 +103,8 @@ int block_height_start_time_day; // The minute to start the current_block_height
 int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
 int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
 int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
+int production_settings; // 0 for production, 1 for test
+int production_settings_database_data_settings; // The initialize the database settings
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -602,6 +604,11 @@ int set_parameters(int parameters_count, char* parameters[])
       test(2);
       database_reset;
       exit(0);
+    }
+    if (strncmp(parameters[count],"--test_mode",BUFFER_SIZE) == 0)
+    {
+      production_settings = 1;
+      sscanf(parameters[count+1], "%d", &production_settings_database_data_settings);
     }
     if (strncmp(parameters[count],"--debug",BUFFER_SIZE) == 0)
     {
@@ -1256,7 +1263,7 @@ int main(int parameters_count, char* parameters[])
     delete_collection_from_database(database_name,"delegates",1);
     delete_collection_from_database(database_name,"statistics",1);
     RESET_ERROR_MESSAGES;
-    INITIALIZE_DATABASE_DATA(6);
+    INITIALIZE_DATABASE_DATA(production_settings_database_data_settings);
   }
 
   print_settings();  

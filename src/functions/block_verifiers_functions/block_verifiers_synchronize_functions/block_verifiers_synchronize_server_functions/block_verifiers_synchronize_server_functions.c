@@ -236,23 +236,23 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
     SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
   }
 
-  if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
+  if ((production_settings == 1 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 0 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,data_hash,DATA_HASH_LENGTH);
   }
-  else if (memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
+  else if ((production_settings == 1 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 0 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,data_hash,DATA_HASH_LENGTH);
   }
-  else if (memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
+  else if ((production_settings == 1 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 0 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,data_hash,DATA_HASH_LENGTH);
   }
-  else if (memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
+  else if ((production_settings == 1 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 0 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,data_hash,DATA_HASH_LENGTH);
   }
-  else if (memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0)
+  else if ((production_settings == 1 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 0 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,data_hash,DATA_HASH_LENGTH);
   }
