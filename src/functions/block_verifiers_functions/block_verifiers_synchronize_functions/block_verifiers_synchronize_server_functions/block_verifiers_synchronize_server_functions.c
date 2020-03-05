@@ -66,9 +66,12 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list",100); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   #define COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA(settings,block_verifiers_data) \
@@ -144,9 +147,12 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list",86); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get a list of the current block verifiers",0,1,""); \
   return 0;
   
@@ -216,9 +222,12 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",87); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(data_hash,0,sizeof(data_hash));
@@ -289,9 +298,12 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   // define macros
   #define DATABASE_COLLECTION "reserve_bytes"
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   pointer_reset(data2); \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the reserve bytes data hash}",0,0,""); \
   return 0;
@@ -387,9 +399,12 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash",82); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   pointer_reset(message2); \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes database hash}",0,0,""); \
   return 0;
@@ -534,9 +549,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update",107); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(message,0,sizeof(message));
@@ -641,9 +659,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update",106); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   pointer_reset_all; \
   return 0;
 
@@ -725,9 +746,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update",106); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(message,0,sizeof(message));
@@ -832,9 +856,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update",105); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   pointer_reset_all; \
   return 0;
 
@@ -912,9 +939,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   // define macros
   #define DATABASE_COLLECTION "delegates"
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update",98); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -989,9 +1019,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update",101); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   pointer_reset_all; \
   return 0;
 
@@ -1071,9 +1104,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   // define macros
   #define DATABASE_COLLECTION "statistics"
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update",99); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   return 0;
 
   memset(data,0,sizeof(data));
@@ -1147,9 +1183,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   data2 = NULL;
 
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",102); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  } \
   pointer_reset_all; \
   return 0;
 
