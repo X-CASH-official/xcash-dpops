@@ -1052,8 +1052,9 @@ void database_sync_check(void)
 
   // check if the database is synced, unless this is the main network data node
   // if (get_network_data_nodes_online_status() != 0)
-  if (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0)
+  if ((production_settings == 0 && memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0) || (production_settings == 1 && memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0))
   {
+    fprintf(stderr,"%d\n\n\n\n\n",production_settings);
     if (network_data_node_settings == 1)
     {
       // check if all of the databases are synced from a random network data node
