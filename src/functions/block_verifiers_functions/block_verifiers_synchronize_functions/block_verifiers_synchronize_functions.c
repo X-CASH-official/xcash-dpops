@@ -1028,7 +1028,6 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
   #define SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR(message) \
   memcpy(error_message.function[error_message.total],"sync_check_reserve_bytes_specific_database",42); \
   memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
-  color_print(message,"yellow"); \
   error_message.total++; \
   pointer_reset_all; \
   return 0;
@@ -1142,7 +1141,6 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       memcpy(data,"reserve_bytes_",14);
       snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",starting_reserve_bytes_database);
       memcpy(data+strlen(data)," has been synced successfully\n",31);
-      color_print(data,"green");
     }
     else
     {
@@ -1152,7 +1150,6 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
         memcpy(data,"reserve_bytes_",14);
         snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%zu",starting_reserve_bytes_database);
         memcpy(data+strlen(data)," is already synced\n",19);
-        color_print(data,"green");
       }
     }
   }

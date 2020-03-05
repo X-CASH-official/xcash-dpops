@@ -627,7 +627,6 @@ int validate_data(const char* MESSAGE)
 
   // define macros  
   #define VALIDATE_DATA_ERROR(settings) \
-  color_print(MESSAGE,"yellow"); \
   if (debug_settings == 1) \
   { \
   memcpy(error_message.function[error_message.total],"validate_data",13); \
