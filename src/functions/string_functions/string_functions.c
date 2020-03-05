@@ -43,7 +43,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
 
   // define macros
   #define PARSE_JSON_DATA_ERROR \
-  if (network_functions_test_error_settings == 1) \
+  if (debug_settings == 1) \
   { \
   memcpy(error_message.function[error_message.total],"parse_json_data",15); \
   memcpy(error_message.data[error_message.total],"Could not parse the message",27); \
