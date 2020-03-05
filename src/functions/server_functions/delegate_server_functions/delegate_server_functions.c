@@ -324,7 +324,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (test_settings == 0 && current_UTC_date_and_time.tm_min >= (BLOCK_TIME-1))
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min != 2 && current_UTC_date_and_time.tm_min != 3)
   {
     send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are the first 4 minutes of each hour",0,0,"");
     return 0;
@@ -471,7 +471,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME < START_TIME_MINUTE_NETWORK_BLOCK_ROUND)
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 2 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
   {
     send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are after the first two minutes of each round",0,0,"");
     return 0;
@@ -649,7 +649,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(const i
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME < START_TIME_MINUTE_NETWORK_BLOCK_ROUND)
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 2 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
   {
     send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are after the first two minutes of each round",0,0,"");
     return 0;
@@ -804,7 +804,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME < START_TIME_MINUTE_NETWORK_BLOCK_ROUND)
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 2 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
   {
     send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are after the first two minutes of each round",0,0,"");
     return 0;
