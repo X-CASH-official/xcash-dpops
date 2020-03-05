@@ -187,28 +187,6 @@ int delegate_server_functions_test(void)
     fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates\033[0m\n");
   }
 
-  // test server_receive_data_socket_nodes_to_block_verifiers_remove_delegates
-  RESET_ERROR_MESSAGES;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  memset(data,0,sizeof(data));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "\"}",0);
-  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REMOVE "|",234);
-  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
-  sleep(5);
-  memset(result_test,0,sizeof(result_test));
-  if (count_documents_in_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\"}",0) == 0)
-  {
-    fprintf(stderr,"\033[1;32mPASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_remove_delegates\033[0m\n");
-    count_test++;
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_remove_delegates\033[0m\n");
-  }
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
-
 
 
   // check all errors for each test
@@ -320,17 +298,6 @@ int delegate_server_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|about|data|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_UPDATE "|","server_receive_data_socket_nodes_to_block_verifiers_update_delegates","The delegate could not be updated from the database"); 
-  RESET_ERROR_MESSAGES;
-
-  // test server_receive_data_socket_nodes_to_block_verifiers_remove_delegates
-  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|","server_receive_data_socket_nodes_to_block_verifiers_remove_delegates","Could not verify the message"); 
-  RESET_ERROR_MESSAGES;
-
-  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REMOVE "|","server_receive_data_socket_nodes_to_block_verifiers_remove_delegates","The delegate is already removed"); 
-  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_DELEGATES_REGISTER "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"public_key\":\"" NEXT_BLOCK_VERIFIERS_PUBLIC_KEY "\"}",0);
-  RESET_ERROR_MESSAGES;
-
-  DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_REMOVE "|","server_receive_data_socket_nodes_to_block_verifiers_remove_delegates","The delegate has already mined a block"); 
   RESET_ERROR_MESSAGES;
 
   // test the check_for_valid_fee_structure

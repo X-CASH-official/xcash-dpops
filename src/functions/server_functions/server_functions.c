@@ -450,11 +450,7 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL)
  {
    server_receive_data_socket_nodes_to_block_verifiers_register_delegates(client_socket,(const char*)buffer);
- }            
- else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE") != NULL)
- {
-   server_receive_data_socket_nodes_to_block_verifiers_remove_delegates(client_socket,(const char*)buffer);
- } 
+ }
  else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL)
  {
    server_receive_data_socket_nodes_to_block_verifiers_update_delegates(client_socket,(const char*)buffer);

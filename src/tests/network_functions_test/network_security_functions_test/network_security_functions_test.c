@@ -244,15 +244,6 @@ int network_security_functions_test(void)
   {
     color_print("FAILED! Test for validate_data for NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE","red");
   }
-  if (validate_data(NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE) == 1)
-  {   
-    color_print("PASSED! Test for validate_data for NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for validate_data for NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE","red");
-  }
   if (validate_data(NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE) == 1)
   {   
     color_print("PASSED! Test for validate_data for NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE","green");
