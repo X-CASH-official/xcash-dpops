@@ -150,6 +150,9 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
     return 0;
   }
 
+  memset(reserve_proof->reserve_proof_amount,0,sizeof(reserve_proof->reserve_proof_amount));
+  memcpy(reserve_proof->reserve_proof_amount,data2,strnlen(data2,sizeof(reserve_proof->reserve_proof_amount)));
+
   // check if the same reserve proof is already in the database
   memset(data,0,sizeof(data));
   memcpy(data,"{\"reserve_proof\":\"",18);
@@ -284,8 +287,6 @@ Return: 0 if an error has occured, 1 if successfull
 int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
-  char delegates_public_address[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
-  char public_address[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
   char message[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
   char message2[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
   char data[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
@@ -312,8 +313,6 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
   memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
 
-  memset(delegates_public_address,0,sizeof(delegates_public_address));
-  memset(public_address,0,sizeof(public_address));
   memset(message,0,sizeof(message));
   memset(message2,0,sizeof(message2));
   memset(data,0,sizeof(data));
@@ -354,7 +353,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(data+strlen(data),"\",\"public_address_voted_for\":\"",30);
   memcpy(data+strlen(data),reserve_proof.public_address_voted_for,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\",\"total\":\"",11);
-  memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
+  memcpy(data+strlen(data),reserve_proof.reserve_proof_amount,strnlen(reserve_proof.reserve_proof_amount,sizeof(data)));
   memcpy(data+strlen(data),"\",\"reserve_proof\":\"",19);
   memcpy(data+strlen(data),reserve_proof.reserve_proof,strnlen(reserve_proof.reserve_proof,sizeof(data)));
   memcpy(data+strlen(data),"\"}",2);
@@ -380,19 +379,19 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   RESET_ERROR_MESSAGES;
 
   // update the delegates total_vote_count
-  memset(data3,0,sizeof(data3));
-  memcpy(data3,"{\"public_address\":\"",19);
-  memcpy(data3+strlen(data3),delegates_public_address,XCASH_WALLET_LENGTH);
-  memcpy(data3+strlen(data3),"\"}",2);
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"{\"public_address\":\"",19);
+  memcpy(data2+strlen(data2),reserve_proof.public_address_voted_for,XCASH_WALLET_LENGTH);
+  memcpy(data2+strlen(data2),"\"}",2);
 
-  if (read_document_field_from_collection(database_name,"delegates",data3,"total_vote_count",message2,1) == 0)
+  if (read_document_field_from_collection(database_name,"delegates",data2,"total_vote_count",message2,1) == 0)
   {
     // delete the reserve proof, since it could not update the delegates total_vote_count
     memset(data,0,sizeof(data));
     memcpy(data,"{\"public_address_created_reserve_proof\":\"",41);
-    memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
+    memcpy(data+strlen(data),reserve_proof.public_address_created_reserve_proof,XCASH_WALLET_LENGTH);
     memcpy(data+strlen(data),"\"}",2);
-    delete_document_from_collection(database_name,data2,data,1);
+    delete_document_from_collection(database_name,data3,data,1);
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
   }
 
@@ -408,14 +407,14 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   memcpy(message+strlen(message),"\"}",2);
 
   // add the total of the reserve proof to the total_vote_count of the delegate
-  if (update_document_from_collection(database_name,"delegates",data3,message,1) == 0)
+  if (update_document_from_collection(database_name,"delegates",data2,message,1) == 0)
   {
     // delete the reserve proof, since it could not update the delegates total_vote_count
     memset(data,0,sizeof(data));
     memcpy(data,"{\"public_address_created_reserve_proof\":\"",41);
-    memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
+    memcpy(data+strlen(data),reserve_proof.public_address_created_reserve_proof,XCASH_WALLET_LENGTH);
     memcpy(data+strlen(data),"\"}",2);
-    delete_document_from_collection(database_name,data2,data,1);
+    delete_document_from_collection(database_name,data3,data,1);
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The vote could not be added to the database");
   }
   send_data(CLIENT_SOCKET,(unsigned char*)"The vote was successfully added to the database}",0,0,"");
