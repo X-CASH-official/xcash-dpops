@@ -323,7 +323,7 @@ Parameters:
 #define sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,minutes) \
 do \
 { \
-  usleep(200000); \
+  nanosleep((const struct timespec[]){{0, 200000000L}}, NULL); \
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 } while (current_UTC_date_and_time.tm_min % BLOCK_TIME != minutes); 
 
@@ -343,7 +343,7 @@ Parameters:
 #define sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,seconds) \
 do \
 { \
-  usleep(200000); \
+  nanosleep((const struct timespec[]){{0, 200000000L}}, NULL); \
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 } while (current_UTC_date_and_time.tm_sec != seconds);
 
@@ -364,7 +364,7 @@ Parameters:
 #define sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,minutes,seconds) \
 do \
 { \
-  usleep(200000); \
+  nanosleep((const struct timespec[]){{0, 200000000L}}, NULL); \
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
 } while (current_UTC_date_and_time.tm_min % BLOCK_TIME != minutes || current_UTC_date_and_time.tm_sec != seconds);
 
