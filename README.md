@@ -84,7 +84,9 @@ This program allows one to run a DPOPS node, a shared delegates website, and a d
 *  [Allow X11 Forwarding on the server](#allow-x11-forwarding-on-the-server)  
 *  [Install GDB and vscode](#install-gdb-and-vscode)
 *  [Run vscode on the Server and Forward the GUI to a Dekstop](#run-vscode-on-the-server-and-forward-the-gui-to-a-dekstop)
-*  [Change vscode Keyboard Shortcuts](#change-vscode-keyboard-shortcuts)
+*  [Change vscode Keyboard Shortcuts](#change-vscode-keyboard-shortcuts)  
+
+[Network Data Nodes Delegates Supervisor](#netowrk-data-nodes-delegate-supervisor)  
 
  
 ## System Requirements
@@ -1122,3 +1124,17 @@ To rebuild, and start the debugger use `Control+Shift+D`
 If the keyboard shortcuts are not changed, then to rebuild and start the debugger it is `F5` and `Control+Shift+D` to switch to the debugger panel
 
 The vscode files have already been written for you and are included in the `.vscode` directory
+
+
+
+## Network Data Nodes Delegates Supervisor
+Each network data node and our official shared delegate have a delegate supervisor setup, so it is easy to see the statistics of the company owned delegates
+
+| Delegate      | Location | Delegates domain  | Delegates supervisor domain |
+| ------------- | ---------|-------- | -------------------------     |
+| delegates_xcash_foundation | US |     delegates.xcash.foundation            | 116.202.179.242     |
+| europe1_xcash_foundation  | EU |        europe1.xcash.foundation            | 116.202.179.243    |
+| europe2_xcash_foundation  | EU |      europe2.xcash.foundation            | 116.202.179.244     |
+| europe3_xcash_foundation  | EU |         europe3.xcash.foundation            | 116.202.179.245     |
+| asia1_xcash_foundation    | ASIA | asia1.xcash.foundation           | 116.202.179.246                 |
+| officialdelegate_xcash_foundation |EU | officialdelegate.xcash.foundation            | 116.202.179.247  |
