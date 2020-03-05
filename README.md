@@ -791,7 +791,7 @@ To delete the container (Note the container must be stopped first)
 `lxc delete container`
 
 To open a terminal inside the container  
-`lxc exec container -- bash`
+`lxc exec container1 -- bash -c "source ~/.profile ; bash"`
 
 If you already have the blockchain locally installed, and need to add it to the container you can run  
 `lxc file push -r /root/.X-CASH/ container/root/`
