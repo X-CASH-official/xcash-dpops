@@ -166,6 +166,8 @@ All parameters are optional, execept for --block_verifiers_secret_key. **The --b
 
 --block_verifiers_secret_key - The block verifiers secret key. This must be the first parameter
 
+--test_mode "settings" - use the test network data nodes, with the specific settings (1-9)
+
 --debug - Show all incoming and outgoing messages from the server
 
 --log_file "log_file" - Write all output to a log file with no colors

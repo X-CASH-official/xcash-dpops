@@ -178,6 +178,7 @@ void initialize_data(void)
   block_height_start_time = 0;
   database_settings = 1;
   network_data_nodes_sync_databases_settings = 1;
+  production_settings = 1;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -607,7 +608,7 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--test_mode",BUFFER_SIZE) == 0)
     {
-      production_settings = 1;
+      production_settings = 0;
       sscanf(parameters[count+1], "%d", &production_settings_database_data_settings);
     }
     if (strncmp(parameters[count],"--debug",BUFFER_SIZE) == 0)
