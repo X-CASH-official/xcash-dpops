@@ -849,7 +849,7 @@ void print_settings(void)
   }
   debug_settings == 1 ? memcpy(data+strlen(data),"\nDebug Settings: YES",20) : memcpy(data+strlen(data),"\nDebug Settings: NO",19);
   memcpy(data+strlen(data),"\nDelegates Server IP Address: ",30);
-  memcmp(XCASH_DPOPS_delegates_IP_address,"",1) == 0 ? memcpy(data+strlen(data),"0.0.0.0",7) : memcpy(data+strlen(data),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data)));
+  memcmp(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9) == 0 ? memcpy(data+strlen(data),"0.0.0.0",7) : memcpy(data+strlen(data),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data)));
   memcpy(data+strlen(data),"\nDelegates Server Port: 18283\nXCASH Wallet Port: ",49);
   snprintf(data+strlen(data),sizeof(data)-1,"%d",xcash_wallet_port);
   memcpy(data+strlen(data),"\nTotal Threads: ",16);
