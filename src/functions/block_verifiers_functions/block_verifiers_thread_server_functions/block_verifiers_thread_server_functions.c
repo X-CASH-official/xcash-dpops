@@ -146,11 +146,14 @@ void* current_block_height_timer_thread(void* parameters)
       }
       else
       {
-        memset(data,0,strlen(data));
-        memcpy(data,"Network Block ",14);
-        memcpy(data+14,current_block_height,strnlen(current_block_height,sizeof(data)));
-        memcpy(data+strlen(data)," Has Been Created Successfully\n",31);
-        color_print(data,"green");
+        if (registration_settings == 0)
+        {
+          memset(data,0,strlen(data));
+          memcpy(data,"Network Block ",14);
+          memcpy(data+14,current_block_height,strnlen(current_block_height,sizeof(data)));
+          memcpy(data+strlen(data)," Has Been Created Successfully\n",31);
+          color_print(data,"green");
+        }
       }  
     }
     sleep(1);
