@@ -812,9 +812,9 @@ First get the containers private IP address (the IPV4 address)
 
 Then forward the ports to the containers private IP address  
 ```
-lxc config device add container container_XCASH_DPOPS_18280 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18280 connect=tcp:PRIVATE_IP_OF_CONTAINER:18280 proxy_protocol=true
-lxc config device add container container_XCASH_DPOPS_18281 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18281 connect=tcp:PRIVATE_IP_OF_CONTAINER:18281 proxy_protocol=true
-lxc config device add container container_XCASH_DPOPS_18283 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18283 connect=tcp:PRIVATE_IP_OF_CONTAINER:18283 proxy_protocol=true
+lxc config device add container container_XCASH_DPOPS_18280 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18280 connect=tcp:PRIVATE_IP_OF_CONTAINER:18280
+lxc config device add container container_XCASH_DPOPS_18281 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18281 connect=tcp:PRIVATE_IP_OF_CONTAINER:18281
+lxc config device add container container_XCASH_DPOPS_18283 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18283 connect=tcp:PRIVATE_IP_OF_CONTAINER:18283
 ```
 
 ### Install XCASH_DPOPS in the Container
