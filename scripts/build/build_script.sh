@@ -12,9 +12,9 @@ NODEJS_CURRENT_VERSION=""
 CPP_CHECK_CURRENT_VERSION=""
 
 # Latest versions
-MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.1"
-MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.15.2"
-NODEJS_LATEST_VERSION="node-v13.2.0-linux-x64"
+MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.3"
+MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.16.2"
+NODEJS_LATEST_VERSION="node-v13.9.0-linux-x64"
 CPP_CHECK_LATEST_VERSION="cppcheck-1.89"
 
 XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
@@ -115,10 +115,10 @@ function update_all_repositories()
 function get_dependencies_current_version()
 {
   echo -e "Getting Dependencies Current Versions\n" >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
-  NODEJS_CURRENT_VERSION=$(sudo find / -type d -name "node-*-linux-x64" -exec basename {} \;) || return 1
-  MONGODB_CURRENT_VERSION=$(sudo find / -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -exec basename {} \;) || return 1
-  MONGOC_DRIVER_CURRENT_VERSION=$(sudo find / -type d -name "mongo-c-driver-*" -exec basename {} \;) || return 1
-  CPP_CHECK_CURRENT_VERSION=$(sudo find / -type d -name "cppcheck-*" -exec basename {} \;) || return 1
+  NODEJS_CURRENT_VERSION=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "node-*-linux-x64" -exec basename {} \;) || return 1
+  MONGODB_CURRENT_VERSION=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -exec basename {} \;) || return 1
+  MONGOC_DRIVER_CURRENT_VERSION=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "mongo-c-driver-*" -exec basename {} \;) || return 1
+  CPP_CHECK_CURRENT_VERSION=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "cppcheck-*" -exec basename {} \;) || return 1
   echo -e "\n" >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
 }
 
@@ -154,7 +154,7 @@ function update_mongodb()
   wget -q ${MONGODB_URL} || return 1
   tar -xf mongodb-linux-x86_64-*.tgz >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
   sudo rm mongodb-linux-x86_64-*.tgz >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
-  MONGODB_DIR=$(sudo find / -type d -name "mongodb-linux-x86_64-ubuntu1804-*")/ || return 1
+  MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*")/ || return 1
   sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i ~/.profile || return 1
   sudo sed '/^[[:space:]]*$/d' -i ~/.profile || return 1
   sudo echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> ~/.profile  || return 1
@@ -180,7 +180,7 @@ function update_mongoc_driver()
   sudo make -j "${CPU_THREADS}" >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
   sudo make install >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
   sudo ldconfig || return 1
-  MONGOC_DRIVER_DIR=$(sudo find / -type d -name "mongo-c-driver-*")/ || return 1
+  MONGOC_DRIVER_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "mongo-c-driver-*")/ || return 1
   echo -e "\n" >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
 }
 
@@ -189,13 +189,13 @@ function update_mongoc_driver()
 function update_nodejs()
 {
   echo -e "Updating NodeJS\n" >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
-  NODEJS_DIR=$(sudo find / -type d -name "node-*-linux-x64")/ || return 1
+  NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "node-*-linux-x64")/ || return 1
   sudo rm -r "${NODEJS_DIR}"   || return 1
   cd "${XCASH_DPOPS_INSTALLATION_DIR}" || return 1
   wget -q ${NODEJS_URL} || return 1
   tar -xf node*.tar.xz >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
   sudo rm node*.tar.xz >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
-  NODEJS_DIR=$(sudo find / -type d -name "node-*-linux-x64")/ || return 1
+  NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "node-*-linux-x64")/ || return 1
   sudo sed '/node-v/d' -i ~/.profile || return 1
   sudo sed '/PATH=\/bin:/d' -i ~/.profile || return 1
   sudo sed '/^[[:space:]]*$/d' -i ~/.profile || return 1
@@ -215,7 +215,7 @@ function update_cppcheck()
   wget -q ${CPP_CHECK_URL} || return 1
   tar -xf ${CPP_CHECK_LATEST_VERSION:9}.tar.gz >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
   sudo rm ${CPP_CHECK_LATEST_VERSION:9}.tar.gz >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
-  CPP_CHECK_DIR=$(sudo find / -type d -name "cppcheck-*")/ || return 1
+  CPP_CHECK_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "cppcheck-*")/ || return 1
   cd "${CPP_CHECK_DIR}" || return 1
   make clean ; make -j "${CPU_THREADS}" >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
   echo -e "\n" >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
@@ -381,6 +381,7 @@ function STEP_9_XCASH_DPOPS_TEST()
 {
   echo -e "XCASH_DPOPS Test\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
   cd "${XCASH_DPOPS_DIR}" || return 1
+  systemctl start MongoDB XCASH_DPOPS && sleep 30s && systemctl start XCASH_Wallet
   build/XCASH_DPOPS --block_verifiers_secret_key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a --quick_test >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
   echo -e "\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
 }

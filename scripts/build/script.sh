@@ -3,22 +3,22 @@
 rm -r /var/www/html/build/
 mkdir /var/www/html/build/
 
-docker start ubuntu-18.04
-docker exec -e USER="root" -u root --privileged ubuntu-18.04 /bin/bash -c "source ~/.profile; $(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/build/build_script.sh)"
-docker cp ubuntu-18.04:/root/x-network/build/ /var/www/html/build/ubuntu-18.04
-docker stop ubuntu-18.04
+lxc start ubuntu-1804
+lxc exec ubuntu-1804 -- bash -c "source ~/.profile ; $(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/build/build_script.sh)"
+lxc file pull ubuntu-1804/root/x-network/build/ /var/www/html/build/ubuntu-1804
+lxc stop ubuntu-1804
 
-docker start ubuntu-19.10
-docker exec -e USER="root" -u root --privileged ubuntu-19.10 /bin/bash -c "source ~/.profile; $(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/build/build_script.sh)"
-docker cp ubuntu-19.10:/root/x-network/build/ /var/www/html/build/ubuntu-19.10
-docker stop ubuntu-19.10
+lxc start ubuntu-1910
+lxc exec ubuntu-1910 -- bash -c "source ~/.profile ; $(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/build/build_script.sh)"
+lxc file pull ubuntu-1910/root/x-network/build/ /var/www/html/build/ubuntu-1910
+lxc stop ubuntu-1910
 
-docker start ubuntu-18.04-static-x-cash-build
-docker exec -e USER="root" -u root --privileged ubuntu-18.04-static-x-cash-build /bin/bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/build/build_script_static.sh)"
-docker cp ubuntu-18.04-static-x-cash-build:/root/x-network/build/STEP_10_XCASH_BUILD_STATIC.txt /var/www/html/build/ubuntu-18.04/STEP_10_XCASH_BUILD_STATIC.txt
-docker stop ubuntu-18.04-static-x-cash-build
+lxc start ubuntu-1804-static-x-cash-build
+lxc exec ubuntu-1804-static-x-cash-build -- bash -c "source ~/.profile ; $(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/build/build_script_static.sh)"
+lxc file pull ubuntu-1804-static-x-cash-build/root/x-network/build/STEP_10_XCASH_BUILD_STATIC.txt /var/www/html/build/ubuntu-1804/STEP_10_XCASH_BUILD_STATIC.txt
+lxc stop ubuntu-1804-static-x-cash-build
 
-docker start ubuntu-19.10-static-x-cash-build
-docker exec -e USER="root" -u root --privileged ubuntu-19.10-static-x-cash-build /bin/bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/XCASH_DPOPS/master/scripts/build/build_script_static.sh)"
-docker cp ubuntu-19.10-static-x-cash-build:/root/x-network/build/STEP_10_XCASH_BUILD_STATIC.txt /var/www/html/build/ubuntu-19.10/STEP_10_XCASH_BUILD_STATIC.txt
-docker stop ubuntu-19.10-static-x-cash-build
+lxc start ubuntu-1910-static-x-cash-build
+lxc exec ubuntu-1910-static-x-cash-build -- bash -c "source ~/.profile ; $(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/build/build_script_static.sh)"
+lxc file pull ubuntu-1910-static-x-cash-build/root/x-network/build/STEP_10_XCASH_BUILD_STATIC.txt /var/www/html/build/ubuntu-1910/STEP_10_XCASH_BUILD_STATIC.txt
+lxc stop ubuntu-1910-static-x-cash-build

@@ -48,9 +48,9 @@ function update_packages_list()
         sleep 0.25
         ((i=i+1))
     done
-    echo -e "Updating Packages List\n" >> "${LOGFILE}" 2>&1 || return 1
-    sudo apt update -y >> "${LOGFILE}" 2>&1 || return 1
-    echo -e "\n" >> "${LOGFILE}" 2>&1 || return 1
+    echo -e "Updating Packages List\n" &>"${LOGFILE}" || return 1
+    sudo apt update -y &>"${LOGFILE}" || return 1
+    echo -e "\n" &>"${LOGFILE}" || return 1
 }
 
 
@@ -68,81 +68,81 @@ function update_packages()
         sleep 0.25
         ((i=i+1))
     done
-    echo -e "Updating Packages\n" >> "${LOGFILE}" 2>&1 || return 1
-    sudo apt dist-upgrade -y >> "${LOGFILE}" 2>&1 || return 1
-    echo -e "\n" >> "${LOGFILE}" 2>&1 || return 1
+    echo -e "Updating Packages\n" &>"${LOGFILE}" || return 1
+    sudo apt dist-upgrade -y &>"${LOGFILE}" || return 1
+    echo -e "\n" &>"${LOGFILE}" || return 1
 }  
 
 
 
 function build_boost()
 {
-  echo -e "Building Boost\n" >> "${LOGFILE}" 2>&1 || return 1
+  echo -e "Building Boost\n" &>"${LOGFILE}" || return 1
   cd "${PROGRAMS_INSTALLATION_DIRECTORY}" || return 1
-  wget -q ${BOOST_URL} >> "${LOGFILE}" 2>&1 || return 1
-  tar -xf boost*.tar.gz >> "${LOGFILE}" 2>&1 || return 1
+  wget -q ${BOOST_URL} &>"${LOGFILE}" || return 1
+  tar -xf boost*.tar.gz &>"${LOGFILE}" || return 1
   rm boost*.tar.gz || return 1
   cd boost* || return 1
   mkdir "${BOOST_DIRECTORY}" || return 1
-  ./bootstrap.sh --prefix="${BOOST_DIRECTORY}" || return 1
-  sudo ./b2 cxxflags=-fPIC cflags=-fPIC -a install -j "${CPU_THREADS}"
-  echo -e "\n" >> "${LOGFILE}" 2>&1 || return 1
+  ./bootstrap.sh --prefix="${BOOST_DIRECTORY}" &>"${LOGFILE}" || return 1
+  sudo ./b2 cxxflags=-fPIC cflags=-fPIC -a install -j "${CPU_THREADS}" &>"${LOGFILE}"
+  echo -e "\n" &>"${LOGFILE}" || return 1
 }
 
 
 
 function build_openssl()
 {
-  echo -e "Building OpenSSL\n" >> "${LOGFILE}" 2>&1 || return 1
+  echo -e "Building OpenSSL\n" &>"${LOGFILE}" || return 1
   cd "${PROGRAMS_INSTALLATION_DIRECTORY}" || return 1
-  wget -q ${OPENSSL_URL} >> "${LOGFILE}" 2>&1 || return 1
-  tar -xf openssl*.tar.gz >> "${LOGFILE}" 2>&1 || return 1
+  wget -q ${OPENSSL_URL} &>"${LOGFILE}" || return 1
+  tar -xf openssl*.tar.gz &>"${LOGFILE}" || return 1
   rm openssl*.tar.gz || return 1
   cd openssl* || return 1
   mkdir "${OPENSSL_DIRECTORY}" || return 1
-  ./config -fPIC --prefix="${OPENSSL_DIRECTORY}" --openssldir="${OPENSSL_DIRECTORY}" || return 1
-  make depend || return 1
-  make -j "${CPU_THREADS}" || return 1
-  sudo make install || return 1
-  echo -e "\n" >> "${LOGFILE}" 2>&1 || return 1
+  ./config -fPIC --prefix="${OPENSSL_DIRECTORY}" --openssldir="${OPENSSL_DIRECTORY}" &>"${LOGFILE}" || return 1
+  make depend &>"${LOGFILE}" || return 1
+  make -j "${CPU_THREADS}" &>"${LOGFILE}" || return 1
+  sudo make install &>"${LOGFILE}" || return 1
+  echo -e "\n" &>"${LOGFILE}" || return 1
 }
 
 
 
 function build_pcsc_lite()
 {
-  echo -e "Building PCSC Lite\n" >> "${LOGFILE}" 2>&1 || return 1
+  echo -e "Building PCSC Lite\n" &>"${LOGFILE}" || return 1
   cd "${PROGRAMS_INSTALLATION_DIRECTORY}" || return 1
-  wget -q ${PCSC_LITE_URL} >> "${LOGFILE}" 2>&1 || return 1
-  tar -xf pcsc*.tar.bz2 >> "${LOGFILE}" 2>&1 || return 1
+  wget -q ${PCSC_LITE_URL} &>"${LOGFILE}" || return 1
+  tar -xf pcsc*.tar.bz2 &>"${LOGFILE}" || return 1
   rm pcsc*.tar.bz2 || return 1
   cd pcsc* || return 1
   mkdir "${PCSC_LITE_DIRECTORY}" || return 1
-  ./configure CPPFLAGS=-DPIC CFLAGS=-fPIC CXXFLAGS=-fPIC LDFLAGS=-fPIC --enable-static --prefix="${PCSC_LITE_DIRECTORY}" || return 1
-  make -j "${CPU_THREADS}" || return 1
-  sudo make install || return 1
-  echo -e "\n" >> "${LOGFILE}" 2>&1 || return 1
+  ./configure CPPFLAGS=-DPIC CFLAGS=-fPIC CXXFLAGS=-fPIC LDFLAGS=-fPIC --enable-static --prefix="${PCSC_LITE_DIRECTORY}" &>"${LOGFILE}" || return 1
+  make -j "${CPU_THREADS}" &>"${LOGFILE}" || return 1
+  sudo make install &>"${LOGFILE}" || return 1
+  echo -e "\n" &>"${LOGFILE}" || return 1
 }
 
 
 
 function build_zeromq()
 {
-  echo -e "Building ZeroMQ\n" >> "${LOGFILE}" 2>&1 || return 1
+  echo -e "Building ZeroMQ\n" &>"${LOGFILE}" || return 1
   cd "${PROGRAMS_INSTALLATION_DIRECTORY}" || return 1
-  wget -q ${ZEROMQ_URL} >> "${LOGFILE}" 2>&1 || return 1
-  tar -xf zeromq*.tar.gz >> "${LOGFILE}" 2>&1 || return 1
+  wget -q ${ZEROMQ_URL} &>"${LOGFILE}" || return 1
+  tar -xf zeromq*.tar.gz &>"${LOGFILE}" || return 1
   rm zeromq*.tar.gz || return 1
   cd zeromq* || return 1
-  ./autogen.sh || return 1
-  ./configure CPPFLAGS=-DPIC CFLAGS=-fPIC CXXFLAGS=-fPIC LDFLAGS=-fPIC || return 1
-  make -j "${CPU_THREADS}" || return 1
-  sudo make install || return 1
+  ./autogen.sh &>"${LOGFILE}" || return 1
+  ./configure CPPFLAGS=-DPIC CFLAGS=-fPIC CXXFLAGS=-fPIC LDFLAGS=-fPIC &>"${LOGFILE}" || return 1
+  make -j "${CPU_THREADS}" &>"${LOGFILE}" || return 1
+  sudo make install &>"${LOGFILE}" || return 1
   sudo ldconfig
   cd /usr/local/include/ || return 1
   rm zmq.hpp
-  wget -q https://raw.githubusercontent.com/zeromq/cppzmq/master/zmq.hpp >> "${LOGFILE}" 2>&1 || return 1
-  echo -e "\n" >> "${LOGFILE}" 2>&1 || return 1
+  wget -q https://raw.githubusercontent.com/zeromq/cppzmq/master/zmq.hpp &>"${LOGFILE}" || return 1
+  echo -e "\n" &>"${LOGFILE}" || return 1
 }
 
 
@@ -159,17 +159,17 @@ function build_programs()
 
 function build_xcash()
 {
-  echo -e "Building X-CASH\n" >> "${LOGFILE}" 2>&1 || return 1
+  echo -e "Building X-CASH\n" &>"${LOGFILE}" || return 1
   cd "${PROGRAMS_INSTALLATION_DIRECTORY}" || return 1
-  git clone ${XCASH_URL} >> "${LOGFILE}" 2>&1 || return 1
+  git clone ${XCASH_URL} &>"${LOGFILE}" || return 1
   cd "${XCASH_DIRECTORY}" || return 1
   rm -r build
   mkdir -p build/release || return 1
   cd build/release || return 1
-  cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D BUILD_TESTS=ON -D BOOST_ROOT="${BOOST_DIRECTORY}" -D OPENSSL_ROOT_DIR="${OPENSSL_DIRECTORY}" -D USE_READLINE=OFF -D CMAKE_BUILD_TYPE=release ../.. >> "${LOGFILE}" 2>&1 || return 1
+  cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D BUILD_TESTS=ON -D BOOST_ROOT="${BOOST_DIRECTORY}" -D OPENSSL_ROOT_DIR="${OPENSSL_DIRECTORY}" -D USE_READLINE=OFF -D CMAKE_BUILD_TYPE=release ../.. &>"${LOGFILE}" || return 1
   cd ../../
-  make -I"${BOOST_DIRECTORY}"include -I"${OPENSSL_DIRECTORY}"include -I"${PCSC_LITE_DIRECTORY}"include LDFLAGS="-L${BOOST_DIRECTORY}lib -L${OPENSSL_DIRECTORY}lib -L${PCSC_LITE_DIRECTORY}lib" -j "${CPU_THREADS}" >> "${LOGFILE}" 2>&1 || return 1
-  echo -e "\n" >> "${LOGFILE}" 2>&1 || return 1
+  make -I"${BOOST_DIRECTORY}"include -I"${OPENSSL_DIRECTORY}"include -I"${PCSC_LITE_DIRECTORY}"include LDFLAGS="-L${BOOST_DIRECTORY}lib -L${OPENSSL_DIRECTORY}lib -L${PCSC_LITE_DIRECTORY}lib" -j "${CPU_THREADS}" &>"${LOGFILE}" || return 1
+  echo -e "\n" &>"${LOGFILE}" || return 1
 }
 
 
@@ -194,4 +194,4 @@ function main()
 
 
 
-main || echo "STEP_10_XCASH_BUILD_STATIC_ERROR" >> "${LOGFILE}" 2>&1
+main || echo "STEP_10_XCASH_BUILD_STATIC_ERROR" &>"${LOGFILE}"
