@@ -777,7 +777,7 @@ function check_ubuntu_version()
     }
 
     UBUNTU_VERSION=$(lsb_release -r | awk '{print $2}' | sed s"|\.||g")
-    if [ ! "$UBUNTU_VERSION" == "1804" ]; then
+    if [ "$UBUNTU_VERSION" -lt 1804 ]; then
       echo -e "${COLOR_PRINT_RED}FAIL${END_COLOR_PRINT}"
       echo 
       echo -e "${COLOR_PRINT_RED}############################################################${END_COLOR_PRINT}"
