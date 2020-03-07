@@ -1702,7 +1702,7 @@ function test_update()
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  systemctl stop XCASH_Daemon
+  sudo systemctl stop XCASH_Daemon
   sleep 30s
   if [ $data -ne 0 ]; then
     "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
