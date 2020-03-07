@@ -71,7 +71,7 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 5000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define MINIMUM_AMOUNT_RESERVE_PROOF 1000000 // The minimum amount to create a reserve proof
-#define MINIMUM_AMOUNT_REGISTER_DELEGATE 20000000000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet
+#define MINIMUM_AMOUNT_REGISTER_DELEGATE 1000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
 #define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 30 // the start time in seconds that the block verifiers synchronize the database each round
 #define START_TIME_MINUTE_NETWORK_BLOCK_ROUND 2 // the start time that the block verifiers start to create the network block
