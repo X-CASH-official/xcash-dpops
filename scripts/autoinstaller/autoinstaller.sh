@@ -92,7 +92,7 @@ function get_installation_settings()
   # Check if XCASH_DPOPS is already installed, if the user choose to install
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
     echo -ne "${COLOR_PRINT_YELLOW}Checking if XCASH_DPOPS is already installed${END_COLOR_PRINT}"
-    data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "XCASH_DPOPS" -print | wc -l)
+    data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -ne "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is already installed. You can either update or uninstall${END_COLOR_PRINT}"
       exit 1
