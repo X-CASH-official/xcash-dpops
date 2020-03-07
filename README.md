@@ -796,6 +796,16 @@ To open a terminal inside the container
 If you already have the blockchain locally installed, and need to add it to the container you can run  
 `lxc file push -r /root/.X-CASH/ container/root/`
 
+You can also share the blockchain on the host to any container, even multiple containers at the same time.  
+First you need to restart the container in privileged mode  
+```
+lxc config set container security.privileged true
+lxc restart container
+```
+
+Then add the device to the container  
+`lxc config device add container container_HD_xcash_blockchain disk source=/root/.X-CASH/ path=/root/.X-CASH/`
+
 To exit the terminal  
 `exit`
 
