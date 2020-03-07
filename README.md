@@ -1026,7 +1026,10 @@ lxc exec container1 -- sudo --login --user ubuntu apt install -y gdb
 lxc exec container1 -- sudo --login --user ubuntu bash
 ```
 
-After this you should have a terminal open inside the container. You now need install XCASH_DPOPS using the autoinstaller in each container.
+After this you should have a terminal open inside the container. You now need install XCASH_DPOPS using the autoinstaller in each container  
+```
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh)"
+```
 
 Then exit out of the container by typing `exit`
 
@@ -1043,24 +1046,36 @@ You can get the network interface by running `ip addr` and look for the interfac
 
 Now you will need to route these IP addresses to each containers internal IP address  
 ```
-lxc config device add container container_XCASH_DPOPS_18280 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18280 connect=tcp:PRIVATE_IP_OF_CONTAINER:18280 proxy_protocol=true
-lxc config device add container container_XCASH_DPOPS_18281 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18281 connect=tcp:PRIVATE_IP_OF_CONTAINER:18281 proxy_protocol=true
-lxc config device add container container_XCASH_DPOPS_18283 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18283 connect=tcp:PRIVATE_IP_OF_CONTAINER:18283 proxy_protocol=true
+lxc config device add container container_XCASH_DPOPS_18280 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18280 connect=tcp:PRIVATE_IP_OF_CONTAINER:18280
+lxc config device add container container_XCASH_DPOPS_18281 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18281 connect=tcp:PRIVATE_IP_OF_CONTAINER:18281
+lxc config device add container container_XCASH_DPOPS_18283 proxy listen=tcp:PUBLIC_IP_OF_SERVER:18283 connect=tcp:PRIVATE_IP_OF_CONTAINER:18283
 ```
 
 On older versions of LXD you might need to leave out the `proxy_protocol=true`
 
-Next you need to add the host's X-CASH and XCASH_DPOPS directories to the containers  
+Next you need to add the host's X-CASH and XCASH_DPOPS directories to the containers. Note these will overwrite the containers folders automatically.   
 ```
-lxc config device add container1 container1_XCASH disk source=/PATH_TO_HOST_X-CASH path=/root/x-network/X-CASH
-lxc config device add container1 container1_XCASH_DPOPS disk source=/PATH_TO_HOST_XCASH_DPOPS path=/root/x-network/XCASH_DPOPS
+lxc config device add container1 container1_HD_xcash_core disk source=/PATH_TO_HOST_X-CASH path=/root/x-network/xcash-core
+lxc config device add container1 container1_HD_xcash_dpops disk source=/PATH_TO_HOST_XCASH_DPOPS path=/root/x-network/xcash-dpops
 ```
 
 Now you need to add the blockchain to each container from the host  
 `lxc file push -r /$HOME/.X-CASH/ container/root/`
 
+You can also share the blockchain on the host to any container, even multiple containers at the same time.  
+First you need to restart the container in privileged mode  
+```
+lxc config set container1 security.privileged true
+lxc restart container1
+```
+
+Then add the device to the container  
+`lxc config device add container1 container1_HD_xcash_blockchain disk source=/root/.X-CASH/ path=/root/.X-CASH/`
+
 At this point you should be able to login to each container  
 `lxc exec container1 -- sudo --login --user ubuntu bash`
+
+Then you can use the autoinstaller to
 
 Then start the mongodb, xcashd and xcash-wallet-rpc and then type `code` to start vscode
 
