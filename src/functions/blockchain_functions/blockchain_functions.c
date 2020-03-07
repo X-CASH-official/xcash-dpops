@@ -1055,39 +1055,6 @@ int add_data_hash_to_network_block_string(const char* NETWORK_BLOCK_STRING, char
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: verify_network_block_data_vrf_data_verify_timer
-Description: Runs the VRF_data_verify function using multiple threads
------------------------------------------------------------------------------------------------------------
-*/
-
-void* verify_network_block_data_vrf_data_verify_thread(void* parameters)
-{
-  // variables
-  struct verify_network_block_data_vrf_data_verify_thread_parameters* verify_network_block_data_vrf_data_verify_thread_parameters = (struct verify_network_block_data_vrf_data_verify_thread_parameters*)parameters;
-  int count;
-  int count2;
-  int total_block_verifiers_thread = (verify_network_block_data_vrf_data_verify_thread_parameters->block_verifier_total / verify_network_block_data_vrf_data_verify_thread_parameters->total_amount_of_threads) * (verify_network_block_data_vrf_data_verify_thread_parameters->start + 1);
-  int total_block_verifiers = verify_network_block_data_vrf_data_verify_thread_parameters->block_verifier_total;
-  for (count = (verify_network_block_data_vrf_data_verify_thread_parameters->block_verifier_total / verify_network_block_data_vrf_data_verify_thread_parameters->total_amount_of_threads) * verify_network_block_data_vrf_data_verify_thread_parameters->start; count < total_block_verifiers_thread; count++)
-  { 
-    for (count2 = 0; (int)count2 < total_block_verifiers; count2++)
-    {
-      if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1) != 0 && VRF_data_verify(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count2],verify_network_block_data_vrf_data_verify_thread_parameters->network_block_string) == 1)
-      {
-        pthread_mutex_lock(&verify_network_block_lock);
-        vrf_data_verify_count++;
-        pthread_mutex_unlock(&verify_network_block_lock);
-        break;
-      }
-    }
-  }
-  pthread_exit((void *)(intptr_t)1);
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: verify_network_block_data
 Description: Verifies a blockchain_data struct
 Parameters:
@@ -1110,16 +1077,12 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   char network_block_string[BUFFER_SIZE];
   char current_block_verifiers_public_address[(VRF_PUBLIC_KEY_LENGTH*2)+1];
   char* message_copy1;
-  struct verify_network_block_data_vrf_data_verify_thread_parameters verify_network_block_data_vrf_data_verify_thread_parameters[VRF_DATA_VERIFY_MAXIMUM_THREADS];
   int counter = 0;
   size_t count;
   size_t count2;
   size_t count3;
   size_t number;
   char* str1;
-
-  // threads
-  pthread_t thread_id[VRF_DATA_VERIFY_MAXIMUM_THREADS]; 
 
   // define macros
   #define VERIFY_NETWORK_BLOCK_DATA_ERROR(settings) \
@@ -1479,25 +1442,15 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
         memset(network_block_string,0,strlen(network_block_string));
         memcpy(network_block_string,str1,strnlen(str1,sizeof(network_block_string)));
       }
-      
+
       // check if at least 67 of the next block verifiers in the previous block signed the data in the current block
-      vrf_data_verify_count = 0;
-
-      // start the amount of threads depending on what the best multiple is for the BLOCK_VERIFIERS_TOTAL
-      count2 = BLOCK_VERIFIERS_TOTAL % 4 == 0 || test_settings == 1 ? 4 : BLOCK_VERIFIERS_TOTAL % 5 == 0 ? 5 : BLOCK_VERIFIERS_TOTAL % 2 == 0 ? 2 : 1;
-
-      for (count = 0; count < count2; count++)
-      {
-        verify_network_block_data_vrf_data_verify_thread_parameters[count].total_amount_of_threads = count2;
-        verify_network_block_data_vrf_data_verify_thread_parameters[count].block_verifier_total = BLOCK_VERIFIERS_TOTAL;
-        verify_network_block_data_vrf_data_verify_thread_parameters[count].start = count;
-        memset(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,0,sizeof(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string));
-        memcpy(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,network_block_string,strnlen(network_block_string,sizeof(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string)));
-        pthread_create(&thread_id[count], NULL, &verify_network_block_data_vrf_data_verify_thread,&verify_network_block_data_vrf_data_verify_thread_parameters[count]);
-      }
-      for (count = 0; count < count2; count++)
-      {
-        pthread_join(thread_id[count],NULL);
+      for (count = 0, vrf_data_verify_count = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
+      { 
+        // check the signed data 
+        if (strlen(VRF_data.block_blob_signature[count]) == VRF_BETA_LENGTH+VRF_PROOF_LENGTH && VRF_data_verify(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],VRF_data.block_blob_signature[count],network_block_string) == 1)
+        {
+          vrf_data_verify_count++;
+        }
       }
     }
     if (vrf_data_verify_count < BLOCK_VERIFIERS_VALID_AMOUNT)

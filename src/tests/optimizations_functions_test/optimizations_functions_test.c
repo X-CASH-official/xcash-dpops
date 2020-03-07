@@ -37,32 +37,6 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: vrf_data_verify_timer
-Description: Runs the VRF_data_verify function using multiple threads
------------------------------------------------------------------------------------------------------------
-*/
-
-void* vrf_data_verify_timer(void* parameters)
-{
-  struct verify_network_block_data_vrf_data_verify_thread_parameters* verify_network_block_data_vrf_data_verify_thread_parameters = (struct verify_network_block_data_vrf_data_verify_thread_parameters*)parameters;
-  int count;
-  int count2;
-  int total_block_verifiers_thread = (verify_network_block_data_vrf_data_verify_thread_parameters->block_verifier_total / verify_network_block_data_vrf_data_verify_thread_parameters->total_amount_of_threads) * (verify_network_block_data_vrf_data_verify_thread_parameters->start + 1);
-  int total_block_verifiers = verify_network_block_data_vrf_data_verify_thread_parameters->block_verifier_total;
-  for (count = (verify_network_block_data_vrf_data_verify_thread_parameters->block_verifier_total / verify_network_block_data_vrf_data_verify_thread_parameters->total_amount_of_threads) * verify_network_block_data_vrf_data_verify_thread_parameters->start; count < total_block_verifiers_thread; count++)
-  { 
-    for (count2 = 0; (int)count2 < total_block_verifiers; count2++)
-    {
-      VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
-    }
-  }
-  pthread_exit((void *)(intptr_t)1);
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: optimizations_functions_test
 Description: Test the optimizations functions
 Return: The number of passed optimizations_functions test
@@ -73,14 +47,10 @@ int optimizations_functions_test(void)
 {
   // Variables
   struct reserve_proof reserve_proof;
-  struct verify_network_block_data_vrf_data_verify_thread_parameters verify_network_block_data_vrf_data_verify_thread_parameters[5];
   time_t start;
   int count;
   long int total;
 
-  // threads
-  pthread_t thread_id[BLOCK_VERIFIERS_TOTAL_AMOUNT];  
-  
   // define macros
   #define MESSAGE "{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}"
   #define VALIDATE_RESERVE_PROOFS_WALLET "XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
@@ -275,107 +245,21 @@ int optimizations_functions_test(void)
   RESET_INVALID_RESERVE_PROOFS_DATA;
 
 
+
   start = time(NULL);
-  for (count = 0; count < 5; count++)
+  for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].total_amount_of_threads = 5;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].block_verifier_total = 100;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].start = count;
-    memset(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,0,sizeof(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string));
-    memcpy(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
-    pthread_create(&thread_id[count], NULL, &vrf_data_verify_timer,&verify_network_block_data_vrf_data_verify_thread_parameters[count]);
-  }
-  for (count = 0; count < 5; count++)
-  {
-    pthread_join(thread_id[count],NULL);
+    VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
   }
   total = time(NULL) - start;
-  if (total <= MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED)
+  if (total <= MAXIMUM_TIME_NETWORK_BLOCK_PART_4)
   {
-    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using 5 threads took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
+    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using 1 thread took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_NETWORK_BLOCK_PART_4);
     count_test++;
   }
   else
   {
-    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using 5 threads took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
-  }
-
-
-  start = time(NULL);
-  for (count = 0; count < 4; count++)
-  {
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].total_amount_of_threads = 4;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].block_verifier_total = 100;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].start = count;
-    memset(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,0,sizeof(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string));
-    memcpy(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
-    pthread_create(&thread_id[count], NULL, &vrf_data_verify_timer,&verify_network_block_data_vrf_data_verify_thread_parameters[count]);
-  }
-  for (count = 0; count < 4; count++)
-  {
-    pthread_join(thread_id[count],NULL);
-  }
-  total = time(NULL) - start;
-  if (total <= MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED)
-  {
-    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using 4 threads took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
-    count_test++;
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using 4 threads took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_VRF_DATA_VERIFY_MULTITHREADED);
-  }
-
-
-  start = time(NULL);
-  for (count = 0; count < 2; count++)
-  {
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].total_amount_of_threads = 2;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].block_verifier_total = 100;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].start = count;
-    memset(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,0,sizeof(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string));
-    memcpy(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
-    pthread_create(&thread_id[count], NULL, &vrf_data_verify_timer,&verify_network_block_data_vrf_data_verify_thread_parameters[count]);
-  }
-  for (count = 0; count < 2; count++)
-  {
-    pthread_join(thread_id[count],NULL);
-  }
-  total = time(NULL) - start;
-  if (total <= 100)
-  {
-    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using 2 threads took %ld seconds out of %d seconds\033[0m\n",total,100);
-    count_test++;
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using 2 threads took %ld seconds out of %d seconds\033[0m\n",total,100);
-  }
-
-
-  start = time(NULL);
-  for (count = 0; count < 1; count++)
-  {
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].total_amount_of_threads = 1;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].block_verifier_total = 100;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].start = count;
-    memset(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,0,sizeof(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string));
-    memcpy(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
-    pthread_create(&thread_id[count], NULL, &vrf_data_verify_timer,&verify_network_block_data_vrf_data_verify_thread_parameters[count]);
-  }
-  for (count = 0; count < 1; count++)
-  {
-    pthread_join(thread_id[count],NULL);
-  }
-  total = time(NULL) - start;
-  if (total <= 100)
-  {
-    fprintf(stderr,"\033[1;32mPASSED! Test for VRF_data_verify using 1 thread took %ld seconds out of %d seconds\033[0m\n",total,100);
-    count_test++;
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using 1 thread took %ld seconds out of %d seconds\033[0m\n",total,100);
+    fprintf(stderr,"\033[1;31mFAILED! Test for VRF_data_verify using 1 thread took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_NETWORK_BLOCK_PART_4);
   }
 
   
@@ -482,18 +366,9 @@ int optimizations_functions_test(void)
   CREATE_BLOCK_DATA;
   blockchain_data_to_network_block_string(data_test,BLOCK_VERIFIERS_TOTAL_AMOUNT);
   sign_data(data_test);
-  for (count = 0; count < 4; count++)
+  for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].total_amount_of_threads = 4;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].block_verifier_total = 100;
-    verify_network_block_data_vrf_data_verify_thread_parameters[count].start = count;
-    memset(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,0,sizeof(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string));
-    memcpy(verify_network_block_data_vrf_data_verify_thread_parameters[count].network_block_string,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
-    pthread_create(&thread_id[count], NULL, &vrf_data_verify_timer,&verify_network_block_data_vrf_data_verify_thread_parameters[count]);
-  }
-  for (count = 0; count < 4; count++)
-  {
-    pthread_join(thread_id[count],NULL);
+    VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
   }
   total = time(NULL) - start;
   if (total < MAXIMUM_TIME_NETWORK_BLOCK_PART_4)

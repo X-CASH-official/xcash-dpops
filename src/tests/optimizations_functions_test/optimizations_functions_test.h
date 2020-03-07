@@ -7,6 +7,5 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* vrf_data_verify_timer(void* parameters);
 int optimizations_functions_test(void);
 #endif

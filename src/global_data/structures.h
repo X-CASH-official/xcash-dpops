@@ -416,11 +416,4 @@ struct update_delegates_online_status_thread_parameters {
     const char* DATABASE; // The database name
     const char* COLLECTION; // The collection name
 };
-
-struct verify_network_block_data_vrf_data_verify_thread_parameters {
-    int total_amount_of_threads;
-    int block_verifier_total;
-    int start;
-    char network_block_string[BUFFER_SIZE];
-};
 #endif
