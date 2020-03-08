@@ -60,9 +60,9 @@ long long int add_block_to_blocks_found(void)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
-  char block_height[MAXIMUM_NUMBER_SIZE];
+  char block_height[100];
   char block_hash[65];  
-  char block_reward[MAXIMUM_NUMBER_SIZE];
+  char block_reward[100];
   char block_date_and_time[100];
   long long int number;
   long long int block_reward_number = 0;

@@ -514,7 +514,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   int count = 0;
   int count2;
   size_t counter = 0;
-  int total_delegates;
+  int total_delegates = 0;
 
   struct votes votes[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE];
   struct database_multiple_documents_fields database_multiple_documents_fields;

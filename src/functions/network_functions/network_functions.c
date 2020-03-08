@@ -821,7 +821,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
         memset(message,0,strlen(message));
         memcpy(message,str1,strnlen(str1,LENGTH));
       }
-      break;
+      return 2;
     }
 
     // check for a timeout in receiving data
@@ -830,5 +830,4 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       return 1;
     }
   }
-  return 2;
 }

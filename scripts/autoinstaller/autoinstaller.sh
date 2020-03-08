@@ -699,8 +699,8 @@ function stop_systemd_service_files()
 function check_if_solo_node()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Checking If Solo Node${END_COLOR_PRINT}"
-  data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "XCASH_DPOPS_shared_delegates_website" -print | wc -l)
-  if [ "$data" -eq 1 ]; then
+  data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -type d -name "delegates-pool-website" -print | wc -l)
+  if [ "$data" -gt 0 ]; then
     SHARED_DELEGATE="YES"
   else
     SHARED_DELEGATE="NO"

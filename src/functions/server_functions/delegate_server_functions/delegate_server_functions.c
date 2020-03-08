@@ -325,7 +325,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
   if (test_settings == 0 && current_UTC_date_and_time.tm_min != 2 && current_UTC_date_and_time.tm_min != 3)
   {
-    send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are the first 4 minutes of each hour",0,0,"");
+    send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are the second and third minute of each hour",0,0,"");
     return 0;
   }
 
@@ -585,7 +585,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(data+strlen(data),"\"}",2);
 
   // add the delegate to the database
-  if (memcmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(delegate_name,"delegate_name_1",XCASH_WALLET_LENGTH) == 0 && memcmp(delegate_public_key,NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH) == 0)
+  if (memcmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && strncmp(delegate_name,"delegate_name_1",BUFFER_SIZE) == 0 && memcmp(delegate_public_key,NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH) == 0)
   {
     if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data,1) == 0)
     {

@@ -218,7 +218,7 @@ int delegate_server_functions_test(void)
   memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
   memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
   memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
-  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|delegate_name_1|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF "|",872);
+  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|delegate_name_1|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF "|",789);
   if (block_verifiers_add_reserve_proof_check_if_data_is_valid(result_test,&reserve_proof) == 0)
   {
     fprintf(stderr,"\033[1;32mPASSED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking for invalid data\033[0m\n");
