@@ -85,13 +85,14 @@ int shared_delegate_website_functions_test(void)
  
   // run the test
   memset(data_test,0,sizeof(data_test));
-  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strstr(data_test,xcash_wallet_public_address) != NULL && strstr(data_test,"\"current_delegate_rank\":\"2\"") != NULL && strstr(data_test,"\"total_votes\":\"2000000000\"") != NULL && strstr(data_test,"\"online_percentage\":\"100\"") != NULL && strstr(data_test,"\"total_blocks_found\":\"2\"") != NULL && strstr(data_test,"\"total_xcash_from_blocks_found\":\"25\"") != NULL && strstr(data_test,"\"total_payments\":\"2\"") != NULL && strstr(data_test,"\"fee\":\"0.000000\"") != NULL && strstr(data_test,"\"minimum_amount\":\"0\"") != NULL)
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strstr(data_test,xcash_wallet_public_address) != NULL && strstr(data_test,"\"current_delegate_rank\":\"5\"") != NULL && strstr(data_test,"\"total_votes\":\"2000000000\"") != NULL && strstr(data_test,"\"online_percentage\":\"100\"") != NULL && strstr(data_test,"\"total_blocks_found\":\"2\"") != NULL && strstr(data_test,"\"total_xcash_from_blocks_found\":\"25\"") != NULL && strstr(data_test,"\"total_payments\":\"2\"") != NULL && strstr(data_test,"\"fee\":\"0.000000\"") != NULL && strstr(data_test,"\"minimum_amount\":\"0\"") != NULL)
   {
     color_print("PASSED! Test for server_receive_data_socket_shared_delegates_website_get_statistics","green");
     count_test++;
   }
   else
   {
+    color_print(data_test,"yellow");
     color_print("FAILED! Test for server_receive_data_socket_shared_delegates_website_get_statistics","red");
   }
   RESET_ERROR_MESSAGES;

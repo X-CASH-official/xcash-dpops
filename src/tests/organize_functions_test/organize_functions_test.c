@@ -30,7 +30,7 @@ Return: The number of passed organize_functions test
 
 int organize_functions_test(void)
 {
-  // variables
+  // variables  
   char reserve_proofs[2][BUFFER_SIZE_RESERVE_PROOF] = {"RESERVE_PROOF_TEST_DATA_2","RESERVE_PROOF_TEST_DATA"};
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   int count;
@@ -278,7 +278,7 @@ int organize_functions_test(void)
   // test for organize_delegates_settings
   production_settings = 1;
   qsort(delegates,MAXIMUM_AMOUNT_OF_DELEGATES,sizeof(struct delegates),organize_delegates_settings);
-  if (memcmp(delegates[0].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[1].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[2].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[3].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[4].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[5].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[6].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[7].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[8].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[9].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+  if (memcmp(delegates[0].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[1].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[2].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[3].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[4].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[5].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[6].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[7].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[8].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[9].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
   {   
     color_print("PASSED! Test for organize_delegates_settings","green");
     count_test++;
@@ -288,25 +288,18 @@ int organize_functions_test(void)
     color_print("FAILED! Test for organize_delegates_settings","red");
   }
 
+  delete_database(database_name,0);
   production_settings = 0;
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
 
   // reset the delegates struct
   RESET_DELEGATES_STRUCT;
+  INITIALIZE_DATABASE_DATA(1);
 
-  // insert the delegates into the database
-  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,ORGANIZE_DELEGATES_TEST_DATA_1,0) == 1 && insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,ORGANIZE_DELEGATES_TEST_DATA_2,0) == 1 && insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,ORGANIZE_DELEGATES_TEST_DATA_3,0) == 1)
-  {
-    // test for organize_delegates_settings
-    if (organize_delegates(delegates,DATABASE_COLLECTION_TEST) != 0 && memcmp(delegates[0].total_vote_count,"10",2) == 0 && memcmp(delegates[1].total_vote_count,"5",1) == 0 && memcmp(delegates[2].total_vote_count,"15",2) == 0)
-    {   
-      color_print("PASSED! Test for organize_delegates","green");
-      count_test++;
-    }
-    else
-    {
-      color_print("FAILED! Test for organize_delegates","red");
-    }
+  // test for organize_delegates_settings
+  if (organize_delegates(delegates,"delegates") != 0 && memcmp(delegates[0].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[1].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[2].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[3].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[4].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+  {   
+    color_print("PASSED! Test for organize_delegates","green");
+    count_test++;
   }
   else
   {

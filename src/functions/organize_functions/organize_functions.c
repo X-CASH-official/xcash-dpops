@@ -486,12 +486,7 @@ int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECT
     pointer_reset(delegates_copy[count].block_producer_block_heights);
     pointer_reset(delegates_copy[count].public_key);
  }
-
-  
-  
-
-
-
+ 
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS+1);
 
   return database_multiple_documents_fields.document_count;
