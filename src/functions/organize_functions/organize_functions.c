@@ -49,10 +49,18 @@ int organize_delegates_settings(const void* DELEGATES1, const void* DELEGATES2)
   long long int settings;
   const struct delegates* delegates1 = (const struct delegates*)DELEGATES1;
   const struct delegates* delegates2 = (const struct delegates*)DELEGATES2;
-  
-  settings = strcmp(delegates2->online_status,delegates1->online_status);
 
-  if (settings == 0)
+  // make sure the network data nodes are always the first delegates
+  if (production_settings == 1 && (memcmp(delegates1->public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates1->public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates1->public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates1->public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates1->public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0))
+  {
+    return -1;
+  }
+  if (production_settings == 0 && (memcmp(delegates1->public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates1->public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates1->public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates1->public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates1->public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0))
+  {
+    return -1;
+  }
+
+  if ((settings = strcmp(delegates2->online_status,delegates1->online_status)) == 0)
   {
     sscanf(delegates1->total_vote_count, "%lld", &count);
     sscanf(delegates2->total_vote_count, "%lld", &count2);
