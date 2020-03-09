@@ -105,7 +105,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // check_reserve_proofs_timer_get_database_data
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -131,12 +131,15 @@ int block_verifiers_thread_server_functions_test(void)
   }
   else
   {
+    color_print(invalid_reserve_proofs.public_address_created_reserve_proof[1],"yellow");
+    color_print(invalid_reserve_proofs.public_address_voted_for[1],"yellow");
+    fprintf(stderr,"%zu",invalid_reserve_proofs.reserve_proof_amount[1]);
     color_print("FAILED! Test for check_reserve_proofs_timer_get_database_data","red");
   }
 
   // check_reserve_proofs_timer_update_delegates_total_vote_count
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -171,7 +174,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // check_reserve_proofs_timer_update_delegates_score
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -196,7 +199,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // check_reserve_proofs_timer_update_database
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -231,7 +234,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // select_random_unique_reserve_proof
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   // initialize the reserve_proof struct
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
@@ -251,7 +254,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // send_invalid_reserve_proof_to_block_verifiers
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   // initalize the previous current and next block verifiers list
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
@@ -306,7 +309,7 @@ int block_verifiers_thread_server_functions_test(void)
   // check all errors for each test
   // check_reserve_proofs_timer_get_database_data
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -337,7 +340,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // check_reserve_proofs_timer_update_delegates_total_vote_count
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -372,7 +375,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // check_reserve_proofs_timer_update_delegates_score
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -398,7 +401,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // check_reserve_proofs_timer_update_database
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -428,7 +431,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // select_random_unique_reserve_proof
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   // initialize the reserve_proof struct
   for (count = 0; count < 20; count++)
@@ -476,7 +479,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // send_invalid_reserve_proof_to_block_verifiers
   delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(2);
+  INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   // initialize the reserve_proof struct
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));

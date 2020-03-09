@@ -1060,7 +1060,6 @@ Description: Verifies a blockchain_data struct
 Parameters:
   BLOCK_VALIDATION_SIGNATURES_SETTINGS - 0 to not verify the block validation signatures, 1 to verify the block validation signatures. The consensus node when submitting the block should be the only time when the block validation signatures are verified
   PREVIOUS_BLOCK_HASH_SETTINGS - 0 to not verify the previous block hash, 1 to verify the previous block hash. The blockchain_test should be the only time when the previous block hash is not verified
-  TRANSACTIONS_SETTINGS - 0 to not verify that the transactions are in the network, 1 to verify that the transactions are in the network. The blockchain_test should be the only time when the transactions are not verified
   BLOCK_HEIGHT - The block height of the network block string, 0 to get the current block height
   PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES - The previous network blocks reserve bytes
   BLOCK_VERIFIERS_TOTAL - The maximum amount of block verifiers
@@ -1068,7 +1067,7 @@ Return: 0 if an error has occured or it is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const int TRANSACTIONS_SETTINGS, const char* BLOCK_HEIGHT, char* PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES, const int BLOCK_VERIFIERS_TOTAL)
+int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const char* BLOCK_HEIGHT, char* PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES, const int BLOCK_VERIFIERS_TOTAL)
 {
   // Variables
   char block_height[MAXIMUM_NUMBER_SIZE];
@@ -1470,12 +1469,6 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transaction_amount");
   }
-
-  // transactions
-  if (TRANSACTIONS_SETTINGS == 1 && blockchain_data.transaction_amount != 0 && verify_blockchain_network_transactions(blockchain_data.transactions,blockchain_data.transaction_amount,1) == 0)
-  {
-    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transactions");
-  } 
   return 1;
 
   #undef VERIFY_NETWORK_BLOCK_DATA_ERROR

@@ -37,15 +37,11 @@ Return: The number of passed network_daemon functions test
 int network_daemon_functions_test(void)
 {  
   // Variables
-  char* transactions[5];
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   size_t count = 0;
   int count2;
   size_t block_height;
-
-  // define macros
-  #define TRANSACTIONS_AMOUNT 5
 
   // reset the variables
   memset(data_test,0,sizeof(data_test));
@@ -53,20 +49,6 @@ int network_daemon_functions_test(void)
 
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\nnetwork daemon functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,NETWORK_DAEMON_FUNCTIONS_TEST,TEST_OUTLINE);
-
-  for (count = 0; count < TRANSACTIONS_AMOUNT; count++)
-  {
-    transactions[count] = (char*)calloc(BUFFER_SIZE,sizeof(char));
-  }
-
-  for (count = 0; count < TRANSACTIONS_AMOUNT; count++)
-  {
-    if (transactions[count] == NULL)
-    {
-      color_print("Could not allocate the memory needed on the heap","red");
-      exit(0);
-    }
-  }
 
   // test the check_if_blockchain_is_fully_synced
   if (check_if_blockchain_is_fully_synced() == 1)
@@ -124,27 +106,6 @@ int network_daemon_functions_test(void)
   network_functions_test_error_settings = 1;
   color_print("PASSED! Test for get_block_reserve_byte_data_hash","green");
   count_test++;
-
-  // test the verify_blockchain_network_transactions function
-  memcpy(transactions[0],"f6458824e54ea5cddd80a6bb0105ecdd6d2248629482df2c0f989db3d46f6ebd",64);
-  memcpy(transactions[1],"871eb7b29c72582572041c597ff092143031bfcef5fa1fa92808dacab2ba226f",64);
-  memcpy(transactions[2],"72f97600db9d7522a2a39fc690d25e1cc9a17535064b08f81bd7424a51bba931",64);
-  memcpy(transactions[3],"b180489867776c7e39c07ddb0d88609dac6f748dec554e2d96b6a168785bdb44",64);
-  memcpy(transactions[4],"",1);
-  if (verify_blockchain_network_transactions(transactions,TRANSACTIONS_AMOUNT,0) == 1)
-  {   
-    color_print("PASSED! Test for verifying transactions","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for verifying transactions","red");
-  }
-
-  for (count = 0; count < TRANSACTIONS_AMOUNT; count++)
-  {
-    pointer_reset(transactions[count]);
-  }
 
   // test the get_previous_block_hash function
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
@@ -267,6 +228,4 @@ int network_daemon_functions_test(void)
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nnetwork daemon functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,NETWORK_DAEMON_FUNCTIONS_TEST-count_test,TEST_OUTLINE);
   return count_test;
-  
-  #undef TRANSACTIONS_AMOUNT
 }

@@ -793,7 +793,7 @@ int data_network_node_verify_block_data(char *message, char *network_block_strin
   // verify the block
   memset(data3,0,sizeof(data3));
   snprintf(data3,sizeof(data3)-1,"%zu",count);
-  if (verify_network_block_data(1,1,0,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
+  if (verify_network_block_data(1,1,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
   {
     DATA_NETWORK_NODE_VERIFY_BLOCK_DATA_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
   }
@@ -1369,7 +1369,7 @@ int block_verifiers_create_vote_results(char* message)
   }
 
   // verify the block
-  if (verify_network_block_data(1,1,0,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
+  if (verify_network_block_data(1,1,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
   {
     BLOCK_VERIFIERS_CREATE_VOTE_RESULTS_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
   }

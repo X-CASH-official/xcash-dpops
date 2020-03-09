@@ -236,7 +236,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   RESET_BLOCKCHAIN_DATA; \
   network_block_string_to_blockchain_data(NETWORK_BLOCK,NETWORK_BLOCK_HEIGHT,BLOCK_VERIFIERS_TOTAL_AMOUNT);
   
-  #define VERIFY_NETWORK_BLOCK_DATA_CODE verify_network_block_data(0,0,0,NETWORK_BLOCK_HEIGHT,"",BLOCK_VERIFIERS_TOTAL_AMOUNT);
+  #define VERIFY_NETWORK_BLOCK_DATA_CODE verify_network_block_data(0,0,NETWORK_BLOCK_HEIGHT,"",BLOCK_VERIFIERS_TOTAL_AMOUNT);
 
   #define BLOCKCHAIN_DATA_TO_NETWORK_BLOCK_STRING_CODE blockchain_data_to_network_block_string(data_test,BLOCK_VERIFIERS_TOTAL_AMOUNT);
 

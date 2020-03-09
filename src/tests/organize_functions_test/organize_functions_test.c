@@ -68,16 +68,16 @@ int organize_functions_test(void)
     }
   }
 
-  memcpy(delegates[0].public_address,"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12",XCASH_WALLET_LENGTH);
-  memcpy(delegates[0].total_vote_count,"15",2);
-  memcpy(delegates[0].IP_address,"delegates.xcash.foundation",26);
+  memcpy(delegates[0].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+  memcpy(delegates[0].total_vote_count,"5",2);
+  memcpy(delegates[0].IP_address,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION)-1);
   memcpy(delegates[0].delegate_name,"delegates_xcash_foundation",26);
   memcpy(delegates[0].about,"Official X-Network node",23);
-  memcpy(delegates[0].website,"delegates.xcash.foundation",26);
+  memcpy(delegates[0].website,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION)-1);
   memcpy(delegates[0].team,"X-Network Team",14);
   memcpy(delegates[0].pool_mode,"false",5);
   memcpy(delegates[0].fee_structure,"0",1);
-  memcpy(delegates[0].server_settings,"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download",219);
+  memcpy(delegates[0].server_settings,"",0);
   memcpy(delegates[0].block_verifier_score,"0",1);
   memcpy(delegates[0].online_status,"false",5);
   memcpy(delegates[0].block_verifier_total_rounds,"0",1);
@@ -85,45 +85,178 @@ int organize_functions_test(void)
   memcpy(delegates[0].block_verifier_online_percentage,"0",1);
   memcpy(delegates[0].block_producer_total_rounds,"0",1);
   memcpy(delegates[0].block_producer_block_heights,"0",1);
-  memcpy(delegates[0].public_key,"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a",VRF_PUBLIC_KEY_LENGTH);
+  memcpy(delegates[0].public_key,NETWORK_DATA_NODE_1_PUBLIC_KEY_PRODUCTION,VRF_PUBLIC_KEY_LENGTH);
 
-  memcpy(delegates[1].public_address,"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12",XCASH_WALLET_LENGTH);
-  memcpy(delegates[1].total_vote_count,"5",1);
-  memcpy(delegates[1].IP_address,"delegates.xcash.foundation",26);
-  memcpy(delegates[1].delegate_name,"delegates_xcash_foundation",26);
+  memcpy(delegates[1].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+  memcpy(delegates[1].total_vote_count,"500",3);
+  memcpy(delegates[1].IP_address,NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION)-1);
+  memcpy(delegates[1].delegate_name,"europe1_xcash_foundation",24);
   memcpy(delegates[1].about,"Official X-Network node",23);
-  memcpy(delegates[1].website,"delegates.xcash.foundation",26);
+  memcpy(delegates[1].website,NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION)-1);
   memcpy(delegates[1].team,"X-Network Team",14);
   memcpy(delegates[1].pool_mode,"false",5);
   memcpy(delegates[1].fee_structure,"0",1);
-  memcpy(delegates[1].server_settings,"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download",219);
+  memcpy(delegates[1].server_settings,"",0);
   memcpy(delegates[1].block_verifier_score,"0",1);
-  memcpy(delegates[1].online_status,"true",4);
+  memcpy(delegates[1].online_status,"false",5);
   memcpy(delegates[1].block_verifier_total_rounds,"0",1);
   memcpy(delegates[1].block_verifier_online_total_rounds,"0",1);
   memcpy(delegates[1].block_verifier_online_percentage,"0",1);
   memcpy(delegates[1].block_producer_total_rounds,"0",1);
   memcpy(delegates[1].block_producer_block_heights,"0",1);
-  memcpy(delegates[1].public_key,"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a",VRF_PUBLIC_KEY_LENGTH);
+  memcpy(delegates[1].public_key,NETWORK_DATA_NODE_2_PUBLIC_KEY_PRODUCTION,VRF_PUBLIC_KEY_LENGTH);
 
-  memcpy(delegates[2].public_address,"XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12",XCASH_WALLET_LENGTH);
-  memcpy(delegates[2].total_vote_count,"10",2);
-  memcpy(delegates[2].IP_address,"delegates.xcash.foundation",26);
-  memcpy(delegates[2].delegate_name,"delegates_xcash_foundation",26);
+  memcpy(delegates[2].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+  memcpy(delegates[2].total_vote_count,"15",2);
+  memcpy(delegates[2].IP_address,NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION)-1);
+  memcpy(delegates[2].delegate_name,"europe2_xcash_foundation",24);
   memcpy(delegates[2].about,"Official X-Network node",23);
-  memcpy(delegates[2].website,"delegates.xcash.foundation",26);
+  memcpy(delegates[2].website,NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION)-1);
   memcpy(delegates[2].team,"X-Network Team",14);
   memcpy(delegates[2].pool_mode,"false",5);
   memcpy(delegates[2].fee_structure,"0",1);
-  memcpy(delegates[2].server_settings,"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download",219);
+  memcpy(delegates[2].server_settings,"",0);
   memcpy(delegates[2].block_verifier_score,"0",1);
-  memcpy(delegates[2].online_status,"true",4);
+  memcpy(delegates[2].online_status,"false",5);
   memcpy(delegates[2].block_verifier_total_rounds,"0",1);
   memcpy(delegates[2].block_verifier_online_total_rounds,"0",1);
   memcpy(delegates[2].block_verifier_online_percentage,"0",1);
   memcpy(delegates[2].block_producer_total_rounds,"0",1);
   memcpy(delegates[2].block_producer_block_heights,"0",1);
-  memcpy(delegates[2].public_key,"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a",VRF_PUBLIC_KEY_LENGTH);
+  memcpy(delegates[2].public_key,NETWORK_DATA_NODE_3_PUBLIC_KEY_PRODUCTION,VRF_PUBLIC_KEY_LENGTH);
+
+  memcpy(delegates[3].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+  memcpy(delegates[3].total_vote_count,"10",2);
+  memcpy(delegates[3].IP_address,NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION)-1);
+  memcpy(delegates[3].delegate_name,"europe3_xcash_foundation",24);
+  memcpy(delegates[3].about,"Official X-Network node",23);
+  memcpy(delegates[3].website,NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION)-1);
+  memcpy(delegates[3].team,"X-Network Team",14);
+  memcpy(delegates[3].pool_mode,"false",5);
+  memcpy(delegates[3].fee_structure,"0",1);
+  memcpy(delegates[3].server_settings,"",0);
+  memcpy(delegates[3].block_verifier_score,"0",1);
+  memcpy(delegates[3].online_status,"false",5);
+  memcpy(delegates[3].block_verifier_total_rounds,"0",1);
+  memcpy(delegates[3].block_verifier_online_total_rounds,"0",1);
+  memcpy(delegates[3].block_verifier_online_percentage,"0",1);
+  memcpy(delegates[3].block_producer_total_rounds,"0",1);
+  memcpy(delegates[3].block_producer_block_heights,"0",1);
+  memcpy(delegates[3].public_key,NETWORK_DATA_NODE_4_PUBLIC_KEY_PRODUCTION,VRF_PUBLIC_KEY_LENGTH);
+
+  memcpy(delegates[4].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+  memcpy(delegates[4].total_vote_count,"1000",4);
+  memcpy(delegates[4].IP_address,NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION)-1);
+  memcpy(delegates[4].delegate_name,"asia1_xcash_foundation",22);
+  memcpy(delegates[4].about,"Official X-Network node",23);
+  memcpy(delegates[4].website,NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION)-1);
+  memcpy(delegates[4].team,"X-Network Team",14);
+  memcpy(delegates[4].pool_mode,"false",5);
+  memcpy(delegates[4].fee_structure,"0",1);
+  memcpy(delegates[4].server_settings,"",0);
+  memcpy(delegates[4].block_verifier_score,"0",1);
+  memcpy(delegates[4].online_status,"false",5);
+  memcpy(delegates[4].block_verifier_total_rounds,"0",1);
+  memcpy(delegates[4].block_verifier_online_total_rounds,"0",1);
+  memcpy(delegates[4].block_verifier_online_percentage,"0",1);
+  memcpy(delegates[4].block_producer_total_rounds,"0",1);
+  memcpy(delegates[4].block_producer_block_heights,"0",1);
+  memcpy(delegates[4].public_key,NETWORK_DATA_NODE_5_PUBLIC_KEY_PRODUCTION,VRF_PUBLIC_KEY_LENGTH);
+
+  memcpy(delegates[5].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(delegates[5].total_vote_count,"5000",4);
+  memcpy(delegates[5].IP_address,NETWORK_DATA_NODE_1_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_1_IP_ADDRESS)-1);
+  memcpy(delegates[5].delegate_name,"delegate_name_1",15);
+  memcpy(delegates[5].about,"Official X-Network node",23);
+  memcpy(delegates[5].website,"",0);
+  memcpy(delegates[5].team,"X-Network Team",14);
+  memcpy(delegates[5].pool_mode,"false",5);
+  memcpy(delegates[5].fee_structure,"0",1);
+  memcpy(delegates[5].server_settings,"",0);
+  memcpy(delegates[5].block_verifier_score,"0",1);
+  memcpy(delegates[5].online_status,"false",5);
+  memcpy(delegates[5].block_verifier_total_rounds,"0",1);
+  memcpy(delegates[5].block_verifier_online_total_rounds,"0",1);
+  memcpy(delegates[5].block_verifier_online_percentage,"0",1);
+  memcpy(delegates[5].block_producer_total_rounds,"0",1);
+  memcpy(delegates[5].block_producer_block_heights,"0",1);
+  memcpy(delegates[5].public_key,TEST_WALLET_PUBLIC_KEY_1,VRF_PUBLIC_KEY_LENGTH);
+
+  memcpy(delegates[6].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(delegates[6].total_vote_count,"100",3);
+  memcpy(delegates[6].IP_address,NETWORK_DATA_NODE_2_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_2_IP_ADDRESS)-1);
+  memcpy(delegates[6].delegate_name,"delegate_name_2",15);
+  memcpy(delegates[6].about,"Official X-Network node",23);
+  memcpy(delegates[6].website,"",0);
+  memcpy(delegates[6].team,"X-Network Team",14);
+  memcpy(delegates[6].pool_mode,"false",5);
+  memcpy(delegates[6].fee_structure,"0",1);
+  memcpy(delegates[6].server_settings,"",0);
+  memcpy(delegates[6].block_verifier_score,"0",1);
+  memcpy(delegates[6].online_status,"false",5);
+  memcpy(delegates[6].block_verifier_total_rounds,"0",1);
+  memcpy(delegates[6].block_verifier_online_total_rounds,"0",1);
+  memcpy(delegates[6].block_verifier_online_percentage,"0",1);
+  memcpy(delegates[6].block_producer_total_rounds,"0",1);
+  memcpy(delegates[6].block_producer_block_heights,"0",1);
+  memcpy(delegates[6].public_key,TEST_WALLET_PUBLIC_KEY_2,VRF_PUBLIC_KEY_LENGTH);
+
+  memcpy(delegates[7].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(delegates[7].total_vote_count,"50",2);
+  memcpy(delegates[7].IP_address,NETWORK_DATA_NODE_3_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_3_IP_ADDRESS)-1);
+  memcpy(delegates[7].delegate_name,"delegate_name_3",15);
+  memcpy(delegates[7].about,"Official X-Network node",23);
+  memcpy(delegates[7].website,"",0);
+  memcpy(delegates[7].team,"X-Network Team",14);
+  memcpy(delegates[7].pool_mode,"false",5);
+  memcpy(delegates[7].fee_structure,"0",1);
+  memcpy(delegates[7].server_settings,"",0);
+  memcpy(delegates[7].block_verifier_score,"0",1);
+  memcpy(delegates[7].online_status,"false",5);
+  memcpy(delegates[7].block_verifier_total_rounds,"0",1);
+  memcpy(delegates[7].block_verifier_online_total_rounds,"0",1);
+  memcpy(delegates[7].block_verifier_online_percentage,"0",1);
+  memcpy(delegates[7].block_producer_total_rounds,"0",1);
+  memcpy(delegates[7].block_producer_block_heights,"0",1);
+  memcpy(delegates[7].public_key,TEST_WALLET_PUBLIC_KEY_3,VRF_PUBLIC_KEY_LENGTH);
+
+  memcpy(delegates[8].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(delegates[8].total_vote_count,"55",2);
+  memcpy(delegates[8].IP_address,NETWORK_DATA_NODE_4_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_4_IP_ADDRESS)-1);
+  memcpy(delegates[8].delegate_name,"delegate_name_4",15);
+  memcpy(delegates[8].about,"Official X-Network node",23);
+  memcpy(delegates[8].website,"",0);
+  memcpy(delegates[8].team,"X-Network Team",14);
+  memcpy(delegates[8].pool_mode,"false",5);
+  memcpy(delegates[8].fee_structure,"0",1);
+  memcpy(delegates[8].server_settings,"",0);
+  memcpy(delegates[8].block_verifier_score,"0",1);
+  memcpy(delegates[8].online_status,"false",5);
+  memcpy(delegates[8].block_verifier_total_rounds,"0",1);
+  memcpy(delegates[8].block_verifier_online_total_rounds,"0",1);
+  memcpy(delegates[8].block_verifier_online_percentage,"0",1);
+  memcpy(delegates[8].block_producer_total_rounds,"0",1);
+  memcpy(delegates[8].block_producer_block_heights,"0",1);
+  memcpy(delegates[8].public_key,TEST_WALLET_PUBLIC_KEY_4,VRF_PUBLIC_KEY_LENGTH);
+
+  memcpy(delegates[9].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(delegates[9].total_vote_count,"10000",5);
+  memcpy(delegates[9].IP_address,NETWORK_DATA_NODE_5_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_5_IP_ADDRESS)-1);
+  memcpy(delegates[9].delegate_name,"delegate_name_5",15);
+  memcpy(delegates[9].about,"Official X-Network node",23);
+  memcpy(delegates[9].website,"",0);
+  memcpy(delegates[9].team,"X-Network Team",14);
+  memcpy(delegates[9].pool_mode,"false",5);
+  memcpy(delegates[9].fee_structure,"0",1);
+  memcpy(delegates[9].server_settings,"",0);
+  memcpy(delegates[9].block_verifier_score,"0",1);
+  memcpy(delegates[9].online_status,"false",5);
+  memcpy(delegates[9].block_verifier_total_rounds,"0",1);
+  memcpy(delegates[9].block_verifier_online_total_rounds,"0",1);
+  memcpy(delegates[9].block_verifier_online_percentage,"0",1);
+  memcpy(delegates[9].block_producer_total_rounds,"0",1);
+  memcpy(delegates[9].block_producer_block_heights,"0",1);
+  memcpy(delegates[9].public_key,TEST_WALLET_PUBLIC_KEY_5,VRF_PUBLIC_KEY_LENGTH);
  
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\norganize functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,ORGANIZE_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
@@ -143,8 +276,9 @@ int organize_functions_test(void)
   }
 
   // test for organize_delegates_settings
+  production_settings = 1;
   qsort(delegates,MAXIMUM_AMOUNT_OF_DELEGATES,sizeof(struct delegates),organize_delegates_settings);
-  if (memcmp(delegates[0].total_vote_count,"10",2) == 0 && memcmp(delegates[1].total_vote_count,"5",1) == 0 && memcmp(delegates[2].total_vote_count,"15",2) == 0)
+  if (memcmp(delegates[0].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[1].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[2].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[3].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[4].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[5].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[6].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[7].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[8].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[9].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
   {   
     color_print("PASSED! Test for organize_delegates_settings","green");
     count_test++;
@@ -154,6 +288,7 @@ int organize_functions_test(void)
     color_print("FAILED! Test for organize_delegates_settings","red");
   }
 
+  production_settings = 0;
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
 
   // reset the delegates struct

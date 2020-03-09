@@ -360,7 +360,7 @@ int optimizations_functions_test(void)
   }
   memset(data_test,0,strlen(data_test));
   network_block_string_to_blockchain_data(NETWORK_BLOCK,NETWORK_BLOCK_HEIGHT,BLOCK_VERIFIERS_TOTAL_AMOUNT);
-  verify_network_block_data(0,0,0,NETWORK_BLOCK_HEIGHT,NETWORK_BLOCK,BLOCK_VERIFIERS_TOTAL_AMOUNT);
+  verify_network_block_data(0,0,NETWORK_BLOCK_HEIGHT,NETWORK_BLOCK,BLOCK_VERIFIERS_TOTAL_AMOUNT);
   RESET_BLOCKCHAIN_DATA;
   memset(data_test,0,strlen(data_test));
   CREATE_BLOCK_DATA;
