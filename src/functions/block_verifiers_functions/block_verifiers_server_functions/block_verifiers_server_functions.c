@@ -373,13 +373,24 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK("Could not parse the data");
   }
 
+  // process the vote data
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
+    {
+      memcpy(VRF_data.block_blob_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
+    }
+  } 
+
   // add the block verifiers signature to the network block string
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
     {
       memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count]));
+      memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));
       memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
+      memcpy(VRF_data.block_blob_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
     }
   } 
 
