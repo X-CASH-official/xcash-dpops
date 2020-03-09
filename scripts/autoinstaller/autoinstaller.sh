@@ -20,7 +20,7 @@ WALLET_SETTINGS="YES"
 WALLET_SEED=""
 WALLET_PASSWORD=$(< /dev/urandom tr -dc 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' | head -c"${1:-32}";echo;)
 BLOCK_VERIFIER_KEY_SETTINGS=""
-BLOCK_VERIFIER_SECRET_KEY="00"
+BLOCK_VERIFIER_SECRET_KEY=""
 BLOCK_VERIFIER_PUBLIC_KEY=""
 BLOCK_VERIFIERS_SECRET_KEY_LENGTH=128
 BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH=64
@@ -508,6 +508,8 @@ function setup_lxc_container_profile()
 {
   if [ "$container" == "lxc" ]; then
     sudo sed '/mesg n/d' -i "${HOME}"/.profile
+    sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
+    . "${HOME}"/.profile
   fi
 }
 
@@ -711,6 +713,11 @@ function check_if_solo_node()
 
 function check_if_upgrade_solo_delegate_and_shared_delegate()
 {
+  # get the block verifiers secret key from the systemd service file
+  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/XCASH_DPOPS.service)
+  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block_verifiers_secret_key' '{print $2}')
+  BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
+
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     echo -ne "The current delegate setting is shared delegate. If you would like to change the settings to a solo delegate type \"YES\" otherwise press enter:"
     read -r data
@@ -725,6 +732,7 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
       sudo sed '/node-v/d' -i "${HOME}"/.profile
       sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
       sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
+      sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
       . "${HOME}"/.profile
       get_installation_directory
       get_dependencies_current_version
@@ -751,8 +759,9 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
         echo -ne "\r"
         echo
         [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
-      do true; done     
+      do true; done  
 
+      NODEJS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}${NODEJS_LATEST_VERSION}/
       install_shared_delegates_website
       update_systemd_service_files
       sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
@@ -1359,6 +1368,7 @@ function update_mongodb()
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
   echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
+  sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
   . "${HOME}"/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating MongoDB${END_COLOR_PRINT}"
   echo
@@ -1398,6 +1408,7 @@ function update_nodejs()
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
   echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
+  sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
   . "${HOME}"/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NodeJS${END_COLOR_PRINT}"
   echo
@@ -1473,6 +1484,7 @@ function uninstall_shared_delegates_website()
   sudo sed '/node-v/d' -i "${HOME}"/.profile
   sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
+  sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
   . "${HOME}"/.profile
   echo
   echo
@@ -1673,6 +1685,7 @@ function uninstall()
   sudo sed '/node-v/d' -i "${HOME}"/.profile
   sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
+  sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
   . "${HOME}"/.profile
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Profile${END_COLOR_PRINT}"
   echo
