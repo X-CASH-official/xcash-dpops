@@ -221,17 +221,17 @@ It should only be used in specific circumstances.
 
 
 ## Installation Options
-XCASH_DPOPS provides a few different installation options. It is recommended to at least read over how to manually install XCASH_DPOPS, and then choose one of the installation options below:
+XCASH_DPOPS provides a few different installation options. It is recommended to at least read over how to manually install XCASH_DPOPS, and then use the autoinstaller, or setup an LXC container and then use the autoinstaller in the container:
 
 [Manual Installation Process](#installation-process)  
 [Automatic Installation Process](#auto-installation-process)  
-[Docker Automatic Installation Process](#docker-automatic-installation-process)
+[How to Setup an LXC container](#how-to-setup-an-lxc-container)
 
 
 ## Installation Process
 
 ### Installation Path
-It is recommend to install the XCASH_DPOPS folder, MongoDB and MongoDB C Driver in the home directory (`/home/$USER/`) or root directory (`/root/`) in a `x-network` folder
+It is recommend to install the xcash-dpops folder, MongoDB and MongoDB C Driver in the home directory (`/home/$USER/`) or root directory (`/root/`) in a `x-network` folder
 
 Create the `x-network` folder  
 `mkdir ~/x-network/`
