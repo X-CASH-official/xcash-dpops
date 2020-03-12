@@ -291,7 +291,7 @@ int string_functions_test(void)
   // test for parse_http_response
   memset(result_test,0,sizeof(result_test));
   memcpy(result_test,HTTP_RESPONSE_DATA,sizeof(HTTP_RESPONSE_DATA)-1);
-  if (parse_http_response(result_test) == 1 && strncmp(result_test,"{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"current_delegate_rank\":\"2\",\"total_votes\":\"0\",\"online_percentage\":\"0\",\"total_blocks_found\":\"1\",\"total_xcash_from_blocks_found\":\"15\",\"total_payments\":\"1\",\"total_voters\":\"0\",\"fee\":\"0.000000\",\"minimum_amount\":\"0\"}",sizeof(result_test)) == 0)  
+  if (parse_http_response(result_test) == 1 && strncmp(result_test,"{\"public_address\":\"" TEST_WALLET_1 "\",\"current_delegate_rank\":\"2\",\"total_votes\":\"0\",\"online_percentage\":\"0\",\"total_blocks_found\":\"1\",\"total_xcash_from_blocks_found\":\"15\",\"total_payments\":\"1\",\"total_voters\":\"0\",\"fee\":\"0.000000\",\"minimum_amount\":\"0\"}",sizeof(result_test)) == 0)  
   {
     color_print("PASSED! Test for parse_http_response","green");
     count_test++;

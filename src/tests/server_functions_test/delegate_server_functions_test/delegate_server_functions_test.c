@@ -121,8 +121,8 @@ int delegate_server_functions_test(void)
   insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "\",\"total_vote_count\":\"240000000\",\"IP_address\":\"" NETWORK_DATA_NODE_1_IP_ADDRESS "\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" TEST_WALLET_PUBLIC_KEY_1 "\"}",1);
   insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,1);
   insert_document_into_collection_json(database_name,"reserve_proofs_5",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,1);
-  memcpy(result_test,"{\"public_address_created_reserve_proof\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\"}",141);
-  if (add_reserve_proof_remove_previous_vote((const char*)result_test) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\"}","total_vote_count",data_test,1) == 1 && strncmp(data_test,"0",BUFFER_SIZE) == 0)
+  memcpy(result_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_1 "\"}",141);
+  if (add_reserve_proof_remove_previous_vote((const char*)result_test) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\"}","total_vote_count",data_test,1) == 1 && strncmp(data_test,"0",BUFFER_SIZE) == 0)
   {
     fprintf(stderr,"\033[1;32mPASSED! Test for add_reserve_proof_remove_previous_vote\033[0m\n");
     count_test++;
@@ -171,7 +171,6 @@ int delegate_server_functions_test(void)
   {
     fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_node_to_block_verifiers_add_reserve_proof checking for when a voter votes for another delegate and the old vote is cancelled and the old delegates total is adjusted\033[0m\n");
   }
-  exit(0);
 
   // test server_receive_data_socket_nodes_to_block_verifiers_register_delegates
   RESET_ERROR_MESSAGES;

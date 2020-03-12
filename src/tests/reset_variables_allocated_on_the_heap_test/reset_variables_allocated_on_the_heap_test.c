@@ -650,14 +650,14 @@ int reset_variables_allocated_on_the_heap_test(void)
   invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
   invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
   invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char)); \
-  memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_voted_for[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.block_verifier_public_address[0],TEST_WALLET_6,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET_1,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],TEST_WALLET_1,XCASH_WALLET_LENGTH); \
   invalid_reserve_proofs.reserve_proof_amount[0] = 120000000; \
   memcpy(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537); \
-  memcpy(invalid_reserve_proofs.block_verifier_public_address[1],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_voted_for[1],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[1],"XCA1oPZcuxH1WeyMntcv1Mb28Nzc73UvMbck3VyBedN57gV1c9ikU6tBALSjCwigMs1XCDtTYND7vfELU31PQEBh6zs5MLxYek",XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.block_verifier_public_address[1],TEST_WALLET_1,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_voted_for[1],TEST_WALLET_6,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[1],TEST_WALLET_11,XCASH_WALLET_LENGTH); \
   invalid_reserve_proofs.reserve_proof_amount[1] = 1000000000; \
   memcpy(invalid_reserve_proofs.reserve_proof[1],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NTiwbZLCstwWzpKy8J6J8M1uq9qf5PbWha7C68N8V7qshnzUP113UoSQuy78bpD5CeY2H3ViztSqDBFmmMiNu6uCQGkbu4NrZhZk2T7y7T1ixLCAxYfKRtd2pAAbuAWeBVCNzvmKB8YaneMgZ3mH113kXRg67xZRBtVcawf1CTYHCVuhpur8F6nAGxwFeNoRAdr6rnGwa1SUVdqrXypfmJJyzpPUGTSriAJqtRSBKJqAgQDPz4aV99aLMHHKWAv3eKaGAvBZ3obk2GuVBnHeUUEHAihQ5ECndKS4dw8YxMogdY9o8PvrhZgt2gnX4YrUiF5VbGBcBUsxbag1Ak9oZfTH2d1WeyMntcv1Mb28Nzc73UvMbck3VyBedN57gV1LS8WNV1SeHAFBiGgeBcuveGee9VZYQvGRfiWzkJf9JfYWoQ4dyxh13BrXpp3rF1nWv3UXxMrJJX8SRtQy5zrLAywENZ",538); \
   invalid_reserve_proofs.count = 2; \
@@ -673,9 +673,9 @@ int reset_variables_allocated_on_the_heap_test(void)
   invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
   invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
   invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char)); \
-  memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_voted_for[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.block_verifier_public_address[0],TEST_WALLET_1,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET_6,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],TEST_WALLET_6,XCASH_WALLET_LENGTH); \
   invalid_reserve_proofs.reserve_proof_amount[0] = 0; \
   memcpy(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr1p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537); \
   invalid_reserve_proofs.count = 1; \
@@ -694,14 +694,14 @@ int reset_variables_allocated_on_the_heap_test(void)
   invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
   invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char)); \
   invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char)); \
-  memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_voted_for[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.block_verifier_public_address[0],TEST_WALLET_6,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET_1,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],TEST_WALLET_1,XCASH_WALLET_LENGTH); \
   invalid_reserve_proofs.reserve_proof_amount[0] = 120000000; \
   memcpy(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537); \
-  memcpy(invalid_reserve_proofs.block_verifier_public_address[1],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_voted_for[1],"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n",XCASH_WALLET_LENGTH); \
-  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[1],"XCA1oPZcuxH1WeyMntcv1Mb28Nzc73UvMbck3VyBedN57gV1c9ikU6tBALSjCwigMs1XCDtTYND7vfELU31PQEBh6zs5MLxYek",XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.block_verifier_public_address[1],TEST_WALLET_1,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_voted_for[1],TEST_WALLET_6,XCASH_WALLET_LENGTH); \
+  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[1],TEST_WALLET_11,XCASH_WALLET_LENGTH); \
   invalid_reserve_proofs.reserve_proof_amount[1] = 1000000000; \
   memcpy(invalid_reserve_proofs.reserve_proof[1],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NTiwbZLCstwWzpKy8J6J8M1uq9qf5PbWha7C68N8V7qshnzUP113UoSQuy78bpD5CeY2H3ViztSqDBFmmMiNu6uCQGkbu4NrZhZk2T7y7T1ixLCAxYfKRtd2pAAbuAWeBVCNzvmKB8YaneMgZ3mH113kXRg67xZRBtVcawf1CTYHCVuhpur8F6nAGxwFeNoRAdr6rnGwa1SUVdqrXypfmJJyzpPUGTSriAJqtRSBKJqAgQDPz4aV99aLMHHKWAv3eKaGAvBZ3obk2GuVBnHeUUEHAihQ5ECndKS4dw8YxMogdY9o8PvrhZgt2gnX4YrUiF5VbGBcBUsxbag1Ak9oZfTH2d1WeyMntcv1Mb28Nzc73UvMbck3VyBedN57gV1LS8WNV1SeHAFBiGgeBcuveGee9VZYQvGRfiWzkJf9JfYWoQ4dyxh13BrXpp3rF1nWv3UXxMrJJX8SRtQy5zrLAywENZ",538); \
   invalid_reserve_proofs.count = 2; \
@@ -725,14 +725,14 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for)); \
   memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount)); \
   memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof)); \
-  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|SigV1N2NWu1Yzg4aVrhJUjZVcRZ52CcgUghX7x5Fn9W5drC4g8B9tZn7q4yJEKbiJMRFeNRPmSPT3rBSVkJnFWAGK5PA3|",872); \
+  memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti|" TEST_WALLET_1 "|SigV1N2NWu1Yzg4aVrhJUjZVcRZ52CcgUghX7x5Fn9W5drC4g8B9tZn7q4yJEKbiJMRFeNRPmSPT3rBSVkJnFWAGK5PA3|",872); \
   block_verifiers_add_reserve_proof_check_if_data_is_valid(result_test,&reserve_proof);
 
   #define ADD_RESERVE_PROOF_REMOVE_PREVIOUS_VOTE_CODE \
   delete_database(database_name,0); \
   insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1,1); \
   insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,1); \
-  memcpy(result_test,"{\"public_address_created_reserve_proof\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\"}",141); \
+  memcpy(result_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_1 "\"}",141); \
   add_reserve_proof_remove_previous_vote((const char*)result_test);
 
   #define UPDATE_BLOCK_VERIFIERS_LIST_CODE \
@@ -783,18 +783,18 @@ int reset_variables_allocated_on_the_heap_test(void)
     memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])); \
   } \
   memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
-  memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH); \
+  memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET_1,XCASH_WALLET_LENGTH); \
   memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
   memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
   add_block_verifiers_round_statistics(XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST);
 
   #define ADD_ROUND_STATISTICS_CODE \
   delete_database(database_name,0); \
-  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"1\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
-  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_2\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"2\",\"block_verifier_online_total_rounds\":\"2\",\"block_verifier_online_percentage\":\"100\",\"block_producer_total_rounds\":\"1\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
-  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"XCA1qbzqCoX9WGsqjYgKMGH2eFjkvBRmsb2HKiumrKbjMVDLhukUShsgjFbT6osQBA3TaL9hD7wr8dW2Zq5QzRyU1mnQAQwTpJ\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_3\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"3\",\"block_verifier_online_total_rounds\":\"1\",\"block_verifier_online_percentage\":\"33\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
-  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"XCA1VXWDkYm2u56cbe6b3VajEe4qFLGhVgxeNcgnA3ht1gWvrnZTYr8PJtpkWzagR7c76dDdeyFgoeKZj55W78bp4T8L8n6wLW\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_4\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"4\",\"block_verifier_online_total_rounds\":\"1\",\"block_verifier_online_percentage\":\"25\",\"block_producer_total_rounds\":\"2\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
-  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"XCA1dpsUrcgZvnZYLjXUbcbxSSJqhNWyphoqURumeeKoE8BXQeKqep8QQSk2fd65at2yspnT3z7KVRTU3MFmVS8u7K89wrKVxu\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_5\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"5\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"1\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_20 "\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_2\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"2\",\"block_verifier_online_total_rounds\":\"2\",\"block_verifier_online_percentage\":\"100\",\"block_producer_total_rounds\":\"1\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_19 "\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_3\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"3\",\"block_verifier_online_total_rounds\":\"1\",\"block_verifier_online_percentage\":\"33\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_18 "\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_4\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"4\",\"block_verifier_online_total_rounds\":\"1\",\"block_verifier_online_percentage\":\"25\",\"block_producer_total_rounds\":\"2\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_15 "\",\"total_vote_count\":\"120000000\",\"IP_address\":\"192.168.1.201\",\"delegate_name\":\"delegate_name_5\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"5\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,1); \
   RESET_ERROR_MESSAGES; \
   add_round_statistics();
@@ -829,8 +829,8 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   #define GET_DELEGATES_ONLINE_STATUS_CODE \
   delete_database(database_name,0); \
-  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"total_vote_count\":\"120000000\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
-  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"total_vote_count\":\"120000000\",\"IP_address\":\"\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\",\"total_vote_count\":\"120000000\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\",\"total_vote_count\":\"120000000\",\"IP_address\":\"\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}",1); \
   RESET_ERROR_MESSAGES; \
   get_delegates_online_status();
 
@@ -901,9 +901,9 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   #define CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_CODE calculate_block_reward_for_each_delegate(1000000000000);
 
-  #define PAYMENT_TIMER_SEND_PAYMENT_AND_UPDATE_DATABASES_CODE payment_timer_send_payment_and_update_databases("XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP","5000000000000","10000000000000");
+  #define PAYMENT_TIMER_SEND_PAYMENT_AND_UPDATE_DATABASES_CODE payment_timer_send_payment_and_update_databases(TEST_WALLET_1,"5000000000000","10000000000000");
 
-  #define PAYMENT_TIMER_UPDATE_INACTIVITY_COUNT_CODE payment_timer_update_inactivity_count("XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP","0","0");
+  #define PAYMENT_TIMER_UPDATE_INACTIVITY_COUNT_CODE payment_timer_update_inactivity_count(TEST_WALLET_1,"0","0");
 
 
   // initialize the data
@@ -1244,10 +1244,10 @@ int reset_variables_allocated_on_the_heap_test(void)
   invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
+  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],TEST_WALLET_1,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB31qaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537);
   memcpy(invalid_reserve_proofs.public_address_voted_for[1],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[1],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
+  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[1],TEST_WALLET_1,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.reserve_proof[1],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB31qaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537);
   invalid_reserve_proofs.count = 2;
   CHECK_RESET_VARIABLES_ON_THE_HEAP("check_reserve_proofs_timer_create_message",CHECK_RESERVE_PROOFS_TIMER_CREATE_MESSAGE_CODE);
@@ -1263,7 +1263,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
   invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
-  memcpy(invalid_reserve_proofs.block_verifier_public_address[0],"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
+  memcpy(invalid_reserve_proofs.block_verifier_public_address[0],TEST_WALLET_1,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_voted_for[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],TEST_WALLET,XCASH_WALLET_LENGTH);
   invalid_reserve_proofs.reserve_proof_amount[0] = 0;
@@ -1317,9 +1317,9 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
   memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
   memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
-  memcpy(reserve_proof.block_verifier_public_address,"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
-  memcpy(reserve_proof.public_address_created_reserve_proof,"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
-  memcpy(reserve_proof.public_address_voted_for,"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP",XCASH_WALLET_LENGTH);
+  memcpy(reserve_proof.block_verifier_public_address,TEST_WALLET_1,XCASH_WALLET_LENGTH);
+  memcpy(reserve_proof.public_address_created_reserve_proof,TEST_WALLET_1,XCASH_WALLET_LENGTH);
+  memcpy(reserve_proof.public_address_voted_for,TEST_WALLET_1,XCASH_WALLET_LENGTH);
   memcpy(reserve_proof.reserve_proof_amount,"120000000",9);
   memcpy(reserve_proof.reserve_proof,"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5j1ey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed41JUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("send_invalid_reserve_proof_to_block_verifiers",SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS_CODE);
@@ -1425,8 +1425,8 @@ int reset_variables_allocated_on_the_heap_test(void)
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
   insert_document_into_collection_json(database_name,"blocks_found","{\"block_height\":\"440875\",\"block_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\",\"block_count\":\"10\"}",0);
-  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}",0);
-  insert_document_into_collection_json(database_name,"public_addresses_payments","{\"public_address\":\"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}",0);
+  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET "\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}",0);
+  insert_document_into_collection_json(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET "\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}",0);
   sleep(2);
   memset(result_test,0,sizeof(result_test));
   memcpy(result_test,"{\"public_address\":\"",19);
@@ -1445,69 +1445,69 @@ int reset_variables_allocated_on_the_heap_test(void)
   
   delete_database(DATABASE_NAME_TEST,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_1 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"10000000000000\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",583);
   insert_document_into_collection_json(database_name,"reserve_proofs_1",data_test,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_20 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"20000000000000\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",583);
   insert_document_into_collection_json(database_name,"reserve_proofs_2",data_test,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1qbzqCoX9WGsqjYgKMGH2eFjkvBRmsb2HKiumrKbjMVDLhukUShsgjFbT6osQBA3TaL9hD7wr8dW2Zq5QzRyU1mnQAQwTpJ\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_19 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"15000000000000\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",583);
   insert_document_into_collection_json(database_name,"reserve_proofs_3",data_test,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1VXWDkYm2u56cbe6b3VajEe4qFLGhVgxeNcgnA3ht1gWvrnZTYr8PJtpkWzagR7c76dDdeyFgoeKZj55W78bp4T8L8n6wLW\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_18 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"5529141006200\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",582);
   insert_document_into_collection_json(database_name,"reserve_proofs_4",data_test,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1dpsUrcgZvnZYLjXUbcbxSSJqhNWyphoqURumeeKoE8BXQeKqep8QQSk2fd65at2yspnT3z7KVRTU3MFmVS8u7K89wrKVxu\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_15 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"2000000000000\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",582);
   insert_document_into_collection_json(database_name,"reserve_proofs_5",data_test,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_1 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"10000000000000\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",583);
   insert_document_into_collection_json(database_name,"reserve_proofs_1",data_test,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_20 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"20000000000000\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",583);
   insert_document_into_collection_json(database_name,"reserve_proofs_2",data_test,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1qbzqCoX9WGsqjYgKMGH2eFjkvBRmsb2HKiumrKbjMVDLhukUShsgjFbT6osQBA3TaL9hD7wr8dW2Zq5QzRyU1mnQAQwTpJ\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_19 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"15000000000000\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",583);
   insert_document_into_collection_json(database_name,"reserve_proofs_3",data_test,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1VXWDkYm2u56cbe6b3VajEe4qFLGhVgxeNcgnA3ht1gWvrnZTYr8PJtpkWzagR7c76dDdeyFgoeKZj55W78bp4T8L8n6wLW\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_18 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"5529141006200\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",582);
   insert_document_into_collection_json(database_name,"reserve_proofs_4",data_test,0);
   memset(data_test,0,sizeof(data_test));
-  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"XCA1dpsUrcgZvnZYLjXUbcbxSSJqhNWyphoqURumeeKoE8BXQeKqep8QQSk2fd65at2yspnT3z7KVRTU3MFmVS8u7K89wrKVxu\",\"public_address_voted_for\":\"",169);
+  memcpy(data_test,"{\"public_address_created_reserve_proof\":\"" TEST_WALLET_15 "\",\"public_address_voted_for\":\"",169);
   memcpy(data_test+strlen(data_test),TEST_WALLET,XCASH_WALLET_LENGTH);
   memcpy(data_test+strlen(data_test),"\",\"total\":\"2000000000000\",\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}",582);
   insert_document_into_collection_json(database_name,"reserve_proofs_5",data_test,0);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("get_delegates_total_voters_count",GET_DELEGATES_TOTAL_VOTERS_COUNT_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("get_delegates_total_voters",GET_DELEGATES_TOTAL_VOTERS_CODE);
 
-  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"current_total\":\"5000000000000\",\"total\":\"0\",\"inactivity_count\":\"10\"}",0);
-  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"current_total\":\"0\",\"total\":\"10000000000000\",\"inactivity_count\":\"0\"}",0);
+  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_1 "\",\"current_total\":\"5000000000000\",\"total\":\"0\",\"inactivity_count\":\"10\"}",0);
+  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_20 "\",\"current_total\":\"0\",\"total\":\"10000000000000\",\"inactivity_count\":\"0\"}",0);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("calculate_block_reward_for_each_delegate",CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_CODE);
 
   delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"current_total\":\"5000000000000\",\"total\":\"10000000000000\",\"inactivity_count\":\"10\"}",0);
-  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"current_total\":\"0\",\"total\":\"10000000000000\",\"inactivity_count\":\"0\"}",0);
+  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_1 "\",\"current_total\":\"5000000000000\",\"total\":\"10000000000000\",\"inactivity_count\":\"10\"}",0);
+  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_20 "\",\"current_total\":\"0\",\"total\":\"10000000000000\",\"inactivity_count\":\"0\"}",0);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("payment_timer_send_payment_and_update_databases",PAYMENT_TIMER_SEND_PAYMENT_AND_UPDATE_DATABASES_CODE);
 
   delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"current_total\":\"0\",\"total\":\"10000000000000\",\"inactivity_count\":\"0\"}",0);
+  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_1 "\",\"current_total\":\"0\",\"total\":\"10000000000000\",\"inactivity_count\":\"0\"}",0);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("payment_timer_update_inactivity_count",PAYMENT_TIMER_UPDATE_INACTIVITY_COUNT_CODE);
 
 
