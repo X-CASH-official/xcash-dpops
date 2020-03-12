@@ -78,6 +78,7 @@ void* current_block_height_timer_thread(void* parameters)
   // wait for the specific start time if the block_height_start_time is on
   if (block_height_start_time == 1)
   {
+    color_print("Waiting for the specific start time","yellow");
     do
     {
       get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);

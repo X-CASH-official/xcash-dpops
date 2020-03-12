@@ -378,7 +378,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
   RESET_ERROR_MESSAGES;
 
-  // update the delegates total_vote_count
+  // get the delegates current total vote count
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"public_address\":\"",19);
   memcpy(data2+strlen(data2),reserve_proof.public_address_voted_for,XCASH_WALLET_LENGTH);
@@ -396,7 +396,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
 
   sscanf(message2,"%zu", &count);
-  sscanf(data2,"%zu", &count2);
+  sscanf(reserve_proof.reserve_proof_amount,"%zu", &count2);
   count+= count2;
   memset(message2,0,sizeof(message2));
   snprintf(message2,sizeof(message2)-1,"%zu",count);  
