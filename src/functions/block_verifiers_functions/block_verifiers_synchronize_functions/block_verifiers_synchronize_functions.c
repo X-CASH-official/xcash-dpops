@@ -309,12 +309,6 @@ void sync_network_data_nodes_database(void)
   // wait for the network data nodes to process the data
   sleep(NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS);
 
-  color_print(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,"yellow");
-  color_print(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,"yellow");
-  color_print(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,"yellow");
-  color_print(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,"yellow");
-  color_print(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,"yellow");
-
   // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
   network_data_nodes_sync_databases_settings = 0;
 
@@ -1371,7 +1365,12 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   memcpy(data3+strlen(data3),"\",\r\n \"reserve_bytes_data_hash\": \"",33);
   memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
   memcpy(data3+strlen(data3),"\",\r\n ",5);
-  count = RESERVE_BYTES_START_SETTINGS == 0 ? 1 : current_reserve_bytes_database;
+  count = RESERVE_BYTES_START_SETTINGS == 0 ? 1 : current_reserve_bytes_database - 1;
+  if (count == 0)
+  {
+    // set it to only check the current reserve bytes database if their is no previous reserve bytes database
+    count = 1;
+  }
 
   for (; count <= current_reserve_bytes_database; count++)
   {
@@ -1409,7 +1408,12 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not verify data from ",1);
   }
 
-  count2 = RESERVE_BYTES_START_SETTINGS == 0 ? 1 : current_reserve_bytes_database;
+  count2 = RESERVE_BYTES_START_SETTINGS == 0 ? 1 : current_reserve_bytes_database - 1;
+  if (count2 == 0)
+  {
+    // set it to only check the current reserve bytes database if their is no previous reserve bytes database
+    count2 = 1;
+  }
 
   // check if the block verifier needs to sync any of the reserve bytes databases and sync them if needed
   if (sync_check_reserve_bytes_specific_database(database_data,(const char*)block_verifiers_ip_address,count2,(const size_t)current_reserve_bytes_database) == 0)

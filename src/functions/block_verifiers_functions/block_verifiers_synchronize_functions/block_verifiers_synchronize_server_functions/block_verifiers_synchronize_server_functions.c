@@ -786,7 +786,12 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memcmp(data,data2,DATA_HASH_LENGTH) == 0 ? memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n ",147) : memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n ",148);
     
   // check if the block verifier wanted to sync all reserve bytes databases or just the current reserve bytes database
-  count = memcmp(data3,"0",1) == 0 ? 1 : current_reserve_bytes_database;
+  count = memcmp(data3,"0",1) == 0 ? 1 : current_reserve_bytes_database - 1;
+  if (count == 0)
+  {
+    // set it to only check the current reserve bytes database if their is no previous reserve bytes database
+    count = 1;
+  }
   
   for (; count <= current_reserve_bytes_database; count++)
   {
