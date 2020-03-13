@@ -973,6 +973,10 @@ int data_network_node_create_block(void)
   {
     color_print("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block, and will sign the block\n","yellow");
 
+    // set the VRF data to not empty so it will update the databases on the start of the next round
+    memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
+    memcpy(VRF_data.block_blob,"XCASH_DPOPS",11);
+
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
   }

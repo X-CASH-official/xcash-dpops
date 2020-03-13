@@ -542,7 +542,7 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
 Name: sync_check_majority_reserve_bytes_database
 Description: Checks if the block verifiers reserve bytes database is in the majority and if not syncs the reserve bytes database from the main network data node
 Paramters:
-  RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
+  RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the previous and current reserve bytes database
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */

@@ -336,7 +336,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
 
     
     // add one to the block_producer_total_rounds and the current block height to the block_producer_block_heights if the public address is the block producer
-    if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0))
+    if (main_network_data_node_create_block == 0 && ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0)))
     {
       memset(data,0,sizeof(data));
       if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_producer_total_rounds",data,1) == 0)
@@ -375,6 +375,53 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     if (test_settings == 1)
     {
       break;
+    }
+  }
+
+  // update the main network data node if it had to create the block as the backup block producer
+  if (main_network_data_node_create_block == 1)
+  {
+    // create the message
+    memset(message,0,sizeof(message));
+    if (production_settings == 0)
+    {      
+      memcpy(message,"{\"public_address\":\"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "\"}",119);
+    }
+    else if (production_settings == 1)
+    {
+      memcpy(message,"{\"public_address\":\"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "\"}",119);
+    }    
+
+    memset(data,0,sizeof(data));
+    if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_producer_total_rounds",data,1) == 0)
+    {
+      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_total_rounds from the database");
+    }
+    sscanf(data, "%zu", &number);
+    number++;
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"block_producer_total_rounds\":\"",32);
+    snprintf(data+32,sizeof(data)-33,"%zu",number); 
+    memcpy(data+strlen(data),"\"}",2);
+    if (update_document_from_collection(database_name,DATABASE_COLLECTION,message,data,1) == 0)
+    {
+      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_total_rounds in the database");
+    }
+
+    memset(data,0,sizeof(data));
+    if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_producer_block_heights",data,1) == 0)
+    {
+      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database");
+    }      
+    memcpy(data+strlen(data),"|",1);
+    memcpy(data+strlen(data),BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,sizeof(data)));
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"{\"block_producer_block_heights\":\"",33);
+    memcpy(data2+33,data,strnlen(data,sizeof(data2)));
+    memcpy(data2+strlen(data2),"\"}",2);
+    if (update_document_from_collection(database_name,DATABASE_COLLECTION,message,data2,1) == 0)
+    {
+      ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
     }
   }
   return 1;
