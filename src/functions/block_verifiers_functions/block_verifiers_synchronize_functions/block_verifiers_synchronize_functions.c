@@ -161,7 +161,7 @@ void sync_network_data_nodes_database(void)
       send_data_socket(NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
     }    
   }
-  else if (memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,database_name,"ALL") == 0)
     {
@@ -197,7 +197,7 @@ void sync_network_data_nodes_database(void)
       send_data_socket(NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
     }    
   }
-  else if (memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,database_name,"ALL") == 0)
     {
@@ -233,7 +233,7 @@ void sync_network_data_nodes_database(void)
       send_data_socket(NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
     }    
   }
-  else if (memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,database_name,"ALL") == 0)
     {
@@ -269,7 +269,7 @@ void sync_network_data_nodes_database(void)
       send_data_socket(NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
     }    
   }
-  else if (memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,database_name,"ALL") == 0)
     {
@@ -308,6 +308,12 @@ void sync_network_data_nodes_database(void)
 
   // wait for the network data nodes to process the data
   sleep(NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS);
+
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,"yellow");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,"yellow");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,"yellow");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,"yellow");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,"yellow");
 
   // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
   network_data_nodes_sync_databases_settings = 0;

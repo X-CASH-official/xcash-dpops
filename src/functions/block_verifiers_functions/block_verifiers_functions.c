@@ -1365,6 +1365,7 @@ int block_verifiers_create_vote_results(char* message)
   memcpy(data3,"reserve_bytes_",14);
   get_reserve_bytes_database(count,1);  
   snprintf(data3+14,sizeof(data3)-15,"%zu",count);
+
   if (read_document_field_from_collection(database_name,data3,data,"reserve_bytes",data2,1) == 0)
   {
     BLOCK_VERIFIERS_CREATE_VOTE_RESULTS_ERROR("Could not get the previous blocks reserve bytes");
