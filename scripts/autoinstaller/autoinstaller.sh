@@ -869,9 +869,9 @@ function build_xcash()
   echo -ne "${COLOR_PRINT_YELLOW}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   cd "${XCASH_DIR}"
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-    make clean ; make release -j "${CPU_THREADS}" &>/dev/null
+    echo "y" | make clean ; make release -j "${CPU_THREADS}" &>/dev/null
   else
-    make clean ; make release -j $((CPU_THREADS / 2)) &>/dev/null
+    echo "y" | make clean ; make release -j $((CPU_THREADS / 2)) &>/dev/null
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   echo
@@ -1294,9 +1294,9 @@ function update_xcash()
     git reset --hard HEAD --quiet
     git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-      make clean ; make release -j "${CPU_THREADS}"
+      echo "y" | make clean ; make release -j "${CPU_THREADS}" &>/dev/null
     else
-      make clean ; make release -j $((CPU_THREADS / 2))
+      echo "y" | make clean ; make release -j $((CPU_THREADS / 2)) &>/dev/null
     fi 
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
