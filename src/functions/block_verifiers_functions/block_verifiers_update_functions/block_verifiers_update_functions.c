@@ -159,6 +159,11 @@ int update_block_verifiers_list(void)
     total_delegates = BLOCK_VERIFIERS_TOTAL_AMOUNT;
   }
 
+  for (count = 0; count < total_delegates; count++)
+  {
+    color_print(delegates[count].delegate_name,"yellow");
+  }
+
   // copy the database_multiple_documents_fields to the next_block_verifiers_list
   for (count = 0; (int)count < total_delegates; count++)
   {

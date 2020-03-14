@@ -46,17 +46,36 @@ int organize_delegates_settings(const void* DELEGATES1, const void* DELEGATES2)
   // Variables
   long long int count;
   long long int count2;
-  long long int settings;
+  int settings;
   const struct delegates* delegates1 = (const struct delegates*)DELEGATES1;
   const struct delegates* delegates2 = (const struct delegates*)DELEGATES2;
 
-  if ((settings = strcmp(delegates2->online_status,delegates1->online_status)) == 0)
+  /*
+  First sort by if the delegate are online or offline
+  Next sort by how many total votes the delegate have
+  Then sort by the public address
+
+  This way it will be a correct order with no two delegates being exactly the same
+  */
+
+  // check the delegates online status
+  if ((settings = strcmp(delegates2->online_status,delegates1->online_status)) != 0)
   {
-    sscanf(delegates1->total_vote_count, "%lld", &count);
-    sscanf(delegates2->total_vote_count, "%lld", &count2);
-    return count2 == count ? 0 : count2 - count < 0 ? -1 : 1;
+    return settings < 0 ? -1 : 1;
   }
-  return settings;
+
+  // the delegates have the same online status so check the delegates total vote count
+  sscanf(delegates1->total_vote_count, "%lld", &count);
+  sscanf(delegates2->total_vote_count, "%lld", &count2);
+
+  if (count != count2)
+  {
+    return count2 - count < 0 ? -1 : 1;
+  }
+
+  // the delegates have the same total vote count so sort the delegate by public address
+  settings = strcmp(delegates2->public_address,delegates1->public_address);
+  return settings < 0 ? -1 : settings > 0 ? 1 : 0;
 }
 
 
