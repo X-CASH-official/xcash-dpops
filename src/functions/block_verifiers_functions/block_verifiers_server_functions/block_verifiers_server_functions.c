@@ -222,9 +222,9 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  size_t count;
 
   // define macros
-  #define DATABASE_COLLECTION "reserve_bytes_1"
   #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK(settings) \
   if (debug_settings == 1) \
   { \
@@ -251,13 +251,16 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
 
   // add the data to the database
   memcpy(data2,data,strlen(data)-2);
-  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data2,1) == 0)
+  get_reserve_bytes_database(count,0);
+  memset(data,0,sizeof(data));
+  memcpy(data,"reserve_bytes_",14);
+  snprintf(data+strlen(data),sizeof(data)-15,"%zu",count);
+  if (insert_document_into_collection_json(database_name,data,data2,1) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
   }  
   return 1;
-
-  #undef DATABASE_COLLECTION
+  
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK
 }
 
