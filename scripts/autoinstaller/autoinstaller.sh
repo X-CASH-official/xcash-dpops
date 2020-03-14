@@ -869,9 +869,9 @@ function build_xcash()
   echo -ne "${COLOR_PRINT_YELLOW}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   cd "${XCASH_DIR}"
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-    make release -j "${CPU_THREADS}" &>/dev/null
+    make clean ; make release -j "${CPU_THREADS}" &>/dev/null
   else
-    make release -j $((CPU_THREADS / 2)) &>/dev/null
+    make clean ; make release -j $((CPU_THREADS / 2)) &>/dev/null
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   echo
@@ -992,9 +992,9 @@ function build_xcash_dpops()
   echo -ne "${COLOR_PRINT_YELLOW}Building XCASH_DPOPS${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-    make release -j "${CPU_THREADS}" &>/dev/null
+    make clean ; make release -j "${CPU_THREADS}" &>/dev/null
   else
-    make release -j $((CPU_THREADS / 2)) &>/dev/null
+    make clean ; make release -j $((CPU_THREADS / 2)) &>/dev/null
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Building XCASH_DPOPS${END_COLOR_PRINT}"
   echo
@@ -1294,9 +1294,9 @@ function update_xcash()
     git reset --hard HEAD --quiet
     git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-      make release -j "${CPU_THREADS}" &>/dev/null
+      make clean ; make release -j "${CPU_THREADS}"
     else
-      make release -j $((CPU_THREADS / 2)) &>/dev/null
+      make clean ; make release -j $((CPU_THREADS / 2))
     fi 
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
@@ -1316,9 +1316,9 @@ function update_xcash_dpops()
     git reset --hard HEAD --quiet
     git pull --quiet
     if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-      make release -j "${CPU_THREADS}" &>/dev/null
+      make clean ; make release -j "${CPU_THREADS}" &>/dev/null
     else
-      make release -j $((CPU_THREADS / 2)) &>/dev/null
+      make clean ; make release -j $((CPU_THREADS / 2)) &>/dev/null
     fi
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Updating XCASH_DPOPS${END_COLOR_PRINT}"
