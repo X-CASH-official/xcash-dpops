@@ -83,10 +83,10 @@ regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 100
 # Functions
 function get_installation_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Restart Programs\n5 = Stop Programs\n6 = Test Update\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Restart Programs\n5 = Stop Programs\n6 = Test Update\n7 = Test Update Reset Delegates\nEnter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] && echo "$data" || echo "1")
-  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Test" &>/dev/null)
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Test_Reset_Delegates" &>/dev/null)
   echo -ne "\r"
   echo
   # Check if XCASH_DPOPS is already installed, if the user choose to install
@@ -1741,6 +1741,33 @@ function test_update()
   update
 }
 
+function test_update_reset_delegates()
+{
+  get_installation_directory
+  stop_systemd_service_files
+  echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
+  sudo systemctl start XCASH_Daemon MongoDB
+  sleep 30s
+  data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
+  data="${data:66:6}"
+  data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
+  sudo systemctl stop XCASH_Daemon
+  sleep 30s
+  echo "${XCASH_DIR}"
+  echo "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}"
+  echo ${data}
+  if [ $data -ne 0 ]; then
+    "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Blockchain${END_COLOR_PRINT}"
+  echo
+  echo -ne "${COLOR_PRINT_YELLOW}Resetting the Database${END_COLOR_PRINT}"
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
+  echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Database${END_COLOR_PRINT}"
+  echo
+  update
+}
+
 
 
   
@@ -1772,4 +1799,6 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
   stop_systemd_service_files
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
   test_update
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
+  test_update_reset_delegates
 fi
