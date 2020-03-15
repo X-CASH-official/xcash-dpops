@@ -615,6 +615,7 @@ void* payment_timer_thread(void* parameters)
   { \
     RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS); \
   } \
+  sleep(60); \
   continue;
 
   for (;;)
@@ -678,7 +679,7 @@ void* payment_timer_thread(void* parameters)
       memcpy(data,"\n",1);
       color_print(data,"yellow");
     }
-    sleep(10);
+    sleep(60);
   }
   pthread_exit((void *)(intptr_t)1);
   
