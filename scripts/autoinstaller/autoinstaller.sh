@@ -83,10 +83,10 @@ regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 100
 # Functions
 function get_installation_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Restart Programs\n5 = Stop Programs\n6 = Test Update\n7 = Test Update Reset Delegates\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Restart Programs\n5 = Stop Programs\n6 = Test Update\n7 = Test Update Reset Delegates\n8 = Firewall\n9 = Test Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] && echo "$data" || echo "1")
-  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Test_Reset_Delegates" &>/dev/null)
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Test_Firewall" &>/dev/null)
   echo -ne "\r"
   echo
   # Check if XCASH_DPOPS is already installed, if the user choose to install
@@ -394,6 +394,109 @@ iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
  
 # Redirect HTTP to port 18283
 iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283
+ 
+# DROP all INPUT and FORWARD packets if they have reached this point
+iptables -A INPUT -j DROP
+iptables -A FORWARD -j DROP
+EOF
+)"
+FIREWALL_TEST="$(cat << EOF
+#!/bin/sh
+# iptables script for server
+# if you changed any default ports change them in the firewall as well
+ 
+# ACCEPT all packets at the top so each packet runs through the firewall rules, then DROP all INPUT and FORWARD if they dont use any of the firewall settings
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+# remove all existing IP tables
+iptables -t nat -F
+iptables -t mangle -F
+iptables -t mangle -X
+iptables -t mangle -F
+iptables -t raw -F
+iptables -t raw -X
+iptables -F
+iptables -X
+ 
+# ip table prerouting data (this is where you want to block ddos attacks)
+# Drop all invalid packets
+iptables -t mangle -A PREROUTING -m conntrack --ctstate INVALID -j DROP
+# Prevent syn flood
+iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+iptables -t mangle -A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,FIN FIN -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
+iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+ 
+# filter data for INPUT, FORWARD, and OUTPUT
+# Accept any packets coming or going on localhost
+iptables -I INPUT -i lo -j ACCEPT
+# keep already established connections running
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+ 
+# block ip spoofing. these are the ranges of local IP address.
+iptables -A INPUT -s 45.76.169.83 -j DROP
+iptables -A INPUT -s 10.0.0.0/8 -j DROP
+iptables -A INPUT -s 169.254.0.0/16 -j DROP
+iptables -A INPUT -s 172.16.0.0/12 -j DROP
+iptables -A INPUT -s 127.0.0.0/8 -j DROP
+iptables -A INPUT -s 192.168.0.0/24 -j DROP
+iptables -A INPUT -s 224.0.0.0/4 -j DROP
+iptables -A INPUT -d 224.0.0.0/4 -j DROP
+iptables -A INPUT -s 240.0.0.0/5 -j DROP
+iptables -A INPUT -d 240.0.0.0/5 -j DROP
+iptables -A INPUT -s 0.0.0.0/8 -j DROP
+iptables -A INPUT -d 0.0.0.0/8 -j DROP
+iptables -A INPUT -d 239.255.255.0/24 -j DROP
+iptables -A INPUT -d 255.255.255.255 -j DROP
+ 
+# block all traffic from ip address (iptables -A INPUT -s ipaddress -j DROP)
+#unblock them using iptables -D INPUT -s ipaddress -j DROP
+ 
+# Block different attacks
+# block one computer from opening too many connections (100 simultaneous connections) if this gives trouble with post remove this or increase the limit
+# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
+iptables -t filter -I INPUT -p tcp --syn --dport 18283 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
+# block port scans
+# this will lock the IP out for 1 day
+iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
+iptables -A INPUT -m recent --name portscan --remove
+iptables -A FORWARD -m recent --name portscan --remove
+iptables -A INPUT   -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP 
+iptables -A FORWARD -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP
+ 
+# Accept specific packets
+# Accept ICMP
+iptables -A INPUT -p icmp -j ACCEPT
+ 
+# Accept HTTP
+# iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+ 
+# Accept XCASH
+iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.169.59,54.255.223.94,136.243.102.93,116.203.71.44,116.203.71.47,116.203.71.60,116.203.71.36,116.203.71.48,116.203.71.45 --dport 18280 -j ACCEPT
+iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.169.59,54.255.223.94,136.243.102.93,116.203.71.44,116.203.71.47,116.203.71.60,116.203.71.36,116.203.71.48,116.203.71.45 --dport 18281 -j ACCEPT
+iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.169.59,54.255.223.94,136.243.102.93,116.203.71.44,116.203.71.47,116.203.71.60,116.203.71.36,116.203.71.48,116.203.71.45 --dport 18283 -j ACCEPT
+ 
+# Allow ssh (allow 10 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
+iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --set --name DEFAULT --rsource
+iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
+iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+ 
+# Redirect HTTP to port 18283
+# iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283
  
 # DROP all INPUT and FORWARD packets if they have reached this point
 iptables -A INPUT -j DROP
@@ -1768,6 +1871,28 @@ function test_update_reset_delegates()
   update
 }
 
+function install_firewall_script()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
+  update_systemd_service_files
+  echo "$FIREWALL" > /root/firewall_script.sh
+  sudo chmod +x /root/firewall_script.sh
+  sudo /root/firewall_script.sh
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
+  echo
+}
+
+function install_firewall_script_test()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
+  update_systemd_service_files
+  echo "$FIREWALL_TEST" > /root/firewall_script.sh
+  sudo chmod +x /root/firewall_script.sh
+  sudo /root/firewall_script.sh
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
+  echo
+}
+
 
 
   
@@ -1801,4 +1926,8 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
   test_update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
   test_update_reset_delegates
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ]; then
+  install_firewall_script
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ]; then
+  install_firewall_script_test
 fi
