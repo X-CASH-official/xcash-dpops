@@ -219,6 +219,7 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
   // Variables
   char data_hash[DATA_HASH_LENGTH+1];
   char public_address[XCASH_WALLET_LENGTH+1];
+  char data[SMALL_BUFFER_SIZE];
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR(settings) \
@@ -230,6 +231,7 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
   } \
   return 0;
 
+  memset(data,0,sizeof(data));
   memset(data_hash,0,sizeof(data_hash));
   memset(public_address,0,sizeof(public_address));
 
@@ -240,7 +242,7 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash",data_hash,DATA_HASH_LENGTH) == 0)
+  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash",data_hash,DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"previous_blocks_reserve_bytes",data,sizeof(data)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
   }
@@ -248,22 +250,27 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
   if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,data_hash,DATA_HASH_LENGTH);
+    network_data_nodes_sync_database_list.network_data_nodes_1_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
   else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,data_hash,DATA_HASH_LENGTH);
+    network_data_nodes_sync_database_list.network_data_nodes_2_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
   else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,data_hash,DATA_HASH_LENGTH);
+    network_data_nodes_sync_database_list.network_data_nodes_3_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
   else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,data_hash,DATA_HASH_LENGTH);
+    network_data_nodes_sync_database_list.network_data_nodes_4_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
   else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,data_hash,DATA_HASH_LENGTH);
+    network_data_nodes_sync_database_list.network_data_nodes_5_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
   return 1;
   

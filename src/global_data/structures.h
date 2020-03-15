@@ -74,18 +74,23 @@ struct network_data_nodes_sync_database_list {
     char network_data_node_1_public_address[XCASH_WALLET_LENGTH+1];
     char network_data_nodes_1_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
     char network_data_nodes_1_database_data_hash[DATA_HASH_LENGTH+1];
+    int network_data_nodes_1_previous_block_settings;
     char network_data_node_2_public_address[XCASH_WALLET_LENGTH+1];
     char network_data_nodes_2_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
     char network_data_nodes_2_database_data_hash[DATA_HASH_LENGTH+1];
+    int network_data_nodes_2_previous_block_settings;
     char network_data_node_3_public_address[XCASH_WALLET_LENGTH+1];
     char network_data_nodes_3_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
     char network_data_nodes_3_database_data_hash[DATA_HASH_LENGTH+1];
+    int network_data_nodes_3_previous_block_settings;
     char network_data_node_4_public_address[XCASH_WALLET_LENGTH+1];
     char network_data_nodes_4_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
     char network_data_nodes_4_database_data_hash[DATA_HASH_LENGTH+1];
+    int network_data_nodes_4_previous_block_settings;
     char network_data_node_5_public_address[XCASH_WALLET_LENGTH+1];
     char network_data_nodes_5_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
     char network_data_nodes_5_database_data_hash[DATA_HASH_LENGTH+1];
+    int network_data_nodes_5_previous_block_settings;
 };
 
 struct VRF_data { 
