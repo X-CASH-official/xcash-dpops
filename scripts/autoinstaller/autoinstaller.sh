@@ -83,10 +83,10 @@ regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 100
 # Functions
 function get_installation_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Restart Programs\n5 = Stop Programs\n6 = Test Update\n7 = Test Update Reset Delegates\n8 = Firewall\n9 = Test Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Restart Programs\n5 = Stop Programs\n6 = Test Update\n7 = Test Update Reset Delegates\n8 = Firewall\n9 = Shared Delegates Firewall\n10 = Test Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] && echo "$data" || echo "1")
-  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Test_Firewall" &>/dev/null)
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Shared_Delegates_Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Test_Firewall" &>/dev/null)
   echo -ne "\r"
   echo
   # Check if XCASH_DPOPS is already installed, if the user choose to install
@@ -288,9 +288,6 @@ iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
 iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --set --name DEFAULT --rsource
 iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
 iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
- 
-# Redirect HTTP to port 18283
-# iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283
  
 # DROP all INPUT and FORWARD packets if they have reached this point
 iptables -A INPUT -j DROP
@@ -495,9 +492,6 @@ iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --set 
 iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
 iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
  
-# Redirect HTTP to port 18283
-# iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283
- 
 # DROP all INPUT and FORWARD packets if they have reached this point
 iptables -A INPUT -j DROP
 iptables -A FORWARD -j DROP
@@ -511,7 +505,7 @@ Description=firewall
 Type=oneshot
 RemainAfterExit=yes
 User=root
-ExecStart=${XCASH_DPOPS_DIR}scripts/firewall/firewall_script.sh
+ExecStart=${HOME}/firewall_script.sh
  
 [Install]
 WantedBy=multi-user.target
@@ -1122,14 +1116,13 @@ function create_block_verifier_key()
 function install_firewall()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
-  sudo rm "${XCASH_DPOPS_DIR}"scripts/firewall/firewall_script.sh
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
-    echo "$FIREWALL_SHARED_DELEGATES" > "${XCASH_DPOPS_DIR}"scripts/firewall/firewall_script.sh
+    echo "$FIREWALL_SHARED_DELEGATES" > ${HOME}/firewall_script.sh
   else
-    echo "$FIREWALL" > "${XCASH_DPOPS_DIR}"scripts/firewall/firewall_script.sh
+    echo "$FIREWALL" > ${HOME}/firewall_script.sh
   fi
-  sudo chmod +x "${XCASH_DPOPS_DIR}"scripts/firewall/firewall_script.sh
-  sudo "${XCASH_DPOPS_DIR}"scripts/firewall/firewall_script.sh
+  sudo chmod +x ${HOME}/firewall_script.sh
+  sudo ${HOME}/firewall_script.sh
   sudo systemctl enable firewall &>/dev/null
   sudo systemctl start firewall &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
@@ -1875,9 +1868,24 @@ function install_firewall_script()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   update_systemd_service_files
-  echo "$FIREWALL" > /root/firewall_script.sh
-  sudo chmod +x /root/firewall_script.sh
-  sudo /root/firewall_script.sh
+  echo "$FIREWALL" > ${HOME}/firewall_script.sh
+  sudo chmod +x ${HOME}/firewall_script.sh
+  sudo ${HOME}/firewall_script.sh
+  sudo systemctl enable firewall &>/dev/null
+  sudo systemctl start firewall &>/dev/null
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
+  echo
+}
+
+function install_firewall_script_shared_delegates()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
+  update_systemd_service_files
+  echo "$FIREWALL_SHARED_DELEGATES" > ${HOME}/firewall_script.sh
+  sudo chmod +x ${HOME}/firewall_script.sh
+  sudo ${HOME}/firewall_script.sh
+  sudo systemctl enable firewall &>/dev/null
+  sudo systemctl start firewall &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
   echo
 }
@@ -1886,21 +1894,14 @@ function install_firewall_script_test()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   update_systemd_service_files
-  echo "$FIREWALL_TEST" > /root/firewall_script.sh
-  sudo chmod +x /root/firewall_script.sh
-  sudo /root/firewall_script.sh
+  echo "$FIREWALL_TEST" > ${HOME}/firewall_script.sh
+  sudo chmod +x ${HOME}/firewall_script.sh
+  sudo ${HOME}/firewall_script.sh
+  sudo systemctl enable firewall &>/dev/null
+  sudo systemctl start firewall &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
   echo
 }
-
-
-
-  
-
-
-
-
-
 
 # Check for a compatible OS
 check_ubuntu_version
@@ -1929,5 +1930,7 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ]; then
   install_firewall_script
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ]; then
+  install_firewall_script_shared_delegates
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ]; then
   install_firewall_script_test
 fi

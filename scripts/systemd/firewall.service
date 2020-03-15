@@ -5,7 +5,7 @@ Description=firewall
 Type=oneshot
 RemainAfterExit=yes
 User=root
-ExecStart=/root/x-network/XCASH_DPOPS/scripts/firewall/firewall_script.sh
+ExecStart=/root/x-network/firewall_script.sh
  
 [Install]
 WantedBy=multi-user.target

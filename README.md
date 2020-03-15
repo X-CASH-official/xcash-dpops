@@ -491,33 +491,14 @@ Reload systemd after you have made any changes to the systemd service files
 ## How To Setup the Firewall
  
 We will need to setup a firewall for our DPOPS node. The goal of settings up the firewall is to block any DDOS attacks. We will use IPtables for the firewall
- 
-The firewall is configured for a solo node setup. To configure the firewall for a shared delegates website or delegates website:
- 
-Open the firewall script  
-`nano ~/x-network/xcash-dpops/scripts/firewall/firewall_script.sh`
- 
-Uncomment these 3 lines (by removing the `#`) if running a shared delegates website or delegates website  
-`# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP`
- 
-`# iptables -A INPUT -p tcp --dport 80 -j ACCEPT`
- 
-`# iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283`
- 
-If you want to run the shared delegates website or delegates website using HTTPS, you will need to install a webserver like nginx and configure it.
- 
-Now we need to run the firewall script and activate it  
-```
-chmod +x ~/x-network/xcash-dpops/scripts/firewall/firewall_script.sh
-~/x-network/xcash-dpops/scripts/firewall/firewall_script.sh
-iptables-save > /etc/network/iptables.up.rules
-iptables-apply -t 60
-```
- 
-You should then open another connection to the server to make sure it worked and did not lock you out. Then press y to confirm the changes for the firewall.
 
-Now we need to enable the firewall systemd service file to run this script after a restart  
-`systemctl enable firewall`
+Note this step is only necessary if using LXC containers, as the autoinstaller script will install the firewall for you if not using LXC containers
+
+Run the bash script and choose either Firewall or Shared Delegates Firewall to install the firewall
+ 
+```
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh)"
+```
  
  
  
