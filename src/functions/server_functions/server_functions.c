@@ -257,7 +257,7 @@ int socket_thread(int client_socket)
   {
     pointer_reset(buffer);
     return 0;
-  } 
+  }
 
   // check if the message length is correct for the type of message
   if (strstr(buffer,"POST /") != NULL || strstr(buffer,"PUT /") != NULL || strstr(buffer,"PATCH /") != NULL || strstr(buffer,"DELETE /") != NULL)
@@ -611,61 +611,59 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   str1 = string_replace(buffer,"%",""); 
   memset(buffer,0,strlen(buffer));
   memcpy(buffer,str1,strnlen(str1,sizeof(buffer)));
-  
-  if (shared_delegates_website == 1)
-  {
-    memcpy(data2,"../delegates-pool-website/",26);
-  }
-  if (delegates_website == 1)
-  {
-    memcpy(data2,"../delegates-explorer/",22);
-  }
+  memcpy(data2,website_path,strnlen(website_path,sizeof(data2)));
   memcpy(data2+strlen(data2),buffer,strnlen(buffer,sizeof(data2)));
+
+  if (strstr(data2,".") == NULL)
+  {
+    memcpy(data2+strlen(data2),"index.html",10);
+  }
 
   // get the file size
   if ((file_size = get_file_size(data2)) == 0)
   {
-    if ((file_size = shared_delegates_website == 1 ? get_file_size("../delegates-pool-website/index.html") : get_file_size("../delegates-explorer/index.html")) == 0)
+    memcpy(data2+strlen(data2),"index.html",10);
+    if ((file_size = get_file_size(data2)) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
     }
   }
   const size_t MAXIMUM_AMOUNT = file_size >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : file_size+SMALL_BUFFER_SIZE;
   unsigned char* data = (unsigned char*)calloc(MAXIMUM_AMOUNT,sizeof(unsigned char));
-  
   if ((file_size = read_file(data,data2)) == 0)
   {
-    if ((file_size = shared_delegates_website == 1 ? read_file(data,"../delegates-pool-website/index.html") : read_file(data,"../delegates-explorer/index.html")) == 0)
-    {
-      pointer_reset(data);
-      SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
-    }
+    pointer_reset(data);
+    SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
   }
 
-  memset(data2,0,sizeof(data2));
-
-  if (strstr(MESSAGE,".html") != NULL)
+  if (strstr(data2,".html") != NULL)
   {
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"text/html; charset=utf-8",24);
   }
-  else if (strstr(MESSAGE,".js") != NULL)
+  else if (strstr(data2,".js") != NULL)
   {
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"application/javascript; charset=utf-8",37);
   }
-  else if (strstr(MESSAGE,".css") != NULL)
+  else if (strstr(data2,".css") != NULL)
   {
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"text/css; charset=utf-8",23);
   }
-  else if (strstr(MESSAGE,".png") != NULL)
+  else if (strstr(data2,".png") != NULL)
   {
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"image/png",9);
   }
-  else if (strstr(MESSAGE,".jpg") != NULL || strstr(MESSAGE,".jpeg") != NULL)
+  else if (strstr(data2,".jpg") != NULL || strstr(data2,".jpeg") != NULL)
   {
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"image/jpeg",10);
   }
-  else if (strstr(MESSAGE,".ico") != NULL)
+  else if (strstr(data2,".ico") != NULL)
   {
+    memset(data2,0,sizeof(data2));
     memcpy(data2,"image/x-icon",12);
   }
   else

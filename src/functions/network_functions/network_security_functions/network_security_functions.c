@@ -930,7 +930,7 @@ int validate_data(const char* MESSAGE)
     }
     else
     {
-      VALIDATE_DATA_ERROR("Invalid message");
+      
     }
   }
   else if (shared_delegates_website == 1)
@@ -962,7 +962,7 @@ int validate_data(const char* MESSAGE)
     }
     else
     {
-      VALIDATE_DATA_ERROR("Invalid message");
+     
     }
   }
   else

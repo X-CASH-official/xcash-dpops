@@ -105,6 +105,7 @@ int block_height_start_time_minute; // The minute to start the current_block_hei
 int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
 int production_settings; // 0 for production, 1 for test
 int production_settings_database_data_settings; // The initialize the database settings
+char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -474,6 +475,16 @@ void get_delegates_data(void)
   {
     GET_DELEGATES_DATA_ERROR("Could not get the previous block hash");
   }
+
+  // get the website path
+  memset(website_path,0,sizeof(website_path));
+  memset(data,0,sizeof(data));
+  if (readlink("/proc/self/exe", data, sizeof(data)) == -1)
+  {
+    GET_DELEGATES_DATA_ERROR("Could not get the websites path");
+  }
+  memcpy(website_path,data,strnlen(data,sizeof(website_path))-17);
+  delegates_website == 1 ? memcpy(website_path+strlen(website_path),DELEGATES_WEBSITE_PATH,sizeof(DELEGATES_WEBSITE_PATH)-1) : memcpy(website_path+strlen(website_path),SHARED_DELEGATES_WEBSITE_PATH,sizeof(SHARED_DELEGATES_WEBSITE_PATH)-1);
   return;
 
   #undef GET_DELEGATES_DATA_ERROR

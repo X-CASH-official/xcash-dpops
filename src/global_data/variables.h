@@ -77,6 +77,7 @@ extern int block_height_start_time_minute; // The minute to start the current_bl
 extern int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
 extern int production_settings; // 1 for production, 0 for test
 extern int production_settings_database_data_settings; // The initialize the database settings
+extern char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
 
 extern int delegates_website; // 1 if the running the delegates websites, 0 if not
 extern int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not

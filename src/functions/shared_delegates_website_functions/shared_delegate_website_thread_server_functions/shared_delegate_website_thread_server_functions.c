@@ -615,6 +615,8 @@ void* payment_timer_thread(void* parameters)
   { \
     RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS); \
   } \
+  memset(data,0,sizeof(data)); \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   sleep(60); \
   continue;
 
