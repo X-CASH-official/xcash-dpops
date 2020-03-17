@@ -100,7 +100,7 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_SYNCING_TIMEOUT_SETTINGS 10 // The maximum amount of time to wait in seconds to sync any of the databases
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
-#define DELEGATES_WEBSITE_PATH "website/" // The delegates website path
+#define DELEGATES_WEBSITE_PATH "delegates-explorer/" // The delegates website path
 #define SHARED_DELEGATES_WEBSITE_PATH "delegates-pool-website/" // The shared delegates website path
 #define XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING "}\r\n}" // End string for the xcash daemon or xcash wallet
 #define XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING "\"code\":" // End string for the xcash daemon or xcash wallet when an error occurs
