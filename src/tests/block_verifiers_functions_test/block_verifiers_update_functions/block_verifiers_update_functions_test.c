@@ -138,7 +138,7 @@ int block_verifiers_update_functions_test(void)
   memcpy(current_round_part_backup_node,"0",1);
   memset(main_nodes_list.block_producer_public_address,0,sizeof(main_nodes_list.block_producer_public_address));
   memcpy(main_nodes_list.block_producer_public_address,TEST_WALLET_1,XCASH_WALLET_LENGTH);
-  if (add_block_verifiers_round_statistics(XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\"}","block_producer_total_rounds",data_test,1) == 1 && strncmp(data_test,"1",sizeof(data_test)) == 0 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\"}","block_producer_block_heights",result_test,1) == 1 && strncmp(result_test,"|" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST,sizeof(result_test)) == 0)
+  if (add_block_verifiers_round_statistics(XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\"}","block_producer_total_rounds",data_test,1) == 1 && strncmp(data_test,"1",sizeof(data_test)) == 0 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\"}","block_producer_block_heights",result_test,1) == 1 && strncmp(result_test,"|" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "|" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST,sizeof(result_test)) == 0)
   {
     color_print("PASSED! Test for add_block_verifiers_round_statistics for the block producer","green");
     count_test++;

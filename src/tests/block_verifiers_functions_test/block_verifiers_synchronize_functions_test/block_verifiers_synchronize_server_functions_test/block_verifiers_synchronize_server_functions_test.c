@@ -46,7 +46,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   #define RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA_RESULTS "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n \"reserve_bytes_database_1\": \"true\""
   #define RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"{\"block_height\" : \"521850\", \"reserve_bytes_data_hash\" : \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\", \"reserve_bytes\" : \"DATA\" }\""
   #define DELEGATES_SYNC_CHECK_ALL_UPDATE_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"true\""
-  #define DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"delegates_database\": \"{\"public_address\" : \"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "\", \"total_vote_count\" : \"120000000\", \"IP_address\" : \"" NETWORK_DATA_NODE_1_IP_ADDRESS "\", \"delegate_name\" : \"delegate_name_1\", \"about\" : \"\", \"website\" : \"\", \"team\" : \"\", \"pool_mode\" : \"false\", \"fee_structure\" : \"\", \"server_settings\" : \"\", \"block_verifier_score\" : \"0\", \"online_status\" : \"true\", \"block_verifier_total_rounds\" : \"0\", \"block_verifier_online_total_rounds\" : \"0\", \"block_verifier_online_percentage\" : \"0\", \"block_producer_total_rounds\" : \"0\", \"block_producer_block_heights\" : \"\", \"public_key\" : \"" TEST_WALLET_PUBLIC_KEY_1 "\" }\""
+  #define DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"delegates_database\": \"{\"public_address\" : \"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "\", \"total_vote_count\" : \"120000000\", \"IP_address\" : \"" NETWORK_DATA_NODE_1_IP_ADDRESS "\", \"delegate_name\" : \"delegate_name_1\", \"about\" : \"\", \"website\" : \"\", \"team\" : \"\", \"pool_mode\" : \"false\", \"fee_structure\" : \"\", \"server_settings\" : \"\", \"block_verifier_score\" : \"0\", \"online_status\" : \"true\", \"block_verifier_total_rounds\" : \"0\", \"block_verifier_online_total_rounds\" : \"0\", \"block_verifier_online_percentage\" : \"0\", \"block_producer_total_rounds\" : \"0\", \"block_producer_block_heights\" : \"|" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "\", \"public_key\" : \"" TEST_WALLET_PUBLIC_KEY_1 "\" }\""
   #define STATISTICS_SYNC_CHECK_ALL_UPDATE_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"true\","
   #define STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"statistics_database\": \"{\"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"delegate_name_1\", \"most_total_rounds\" : \"0\", \"best_block_verifier_online_percentage_delegate_name\" : \"delegate_name_1\", \"best_block_verifier_online_percentage\" : \"0\", \"most_block_producer_total_rounds_delegate_name\" : \"delegate_name_1\", \"most_block_producer_total_rounds\" : \"0\" }\""
 
@@ -260,6 +260,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   }
   else
   {
+    color_print(result_test,"yellow");
     color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update","red");
   }
   RESET_ERROR_MESSAGES;
@@ -277,6 +278,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   }
   else
   {
+    color_print(result_test,"yellow");
     color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update","red");
   }
   RESET_ERROR_MESSAGES;

@@ -79,7 +79,6 @@ int delegate_website_functions_test(void)
   }
   else
   {
-    color_print(data_test,"yellow");
     color_print("FAILED! Test for server_receive_data_socket_delegates_website_get_statistics","red");
   }
   RESET_ERROR_MESSAGES;
@@ -92,7 +91,6 @@ int delegate_website_functions_test(void)
   }
   else
   {
-    color_print(data_test,"yellow");
     color_print("FAILED! Test for server_receive_data_socket_get_delegates","red");
   }
   RESET_ERROR_MESSAGES;
