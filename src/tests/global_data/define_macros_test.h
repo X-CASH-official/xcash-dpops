@@ -662,15 +662,15 @@ for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++) \
   memset(network_data_nodes_list.network_data_nodes_IP_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_IP_address[count])); \
 } \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[0],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[1],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[2],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[2],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[2],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[3],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[3],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[3],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(network_data_nodes_list.network_data_nodes_public_address[4],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(network_data_nodes_list.network_data_nodes_IP_address[4],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 
 #define INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST \
 for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++) \
@@ -690,27 +690,27 @@ for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++) \
 } \
 memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
 memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(previous_block_verifiers_list.block_verifiers_name[1],"delegate_1",10); \
 memcpy(previous_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(previous_block_verifiers_list.block_verifiers_IP_address[1],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(previous_block_verifiers_list.block_verifiers_IP_address[1],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(previous_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
 memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(current_block_verifiers_list.block_verifiers_name[1],"delegate_1",10); \
 memcpy(current_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(current_block_verifiers_list.block_verifiers_IP_address[1],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(current_block_verifiers_list.block_verifiers_IP_address[1],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(current_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_1",10); \
 memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH); \
 memcpy(next_block_verifiers_list.block_verifiers_name[1],"delegate_1",10); \
 memcpy(next_block_verifiers_list.block_verifiers_public_address[1],TEST_WALLET,XCASH_WALLET_LENGTH); \
-memcpy(next_block_verifiers_list.block_verifiers_IP_address[1],XCASH_DPOPS_delegates_IP_address,9); \
+memcpy(next_block_verifiers_list.block_verifiers_IP_address[1],XCASH_DPOPS_delegates_IP_address,strlen(XCASH_DPOPS_delegates_IP_address)); \
 memcpy(next_block_verifiers_list.block_verifiers_public_key[1],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
 
 
