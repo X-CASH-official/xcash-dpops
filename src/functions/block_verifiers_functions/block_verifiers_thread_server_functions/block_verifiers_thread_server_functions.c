@@ -206,9 +206,6 @@ int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
     }
   }
 
-  // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
-  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
-
   // copy all of the reserve proofs to the reserve_proofs array
   for (count = 0; count < invalid_reserve_proofs.count; count++)
   {
@@ -216,7 +213,7 @@ int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
   }
 
   // organize the invalid reserve proofs struct so the data hash is the same
-  qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),organize_invalid_reserve_proofs_settings);
+  qsort(reserve_proofs,invalid_reserve_proofs.count,sizeof(char*),organize_invalid_reserve_proofs_settings);
 
   // get the data hash of the invalid_reserve_proofs struct
   memset(data,0,sizeof(data));
@@ -252,16 +249,10 @@ int check_reserve_proofs_timer_create_message(char *block_verifiers_message)
   memset(block_verifiers_message,0,strlen(block_verifiers_message));
   memcpy(block_verifiers_message,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
   memcpy(block_verifiers_message+strlen(block_verifiers_message),current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH);
-  memcpy(block_verifiers_message+strlen(block_verifiers_message),"\",\r\n}",5); 
+  memcpy(block_verifiers_message+strlen(block_verifiers_message),"\",\r\n}",5);
 
-  // sign_data
-  if (sign_data(block_verifiers_message) == 0)
-  { 
-    RESET_RESERVE_PROOFS_ARRAY
-    return 0;
-  }
-  RESET_RESERVE_PROOFS_ARRAY
-  return 1;
+  RESET_RESERVE_PROOFS_ARRAY;
+  return sign_data(block_verifiers_message);
 
   #undef RESET_RESERVE_PROOFS_ARRAY
 }
@@ -388,11 +379,7 @@ int check_reserve_proofs_timer_update_delegates_total_vote_count(const int CURRE
   memcpy(data2+strlen(data2),data,strnlen(data,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
 
-  if (update_document_from_collection(database_name,"delegates",data3,data2,1) == 0)
-  {
-    return 0;
-  }
-  return 1;
+  return update_document_from_collection(database_name,"delegates",data3,data2,1);
 }
 
 
@@ -483,9 +470,7 @@ void check_reserve_proofs_timer_delete_reserve_proof(const int CURRENT_RESERVE_P
   }
 
   // reset the error messages since there just going to contain The database collection does not exist if not all reserve proof databases are being used
-  pthread_rwlock_wrlock(&rwlock_reserve_proofs);
   RESET_ERROR_MESSAGES;
-  pthread_rwlock_unlock(&rwlock_reserve_proofs);
 
   return;
 }
@@ -507,9 +492,7 @@ int check_reserve_proofs_timer_update_database(void)
 
   for (count = 0; count < invalid_reserve_proofs.count; count++)
   {
-    pthread_rwlock_wrlock(&rwlock_reserve_proofs);
     RESET_ERROR_MESSAGES;
-    pthread_rwlock_unlock(&rwlock_reserve_proofs);
 
     // get the data for the reserve proof from your own database, since you cant know if the data given was valid since the reserve proof is already invalid
     if (check_reserve_proofs_timer_get_database_data(count) == 0)
@@ -669,7 +652,7 @@ int send_invalid_reserve_proof_to_block_verifiers(const struct reserve_proof* re
   // add the reserve proof to the invalid_reserve_proofs struct
   if (test_settings == 0)
   {
-    pthread_rwlock_wrlock(&rwlock_reserve_proofs);
+    pthread_mutex_lock(&invalid_reserve_proof_lock);
     invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
     invalid_reserve_proofs.public_address_created_reserve_proof[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
     invalid_reserve_proofs.public_address_voted_for[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -677,7 +660,7 @@ int send_invalid_reserve_proof_to_block_verifiers(const struct reserve_proof* re
     memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],xcash_wallet_public_address,XCASH_WALLET_LENGTH);
     memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof->reserve_proof,strnlen(reserve_proof->reserve_proof,sizeof(reserve_proof->reserve_proof)));
     invalid_reserve_proofs.count++;
-    pthread_rwlock_unlock(&rwlock_reserve_proofs);
+    pthread_mutex_unlock(&invalid_reserve_proof_lock);
   }
 
   // send the reserve proof to all block verifiers
@@ -763,14 +746,17 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       // set the database to not accept data
       database_settings = 0;
 
-      color_print("Part 2 - Send all invalid reserve proofs to all block verifiers","yellow");
-
       // check if there was any invalid reserve proofs found
       if (invalid_reserve_proofs.count <= 0)
       {
         color_print("No invalid reserve proofs were found","yellow");
         RESET_INVALID_RESERVE_PROOFS_DATA;
       }
+
+      // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
+      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2);
+
+      color_print("Part 2 - Send all invalid reserve proofs to all block verifiers","yellow");
 
       // create the data to send to the block verifiers
       if (check_reserve_proofs_timer_create_message(data2) == 0)
@@ -785,7 +771,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       }
 
       // wait for the block verifiers to process the votes
-      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2);
+      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3);
 
       color_print("Part 3 - Check if the valid amount of block verifiers had the same invalid reserve proofs","yellow");
 
@@ -803,14 +789,11 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       color_print("Part 4 - Remove the invalid reserve proofs from the database","yellow");
 
       // update the database
-      if (check_reserve_proofs_timer_update_database() == 0)
-      {
-        RESET_INVALID_RESERVE_PROOFS_DATA;
-      }
-
-      // set the database to accept data
       database_settings = 1;
-      
+      check_reserve_proofs_timer_update_database();
+
+      color_print("Invalid reserve proofs have been removed from the database","yellow");
+
       // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
       RESET_INVALID_RESERVE_PROOFS_DATA;
     }
@@ -818,7 +801,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     
     // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
     memset(data,0,strlen(data));
-    if (select_random_unique_reserve_proof(&reserve_proof) == 1 && (check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof) == 0 || memcmp(data,reserve_proof.reserve_proof_amount,strlen(data)) != 0))
+    if (select_random_unique_reserve_proof(&reserve_proof) == 1 && (check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof) != 1 || memcmp(data,reserve_proof.reserve_proof_amount,strlen(data)) != 0))
     { 
       send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
     }

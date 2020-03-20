@@ -73,6 +73,7 @@ pthread_mutex_t verify_network_block_lock;
 pthread_mutex_t vote_lock;
 pthread_cond_t thread_settings_lock;
 pthread_mutex_t add_reserve_proof_lock;
+pthread_mutex_t invalid_reserve_proof_lock;
 
 pthread_t server_threads[100];
 int epoll_fd;
@@ -189,6 +190,7 @@ void initialize_data(void)
   pthread_mutex_init(&vote_lock, NULL);
   pthread_cond_init(&thread_settings_lock,NULL);
   pthread_mutex_init(&add_reserve_proof_lock, NULL);
+  pthread_mutex_init(&invalid_reserve_proof_lock, NULL);
 
   // initialize the error_message struct
   for (count = 0; count < TOTAL_ERROR_MESSAGES; count++)

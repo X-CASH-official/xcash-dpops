@@ -29,7 +29,7 @@ Description: organize invalid reserve proofs
 
 int organize_invalid_reserve_proofs_settings(const void* STRING1, const void* STRING2)
 {
-  return (strcmp((const char*)STRING1, (const char*)STRING2));
+  return strcmp(*(char* const*)STRING2, *(char* const*)STRING1);
 }
 
 

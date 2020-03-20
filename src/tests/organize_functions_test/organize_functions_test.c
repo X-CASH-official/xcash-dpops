@@ -30,8 +30,8 @@ Return: The number of passed organize_functions test
 
 int organize_functions_test(void)
 {
-  // variables  
-  char reserve_proofs[2][BUFFER_SIZE_RESERVE_PROOF] = {"RESERVE_PROOF_TEST_DATA_2","RESERVE_PROOF_TEST_DATA"};
+  // variables 
+  char* reserve_proofs[5];
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   int count;
 
@@ -39,6 +39,18 @@ int organize_functions_test(void)
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
+
+  // initialize the reserve_proofs array 
+  for (count = 0; count < 5; count++)
+  {
+    reserve_proofs[count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+
+    if (reserve_proofs[count] == NULL)
+    {
+      color_print("Could not allocate the memory needed on the heap","red");
+      exit(0);
+    }
+  }
 
   // initialize the delegates struct
   for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
@@ -257,6 +269,13 @@ int organize_functions_test(void)
   memcpy(delegates[9].block_producer_total_rounds,"0",1);
   memcpy(delegates[9].block_producer_block_heights,"0",1);
   memcpy(delegates[9].public_key,TEST_WALLET_PUBLIC_KEY_5,VRF_PUBLIC_KEY_LENGTH);
+
+  // copy the reserve proofs
+  memcpy(reserve_proofs[0],"RESERVE_PROOF_TEST_DATA_2",25);
+  memcpy(reserve_proofs[1],"RESERVE_PROOF_TEST_DATA_4",25);
+  memcpy(reserve_proofs[2],"RESERVE_PROOF_TEST_DATA_1",25);
+  memcpy(reserve_proofs[3],"RESERVE_PROOF_TEST_DATA_3",25);
+  memcpy(reserve_proofs[4],"RESERVE_PROOF_TEST_DATA_5",25);
  
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\norganize functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,ORGANIZE_FUNCTIONS_TOTAL_TEST,TEST_OUTLINE);
@@ -264,8 +283,8 @@ int organize_functions_test(void)
   // run the test
  
   // test for organize_invalid_reserve_proofs_settings
-  qsort((char*)reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(reserve_proofs[0]),organize_invalid_reserve_proofs_settings);
-  if (strncmp(reserve_proofs[0],"RESERVE_PROOF_TEST_DATA",sizeof(reserve_proofs[0])) == 0 && strncmp(reserve_proofs[1],"RESERVE_PROOF_TEST_DATA_2",sizeof(reserve_proofs[1])) == 0)
+  qsort(reserve_proofs,sizeof(reserve_proofs)/sizeof(reserve_proofs[0]),sizeof(char*),organize_invalid_reserve_proofs_settings);
+  if (strncmp(reserve_proofs[0],"RESERVE_PROOF_TEST_DATA_5",BUFFER_SIZE_RESERVE_PROOF) == 0 && strncmp(reserve_proofs[1],"RESERVE_PROOF_TEST_DATA_4",BUFFER_SIZE_RESERVE_PROOF) == 0 && strncmp(reserve_proofs[2],"RESERVE_PROOF_TEST_DATA_3",BUFFER_SIZE_RESERVE_PROOF) == 0 && strncmp(reserve_proofs[3],"RESERVE_PROOF_TEST_DATA_2",BUFFER_SIZE_RESERVE_PROOF) == 0 && strncmp(reserve_proofs[4],"RESERVE_PROOF_TEST_DATA_1",BUFFER_SIZE_RESERVE_PROOF) == 0)
   {   
     color_print("PASSED! Test for organize_invalid_reserve_proofs_settings","green");
     count_test++;
@@ -325,6 +344,12 @@ int organize_functions_test(void)
     color_print("FAILED! Test for organize_delegates checking for Could not get the delegates from the database","red");
   }
   RESET_ERROR_MESSAGES;
+
+  // reset the reserve proofs
+  for (count = 0; count < 5; count++)
+  {
+    pointer_reset(reserve_proofs[count]);
+  }
 
   // reset the delegates struct
   for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)

@@ -45,6 +45,7 @@ extern pthread_mutex_t verify_network_block_lock;
 extern pthread_mutex_t vote_lock;
 extern pthread_cond_t thread_settings_lock;
 extern pthread_mutex_t add_reserve_proof_lock;
+extern pthread_mutex_t invalid_reserve_proof_lock;
 
 extern pthread_t server_threads[100];
 extern int epoll_fd;

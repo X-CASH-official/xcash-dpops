@@ -445,7 +445,9 @@ int socket_thread(int client_socket)
  } 
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL)
  {
+   pthread_mutex_lock(&invalid_reserve_proof_lock);
    server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
+   pthread_mutex_unlock(&invalid_reserve_proof_lock);
  }  
  else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL)
  {
@@ -483,7 +485,7 @@ int socket_thread(int client_socket)
  {
    server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
  }  
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time.tm_sec >= SEND_DATA_TIME_SECONDS_NETWORK_BLOCK_PART_4 && current_UTC_date_and_time.tm_sec < START_TIME_SECONDS_NETWORK_BLOCK_PART_5) || (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec < START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2) || (network_functions_test_error_settings == 2)))
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time.tm_sec >= SEND_DATA_TIME_SECONDS_NETWORK_BLOCK_PART_4 && current_UTC_date_and_time.tm_sec < START_TIME_SECONDS_NETWORK_BLOCK_PART_5) || (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec >= START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2 && current_UTC_date_and_time.tm_sec < START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3) || (network_functions_test_error_settings == 2)))
  { 
    server_receive_data_socket_node_to_node((const char*)buffer);
  }

@@ -197,41 +197,6 @@ int block_verifiers_thread_server_functions_test(void)
     color_print("FAILED! Test for check_reserve_proofs_timer_update_delegates_score","red");
   }
 
-  // check_reserve_proofs_timer_update_database
-  delete_database(database_name,0);
-  INITIALIZE_DATABASE_DATA(3);
-  RESET_INVALID_RESERVE_PROOFS_DATA;
-  invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  invalid_reserve_proofs.public_address_created_reserve_proof[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  invalid_reserve_proofs.public_address_voted_for[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  invalid_reserve_proofs.reserve_proof[0] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
-  invalid_reserve_proofs.block_verifier_public_address[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  invalid_reserve_proofs.public_address_created_reserve_proof[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  invalid_reserve_proofs.public_address_voted_for[1] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-  invalid_reserve_proofs.reserve_proof[1] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
-  memcpy(invalid_reserve_proofs.block_verifier_public_address[0],TEST_WALLET_6,XCASH_WALLET_LENGTH);
-  memcpy(invalid_reserve_proofs.public_address_voted_for[0],RESERVE_PROOF_PUBLIC_ADDRESS_TEST,XCASH_WALLET_LENGTH);
-  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[0],RESERVE_PROOF_PUBLIC_ADDRESS_TEST,XCASH_WALLET_LENGTH);
-  invalid_reserve_proofs.reserve_proof_amount[0] = 120000000;
-  memcpy(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537);
-  memcpy(invalid_reserve_proofs.block_verifier_public_address[1],RESERVE_PROOF_PUBLIC_ADDRESS_TEST,XCASH_WALLET_LENGTH);
-  memcpy(invalid_reserve_proofs.public_address_voted_for[1],TEST_WALLET_6,XCASH_WALLET_LENGTH);
-  memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[1],TEST_WALLET_11,XCASH_WALLET_LENGTH);
-  invalid_reserve_proofs.reserve_proof_amount[1] = 1000000000;
-  memcpy(invalid_reserve_proofs.reserve_proof[1],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NTiwbZLCstwWzpKy8J6J8M1uq9qf5PbWha7C68N8V7qshnzUP113UoSQuy78bpD5CeY2H3ViztSqDBFmmMiNu6uCQGkbu4NrZhZk2T7y7T1ixLCAxYfKRtd2pAAbuAWeBVCNzvmKB8YaneMgZ3mH113kXRg67xZRBtVcawf1CTYHCVuhpur8F6nAGxwFeNoRAdr6rnGwa1SUVdqrXypfmJJyzpPUGTSriAJqtRSBKJqAgQDPz4aV99aLMHHKWAv3eKaGAvBZ3obk2GuVBnHeUUEHAihQ5ECndKS4dw8YxMogdY9o8PvrhZgt2gnX4YrUiF5VbGBcBUsxbag1Ak9oZfTH2d1WeyMntcv1Mb28Nzc73UvMbck3VyBedN57gV1LS8WNV1SeHAFBiGgeBcuveGee9VZYQvGRfiWzkJf9JfYWoQ4dyxh13BrXpp3rF1nWv3UXxMrJJX8SRtQy5zrLAywENZ",538);
-  invalid_reserve_proofs.count = 2;
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  if (check_reserve_proofs_timer_update_database() == 1)
-  {
-    color_print("PASSED! Test for check_reserve_proofs_timer_update_database","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for check_reserve_proofs_timer_update_database","red");
-  }
-
   // select_random_unique_reserve_proof
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(3);
@@ -399,7 +364,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
   RESET_ERROR_MESSAGES;
 
-  // check_reserve_proofs_timer_update_database
+  // check_reserve_proofs_timer_update_delegates_total_vote_count
   delete_database(database_name,0);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;

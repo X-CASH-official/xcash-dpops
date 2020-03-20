@@ -120,7 +120,7 @@ Parameters:
   result - The amount for the reserve proof
   PUBLIC_ADDRESS - The public address that created the reserve proof
   RESERVE_PROOF - The reserve proof
-Return: 0 if an error has occured or if the reserve proof is invalid, 1 if the reserve proof is valid
+Return: -1 if an error has occured, 0 if the reserve proof is invalid, 1 if the reserve proof is valid
 -----------------------------------------------------------------------------------------------------------
 */
 
