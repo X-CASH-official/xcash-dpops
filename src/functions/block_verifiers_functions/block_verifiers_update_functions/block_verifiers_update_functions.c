@@ -159,11 +159,6 @@ int update_block_verifiers_list(void)
     total_delegates = BLOCK_VERIFIERS_TOTAL_AMOUNT;
   }
 
-  for (count = 0; count < total_delegates; count++)
-  {
-    color_print(delegates[count].delegate_name,"yellow");
-  }
-
   // copy the database_multiple_documents_fields to the next_block_verifiers_list
   for (count = 0; (int)count < total_delegates; count++)
   {
@@ -199,6 +194,86 @@ int update_block_verifiers_list(void)
   
   #undef DATABASE_COLLECTION
   #undef UPDATE_BLOCK_VERIFIERS_LIST_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: update_next_block_verifiers_list
+Description: Updates the next block verifiers list struct
+Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to sync from a random network data node
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int update_next_block_verifiers_list(void)
+{
+  // Variables 
+  char data[1024];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
+  int count;
+  int total_delegates = 0;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  #define UPDATE_NEXT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  database_settings = 1; \
+  pthread_cond_broadcast(&thread_settings_lock); \
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
+  return 0;
+
+  // set the database to not accept any new data
+  database_settings = 0;
+
+  // reset the next_block_verifiers_list struct
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  {
+    memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
+    memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
+    memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
+    memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
+  }
+
+  // initialize the delegates struct
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
+
+  // organize the delegates
+  if ((total_delegates = organize_delegates(delegates,DATABASE_COLLECTION)) == 0)
+  {
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    UPDATE_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+  }
+  else if (total_delegates > BLOCK_VERIFIERS_TOTAL_AMOUNT)
+  {
+    total_delegates = BLOCK_VERIFIERS_TOTAL_AMOUNT;
+  }
+
+  // copy the database_multiple_documents_fields to the next_block_verifiers_list
+  for (count = 0; (int)count < total_delegates; count++)
+  {
+    memcpy(next_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(next_block_verifiers_list.block_verifiers_name[count])));
+    memcpy(next_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(next_block_verifiers_list.block_verifiers_public_address[count])));
+    memcpy(next_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(next_block_verifiers_list.block_verifiers_public_key[count])));
+    memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
+  }
+
+  // set the database to accept data
+  database_settings = 1;
+
+  // reset any thread that was waiting for the database
+  pthread_cond_broadcast(&thread_settings_lock);
+
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+
+  return 1;
+  
+  #undef DATABASE_COLLECTION
+  #undef UPDATE_NEXT_BLOCK_VERIFIERS_LIST_ERROR
 }
 
 

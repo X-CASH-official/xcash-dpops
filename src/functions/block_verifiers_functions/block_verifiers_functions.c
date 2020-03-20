@@ -209,6 +209,12 @@ int start_new_round(void)
       color_print("Successfully synced all databases\n","yellow");
     }
 
+    // update the next block verifiers list
+    if (update_next_block_verifiers_list() == 0)
+    {
+      START_NEW_ROUND_ERROR("Could not update the next blokc verifiers list");
+    }
+
     // check if it is running in registration mode only
     if (registration_settings == 1)
     {

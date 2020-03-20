@@ -8,6 +8,7 @@ Function prototypes
 */
 
 int update_block_verifiers_list(void);
+int update_next_block_verifiers_list(void);
 int update_databases(void);
 int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT);
 int add_round_statistics(void);
