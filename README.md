@@ -736,6 +736,8 @@ You can also run XCASH DPOPS inside of a container, using LXC containers. This w
 It is recommended to install the firewall on your system (not inside the LXC container)  
 Follow the [How To Setup the Firewall](#how-to-setup-the-firewall)  part of the readme first.
 
+Note sometimes xcash will not be able to connect to other peers when using LXC containers. To fix this you can restart the container
+
 
 ### Install LXC  
 We will use LXD to manage LXC containers as this is a more user friendly tool for LXC containers. LXD might already be installed on some Ubuntu servers, but it is recommend to uninstall this version of LXD and install LXD using a snap. This is because the LXD that comes installed on some servers will not be up to date and can only be updated to minor releases.
@@ -767,6 +769,9 @@ To start the container
 
 To stop the container  
 `lxc stop container`
+
+To restart the container  
+`lxc restart container`
 
 To delete the container (Note the container must be stopped first)  
 `lxc delete container`
