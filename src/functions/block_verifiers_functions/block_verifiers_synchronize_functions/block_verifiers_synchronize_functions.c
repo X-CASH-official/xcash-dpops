@@ -397,6 +397,13 @@ void sync_network_data_nodes_database(void)
   if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
   if (count > NETWORK_DATA_NODES_VALID_AMOUNT-1) {memcpy(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,DATA_HASH_LENGTH); synced_network_data_nodes[4] = 4;}
 
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,"yellow");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,"yellow");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,"yellow");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,"yellow");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,"yellow");
+  color_print(database_data_hash_majority,"yellow");
+
   if (network_data_nodes_valid_count / (NETWORK_DATA_NODES_AMOUNT*(NETWORK_DATA_NODES_AMOUNT-1)) < NETWORK_DATA_NODES_VALID_AMOUNT_PERCENTAGE)
   {
     // a consensus could not be reached, sync from the main network data node
