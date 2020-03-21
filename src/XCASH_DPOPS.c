@@ -1181,7 +1181,7 @@ void start_timer_threads(void)
       START_TIMER_THREADS_ERROR("Could not start the block_height_timer_thread");
     }
   
-    color_print("Started the current block height timer thread","green");
+    color_print("Started the shared delegates current block height timer thread","green");
 
     // start the payment timer thread
     if (pthread_create(&thread_id[4], NULL, &payment_timer_thread, NULL) != 0 && pthread_detach(thread_id[4]) != 0)

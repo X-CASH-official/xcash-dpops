@@ -118,17 +118,23 @@ int start_new_round(void)
     print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2); 
   }
 
+  // get the current block height
+  sscanf(current_block_height,"%zu", &count);
+
   // get the delegates online status
   get_delegates_online_status();
+
+  // reload the initial previous, current and next block verifiers list if its the first block
+  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  {
+    sync_all_block_verifiers_list();
+  }
 
   // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
   if (update_block_verifiers_list() == 0)
   {
     START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
   }
-
-  // get the current block height
-  sscanf(current_block_height,"%zu", &count);
   
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && registration_settings == 0)
   {

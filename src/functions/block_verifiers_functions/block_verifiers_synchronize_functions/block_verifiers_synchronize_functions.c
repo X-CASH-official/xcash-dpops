@@ -565,9 +565,6 @@ int sync_all_block_verifiers_list(void)
   pthread_cond_broadcast(&thread_settings_lock); \
   return 0;
 
-  // get the delegates online status
-  get_delegates_online_status();
-
   // set the database to not accept any new data
   database_settings = 0;
 
