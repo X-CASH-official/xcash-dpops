@@ -626,7 +626,7 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define ORGANIZE_DELEGATES_TEST_DATA_3 "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"10\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
 #define RESERVE_BYTES_TEST_DATA "{\"block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}"
 
-#define XCASH_DPOPS_TOTAL_TEST 465
+#define XCASH_DPOPS_TOTAL_TEST 461
 #define BLOCKCHAIN_TOTAL_TEST 32
 #define DATABASE_FUNCTIONS_TEST 13
 #define INSERT_DATABASE_FUNCTIONS_TEST 6
@@ -635,7 +635,7 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define DELETE_DATABASE_FUNCTIONS_TEST 8
 #define COUNT_DATABASE_FUNCTIONS_TEST 7
 #define FILE_FUNCTIONS_TOTAL_TEST 7
-#define NETWORK_DAEMON_FUNCTIONS_TEST 11
+#define NETWORK_DAEMON_FUNCTIONS_TEST 8
 #define NETWORK_FUNCTIONS_TEST 11
 #define NETWORK_SECURITY_FUNCTIONS_TEST 43
 #define NETWORK_WALLET_FUNCTIONS_TEST 2
@@ -653,7 +653,7 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST 16
 #define SHARED_DELEGATE_WEBSITE_THREAD_SERVER_FUNCTIONS_TOTAL_TEST 10
 #define SHARED_DELEGATE_WEBSITE_FUNCTIONS_TOTAL_TEST 8
-#define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 133
+#define RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST 132
 
 #define INITIALIZE_NETWORK_DATA_NODES_TEST \
 for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++) \

@@ -360,8 +360,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data3,0,sizeof(data3)); \
   get_previous_block_information(result_test,data_test,data3);
 
-  #define CHECK_FOUND_BLOCK_CODE check_found_block();
-
   #define SEND_HTTP_REQUEST_CODE \
   memset(data_test,0,sizeof(data_test)); \
   send_http_request(data_test,XCASH_DPOPS_delegates_IP_address,"/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
@@ -1116,7 +1114,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   CHECK_RESET_VARIABLES_ON_THE_HEAP("get_block_reserve_byte_data_hash",GET_BLOCK_RESERVE_BYTE_DATA_HASH_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("get_previous_block_hash",GET_PREVIOUS_BLOCK_HASH_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("get_previous_block_information",GET_PREVIOUS_BLOCK_INFORMATION_CODE);
-  CHECK_RESET_VARIABLES_ON_THE_HEAP("check_found_block",CHECK_FOUND_BLOCK_CODE);
 
   CHECK_RESET_VARIABLES_ON_THE_HEAP("sign_data using wallet signing key",SIGN_DATA_USING_WALLET_SIGNING_KEY_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("verify_data using wallet signing key",VERIFY_DATA_USING_WALLET_SIGNING_KEY_CODE);

@@ -406,7 +406,8 @@ void sync_network_data_nodes_database(void)
     sleep(BLOCK_VERIFIERS_SETTINGS);
     database_settings = 1;
     pthread_cond_broadcast(&thread_settings_lock);
-   
+
+    // if all previous block settings are false then sync from the main network data node. This should not happen unless its the first block of the network   
     if (network_data_nodes_sync_database_list.network_data_nodes_1_previous_block_settings == 1)
     { 
       if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)

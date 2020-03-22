@@ -389,7 +389,7 @@ void* block_height_timer_thread(void* parameters)
   for (;;)
   {   
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    
+
     // check if you found the previous block in the network
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 10 && memcmp(current_block_producer,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
@@ -402,6 +402,7 @@ void* block_height_timer_thread(void* parameters)
       {
         BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not calculate the block reward for each delegate");
       }
+      sleep(1);
     }
     nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
@@ -681,8 +682,9 @@ void* payment_timer_thread(void* parameters)
       snprintf(data+strlen(data),sizeof(data)-1,"%lld",total_amount);
       memcpy(data,"\n",1);
       color_print(data,"yellow");
+      sleep(60);
     }
-    sleep(60);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
   pthread_exit((void *)(intptr_t)1);
   
