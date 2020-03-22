@@ -444,7 +444,7 @@ long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC
   memset(payment_tx_key,0,sizeof(payment_tx_key));
 
   if (test_settings == 0)
-  {    
+  { 
     if (send_payment(PUBLIC_ADDRESS, CURRENT_TOTAL, payment_tx_hash, payment_tx_key) == 0)
     {
       return 0;
@@ -602,6 +602,7 @@ void* payment_timer_thread(void* parameters)
   long long int number;
   long long int amount_of_payments;
   long long int total_amount;
+  double total;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count;
 
@@ -609,21 +610,20 @@ void* payment_timer_thread(void* parameters)
   (void)parameters;
 
   // define macros
+  #define DATABASE_COLLECTION "public_addresses"
   #define PAYMENT_TIMER_THREAD_ERROR(message,settings) \
   memcpy(error_message.function[error_message.total],"payment_timer_thread",20); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
-  if ((settings) == 0) \
-  { \
-    RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS); \
-  } \
   memset(data,0,sizeof(data)); \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS); \
   sleep(60); \
-  continue;
+  goto start;
 
   for (;;)
   {
+    start:
     // check if it is time to send the payments
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_hour == shared_delegate_payment_time_hour && current_UTC_date_and_time.tm_min == shared_delegate_payment_time_minute)
@@ -638,15 +638,17 @@ void* payment_timer_thread(void* parameters)
       amount_of_payments = 0;
       total_amount = 0;
       
-      if ((document_count = count_all_documents_in_collection(shared_delegates_database_name,"public_addresses",1)) <= 0)
+      if ((document_count = count_all_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,1)) <= 0)
       {
-        PAYMENT_TIMER_THREAD_ERROR("The database is empty",1);
+        color_print("The database is empty so there are no payments to send","yellow");
+        sleep(60);
+        goto start;
       }
 
       // initialize the database_multiple_documents_fields struct 
       INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"payment_timer_thread",data,current_date_and_time,current_UTC_date_and_time);
 
-      if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,"public_addresses","",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
+      if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
       {
         PAYMENT_TIMER_THREAD_ERROR("Could not read the public addresses database.\nCould not send any payments to the delegates",0);
       }
@@ -673,14 +675,19 @@ void* payment_timer_thread(void* parameters)
           PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity count for the shared delegates",0);
         }
       }
+
+      // format the total amount
+      total = (double)total_amount / XCASH_WALLET_DECIMAL_PLACES_AMOUNT;     
+
       RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS);
       memset(data,0,sizeof(data));  
-      print_start_message(current_date_and_time,current_UTC_date_and_time,"Delegates payments",data);      
+      print_start_message(current_date_and_time,current_UTC_date_and_time,"Delegates Payments",data); 
+      memset(data,0,sizeof(data));    
       memcpy(data,"Amount of payments: ",20);
       snprintf(data+strlen(data),sizeof(data)-1,"%lld",amount_of_payments);
-      memcpy(data,"\nTotal amount: ",15);
-      snprintf(data+strlen(data),sizeof(data)-1,"%lld",total_amount);
-      memcpy(data,"\n",1);
+      memcpy(data+strlen(data),"\nTotal amount: ",15);
+      snprintf(data+strlen(data),sizeof(data)-1,"%lf",total);
+      memcpy(data+strlen(data),"\n",1);
       color_print(data,"yellow");
       sleep(60);
     }
@@ -688,5 +695,6 @@ void* payment_timer_thread(void* parameters)
   }
   pthread_exit((void *)(intptr_t)1);
   
+  #undef DATABASE_COLLECTION
   #undef BLOCK_HEIGHT_TIMER_THREAD_ERROR
 }
