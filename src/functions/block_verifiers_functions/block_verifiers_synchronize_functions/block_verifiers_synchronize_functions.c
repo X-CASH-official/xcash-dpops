@@ -477,6 +477,20 @@ void sync_network_data_nodes_database(void)
         }        
       }
     }
+    else
+    { 
+      if (memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+      { 
+        if (production_settings == 1)
+        {      
+          SYNC_NETWORK_DATA_NODES(NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION);
+        }
+        else
+        {
+          SYNC_NETWORK_DATA_NODES(NETWORK_DATA_NODE_1_IP_ADDRESS);
+        }        
+      }
+    }
   }
 
 
