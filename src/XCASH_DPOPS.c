@@ -183,6 +183,7 @@ void initialize_data(void)
   database_settings = 1;
   network_data_nodes_sync_databases_settings = 1;
   production_settings = 1;
+  production_settings_database_data_settings = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
