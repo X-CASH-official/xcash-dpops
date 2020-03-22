@@ -22,6 +22,7 @@ fi
 
 # reset the database
 (echo "use XCASH_PROOF_OF_STAKE"; echo "db.dropDatabase()"; echo "exit";) | "${MONGODB_DIR}"mongo
+(echo "use XCASH_PROOF_OF_STAKE_DELEGATES"; echo "db.dropDatabase()"; echo "exit";) | "${MONGODB_DIR}"mongo
 
 # reset xcashd and xcash-wallet-rpc
 curl -X POST http://127.0.0.1:18281/stop_daemon -H 'Content-Type: application/json'
