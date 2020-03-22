@@ -1546,8 +1546,12 @@ void print_block_producer(void)
   // Variables
   int count;
 
+  memset(current_block_producer,0,sizeof(current_block_producer));
+
   if (memcmp(current_round_part_backup_node,"0",1) == 0)
   {
+    memcpy(current_block_producer,main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH);
+
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,BUFFER_SIZE) == 0)
@@ -1559,6 +1563,8 @@ void print_block_producer(void)
   }
   else if (memcmp(current_round_part_backup_node,"1",1) == 0)
   {
+    memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH);
+
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,BUFFER_SIZE) == 0)
@@ -1570,6 +1576,8 @@ void print_block_producer(void)
   }
   else if (memcmp(current_round_part_backup_node,"2",1) == 0)
   {
+    memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH);
+
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,BUFFER_SIZE) == 0)
@@ -1581,6 +1589,8 @@ void print_block_producer(void)
   }
   else if (memcmp(current_round_part_backup_node,"3",1) == 0)
   {
+    memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH);
+
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,BUFFER_SIZE) == 0)
@@ -1592,6 +1602,8 @@ void print_block_producer(void)
   }
   else if (memcmp(current_round_part_backup_node,"4",1) == 0)
   {
+    memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH);
+
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,BUFFER_SIZE) == 0)
@@ -1603,6 +1615,8 @@ void print_block_producer(void)
   }
   else if (memcmp(current_round_part_backup_node,"5",1) == 0)
   {
+    memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH);
+
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,BUFFER_SIZE) == 0)

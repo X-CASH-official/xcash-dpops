@@ -389,8 +389,9 @@ void* block_height_timer_thread(void* parameters)
   for (;;)
   {   
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    
     // check if you found the previous block in the network
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 10 && check_found_block() == 2)
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 10 && memcmp(current_block_producer,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       if ((block_reward_number = add_block_to_blocks_found()) == 0)
       {
