@@ -166,6 +166,9 @@ void sync_network_data_nodes_database(void)
   // get the database data hash and send it to all other network data nodes
   if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
+    // set your own network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings
+    network_data_nodes_sync_database_list.network_data_nodes_1_previous_block_settings = strncmp(data2,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,database_name,"ALL") == 0)
     {
       database_settings = 1;
@@ -204,6 +207,9 @@ void sync_network_data_nodes_database(void)
   }
   else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
+    // set your own network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings
+    network_data_nodes_sync_database_list.network_data_nodes_2_previous_block_settings = strncmp(data2,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,database_name,"ALL") == 0)
     {
       database_settings = 1;
@@ -242,6 +248,9 @@ void sync_network_data_nodes_database(void)
   }
   else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
+    // set your own network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings
+    network_data_nodes_sync_database_list.network_data_nodes_3_previous_block_settings = strncmp(data2,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,database_name,"ALL") == 0)
     {
       database_settings = 1;
@@ -280,6 +289,9 @@ void sync_network_data_nodes_database(void)
   }
   else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
+    // set your own network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings
+    network_data_nodes_sync_database_list.network_data_nodes_4_previous_block_settings = strncmp(data2,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,database_name,"ALL") == 0)
     {
       database_settings = 1;
@@ -318,6 +330,9 @@ void sync_network_data_nodes_database(void)
   }
   else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
+    // set your own network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings
+    network_data_nodes_sync_database_list.network_data_nodes_5_previous_block_settings = strncmp(data2,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,database_name,"ALL") == 0)
     {
       database_settings = 1;
@@ -398,6 +413,13 @@ void sync_network_data_nodes_database(void)
   if (memcmp(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,DATA_HASH_LENGTH) == 0) {network_data_nodes_valid_count++; count++;}
   if (count > NETWORK_DATA_NODES_VALID_AMOUNT-1) {memcpy(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,DATA_HASH_LENGTH); synced_network_data_nodes[4] = 4;}
 
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,"green");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,"green");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,"green");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,"green");
+  color_print(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,"green");
+  color_print(database_data_hash_majority,"green");
+
   if (network_data_nodes_valid_count / (NETWORK_DATA_NODES_AMOUNT*(NETWORK_DATA_NODES_AMOUNT-1)) < NETWORK_DATA_NODES_VALID_AMOUNT_PERCENTAGE)
   {
     // a consensus could not be reached, sync from the main network data node
@@ -421,6 +443,11 @@ void sync_network_data_nodes_database(void)
           SYNC_NETWORK_DATA_NODES(NETWORK_DATA_NODE_1_IP_ADDRESS);
         }        
       }
+      else
+      {
+        color_print("Successfully synced all databases","yellow");
+        return;
+      }      
     }
     else if (network_data_nodes_sync_database_list.network_data_nodes_2_previous_block_settings == 1)
     { 
@@ -435,6 +462,11 @@ void sync_network_data_nodes_database(void)
           SYNC_NETWORK_DATA_NODES(NETWORK_DATA_NODE_2_IP_ADDRESS);
         }        
       }
+      else
+      {
+        color_print("Successfully synced all databases","yellow");
+        return;
+      }
     }
     else if (network_data_nodes_sync_database_list.network_data_nodes_3_previous_block_settings == 1)
     { 
@@ -448,6 +480,11 @@ void sync_network_data_nodes_database(void)
         {
           SYNC_NETWORK_DATA_NODES(NETWORK_DATA_NODE_3_IP_ADDRESS);
         }        
+      }
+      else
+      {
+        color_print("Successfully synced all databases","yellow");
+        return;
       }
     }
     else if (network_data_nodes_sync_database_list.network_data_nodes_4_previous_block_settings == 1)
@@ -477,6 +514,11 @@ void sync_network_data_nodes_database(void)
           SYNC_NETWORK_DATA_NODES(NETWORK_DATA_NODE_5_IP_ADDRESS);
         }        
       }
+      else
+      {
+        color_print("Successfully synced all databases","yellow");
+        return;
+      }
     }
     else
     { 
@@ -490,6 +532,11 @@ void sync_network_data_nodes_database(void)
         {
           SYNC_NETWORK_DATA_NODES(NETWORK_DATA_NODE_1_IP_ADDRESS);
         }        
+      }
+      else
+      {
+        color_print("Successfully synced all databases","yellow");
+        return;
       }
     }
   }
