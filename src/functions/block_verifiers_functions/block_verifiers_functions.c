@@ -183,6 +183,7 @@ int start_new_round(void)
     {
       color_print("Your block verifier is a network data node, checking to make sure all network data nodes databases are synced","yellow");
       sync_network_data_nodes_database();
+      memset(data,0,sizeof(data));print_error_message(current_date_and_time,current_UTC_date_and_time,data);
     }
 
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE,START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);

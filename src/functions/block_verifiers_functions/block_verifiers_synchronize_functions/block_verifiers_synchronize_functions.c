@@ -69,6 +69,7 @@ void sync_network_data_nodes_database(void)
 
   // define macros
   #define SYNC_NETWORK_DATA_NODES(NETWORK_DATA_NODE); \
+  sleep(BLOCK_VERIFIERS_SETTINGS); \
   color_print("Syncing the reserve proofs database","yellow"); \
   sync_reserve_proofs_database(0,NETWORK_DATA_NODE); \
   color_print("Syncing the reserve bytes database","yellow"); \
@@ -78,6 +79,7 @@ void sync_network_data_nodes_database(void)
   color_print("Syncing the statistics database","yellow"); \
   sync_statistics_database(0,NETWORK_DATA_NODE); \
   color_print("Successfully synced all databases","yellow"); \
+  network_data_nodes_sync_databases_settings = 1; \
   return;
 
   memset(data,0,sizeof(data));
@@ -418,7 +420,6 @@ void sync_network_data_nodes_database(void)
     // a consensus could not be reached, sync from the main network data node
     color_print("A majority could not be reached between network data nodes for the database sync. Syncing the database from the main network data node","yellow");
     
-    sleep(BLOCK_VERIFIERS_SETTINGS);
     database_settings = 1;
     pthread_cond_broadcast(&thread_settings_lock);
 
@@ -435,6 +436,7 @@ void sync_network_data_nodes_database(void)
       } 
       else
       {
+        network_data_nodes_sync_databases_settings = 1;
         color_print("Successfully synced all databases","yellow");
         return;
       }      
@@ -451,6 +453,7 @@ void sync_network_data_nodes_database(void)
       } 
       else
       {
+        network_data_nodes_sync_databases_settings = 1;
         color_print("Successfully synced all databases","yellow");
         return;
       }
@@ -467,6 +470,7 @@ void sync_network_data_nodes_database(void)
       } 
       else
       {
+        network_data_nodes_sync_databases_settings = 1;
         color_print("Successfully synced all databases","yellow");
         return;
       }
@@ -483,6 +487,7 @@ void sync_network_data_nodes_database(void)
       } 
       else
       {
+        network_data_nodes_sync_databases_settings = 1;
         color_print("Successfully synced all databases","yellow");
         return;
       }
@@ -499,6 +504,7 @@ void sync_network_data_nodes_database(void)
       } 
       else
       {
+        network_data_nodes_sync_databases_settings = 1;
         color_print("Successfully synced all databases","yellow");
         return;
       }
@@ -515,6 +521,7 @@ void sync_network_data_nodes_database(void)
       } 
       else
       {
+        network_data_nodes_sync_databases_settings = 1;
         color_print("Successfully synced all databases","yellow");
         return;
       }
@@ -1316,6 +1323,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+    memcpy(error_message.data[error_message.total]+strlen(error_message.data[error_message.total]),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
     error_message.total++; \
     return 0; \
   } \
@@ -1441,6 +1449,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   { \
     memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+    memcpy(error_message.data[error_message.total]+strlen(error_message.data[error_message.total]),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
     error_message.total++; \
     return 0; \
   } \
@@ -1582,6 +1591,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   { \
     memcpy(error_message.function[error_message.total],"sync_delegates_database",23); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+    memcpy(error_message.data[error_message.total]+strlen(error_message.data[error_message.total]),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
     error_message.total++; \
     pointer_reset(data); \
     return 0; \
@@ -1708,6 +1718,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   { \
     memcpy(error_message.function[error_message.total],"sync_statistics_database",24); \
     memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+    memcpy(error_message.data[error_message.total]+strlen(error_message.data[error_message.total]),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
     error_message.total++; \
     pointer_reset(data); \
     return 0; \
