@@ -7,6 +7,6 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS);
-int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
+int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, const char* DATA);
+int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTION);
 #endif

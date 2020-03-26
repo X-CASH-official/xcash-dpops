@@ -15,7 +15,6 @@ Global Variables
 */
 
 // database
-extern mongoc_client_t* database_client;
 extern mongoc_client_pool_t* database_client_thread_pool;
 
 // network data nodes

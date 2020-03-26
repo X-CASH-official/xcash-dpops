@@ -79,9 +79,9 @@ int block_verifiers_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
+  delete_database(database_name);
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK_TEST_DATA)-1);
-  if (sign_data(data_test) == 1 && send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && sleep(5) == 0 && count_documents_in_collection(database_name,"reserve_bytes_1","{\"block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}",0) == 1)
+  if (sign_data(data_test) == 1 && send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && sleep(5) == 0 && count_documents_in_collection(database_name,"reserve_bytes_1","{\"block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}") == 1)
   {
     color_print("PASSED! Test for server_receive_data_socket_main_network_data_node_to_block_verifier_start_block","green");
     count_test++;
@@ -91,7 +91,7 @@ int block_verifiers_server_functions_test(void)
     color_print("FAILED! Test for server_receive_data_socket_main_network_data_node_to_block_verifier_start_block","red");
   }
   RESET_ERROR_MESSAGES;
-  delete_database(database_name,0);
+  delete_database(database_name);
   main_network_data_node_create_block = 0;
   
   // set the current_round_part and current_round_part_backup_node

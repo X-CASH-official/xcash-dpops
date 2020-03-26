@@ -90,7 +90,7 @@ void test(int settings)
   memcpy(shared_delegates_database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);
 
   // reset the test database
-  delete_database(DATABASE_COLLECTION_TEST,0);
+  delete_database(DATABASE_COLLECTION_TEST);
 
   // print the start message
   memcpy(data_test,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1);
@@ -123,12 +123,12 @@ void test(int settings)
     XCASH_DPOPS_total_passed_test += count_database_functions_test();
     XCASH_DPOPS_total_passed_test += file_functions_test();
     XCASH_DPOPS_total_passed_test += network_daemon_functions_test();
-    XCASH_DPOPS_total_passed_test += network_functions_test();
-    XCASH_DPOPS_total_passed_test += network_security_functions_test();
+    */XCASH_DPOPS_total_passed_test += network_functions_test();
+    /*XCASH_DPOPS_total_passed_test += network_security_functions_test();
     XCASH_DPOPS_total_passed_test += network_wallet_functions_test();
     XCASH_DPOPS_total_passed_test += optimizations_functions_test();
-    */XCASH_DPOPS_total_passed_test += organize_functions_test();
-    /*XCASH_DPOPS_total_passed_test += string_functions_test();
+    XCASH_DPOPS_total_passed_test += organize_functions_test();
+    XCASH_DPOPS_total_passed_test += string_functions_test();
     XCASH_DPOPS_total_passed_test += VRF_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_server_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_check_functions_test();
@@ -136,8 +136,8 @@ void test(int settings)
     XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_server_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_thread_server_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_update_functions_test();
-    XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
-    XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
+    */XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
+    /*XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
     XCASH_DPOPS_total_passed_test += shared_delegate_website_functions_test();
     XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();
     */if (settings == 0)
@@ -156,7 +156,7 @@ void test(int settings)
   memset(data_test,0,sizeof(data_test));
 
   // delete the database
-  delete_database(DATABASE_NAME_TEST,0);
+  delete_database(DATABASE_NAME_TEST);
 
   // write the end test message
   memcpy(data_test,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1);

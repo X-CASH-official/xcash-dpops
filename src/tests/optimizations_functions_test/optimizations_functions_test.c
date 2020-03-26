@@ -107,7 +107,7 @@ int optimizations_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
   network_functions_test_error_settings = 2;
-  delete_database(database_name,0);
+  delete_database(database_name);
   RESET_ERROR_MESSAGES;
  
   // write the start test message
@@ -116,7 +116,7 @@ int optimizations_functions_test(void)
   // run the test
   
   // test sending 100 messages to the block verifiers
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(2);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   // initalize the previous current and next block verifiers list
@@ -175,7 +175,7 @@ int optimizations_functions_test(void)
 
 
 
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(2);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   for (count = 0; count < 20; count++)
@@ -214,7 +214,7 @@ int optimizations_functions_test(void)
   invalid_reserve_proofs.count = 20;
 
 
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(2);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   for (count = 0; count < MAXIMUM_INVALID_RESERVE_PROOFS * 0.10; count++)

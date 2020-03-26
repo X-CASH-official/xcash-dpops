@@ -60,7 +60,7 @@ int block_verifiers_thread_server_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
   network_functions_test_error_settings = 2;
-  delete_database(database_name,0);
+  delete_database(database_name);
   RESET_ERROR_MESSAGES;
  
   // write the start test message
@@ -70,10 +70,10 @@ int block_verifiers_thread_server_functions_test(void)
   // sync_reserve_proofs_database
   INITIALIZE_NETWORK_DATA_NODES_TEST;
   INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST;
-  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"521850\"}",0);
-  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"521850\"}");
+  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   RESET_ERROR_MESSAGES;
 
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -104,7 +104,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
 
   // check_reserve_proofs_timer_get_database_data
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -138,7 +138,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
 
   // check_reserve_proofs_timer_update_delegates_total_vote_count
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -162,7 +162,7 @@ int block_verifiers_thread_server_functions_test(void)
   invalid_reserve_proofs.count = 2;
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  if (check_reserve_proofs_timer_update_delegates_total_vote_count(0) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" RESERVE_PROOF_PUBLIC_ADDRESS_TEST "\"}","total_vote_count",result_test,1) == 1 && strncmp(result_test,"0",sizeof(result_test)) == 0 && check_reserve_proofs_timer_update_delegates_total_vote_count(1) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n\"}","total_vote_count",result_test,1) == 1 && strncmp(result_test,"2000000000",sizeof(result_test)) == 0)
+  if (check_reserve_proofs_timer_update_delegates_total_vote_count(0) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" RESERVE_PROOF_PUBLIC_ADDRESS_TEST "\"}","total_vote_count",result_test) == 1 && strncmp(result_test,"0",sizeof(result_test)) == 0 && check_reserve_proofs_timer_update_delegates_total_vote_count(1) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"XCA1jh9Nw2XbshVEYsSrnEX5q6WWzHkMaEgRd2TSkrcGckvqoqxoQZejnv31SZPgVjL9uVRvX4NYsPbCLjMdT4m58kmgCnN63n\"}","total_vote_count",result_test) == 1 && strncmp(result_test,"2000000000",sizeof(result_test)) == 0)
   {
     color_print("PASSED! Test for check_reserve_proofs_timer_update_delegates_total_vote_count","green");
     count_test++;
@@ -173,7 +173,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
 
   // check_reserve_proofs_timer_update_delegates_score
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -187,7 +187,7 @@ int block_verifiers_thread_server_functions_test(void)
   memcpy(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5jPey2PF2RPr1p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537);
   invalid_reserve_proofs.count = 1;
   memset(data_test,0,sizeof(data_test));
-  if (check_reserve_proofs_timer_update_delegates_score(0) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" RESERVE_PROOF_PUBLIC_ADDRESS_TEST "\"}","block_verifier_score",data_test,1) == 1 && strncmp(data_test,"1",sizeof(data_test)) == 0)
+  if (check_reserve_proofs_timer_update_delegates_score(0) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" RESERVE_PROOF_PUBLIC_ADDRESS_TEST "\"}","block_verifier_score",data_test) == 1 && strncmp(data_test,"1",sizeof(data_test)) == 0)
   {
     color_print("PASSED! Test for check_reserve_proofs_timer_update_delegates_score","green");
     count_test++;
@@ -198,7 +198,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
 
   // select_random_unique_reserve_proof
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   // initialize the reserve_proof struct
@@ -218,7 +218,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
 
   // send_invalid_reserve_proof_to_block_verifiers
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   // initalize the previous current and next block verifiers list
@@ -273,7 +273,7 @@ int block_verifiers_thread_server_functions_test(void)
 
   // check all errors for each test
   // check_reserve_proofs_timer_get_database_data
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -304,7 +304,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
 
   // check_reserve_proofs_timer_update_delegates_total_vote_count
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -339,7 +339,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
 
   // check_reserve_proofs_timer_update_delegates_score
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -365,7 +365,7 @@ int block_verifiers_thread_server_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   // check_reserve_proofs_timer_update_delegates_total_vote_count
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   invalid_reserve_proofs.block_verifier_public_address[0] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
@@ -395,7 +395,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
 
   // select_random_unique_reserve_proof
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   // initialize the reserve_proof struct
@@ -443,7 +443,7 @@ int block_verifiers_thread_server_functions_test(void)
   }
 
   // send_invalid_reserve_proof_to_block_verifiers
-  delete_database(database_name,0);
+  delete_database(database_name);
   INITIALIZE_DATABASE_DATA(3);
   RESET_INVALID_RESERVE_PROOFS_DATA;
   // initialize the reserve_proof struct

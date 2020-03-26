@@ -34,7 +34,7 @@ int delete_database_functions_test(void)
   // define macros
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
 
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
 
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\ndelete database functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,DELETE_DATABASE_FUNCTIONS_TEST,TEST_OUTLINE);
@@ -44,8 +44,8 @@ int delete_database_functions_test(void)
   count_test = 0;
 
   // delete a document from the collection
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
-  if (delete_document_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0) == 0)
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
+  if (delete_document_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE) == 0)
   {
     color_print("FAILED! Test for delete_document_from_collection","red");
   }
@@ -56,8 +56,8 @@ int delete_database_functions_test(void)
   }
 
   // delete a document from the collection on a separate thread
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
-  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0) == 0)
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE) == 0)
   {
     color_print("FAILED! Test for delete_document_from_collection_thread","red");
   }
@@ -77,8 +77,8 @@ int delete_database_functions_test(void)
   }  
 
   // delete a collection from the database
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
-  if (delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0) == 0)
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
+  if (delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST) == 0)
   {
     color_print("FAILED! Test for delete_collection_from_database","red");
   }
@@ -89,8 +89,8 @@ int delete_database_functions_test(void)
   }
 
   // delete a collection from the database on a separate thread
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
-  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0) == 0)
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE) == 0)
   {
     color_print("FAILED! Test for delete_collection_from_database_thread","red");
   }
@@ -110,8 +110,8 @@ int delete_database_functions_test(void)
   }
 
   // delete a database
-  insert_document_into_collection_json(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,MESSAGE,0);
-  if (delete_database(DATABASE_NAME_TEST,0) == 0)
+  insert_document_into_collection_json(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,MESSAGE);
+  if (delete_database(DATABASE_NAME_TEST) == 0)
   {
     color_print("FAILED! Test for delete_database","red");
   }
@@ -122,7 +122,7 @@ int delete_database_functions_test(void)
   }
 
   // delete a database on a separate thread
-  insert_document_into_collection_json(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  insert_document_into_collection_json(DATABASE_NAME_TEST,DATABASE_COLLECTION_TEST,MESSAGE);
   struct delete_database_thread_parameters delete_database_thread_parameters = {DATABASE_NAME_TEST};
   pthread_create(&thread_id, NULL, &delete_database_thread,(void *)&delete_database_thread_parameters);
   if (thread_settings(thread_id) == 0)
@@ -138,11 +138,11 @@ int delete_database_functions_test(void)
 
 
   // check all errors for each test
-  delete_database(DATABASE_NAME_TEST,0);
+  delete_database(DATABASE_NAME_TEST);
   RESET_ERROR_MESSAGES;
 
   // delete_document_from_collection
-  if (delete_document_from_collection(database_name,DATABASE_COLLECTION_TEST,"data",0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  if (delete_document_from_collection(database_name,DATABASE_COLLECTION_TEST,"data") == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for delete_document_from_collection checking for Could not convert the data into a database document","green");
     count_test++;
@@ -154,7 +154,7 @@ int delete_database_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   // delete_collection_from_database
-  if (delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0) == 0 && strncmp(error_message.data[0],"Could not delete the database collection from the database",BUFFER_SIZE) == 0)
+  if (delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST) == 0 && strncmp(error_message.data[0],"Could not delete the database collection from the database",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for delete_collection_from_database checking for Could not delete the database collection from the database","green");
     count_test++;

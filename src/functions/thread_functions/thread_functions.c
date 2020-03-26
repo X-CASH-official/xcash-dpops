@@ -114,7 +114,7 @@ Return: NULL
 void* insert_document_into_collection_json_thread(void* parameters)
 {
   struct insert_document_into_collection_json_thread_parameters* data = parameters;
-  int settings = insert_document_into_collection_json(data->DATABASE, data->COLLECTION, data->DATA, 1);
+  int settings = insert_document_into_collection_json(data->DATABASE, data->COLLECTION, data->DATA);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -137,7 +137,7 @@ Return: NULL
 void* insert_multiple_documents_into_collection_json_thread(void* parameters)
 {
   struct insert_multiple_documents_into_collection_json_thread_parameters* data = parameters;
-  int settings = insert_multiple_documents_into_collection_json(data->DATABASE, data->COLLECTION, data->DATA, data->DATA_TOTAL_LENGTH, 1);
+  int settings = insert_multiple_documents_into_collection_json(data->DATABASE, data->COLLECTION, data->DATA, data->DATA_TOTAL_LENGTH);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -161,7 +161,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* read_document_from_collection_thread(void* parameters)
 {
   struct read_document_from_collection_thread_parameters* data = parameters;
-  int settings = read_document_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->result, 1);
+  int settings = read_document_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->result);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -186,7 +186,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* read_document_field_from_collection_thread(void* parameters)
 {
   struct read_document_field_from_collection_thread_parameters* data = parameters;
-  int settings = read_document_field_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->FIELD_NAME, data->result, 1);
+  int settings = read_document_field_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->FIELD_NAME, data->result);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -214,7 +214,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* read_document_all_fields_from_collection_thread(void* parameters)
 {
   struct read_document_all_fields_from_collection_thread_parameters* data = parameters;
-  int settings = read_document_all_fields_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->result, 1);
+  int settings = read_document_all_fields_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->result);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -246,7 +246,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* read_multiple_documents_all_fields_from_collection_thread(void* parameters)
 {
   struct read_multiple_documents_all_fields_from_collection_thread_parameters* data = parameters;
-  int settings = read_multiple_documents_all_fields_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->result, data->DOCUMENT_COUNT_START, data->DOCUMENT_COUNT_TOTAL, data->DOCUMENT_OPTIONS, data->DOCUMENT_OPTIONS_DATA, 1);
+  int settings = read_multiple_documents_all_fields_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->result, data->DOCUMENT_COUNT_START, data->DOCUMENT_COUNT_TOTAL, data->DOCUMENT_OPTIONS, data->DOCUMENT_OPTIONS_DATA);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -270,7 +270,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* update_document_from_collection_thread(void* parameters)
 {
   struct update_document_from_collection_thread_parameters* data = parameters;
-  int settings = update_document_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->FIELD_NAME_AND_DATA, 1);
+  int settings = update_document_from_collection(data->DATABASE, data->COLLECTION, data->DATA, data->FIELD_NAME_AND_DATA);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -293,7 +293,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* update_all_documents_from_collection_thread(void* parameters)
 {
   struct update_all_documents_from_collection_thread_parameters* data = parameters;
-  int settings = update_all_documents_from_collection(data->DATABASE, data->COLLECTION, data->DATA, 1);
+  int settings = update_all_documents_from_collection(data->DATABASE, data->COLLECTION, data->DATA);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -316,7 +316,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* delete_document_from_collection_thread(void* parameters)
 {
   struct delete_document_from_collection_thread_parameters* data = parameters;
-  int settings = delete_document_from_collection(data->DATABASE, data->COLLECTION, data->DATA, 1);
+  int settings = delete_document_from_collection(data->DATABASE, data->COLLECTION, data->DATA);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -338,7 +338,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* delete_collection_from_database_thread(void* parameters)
 {
   struct delete_collection_from_database_thread_parameters* data = parameters;
-  int settings = delete_collection_from_database(data->DATABASE, data->COLLECTION, 1);
+  int settings = delete_collection_from_database(data->DATABASE, data->COLLECTION);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -359,7 +359,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* delete_database_thread(void* parameters)
 {
   struct delete_database_thread_parameters* data = parameters;
-  int settings = delete_database(data->DATABASE, 1);
+  int settings = delete_database(data->DATABASE);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -382,7 +382,7 @@ Return: -1 if an error has occured, otherwise the amount of documents that match
 void* count_documents_in_collection_thread(void* parameters)
 {
   struct count_documents_in_collection_thread_parameters* data = parameters;
-  int settings = count_documents_in_collection(data->DATABASE, data->COLLECTION, data->DATA, 1);
+  int settings = count_documents_in_collection(data->DATABASE, data->COLLECTION, data->DATA);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -404,7 +404,7 @@ Return: -1 if an error has occured, otherwise the amount of documents in the col
 void* count_all_documents_in_collection_thread(void* parameters)
 {
   struct count_all_documents_in_collection_thread_parameters* data = parameters;
-  int settings = count_all_documents_in_collection(data->DATABASE, data->COLLECTION, 1);
+  int settings = count_all_documents_in_collection(data->DATABASE, data->COLLECTION);
   pthread_exit((void *)(intptr_t)settings);
 }
 
@@ -427,7 +427,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* get_database_data_thread(void* parameters)
 {
   struct get_database_data_thread_parameters* data = parameters;
-  int settings = get_database_data(data->database_data, data->DATABASE, data->COLLECTION, 1);
+  int settings = get_database_data(data->database_data, data->DATABASE, data->COLLECTION);
   pthread_exit((void *)(intptr_t)settings);
 }
 

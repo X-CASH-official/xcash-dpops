@@ -32,12 +32,11 @@ Parameters:
   COLLECTION - The collection name
   DATA - The json data to use to search the collection for
   FIELD_NAME_AND_DATA - The json data to use to update the document
-  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int update_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const char* FIELD_NAME_AND_DATA, const int THREAD_SETTINGS)
+int update_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const char* FIELD_NAME_AND_DATA)
 {
   // Variables
   char data2[BUFFER_SIZE];
@@ -52,10 +51,8 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   bson_destroy(update); \
   bson_destroy(update_settings); \
   mongoc_collection_destroy(collection); \
-  if (THREAD_SETTINGS == 1) \
-  { \
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
-  }
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+
   #define UPDATE_DOCUMENT_FROM_COLLECTION_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"update_document_from_collection",31); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -65,24 +62,17 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
 
   memset(data2,0,sizeof(data2));
 
-  // check if we need to create a database connection, or use the global database connection
-  if (THREAD_SETTINGS == 0)
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
   {
-    // set the collection
-    collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
-  }
-  else
-  {
-    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
-    {
-      return 0;
-    }
-    // set the collection
-    collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+    return 0;
   }
 
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+
   // check if the database collection exist
-  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  if (check_if_database_collection_exist(DATABASE,COLLECTION) == 0)
   {
     UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("The database collection does not exist");
   }
@@ -125,12 +115,11 @@ Parameters:
   DATABASE - The database name
   COLLECTION - The collection name
   DATA - The json data to use to update the documents
-  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int update_all_documents_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS)
+int update_all_documents_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA)
 {
   // Variables
   char data2[BUFFER_SIZE];
@@ -145,10 +134,8 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   bson_destroy(update); \
   bson_destroy(update_settings); \
   mongoc_collection_destroy(collection); \
-  if (THREAD_SETTINGS == 1) \
-  { \
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
-  }
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+  
   #define UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"update_all_documents_from_collection",36); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -158,24 +145,17 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
 
   memset(data2,0,sizeof(data2));
 
-  // check if we need to create a database connection, or use the global database connection
-  if (THREAD_SETTINGS == 0)
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
   {
-    // set the collection
-    collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
-  }
-  else
-  {
-    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
-    {
-      return 0;
-    }
-    // set the collection
-    collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+    return 0;
   }
 
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+
   // check if the database collection exist
-  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  if (check_if_database_collection_exist(DATABASE,COLLECTION) == 0)
   {
     UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR("The database collection does not exist");
   }

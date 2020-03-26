@@ -307,7 +307,7 @@ int organize_functions_test(void)
     color_print("FAILED! Test for organize_delegates_settings","red");
   }
 
-  delete_database(database_name,0);
+  delete_database(database_name);
   production_settings = 0;
 
   // reset the delegates struct
@@ -324,13 +324,13 @@ int organize_functions_test(void)
   {
     color_print("FAILED! Test for organize_delegates","red");
   }
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
 
 
 
   // check all errors for each test
   network_functions_test_error_settings = 2;
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
   RESET_ERROR_MESSAGES;
 
   // organize_delegates

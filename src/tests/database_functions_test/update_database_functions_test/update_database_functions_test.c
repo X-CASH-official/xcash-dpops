@@ -36,7 +36,7 @@ int update_database_functions_test(void)
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
   #define MESSAGE_SETTINGS "{\"message_settings\": \"XCASH_DPOPS_DATA\"}"
 
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
 
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\nupdate database functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,UPDATE_DATABASE_FUNCTIONS_TEST,TEST_OUTLINE);
@@ -45,9 +45,9 @@ int update_database_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
 
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   // update a document in the collection
-  if (update_document_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,MESSAGE_SETTINGS,0) == 0)
+  if (update_document_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,MESSAGE_SETTINGS) == 0)
   {
     color_print("FAILED! Test for update_document_from_collection","red");
   }
@@ -57,8 +57,8 @@ int update_database_functions_test(void)
     count_test++;
   }
 
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   // update a document in the collection on a separate thread
   struct update_document_from_collection_thread_parameters update_document_from_collection_thread_parameters = {database_name,DATABASE_COLLECTION_TEST,MESSAGE,MESSAGE_SETTINGS};
   pthread_create(&thread_id, NULL, &update_document_from_collection_thread,(void *)&update_document_from_collection_thread_parameters);
@@ -72,10 +72,10 @@ int update_database_functions_test(void)
     count_test++;
   }
 
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   // update all document in the collection
-  if (update_all_documents_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0) == 0)
+  if (update_all_documents_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE) == 0)
   {
     color_print("FAILED! Test for update_all_documents_from_collection","red");
   }
@@ -85,8 +85,8 @@ int update_database_functions_test(void)
     count_test++;
   }
 
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   // update all document in the collection on a separate thread
   struct update_all_documents_from_collection_thread_parameters update_all_documents_from_collection_thread_parameters = {database_name,DATABASE_COLLECTION_TEST,MESSAGE};
   pthread_create(&thread_id, NULL, &update_all_documents_from_collection_thread,(void *)&update_all_documents_from_collection_thread_parameters);
@@ -103,11 +103,11 @@ int update_database_functions_test(void)
 
 
   // check all errors for each test
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
   RESET_ERROR_MESSAGES;
 
   // update_document_from_collection
-  if (update_document_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,MESSAGE_SETTINGS,0) == 0 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
+  if (update_document_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,MESSAGE_SETTINGS) == 0 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for update_document_from_collection checking for The database collection does not exist","green");
     count_test++;
@@ -116,10 +116,10 @@ int update_database_functions_test(void)
   {
     color_print("FAILED! Test for update_document_from_collection checking for The database collection does not exist","red");
   }
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   RESET_ERROR_MESSAGES;
 
-  if (update_document_from_collection(database_name,DATABASE_COLLECTION_TEST,"data",MESSAGE_SETTINGS,0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  if (update_document_from_collection(database_name,DATABASE_COLLECTION_TEST,"data",MESSAGE_SETTINGS) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for update_document_from_collection checking for Could not convert the data into a database document","green");
     count_test++;
@@ -128,11 +128,11 @@ int update_database_functions_test(void)
   {
     color_print("FAILED! Test for update_document_from_collection checking for Could not convert the data into a database document","red");
   }
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
   RESET_ERROR_MESSAGES;
 
   // update_all_documents_from_collection
-  if (update_all_documents_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0) == 0 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
+  if (update_all_documents_from_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE) == 0 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for update_all_documents_from_collection checking for The database collection does not exist","green");
     count_test++;
@@ -141,10 +141,10 @@ int update_database_functions_test(void)
   {
     color_print("FAILED! Test for update_all_documents_from_collection checking for The database collection does not exist","red");
   }
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   RESET_ERROR_MESSAGES;
 
-  if (update_all_documents_from_collection(database_name,DATABASE_COLLECTION_TEST,"data",0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  if (update_all_documents_from_collection(database_name,DATABASE_COLLECTION_TEST,"data") == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for update_all_documents_from_collection checking for Could not convert the data into a database document","green");
     count_test++;

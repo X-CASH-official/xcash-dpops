@@ -43,7 +43,7 @@ int block_verifiers_synchronize_check_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
   network_functions_test_error_settings = 2;
-  delete_database(database_name,0);
+  delete_database(database_name);
   RESET_ERROR_MESSAGES;
  
   // write the start test message
@@ -51,10 +51,10 @@ int block_verifiers_synchronize_check_functions_test(void)
  
   // run the test
   // sync_reserve_proofs_database
-  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"521850\"}",0);
-  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"521850\"}");
+  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   INITIALIZE_NETWORK_DATA_NODES_TEST
  
 

@@ -31,12 +31,11 @@ Parameters:
   DATABASE - The database name
   COLLECTION - The collection name
   DATA - The json data to insert into the collection
-  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int insert_document_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS)
+int insert_document_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA)
 {
   // Variables
   mongoc_client_t* database_client_thread = NULL;
@@ -48,10 +47,8 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   #define database_reset_all \
   bson_destroy(document); \
   mongoc_collection_destroy(collection); \
-  if (THREAD_SETTINGS == 1) \
-  { \
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
-  }
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+  
   #define INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"insert_document_into_collection_json",36); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -59,21 +56,14 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   database_reset_all; \
   return 0;
 
-  // check if we need to create a database connection, or use the global database connection
-  if (THREAD_SETTINGS == 0)
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
   {
-    // set the collection
-    collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
+    return 0;
   }
-  else
-  {
-    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
-    {
-      return 0;
-    }
-    // set the collection
-    collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
-  }
+
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
 
   if (!(document = bson_new_from_json((const uint8_t *)DATA, -1, &error)))
   {
@@ -104,12 +94,11 @@ Parameters:
   COLLECTION - The collection name
   DATA - The json data to insert into the collection
   DATA_TOTAL_LENGTH - The maximum length of DATA 
-  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int insert_multiple_documents_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const size_t DATA_TOTAL_LENGTH, const int THREAD_SETTINGS)
+int insert_multiple_documents_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA, const size_t DATA_TOTAL_LENGTH)
 {
   // Constants
   const size_t MAXIMUM_AMOUNT = DATA_TOTAL_LENGTH >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : DATA_TOTAL_LENGTH+SMALL_BUFFER_SIZE;
@@ -137,10 +126,8 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
 
   #define database_reset_all \
   mongoc_collection_destroy(collection); \
-  if (THREAD_SETTINGS == 1) \
-  { \
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
-  }
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+  
   #define INSERT_MULTIPLE_DOCUMENTS_INTO_COLLECTION_JSON_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"insert_multiple_documents_into_collection_json",46); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -167,22 +154,15 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
 
   memset(buffer,0,sizeof(buffer));
 
-  // check if we need to create a database connection, or use the global database connection
-  if (THREAD_SETTINGS == 0)
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
   {
-    // set the collection
-    collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
+    pointer_reset_all;
+    return 0;
   }
-  else
-  {
-    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
-    {
-      pointer_reset_all;
-      return 0;
-    }
-    // set the collection
-    collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
-  }
+
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
 
   // create a copy of the data since were going to be changing where the data is referencing
   append_string(data2,DATA,MAXIMUM_AMOUNT);

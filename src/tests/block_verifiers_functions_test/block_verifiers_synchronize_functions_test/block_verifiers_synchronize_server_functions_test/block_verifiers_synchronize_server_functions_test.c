@@ -54,10 +54,10 @@ int block_verifiers_synchronize_server_functions_test(void)
   INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST;
 
   // reset the variables
-  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
+  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
@@ -102,8 +102,8 @@ int block_verifiers_synchronize_server_functions_test(void)
   
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}",0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
@@ -119,14 +119,14 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
+  delete_database(database_name);
   network_functions_test_error_settings = 0;
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521851\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521852\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521853\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521854\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521855\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}",0);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521851\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521852\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521853\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521854\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521855\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}");
   RESET_ERROR_MESSAGES;
   memcpy(data_test,"{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"521850\",\r\n}",113);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,sizeof(GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA)-1) == 0)
@@ -142,14 +142,14 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
+  delete_database(database_name);
   network_functions_test_error_settings = 0;
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521851\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521852\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521853\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521854\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004\",\"reserve_bytes\":\"DATA\"}",0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521855\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}",0);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521851\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521852\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521853\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521854\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521855\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}");
   RESET_ERROR_MESSAGES;
   memcpy(data_test,"{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"521855\",\r\n}",113);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,GET_RESERVE_BYTES_DATABASE_HASH_LIVE_SYNCING_TEST_DATA,sizeof(GET_RESERVE_BYTES_DATABASE_HASH_LIVE_SYNCING_TEST_DATA)-1) == 0)
@@ -181,8 +181,8 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_PROOFS_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(RESERVE_PROOFS_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
@@ -198,8 +198,8 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1,0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
@@ -215,8 +215,8 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}",0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA_RESULTS,sizeof(RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA_RESULTS)-1) == 0)
@@ -232,8 +232,8 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}",0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
@@ -249,8 +249,8 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1,0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,DELEGATES_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(DELEGATES_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
@@ -267,8 +267,8 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1,0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
@@ -285,8 +285,8 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,STATISTICS_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(STATISTICS_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1) == 0)
@@ -302,8 +302,8 @@ int block_verifiers_synchronize_server_functions_test(void)
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && memcmp(result_test,STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
@@ -316,7 +316,7 @@ int block_verifiers_synchronize_server_functions_test(void)
     color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update","red");
   }
   RESET_ERROR_MESSAGES;
-  delete_database(database_name,0);
+  delete_database(database_name);
 
   // check all errors for each test
   network_functions_test_error_settings = 2;

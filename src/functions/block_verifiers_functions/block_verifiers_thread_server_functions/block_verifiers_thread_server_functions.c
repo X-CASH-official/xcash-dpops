@@ -290,7 +290,7 @@ int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF
     snprintf(data+15,sizeof(data)-16,"%d",count);
 
     // check if the reserve proof is in the database
-    if (count_all_documents_in_collection(database_name,data,1) > 0)
+    if (count_all_documents_in_collection(database_name,data) > 0)
     {
       memset(data2,0,strlen(data2));
       memset(data3,0,strlen(data3));
@@ -304,21 +304,21 @@ int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF
           
       // get the data from the database for the reserve proof. If the data is not in the database then skip that reserve proof when updating the database
       memset(data2,0,strlen(data2));
-      if (read_document_field_from_collection(database_name,data,data3,"public_address_created_reserve_proof",data2,1) == 0)
+      if (read_document_field_from_collection(database_name,data,data3,"public_address_created_reserve_proof",data2) == 0)
       {
         return 0;
       }
       memcpy(invalid_reserve_proofs.public_address_created_reserve_proof[CURRENT_RESERVE_PROOF_COUNT],data2,strnlen(data2,XCASH_WALLET_LENGTH));
 
       memset(data2,0,strlen(data2));
-      if (read_document_field_from_collection(database_name,data,data3,"public_address_voted_for",data2,1) == 0)
+      if (read_document_field_from_collection(database_name,data,data3,"public_address_voted_for",data2) == 0)
       {
         return 0;
       }
       memcpy(invalid_reserve_proofs.public_address_voted_for[CURRENT_RESERVE_PROOF_COUNT],data2,strnlen(data2,XCASH_WALLET_LENGTH));
 
       memset(data2,0,strlen(data2));
-      if (read_document_field_from_collection(database_name,data,data3,"total",data2,1) == 0)
+      if (read_document_field_from_collection(database_name,data,data3,"total",data2) == 0)
       {
         return 0;
       }
@@ -360,7 +360,7 @@ int check_reserve_proofs_timer_update_delegates_total_vote_count(const int CURRE
   memcpy(data3+strlen(data3),invalid_reserve_proofs.public_address_voted_for[CURRENT_RESERVE_PROOF_COUNT],XCASH_WALLET_LENGTH);
   memcpy(data3+strlen(data3),"\"}",2);
 
-  if (read_document_field_from_collection(database_name,"delegates",data3,"total_vote_count",data,1) == 0)
+  if (read_document_field_from_collection(database_name,"delegates",data3,"total_vote_count",data) == 0)
   {
     return 0;
   }
@@ -379,7 +379,7 @@ int check_reserve_proofs_timer_update_delegates_total_vote_count(const int CURRE
   memcpy(data2+strlen(data2),data,strnlen(data,sizeof(data2)));
   memcpy(data2+strlen(data2),"\"}",2);
 
-  return update_document_from_collection(database_name,"delegates",data3,data2,1);
+  return update_document_from_collection(database_name,"delegates",data3,data2);
 }
 
 
@@ -412,7 +412,7 @@ int check_reserve_proofs_timer_update_delegates_score(const int CURRENT_RESERVE_
   memcpy(data+strlen(data),"\"}",2);
 
   // get the block verifiers score
-  if (read_document_field_from_collection(database_name,"delegates",data,"block_verifier_score",data2,1) == 0)
+  if (read_document_field_from_collection(database_name,"delegates",data,"block_verifier_score",data2) == 0)
   {
     return 0;
   }
@@ -424,11 +424,7 @@ int check_reserve_proofs_timer_update_delegates_score(const int CURRENT_RESERVE_
   snprintf(data2+25,sizeof(data2)-26,"%zu",block_verifiers_score);
   memcpy(data2+strlen(data2),"\"}",2);
 
-  if (update_document_from_collection(database_name,"delegates",data,data2,1) == 0)
-  {
-    return 0;
-  }
-  return 1;
+  return update_document_from_collection(database_name,"delegates",data,data2);
 }
 
 
@@ -463,9 +459,9 @@ void check_reserve_proofs_timer_delete_reserve_proof(const int CURRENT_RESERVE_P
     memcpy(data2,"{\"reserve_proof\":\"",18);
     memcpy(data2+18,invalid_reserve_proofs.reserve_proof[CURRENT_RESERVE_PROOF_COUNT],strnlen(invalid_reserve_proofs.reserve_proof[CURRENT_RESERVE_PROOF_COUNT],sizeof(data2)));
     memcpy(data2+strlen(data2),"\"}",2);
-    if (count_documents_in_collection(database_name,data,data2,1) > 0)
+    if (count_documents_in_collection(database_name,data,data2) > 0)
     {
-      delete_document_from_collection(database_name,data,data2,1);
+      delete_document_from_collection(database_name,data,data2);
     }
   }
 
@@ -586,7 +582,7 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
     memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
     snprintf(data+15,sizeof(data)-16,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1));
-  } while ((count = count_all_documents_in_collection(database_name,data,1)) <= 0);
+  } while ((count = count_all_documents_in_collection(database_name,data)) <= 0);
   pthread_rwlock_wrlock(&rwlock_reserve_proofs);
   RESET_ERROR_MESSAGES; 
   pthread_rwlock_unlock(&rwlock_reserve_proofs);
@@ -595,7 +591,7 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
   count = (rand() % count) + 1;
 
   // get a random document from the collection
-  if (read_multiple_documents_all_fields_from_collection(database_name,data,"",&database_multiple_documents_fields,count,1,0,"",1) == 1)
+  if (read_multiple_documents_all_fields_from_collection(database_name,data,"",&database_multiple_documents_fields,count,1,0,"") == 1)
   {
     // check if the reserve proof is unique
     pthread_rwlock_wrlock(&rwlock_reserve_proofs);
@@ -852,7 +848,7 @@ void remove_inactive_delegates(void)
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+strlen(data),delegates[count].public_address,XCASH_WALLET_LENGTH);
       memcpy(data+strlen(data),"\"}",2);
-      delete_document_from_collection(database_name,DATABASE_COLLECTION,data,1);
+      delete_document_from_collection(database_name,DATABASE_COLLECTION,data);
     }
   }
   RESET_ERROR_MESSAGES;

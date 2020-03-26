@@ -31,12 +31,11 @@ Parameters:
   DATABASE - The database name
   COLLECTION - The collection name
   DATA - The json data to use to search the collection for
-  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: -1 if an error has occured, otherwise the amount of documents that match a specific field name and field in the collection
 -----------------------------------------------------------------------------------------------------------
 */
 
-int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const int THREAD_SETTINGS)
+int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, const char* DATA)
 {
   // Variables
   mongoc_client_t* database_client_thread = NULL;
@@ -48,10 +47,8 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
   #define database_reset_all \
   bson_destroy(document); \
   mongoc_collection_destroy(collection); \
-  if (THREAD_SETTINGS == 1) \
-  { \
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
-  }
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+
   #define COUNT_DOCUMENTS_IN_COLLECTION_ERROR(settings) \
   if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (strncmp(settings,"The database collection does not exist",BUFFER_SIZE) != 0)) \
   { \
@@ -62,24 +59,17 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
   database_reset_all; \
   return -1;
 
-   // check if we need to create a database connection, or use the global database connection
-  if (THREAD_SETTINGS == 0)
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
   {
-    // set the collection
-    collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
-  }
-  else
-  {
-    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
-    {
-      return -1;
-    }
-    // set the collection
-    collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+    return -1;
   }
 
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+
   // check if the database collection exist
-  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  if (check_if_database_collection_exist(DATABASE,COLLECTION) == 0)
   {
     COUNT_DOCUMENTS_IN_COLLECTION_ERROR("The database collection does not exist");
   }
@@ -106,12 +96,11 @@ Description: Counts all the documents in the collection
 Parameters:
   DATABASE - The database name
   COLLECTION - The collection name
-  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: -1 if an error has occured, otherwise the amount of documents in the collection
 -----------------------------------------------------------------------------------------------------------
 */
 
-int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS)
+int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTION)
 {
   // Variables
   mongoc_client_t* database_client_thread = NULL;
@@ -123,10 +112,8 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
   #define database_reset_all \
   bson_destroy(document); \
   mongoc_collection_destroy(collection); \
-  if (THREAD_SETTINGS == 1) \
-  { \
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
-  }
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+
   #define COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR(settings) \
   if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (strncmp(settings,"The database collection does not exist",BUFFER_SIZE) != 0)) \
   { \
@@ -137,24 +124,17 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
   database_reset_all; \
   return -1;
 
-  // check if we need to create a database connection, or use the global database connection
-  if (THREAD_SETTINGS == 0)
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
   {
-    // set the collection
-    collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
-  }
-  else
-  {
-    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
-    {
-      return -1;
-    }
-    // set the collection
-    collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+    return -1;
   }
 
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+
   // check if the database collection exist
-  if (check_if_database_collection_exist(DATABASE,COLLECTION,THREAD_SETTINGS) == 0)
+  if (check_if_database_collection_exist(DATABASE,COLLECTION) == 0)
   {
     COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR("The database collection does not exist");
   }

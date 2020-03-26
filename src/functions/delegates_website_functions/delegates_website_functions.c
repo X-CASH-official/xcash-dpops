@@ -97,7 +97,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_STATISTICS_DATABASE_FIELDS+4,"server_receive_data_socket_delegates_website_get_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
 
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(database_name,"statistics",DATA,1) <= 0)
+  if (count_documents_in_collection(database_name,"statistics",DATA) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR("Could not read the statistics database collection");
   }
@@ -105,7 +105,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   // organize the delegates
   document_count = organize_delegates(delegates,"delegates");
 
-  if (read_document_all_fields_from_collection(database_name,"statistics",DATA,&database_data,1) == 0)
+  if (read_document_all_fields_from_collection(database_name,"statistics",DATA,&database_data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR("Could not read all of the fields of the statistics database collection");
   }
@@ -351,7 +351,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   }
 
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message,1) <= 0 || read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION,message,&database_data,1) == 0)
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message) <= 0 || read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION,message,&database_data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR("Could not get the data from the delegates database collection");
   }
@@ -469,7 +469,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   }
   
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message,1) <= 0 || read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION,message,&database_data,1) == 0)
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message) <= 0 || read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION,message,&database_data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR("Could not get the delegates information");
   }
@@ -557,7 +557,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     memcpy(buffer+18+DATA_LENGTH,"\"}",2);
     memset(data2,0,strlen(data2));
 
-    if (read_document_field_from_collection(database_name,"delegates",buffer,"public_address",data2,1) == 0)
+    if (read_document_field_from_collection(database_name,"delegates",buffer,"public_address",data2) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(1,"Could not find a registered delegate with the information provided");
     }
@@ -575,7 +575,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
-    if ((count2 = count_documents_in_collection(database_name,data2,buffer,1)) == -1)
+    if ((count2 = count_documents_in_collection(database_name,data2,buffer)) == -1)
     {
       continue;
     }
@@ -599,9 +599,9 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
 
-    if ((count2 = count_documents_in_collection(database_name,data2,buffer,1)) > 0)
+    if ((count2 = count_documents_in_collection(database_name,data2,buffer)) > 0)
     {      
-      if (read_multiple_documents_all_fields_from_collection(database_name,data2,buffer,&database_multiple_documents_fields,1,count2,0,"",1) == 0)
+      if (read_multiple_documents_all_fields_from_collection(database_name,data2,buffer,&database_multiple_documents_fields,1,count2,0,"") == 0)
       {
         SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(0,"Could not get the delegates voters list");
       }
@@ -711,14 +711,14 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
   memcpy(message+strlen(message),"\"}",2);
 
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(database_name,data3,message,1) <= 0)
+  if (count_documents_in_collection(database_name,data3,message) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR("Could not get the rounds statistics");
   }
 
   memset(data2,0,strlen(data2));
 
-  if (read_document_field_from_collection(database_name,data3,message,"reserve_bytes",data2,1) == 0)
+  if (read_document_field_from_collection(database_name,data3,message,"reserve_bytes",data2) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR("Could not get the rounds statistics");
   }

@@ -153,7 +153,7 @@ void sync_network_data_nodes_database(void)
   get_reserve_bytes_database(count2,1);
   memcpy(data,"reserve_bytes_",14);
   snprintf(data+strlen(data),sizeof(data)-15,"%zu",count2);
-  if (count_documents_in_collection(database_name,data,data2,1) == 1)
+  if (count_documents_in_collection(database_name,data,data2) == 1)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"true",4);
@@ -1094,12 +1094,12 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       snprintf(data2+15,sizeof(data2)-16,"%d",count);
 
       // delete the collection from the database
-      delete_collection_from_database(database_name,data2,1);
+      delete_collection_from_database(database_name,data2);
 
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(database_name,data2,data,strlen(data),1);
+      insert_multiple_documents_into_collection_json(database_name,data2,data,strlen(data));
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
@@ -1263,12 +1263,12 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       snprintf(data2+14,sizeof(data2)-15,"%zu",starting_reserve_bytes_database);
 
       // delete the collection from the database
-      delete_collection_from_database(database_name,data2,1);
+      delete_collection_from_database(database_name,data2);
 
       // add the data to the database
       memset(data,0,strlen(data));
       memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(database_name,data2,data,strlen(data),1);
+      insert_multiple_documents_into_collection_json(database_name,data2,data,strlen(data));
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
@@ -1672,12 +1672,12 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
 
   // delete the collection from the database
-  delete_collection_from_database(database_name,DATABASE_COLLECTION,1);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION);
 
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,strlen(data),1);
+  insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,strlen(data));
 
   pointer_reset(data);
   return 1;
@@ -1799,12 +1799,12 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
 
   // delete the collection from the database
-  delete_collection_from_database(database_name,DATABASE_COLLECTION,1);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION);
 
   // add the data to the database
   memset(data,0,strlen(data));
   memcpy(data,data2,strlen(data2)-2);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data,1);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data);
 
   pointer_reset(data);
   return 1;

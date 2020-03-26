@@ -51,7 +51,7 @@ int database_test(void)
   #define DATA_HASH_ALL_RESERVE_BYTES_COLLECTIONS "1eba4b3c56c6d25f91b5ce6340c49f6a8d1a69f21b4f02584863aa55b27edd453e6352ab0ae838f5ddbde1c1ed06d0684c00f4bfa8d5b0b9b74b61b909b96daf"
   #define DATA_HASH_ALL_COLLECTIONS "56aac64d6320c14db5f03e964962449e34252aadc704989e1969c8d133172664b13818d04a95595deed8d1b9c133ffcdf5ad2c7ace7ecf66e204772da355c743"
 
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
 
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\ndatabase functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,DATABASE_FUNCTIONS_TEST,TEST_OUTLINE);
@@ -60,21 +60,9 @@ int database_test(void)
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
 
-  // test create_database_connection
-  mongoc_client_destroy(database_client);
-  if (create_database_connection() == 1)
-  {
-    color_print("PASSED! Test for create_database_connection","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for create_database_connection","red");
-  }
-
   // test check_if_database_collection_exist
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_DELEGATES_TEST_DATA,0);
-  if (check_if_database_collection_exist(database_name,DATABASE_COLLECTION_TEST,0) == 1)
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_DELEGATES_TEST_DATA);
+  if (check_if_database_collection_exist(database_name,DATABASE_COLLECTION_TEST) == 1)
   {
     color_print("PASSED! Test for check_if_database_collection_exist","green");
     count_test++;
@@ -85,15 +73,15 @@ int database_test(void)
   }
 
   // get the database data hash
-  delete_database(database_name,0);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"reserve_proofs_10",RESERVE_PROOFS_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"reserve_bytes_10",RESERVE_BYTES_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA,0);
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_proofs_10",RESERVE_PROOFS_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_bytes_10",RESERVE_BYTES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   if (get_database_data_hash(data_test,database_name,DATABASE_COLLECTION_TEST) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
@@ -175,12 +163,12 @@ int database_test(void)
     color_print("FAILED! Test for get_database_data_hash for ALL collections","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_database(database_name,0);
+  delete_database(database_name);
 
   // get the database data hash on a separate thread
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   struct get_database_data_hash_thread_parameters get_database_data_hash_thread_parameters = {data_test,database_name,DATABASE_COLLECTION_TEST};
   pthread_create(&thread_id, NULL, &get_database_data_hash_thread,(void *)&get_database_data_hash_thread_parameters);
@@ -194,12 +182,12 @@ int database_test(void)
     color_print("FAILED! Test for get_database_data_hash_thread","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
 
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   // get the database data
   memset(result_test,0,strlen(result_test));
-  if (get_database_data(result_test,database_name,DATABASE_COLLECTION_TEST,0) == 1 && strncmp(result_test,MESSAGE,BUFFER_SIZE) == 0)
+  if (get_database_data(result_test,database_name,DATABASE_COLLECTION_TEST) == 1 && strncmp(result_test,MESSAGE,BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for get_database_data","green");
     count_test++;
@@ -224,7 +212,7 @@ int database_test(void)
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memset(result_test,0,strnlen(result_test,BUFFER_SIZE));
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
 
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\ndatabase functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,DATABASE_FUNCTIONS_TEST-count_test,TEST_OUTLINE);

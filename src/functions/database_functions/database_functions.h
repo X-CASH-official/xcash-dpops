@@ -7,8 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int create_database_connection(void);
-int check_if_database_collection_exist(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
-int get_database_data(char *database_data, const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS);
+int check_if_database_collection_exist(const char* DATABASE, const char* COLLECTION);
+int get_database_data(char *database_data, const char* DATABASE, const char* COLLECTION);
 int get_database_data_hash(char *data_hash, const char* DATABASE, const char* COLLECTION);
 #endif

@@ -137,7 +137,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memset(message,0,sizeof(message));
 
   // get the total blocks found
-  document_count = count_all_documents_in_collection(shared_delegates_database_name,"blocks_found",1);
+  document_count = count_all_documents_in_collection(shared_delegates_database_name,"blocks_found");
   total_blocks_found = document_count;
   if (document_count <= 0)
   {
@@ -190,7 +190,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   if (total_blocks_found != 0)
   {
-    if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"",1) <= 0)
+    if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,"blocks_found","",&database_multiple_documents_fields,1,document_count,0,"") <= 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
     }
@@ -203,7 +203,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     }
 
     // add the total payments to the database_document_fields struct 
-    total_payments = count_all_documents_in_collection(shared_delegates_database_name,"public_addresses_payments",1);
+    total_payments = count_all_documents_in_collection(shared_delegates_database_name,"public_addresses_payments");
   }
 
   // get the total voters
@@ -218,7 +218,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     memcpy(data,"reserve_proofs_",15);
     snprintf(data+15,sizeof(data)-16,"%d",count);
 
-    counter = count_documents_in_collection(database_name,data,message,1);
+    counter = count_documents_in_collection(database_name,data,message);
     if (counter == -1)
     {
       continue;
@@ -243,7 +243,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+117,"\"}",2);
-  if (read_document_field_from_collection(database_name,"delegates",message,"total_vote_count",total_votes_data,1) == 0)
+  if (read_document_field_from_collection(database_name,"delegates",message,"total_vote_count",total_votes_data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
   }
@@ -255,7 +255,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+117,"\"}",2);
 
-  if (read_document_field_from_collection(database_name,"delegates",message,"block_verifier_online_percentage",data,1) <= 0)
+  if (read_document_field_from_collection(database_name,"delegates",message,"block_verifier_online_percentage",data) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
   } 
@@ -334,7 +334,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   return 0;
 
   // get the total blocks found
-  document_count = count_all_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,1);
+  document_count = count_all_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION);
 
   if (document_count <= 0)
   {
@@ -346,7 +346,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   // initialize the database_multiple_documents_fields struct
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_get_blocks_found",buffer,current_date_and_time,current_UTC_date_and_time);
 
-  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
+  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0,"Could not get the delegates blocks found data");
   }
@@ -440,7 +440,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
   
   // check if there is any data in the database that matches the message
-  if (count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,message,1) <= 0)
+  if (count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,message) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1,"The public address could not be found in the database for the delegate");
   }
@@ -448,7 +448,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   // initialize the database_document_fields struct 
   INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_information",data2,current_date_and_time,current_UTC_date_and_time);
    
-  if (read_document_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,message,&database_data,1) == 0)
+  if (read_document_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,message,&database_data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(0,"Could not get the public addresses data");
   }
@@ -530,7 +530,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   memcpy(data3+19+XCASH_WALLET_LENGTH,"\"}",2);
   
   // check if there is any data in the database that matches the message
-  document_count = count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,data3,1);
+  document_count = count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,data3);
   if (document_count <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"There is no payment data for the public address");
@@ -539,7 +539,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   // initialize the database_multiple_documents_fields struct
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_payment_information",data2,current_date_and_time,current_UTC_date_and_time);
   
-  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"",1) == 0)
+  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0,"Could not get the payment data for the public address");
   }

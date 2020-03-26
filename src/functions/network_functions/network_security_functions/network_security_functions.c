@@ -497,9 +497,9 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
         memcpy(data+19,public_address,XCASH_WALLET_LENGTH);
         memcpy(data+117,"\"}",2);
 
-        if (count_documents_in_collection(database_name,"delegates",data,1) == 1)
+        if (count_documents_in_collection(database_name,"delegates",data) == 1)
         {
-          if (read_document_field_from_collection(database_name,"delegates",data,"public_key",public_key,1) == 0)
+          if (read_document_field_from_collection(database_name,"delegates",data,"public_key",public_key) == 0)
           {
             VERIFY_DATA_ERROR("Could not find the public key to verify the message");
           }

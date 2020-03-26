@@ -40,13 +40,13 @@ int insert_database_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   count_test = 0;
 
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
 
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\ninsert database functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,INSERT_DATABASE_FUNCTIONS_TEST,TEST_OUTLINE);
   
   // insert a document into the collection using json data
-  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0) == 0)
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE) == 0)
   {
     color_print("FAILED! Test for insert_document_into_collection_json","red");
   }
@@ -74,7 +74,7 @@ int insert_database_functions_test(void)
   memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
   memcpy(data_test+strlen(data_test),",",1);
   memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
-  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data_test,sizeof(data_test),0) == 1)
+  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data_test,sizeof(data_test)) == 1)
   {
     color_print("PASSED! Test for insert_multiple_documents_into_collection_json","green");
     count_test++;
@@ -104,11 +104,11 @@ int insert_database_functions_test(void)
 
 
   // check all errors for each test
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
   RESET_ERROR_MESSAGES;
 
   // insert_document_into_collection_json
-  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"data",0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"data") == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for insert_document_into_collection_json checking for Could not convert the data into a database document","green");
     count_test++;
@@ -120,7 +120,7 @@ int insert_database_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   // insert_multiple_documents_into_collection_json
-  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"data",5,0) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"data",5) == 0 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for insert_multiple_documents_into_collection_json checking for Could not convert the data into a database document","green");
     count_test++;

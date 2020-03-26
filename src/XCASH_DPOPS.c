@@ -43,7 +43,6 @@ Global Variables
 -----------------------------------------------------------------------------------------------------------
 */
 
-mongoc_client_t* database_client;
 mongoc_client_pool_t* database_client_thread_pool;
 
 // network data nodes
@@ -403,7 +402,6 @@ void create_overall_database_connection(void)
   memcpy(error_message.data[error_message.total],"Could not create a connection for the database",46); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  mongoc_client_destroy(database_client); \
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup(); \
   exit(0);
@@ -414,7 +412,7 @@ void create_overall_database_connection(void)
   mongoc_init();
 
   // create a connection to the database
-  if (create_database_connection() == 0 || !(uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error)) || !(database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool)))
+  if (!(uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error)) || !(database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool)))
   {
     CREATE_OVERALL_DATABASE_CONNECTION_ERROR;
   }
@@ -445,7 +443,6 @@ void get_delegates_data(void)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  mongoc_client_destroy(database_client); \
   mongoc_client_pool_destroy(database_client_thread_pool); \
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup(); \
@@ -512,7 +509,6 @@ int set_parameters(int parameters_count, char* parameters[])
 {
   // define macros
   #define database_reset \
-  mongoc_client_destroy(database_client); \
   mongoc_client_pool_destroy(database_client_thread_pool); \
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup();
@@ -695,21 +691,21 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       memset(data,0,sizeof(data));
       
-      insert_document_into_collection_json(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\"}",0);
-      insert_document_into_collection_json(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\"}",0);
+      insert_document_into_collection_json(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\"}");
+      insert_document_into_collection_json(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\"}");
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+117,"\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}",59);
-      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses",data,0);
+      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses",data);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+117,"\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}",73);
-      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses_payments",data,0);
-      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses_payments",data,0);
+      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses_payments",data);
+      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses_payments",data);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address_created_reserve_proof\":\"",41);
@@ -717,10 +713,10 @@ int set_parameters(int parameters_count, char* parameters[])
       memcpy(data+139,"\",\"public_address_voted_for\":\"",30);
       memcpy(data+169,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+267,"\",\"total\":\"10\",\"reserve_proof\":\"15\"}",36);
-      insert_document_into_collection_json(database_name,"reserve_proofs_5",data,0);
-      insert_document_into_collection_json(database_name,"reserve_proofs_10",data,0);
-      insert_document_into_collection_json(database_name,"reserve_proofs_10",data,0);
-      insert_document_into_collection_json(database_name,"reserve_proofs_15",data,0);
+      insert_document_into_collection_json(database_name,"reserve_proofs_5",data);
+      insert_document_into_collection_json(database_name,"reserve_proofs_10",data);
+      insert_document_into_collection_json(database_name,"reserve_proofs_10",data);
+      insert_document_into_collection_json(database_name,"reserve_proofs_15",data);
 
       color_print("The database test data has been added successfully\n","green");
       database_reset;
@@ -730,30 +726,30 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       memset(data,0,strlen(data));
       
-      delete_document_from_collection(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\"}",0);
-      delete_document_from_collection(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\"}",0);
+      delete_document_from_collection(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\"}");
+      delete_document_from_collection(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\"}");
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+117,"\"}",2);
-      delete_document_from_collection(shared_delegates_database_name,"public_addresses",data,0);
+      delete_document_from_collection(shared_delegates_database_name,"public_addresses",data);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address\":\"",19);
       memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+117,"\"}",2);
-      delete_document_from_collection(shared_delegates_database_name,"public_addresses_payments",data,0);
-      delete_document_from_collection(shared_delegates_database_name,"public_addresses_payments",data,0);
+      delete_document_from_collection(shared_delegates_database_name,"public_addresses_payments",data);
+      delete_document_from_collection(shared_delegates_database_name,"public_addresses_payments",data);
 
       memset(data,0,strlen(data));
       memcpy(data,"{\"public_address_voted_for\":\"",29);
       memcpy(data+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       memcpy(data+127,"\"}",2);
-      delete_document_from_collection(database_name,"reserve_proofs_5",data,0);
-      delete_document_from_collection(database_name,"reserve_proofs_10",data,0);
-      delete_document_from_collection(database_name,"reserve_proofs_10",data,0);
-      delete_document_from_collection(database_name,"reserve_proofs_15",data,0);
+      delete_document_from_collection(database_name,"reserve_proofs_5",data);
+      delete_document_from_collection(database_name,"reserve_proofs_10",data);
+      delete_document_from_collection(database_name,"reserve_proofs_10",data);
+      delete_document_from_collection(database_name,"reserve_proofs_15",data);
 
       color_print("The database test data has been removed successfully\n","green");
       database_reset;
@@ -1051,7 +1047,6 @@ void database_sync_check(void)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  mongoc_client_destroy(database_client); \
   mongoc_client_pool_destroy(database_client_thread_pool); \
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup(); \
@@ -1158,7 +1153,6 @@ void start_timer_threads(void)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  mongoc_client_destroy(database_client); \
   mongoc_client_pool_destroy(database_client_thread_pool); \
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup(); \
@@ -1229,7 +1223,6 @@ int main(int parameters_count, char* parameters[])
   #define MESSAGE "{\"username\":\"XCASH\"}"
   
   #define database_reset \
-  mongoc_client_destroy(database_client); \
   mongoc_client_pool_destroy(database_client_thread_pool); \
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup();
@@ -1239,7 +1232,6 @@ int main(int parameters_count, char* parameters[])
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  mongoc_client_destroy(database_client); \
   mongoc_client_pool_destroy(database_client_thread_pool); \
   mongoc_uri_destroy(uri_thread_pool); \
   mongoc_cleanup(); \
@@ -1370,11 +1362,11 @@ int main(int parameters_count, char* parameters[])
 
   // check if it should create the default database data
   memset(data,0,sizeof(data));
-  if ((read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 0) || (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data,0) == 1 && count_all_documents_in_collection(database_name,"delegates",1) < NETWORK_DATA_NODES_AMOUNT))
+  if ((read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data) == 0) || (read_document_field_from_collection(database_name,"statistics",MESSAGE,"username",data) == 1 && count_all_documents_in_collection(database_name,"delegates") < NETWORK_DATA_NODES_AMOUNT))
   {
-    delete_collection_from_database(database_name,"reserve_proofs_1",1);
-    delete_collection_from_database(database_name,"delegates",1);
-    delete_collection_from_database(database_name,"statistics",1);
+    delete_collection_from_database(database_name,"reserve_proofs_1");
+    delete_collection_from_database(database_name,"delegates");
+    delete_collection_from_database(database_name,"statistics");
     RESET_ERROR_MESSAGES;
     INITIALIZE_DATABASE_DATA(production_settings_database_data_settings);
   }

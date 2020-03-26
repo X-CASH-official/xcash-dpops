@@ -26,69 +26,16 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: create_database_connection
-Description: Creates a database connection
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int create_database_connection(void)
-{
-  // Variables
-  mongoc_uri_t* uri;
-  bson_t* command = NULL;
-  bson_t reply;
-  bson_error_t error;
-
-  // define macros
-  #define database_reset_all \
-  mongoc_uri_destroy(uri); \
-  bson_destroy(&reply); \
-  bson_destroy(command);
-
-  #define CREATE_DATABASE_CONNECTION_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"create_database_connection",26); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  database_reset_all; \
-  return 0;
-
-  // create a connection to the database
-  if (!(uri = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error)))
-  {
-    return 0;
-  }
-  if (!(database_client = mongoc_client_new_from_uri(uri)))
-  {
-    CREATE_DATABASE_CONNECTION_ERROR("Could not create a database connection");
-  }
-  command = BCON_NEW("ping", BCON_INT32(1));
-  if (!mongoc_client_command_simple(database_client, "admin", command, NULL, &reply, &error))
-  {
-    CREATE_DATABASE_CONNECTION_ERROR("Could not create a database connection");
-  }
-  database_reset_all;
-  return 1;
-
-  #undef database_reset_all
-  #undef CREATE_DATABASE_CONNECTION_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: check_if_database_collection_exist
 Description: Checks if a database collection exist
 Parameters:
   DATABASE - The database name
   COLLECTION - The collection name
-  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int check_if_database_collection_exist(const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS)
+int check_if_database_collection_exist(const char* DATABASE, const char* COLLECTION)
 {
    // Variables
   mongoc_client_t* database_client_thread = NULL;
@@ -98,24 +45,16 @@ int check_if_database_collection_exist(const char* DATABASE, const char* COLLECT
   // define macros
   #define database_reset_all \
   mongoc_database_destroy(database); \
-  if (THREAD_SETTINGS == 1) \
-  { \
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
+  {
+    return 0;
   }
 
-  // check if we need to create a database connection, or use the global database connection
-  if (THREAD_SETTINGS == 0)
-  {
-    database = mongoc_client_get_database(database_client, DATABASE);
-  }
-  else
-  {
-    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
-    {
-      return 0;
-    }
-    database = mongoc_client_get_database(database_client_thread, DATABASE);
-  }  
+  // set the datbase
+  database = mongoc_client_get_database(database_client_thread, DATABASE);
    
   if (!mongoc_database_has_collection(database,COLLECTION,&error))
   {    
@@ -139,12 +78,11 @@ Parameters:
   database_data - The database data
   DATABASE - The database name
   COLLECTION - The collection name
-  THREAD_SETTINGS - 1 to use a separate thread, otherwise 0
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int get_database_data(char *database_data, const char* DATABASE, const char* COLLECTION, const int THREAD_SETTINGS)
+int get_database_data(char *database_data, const char* DATABASE, const char* COLLECTION)
 {
   // Constants
   const bson_t* current_document;
@@ -164,10 +102,8 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   bson_destroy(document_options); \
   mongoc_cursor_destroy(document_settings); \
   mongoc_collection_destroy(collection); \
-  if (THREAD_SETTINGS == 1) \
-  { \
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread); \
-  }
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+  
   #define GET_DATABASE_DATA_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"get_database_data",17); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -175,21 +111,14 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   database_reset_all; \
   return 0;
 
-  // check if we need to create a database connection, or use the global database connection
-  if (THREAD_SETTINGS == 0)
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
   {
-    // set the collection
-    collection = mongoc_client_get_collection(database_client, DATABASE, COLLECTION);
+    return 0;
   }
-  else
-  {
-    if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
-    {
-      return 0;
-    }
-    // set the collection
-    collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
-  }
+
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
 
   if (!(document = bson_new()))
   {
@@ -286,7 +215,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
       snprintf(data2+15,BUFFER_SIZE-16,"%zu",count);
-      if (get_database_data(data,DATABASE,data2,1) == 0)
+      if (get_database_data(data,DATABASE,data2) == 0)
       {
         continue;
       }
@@ -325,7 +254,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);  
       snprintf(data2+14,BUFFER_SIZE-15,"%zu",count);
-      get_database_data(data,DATABASE,data2,1);
+      get_database_data(data,DATABASE,data2);
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
@@ -361,7 +290,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);  
       snprintf(data2+15,BUFFER_SIZE-16,"%zu",count);
-      get_database_data(data,DATABASE,data2,1);
+      get_database_data(data,DATABASE,data2);
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
@@ -391,7 +320,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);  
       snprintf(data2+14,BUFFER_SIZE-15,"%zu",count);
-      get_database_data(data,DATABASE,data2,1);
+      get_database_data(data,DATABASE,data2);
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
@@ -410,7 +339,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
     // get the data hash of the delegates database
     memset(data,0,strlen(data));
-    get_database_data(data,DATABASE,"delegates",1);
+    get_database_data(data,DATABASE,"delegates");
 
     // get the data hash of the collection  
     memset(string,0,strlen((char*)string));    
@@ -422,7 +351,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
     // get the data hash of the delegates database
     memset(data,0,strlen(data));
-    get_database_data(data,DATABASE,"statistics",1);
+    get_database_data(data,DATABASE,"statistics");
 
     // get the data hash of the collection  
     memset(string,0,strlen((char*)string));    
@@ -447,7 +376,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     // get the data hash of the reserve proofs database
     memset(data,0,strlen(data));
     memset(data_hash,0,strlen(data_hash));
-    get_database_data(data,DATABASE,COLLECTION,1);
+    get_database_data(data,DATABASE,COLLECTION);
 
     // get the data hash of the collection  
     memset(string,0,strlen((char*)string));    

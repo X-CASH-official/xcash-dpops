@@ -35,8 +35,8 @@ int count_database_functions_test(void)
   // define macros
   #define MESSAGE "{\"message_settings\": \"XCASH_DPOPS_TEST_DATA\"}"
 
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
 
   // reset the variables
   count_test = 0;
@@ -45,8 +45,8 @@ int count_database_functions_test(void)
   fprintf(stderr,"\033[1;34m%s\ncount database functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,COUNT_DATABASE_FUNCTIONS_TEST,TEST_OUTLINE);
 
   // count how many documents have "message_settings":"XCASH_DPOPS_TEST_DATA" in the collection
-  int count1 = count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
-  int count2 = count_all_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,0);
+  int count1 = count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
+  int count2 = count_all_documents_in_collection(database_name,DATABASE_COLLECTION_TEST);
   if ((count1 == count2) && (count1 != -1 || count2 != -1))
   {
     color_print("PASSED! Test for count_documents_in_collection","green");
@@ -81,11 +81,11 @@ int count_database_functions_test(void)
 
 
   // check all errors for each test
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
   RESET_ERROR_MESSAGES;
 
   // count_documents_in_collection
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0) == -1 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,MESSAGE) == -1 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for count_documents_in_collection checking for The database collection does not exist","green");
     count_test++;
@@ -94,10 +94,10 @@ int count_database_functions_test(void)
   {
     color_print("FAILED! Test for count_documents_in_collection checking for The database collection does not exist","red");
   }
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE,0);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   RESET_ERROR_MESSAGES;
 
-  if (count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,"data",0) == -1 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,"data") == -1 && strncmp(error_message.data[0],"Could not convert the data into a database document",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for count_documents_in_collection checking for Could not convert the data into a database document","green");
     count_test++;
@@ -106,11 +106,11 @@ int count_database_functions_test(void)
   {
     color_print("FAILED! Test for count_documents_in_collection checking for Could not convert the data into a database document","red");
   }
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST,0);
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
   RESET_ERROR_MESSAGES;
 
   // count_all_documents_in_collection
-  if (count_all_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,0) == -1 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
+  if (count_all_documents_in_collection(database_name,DATABASE_COLLECTION_TEST) == -1 && strncmp(error_message.data[0],"The database collection does not exist",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for count_all_documents_in_collection checking for The database collection does not exist","green");
     count_test++;
