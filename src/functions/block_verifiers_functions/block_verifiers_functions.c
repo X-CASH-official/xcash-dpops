@@ -124,9 +124,10 @@ int start_new_round(void)
   // get the delegates online status
   get_delegates_online_status();
 
-  // reload the initial previous, current and next block verifiers list if its the first block
-  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  // reload the initial previous, current and next block verifiers list if its the first block or if you had to restart
+  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
   {
+    sync_previous_current_next_block_verifiers_settings = 0;
     sync_all_block_verifiers_list();
   }
 

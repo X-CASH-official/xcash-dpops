@@ -107,6 +107,7 @@ int production_settings; // 0 for production, 1 for test
 int production_settings_database_data_settings; // The initialize the database settings
 char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
 char current_block_producer[XCASH_WALLET_LENGTH+1]; // The public address of the current block producer
+int sync_previous_current_next_block_verifiers_settings; // sync the previous, current and next block verifiers if you had to restart
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -183,6 +184,7 @@ void initialize_data(void)
   network_data_nodes_sync_databases_settings = 1;
   production_settings = 1;
   production_settings_database_data_settings = 0;
+  sync_previous_current_next_block_verifiers_settings = 1;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);

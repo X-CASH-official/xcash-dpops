@@ -79,6 +79,7 @@ extern int production_settings; // 1 for production, 0 for test
 extern int production_settings_database_data_settings; // The initialize the database settings
 extern char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
 extern char current_block_producer[XCASH_WALLET_LENGTH+1]; // The public address of the current block producer
+extern int sync_previous_current_next_block_verifiers_settings; // sync the previous, current and next block verifiers if you had to restart
 
 extern int delegates_website; // 1 if the running the delegates websites, 0 if not
 extern int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
