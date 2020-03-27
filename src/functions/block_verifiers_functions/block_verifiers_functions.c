@@ -1496,8 +1496,11 @@ int block_verifiers_create_block_and_update_database(void)
   }
   
   // start the reserve proofs timer
-  pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
-  pthread_detach(thread_id);
+  if (memcmp(current_round_part_backup_node,"0",1) == 0)
+  {
+    pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
+    pthread_detach(thread_id);
+  }
 
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);  
 
