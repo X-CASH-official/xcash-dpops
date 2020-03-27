@@ -1934,6 +1934,45 @@ int block_verifiers_create_block(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_network_data_nodes_online_status
+Description: Get all of the network data nodes online status
+Return: 0 if no network data nodes are online, 1 if there is at least one network data node online
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_network_data_nodes_online_status(void)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  int count;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  
+  // create the message
+  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}",95);
+
+  // sign_data
+  if (sign_data(data) == 0)
+  { 
+    return 0;
+  }
+
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    if (send_and_receive_data_socket(data2,sizeof(data2),network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1)
+    {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: block_verifiers_send_data_socket
 Description: Sends the message to all of the block verifiers
 Parameters:

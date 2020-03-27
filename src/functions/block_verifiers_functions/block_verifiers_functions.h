@@ -21,5 +21,6 @@ int block_verifiers_create_vote_results(char* message);
 int block_verifiers_create_block_and_update_database(void);
 void print_block_producer(void);
 int block_verifiers_create_block(void);
+int get_network_data_nodes_online_status(void);
 int block_verifiers_send_data_socket(const char* MESSAGE);
 #endif

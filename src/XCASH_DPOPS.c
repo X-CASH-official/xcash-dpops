@@ -21,6 +21,7 @@
 #include "block_verifiers_synchronize_check_functions.h"
 #include "block_verifiers_thread_server_functions.h"
 #include "block_verifiers_update_functions.h"
+#include "block_verifiers_functions.h"
 #include "database_functions.h"
 #include "count_database_functions.h"
 #include "insert_database_functions.h"
@@ -873,158 +874,6 @@ void print_settings(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: get_network_data_nodes_online_status
-Description: Get all of the network data nodes online status
-Return: -1 if an error has occured, 0 if no network data nodes are online, 1 if there is at least one network data node online
------------------------------------------------------------------------------------------------------------
-*/
-
-int get_network_data_nodes_online_status(void)
-{
-  // Variables
-  char data[SMALL_BUFFER_SIZE];
-  char data2[MAXIMUM_NUMBER_SIZE];
-  int epoll_fd_copy;
-  struct epoll_event events[NETWORK_DATA_NODES_AMOUNT];
-  int count;
-  int number;
-  int network_data_nodes_settings = 0;
-  int network_data_nodes_sockets[NETWORK_DATA_NODES_AMOUNT];
-  char* str1;
-
-  // define macros
-  #define GET_NETWORK_DATA_NODES_ONLINE_STATUS_ERROR(message) \
-  memcpy(error_message.function[error_message.total],"get_network_data_nodes_online_status",36); \
-  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
-  error_message.total++; \
-  return -1;
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-  
-  // create the epoll file descriptor
-  if ((epoll_fd_copy = epoll_create1(0)) < 0)
-  {
-    GET_NETWORK_DATA_NODES_ONLINE_STATUS_ERROR("Error creating the epoll file descriptor");
-  }
-
-  // convert the port to a string  
-  snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
-
-  // create a socket connection for each network data node
-  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-  {
-    // Variables
-    struct addrinfo serv_addr;
-    struct addrinfo* settings = NULL;
-
-    if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-    {
-      continue;
-    }
-
-    // set up the addrinfo
-    memset(&serv_addr, 0, sizeof(serv_addr));
-    if (string_count(network_data_nodes_list.network_data_nodes_IP_address[count],".") == 3)
-    {
-      /* the host is an IP address
-      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
-      AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
-      AF_INET = IPV4 support
-      SOCK_STREAM = TCP protocol
-      */
-      serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
-      serv_addr.ai_family = AF_INET;
-      serv_addr.ai_socktype = SOCK_STREAM;
-    }
-    else
-    {
-      /* the host is a domain name
-      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
-      AF_INET = IPV4 support
-      SOCK_STREAM = TCP protocol
-      */
-      serv_addr.ai_flags = AI_NUMERICSERV;
-      serv_addr.ai_family = AF_INET;
-      serv_addr.ai_socktype = SOCK_STREAM;
-    }
-  
-    // convert the hostname if used, to an IP address
-    memset(data,0,sizeof(data));
-    memcpy(data,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data)));
-    str1 = string_replace(data,"http://","");
-    memset(data,0,strlen(data));
-    memcpy(data,str1,strnlen(str1,sizeof(data)));
-    str1 = string_replace(data,"https://","");
-    memset(data,0,strlen(data));
-    memcpy(data,str1,strnlen(str1,sizeof(data)));
-    str1 = string_replace(data,"www.","");
-    memset(data,0,strlen(data));
-    memcpy(data,str1,strnlen(str1,sizeof(data)));
-    if (getaddrinfo(data, data2, &serv_addr, &settings) != 0)
-    {  
-      freeaddrinfo(settings);
-      continue;
-    }
-
-    /* Create the socket  
-    AF_INET = IPV4 support
-    SOCK_STREAM = TCP protocol
-    SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
-    */
-    if ((network_data_nodes_sockets[count] = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
-    {
-      freeaddrinfo(settings);
-      continue;
-    }
-
-    /* create the epoll_event struct
-    EPOLLIN = signal when the file descriptor is ready to read
-    EPOLLOUT = signal when the file descriptor is ready to write
-    EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
-    */  
-    events[count].events = EPOLLIN | EPOLLOUT | EPOLLONESHOT;
-    events[count].data.fd = network_data_nodes_sockets[count];
-
-    // add the delegates socket to the epoll file descriptor
-    epoll_ctl(epoll_fd_copy, EPOLL_CTL_ADD, network_data_nodes_sockets[count], &events[count]);
-
-    // connect to the delegate
-    connect(network_data_nodes_sockets[count],settings->ai_addr, settings->ai_addrlen);
-
-    freeaddrinfo(settings);
-  }
-
-  sleep(CONNECTION_TIMEOUT_SETTINGS);
-
-  // get the total amount of sockets that are ready
-  number = epoll_wait(epoll_fd_copy, events, NETWORK_DATA_NODES_AMOUNT, 0);
-
-  for (count = 0; count < number; count++)
-  {
-    // check that the socket is connected
-    if (events[count].events & EPOLLIN || events[count].events & EPOLLOUT)
-    {
-      network_data_nodes_settings = 1;
-      break;
-    }
-  }
-
-  // remove the sockets from the epoll file descriptor and close all of the sockets
-  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-  {
-    epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, network_data_nodes_sockets[count], &events[count]);
-    close(network_data_nodes_sockets[count]);
-  }
-  return network_data_nodes_settings;
-  
-  #undef GET_NETWORK_DATA_NODES_ONLINE_STATUS_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: database_sync_check
 Description: Sync check the databases
 -----------------------------------------------------------------------------------------------------------
@@ -1061,8 +910,11 @@ void database_sync_check(void)
   }
 
   // check if the database is synced, unless this is the main network data node
-  // if (get_network_data_nodes_online_status() != 0)
-  if ((production_settings == 0 && memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0) || (production_settings == 1 && memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0))
+  if (network_data_node_settings == 1 && get_network_data_nodes_online_status() == 0)
+  {
+
+  }
+  else
   {
     if (network_data_node_settings == 1)
     {
@@ -1079,7 +931,7 @@ void database_sync_check(void)
       {
         DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
       }
-    }    
+    } 
   }
 
   // check the block verifiers current time, if it is not a network data node

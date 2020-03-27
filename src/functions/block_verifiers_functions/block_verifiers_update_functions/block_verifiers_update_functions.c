@@ -554,8 +554,6 @@ int add_round_statistics(void)
   char* message_copy1;
   char* message_copy2;
 
-  color_print("1","yellow");
-
   // define macros
   #define MESSAGE "{\"username\":\"XCASH\"}"
 
