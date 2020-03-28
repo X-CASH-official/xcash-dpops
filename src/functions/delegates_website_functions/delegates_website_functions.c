@@ -303,9 +303,12 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   #define DATABASE_FIELDS "IP_address|public_key|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_statistics",51); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_statistics",51); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -426,9 +429,12 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   #define DATABASE_FIELDS "total_vote_count|IP_address|delegate_name|public_key|block_verifier_score|online_status|block_verifier_total_rounds|block_verifier_online_total_rounds|block_verifier_online_percentage|block_producer_total_rounds|VRF_node_public_and_secret_key_total_rounds|VRF_node_random_data_total_rounds|VRF_node_next_main_nodes_total_rounds|block_producer_block_heights|VRF_node_public_and_secret_key_block_heights|VRF_node_random_data_block_heights|VRF_node_next_main_nodes_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_information",52); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_information",52); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
@@ -522,9 +528,12 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_VOTERS_LIST_ERROR(settings,MESSAGE) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_voters_list",52); \
-  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
-  error_message.total++; \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates_voters_list",52); \
+    memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+    error_message.total++; \
+  } \
   memset(buffer,0,strlen(buffer)); \
   memcpy(buffer,"{\"Error\":\"Could not get the delegates voters list\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)buffer,strlen(buffer),400,"application/json"); \
@@ -673,9 +682,12 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_GET_ROUND_STATISTICS_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_round_statistics",47); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_round_statistics",47); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
   memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the round statistics\"}",46); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
