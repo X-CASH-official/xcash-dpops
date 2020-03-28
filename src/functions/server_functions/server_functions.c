@@ -618,12 +618,16 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
 
   if (strstr(data2,".") == NULL)
   {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,website_path,strnlen(website_path,sizeof(data2)));
     memcpy(data2+strlen(data2),"index.html",10);
   }
 
   // get the file size
   if ((file_size = get_file_size(data2)) == 0)
   {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,website_path,strnlen(website_path,sizeof(data2)));
     memcpy(data2+strlen(data2),"index.html",10);
     if ((file_size = get_file_size(data2)) == 0)
     {
