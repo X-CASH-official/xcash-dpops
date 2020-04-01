@@ -807,7 +807,14 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
-      total_threads >= MINIMUM_THREADS_AMOUNT ? sscanf(parameters[count+1], "%d", &total_threads) : sscanf(MINIMUM_THREADS_AMOUNT, "%d", &total_threads);
+      if (total_threads >= MINIMUM_THREADS_AMOUNT)
+      {
+        sscanf(parameters[count+1], "%d", &total_threads);
+      }
+      else
+      {
+        total_threads = MINIMUM_THREADS_AMOUNT;
+      }
     }    
   }
   return 1;
