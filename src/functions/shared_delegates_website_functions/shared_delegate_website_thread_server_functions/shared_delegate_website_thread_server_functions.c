@@ -274,6 +274,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   struct voters voters[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE];
 
   // define macros
+  #define DATABASE_COLLECTION "public_addresses"
   #define CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR(message) \
   memcpy(error_message.function[error_message.total],"calculate_block_reward_for_each_delegate",40); \
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
@@ -317,14 +318,14 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
     memset(data,0,sizeof(data));
 
     // check if the public address is in the database, if not add it
-    if (count_documents_in_collection(shared_delegates_database_name,"public_addresses",data2) <= 0)
+    if (count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,data2) <= 0)
     {
       memset(data3,0,sizeof(data3));
       memcpy(data3,"{\"public_address\":\"",19);
       memcpy(data3+19,voters[count].public_address,XCASH_WALLET_LENGTH);
       memcpy(data3+strlen(data3),"\",\"current_total\":\"0\",\"total\":\"0\",\"inactivity_count\":\"0\"}",57);
 
-      if (insert_document_into_collection_json(shared_delegates_database_name,"public_addresses",data3) == 0)
+      if (insert_document_into_collection_json(shared_delegates_database_name,DATABASE_COLLECTION,data3) == 0)
       {
         CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("Could not calculate block reward for all of the public address that voted for the delegate.");
       }
@@ -333,7 +334,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
     // calculate the current delegates block reward
     current_delegates_block_reward = (long long int)((((double)voters[count].total_votes / (double)total_votes) * (double)block_reward) * ((100 - fee)/100)) | 0;
     
-    if (read_document_field_from_collection(shared_delegates_database_name,"public_addresses",data2,"current_total",data) == 0)
+    if (read_document_field_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,data2,"current_total",data) == 0)
     {
       CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("Could not calculate block reward for all of the public address that voted for the delegate.");
     }
@@ -347,7 +348,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
     memcpy(data+18,data3,strnlen(data3,sizeof(data)));
     memcpy(data+strlen(data),"\"}",2);
     
-    if (update_document_from_collection(shared_delegates_database_name,"public_addresses",data2,data) == 0)
+    if (update_document_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,data2,data) == 0)
     {
       CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR("Could not calculate block reward for all of the public address that voted for the delegate.");
     } 
@@ -356,6 +357,7 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   return 1;
 
   #undef CALCULATE_BLOCK_REWARD_FOR_EACH_DELEGATE_ERROR
+  #undef DATABASE_COLLECTION
 }
 
 
@@ -527,6 +529,9 @@ int payment_timer_update_inactivity_count(const char* PUBLIC_ADDRESS,const char*
   long long int inactivity_count;
   long long int maximum_inactivity_count;
 
+  // define macros
+  #define DATABASE_COLLECTION "public_addresses"
+
   /*
   set the inactivity_count
   if the address has a 0 current_total before sending any payments the inactivity_count ++
@@ -555,7 +560,7 @@ int payment_timer_update_inactivity_count(const char* PUBLIC_ADDRESS,const char*
     memcpy(data2+21,data3,strnlen(data3,sizeof(data2)));
     memcpy(data2+strlen(data2),"\"}",2);
 
-    if (update_document_from_collection(shared_delegates_database_name,"public_addresses",data,data2) == 0)
+    if (update_document_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,data,data2) == 0)
     {
       return 0;
     }
@@ -564,7 +569,7 @@ int payment_timer_update_inactivity_count(const char* PUBLIC_ADDRESS,const char*
   {
     // set the inactivity_count to 0
     memcpy(data2,"{\"inactivity_count\":\"0\"}",24);
-    if (update_document_from_collection(shared_delegates_database_name,"public_addresses",data,data2) == 0)
+    if (update_document_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,data,data2) == 0)
     {
       return 0;
     }
@@ -572,12 +577,14 @@ int payment_timer_update_inactivity_count(const char* PUBLIC_ADDRESS,const char*
   else if (strncmp(CURRENT_TOTAL,"0",BUFFER_SIZE) == 0 && inactivity_count > maximum_inactivity_count)
   {
     // remove the document from the database
-    if (delete_document_from_collection(database_name,"public_addresses",data) == 0)
+    if (delete_document_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,data) == 0)
     {
       return 0;
     }                   
   }
   return 1;
+
+  #undef DATABASE_COLLECTION
 }
 
 
