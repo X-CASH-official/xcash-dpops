@@ -737,8 +737,10 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
 
   // create a json string out of the database array of item and value
   memset(message,0,strlen(message));
-  memcpy(message,"{\"reserve_bytes\":\"",18);
-  memcpy(message+18,data2,strnlen(data2,sizeof(message)));
+  memcpy(message,"{\"block_verifiers_amount\":\"",27);
+  snprintf(message+27,sizeof(message)-28,"%d",BLOCK_VERIFIERS_AMOUNT);
+  memcpy(message+strlen(message),"\",\"reserve_bytes\":\"",19);
+  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
   memcpy(message+strlen(message),"\"}",2);
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
   
