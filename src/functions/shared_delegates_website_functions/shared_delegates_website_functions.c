@@ -60,6 +60,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 {
   // Variables
   char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   char total_votes_data[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -134,6 +135,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   }
 
   memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
 
   // get the total blocks found
@@ -248,20 +250,19 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
   }
 
-  // get the block_verifier_online_percentage
+  // get the block_verifier_online_percentage and block_verifier_total_rounds
   memset(data,0,sizeof(data));
   memset(message,0,sizeof(message));
   memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+117,"\"}",2);
 
-  if (read_document_field_from_collection(database_name,"delegates",message,"block_verifier_online_percentage",data) <= 0)
+  if (read_document_field_from_collection(database_name,"delegates",message,"block_verifier_online_percentage",data) <= 0 || read_document_field_from_collection(database_name,"delegates",message,"block_verifier_total_rounds",data2) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
-  } 
-  
-  memset(message,0,sizeof(message));
+  }
 
+  memset(message,0,sizeof(message));
   memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+strlen(message),"\",\"current_delegate_rank\":\"",27);
@@ -270,6 +271,8 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message+strlen(message),total_votes_data,strnlen(total_votes_data,sizeof(message)));
   memcpy(message+strlen(message),"\",\"online_percentage\":\"",23);
   memcpy(message+strlen(message),data,strnlen(data,sizeof(message)));
+  memcpy(message+strlen(message),"\",\"block_verifier_total_rounds\":\"",33);
+  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
   memcpy(message+strlen(message),"\",\"total_blocks_found\":\"",24);
   snprintf(message+strlen(message),sizeof(message),"%d",total_blocks_found);
   memcpy(message+strlen(message),"\",\"total_xcash_from_blocks_found\":\"",35);
