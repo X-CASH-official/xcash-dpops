@@ -511,6 +511,8 @@ Return: 0 if an error has occured, 1 if successfull, 2 to disable the timers
 int set_parameters(int parameters_count, char* parameters[])
 {
   // define macros
+  #define MINIMUM_THREADS_AMOUNT 2
+
   #define database_reset \
   mongoc_client_pool_destroy(database_client_thread_pool); \
   mongoc_uri_destroy(uri_thread_pool); \
@@ -805,11 +807,12 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
-      sscanf(parameters[count+1], "%d", &total_threads);
+      total_threads >= MINIMUM_THREADS_AMOUNT ? sscanf(parameters[count+1], "%d", &total_threads) : sscanf(MINIMUM_THREADS_AMOUNT, "%d", &total_threads);
     }    
   }
   return 1;
 
+  #undef MINIMUM_THREADS_AMOUNT
   #undef database_reset
   #undef SET_PARAMETERS_ERROR
 }

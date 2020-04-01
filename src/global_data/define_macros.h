@@ -728,7 +728,7 @@ sleep(BLOCK_VERIFIERS_SETTINGS);
 "--test_mode \"settings\" - use the test network data nodes, with the specific settings (1-9)\n\n" \
 "--log_file \"log_file\" - Write all output to a log file with no colors\n\n" \
 "--log_file_color \"log_file\" - Write all output to a log file with colors\n\n" \
-"--total_threads \"total_threads\" - The total threads to use, the maximum is 100 total threads.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
+"--total_threads \"total_threads\" - The total threads to use, the minimum is 2.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
 "--XCASH_DPOPS_delegates_IP_address \"delegates IP address\" - The delegates IP address (IPV4 only) to create the server on.\nIf this parameter is not specified, the default is 0.0.0.0 (all available networking interfaces).\n\n" \
 "--xcash_wallet_port \"xcash_wallet_port\" - The xcash wallet port.\nIf this parameter is not specified, the default port is 18285.\n\n" \
 "--database_name - The name of the database.\nIf this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE.\n\n" \
