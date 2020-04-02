@@ -641,6 +641,9 @@ int sync_all_block_verifiers_list(void)
 
   if (network_data_node_settings == 0)
   {
+    // wait for the network data nodes to load the previous, current and next block verifiers list, before trying to sync them
+    sleep(10);
+    
     if (test_settings == 0)
     {
       print_start_message(current_date_and_time,current_UTC_date_and_time,"Syncing the previous, current and next block verifiers directly from a network data node, to be able to update the database",data2);
@@ -674,7 +677,7 @@ int sync_all_block_verifiers_list(void)
       memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
       strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
       memcpy(data3+strlen(data3),data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
-     color_print(data3,"white");
+      color_print(data3,"white");
     }
     memset(data2,0,strlen(data2));
     memset(data3,0,strlen(data3));
