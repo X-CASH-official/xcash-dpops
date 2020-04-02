@@ -386,6 +386,7 @@ void* block_height_timer_thread(void* parameters)
   memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  sleep(1); \
   continue;
 
   for (;;)
