@@ -324,9 +324,12 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   #define DATABASE_COLLECTION "blocks_found"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(settings,MESSAGE) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_blocks_found",42); \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_blocks_found",43); \
   memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
   error_message.total++; \
+  } \
   memset(buffer,0,strlen(buffer)); \
   memcpy(buffer,"{\"Error\":\"Could not get the delegates blocks found\"}",52); \
   send_data(CLIENT_SOCKET,(unsigned char*)buffer,strlen(buffer),400,"application/json"); \

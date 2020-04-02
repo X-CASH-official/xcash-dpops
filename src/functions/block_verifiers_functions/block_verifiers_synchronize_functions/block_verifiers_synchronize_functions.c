@@ -1468,9 +1468,9 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   
   start:
 
-  memset(data,0,strlen(data));
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
-  memset(data3,0,strlen(data3));
+  memset(data3,0,sizeof(data3));
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <netdb.h> 
+#include <errno.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/epoll.h>
@@ -1996,7 +1997,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   struct epoll_event events[TOTAL_BLOCK_VERIFIERS];
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[TOTAL_BLOCK_VERIFIERS];
-  int socket_settings;
   int total;
   int sent;
   int bytes = 1;
@@ -2155,14 +2155,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   {
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
-      // set the socket to blocking mode
-      socket_settings = fcntl(block_verifiers_send_data_socket[count].socket, F_GETFL, NULL);
-      socket_settings &= (~O_NONBLOCK);
-      if (fcntl(block_verifiers_send_data_socket[count].socket, F_SETFL, socket_settings) == -1)
-      {
-        continue;
-      }
-
       // send the message  
       if (debug_settings == 1 && test_settings == 0)
       {  
@@ -2184,7 +2176,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       
       for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
       {
-        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) < 0)
+        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
         {           
           break;
         }
