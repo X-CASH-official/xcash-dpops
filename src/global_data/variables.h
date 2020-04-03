@@ -88,7 +88,5 @@ extern int total_threads; // The total threads
 extern double fee; // the fee
 extern long long int minimum_amount; // the minimum amount to send a payment
 extern char voter_inactivity_count[10]; // the number of days to wait to remove an inactive delegates information from the database
-extern int shared_delegate_payment_time_hour; // the hour for the shared delegate to send the payments
-extern int shared_delegate_payment_time_minute; // the minute for the shared delegate to send the payments
 
 #endif

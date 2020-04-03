@@ -450,6 +450,7 @@ long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC
   { 
     if (send_payment(PUBLIC_ADDRESS, CURRENT_TOTAL, payment_tx_hash, payment_tx_key) == 0)
     {
+      color_print("Could not send out a payment, possibly due to not having enough balance or enough unspents (unlocked balance)","yellow");
       return 0;
     }
   }
@@ -634,9 +635,9 @@ void* payment_timer_thread(void* parameters)
     start:
     // check if it is time to send the payments
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_hour == shared_delegate_payment_time_hour && current_UTC_date_and_time.tm_min == shared_delegate_payment_time_minute)
+    if (current_UTC_date_and_time.tm_min == 4)
     {
-      color_print("Sending the daily payments","yellow");
+      color_print("Sending the hourly payments","yellow");
 
       memset(data,0,sizeof(data));
       memset(data2,0,sizeof(data2));

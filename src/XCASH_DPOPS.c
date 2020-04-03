@@ -117,8 +117,6 @@ int total_threads; // The total threads
 double fee; // the fee
 long long int minimum_amount; // the minimum amount to send a payment
 char voter_inactivity_count[10]; // the number of days to wait to remove an inactive delegates information from the database
-int shared_delegate_payment_time_hour; // the hour for the shared delegate to send the payments
-int shared_delegate_payment_time_minute; // the minute for the shared delegate to send the payments
 
 
 
@@ -174,8 +172,6 @@ void initialize_data(void)
   database_settings = 1;
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
-  shared_delegate_payment_time_hour = (rand() % (23 - 0 + 1)) + 0;
-  shared_delegate_payment_time_minute = (rand() % (59 - 0 + 1)) + 0;
   network_functions_test_settings = 0;
   network_functions_test_error_settings = 1;
   network_functions_test_server_messages_settings = 1;
@@ -808,14 +804,6 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
       memcpy(voter_inactivity_count,parameters[count+1],strnlen(parameters[count+1],sizeof(voter_inactivity_count)));
-    }
-    if (strncmp(parameters[count],"--shared_delegate_payment_time_hour",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
-    {
-      sscanf(parameters[count+1], "%d", &shared_delegate_payment_time_hour);
-    }
-    if (strncmp(parameters[count],"--shared_delegate_payment_time_minute",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
-    {
-      sscanf(parameters[count+1], "%d", &shared_delegate_payment_time_minute);
     }
     if (strncmp(parameters[count],"--total_threads",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
