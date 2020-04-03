@@ -294,8 +294,7 @@ struct votes {
 };
 
 struct delegates_online_status {
-    char* public_address;
-    int socket;
+    char public_address[XCASH_WALLET_LENGTH+1];
     int settings;
 };
 

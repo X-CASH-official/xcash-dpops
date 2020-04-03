@@ -460,7 +460,11 @@ int socket_thread(int client_socket)
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\"") != NULL)
  {
    server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(client_socket);
- } 
+ }
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS\"") != NULL)
+ {
+   server_receive_data_socket_block_verifiers_to_block_verifiers_online_status((const char*)buffer);
+ }
  else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\"") != NULL && main_network_data_node_create_block == 1)
  {  
    server_receive_data_socket_main_network_data_node_to_block_verifier_start_block((const char*)buffer);

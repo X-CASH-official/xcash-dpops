@@ -75,6 +75,7 @@ int block_verifiers_server_functions_test(void)
   RESET_INVALID_RESERVE_PROOFS_DATA;
 
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODES_BLOCK_VERIFIERS_CURRENT_TIME_TEST_DATA);
+  CHECK_SERVER_FUNCTIONS("server_receive_data_socket_block_verifiers_to_block_verifiers_online_status",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS_TEST_DATA);
   main_network_data_node_create_block = 1;
 
   memset(result_test,0,sizeof(result_test));

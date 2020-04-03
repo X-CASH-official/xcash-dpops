@@ -194,12 +194,53 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   { 
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR("Could not sign_data");
   }
-  
-  // send the network block signature to the main network data node
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
   return 1;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifiers_to_block_verifiers_online_status
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS message
+Parameters:
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_block_verifiers_to_block_verifiers_online_status(const char* MESSAGE)
+{
+  // Variables
+  char public_address[XCASH_WALLET_LENGTH+1];
+  int count;
+
+  memset(public_address,0,sizeof(public_address));
+
+  // verify the message
+  if (verify_data(MESSAGE,0) == 0)
+  {   
+    return;
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
+  {
+    return;
+  }
+
+  // update the block verifiers online status
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  {
+    if (memcmp(delegates_online_status[count].public_address,public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      delegates_online_status[count].settings = 1;
+      break;
+    }
+  }
+  return;
 }
 
 

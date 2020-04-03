@@ -95,7 +95,7 @@ void test(int settings)
   // print the start message
   memcpy(data_test,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1);
   memcpy(data_test+strlen(data_test),"\n",1);
-  memcpy(data_test+strlen(data_test),"Starting XCASH_DPOPS Test\n\n\nSome errors may happen during the test towards the last test since they are run 1000 times.\nPlease ignore these errors and only look at the end test results for each section and the last section to see if you have any errors.",25);
+  memcpy(data_test+strlen(data_test),"Starting XCASH_DPOPS Test",25);
   color_print(data_test,"yellow");
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); 
   memset(data_test,0,sizeof(data_test));
@@ -114,7 +114,7 @@ void test(int settings)
   }
   else
   {
-    /*XCASH_DPOPS_total_passed_test += blockchain_functions_test();
+    XCASH_DPOPS_total_passed_test += blockchain_functions_test();
     XCASH_DPOPS_total_passed_test += database_test(); 
     XCASH_DPOPS_total_passed_test += insert_database_functions_test(); 
     XCASH_DPOPS_total_passed_test += read_database_functions_test();
@@ -123,8 +123,8 @@ void test(int settings)
     XCASH_DPOPS_total_passed_test += count_database_functions_test();
     XCASH_DPOPS_total_passed_test += file_functions_test();
     XCASH_DPOPS_total_passed_test += network_daemon_functions_test();
-    */XCASH_DPOPS_total_passed_test += network_functions_test();
-    /*XCASH_DPOPS_total_passed_test += network_security_functions_test();
+    XCASH_DPOPS_total_passed_test += network_functions_test();
+    XCASH_DPOPS_total_passed_test += network_security_functions_test();
     XCASH_DPOPS_total_passed_test += network_wallet_functions_test();
     XCASH_DPOPS_total_passed_test += optimizations_functions_test();
     XCASH_DPOPS_total_passed_test += organize_functions_test();
@@ -136,11 +136,11 @@ void test(int settings)
     XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_server_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_thread_server_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_update_functions_test();
-    */XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
-    /*XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
+    XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
+    XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
     XCASH_DPOPS_total_passed_test += shared_delegate_website_functions_test();
     XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();
-    */if (settings == 0)
+    if (settings == 0)
     {
       XCASH_DPOPS_total_passed_test += reset_variables_allocated_on_the_heap_test();
     }

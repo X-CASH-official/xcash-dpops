@@ -235,6 +235,15 @@ int network_security_functions_test(void)
   {
     color_print("FAILED! Test for validate_data for NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME","red");
   }
+  if (validate_data(BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS) == 1)
+  {   
+    color_print("PASSED! Test for validate_data for BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for validate_data for BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS","red");
+  }
   if (validate_data(NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE) == 1)
   {   
     color_print("PASSED! Test for validate_data for NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE","green");

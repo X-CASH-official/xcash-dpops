@@ -63,6 +63,7 @@ struct blockchain_data blockchain_data; // The data for a new block to be added 
 struct error_message error_message; // holds all of the error messages and the functions for an error.
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
+struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 char current_round_part[2]; // The current round part (1-4)
 char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 pthread_rwlock_t rwlock;
@@ -379,6 +380,17 @@ void initialize_data(void)
     }
   }
   invalid_reserve_proofs.count = 0;
+
+  for (count = 0; count < MAXIMUM_TRANSACATIONS_PER_BLOCK; count++)
+  {
+    blockchain_data.transactions[count] = (char*)calloc(TRANSACTION_HASH_LENGTH+1,sizeof(char));
+
+    // check if the memory needed was allocated on the heap successfully
+    if (blockchain_data.transactions[count] == NULL)
+    {
+      INITIALIZE_DATA_ERROR;
+    }
+  }
   return;
 
   #undef INITIALIZE_DATA_ERROR
