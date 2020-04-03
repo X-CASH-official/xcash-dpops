@@ -208,6 +208,12 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     total_payments = count_all_documents_in_collection(shared_delegates_database_name,"public_addresses_payments");
   }
 
+  // set the total payments to 0 if the database does not exist
+  if (total_payments == -1)
+  {
+    total_payments = 0;
+  }
+
   // get the total voters
   memcpy(message,"{\"public_address_voted_for\":\"",29);
   memcpy(message+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
