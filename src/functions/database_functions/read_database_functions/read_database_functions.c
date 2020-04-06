@@ -150,7 +150,7 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
   mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
   
   #define READ_DOCUMENT_FIELD_FROM_COLLECTION_ERROR(settings) \
-  if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (strncmp(settings,"The database collection does not exist",BUFFER_SIZE) != 0)) \
+  if ((strncmp(settings,"The database collection does not exist",BUFFER_SIZE) == 0 && test_settings == 1) || (debug_settings == 1 && test_settings == 0)) \
   { \
     memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35); \
     memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
