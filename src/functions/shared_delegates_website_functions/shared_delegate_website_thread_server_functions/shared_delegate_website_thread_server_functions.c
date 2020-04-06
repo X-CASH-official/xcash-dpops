@@ -446,7 +446,7 @@ long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC
   memset(payment_tx_hash,0,sizeof(payment_tx_hash));
   memset(payment_tx_key,0,sizeof(payment_tx_key));
 
-  if (test_settings == 0)
+  if (test_settings == 0 && memcmp(PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
   { 
     if (send_payment(PUBLIC_ADDRESS, CURRENT_TOTAL, payment_tx_hash, payment_tx_key) == 0)
     {
