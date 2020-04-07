@@ -195,7 +195,6 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     if (strlen(data3) > MAXIMUM_DATABASE_WRITE_SIZE)
     {
       INSERT_MULTIPLE_DOCUMENTS_INTO_COLLECTION_JSON_ERROR("Could not convert the data into a database document");
-      bson_destroy(document);
       return 0;
     }
 
