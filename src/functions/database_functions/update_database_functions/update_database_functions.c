@@ -38,6 +38,12 @@ Return: 0 if an error has occured, 1 if successfull
 
 int update_document_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA, const char* FIELD_NAME_AND_DATA)
 {
+  // check if the data is over the MAXIMUM_DATABASE_WRITE_SIZE
+  if (strlen(FIELD_NAME_AND_DATA) > MAXIMUM_DATABASE_WRITE_SIZE)
+  {
+    return 0;
+  }
+
   // Variables
   char data2[BUFFER_SIZE];
   mongoc_client_t* database_client_thread = NULL;
@@ -121,6 +127,12 @@ Return: 0 if an error has occured, 1 if successfull
 
 int update_all_documents_from_collection(const char* DATABASE, const char* COLLECTION, const char* DATA)
 {
+  // check if the data is over the MAXIMUM_DATABASE_WRITE_SIZE
+  if (strlen(DATA) > MAXIMUM_DATABASE_WRITE_SIZE)
+  {
+    return 0;
+  }
+
   // Variables
   char data2[BUFFER_SIZE];
   mongoc_client_t* database_client_thread = NULL;

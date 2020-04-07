@@ -37,6 +37,12 @@ Return: 0 if an error has occured, 1 if successfull
 
 int insert_document_into_collection_json(const char* DATABASE, const char* COLLECTION, const char* DATA)
 {
+  // check if the data is over the MAXIMUM_DATABASE_WRITE_SIZE
+  if (strlen(DATA) > MAXIMUM_DATABASE_WRITE_SIZE)
+  {
+    return 0;
+  }
+
   // Variables
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
@@ -183,6 +189,14 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     {
       memset(data3,0,strlen(data3));
       memcpy(data3,data2,strnlen(data2,MAXIMUM_AMOUNT));
+    }
+
+    // check if the data is over the MAXIMUM_DATABASE_WRITE_SIZE
+    if (strlen(data3) > MAXIMUM_DATABASE_WRITE_SIZE)
+    {
+      INSERT_MULTIPLE_DOCUMENTS_INTO_COLLECTION_JSON_ERROR("Could not convert the data into a database document");
+      bson_destroy(document);
+      return 0;
     }
 
     bson_t* document = bson_new_from_json((const uint8_t *)data3, -1, &error);

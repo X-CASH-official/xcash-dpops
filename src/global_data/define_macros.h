@@ -141,6 +141,7 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_CONNECTION "mongodb://localhost:27017" // The database connection string
 #define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
 #define DATABASE_NAME_DELEGATES "XCASH_PROOF_OF_STAKE_DELEGATES" // The name of the database for the delegates
+#define MAXIMUM_DATABASE_WRITE_SIZE 48000000 // The maximum database write size
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
 #define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The reserve bytes database fields
 #define TOTAL_RESERVE_PROOFS_DATABASE_FIELDS 4 // The reserve proofs database fields
