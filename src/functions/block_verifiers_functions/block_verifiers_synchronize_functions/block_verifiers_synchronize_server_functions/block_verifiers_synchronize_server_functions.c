@@ -445,7 +445,8 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
     count2 = 521855;
   }
   sscanf(data,"%zu",&current_block_height_reserve_bytes);
-  if (test_settings == 0 && current_block_height_reserve_bytes < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  // check if the block height is under the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT or over the current_block_height
+  if (test_settings == 0 && (current_block_height_reserve_bytes < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || current_block_height_reserve_bytes > current_block_height))
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Invalid block height");
   }
