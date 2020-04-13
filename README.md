@@ -95,19 +95,19 @@ XCASH DPOPS will only run on a Linux/Unix OS at this time. We recommend installi
  
 **Minimum System Requirements:**  
 Operating System: Ubuntu 18.04 (or higher)  
-CPU: 4 threads, with at least 2.0GHZ or more for each thread  
-RAM: 8GB  
+CPU: 2 threads, with at least 2.0GHZ or more for each thread  
+RAM: 6GB  
 Hard drive: 50GB (with 18 GB of space needed per year)  
-Bandwidth Transfer: 500GB per month  
-Bandwidth Speed: 50 Mbps
+Bandwidth Transfer: 100GB per month  
+Bandwidth Speed: 25 Mbps
  
 **Recommended System Requirements:**  
 Operating System: Ubuntu 18.04 (or higher)  
-CPU: 8 threads, with at least 2.0GHZ or more for each thread  
-RAM: 16GB  
+CPU: 4 threads, with at least 2.0GHZ or more for each thread  
+RAM: 8GB  
 Hard drive: 100GB (with 18 GB of space needed per year)  
-Bandwidth Transfer: 2TB per month  
-Bandwidth Speed: 500 Mbps
+Bandwidth Transfer: 500GB per month  
+Bandwidth Speed: 100 Mbps
 
 
 ## Synchronizing the Time
@@ -176,7 +176,7 @@ All parameters are optional, execept for --block_verifiers_secret_key. **The --b
 
 --log_file_color "log_file" - Write all output to a log file with colors
 
---total_threads "total_threads" - The total threads to use, the maximum is 100 total threads.
+--total_threads "total_threads" - The total threads to use, the minimum is 2
 If this parameter is not specified, the default is the number of threads the CPU has.
 
 --XCASH_DPOPS_delegates_IP_address "delegates IP address" - The delegates IP address (IPV4 only) to create the server on.
@@ -193,12 +193,10 @@ If this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE_DEL
 
 --delegates_website - Run the delegates website
 
---shared_delegates_website --fee "fee" --minimum_amount "minimum_amount" (optional) --voter_inactivity_count NUMBER_OF_DAYS (optional) --shared_delegate_payment_time_hour HOUR (optional) --shared_delegate_payment_time_minute MINUTE - Run the shared delegates website, with a fee of "fee" and a minimum amount of "minimum_amount"
+--shared_delegates_website --fee "fee" --minimum_amount "minimum_amount" (optional) --voter_inactivity_count NUMBER_OF_DAYS (optional) - Run the shared delegates website, with a fee of "fee" and a minimum amount of "minimum_amount"
 The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)
 The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)
 The voter inactivity count is optional. This is the number of consecutive days where a voter would have registered in the database, but is not actively participating towards the shared delegate. If this number of consecutive days is reached, the voter will be removed from the database and all funds that were left over would not sent out, since they were below the MINIMUM AMOUNT. If this parameter is not specified, the default amount is 30 consecutive days.
-The shared delegate payment time hour is optional. This is the hour that the shared delegate will send the daily payments. If this parameter is not specified, the default amount is a random hour
-The shared delegate payment time minute is optional. This is the minute that the shared delegate will send the daily payments. If this parameter is not specified, the default amount is a random minute.
 
 --generate_key - Generate a public and private key for signing and verifying messages between block verifiers
 
