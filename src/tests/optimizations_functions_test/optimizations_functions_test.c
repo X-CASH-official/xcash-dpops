@@ -49,6 +49,7 @@ int optimizations_functions_test(void)
   struct reserve_proof reserve_proof;
   time_t start;
   int count;
+  int count2;
   long int total;
 
   // define macros
@@ -137,15 +138,15 @@ int optimizations_functions_test(void)
 
     memcpy(previous_block_verifiers_list.block_verifiers_name[count],"delegate_1",10);
     memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],TEST_WALLET,XCASH_WALLET_LENGTH);
-    memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,9);
+    memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     memcpy(previous_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
     memcpy(current_block_verifiers_list.block_verifiers_name[count],"delegate_1",10);
     memcpy(current_block_verifiers_list.block_verifiers_public_address[count],TEST_WALLET,XCASH_WALLET_LENGTH);
-    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],"9.2.65.55",9);
+    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     memcpy(current_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
     memcpy(next_block_verifiers_list.block_verifiers_name[count],"delegate_1",10);
     memcpy(next_block_verifiers_list.block_verifiers_public_address[count],TEST_WALLET,XCASH_WALLET_LENGTH);
-    memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,9);
+    memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     memcpy(next_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   }
   
@@ -330,6 +331,7 @@ int optimizations_functions_test(void)
   memcpy(VRF_data.block_blob,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
   block_verifiers_create_block_signature(data_test);
   sign_data(data_test);
+  block_verifiers_send_data_socket((const char*)data_test);
 
   total = time(NULL) - start;
   if (total < MAXIMUM_TIME_NETWORK_BLOCK_PART_3)
@@ -358,18 +360,29 @@ int optimizations_functions_test(void)
       memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
     }
   }
-  memset(data_test,0,strlen(data_test));
+  memset(data_test,0,sizeof(data_test));
   network_block_string_to_blockchain_data(NETWORK_BLOCK,NETWORK_BLOCK_HEIGHT,BLOCK_VERIFIERS_TOTAL_AMOUNT);
   verify_network_block_data(0,0,NETWORK_BLOCK_HEIGHT,NETWORK_BLOCK,BLOCK_VERIFIERS_TOTAL_AMOUNT);
-  RESET_BLOCKCHAIN_DATA;
-  memset(data_test,0,strlen(data_test));
-  CREATE_BLOCK_DATA;
-  blockchain_data_to_network_block_string(data_test,BLOCK_VERIFIERS_TOTAL_AMOUNT);
-  sign_data(data_test);
   for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
   }
+  RESET_BLOCKCHAIN_DATA;
+  memset(data_test,0,sizeof(data_test));
+  CREATE_BLOCK_DATA;
+  blockchain_data_to_network_block_string(data_test,BLOCK_VERIFIERS_TOTAL_AMOUNT);
+  memset(result_test,0,sizeof(result_test));
+  // convert the SHA512 data hash to a string
+  for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
+  {
+    snprintf(result_test+count,sizeof(result_test)-1,"%02x",data_test[count2] & 0xFF);
+  }
+  memset(data_test,0,sizeof(data_test));
+  memcpy(data_test,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\",\r\n \"vote_settings\": \"valid\",\r\n \"vote_data\": \"",99);  
+  memcpy(data_test+strlen(data_test),result_test,DATA_HASH_LENGTH);
+  memcpy(data_test+strlen(data_test),"\",\r\n}",5); 
+  sign_data(data_test);
+  block_verifiers_send_data_socket((const char*)data_test);
   total = time(NULL) - start;
   if (total < MAXIMUM_TIME_NETWORK_BLOCK_PART_4)
   {
@@ -380,22 +393,6 @@ int optimizations_functions_test(void)
   {
     fprintf(stderr,"\033[1;31mFAILED! Test for Part 4 of the network block round took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_NETWORK_BLOCK_PART_4);
   }
-
-
-  RESET_NETWORK_BLOCK_ROUND;
-  start = time(NULL);
-
-  total = time(NULL) - start;
-  if (total < MAXIMUM_TIME_NETWORK_BLOCK_PART_5)
-  {
-    fprintf(stderr,"\033[1;32mPASSED! Test for Part 5 of the network block round took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_NETWORK_BLOCK_PART_5);
-    count_test++;
-  }
-  else
-  {
-    fprintf(stderr,"\033[1;31mFAILED! Test for Part 5 of the network block round took %ld seconds out of %d seconds\033[0m\n",total,MAXIMUM_TIME_NETWORK_BLOCK_PART_5);
-  }
-
 
 
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
