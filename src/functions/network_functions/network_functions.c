@@ -176,9 +176,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // convert the hostname if used, to an IP address
   memset(str,0,sizeof(str));
   memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
     SEND_HTTP_REQUEST_ERROR("Error invalid hostname",0);
@@ -368,9 +365,6 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   // convert the hostname if used, to an IP address
   memset(str,0,sizeof(str));
   memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error invalid hostname",0);
@@ -527,9 +521,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   memset(str,0,sizeof(str));
   memcpy(str,HOST,strnlen(HOST,sizeof(str)));
 
-  string_replace(str,sizeof(str),"http://","");
-  string_replace(str,sizeof(str),"https://","");
-  string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {     
     memset(str,0,sizeof(str));
@@ -788,7 +779,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       // if the final message has the SOCKET_END_STRING in the message, remove it
       if (strstr(buffer,SOCKET_END_STRING) != NULL)
       {
-        string_replace(message,MAXIMUM_BUFFER_SIZE,SOCKET_END_STRING,"");
+        message[strlen(message)-(sizeof(SOCKET_END_STRING)-1)] = 0;
       }
       return 2;
     }

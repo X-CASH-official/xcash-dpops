@@ -2071,9 +2071,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       // convert the hostname if used, to an IP address
       memset(data3,0,sizeof(data3));
       memcpy(data3,block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data3)));
-      string_replace(data3,sizeof(data3),"http://","");
-      string_replace(data3,sizeof(data3),"https://","");
-      string_replace(data3,sizeof(data3),"www.","");
       if (getaddrinfo(data3, data2, &serv_addr, &settings) != 0)
       { 
         freeaddrinfo(settings);
