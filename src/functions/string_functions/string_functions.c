@@ -104,35 +104,16 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     // remove all the formating from the result, if it is not a database document
     if (strstr(message,"username") == NULL && strstr(message,"total_vote_count") == NULL && strstr(message,"public_address_created_reserve_proof") == NULL && strstr(message,"reserve_bytes_data_hash") == NULL)
     {
-      str1 = string_replace(message,"\"","");
-      memset(message,0,strlen(message));
-      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
-
-      str1 = string_replace(message,",","");
-      memset(message,0,strlen(message));
-      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
-
-      str1 = string_replace(message,"[","");
-      memset(message,0,strlen(message));
-      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
-
-      str1 = string_replace(message,"]","");
-      memset(message,0,strlen(message));
-      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
-
-      str1 = string_replace(message,"{","");
-      memset(message,0,strlen(message));
-      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
-
-      str1 = string_replace(message,"}","");
-      memset(message,0,strlen(message));
-      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
+      string_replace(message,MAXIMUM_AMOUNT,"\"","");
+      string_replace(message,MAXIMUM_AMOUNT,",","");
+      string_replace(message,MAXIMUM_AMOUNT,"[","");
+      string_replace(message,MAXIMUM_AMOUNT,"]","");
+      string_replace(message,MAXIMUM_AMOUNT,"{","");
+      string_replace(message,MAXIMUM_AMOUNT,"}","");
     }
     else
     {
-      str1 = string_replace(message,"\"{\"","{\"");
-      memset(message,0,strlen(message));
-      memcpy(message,str1,strnlen(str1,MAXIMUM_AMOUNT));
+      string_replace(message,MAXIMUM_AMOUNT,"\"{\"","{\"");
     }
     memcpy(result,message,strnlen(message,RESULT_TOTAL_LENGTH));
   }
@@ -549,42 +530,44 @@ Name: string_replace
 Description: String replace
 Parameters:
   str - The string to replace the data
-  DATA_TOTAL_LENGTH - The maximum size of data
   sub - The string to be replaced
   rep - The string to replace the other string
 Return: The result string
 -----------------------------------------------------------------------------------------------------------
 */
 
-char* string_replace(const char *str, const char *sub, const char *rep)
-{  
-    size_t slen = strlen(sub);
-    size_t rlen = strlen(rep);
-    size_t size = strlen(str) + 1;
-    size_t diff = rlen - slen;
-    size_t capacity = (diff>0 && slen) ? 2 * size : size;
-    char *buf = malloc(capacity);
-    char *find, *b = buf;
+void string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1, const char* STR2)
+{ 
+  // Constants
+  const size_t slen = strlen(STR1);
+  const size_t rlen = strlen(STR2);
+
+  // Variables  
+  char* buf = calloc((strlen(data) + 1)*2,sizeof(char));
+  char* find;
+  char* b = data;
     
-    if (b == NULL) return NULL;
-    if (slen == 0) return memcpy(b, str, size);
-  
-    while((find = strstr(str, sub))) {
-        if ((size += diff) > capacity) {
-            char *ptr = realloc(buf, capacity = 2 * size);
-            if (ptr == NULL) {free(buf); return NULL;}
-            b = ptr + (b - buf);
-            buf = ptr;
-        }
-        memcpy(b, str, find - str); /* copy up to occurrence */
-        b += find - str;
-        memcpy(b, rep, rlen);       /* add replacement */
-        b += rlen;
-        str = find + slen;
-    }
-    memcpy(b, str, size - (b - buf));
-    b = realloc(buf, size);         /* trim to size */
-    return b ? b : buf;
+  if (buf == NULL || slen == 0)
+  {
+    pointer_reset(buf);
+    return;
+  }
+    
+  while((find = strstr(b, STR1)))
+  {   
+    memcpy(buf+strlen(buf), b, find - b);  /* copy up to occurrence */
+    memcpy(buf+strlen(buf), STR2, rlen);   /* add replacement */
+    b = find + slen;
+  }
+  // copy the end of the string
+  memcpy(buf+strlen(buf), b, strlen(b));
+   
+  // replace the original string with the new string
+  memset(data,0,strlen(data));
+  memcpy(data,buf,strnlen(buf,DATA_TOTAL_LENGTH));
+    
+  pointer_reset(buf);
+  return;
 }
 
 

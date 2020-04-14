@@ -862,9 +862,7 @@ if (STRING_REPLACE_SETTINGS == 1) \
 { \
   if (sign_data(result_test) == 1) \
   { \
-    str1 = string_replace(result_test,CURRENT_STRING,NEW_STRING); \
-    memset(result_test,0,strlen(result_test)); \
-    memcpy(result_test,str1,strnlen(str1,sizeof(result_test))); \
+    string_replace(result_test,sizeof(result_test),CURRENT_STRING,NEW_STRING); \
     send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS); \
     sleep(5); \
     for (count = 0; count < error_message.total; count++) \

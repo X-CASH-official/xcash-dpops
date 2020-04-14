@@ -43,7 +43,6 @@ int string_functions_test(void)
   struct database_multiple_documents_fields database_multiple_documents_fields;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
   struct votes votes[MAXIMUM_AMOUNT_OF_DELEGATES];
-  char* str1;
 
   // reset the variables
   memset(result_test,0,sizeof(result_test));
@@ -304,30 +303,22 @@ int string_functions_test(void)
   // test for string replace
   memset(result_test,0,sizeof(result_test));
   memcpy(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}",49);
-  str1 = string_replace(result_test,"string_replace_test","string_replace");
-  memset(result_test,0,strlen(result_test));
-  memcpy(result_test,str1,strnlen(str1,sizeof(result_test)));
+  string_replace(result_test,sizeof(result_test),"string_replace_test","string_replace");
   if (strncmp(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}",BUFFER_SIZE) == 0)
   {
     memset(result_test,0,sizeof(result_test));
     memcpy(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}",49);
-    str1 = string_replace(result_test,"\"","\\\"");
-    memset(result_test,0,strlen(result_test));
-    memcpy(result_test,str1,strnlen(str1,sizeof(result_test)));
+    string_replace(result_test,sizeof(result_test),"\"","\\\"");
      if (strncmp(result_test,"{\r\n \\\"message_settings\\\": \\\"string_replace_test\\\",\r\n}",BUFFER_SIZE) == 0)
      {
        memset(result_test,0,sizeof(result_test));
        memcpy(result_test,"{\r\n \"message_settings\": \"string_replace_test\",\r\n}",49);
-       str1 = string_replace(result_test,"_test","");
-       memset(result_test,0,strlen(result_test));
-       memcpy(result_test,str1,strnlen(str1,sizeof(result_test)));
+       string_replace(result_test,sizeof(result_test),"_test","");
        if (strncmp(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}",BUFFER_SIZE) == 0)
        {
          memset(result_test,0,sizeof(result_test));
          memcpy(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}",44);
-         str1 = string_replace(result_test,"string_replace_test","");
-         memset(result_test,0,strlen(result_test));
-         memcpy(result_test,str1,strnlen(str1,sizeof(result_test)));
+         string_replace(result_test,sizeof(result_test),"string_replace_test","");
          if (strncmp(result_test,"{\r\n \"message_settings\": \"string_replace\",\r\n}",BUFFER_SIZE) == 0)
          {    
            color_print("PASSED! Test for string_replace","green");

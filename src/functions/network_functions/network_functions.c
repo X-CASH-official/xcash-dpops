@@ -73,7 +73,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
   int network_socket;
-  char* str1;
 
   // define macros
   #define SEND_HTTP_REQUEST_ERROR(data_settings,socket_settings) \
@@ -177,15 +176,9 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // convert the hostname if used, to an IP address
   memset(str,0,sizeof(str));
   memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  str1 = string_replace(str,"http://","");
-  memset(str,0,strlen(str));
-  memcpy(str,str1,strnlen(str1,sizeof(str)));
-  str1 = string_replace(str,"https://","");
-  memset(str,0,strlen(str));
-  memcpy(str,str1,strnlen(str1,sizeof(str)));
-  str1 = string_replace(str,"www.","");
-  memset(str,0,strlen(str));
-  memcpy(str,str1,strnlen(str1,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
     SEND_HTTP_REQUEST_ERROR("Error invalid hostname",0);
@@ -313,7 +306,6 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
   int network_socket;
-  char* str1;
 
   // define macros
   #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR(data_settings,socket_settings) \
@@ -376,15 +368,9 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   // convert the hostname if used, to an IP address
   memset(str,0,sizeof(str));
   memcpy(str,HOST,strnlen(HOST,sizeof(str)));
-  str1 = string_replace(str,"http://","");
-  memset(str,0,strlen(str));
-  memcpy(str,str1,strnlen(str1,sizeof(str)));
-  str1 = string_replace(str,"https://","");
-  memset(str,0,strlen(str));
-  memcpy(str,str1,strnlen(str1,sizeof(str)));
-  str1 = string_replace(str,"www.","");
-  memset(str,0,strlen(str));
-  memcpy(str,str1,strnlen(str1,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error invalid hostname",0);
@@ -492,7 +478,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
-  char* str1;
 
   // define macros
   #define SEND_DATA_SOCKET_ERROR(message) \
@@ -542,15 +527,9 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   memset(str,0,sizeof(str));
   memcpy(str,HOST,strnlen(HOST,sizeof(str)));
 
-  str1 = string_replace(str,"http://","");
-  memset(str,0,strlen(str));
-  memcpy(str,str1,strnlen(str1,sizeof(str)));
-  str1 = string_replace(str,"https://","");
-  memset(str,0,strlen(str));
-  memcpy(str,str1,strnlen(str1,sizeof(str)));
-  str1 = string_replace(str,"www.","");
-  memset(str,0,strlen(str));
-  memcpy(str,str1,strnlen(str1,sizeof(str)));
+  string_replace(str,sizeof(str),"http://","");
+  string_replace(str,sizeof(str),"https://","");
+  string_replace(str,sizeof(str),"www.","");
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {     
     memset(str,0,sizeof(str));
@@ -781,7 +760,6 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
 {
   // Variables
   char buffer[BUFFER_SIZE];
-  char* str1;
   time_t start = time(NULL);
 
   memset(buffer,0,sizeof(buffer));
@@ -810,9 +788,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       // if the final message has the SOCKET_END_STRING in the message, remove it
       if (strstr(buffer,SOCKET_END_STRING) != NULL)
       {
-        str1 = string_replace(message,SOCKET_END_STRING,"");
-        memset(message,0,strlen(message));
-        memcpy(message,str1,strnlen(str1,LENGTH));
+        string_replace(message,MAXIMUM_BUFFER_SIZE,SOCKET_END_STRING,"");
       }
       return 2;
     }
