@@ -222,7 +222,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
-      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+      crypto_hash_sha512(string,(const unsigned char*)data,strlen(data));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
       {
         snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
@@ -239,7 +239,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     }
 
     memset(string,0,strlen((char*)string));    
-    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+    crypto_hash_sha512(string,(const unsigned char*)data,strlen(data));
     for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
     {
       snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
@@ -258,7 +258,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
-      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+      crypto_hash_sha512(string,(const unsigned char*)data,strlen(data));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
       {
         snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
@@ -275,7 +275,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     }
 
     memset(string,0,strlen((char*)string));    
-    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+    crypto_hash_sha512(string,(const unsigned char*)data,strlen(data));
     for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
     {
       snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
@@ -294,7 +294,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
-      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+      crypto_hash_sha512(string,(const unsigned char*)data,strlen(data));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
       {
         snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
@@ -324,7 +324,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
       // get the data hash of the collection  
       memset(string,0,strlen((char*)string));    
-      crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+      crypto_hash_sha512(string,(const unsigned char*)data,strlen(data));
       for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
       {
         snprintf(database_data_hash[count-1]+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
@@ -343,7 +343,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
     // get the data hash of the collection  
     memset(string,0,strlen((char*)string));    
-    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+    crypto_hash_sha512(string,(const unsigned char*)data,strlen(data));
     for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
     {
       snprintf(data3+strlen(data3)+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
@@ -355,7 +355,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
     // get the data hash of the collection  
     memset(string,0,strlen((char*)string));    
-    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+    crypto_hash_sha512(string,(const unsigned char*)data,strlen(data));
     for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
     {
       snprintf(data3+strlen(data3)+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
@@ -365,7 +365,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     memset(data,0,strlen(data));
     memset(data_hash,0,strlen(data_hash));
     memset(string,0,strlen((char*)string));    
-    crypto_hash_sha512(string,(const unsigned char*)data3,strnlen(data3,MAXIMUM_BUFFER_SIZE));
+    crypto_hash_sha512(string,(const unsigned char*)data3,strlen(data3));
     for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
     {
       snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);
@@ -380,7 +380,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
     // get the data hash of the collection  
     memset(string,0,strlen((char*)string));    
-    crypto_hash_sha512(string,(const unsigned char*)data,strnlen(data,MAXIMUM_BUFFER_SIZE));
+    crypto_hash_sha512(string,(const unsigned char*)data,strlen(data));
     for (count3 = 0, count2 = 0; count3 < DATA_HASH_LENGTH / 2; count3++, count2 += 2)
     {
       snprintf(data_hash+count2,BUFFER_SIZE,"%02x",string[count3] & 0xFF);

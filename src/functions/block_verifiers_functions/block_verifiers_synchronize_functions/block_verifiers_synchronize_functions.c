@@ -673,10 +673,10 @@ int sync_all_block_verifiers_list(void)
     if (test_settings == 0)
     {
       memcpy(data3,"Connecting to network data node ",32);
-      memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
+      memcpy(data3+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
       memcpy(data3+strlen(data3)," and sending NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\n",87);
       strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
-      memcpy(data3+strlen(data3),data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
+      memcpy(data3+strlen(data3),data2,strnlen(data2,sizeof(data3)));
       color_print(data3,"white");
     }
     memset(data2,0,strlen(data2));
@@ -686,7 +686,7 @@ int sync_all_block_verifiers_list(void)
     {
       memset(data2,0,strlen(data2));
       memcpy(data2,"Could not receive data from network data node ",46);
-      memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],MAXIMUM_BUFFER_SIZE));
+      memcpy(data2+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
       color_print(data2,"red");
       color_print("Connecting to a different network data node\n","white");
       goto start;
@@ -849,7 +849,7 @@ int get_synced_block_verifiers(void)
     memcpy(data,"Connecting to network data node ",32);
     memcpy(data+32,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     memcpy(data+strlen(data)," and sending NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\n",73);
-    strftime(data2,MAXIMUM_BUFFER_SIZE,"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
+    strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
     memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
     color_print(data,"white");
   }
@@ -1066,13 +1066,18 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       if (sign_data(data2) == 0)
       { 
         SYNC_CHECK_RESERVE_PROOFS_SPECIFIC_DATABASE_ERROR("Could not sign_data");
-      }
-     
+      }     
       memset(data,0,strlen(data));
+
+      // allow the database data to be received over the socket
+      database_data_socket_settings = 1;
+
       if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,BLOCK_VERIFIERS_IP_ADDRESS,SEND_DATA_PORT,data2,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
       {
+        database_data_socket_settings = 0;
         SYNC_CHECK_RESERVE_PROOFS_SPECIFIC_DATABASE_ERROR("Could not receive data from the block verifier");
       }
+      database_data_socket_settings = 0;
 
       if (verify_data(data,0) == 0)
       {
@@ -1234,13 +1239,18 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       if (sign_data(data2) == 0)
       { 
         SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not sign_data");
-      }
-     
+      }     
       memset(data,0,strlen(data));
+
+      // allow the database data to be received over the socket
+      database_data_socket_settings = 1;
+
       if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,BLOCK_VERIFIERS_IP_ADDRESS,SEND_DATA_PORT,data2,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
       {
+        database_data_socket_settings = 0;
         SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not receive data from the block verifier3");
       }
+      database_data_socket_settings = 0;
 
       if (verify_data(data,0) == 0)
       {
@@ -1333,7 +1343,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   { \
     memset(data,0,strlen(data)); \
     memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
+    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
     get_random_network_data_node(settings); \
@@ -1459,7 +1469,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   { \
     memset(data,0,strlen(data)); \
     memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
+    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
     get_random_network_data_node(settings); \
@@ -1602,7 +1612,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   { \
     memset(data,0,strlen(data)); \
     memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
+    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
     get_random_network_data_node(settings); \
@@ -1653,13 +1663,18 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   if (sign_data(data2) == 0)
   { 
     SYNC_DELEGATES_DATABASE_ERROR("Could not sign_data",0);
-  }
-     
+  }     
   memset(data,0,strlen(data));
+
+  // allow the database data to be received over the socket
+  database_data_socket_settings = 1;
+
   if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
   {
+    database_data_socket_settings = 0;
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
   }
+  database_data_socket_settings = 0;
 
   if (verify_data(data,0) == 0)
   {
@@ -1728,7 +1743,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   { \
     memset(data,0,strlen(data)); \
     memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,MAXIMUM_BUFFER_SIZE)); \
+    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
     memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
     color_print(data,"red"); \
     get_random_network_data_node(settings); \
@@ -1780,12 +1795,17 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   { 
     SYNC_STATISTICS_DATABASE_ERROR("Could not sign_data",0);
   }
-     
   memset(data,0,strlen(data));
+
+  // allow the database data to be received over the socket
+  database_data_socket_settings = 1;
+
   if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
   {
+    database_data_socket_settings = 0;
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
   }
+  database_data_socket_settings = 0;
 
   if (verify_data(data,0) == 0)
   {

@@ -1438,7 +1438,7 @@ memset(data_test,0,sizeof(data_test));
   The purpose of this message is for the block verifiers to send a block verifier the up to date reserve bytes database
  
   message_settings - The type of the message
-  reserve_bytes_database - The reserve bytes database
+  reserve_bytes_database - The database data
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (always 1)
@@ -1600,9 +1600,14 @@ memset(data_test,0,sizeof(data_test));
  
 /*
   The purpose of this message is for the block verifiers to send a block verifier the up to date reserve proofs database
+
+  since this message could be up to 50MB in size, it is prefixed with
+  MESSAGE_SETTINGS|RANDOM_DATA|PUBLIC_KEY|PROOF|BETA|
+
+  The reason for the prefix, is to confirm that a current top 100 delegate is sending
  
   message_settings - The type of the message
-  reserve_proofs_database - True if the database file is synced, false if not
+  reserve_proofs_database - The database data
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (always 1)
@@ -1665,7 +1670,7 @@ memset(data_test,0,sizeof(data_test));
   The purpose of this message is for the block verifiers to send a block verifier the up to date delegates database
  
   message_settings - The type of the message
-  delegates_database - True if the database file is synced, false if not
+  delegates_database - The database data
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (always 1)
@@ -1728,7 +1733,7 @@ memset(data_test,0,sizeof(data_test));
   The purpose of this message is for the block verifiers to send a block verifier the up to date statistics database
  
   message_settings - The type of the message
-  statistics_database - True if the database file is synced, false if not
+  statistics_database - The database data
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
   current_round_part - The current round part (always 1)
