@@ -22,6 +22,7 @@
 #include "blockchain_functions.h"
 #include "block_verifiers_synchronize_server_functions.h"
 #include "block_verifiers_thread_server_functions.h"
+#include "block_verifiers_update_functions.h"
 #include "database_functions.h"
 #include "read_database_functions.h"
 #include "update_database_functions.h"
@@ -200,6 +201,98 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   return 1;
 
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: database_data_sync_limit
+Description: limits only one open connection per IP address for database syncing functions
+Parameters:
+  SETTINGS - 1 to run the check before running the server code, 0 to remove the IP address so it can make another connection
+  IP_ADDRESS - The IP address
+  MESSAGE - The message
+  Return: 0 if there is multiple connections, 1 if there is a single connection
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int database_data_sync_limit(const int SETTINGS, const char* IP_ADDRESS, const char* MESSAGE)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
+  long long int number;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  memcpy(data,"|",1);
+  memcpy(data+strlen(data),IP_ADDRESS,strnlen(IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); 
+
+  // start data
+  if (SETTINGS == 1)
+  {
+    // verify the message
+    if (verify_data(MESSAGE,0) == 0)
+    {   
+      return 0;
+    }
+
+    // parse the data
+    if (parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
+    {
+      return 0;
+    }
+
+    // create the message
+    memcpy(data3,"{\"public_address\":\"",19);
+    memcpy(data3+19,data2,strnlen(data2,XCASH_WALLET_LENGTH));
+    memcpy(data3+strlen(data3),"\"}",2);
+    memset(data2,0,sizeof(data2));
+
+    // check to make sure that the IP address is registered to a delegate and the delegate has the DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT
+    if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data3,"total_vote_count",data2) == 1)
+    {
+      sscanf(data2, "%lld", &number);
+      if ((production_settings == 1 && number < DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT) || (production_settings == 0 && number < 0))
+      {
+        return 0;
+      }
+    }
+    else
+    {
+      return 0;
+    }
+
+    pthread_mutex_lock(&database_data_IP_address_lock);
+    if (strstr(database_data_IP_address,data) != NULL)
+    {
+      pthread_mutex_unlock(&database_data_IP_address_lock);
+      return 0;
+    }
+    else
+    {
+      memcpy(database_data_IP_address+strlen(database_data_IP_address),data,strnlen(data,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    }  
+    pthread_mutex_unlock(&database_data_IP_address_lock);
+    return 1;
+  }
+  else if (SETTINGS == 0)
+  {
+    pthread_mutex_lock(&database_data_IP_address_lock);
+    string_replace(database_data_IP_address,15728640,data,"");
+    pthread_mutex_unlock(&database_data_IP_address_lock);
+    return 1;
+  }
+  return 0;
+
+  #undef DATABASE_COLLECTION
 }
 
 
@@ -396,7 +489,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
-  char* message2 = (char*)calloc(2097152,sizeof(char)); // 2 MB
+  char* message2 = (char*)calloc(1500000,sizeof(char)); // 1.5 MB
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
@@ -486,7 +579,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
       color_print("sync error","yellow");
     }
-    memcpy(message2+strlen(message2),message,strnlen(message,MAXIMUM_BUFFER_SIZE));
+    memcpy(message2+strlen(message2),message,strnlen(message,1500000));
     memcpy(message2+strlen(message2),"|",1);
   }
   

@@ -75,6 +75,7 @@ pthread_mutex_t vote_lock;
 pthread_cond_t thread_settings_lock;
 pthread_mutex_t add_reserve_proof_lock;
 pthread_mutex_t invalid_reserve_proof_lock;
+pthread_mutex_t database_data_IP_address_lock;
 
 pthread_t server_threads[100];
 int epoll_fd;
@@ -111,6 +112,7 @@ char website_path[1024]; // holds the path to the website if running a delegates
 char current_block_producer[XCASH_WALLET_LENGTH+1]; // The public address of the current block producer
 int sync_previous_current_next_block_verifiers_settings; // sync the previous, current and next block verifiers if you had to restart
 int database_data_socket_settings; // 1 to allow database data up to 50MB to be received in the server, 0 to only allow message up to BUFFER_SIZE
+char* database_data_IP_address; // holds all of the IP addresses that are currently syncing database data. This can hold up to 1 million IP addresses
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -195,6 +197,15 @@ void initialize_data(void)
   pthread_cond_init(&thread_settings_lock,NULL);
   pthread_mutex_init(&add_reserve_proof_lock, NULL);
   pthread_mutex_init(&invalid_reserve_proof_lock, NULL);
+  pthread_mutex_init(&database_data_IP_address_lock, NULL);
+
+  database_data_IP_address = (char*)calloc(15728640,sizeof(char)); // 15 MB
+   
+  // check if the memory needed was allocated on the heap successfully
+  if (database_data_IP_address == NULL)
+  {
+    INITIALIZE_DATA_ERROR;
+  }
 
   // initialize the error_message struct
   for (count = 0; count < TOTAL_ERROR_MESSAGES; count++)
@@ -1251,7 +1262,7 @@ int main(int parameters_count, char* parameters[])
   if (create_server(1) == 0)
   {
     MAIN_ERROR("Could not start the server");
-  }
+  }  
 
   if (settings != 2)
   {

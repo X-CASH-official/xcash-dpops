@@ -242,6 +242,7 @@ int socket_thread(int client_socket)
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
   char client_address[BUFFER_SIZE]; 
+  char client_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   struct sockaddr_in addr;
@@ -251,6 +252,7 @@ int socket_thread(int client_socket)
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
   memset(client_address,0,sizeof(client_address));
+  memset(client_IP_address,0,sizeof(client_IP_address));
 
   // convert the port to a string
   snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
@@ -317,6 +319,7 @@ int socket_thread(int client_socket)
   {
     getnameinfo((struct sockaddr *)&addr, addrlength, client_address, sizeof(client_address), NULL, 0, NI_NUMERICHOST);
   }
+  getnameinfo((struct sockaddr *)&addr, addrlength, client_IP_address, sizeof(client_IP_address), NULL, 0, NI_NUMERICHOST);
   pthread_mutex_unlock(&lock); 
   
   // get the current time
@@ -397,7 +400,12 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
-   server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket);
+   // check to see if there is only one connection for this IP address
+   if (database_data_sync_limit(1,(const char*)client_IP_address,(const char*)buffer) == 1)
+   {
+     server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket);
+     database_data_sync_limit(0,(const char*)client_IP_address,"");
+   }
  }
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\"") != NULL)
  {
@@ -413,7 +421,12 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(client_socket,(const char*)buffer);
+   // check to see if there is only one connection for this IP address
+   if (database_data_sync_limit(1,(const char*)client_IP_address,(const char*)buffer) == 1)
+   {
+     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(client_socket,(const char*)buffer);
+     database_data_sync_limit(0,(const char*)client_IP_address,"");
+   }
  }  
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
@@ -421,7 +434,12 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(client_socket,(const char*)buffer);
+   // check to see if there is only one connection for this IP address
+   if (database_data_sync_limit(1,(const char*)client_IP_address,(const char*)buffer) == 1)
+   {
+     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(client_socket,(const char*)buffer);
+     database_data_sync_limit(0,(const char*)client_IP_address,"");
+   }
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
  {
@@ -429,7 +447,12 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(client_socket);
+   // check to see if there is only one connection for this IP address
+   if (database_data_sync_limit(1,(const char*)client_IP_address,(const char*)buffer) == 1)
+   {
+     server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(client_socket);
+     database_data_sync_limit(0,(const char*)client_IP_address,"");
+   }
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE\"") != NULL)
  {
@@ -437,7 +460,12 @@ int socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(client_socket);
+   // check to see if there is only one connection for this IP address
+   if (database_data_sync_limit(1,(const char*)client_IP_address,(const char*)buffer) == 1)
+   {
+     server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(client_socket);
+     database_data_sync_limit(0,(const char*)client_IP_address,"");
+   }
  }
  else if (strstr(buffer,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL)
  {
