@@ -633,7 +633,7 @@ int validate_data(const char* MESSAGE)
   memset(data,0,sizeof(data));
 
   // check if the format is correct for each message
-  if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL)
+  if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || memcmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0 || memcmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
   {
     return 1;
   }

@@ -218,6 +218,11 @@ Parameters:
 
 int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
 {
+  if (test_settings == 1)
+  {
+    return 1;
+  }
+
   // Variables
   char data[SMALL_BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
@@ -326,6 +331,11 @@ Parameters:
 
 int server_limit_IP_addresses(const int SETTINGS, const char* IP_ADDRESS)
 {
+  if (test_settings == 1)
+  {
+    return 1;
+  }
+  
   // Variables
   char data[SMALL_BUFFER_SIZE];
 
