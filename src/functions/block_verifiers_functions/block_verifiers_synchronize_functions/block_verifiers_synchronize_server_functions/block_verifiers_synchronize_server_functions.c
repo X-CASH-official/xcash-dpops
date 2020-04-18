@@ -833,6 +833,12 @@ Return: 0 if an error has occured, 1 if successfull
 
 int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
+  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
+  if (network_data_nodes_sync_databases_settings == 0)
+  {
+    return 0;
+  }
+  
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1035,6 +1041,12 @@ Return: 0 if an error has occured, 1 if successfull
 
 int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
+  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
+  if (network_data_nodes_sync_databases_settings == 0)
+  {
+    return 0;
+  }
+
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1197,6 +1209,12 @@ Return: 0 if an error has occured, 1 if successfull
 
 int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(const int CLIENT_SOCKET)
 {
+  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
+  if (network_data_nodes_sync_databases_settings == 0)
+  {
+    return 0;
+  }
+
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1223,12 +1241,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   return 0;
 
   memset(buffer,0,sizeof(buffer));
-
-  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
-  if (network_data_nodes_sync_databases_settings == 0)
-  {
-    return 0;
-  }
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -1361,6 +1373,12 @@ Return: 0 if an error has occured, 1 if successfull
 
 int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(const int CLIENT_SOCKET)
 {
+  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
+  if (network_data_nodes_sync_databases_settings == 0)
+  {
+    return 0;
+  }
+
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
@@ -1385,12 +1403,6 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   } \
   pointer_reset_all; \
   return 0;
-
-  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
-  if (network_data_nodes_sync_databases_settings == 0)
-  {
-    return 0;
-  }
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
