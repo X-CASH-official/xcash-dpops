@@ -93,6 +93,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_WALLET_PORT 18285 // The X-CASH Wallet RPC port
 #define SEND_DATA_PORT 18283 // The port that is used by all nodes to send and receive data
 #define MAXIMUM_CONNECTIONS 1000 // The maximum connections a node can have at one time
+#define MAXIMUM_CONNECTIONS_IP_ADDRESS_OR_PUBLIC_ADDRESS 20 // The maximum connections a specific IP address or specific public address can have at one time
 #define BLOCK_VERIFIERS_SETTINGS 3 // The time in seconds to wait to send data to the block verifiers
 #define MAIN_NETWORK_DATA_NODE_SEND_BLOCK_SETTINGS 20 // The time in seconds that the main network data node waits for the block verifiers signatures
 #define NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS 15 // the time in seconds that the network data nodes wait to see if the database is synced
@@ -128,8 +129,8 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_INVALID_RESERVE_PROOFS 50000 // The maximum invalid reserve proofs for the delegate
 #define VOTE_PARAMETER_AMOUNT 5 // The vote parameter amount
 #define REGISTER_PARAMETER_AMOUNT 6 // The register parameter amount
-#define REMOVE_PARAMETER_AMOUNT 3 // The remove parameter amount
 #define UPDATE_PARAMETER_AMOUNT 5 // The update parameter amount
+#define GET_RESERVE_BYTES_DATABASE_HASH_PARAMETER_AMOUNT 5 // The GET_RESERVE_BYTES_DATABASE_HASH parameter amount
 
 // VRF
 #define VRF_PUBLIC_KEY_LENGTH 64

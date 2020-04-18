@@ -652,6 +652,12 @@ int sync_all_block_verifiers_list(void)
     // create the message
     memcpy(message,MESSAGE,sizeof(MESSAGE)-1);
 
+    // sign the message
+    if (sign_data(message) == 0)
+    {
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data");
+    }
+
     start:
     if (test_settings == 0)
     {
@@ -790,6 +796,7 @@ int get_synced_block_verifiers(void)
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  char message[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -797,7 +804,8 @@ int get_synced_block_verifiers(void)
   int total_delegates = 0;
 
   // define macros
-  #define GET_SYNCED_BLOCK_VERIFIERS_DATA "{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}"
+  #define MESSAGE "{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}"
+
   #define PARSE_BLOCK_VERIFIERS_LIST_DATA(settings,block_verifiers_data) \
   memset(data,0,sizeof(data)); \
   if (parse_json_data(data2,settings,data,sizeof(data)) == 0) \
@@ -834,7 +842,17 @@ int get_synced_block_verifiers(void)
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
 
+  // create the message
+  memcpy(message,MESSAGE,sizeof(MESSAGE)-1);
+
+  // sign the data
+  if (sign_data(message) == 0)
+  {
+    GET_SYNCED_BLOCK_VERIFIERS_ERROR("Could not sign data");
+  }
+  
   // send the message to a random network data node
   do
   {
@@ -856,7 +874,7 @@ int get_synced_block_verifiers(void)
   memset(data,0,strlen(data));
   memset(data2,0,strlen(data2));
 
-  if (send_and_receive_data_socket(data2,sizeof(data2),network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,GET_SYNCED_BLOCK_VERIFIERS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
+  if (send_and_receive_data_socket(data2,sizeof(data2),network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
   {
     memcpy(data,"Could not receive data from network data node ",46);
     memcpy(data+46,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
@@ -881,7 +899,7 @@ int get_synced_block_verifiers(void)
   
   return 1;
 
-  #undef GET_SYNCED_BLOCK_VERIFIERS_DATA
+  #undef MESSAGE
   #undef PARSE_BLOCK_VERIFIERS_LIST_DATA
   #undef GET_SYNCED_BLOCK_VERIFIERS_ERROR
 }

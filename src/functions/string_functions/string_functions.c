@@ -529,9 +529,10 @@ int parse_http_response(char *result)
 Name: string_replace
 Description: String replace
 Parameters:
-  str - The string to replace the data
-  sub - The string to be replaced
-  rep - The string to replace the other string
+  data - The string to replace the data
+  DATA_TOTAL_LENGTH - The maximum size of data
+  STR1 - The string to be replaced
+  STR2 - The string to replace the other string
 Return: The result string
 -----------------------------------------------------------------------------------------------------------
 */
@@ -558,6 +559,62 @@ void string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1
     memcpy(buf+strlen(buf), b, find - b);  /* copy up to occurrence */
     memcpy(buf+strlen(buf), STR2, rlen);   /* add replacement */
     b = find + slen;
+  }
+  // copy the end of the string
+  memcpy(buf+strlen(buf), b, strlen(b));
+   
+  // replace the original string with the new string
+  memset(data,0,strlen(data));
+  memcpy(data,buf,strnlen(buf,DATA_TOTAL_LENGTH));
+    
+  pointer_reset(buf);
+  return;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: string_replace
+Description: String replace only a specific amount of string occurences
+Parameters:
+  data - The string to replace the data
+  DATA_TOTAL_LENGTH - The maximum size of data
+  STR1 - The string to be replaced
+  STR2 - The string to replace the other string
+  COUNT - The number of string occurences to replace
+Return: The result string
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void string_replace_limit(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1, const char* STR2, const int COUNT)
+{ 
+  // Constants
+  const size_t slen = strlen(STR1);
+  const size_t rlen = strlen(STR2);
+  int count2 = 0;
+
+  // Variables  
+  char* buf = calloc((strlen(data) + 1)*2,sizeof(char));
+  char* find;
+  char* b = data;
+    
+  if (buf == NULL || slen == 0)
+  {
+    pointer_reset(buf);
+    return;
+  }
+  
+  while((find = strstr(b, STR1)))
+  {
+    if (count2 == COUNT)
+    {
+      break;
+    }
+    memcpy(buf+strlen(buf), b, find - b);  /* copy up to occurrence */
+    memcpy(buf+strlen(buf), STR2, rlen);   /* add replacement */
+    b = find + slen;
+    count2++;
   }
   // copy the end of the string
   memcpy(buf+strlen(buf), b, strlen(b));

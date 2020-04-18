@@ -83,7 +83,8 @@ extern char website_path[1024]; // holds the path to the website if running a de
 extern char current_block_producer[XCASH_WALLET_LENGTH+1]; // The public address of the current block producer
 extern int sync_previous_current_next_block_verifiers_settings; // sync the previous, current and next block verifiers if you had to restart
 extern int database_data_socket_settings; // 1 to allow database data up to 50MB to be received in the server, 0 to only allow message up to BUFFER_SIZE
-extern char* database_data_IP_address; // holds all of the IP addresses that are currently syncing database data. This can hold up to 1 million IP addresses
+extern char* server_limit_IP_address_list; // holds all of the IP addresses that are currently running on the server. This can hold up to 1 million IP addresses
+extern char* server_limit_public_address_list; // holds all of the public addresses that are currently running on the server. This can hold up to 1 million public addresses
 
 extern int delegates_website; // 1 if the running the delegates websites, 0 if not
 extern int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not

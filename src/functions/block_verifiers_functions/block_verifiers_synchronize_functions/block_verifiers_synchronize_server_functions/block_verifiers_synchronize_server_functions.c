@@ -207,22 +207,23 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: database_data_sync_limit
-Description: limits only one open connection per IP address for database syncing functions
+Name: server_limit_public_addresses
+Description: limits connections based on registered public addresses to the server
 Parameters:
-  SETTINGS - 1 to run the check before running the server code, 0 to remove the IP address so it can make another connection
-  IP_ADDRESS - The IP address
+  SETTINGS - 1 to run the check before running the server code, 0 to remove the IP address so it can make another connection, 2 to not verify any of the previous block hash or current round part
   MESSAGE - The message
   Return: 0 if there is multiple connections, 1 if there is a single connection
 -----------------------------------------------------------------------------------------------------------
 */
 
-int database_data_sync_limit(const int SETTINGS, const char* IP_ADDRESS, const char* MESSAGE)
+int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
   char data3[SMALL_BUFFER_SIZE];
+  int count;
+  int count2;
   long long int number;
 
   // define macros
@@ -232,21 +233,36 @@ int database_data_sync_limit(const int SETTINGS, const char* IP_ADDRESS, const c
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
-  memcpy(data,"|",1);
-  memcpy(data+strlen(data),IP_ADDRESS,strnlen(IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); 
-
-  // start data
+  // parse the data
   if (SETTINGS == 1)
   {
-    // verify the message
-    if (verify_data(MESSAGE,0) == 0)
-    {   
-      return 0;
-    }
-
-    // parse the data
     if (parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
     {
+      return 0;
+    }    
+  }
+  else if (SETTINGS == 2)
+  {
+    for (count = 0, count2 = 0; count < GET_RESERVE_BYTES_DATABASE_HASH_PARAMETER_AMOUNT; count++)
+    {
+      if (count == 2)
+      {
+        memcpy(data2,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+        break;
+      }
+      count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+    }
+  }
+
+  memcpy(data,"|",1);
+  memcpy(data+1,data2,XCASH_WALLET_LENGTH); 
+
+  // start data
+  if (SETTINGS == 1 || SETTINGS == 2)
+  {
+    // verify the message
+    if ((SETTINGS == 1 && verify_data(MESSAGE,1) == 0) || (SETTINGS == 2 && verify_data(MESSAGE,0) == 0))
+    { 
       return 0;
     }
 
@@ -269,16 +285,16 @@ int database_data_sync_limit(const int SETTINGS, const char* IP_ADDRESS, const c
     {
       return 0;
     }
-
+    
     pthread_mutex_lock(&database_data_IP_address_lock);
-    if (strstr(database_data_IP_address,data) != NULL)
+    if (string_count(server_limit_public_address_list,data) > MAXIMUM_CONNECTIONS_IP_ADDRESS_OR_PUBLIC_ADDRESS)
     {
       pthread_mutex_unlock(&database_data_IP_address_lock);
       return 0;
     }
     else
     {
-      memcpy(database_data_IP_address+strlen(database_data_IP_address),data,strnlen(data,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+      memcpy(server_limit_public_address_list+strlen(server_limit_public_address_list),data,strnlen(data,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     }  
     pthread_mutex_unlock(&database_data_IP_address_lock);
     return 1;
@@ -286,7 +302,58 @@ int database_data_sync_limit(const int SETTINGS, const char* IP_ADDRESS, const c
   else if (SETTINGS == 0)
   {
     pthread_mutex_lock(&database_data_IP_address_lock);
-    string_replace(database_data_IP_address,15728640,data,"");
+    string_replace_limit(server_limit_public_address_list,15728640,data,"",1);
+    pthread_mutex_unlock(&database_data_IP_address_lock);
+    return 1;
+  }
+  return 0;
+
+  #undef DATABASE_COLLECTION
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_limit_IP_addresses
+Description: limits connections based on IP addresses to the server
+Parameters:
+  SETTINGS - 1 to run the check before running the server code, 0 to remove the IP address so it can make another connection
+  IP_ADDRESS - The IP address
+  Return: 0 if there is multiple connections, 1 if there is a single connection
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_limit_IP_addresses(const int SETTINGS, const char* IP_ADDRESS)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+
+  memset(data,0,sizeof(data));
+
+  memcpy(data,"|",1);
+  memcpy(data+1,IP_ADDRESS,strnlen(IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); 
+
+  // start data
+  if (SETTINGS == 1)
+  {
+    pthread_mutex_lock(&database_data_IP_address_lock);
+    if (string_count(server_limit_IP_address_list,data) >= MAXIMUM_CONNECTIONS_IP_ADDRESS_OR_PUBLIC_ADDRESS)
+    {
+      pthread_mutex_unlock(&database_data_IP_address_lock);
+      return 0;
+    }
+    else
+    {
+      memcpy(server_limit_IP_address_list+strlen(server_limit_IP_address_list),data,strnlen(data,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    }  
+    pthread_mutex_unlock(&database_data_IP_address_lock);
+    return 1;
+  }
+  else if (SETTINGS == 0)
+  {
+    pthread_mutex_lock(&database_data_IP_address_lock);
+    string_replace_limit(server_limit_IP_address_list,15728640,data,"",1);
     pthread_mutex_unlock(&database_data_IP_address_lock);
     return 1;
   }
@@ -523,10 +590,28 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
   
-  if (parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
+  if (strstr(MESSAGE,"|") == NULL && parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not create the message");
   }
+  else if (strstr(MESSAGE,"|") != NULL && (string_count(MESSAGE,"|") != GET_RESERVE_BYTES_DATABASE_HASH_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0))
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not create the message");
+  }
+  else if (strstr(MESSAGE,"|") != NULL)
+  {
+    for (count = 0, count2 = 0; count < GET_RESERVE_BYTES_DATABASE_HASH_PARAMETER_AMOUNT; count++)
+    {
+      if (count == 1)
+      {
+        memcpy(data,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+        break;
+      }
+      count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+    }
+  }
+  
+
 
   // calculate how many blocks to send
   if (test_settings == 0)

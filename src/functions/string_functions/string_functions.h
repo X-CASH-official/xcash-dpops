@@ -17,6 +17,7 @@ size_t string_count(const char* DATA, const char* STRING);
 int parse_http_response(char *result);
 int check_for_invalid_strings(const char* MESSAGE);
 void string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1, const char* STR2);
+void string_replace_limit(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1, const char* STR2, const int COUNT);
 int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM);
 int random_string(char *result, const size_t LENGTH);
 #endif

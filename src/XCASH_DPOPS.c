@@ -112,7 +112,8 @@ char website_path[1024]; // holds the path to the website if running a delegates
 char current_block_producer[XCASH_WALLET_LENGTH+1]; // The public address of the current block producer
 int sync_previous_current_next_block_verifiers_settings; // sync the previous, current and next block verifiers if you had to restart
 int database_data_socket_settings; // 1 to allow database data up to 50MB to be received in the server, 0 to only allow message up to BUFFER_SIZE
-char* database_data_IP_address; // holds all of the IP addresses that are currently syncing database data. This can hold up to 1 million IP addresses
+char* server_limit_IP_address_list; // holds all of the IP addresses that are currently running on the server. This can hold up to 1 million IP addresses
+char* server_limit_public_address_list; // holds all of the public addresses that are currently running on the server. This can hold up to 1 million public addresses
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -199,10 +200,11 @@ void initialize_data(void)
   pthread_mutex_init(&invalid_reserve_proof_lock, NULL);
   pthread_mutex_init(&database_data_IP_address_lock, NULL);
 
-  database_data_IP_address = (char*)calloc(15728640,sizeof(char)); // 15 MB
+  server_limit_IP_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
+  server_limit_public_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
    
   // check if the memory needed was allocated on the heap successfully
-  if (database_data_IP_address == NULL)
+  if (server_limit_IP_address_list == NULL || server_limit_public_address_list == NULL)
   {
     INITIALIZE_DATA_ERROR;
   }
@@ -1251,7 +1253,7 @@ int main(int parameters_count, char* parameters[])
   print_settings();  
 
   // check if the block verifier is a network data node
-  CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;     
+  CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;   
  
   if (settings != 2)
   {
@@ -1267,7 +1269,7 @@ int main(int parameters_count, char* parameters[])
   if (settings != 2)
   {
     start_timer_threads();
-  }
+  }  
 
   for (;;)
   {
