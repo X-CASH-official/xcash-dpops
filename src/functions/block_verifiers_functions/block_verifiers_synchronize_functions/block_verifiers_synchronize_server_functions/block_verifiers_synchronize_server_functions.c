@@ -239,14 +239,14 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
   memset(data3,0,sizeof(data3));
 
   // parse the data
-  if (SETTINGS == 1)
+  if (SETTINGS == 1 || SETTINGS == 3)
   {
     if (parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
     {
       return 0;
     }    
   }
-  else if (SETTINGS == 2)
+  else if (SETTINGS == 2 || SETTINGS == 4)
   {
     for (count = 0, count2 = 0; count < GET_RESERVE_BYTES_DATABASE_HASH_PARAMETER_AMOUNT; count++)
     {
@@ -304,7 +304,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     pthread_mutex_unlock(&database_data_IP_address_lock);
     return 1;
   }
-  else if (SETTINGS == 0)
+  else if (SETTINGS == 3 || SETTINGS == 4)
   {
     pthread_mutex_lock(&database_data_IP_address_lock);
     string_replace_limit(server_limit_public_address_list,15728640,data,"",1);
@@ -335,7 +335,7 @@ int server_limit_IP_addresses(const int SETTINGS, const char* IP_ADDRESS)
   {
     return 1;
   }
-  
+
   // Variables
   char data[SMALL_BUFFER_SIZE];
 
@@ -672,7 +672,6 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
     if (read_document_field_from_collection(database_name,data,data2,"reserve_bytes_data_hash",message) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
-      color_print("sync error","yellow");
     }
     memcpy(message2+strlen(message2),message,strnlen(message,1500000));
     memcpy(message2+strlen(message2),"|",1);
