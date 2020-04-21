@@ -834,7 +834,12 @@ void remove_inactive_delegates(void)
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"remove_inactive_delegates_timer_thread",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
-  total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
+  
+  if ((total_delegates = organize_delegates(delegates) == 0))
+  {
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    return;
+  }
 
   for (count = 0; count < total_delegates; count++)
   {

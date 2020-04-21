@@ -139,14 +139,13 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memset(message,0,sizeof(message));
 
   // get the total blocks found
-  document_count = count_all_documents_in_collection(shared_delegates_database_name,"blocks_found");
-  total_blocks_found = document_count;
-  if (document_count <= 0)
+  if ((document_count = count_all_documents_in_collection(shared_delegates_database_name,"blocks_found")) <= 0)
   {
     total_blocks_found = 0;
     total_xcash_from_found_blocks = 0;
     total_payments = 0; 
-  }
+  }  
+  total_blocks_found = document_count;
 
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_shared_delegates_website_get_statistics",data,current_date_and_time,current_UTC_date_and_time);
@@ -178,7 +177,10 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   database_multiple_documents_fields2.database_fields_count = 0;
 
   // organize the delegates
-  delegates_count = organize_delegates(delegates,DATABASE_COLLECTION);
+  if ((delegates_count = organize_delegates(delegates)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not organize the delegates");
+  }
 
   // get the current_delegate_rank
   for (count = 0; (int)count < delegates_count; count++)
@@ -251,7 +253,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+117,"\"}",2);
-  if (read_document_field_from_collection(database_name,"delegates",message,"total_vote_count",total_votes_data) == 0)
+  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"total_vote_count",total_votes_data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
   }
@@ -263,7 +265,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+117,"\"}",2);
 
-  if (read_document_field_from_collection(database_name,"delegates",message,"block_verifier_online_percentage",data) <= 0 || read_document_field_from_collection(database_name,"delegates",message,"block_verifier_total_rounds",data2) <= 0)
+  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_online_percentage",data) <= 0 || read_document_field_from_collection(database_name,"delegates",message,"block_verifier_total_rounds",data2) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
   }
@@ -346,9 +348,7 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   return 0;
 
   // get the total blocks found
-  document_count = count_all_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION);
-
-  if (document_count <= 0)
+  if ((document_count = count_all_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION)) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1,"The delegate has not found any blocks");
   }

@@ -86,12 +86,11 @@ Name: organize_delegates
 Description: Organize the delegates in descending order of total_vote_count
 Parameters:
   struct delegates - struct delegates
-  DATABASE_COLLECTION - The database collection to read the delegates from
 Return: 0 if an error has occured, otherwise the amount of delegates in the struct delegates
 -----------------------------------------------------------------------------------------------------------
 */
 
-int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECTION)
+int organize_delegates(struct delegates* delegates)
 {
   // Variables
   char data[4096];
@@ -104,6 +103,7 @@ int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECT
   int document_count = 0;
 
   // define macros
+  #define DATABASE_COLLECTION "delegates"
   #define ORGANIZE_DELEGATES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"organize_delegates",18); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -149,7 +149,17 @@ int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECT
   }
 
   // get how many documents are in the database
-  document_count = count_all_documents_in_collection(database_name,DATABASE_COLLECTION);
+  if ((document_count = count_all_documents_in_collection(database_name,DATABASE_COLLECTION)) <= 0)
+  {
+    memcpy(error_message.function[error_message.total],"organize_delegates",18);
+    memcpy(error_message.data[error_message.total],"Could not count how many delegates are in the database",54);
+    error_message.total++;
+    if (network_functions_test_error_settings != 2)
+    {
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);
+    }
+    return 0;
+  }
 
   // initialize the database_multiple_documents_fields struct 
   for (count = 0; count < document_count; count++)

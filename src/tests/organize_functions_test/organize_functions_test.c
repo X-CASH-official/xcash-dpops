@@ -315,7 +315,7 @@ int organize_functions_test(void)
   INITIALIZE_DATABASE_DATA(1);
 
   // test for organize_delegates_settings
-  if (organize_delegates(delegates,"delegates") != 0 && memcmp(delegates[0].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[1].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[2].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[3].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[4].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+  if (organize_delegates(delegates) != 0 && memcmp(delegates[0].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[1].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[2].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[3].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 && memcmp(delegates[4].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
   {   
     color_print("PASSED! Test for organize_delegates","green");
     count_test++;
@@ -334,7 +334,7 @@ int organize_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   // organize_delegates
-  if (organize_delegates(delegates,DATABASE_COLLECTION_TEST) == 0 && strncmp(error_message.data[2],"Could not get the delegates from the database",BUFFER_SIZE) == 0)
+  if (organize_delegates(delegates) == 0 && strncmp(error_message.data[2],"Could not get the delegates from the database",BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for organize_delegates checking for Could not get the delegates from the database","green");
     count_test++;

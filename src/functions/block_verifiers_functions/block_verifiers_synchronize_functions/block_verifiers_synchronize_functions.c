@@ -593,7 +593,6 @@ int sync_all_block_verifiers_list(void)
   int total_delegates = 0;
 
   // define macros
-  #define DATABASE_COLLECTION "delegates"
   #define MESSAGE "{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\",\r\n}"
   #define PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA(settings,block_verifiers_data) \
   memset(data2,0,sizeof(data2)); \
@@ -733,7 +732,7 @@ int sync_all_block_verifiers_list(void)
     INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"sync_all_block_verifiers_list",data2,current_date_and_time,current_UTC_date_and_time);
 
     // organize the delegates
-    if ((total_delegates = organize_delegates(delegates,DATABASE_COLLECTION)) == 0)
+    if ((total_delegates = organize_delegates(delegates)) == 0)
     {
       POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
       SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
@@ -774,8 +773,7 @@ int sync_all_block_verifiers_list(void)
   pthread_cond_broadcast(&thread_settings_lock);
 
   return 1;
-
-  #undef DATABASE_COLLECTION  
+  
   #undef MESSAGE
   #undef PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA
   #undef SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR  

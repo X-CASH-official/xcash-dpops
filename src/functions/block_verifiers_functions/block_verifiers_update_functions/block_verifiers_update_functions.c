@@ -71,7 +71,6 @@ int update_block_verifiers_list(void)
   int total_delegates = 0;
 
   // define macros
-  #define DATABASE_COLLECTION "delegates"
   #define UPDATE_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -153,9 +152,8 @@ int update_block_verifiers_list(void)
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
-  if ((total_delegates = organize_delegates(delegates,DATABASE_COLLECTION)) == 0)
+  if ((total_delegates = organize_delegates(delegates)) == 0)
   {
-    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
     UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
   }
   else if (total_delegates > BLOCK_VERIFIERS_TOTAL_AMOUNT)
@@ -196,7 +194,6 @@ int update_block_verifiers_list(void)
 
   return settings;
   
-  #undef DATABASE_COLLECTION
   #undef UPDATE_BLOCK_VERIFIERS_LIST_ERROR
 }
 
@@ -221,7 +218,6 @@ int update_next_block_verifiers_list(void)
   int total_delegates = 0;
 
   // define macros
-  #define DATABASE_COLLECTION "delegates"
   #define UPDATE_NEXT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -247,9 +243,8 @@ int update_next_block_verifiers_list(void)
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
-  if ((total_delegates = organize_delegates(delegates,DATABASE_COLLECTION)) == 0)
+  if ((total_delegates = organize_delegates(delegates)) == 0)
   {
-    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
     UPDATE_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
   }
   else if (total_delegates > BLOCK_VERIFIERS_TOTAL_AMOUNT)
@@ -275,8 +270,7 @@ int update_next_block_verifiers_list(void)
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
 
   return 1;
-  
-  #undef DATABASE_COLLECTION
+
   #undef UPDATE_NEXT_BLOCK_VERIFIERS_LIST_ERROR
 }
 
@@ -955,7 +949,10 @@ int get_delegates_online_status(void)
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"get_delegates_online_status",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
-  total_delegates = organize_delegates(delegates,DATABASE_COLLECTION);
+  if ((total_delegates = organize_delegates(delegates)) == 0)
+  {
+    GET_DELEGATES_ONLINE_STATUS_ERROR("Could not organize the delegates");
+  }
 
   struct epoll_event events[total_delegates];
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[total_delegates];

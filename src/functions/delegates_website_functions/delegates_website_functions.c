@@ -103,8 +103,11 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   }
 
   // organize the delegates
-  document_count = organize_delegates(delegates,"delegates");
-
+  if ((document_count = organize_delegates(delegates)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR("Could not organize the delegates");
+  }
+  
   if (read_document_all_fields_from_collection(database_name,"statistics",DATA,&database_data) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_STATISTICS_ERROR("Could not read all of the fields of the statistics database collection");
@@ -205,7 +208,6 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   int total_delegates;
 
   // define macros
-  #define DATABASE_COLLECTION "delegates"
   #define DATABASE_FIELDS "public_address|IP_address|public_key|about|website|team|server_settings|block_verifier_online_total_rounds|block_producer_total_rounds|block_producer_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(settings) \
@@ -224,7 +226,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates",buffer,current_date_and_time,current_UTC_date_and_time);
   
   // organize the delegates
-  if ((total_delegates = organize_delegates(delegates,DATABASE_COLLECTION)) == 0)
+  if ((total_delegates = organize_delegates(delegates)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR("Could not organize the delegates");
   }
@@ -266,7 +268,6 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   return 1;
 
-  #undef DATABASE_COLLECTION
   #undef DATABASE_FIELDS
   #undef SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR
 }
@@ -360,8 +361,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   }
 
   // organize the delegates
-  document_count = organize_delegates(delegates,DATABASE_COLLECTION);
-  if (document_count == 0)
+  if ((document_count = organize_delegates(delegates)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR("Could not organize the delegates");
   }

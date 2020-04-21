@@ -385,7 +385,7 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   #define ORGANIZE_DELEGATES_CODE \
   RESET_DELEGATES_STRUCT; \
-  organize_delegates(delegates,DATABASE_COLLECTION_TEST);
+  organize_delegates(delegates);
 
   #define PARSE_JSON_DATA_CODE \
   memcpy(result_test,"{\r\n \"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\",\r\n}",60);
