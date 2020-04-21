@@ -794,10 +794,19 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--start_time",BUFFER_SIZE) == 0)
     {
-      block_height_start_time = 1;
-      sscanf(parameters[count+1], "%d", &block_height_start_time_day);
-      sscanf(parameters[count+2], "%d", &block_height_start_time_hour);
-      sscanf(parameters[count+3], "%d", &block_height_start_time_minute);
+      // if the program restarts dont wait for the start_time again
+      get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+      if ((current_UTC_date_and_time.tm_mday > block_height_start_time_day) || (current_UTC_date_and_time.tm_mday == block_height_start_time_day && current_UTC_date_and_time.tm_hour > block_height_start_time_hour) || (current_UTC_date_and_time.tm_mday == block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time_hour && current_UTC_date_and_time.tm_min > block_height_start_time_minute))
+      {
+
+      }
+      else
+      {
+        block_height_start_time = 1;
+        sscanf(parameters[count+1], "%d", &block_height_start_time_day);
+        sscanf(parameters[count+2], "%d", &block_height_start_time_hour);
+        sscanf(parameters[count+3], "%d", &block_height_start_time_minute);
+      }
     }
     if (strncmp(parameters[count],"--delegates_website",BUFFER_SIZE) == 0)
     {
