@@ -136,7 +136,7 @@ int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECT
     delegates_copy[count].block_verifier_online_total_rounds = (char*)calloc(10,sizeof(char));
     delegates_copy[count].block_verifier_online_percentage = (char*)calloc(10,sizeof(char));
     delegates_copy[count].block_producer_total_rounds = (char*)calloc(10,sizeof(char));
-    delegates_copy[count].block_producer_block_heights = (char*)calloc(50000,sizeof(char));
+    delegates_copy[count].block_producer_block_heights = (char*)calloc(100000,sizeof(char));
     delegates_copy[count].public_key = (char*)calloc(VRF_PUBLIC_KEY_LENGTH+1,sizeof(char));
     if (delegates_copy[count].public_address == NULL || delegates_copy[count].total_vote_count == NULL || delegates_copy[count].IP_address == NULL || delegates_copy[count].delegate_name == NULL || delegates_copy[count].about == NULL || delegates_copy[count].website == NULL || delegates_copy[count].team == NULL || delegates_copy[count].pool_mode == NULL || delegates_copy[count].fee_structure == NULL || delegates_copy[count].server_settings == NULL || delegates_copy[count].block_verifier_score == NULL || delegates_copy[count].online_status == NULL || delegates_copy[count].block_verifier_total_rounds == NULL || delegates_copy[count].block_verifier_online_total_rounds == NULL || delegates_copy[count].block_verifier_online_percentage == NULL || delegates_copy[count].block_producer_total_rounds == NULL || delegates_copy[count].block_producer_block_heights == NULL || delegates_copy[count].public_key == NULL)
     {
@@ -160,7 +160,7 @@ int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECT
        if (count2+2 == TOTAL_DELEGATES_DATABASE_FIELDS)
        {
          database_multiple_documents_fields.item[count][count2] = (char*)calloc(100,sizeof(char));
-         database_multiple_documents_fields.value[count][count2] = (char*)calloc(50000,sizeof(char));
+         database_multiple_documents_fields.value[count][count2] = (char*)calloc(100000,sizeof(char));
        }
        else if (count2 == 4)
        {
@@ -211,7 +211,7 @@ int organize_delegates(struct delegates* delegates, const char* DATABASE_COLLECT
     memcpy(delegates[count].block_verifier_online_total_rounds,database_multiple_documents_fields.value[count][13],strnlen(database_multiple_documents_fields.value[count][13],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].block_verifier_online_percentage,database_multiple_documents_fields.value[count][14],strnlen(database_multiple_documents_fields.value[count][14],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].block_producer_total_rounds,database_multiple_documents_fields.value[count][15],strnlen(database_multiple_documents_fields.value[count][15],BUFFER_SIZE_NETWORK_BLOCK_DATA));
-    memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],50000));
+    memcpy(delegates[count].block_producer_block_heights,database_multiple_documents_fields.value[count][16],strnlen(database_multiple_documents_fields.value[count][16],100000));
     memcpy(delegates[count].public_key,database_multiple_documents_fields.value[count][17],VRF_PUBLIC_KEY_LENGTH);
   }
   

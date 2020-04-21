@@ -27,7 +27,7 @@ for (count = 0; (int)count < maximum_amount; count++) \
   delegates[count].block_verifier_online_total_rounds = (char*)calloc(10,sizeof(char)); \
   delegates[count].block_verifier_online_percentage = (char*)calloc(10,sizeof(char)); \
   delegates[count].block_producer_total_rounds = (char*)calloc(10,sizeof(char)); \
-  delegates[count].block_producer_block_heights = (char*)calloc(50000,sizeof(char)); \
+  delegates[count].block_producer_block_heights = (char*)calloc(100000,sizeof(char)); \
   delegates[count].public_key = (char*)calloc(VRF_PUBLIC_KEY_LENGTH+1,sizeof(char)); \
   if (delegates[count].public_address == NULL || delegates[count].total_vote_count == NULL || delegates[count].IP_address == NULL || delegates[count].delegate_name == NULL || delegates[count].about == NULL || delegates[count].website == NULL || delegates[count].team == NULL || delegates[count].pool_mode == NULL || delegates[count].fee_structure == NULL || delegates[count].server_settings == NULL || delegates[count].block_verifier_score == NULL || delegates[count].online_status == NULL || delegates[count].block_verifier_total_rounds == NULL || delegates[count].block_verifier_online_total_rounds == NULL || delegates[count].block_verifier_online_percentage == NULL || delegates[count].block_producer_total_rounds == NULL || delegates[count].block_producer_block_heights == NULL || delegates[count].public_key == NULL) \
   { \
