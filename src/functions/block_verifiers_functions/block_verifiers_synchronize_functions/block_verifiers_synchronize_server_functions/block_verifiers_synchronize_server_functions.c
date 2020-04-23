@@ -230,6 +230,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
   int count;
   int count2;
   long long int number;
+  size_t data_size;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -252,7 +253,15 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     {
       if (count == 2)
       {
-        memcpy(data2,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+        if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+        {
+          return 0;
+        }
+        memcpy(data2,&MESSAGE[count2],data_size);
+        if (memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+        {
+          return 0;
+        }
         break;
       }
       count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;

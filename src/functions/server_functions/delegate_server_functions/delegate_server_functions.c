@@ -74,6 +74,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
   int count;
   int count2;
   size_t reserve_proof_amount;
+  size_t data_size;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -90,15 +91,27 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
   {
     if (count == 1)
     {
-      memcpy(data,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= sizeof(data))
+      {
+        return 0;
+      }
+      memcpy(data,&MESSAGE[count2],data_size);
     }
     if (count == 2)
     {
-      memcpy(reserve_proof->reserve_proof,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= BUFFER_SIZE_RESERVE_PROOF)
+      {
+        return 0;
+      }
+      memcpy(reserve_proof->reserve_proof,&MESSAGE[count2],data_size);
     }
     if (count == 3)
     {
-      memcpy(reserve_proof->public_address_created_reserve_proof,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+      {
+        return 0;
+      }
+      memcpy(reserve_proof->public_address_created_reserve_proof,&MESSAGE[count2],data_size);
     }
     count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
   }
@@ -454,6 +467,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   struct tm current_UTC_date_and_time;
   int count;
   int count2;
+  size_t data_size;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -501,19 +515,35 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   {
     if (count == 1)
     {
-      memcpy(delegate_name,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= sizeof(delegate_name))
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid message data}");
+      }
+      memcpy(delegate_name,&MESSAGE[count2],data_size);
     }
     if (count == 2)
     {
-      memcpy(delegates_IP_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= sizeof(delegates_IP_address))
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid message data}");
+      }
+      memcpy(delegates_IP_address,&MESSAGE[count2],data_size);
     }
     if (count == 3)
     {
-      memcpy(delegate_public_key,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != VRF_PUBLIC_KEY_LENGTH)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid message data}");
+      }
+      memcpy(delegate_public_key,&MESSAGE[count2],data_size);
     }
     if (count == 4)
     {
-      memcpy(delegate_public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid message data}");
+      }
+      memcpy(delegate_public_address,&MESSAGE[count2],data_size);
     }
     count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
   }
@@ -685,6 +715,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   struct tm current_UTC_date_and_time;
   int count;
   int count2;
+  size_t data_size;
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -726,15 +757,27 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   {
     if (count == 1)
     {
-      memcpy(item,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= sizeof(item))
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid message data}");
+      }
+      memcpy(item,&MESSAGE[count2],data_size);
     }
     if (count == 2)
     {
-      memcpy(value,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= sizeof(value))
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid message data}");
+      }
+      memcpy(value,&MESSAGE[count2],data_size);
     }
     if (count == 3)
     {
-      memcpy(delegate_public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid message data}");
+      }
+      memcpy(delegate_public_address,&MESSAGE[count2],data_size);
     }
     count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
   }

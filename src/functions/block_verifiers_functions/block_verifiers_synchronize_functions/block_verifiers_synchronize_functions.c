@@ -591,6 +591,7 @@ int sync_all_block_verifiers_list(void)
   int count;
   int count2;
   int total_delegates = 0;
+  size_t data_size;
 
   // define macros
   #define MESSAGE "{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\",\r\n}"
@@ -602,7 +603,11 @@ int sync_all_block_verifiers_list(void)
   } \
   for (count = 0, count2 = 0; count < total_delegates; count++) \
   { \
-    memcpy((block_verifiers_data)[count],&data2[count2],strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2); \
+    if ((data_size = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) - count2) >= sizeof(block_verifiers_data)) \
+    { \
+      SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Invalid message data"); \
+    } \
+    memcpy((block_verifiers_data)[count],&data2[count2],data_size); \
     count2 = strnlen(data2,sizeof(data2)) - strnlen(strstr(data2+count2,"|"),sizeof(data2)) + 1; \
   }
 

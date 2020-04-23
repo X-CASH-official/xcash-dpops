@@ -226,6 +226,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   size_t message_length;
   size_t count;
   size_t count2;
+  size_t data_size;
 
   // define macros
   #define VERIFY_DATA_ERROR(settings) \
@@ -309,11 +310,19 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
           {
             if (count == 3)
             {
-              memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
             }
             if (count == 4)
             {
-              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],data_size);
             }
             count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
           }
@@ -331,11 +340,19 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
           {
             if (count == 4)
             {
-              memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
             }
             if (count == 5)
             {
-              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],data_size);
             }
             count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
           }
@@ -353,11 +370,19 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
           {
             if (count == 3)
             {
-              memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
             }
             if (count == 4)
             {
-              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],data_size);
             }
             count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
           }
@@ -375,11 +400,19 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
           {
             if (count == 2)
             {
-              memcpy(public_address,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
             }
             if (count == 4)
             {
-              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(XCASH_DPOPS_signature,&MESSAGE[count2],data_size);
             }
             count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
           }
