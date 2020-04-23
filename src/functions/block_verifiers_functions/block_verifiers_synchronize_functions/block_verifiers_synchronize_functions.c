@@ -805,6 +805,7 @@ int get_synced_block_verifiers(void)
   int count;
   int count2;
   int total_delegates = 0;
+  size_t data_size;
 
   // define macros
   #define MESSAGE "{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n}"
@@ -817,7 +818,11 @@ int get_synced_block_verifiers(void)
   } \
   for (count = 0, count2 = 0; count < total_delegates; count++) \
   { \
-    memcpy(block_verifiers_data[count],&data[count2],strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) - count2); \
+    if ((data_size = strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) - count2 >= sizeof(block_verifiers_data[count])) \
+    { \
+      GET_SYNCED_BLOCK_VERIFIERS_ERROR("Invalid message data"); \
+    } \
+    memcpy(block_verifiers_data[count],&data[count2],data_size); \
     count2 = strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) + 1; \
   }
 
@@ -827,9 +832,11 @@ int get_synced_block_verifiers(void)
   error_message.total++; \
   return 0;
 
-  // reset the block_verifiers_IP_addresses 
+  // reset the synced_block_verifiers
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
+    memset(synced_block_verifiers.synced_block_verifiers_public_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_public_address[count]));
+    memset(synced_block_verifiers.synced_block_verifiers_public_key[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_public_key[count]));
     memset(synced_block_verifiers.synced_block_verifiers_IP_address[count],0,sizeof(synced_block_verifiers.synced_block_verifiers_IP_address[count]));
     memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count]));
   }
