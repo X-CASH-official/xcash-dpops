@@ -582,6 +582,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   size_t count2;
   size_t current_block_height_reserve_bytes;
   size_t reserve_bytes_blocks_amount;
+  size_t data_size;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR(settings) \
@@ -623,14 +624,25 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
     {
       if (count == 1)
       {
-        memcpy(data,&MESSAGE[count2],strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2);
+        if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= sizeof(data))
+        {
+          SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Invalid message data");
+        }
+        memcpy(data,&MESSAGE[count2],data_size);
         break;
       }
       count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
     }
   }
-  
 
+  // check if the block height is valid
+  for (count = 0; count < strlen(data); count++)
+  {
+    if (memcmp(data[count],"0",1) != 0 && memcmp(data[count],"1",1) != 0 && memcmp(data[count],"2",1) != 0 && memcmp(data[count],"3",1) != 0 && memcmp(data[count],"4",1) != 0 && memcmp(data[count],"5",1) != 0 && memcmp(data[count],"6",1) != 0 && memcmp(data[count],"7",1) != 0 && memcmp(data[count],"8",1) != 0 && memcmp(data[count],"9",1) != 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Invalid block height}");
+    }
+  }
 
   // calculate how many blocks to send
   if (test_settings == 0)
