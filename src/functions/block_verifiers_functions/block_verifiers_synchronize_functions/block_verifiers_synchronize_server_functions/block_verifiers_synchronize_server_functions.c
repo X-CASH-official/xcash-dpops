@@ -638,7 +638,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   // check if the block height is valid
   for (count = 0; count < strlen(data); count++)
   {
-    if (memcmp(data[count],"0",1) != 0 && memcmp(data[count],"1",1) != 0 && memcmp(data[count],"2",1) != 0 && memcmp(data[count],"3",1) != 0 && memcmp(data[count],"4",1) != 0 && memcmp(data[count],"5",1) != 0 && memcmp(data[count],"6",1) != 0 && memcmp(data[count],"7",1) != 0 && memcmp(data[count],"8",1) != 0 && memcmp(data[count],"9",1) != 0)
+    if (memcmp(&data[count],"0",1) != 0 && memcmp(&data[count],"1",1) != 0 && memcmp(&data[count],"2",1) != 0 && memcmp(&data[count],"3",1) != 0 && memcmp(&data[count],"4",1) != 0 && memcmp(&data[count],"5",1) != 0 && memcmp(&data[count],"6",1) != 0 && memcmp(&data[count],"7",1) != 0 && memcmp(&data[count],"8",1) != 0 && memcmp(&data[count],"9",1) != 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Invalid block height}");
     }

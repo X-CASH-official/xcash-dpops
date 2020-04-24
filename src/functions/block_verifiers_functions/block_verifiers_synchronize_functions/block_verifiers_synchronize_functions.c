@@ -818,7 +818,7 @@ int get_synced_block_verifiers(void)
   } \
   for (count = 0, count2 = 0; count < total_delegates; count++) \
   { \
-    if ((data_size = strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) - count2 >= sizeof(block_verifiers_data[count])) \
+    if ((data_size = strnlen(data,sizeof(data)) - strnlen(strstr(data+count2,"|"),sizeof(data)) - count2) >= sizeof(block_verifiers_data[count])) \
     { \
       GET_SYNCED_BLOCK_VERIFIERS_ERROR("Invalid message data"); \
     } \
