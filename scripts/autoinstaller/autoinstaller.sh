@@ -969,7 +969,6 @@ function build_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   cd "${XCASH_DIR}"
-  git checkout --quiet xcash_proof_of_stake
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
     echo "y" | make clean &>/dev/null
     make release -j "${CPU_THREADS}" &>/dev/null
@@ -1651,6 +1650,18 @@ function install()
 
   # Get the current xcash wallet data
   get_current_xcash_wallet_data
+
+  # test change the xcash-core to xcash_proof_of_stake branch
+  systemctl stop XCASH_DPOPS
+  cd "${XCASH_DIR}"
+  git checkout --quiet xcash_proof_of_stake
+  if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
+    echo "y" | make clean &>/dev/null
+    make release -j "${CPU_THREADS}" &>/dev/null
+  else
+    echo "y" | make clean &>/dev/null
+    make release -j $((CPU_THREADS / 2)) &>/dev/null
+  fi
 
   # Start the systemd service files
   start_systemd_service_files
