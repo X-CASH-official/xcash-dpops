@@ -408,7 +408,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
             }
             if (count == 4)
             {
-              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != VRF_BETA_LENGTH+VRF_PROOF_LENGTH)
               {
                 VERIFY_DATA_ERROR("Invalid message data");
               }
