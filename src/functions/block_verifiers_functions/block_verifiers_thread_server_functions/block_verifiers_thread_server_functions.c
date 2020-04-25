@@ -133,6 +133,7 @@ void* current_block_height_timer_thread(void* parameters)
 
       get_current_block_height(current_block_height);
       get_previous_block_hash(previous_block_hash);
+      fprintf(stderr,"IP=%s\npublic_addres=%s\n",server_limit_IP_address_list,server_limit_public_address_list);
 
       if ((block_verifier_settings = start_new_round()) == 0)
       {
