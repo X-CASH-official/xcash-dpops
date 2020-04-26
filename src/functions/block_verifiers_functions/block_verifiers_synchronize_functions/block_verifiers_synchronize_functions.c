@@ -1304,6 +1304,7 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       snprintf(data2+14,sizeof(data2)-15,"%zu",starting_reserve_bytes_database);
 
       // delete the collection from the database
+      fprintf(stderr,"delete database %s\n",data2);
       delete_collection_from_database(database_name,data2);
 
       // add the data to the database

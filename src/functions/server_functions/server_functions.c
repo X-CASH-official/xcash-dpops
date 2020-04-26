@@ -552,6 +552,7 @@ int socket_thread(int client_socket)
      pthread_mutex_lock(&add_reserve_proof_lock);
      server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(client_socket,(const char*)buffer);
      pthread_mutex_unlock(&add_reserve_proof_lock);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\"") != NULL)
@@ -569,7 +570,7 @@ int socket_thread(int client_socket)
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
      server_receive_data_socket_nodes_to_block_verifiers_register_delegates(client_socket,(const char*)buffer);
-     server_limit_public_addresses(3,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
  else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL)
@@ -577,7 +578,7 @@ int socket_thread(int client_socket)
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
      server_receive_data_socket_nodes_to_block_verifiers_update_delegates(client_socket,(const char*)buffer);
-     server_limit_public_addresses(3,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\"") != NULL)
