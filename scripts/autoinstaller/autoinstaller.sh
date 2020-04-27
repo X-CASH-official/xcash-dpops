@@ -83,10 +83,10 @@ regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 100
 # Functions
 function get_installation_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Restart Programs\n5 = Stop Programs\n6 = Test Update\n7 = Test Update Reset Delegates\n8 = Firewall\n9 = Shared Delegates Firewall\n10 = Test Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Change Solo Delegate or Shared Delegate\n5 = Restart Programs\n6 = Stop Programs\n7 = Test Update\n8 = Test Update Reset Delegates\n9 = Firewall\n10 = Shared Delegates Firewall\n11 = Test Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] && echo "$data" || echo "1")
-  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Shared_Delegates_Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Test_Firewall" &>/dev/null)
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "solo or shared delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Shared_Delegates_Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "11" ] && echo "Test_Firewall" &>/dev/null)
   echo -ne "\r"
   echo
   # Check if XCASH_DPOPS is already installed, if the user choose to install
@@ -1700,9 +1700,6 @@ function update()
   # Stop the systemd service files
   stop_systemd_service_files
 
-  # Check if upgrade from a solo delegate to a shared delegate or a shared delegate to a solo delegate
-  check_if_upgrade_solo_delegate_and_shared_delegate
-
   # Update the package list
   update_packages_list
 
@@ -1825,6 +1822,13 @@ function uninstall()
   echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
 }
 
+function change_solo_or_shared_delegate()
+{
+  check_if_solo_node
+  check_if_upgrade_solo_delegate_and_shared_delegate
+  echo
+}
+
 function test_update()
 {
   get_installation_directory
@@ -1937,18 +1941,20 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ]; then
   uninstall
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ]; then
-  stop_systemd_service_files
-  start_systemd_service_files
+  change_solo_or_shared_delegate
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
   stop_systemd_service_files
+  start_systemd_service_files
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
-  test_update
+  stop_systemd_service_files
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
-  test_update_reset_delegates
+  test_update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ]; then
-  install_firewall_script
+  test_update_reset_delegates
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ]; then
-  install_firewall_script_shared_delegates
+  install_firewall_script
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ]; then
+  install_firewall_script_shared_delegates
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then
   install_firewall_script_test
 fi

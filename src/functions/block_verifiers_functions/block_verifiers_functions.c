@@ -237,16 +237,12 @@ int start_new_round(void)
       return 2;
     }
 
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      color_print(current_block_verifiers_list.block_verifiers_name[count],"green");
-    }
-
     if (calculate_main_nodes_roles() == 0)
     {
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);
       START_NEW_ROUND_ERROR("Error calculating the next block producer.\nYour block verifier will wait until the next round\n");
     }
+    
     if (block_verifiers_create_block() == 0)
     {
       START_NEW_ROUND_ERROR("Your block verifier will wait until the next round\n");
