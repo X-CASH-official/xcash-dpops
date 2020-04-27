@@ -920,7 +920,7 @@ void database_sync_check(void)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   size_t count = 0;
-  long int current_time;
+  long long int current_time;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
@@ -1002,7 +1002,7 @@ void database_sync_check(void)
         continue;
       }
 
-      sscanf(data,"%ld", &current_time);
+      sscanf(data,"%lld", &current_time);
 
       if (labs(time(NULL) - current_time) > BLOCK_VERIFIERS_SETTINGS)
       {
