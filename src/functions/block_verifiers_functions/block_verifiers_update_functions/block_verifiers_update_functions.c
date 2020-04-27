@@ -783,8 +783,6 @@ int calculate_main_nodes_roles(void)
     CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
   }
 
-  color_print(data3,"yellow");
-
   for (count = 0, count3 = 0, main_nodes_count = 0; count < VRF_BETA_LENGTH || main_nodes_count == 6; count += 2)
   {
     memset(data,0,sizeof(data));

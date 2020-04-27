@@ -125,6 +125,9 @@ int start_new_round(void)
   // get the delegates online status
   get_delegates_online_status();
 
+  // wait so everyone has got the online status
+  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,20);
+
   // reload the initial previous, current and next block verifiers list if its the first block or if you had to restart
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
   {
@@ -232,6 +235,11 @@ int start_new_round(void)
       pthread_detach(thread_id);
       sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS); 
       return 2;
+    }
+
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      color_print(current_block_verifiers_list.block_verifiers_name[count],"green");
     }
 
     if (calculate_main_nodes_roles() == 0)

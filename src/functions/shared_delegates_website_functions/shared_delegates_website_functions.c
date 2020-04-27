@@ -179,7 +179,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   // organize the delegates
   if ((delegates_count = organize_delegates(delegates)) == 0)
   {
-    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not organize the delegates");
+    SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(0,"Could not get the shared delegates statistics");
   }
 
   // get the current_delegate_rank
