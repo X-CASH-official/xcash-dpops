@@ -155,7 +155,6 @@ int read_document_field_from_collection(const char* DATABASE, const char* COLLEC
     memcpy(error_message.function[error_message.total],"read_document_field_from_collection",35); \
     memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
     error_message.total++; \
-    fprintf(stderr,"Could not read field %s of collection %s with data %s\n\n",FIELD_NAME,COLLECTION,DATA); \
   } \
   database_reset_all; \
   return 0;

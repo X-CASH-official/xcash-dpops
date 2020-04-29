@@ -268,8 +268,8 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     }
   }
 
-  //memcpy(data,"|",1);
-  //memcpy(data+1,data2,XCASH_WALLET_LENGTH); 
+  memcpy(data,"|",1);
+  memcpy(data+1,data2,XCASH_WALLET_LENGTH); 
 
   // start data
   if (SETTINGS == 1 || SETTINGS == 2)
@@ -300,7 +300,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
       return 0;
     }
     
-    /*pthread_mutex_lock(&database_data_IP_address_lock);
+    pthread_mutex_lock(&database_data_IP_address_lock);
     if (string_count(server_limit_public_address_list,data) > MAXIMUM_CONNECTIONS_IP_ADDRESS_OR_PUBLIC_ADDRESS)
     {
       pthread_mutex_unlock(&database_data_IP_address_lock);
@@ -310,14 +310,14 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     {
       memcpy(server_limit_public_address_list+strlen(server_limit_public_address_list),data,strnlen(data,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     }  
-    pthread_mutex_unlock(&database_data_IP_address_lock);*/
+    pthread_mutex_unlock(&database_data_IP_address_lock);
     return 1;
   }
   else if (SETTINGS == 3 || SETTINGS == 4)
   {
-    /*pthread_mutex_lock(&database_data_IP_address_lock);
+    pthread_mutex_lock(&database_data_IP_address_lock);
     string_replace_limit(server_limit_public_address_list,15728640,data,"",1);
-    pthread_mutex_unlock(&database_data_IP_address_lock);*/
+    pthread_mutex_unlock(&database_data_IP_address_lock);
     return 1;
   }
   return 0;

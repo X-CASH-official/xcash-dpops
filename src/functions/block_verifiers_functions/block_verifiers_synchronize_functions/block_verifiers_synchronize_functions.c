@@ -1134,8 +1134,11 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       delete_collection_from_database(database_name,data2);
 
       // add the data to the database
-      data3[strlen(data3)-2] = 0;
-      insert_multiple_documents_into_collection_json(database_name,data2,data3,MAXIMUM_BUFFER_SIZE);
+      memset(data,0,strlen(data));
+      memcpy(data,data3,strlen(data3)-2);
+      insert_multiple_documents_into_collection_json(database_name,data2,data,strlen(data));
+      //data3[strlen(data3)-2] = 0;
+      //insert_multiple_documents_into_collection_json(database_name,data2,data3,MAXIMUM_BUFFER_SIZE);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
@@ -1307,8 +1310,11 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       delete_collection_from_database(database_name,data2);
 
       // add the data to the database
-      data3[strlen(data3)-2] = 0;
-      insert_multiple_documents_into_collection_json(database_name,data2,data3,MAXIMUM_BUFFER_SIZE);
+      memset(data,0,strlen(data));
+      memcpy(data,data3,strlen(data3)-2);
+      insert_multiple_documents_into_collection_json(database_name,data2,data,strlen(data));
+      //data3[strlen(data3)-2] = 0;
+      //insert_multiple_documents_into_collection_json(database_name,data2,data3,MAXIMUM_BUFFER_SIZE);
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
@@ -1720,8 +1726,11 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   delete_collection_from_database(database_name,DATABASE_COLLECTION);
 
   // add the data to the database
-  data2[strlen(data2)-2] = 0;
-  insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data2,sizeof(data2));
+  //data2[strlen(data2)-2] = 0;
+  // insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data2,sizeof(data2));
+  memset(data,0,strlen(data));
+  memcpy(data,data2,strlen(data2)-2);
+  insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,strlen(data));
 
   pointer_reset(data);
   return 1;
@@ -1851,8 +1860,11 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   delete_collection_from_database(database_name,DATABASE_COLLECTION);
 
   // add the data to the database
-  data2[strlen(data2)-2] = 0;
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data2);
+  //data2[strlen(data2)-2] = 0;
+  //insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data2);
+  memset(data,0,strlen(data));
+  memcpy(data,data2,strlen(data2)-2);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data);
 
   pointer_reset(data);
   return 1;
