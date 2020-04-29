@@ -226,6 +226,11 @@ int start_new_round(void)
       START_NEW_ROUND_ERROR("Could not update the next blokc verifiers list");
     }
 
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      color_print(current_block_verifiers_list.block_verifiers_name[count],"green");
+    }
+
     // check if it is running in registration mode only
     if (registration_settings == 1)
     {
