@@ -187,7 +187,7 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n \"current_time\": \"",112);
-  snprintf(data+112,sizeof(data)-113,"%lld",time(NULL));
+  snprintf(data+112,sizeof(data)-113,"%ld",time(NULL));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data
