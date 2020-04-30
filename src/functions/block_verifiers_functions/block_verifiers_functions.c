@@ -2098,6 +2098,16 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
         continue;
       }
 
+      /* Set TCP_NODELAY on the socket, so it will send data immediately
+      IPPROTO_TCP = TCP level
+      TCP_NODELAY = send data immediately
+      */
+      if (setsockopt(block_verifiers_send_data_socket[count].socket, IPPROTO_TCP, TCP_NODELAY,&(int){1}, sizeof(int)) != 0)
+      { 
+        freeaddrinfo(settings);
+        continue;
+      }
+
       /* Set the socket options for sending and receiving data
       SOL_SOCKET = socket level
       SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
