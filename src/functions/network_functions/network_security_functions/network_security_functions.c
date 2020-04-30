@@ -1024,7 +1024,7 @@ int validate_data(const char* MESSAGE)
   }
   
   // dont check if the message came from a valid user, if the message is from the test wallet, or your own wallet
-  if (strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE") != NULL || (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && strncmp(data,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && strncmp(data,TEST_WALLET,XCASH_WALLET_LENGTH) == 0))
+  if (strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE") != NULL || strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL || (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && strncmp(data,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 1 && strncmp(data,TEST_WALLET,XCASH_WALLET_LENGTH) == 0))
   {
     return 1;
   }

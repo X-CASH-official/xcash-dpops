@@ -283,12 +283,19 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"database_data",data,sizeof(data)) == 0)
+  if (parse_json_data(MESSAGE,"database_data",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not parse the data");
   }
 
+  // make sure the message is coming from the main network data node
+  if (strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0 || strncmp(current_block_height,XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST,BUFFER_SIZE) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Invalid message");
+  }
+
   // add the data to the database
+  memset(data2,0,sizeof(data2));
   memcpy(data2,data,strlen(data)-2);
   get_reserve_bytes_database(count,0);
   memset(data,0,sizeof(data));
