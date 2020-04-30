@@ -2012,6 +2012,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   int count;
   int count2;
   int number;
+  int socket_settings;
 
   // define macros
   #define BLOCK_VERIFIERS_SEND_DATA_SOCKET(message) \
@@ -2154,6 +2155,14 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   {
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
+      // set the socket to blocking mode
+      socket_settings = fcntl(block_verifiers_send_data_socket[count].socket, F_GETFL, NULL);
+      socket_settings &= (~O_NONBLOCK);
+      if (fcntl(block_verifiers_send_data_socket[count].socket, F_SETFL, socket_settings) == -1)
+      {
+        continue;
+      }
+
       // send the message  
       if (debug_settings == 1 && test_settings == 0)
       {  
@@ -2175,7 +2184,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       
       for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
       {
-        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
+        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) < 0)
         {           
           break;
         }
