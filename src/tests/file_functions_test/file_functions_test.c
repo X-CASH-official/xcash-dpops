@@ -73,7 +73,7 @@ int file_functions_test(void)
   }
 
   // append and read the file
-  if (append_file("|",NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || append_file(data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || read_file((unsigned char*)result_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || memcmp(result_test,"XCASH_PROOF_OF_STAKE_TEST_DATA|XCASH_PROOF_OF_STAKE_TEST_DATA",61) != 0)
+  if (append_file("|",NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || append_file(data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || read_file((unsigned char*)result_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || strncmp(result_test,"XCASH_PROOF_OF_STAKE_TEST_DATA|XCASH_PROOF_OF_STAKE_TEST_DATA",61) != 0)
   {
     color_print("FAILED! Test for appending the file","red");
     color_print("FAILED! Test for reading the file","red");
@@ -108,7 +108,7 @@ int file_functions_test(void)
   memcpy(data_test,"|XCASH_PROOF_OF_STAKE_TEST_DATA",31);
   struct append_file_thread_parameters append_file_thread_parameters = {data_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY};
   pthread_create(&thread_id, NULL, &append_file_thread,(void *)&append_file_thread_parameters);
-  if (thread_settings(thread_id) == 0 || read_file((unsigned char*)result_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || memcmp(result_test,"XCASH_PROOF_OF_STAKE_TEST_DATA|XCASH_PROOF_OF_STAKE_TEST_DATA",61) != 0)
+  if (thread_settings(thread_id) == 0 || read_file((unsigned char*)result_test,NODES_PUBLIC_ADDRESS_LIST_FILE_NAME_COPY) == 0 || strncmp(result_test,"XCASH_PROOF_OF_STAKE_TEST_DATA|XCASH_PROOF_OF_STAKE_TEST_DATA",61) != 0)
   {
     color_print("FAILED! Test for appending the file on a seperate thread","red");
   }

@@ -275,7 +275,7 @@ int create_json_data_from_delegates_array(const struct delegates* delegates, cha
   
   for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
-    if (memcmp(delegates[count].public_address,"",1) != 0)
+    if (strncmp(delegates[count].public_address,"",1) != 0)
     {
       memcpy(result+strlen(result),"{",1);
       if (strstr(DOCUMENT_FIELDS,"public_address|") == NULL)
@@ -411,7 +411,7 @@ int create_json_data_from_votes_array(const struct votes* votes, char *result, c
   
   for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
-    if (memcmp(votes[count].public_address_created_reserve_proof,"",1) != 0)
+    if (strncmp(votes[count].public_address_created_reserve_proof,"",1) != 0)
     {
       memcpy(result+strlen(result),"{",1);
       if (strstr(DOCUMENT_FIELDS,"public_address_created_reserve_proof|") == NULL)

@@ -341,7 +341,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
 
   // check if the data is a public address or a delegate name
   memcpy(message,"{\"",2);
-  if (memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) == 0 && DATA_LENGTH == XCASH_WALLET_LENGTH)
+  if (strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) == 0 && DATA_LENGTH == XCASH_WALLET_LENGTH)
   {
     memcpy(message+2,"public_address\":\"",17);
     memcpy(message+19,data2,DATA_LENGTH);
@@ -461,7 +461,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   
   // check if the data is a public address or a delegate name
   memcpy(message,"{\"",2);
-  if (memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) == 0 && DATA_LENGTH == XCASH_WALLET_LENGTH)
+  if (strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) == 0 && DATA_LENGTH == XCASH_WALLET_LENGTH)
   {
     memcpy(message+2,"public_address\":\"",17);
     memcpy(message+19,data2,DATA_LENGTH);
@@ -559,7 +559,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
 
   // get the delegates public address
-  if (memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || DATA_LENGTH != XCASH_WALLET_LENGTH)
+  if (strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || DATA_LENGTH != XCASH_WALLET_LENGTH)
   {
     memcpy(buffer,"{\"delegate_name\":\"",18);
     memcpy(buffer+18,data2,DATA_LENGTH);

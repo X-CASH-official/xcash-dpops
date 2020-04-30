@@ -896,7 +896,7 @@ void print_settings(void)
   }
   debug_settings == 1 ? memcpy(data+strlen(data),"\nDebug Settings: YES",20) : memcpy(data+strlen(data),"\nDebug Settings: NO",19);
   memcpy(data+strlen(data),"\nDelegates Server IP Address: ",30);
-  memcmp(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9) == 0 ? memcpy(data+strlen(data),"0.0.0.0",7) : memcpy(data+strlen(data),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data)));
+  strncmp(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9) == 0 ? memcpy(data+strlen(data),"0.0.0.0",7) : memcpy(data+strlen(data),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data)));
   memcpy(data+strlen(data),"\nDelegates Server Port: 18283\nXCASH Wallet Port: ",49);
   snprintf(data+strlen(data),sizeof(data)-1,"%d",xcash_wallet_port);
   memcpy(data+strlen(data),"\nTotal Threads: ",16);
@@ -997,7 +997,7 @@ void database_sync_check(void)
 
       // parse the message
       memset(data,0,sizeof(data));
-      if (parse_json_data(data2,"current_time",data,sizeof(data)) == 0 || memcmp(data,"",1) == 0)
+      if (parse_json_data(data2,"current_time",data,sizeof(data)) == 0 || strncmp(data,"",1) == 0)
       {
         continue;
       }
@@ -1160,83 +1160,83 @@ int main(int parameters_count, char* parameters[])
   {
     memset(secret_key,0,sizeof(secret_key));
     memset(secret_key_data,0,sizeof(secret_key_data));
-    if (memcmp(xcash_wallet_public_address,TEST_WALLET_1,XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(xcash_wallet_public_address,TEST_WALLET_1,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_1,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_2,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_2,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_2,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_3,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_3,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_3,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_4,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_4,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_4,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_5,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_5,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_5,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_6,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_6,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_6,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_7,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_7,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_7,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_8,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_8,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_8,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_9,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_9,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_9,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_10,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_10,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_10,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_11,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_11,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_11,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_12,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_12,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_12,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_13,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_13,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_13,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_14,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_14,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_14,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_15,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_15,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_15,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_16,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_16,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_16,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_17,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_17,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_17,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_18,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_18,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_18,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_19,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_19,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_19,VRF_SECRET_KEY_LENGTH);
     }
-    else if (memcmp(xcash_wallet_public_address,TEST_WALLET_20,XCASH_WALLET_LENGTH) == 0)
+    else if (strncmp(xcash_wallet_public_address,TEST_WALLET_20,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(secret_key,TEST_WALLET_SECRET_KEY_20,VRF_SECRET_KEY_LENGTH);
     }

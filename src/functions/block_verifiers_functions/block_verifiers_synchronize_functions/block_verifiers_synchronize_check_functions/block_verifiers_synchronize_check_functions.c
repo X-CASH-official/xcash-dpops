@@ -50,7 +50,7 @@ Global Define Macros
 #define SEND_DATABASE_SYNC_CHECK_MESSAGE(database) \
 for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
 { \
-  if (memcmp(synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
+  if (strncmp((char*)synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
   { \
     memset(data,0,strlen(data)); \
     memset(data2,0,strlen(data2)); \
@@ -61,7 +61,7 @@ for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
     } \
     else \
     { \
-      if (strstr(data,database) != NULL && parse_json_data(data,database,data2,sizeof(data2)) != 0 && memcmp(data2,"true",4) == 0) \
+      if (strstr(data,database) != NULL && parse_json_data(data,database,data2,sizeof(data2)) != 0 && strncmp(data2,"true",4) == 0) \
       { \
         synced_block_verifiers.vote_settings_true++; \
       } \

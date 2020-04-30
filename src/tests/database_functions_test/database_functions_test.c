@@ -83,7 +83,7 @@ int database_test(void)
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,database_name,DATABASE_COLLECTION_TEST) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  if (get_database_data_hash(data_test,database_name,DATABASE_COLLECTION_TEST) == 1 && strncmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for get_database_data_hash for XCASH_PROOF_OF_STAKE_TEST_DATA collection","green");
     count_test++;
@@ -93,7 +93,7 @@ int database_test(void)
     color_print("FAILED! Test for get_database_data_hash for XCASH_PROOF_OF_STAKE_TEST_DATA collection","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,database_name,"reserve_proofs_1") == 1 && memcmp(data_test,DATA_HASH_SPECIFIC_RESERVE_PROOFS_COLLECTION,DATA_HASH_LENGTH) == 0)
+  if (get_database_data_hash(data_test,database_name,"reserve_proofs_1") == 1 && strncmp(data_test,DATA_HASH_SPECIFIC_RESERVE_PROOFS_COLLECTION,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for get_database_data_hash for a specific reserve proofs collection","green");
     count_test++;
@@ -103,7 +103,7 @@ int database_test(void)
     color_print("FAILED! Test for get_database_data_hash for a specific reserve proofs collection","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,database_name,"reserve_bytes_1") == 1 && memcmp(data_test,DATA_HASH_SPECIFIC_RESERVE_BYTES_COLLECTION,DATA_HASH_LENGTH) == 0)
+  if (get_database_data_hash(data_test,database_name,"reserve_bytes_1") == 1 && strncmp(data_test,DATA_HASH_SPECIFIC_RESERVE_BYTES_COLLECTION,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for get_database_data_hash for a specific reserve bytes collection","green");
     count_test++;
@@ -113,7 +113,7 @@ int database_test(void)
     color_print("FAILED! Test for get_database_data_hash for a specific reserve bytes collection","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,database_name,"delegates") == 1 && memcmp(data_test,DATA_HASH_DELEGATES_COLLECTION,DATA_HASH_LENGTH) == 0)
+  if (get_database_data_hash(data_test,database_name,"delegates") == 1 && strncmp(data_test,DATA_HASH_DELEGATES_COLLECTION,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for get_database_data_hash for delegates collection","green");
     count_test++;
@@ -123,7 +123,7 @@ int database_test(void)
     color_print("FAILED! Test for get_database_data_hash for delegates collection","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,database_name,"statistics") == 1 && memcmp(data_test,DATA_HASH_STATISTICS_COLLECTION,DATA_HASH_LENGTH) == 0)
+  if (get_database_data_hash(data_test,database_name,"statistics") == 1 && strncmp(data_test,DATA_HASH_STATISTICS_COLLECTION,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for get_database_data_hash for statistics collection","green");
     count_test++;
@@ -133,7 +133,7 @@ int database_test(void)
     color_print("FAILED! Test for get_database_data_hash for statistics collection","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,database_name,"reserve_proofs") == 1 && memcmp(data_test,DATA_HASH_ALL_RESERVE_PROOFS_COLLECTIONS,DATA_HASH_LENGTH) == 0)
+  if (get_database_data_hash(data_test,database_name,"reserve_proofs") == 1 && strncmp(data_test,DATA_HASH_ALL_RESERVE_PROOFS_COLLECTIONS,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for get_database_data_hash for all reserve proofs collections","green");
     count_test++;
@@ -143,7 +143,7 @@ int database_test(void)
     color_print("FAILED! Test for get_database_data_hash for all reserve proofs collections","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,database_name,"reserve_bytes") == 1 && memcmp(data_test,DATA_HASH_ALL_RESERVE_BYTES_COLLECTIONS,DATA_HASH_LENGTH) == 0)
+  if (get_database_data_hash(data_test,database_name,"reserve_bytes") == 1 && strncmp(data_test,DATA_HASH_ALL_RESERVE_BYTES_COLLECTIONS,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for get_database_data_hash for all reserve bytes collections","green");
     count_test++;
@@ -153,7 +153,7 @@ int database_test(void)
     color_print("FAILED! Test for get_database_data_hash for all reserve bytes collections","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,database_name,"ALL") == 1 && memcmp(data_test,DATA_HASH_ALL_COLLECTIONS,DATA_HASH_LENGTH) == 0)
+  if (get_database_data_hash(data_test,database_name,"ALL") == 1 && strncmp(data_test,DATA_HASH_ALL_COLLECTIONS,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for get_database_data_hash for ALL collections","green");
     count_test++;
@@ -172,7 +172,7 @@ int database_test(void)
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   struct get_database_data_hash_thread_parameters get_database_data_hash_thread_parameters = {data_test,database_name,DATABASE_COLLECTION_TEST};
   pthread_create(&thread_id, NULL, &get_database_data_hash_thread,(void *)&get_database_data_hash_thread_parameters);
-  if (thread_settings(thread_id) == 1 && memcmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  if (thread_settings(thread_id) == 1 && strncmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for get_database_data_hash_thread","green");
     count_test++;

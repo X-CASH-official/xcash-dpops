@@ -175,7 +175,7 @@ int update_block_verifiers_list(void)
   {
     for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
     {
-      if (memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH) == 0)
+      if (strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count2],XCASH_WALLET_LENGTH) == 0)
       {
         settings++;
         break;
@@ -419,7 +419,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
 
     
     // add one to the block_producer_total_rounds and the current block height to the block_producer_block_heights if the public address is the block producer
-    if (main_network_data_node_create_block == 0 && ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0)))
+    if (main_network_data_node_create_block == 0 && ((strncmp(current_round_part_backup_node,"0",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"1",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"2",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"3",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"4",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"5",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0)))
     {
       memset(data,0,sizeof(data));
       if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_producer_total_rounds",data) == 0)
@@ -962,7 +962,7 @@ int get_delegates_online_status(void)
   {
     memset(delegates_online_status[count].public_address,0,sizeof(delegates_online_status[count].public_address));
     memcpy(delegates_online_status[count].public_address,delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(delegates_online_status[count].public_address)));
-    delegates_online_status[count].settings = memcmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0 ? 0 : 1;
+    delegates_online_status[count].settings = strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0 ? 0 : 1;
   }
 
   // create the message
@@ -994,7 +994,7 @@ int get_delegates_online_status(void)
     memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
     block_verifiers_send_data_socket[count].settings = 0;
     
-    if (memcmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    if (strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
       // set up the addrinfo
       memset(&serv_addr, 0, sizeof(serv_addr));
@@ -1129,7 +1129,7 @@ int get_delegates_online_status(void)
   }
 
   // wait for all of the data to be sent to the connected sockets, and for the block verifiers to process the data
-  sleep(10);
+  sleep(BLOCK_VERIFIERS_SETTINGS);
 
   for (count = 0; count < total_delegates; count++)
   {

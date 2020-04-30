@@ -258,7 +258,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
           return 0;
         }
         memcpy(data2,&MESSAGE[count2],data_size);
-        if (memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+        if (strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
         {
           return 0;
         }
@@ -275,7 +275,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
   if (SETTINGS == 1 || SETTINGS == 2)
   {
     // verify the message
-    if ((SETTINGS == 1 && verify_data(MESSAGE,1) == 0) || (SETTINGS == 2 && verify_data(MESSAGE,0) == 0))
+    if ((SETTINGS == 1 && verify_data(MESSAGE,0) == 0) || (SETTINGS == 2 && verify_data(MESSAGE,0) == 0))
     { 
       return 0;
     }
@@ -426,27 +426,27 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
     SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
   }
 
-  if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
+  if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,data_hash,DATA_HASH_LENGTH);
     network_data_nodes_sync_database_list.network_data_nodes_1_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
-  else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
+  else if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,data_hash,DATA_HASH_LENGTH);
     network_data_nodes_sync_database_list.network_data_nodes_2_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
-  else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
+  else if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,data_hash,DATA_HASH_LENGTH);
     network_data_nodes_sync_database_list.network_data_nodes_3_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
-  else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
+  else if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,data_hash,DATA_HASH_LENGTH);
     network_data_nodes_sync_database_list.network_data_nodes_4_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
-  else if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
+  else if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,public_address,XCASH_WALLET_LENGTH) == 0))
   {
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,data_hash,DATA_HASH_LENGTH);
     network_data_nodes_sync_database_list.network_data_nodes_5_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
@@ -638,7 +638,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   // check if the block height is valid
   for (count = 0; count < strlen(data); count++)
   {
-    if (memcmp(&data[count],"0",1) != 0 && memcmp(&data[count],"1",1) != 0 && memcmp(&data[count],"2",1) != 0 && memcmp(&data[count],"3",1) != 0 && memcmp(&data[count],"4",1) != 0 && memcmp(&data[count],"5",1) != 0 && memcmp(&data[count],"6",1) != 0 && memcmp(&data[count],"7",1) != 0 && memcmp(&data[count],"8",1) != 0 && memcmp(&data[count],"9",1) != 0)
+    if (strncmp(&data[count],"0",1) != 0 && strncmp(&data[count],"1",1) != 0 && strncmp(&data[count],"2",1) != 0 && strncmp(&data[count],"3",1) != 0 && strncmp(&data[count],"4",1) != 0 && strncmp(&data[count],"5",1) != 0 && strncmp(&data[count],"6",1) != 0 && strncmp(&data[count],"7",1) != 0 && strncmp(&data[count],"8",1) != 0 && strncmp(&data[count],"9",1) != 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Invalid block height}");
     }
@@ -731,7 +731,7 @@ int server_receive_data_socket_node_to_block_verifiers_check_if_current_block_ve
 
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       memset(data,0,2);
       memcpy(data,"1}",2);
@@ -800,7 +800,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   }
 
   // create the message
-  if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
+  if (strncmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
     memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"true\",\r\n \"reserve_proofs_database_1\": \"true\",\r\n \"reserve_proofs_database_2\": \"true\",\r\n \"reserve_proofs_database_3\": \"true\",\r\n \"reserve_proofs_database_4\": \"true\",\r\n \"reserve_proofs_database_5\": \"true\",\r\n \"reserve_proofs_database_6\": \"true\",\r\n \"reserve_proofs_database_7\": \"true\",\r\n \"reserve_proofs_database_8\": \"true\",\r\n \"reserve_proofs_database_9\": \"true\",\r\n \"reserve_proofs_database_10\": \"true\",\r\n \"reserve_proofs_database_11\": \"true\",\r\n \"reserve_proofs_database_12\": \"true\",\r\n \"reserve_proofs_database_13\": \"true\",\r\n \"reserve_proofs_database_14\": \"true\",\r\n \"reserve_proofs_database_15\": \"true\",\r\n \"reserve_proofs_database_16\": \"true\",\r\n \"reserve_proofs_database_17\": \"true\",\r\n \"reserve_proofs_database_18\": \"true\",\r\n \"reserve_proofs_database_19\": \"true\",\r\n \"reserve_proofs_database_20\": \"true\",\r\n \"reserve_proofs_database_21\": \"true\",\r\n \"reserve_proofs_database_22\": \"true\",\r\n \"reserve_proofs_database_23\": \"true\",\r\n \"reserve_proofs_database_24\": \"true\",\r\n \"reserve_proofs_database_25\": \"true\",\r\n \"reserve_proofs_database_26\": \"true\",\r\n \"reserve_proofs_database_27\": \"true\",\r\n \"reserve_proofs_database_28\": \"true\",\r\n \"reserve_proofs_database_29\": \"true\",\r\n \"reserve_proofs_database_30\": \"true\",\r\n \"reserve_proofs_database_31\": \"true\",\r\n \"reserve_proofs_database_32\": \"true\",\r\n \"reserve_proofs_database_33\": \"true\",\r\n \"reserve_proofs_database_34\": \"true\",\r\n \"reserve_proofs_database_35\": \"true\",\r\n \"reserve_proofs_database_36\": \"true\",\r\n \"reserve_proofs_database_37\": \"true\",\r\n \"reserve_proofs_database_38\": \"true\",\r\n \"reserve_proofs_database_39\": \"true\",\r\n \"reserve_proofs_database_40\": \"true\",\r\n \"reserve_proofs_database_41\": \"true\",\r\n \"reserve_proofs_database_42\": \"true\",\r\n \"reserve_proofs_database_43\": \"true\",\r\n \"reserve_proofs_database_44\": \"true\",\r\n \"reserve_proofs_database_45\": \"true\",\r\n \"reserve_proofs_database_46\": \"true\",\r\n \"reserve_proofs_database_47\": \"true\",\r\n \"reserve_proofs_database_48\": \"true\",\r\n \"reserve_proofs_database_49\": \"true\",\r\n \"reserve_proofs_database_50\": \"true\",\r\n}",2140);
   }
@@ -828,7 +828,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
       {
         SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
       }
-      memcmp(reserve_proofs_database,data,DATA_HASH_LENGTH) == 0 ? memcpy(message+strlen(message),"true",4) : memcpy(message+strlen(message),"false",5);
+      strncmp(reserve_proofs_database,data,DATA_HASH_LENGTH) == 0 ? memcpy(message+strlen(message),"true",4) : memcpy(message+strlen(message),"false",5);
       memcpy(message+strlen(message),"\",\r\n",4);
     }
     RESET_ERROR_MESSAGES;
@@ -992,7 +992,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"reserve_bytes_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH || parse_json_data(MESSAGE,"reserve_bytes_settings",data3,sizeof(data3)) == 0 || (memcmp(data3,"0",1) != 0 && memcmp(data3,"1",1) != 0))
+  if (parse_json_data(MESSAGE,"reserve_bytes_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH || parse_json_data(MESSAGE,"reserve_bytes_settings",data3,sizeof(data3)) == 0 || (strncmp(data3,"0",1) != 0 && strncmp(data3,"1",1) != 0))
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not parse the message");
   }
@@ -1007,10 +1007,10 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   }
 
   // create the message
-  memcmp(data,data2,DATA_HASH_LENGTH) == 0 ? memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n ",147) : memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n ",148);
+  strncmp(data,data2,DATA_HASH_LENGTH) == 0 ? memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n ",147) : memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n ",148);
     
   // check if the block verifier wanted to sync all reserve bytes databases or just the current reserve bytes database
-  count = memcmp(data3,"0",1) == 0 ? 1 : current_reserve_bytes_database - 1;
+  count = strncmp(data3,"0",1) == 0 ? 1 : current_reserve_bytes_database - 1;
   if (count == 0)
   {
     // set it to only check the current reserve bytes database if their is no previous reserve bytes database
@@ -1038,7 +1038,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
     {
       SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
     }
-    memcmp(reserve_bytes_database,data,DATA_HASH_LENGTH) == 0 ? memcpy(message+strlen(message),"true",4) : memcpy(message+strlen(message),"false",5);
+    strncmp(reserve_bytes_database,data,DATA_HASH_LENGTH) == 0 ? memcpy(message+strlen(message),"true",4) : memcpy(message+strlen(message),"false",5);
     memcpy(message+strlen(message),"\",\r\n",4);
   }
   memcpy(message+strlen(message),"}",1);
@@ -1199,7 +1199,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   }
 
   // create the message
-  if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
+  if (strncmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
     memset(data,0,strlen(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"true\",\r\n}",135);
@@ -1364,7 +1364,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   }
 
   // create the message
-  if (memcmp(data,data2,DATA_HASH_LENGTH) == 0)
+  if (strncmp(data,data2,DATA_HASH_LENGTH) == 0)
   {
     memset(data,0,strlen(data));
     memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"statistics_database\": \"true\",\r\n}",137);

@@ -629,7 +629,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
     READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR("The database collection does not exist");
   }
 
-  if (!(document = memcmp(DATA,"",1) == 0 ? bson_new() : bson_new_from_json((const uint8_t *)DATA, -1, &error)))
+  if (!(document = strncmp(DATA,"",1) == 0 ? bson_new() : bson_new_from_json((const uint8_t *)DATA, -1, &error)))
   {
     READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }

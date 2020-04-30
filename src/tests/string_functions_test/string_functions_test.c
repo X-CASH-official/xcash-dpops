@@ -264,7 +264,7 @@ int string_functions_test(void)
 
   // test for parse_reserve_bytes_data
   memset(result_test,0,sizeof(result_test));
-  if (parse_reserve_bytes_data(result_test,NETWORK_BLOCK,8) == 1 && memcmp(result_test,"d65cd4647f61953d6fa26fd80d1646ec96822abb5d3a87bcf84fc33daf32c0754932b5ec9abcbda86a053ce11508c08281a2fa386ed87edbd442d71934a6450d",VRF_BETA_LENGTH) == 0)
+  if (parse_reserve_bytes_data(result_test,NETWORK_BLOCK,8) == 1 && strncmp(result_test,"d65cd4647f61953d6fa26fd80d1646ec96822abb5d3a87bcf84fc33daf32c0754932b5ec9abcbda86a053ce11508c08281a2fa386ed87edbd442d71934a6450d",VRF_BETA_LENGTH) == 0)
   {
     color_print("PASSED! Test for parse_reserve_bytes_data","green");
     count_test++;

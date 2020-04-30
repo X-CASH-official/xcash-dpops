@@ -306,20 +306,14 @@ int socket_thread(int client_socket)
     pointer_reset(buffer);
     return 0;
   }
-  
-  if (getpeername(client_socket, (struct sockaddr *) &addr, &addrlength) != 0)
+    
+  // get the IP address
+  pthread_mutex_lock(&lock);
+  if (getpeername(client_socket, (struct sockaddr *) &addr, &addrlength) != 0 || getnameinfo((struct sockaddr *)&addr, addrlength, client_IP_address, sizeof(client_IP_address), NULL, 0, NI_NUMERICHOST) != 0)
   {
     pointer_reset(buffer);
     return 0;
   }
-  
-  // get the IP address or the reverse DNS name
-  pthread_mutex_lock(&lock);
-  if (getnameinfo((struct sockaddr *)&addr, addrlength, client_address, sizeof(client_address), NULL, 0, 0) != 0)
-  {
-    getnameinfo((struct sockaddr *)&addr, addrlength, client_address, sizeof(client_address), NULL, 0, NI_NUMERICHOST);
-  }
-  getnameinfo((struct sockaddr *)&addr, addrlength, client_IP_address, sizeof(client_IP_address), NULL, 0, NI_NUMERICHOST);
   pthread_mutex_unlock(&lock); 
   
   // get the current time

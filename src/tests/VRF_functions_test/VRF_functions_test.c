@@ -103,7 +103,7 @@ int VRF_functions_test(void)
   memset(vrf_public_key,0,strnlen((char*)vrf_public_key,crypto_vrf_PUBLICKEYBYTES));
   memset(vrf_secret_key,0,strnlen((char*)vrf_secret_key,crypto_vrf_SECRETKEYBYTES));
   crypto_vrf_keypair_from_seed((unsigned char*)vrf_public_key, (unsigned char*)vrf_secret_key, (const unsigned char*)data);
-  if (memcmp(vrf_public_key,public_key,crypto_vrf_PUBLICKEYBYTES) == 0 && crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 1)
+  if (strncmp((char*)vrf_public_key,(const char*)public_key,crypto_vrf_PUBLICKEYBYTES) == 0 && crypto_vrf_is_valid_key((const unsigned char*)vrf_public_key) == 1)
   {
     color_print("PASSED! Test for verifying the VRF public and secret key from the initialization data","green");
     count_test++;
@@ -114,7 +114,7 @@ int VRF_functions_test(void)
   }
 
   // create the VRF proof
-  if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,alpha_string,1) == 0 && memcmp(vrf_proof,proof,crypto_vrf_PROOFBYTES) == 0)
+  if (crypto_vrf_prove((unsigned char*)vrf_proof,(const unsigned char*)vrf_secret_key,alpha_string,1) == 0 && strncmp((char*)vrf_proof,(const char*)proof,crypto_vrf_PROOFBYTES) == 0)
   {
     color_print("PASSED! Test for creating the VRF proof","green");
     count_test++;
@@ -137,7 +137,7 @@ int VRF_functions_test(void)
   }
 
   // check if the VRF beta string is the correct beta string for the test data
-  if (memcmp(vrf_beta,beta_string,crypto_vrf_OUTPUTBYTES) == 0)
+  if (strncmp((char*)vrf_beta,(const char*)beta_string,crypto_vrf_OUTPUTBYTES) == 0)
   {
     color_print("PASSED! Test for verifying the VRF beta string from the public key, proof and the alpha string","green");
     count_test++;
@@ -165,7 +165,7 @@ int VRF_functions_test(void)
   {
     snprintf(data3+count2,BUFFER_SIZE,"%02x",data2[count] & 0xFF);
   }
-  if (memcmp(data3,DATA_HASH,DATA_HASH_LENGTH) == 0)
+  if (strncmp(data3,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {
     color_print("PASSED! Test for verifying the SHA2-512 data hash","green");
     count_test++;

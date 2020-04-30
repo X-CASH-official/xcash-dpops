@@ -232,7 +232,7 @@ int organize_delegates(struct delegates* delegates)
   {
     if (production_settings == 1)
     {
-      if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
+      if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[0].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[0].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -251,7 +251,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[0].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
         memcpy(delegates_copy[0].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
       }
-      else if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
+      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[1].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[1].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -270,7 +270,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[1].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
         memcpy(delegates_copy[1].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
       }
-      else if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
+      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[2].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[2].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -289,7 +289,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[2].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
         memcpy(delegates_copy[2].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
       }
-      else if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
+      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[3].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[3].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -308,7 +308,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[3].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
         memcpy(delegates_copy[3].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
       }
-      else if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
+      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[4].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[4].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -330,7 +330,7 @@ int organize_delegates(struct delegates* delegates)
     }
     else if (production_settings == 0)
     {
-      if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+      if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[0].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[0].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -349,7 +349,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[0].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
         memcpy(delegates_copy[0].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
       }
-      else if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[1].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[1].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -368,7 +368,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[1].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
         memcpy(delegates_copy[1].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
       }
-      else if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[2].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[2].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -387,7 +387,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[2].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
         memcpy(delegates_copy[2].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
       }
-      else if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[3].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[3].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -406,7 +406,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[3].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
         memcpy(delegates_copy[3].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
       }
-      else if (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
+      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
       {
         memcpy(delegates_copy[4].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
         memcpy(delegates_copy[4].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
@@ -430,7 +430,7 @@ int organize_delegates(struct delegates* delegates)
 
   for (count = 0, count2 = NETWORK_DATA_NODES_AMOUNT; count < (int)database_multiple_documents_fields.document_count; count++)
   {
-    if ((production_settings == 1 && (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)) || (production_settings == 0 && (memcmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)))
+    if ((production_settings == 1 && (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)) || (production_settings == 0 && (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)))
     {
       // skip the network data nodes since they have already been added
       continue;

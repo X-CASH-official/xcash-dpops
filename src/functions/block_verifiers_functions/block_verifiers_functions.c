@@ -126,7 +126,7 @@ int start_new_round(void)
   get_delegates_online_status();
 
   // wait so everyone has got the online status
-  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,20);
+  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
 
   // reload the initial previous, current and next block verifiers list if its the first block or if you had to restart
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
@@ -158,7 +158,7 @@ int start_new_round(void)
   else
   {
     // this is a X-CASH proof of stake block so this is not the start blocks of the network
-    if (memcmp(VRF_data.block_blob,"",1) != 0 && registration_settings == 0)
+    if (strncmp(VRF_data.block_blob,"",1) != 0 && registration_settings == 0)
     {
       // update all of the databases 
       color_print("Updating the previous rounds data in the databases","blue");
@@ -538,7 +538,7 @@ int start_current_round_start_blocks(void)
   main_network_data_node_create_block = 1;
 
   // check if the block verifier is the main network data node
-  if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0))
+  if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0))
   {
     color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round\n","yellow");
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
@@ -739,7 +739,7 @@ int data_network_node_create_block_data(char *message)
   // add the block verifier signature to the VRF data and the blockchain_data struct
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count]));
       memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));
@@ -922,7 +922,7 @@ int data_network_node_create_block(void)
   memcpy(current_round_part_backup_node,"1",1);
 
   // check if the block verifier is the main network data node
-  if ((production_settings == 0 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && memcmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
+  if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {   
     color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
     color_print("Part 1 - Create the block and VRF data and send it to all block verifiers","yellow");
@@ -942,7 +942,7 @@ int data_network_node_create_block(void)
 
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (memcmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1) != 0)
+      if (strncmp(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1) != 0)
       {
         count2++;
       }
@@ -1076,7 +1076,7 @@ int block_verifiers_create_VRF_secret_key_and_VRF_public_key(char* message)
   // add the VRF data to the block verifiers VRF data copy
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {        
       memcpy(VRF_data.block_verifiers_vrf_secret_key[count],VRF_data.vrf_secret_key,crypto_vrf_SECRETKEYBYTES);
       memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_data.vrf_secret_key_data,VRF_SECRET_KEY_LENGTH);
@@ -1164,7 +1164,7 @@ int block_verifiers_create_VRF_data(void)
       counter = counter % BLOCK_VERIFIERS_AMOUNT;
 
       // check if the block verifier created the data
-      if (memcmp(VRF_data.block_verifiers_vrf_secret_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1) != 0 && memcmp(VRF_data.block_verifiers_vrf_public_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1) != 0 && memcmp(VRF_data.block_verifiers_random_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1) != 0)
+      if (strncmp(VRF_data.block_verifiers_vrf_secret_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1) != 0 && strncmp(VRF_data.block_verifiers_vrf_public_key_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1) != 0 && strncmp(VRF_data.block_verifiers_random_data[counter],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1) != 0)
       {
         break;
       }
@@ -1246,28 +1246,28 @@ int block_verifiers_create_block_signature(char* message)
   // add all of the VRF data to the blockchain_data struct 
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(main_nodes_list.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(main_nodes_list.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
       memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
     }
-    if (memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
       block_producer_backup_settings[0] = count;
     }
-    if (memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
       block_producer_backup_settings[1] = count;
     }
-    if (memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
       block_producer_backup_settings[2] = count;
     }
-    if (memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
       block_producer_backup_settings[3] = count;
     }
-    if (memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
       block_producer_backup_settings[4] = count;
     }
@@ -1332,7 +1332,7 @@ int block_verifiers_create_block_signature(char* message)
   // add the block verifier signature to the VRF data and the blockchain_data struct
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(VRF_data.block_blob_signature[count],data,strnlen(data,BUFFER_SIZE));
     }
@@ -1506,7 +1506,7 @@ int block_verifiers_create_block_and_update_database(void)
   }
   
   // start the reserve proofs timer
-  if (memcmp(current_round_part_backup_node,"0",1) == 0)
+  if (strncmp(current_round_part_backup_node,"0",1) == 0)
   {
     pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
     pthread_detach(thread_id);
@@ -1515,7 +1515,7 @@ int block_verifiers_create_block_and_update_database(void)
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);  
 
   // let the block producer try to submit the block first, then loop through all of the network data nodes to make sure it was submitted
-  if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
+  if ((strncmp(current_round_part_backup_node,"0",1) == 0 && strncmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"1",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"2",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"3",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"4",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"5",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {
     submit_block_template(data);
   }
@@ -1523,7 +1523,7 @@ int block_verifiers_create_block_and_update_database(void)
 
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
-    if (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
       submit_block_template(data);
     }
@@ -1562,7 +1562,7 @@ void print_block_producer(void)
 
   memset(current_block_producer,0,sizeof(current_block_producer));
 
-  if (memcmp(current_round_part_backup_node,"0",1) == 0)
+  if (strncmp(current_round_part_backup_node,"0",1) == 0)
   {
     memcpy(current_block_producer,main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH);
 
@@ -1575,7 +1575,7 @@ void print_block_producer(void)
       }
     }
   }
-  else if (memcmp(current_round_part_backup_node,"1",1) == 0)
+  else if (strncmp(current_round_part_backup_node,"1",1) == 0)
   {
     memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH);
 
@@ -1588,7 +1588,7 @@ void print_block_producer(void)
       }
     }
   }
-  else if (memcmp(current_round_part_backup_node,"2",1) == 0)
+  else if (strncmp(current_round_part_backup_node,"2",1) == 0)
   {
     memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH);
 
@@ -1601,7 +1601,7 @@ void print_block_producer(void)
       }
     }
   }
-  else if (memcmp(current_round_part_backup_node,"3",1) == 0)
+  else if (strncmp(current_round_part_backup_node,"3",1) == 0)
   {
     memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH);
 
@@ -1614,7 +1614,7 @@ void print_block_producer(void)
       }
     }
   }
-  else if (memcmp(current_round_part_backup_node,"4",1) == 0)
+  else if (strncmp(current_round_part_backup_node,"4",1) == 0)
   {
     memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH);
 
@@ -1627,7 +1627,7 @@ void print_block_producer(void)
       }
     }
   }
-  else if (memcmp(current_round_part_backup_node,"5",1) == 0)
+  else if (strncmp(current_round_part_backup_node,"5",1) == 0)
   {
     memcpy(current_block_producer,main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH);
 
@@ -1696,7 +1696,7 @@ int block_verifiers_create_block(void)
     memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count])); \
     memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count])); \
   } \
-  if (memcmp(current_round_part_backup_node,"0",1) == 0) \
+  if (strncmp(current_round_part_backup_node,"0",1) == 0) \
   { \
     memset(current_round_part,0,sizeof(current_round_part)); \
     memcpy(current_round_part,"1",1); \
@@ -1707,7 +1707,7 @@ int block_verifiers_create_block(void)
     print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2); \
     color_print("\n","white"); \
   } \
-  else if (memcmp(current_round_part_backup_node,"1",1) == 0) \
+  else if (strncmp(current_round_part_backup_node,"1",1) == 0) \
   { \
     return data_network_node_create_block(); \
   } \
@@ -1802,7 +1802,7 @@ int block_verifiers_create_block(void)
     memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
     // create the block template and send it to all block verifiers if the block verifier is the block producer
-    if ((memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
+    if ((strncmp(current_round_part_backup_node,"0",1) == 0 && strncmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"1",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"2",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"3",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"4",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"5",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
       if (get_block_template(VRF_data.block_blob) == 0)
       {
@@ -1837,7 +1837,7 @@ int block_verifiers_create_block(void)
     fprintf(stderr,"\033[1;33mPart 3 - Create reserve bytes data for the block using the selected VRF data and sign the block\033[0m\n\n");
 
     // check if the network block string was created from the correct block verifier
-    if (memcmp(VRF_data.block_blob,"",1) == 0)
+    if (strncmp(VRF_data.block_blob,"",1) == 0)
     {
       RESTART_ROUND("Could not receive the network block string from the block producer");
     }
@@ -2049,7 +2049,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     memcpy(block_verifiers_send_data_socket[count].IP_address,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(block_verifiers_send_data_socket[count].IP_address)));
     block_verifiers_send_data_socket[count].settings = 0;
     
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
       // set up the addrinfo
       memset(&serv_addr, 0, sizeof(serv_addr));
@@ -2184,7 +2184,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  sleep(CONNECTION_TIMEOUT_SETTINGS);
+  sleep(BLOCK_VERIFIERS_SETTINGS);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)

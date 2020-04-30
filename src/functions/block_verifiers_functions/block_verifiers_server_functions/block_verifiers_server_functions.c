@@ -121,7 +121,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address_that_created_the_reserve_proof",block_verifiers_public_address,sizeof(block_verifiers_public_address)) == 0 || strlen(block_verifiers_public_address) != XCASH_WALLET_LENGTH || memcmp(block_verifiers_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof,sizeof(reserve_proof)) == 0)
+  if (parse_json_data(MESSAGE,"public_address_that_created_the_reserve_proof",block_verifiers_public_address,sizeof(block_verifiers_public_address)) == 0 || strlen(block_verifiers_public_address) != XCASH_WALLET_LENGTH || strncmp(block_verifiers_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof,sizeof(reserve_proof)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not parse the message");
   }
@@ -235,7 +235,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_online_status
   // update the block verifiers online status
   for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
-    if (memcmp(delegates_online_status[count].public_address,public_address,XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(delegates_online_status[count].public_address,public_address,XCASH_WALLET_LENGTH) == 0)
     {
       delegates_online_status[count].settings = 1;
       break;
@@ -335,7 +335,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   memset(data2,0,sizeof(data2));
 
   // verify the data
-  if (verify_data(MESSAGE,1) == 0 || memcmp(current_round_part_backup_node,"1",1) != 0 || main_network_data_node_create_block != 1)
+  if (verify_data(MESSAGE,1) == 0 || strncmp(current_round_part_backup_node,"1",1) != 0 || main_network_data_node_create_block != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not verify data");
   }
@@ -404,7 +404,7 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
   memset(data2,0,sizeof(data2));
 
   // verify the data
-  if (verify_data(MESSAGE,1) == 0 || memcmp(current_round_part_backup_node,"1",1) != 0 || main_network_data_node_create_block != 1)
+  if (verify_data(MESSAGE,1) == 0 || strncmp(current_round_part_backup_node,"1",1) != 0 || main_network_data_node_create_block != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK("Could not verify data");
   }
@@ -418,7 +418,7 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
   // process the vote data
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
     {
       memcpy(VRF_data.block_blob_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
     }
@@ -427,7 +427,7 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
   // add the block verifiers signature to the network block string
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
     {
       memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count]));
       memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));
@@ -482,7 +482,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   }
   
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not parse the data");
   }
@@ -490,9 +490,9 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   // check if the public_address is the correct main node
   count = main_network_data_node_create_block;
 
-  if ((test_settings == 1) || (count == 1 && memcmp(network_data_nodes_list.network_data_nodes_public_address[0],data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"0",1) == 0 && memcmp(main_nodes_list.block_producer_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"1",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"2",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"3",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"4",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && memcmp(current_round_part_backup_node,"5",1) == 0 && memcmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,data2,XCASH_WALLET_LENGTH) == 0))
+  if ((test_settings == 1) || (count == 1 && strncmp(network_data_nodes_list.network_data_nodes_public_address[0],data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && strncmp(current_round_part_backup_node,"0",1) == 0 && strncmp(main_nodes_list.block_producer_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && strncmp(current_round_part_backup_node,"1",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && strncmp(current_round_part_backup_node,"2",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && strncmp(current_round_part_backup_node,"3",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && strncmp(current_round_part_backup_node,"4",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,data2,XCASH_WALLET_LENGTH) == 0) || (count == 0 && strncmp(current_round_part_backup_node,"5",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,data2,XCASH_WALLET_LENGTH) == 0))
   { 
-    if (memcmp(VRF_data.block_blob,"",1) == 0)
+    if (strncmp(VRF_data.block_blob,"",1) == 0)
     {
       memcpy(VRF_data.block_blob,data,strnlen(data,BUFFER_SIZE));
     }
@@ -555,7 +555,7 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
 
   // process the vote data
   pthread_mutex_lock(&vote_lock);
-  if (memcmp(data,"valid",5) == 0 && memcmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0)
+  if (strncmp(data,"valid",5) == 0 && strncmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0)
   {
     current_round_part_vote_data.vote_results_valid++;
   }
@@ -619,7 +619,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || memcmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"vrf_secret_key",vrf_secret_key_data,sizeof(vrf_secret_key_data)) == 0 || strlen(vrf_secret_key_data) != VRF_SECRET_KEY_LENGTH || parse_json_data(MESSAGE,"vrf_public_key",vrf_public_key_data,sizeof(vrf_public_key_data)) == 0 || strlen(vrf_public_key_data) != VRF_PUBLIC_KEY_LENGTH || parse_json_data(MESSAGE,"random_data",random_data,sizeof(random_data)) == 0 || strlen(random_data) != RANDOM_STRING_LENGTH)
+  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"vrf_secret_key",vrf_secret_key_data,sizeof(vrf_secret_key_data)) == 0 || strlen(vrf_secret_key_data) != VRF_SECRET_KEY_LENGTH || parse_json_data(MESSAGE,"vrf_public_key",vrf_public_key_data,sizeof(vrf_public_key_data)) == 0 || strlen(vrf_public_key_data) != VRF_PUBLIC_KEY_LENGTH || parse_json_data(MESSAGE,"random_data",random_data,sizeof(random_data)) == 0 || strlen(random_data) != RANDOM_STRING_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not parse the data");
   }
@@ -643,7 +643,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   // process the vote data
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0 && memcmp(VRF_data.block_verifiers_vrf_secret_key_data[count],"",1) == 0 && memcmp(VRF_data.block_verifiers_vrf_secret_key[count],"",1) == 0 && memcmp(VRF_data.block_verifiers_vrf_public_key_data[count],"",1) == 0 && memcmp(VRF_data.block_verifiers_vrf_public_key[count],"",1) == 0 && memcmp(VRF_data.block_verifiers_random_data[count],"",1) == 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0 && strncmp(VRF_data.block_verifiers_vrf_secret_key_data[count],"",1) == 0 && strncmp((char*)VRF_data.block_verifiers_vrf_secret_key[count],"",1) == 0 && strncmp(VRF_data.block_verifiers_vrf_public_key_data[count],"",1) == 0 && strncmp((char*)VRF_data.block_verifiers_vrf_public_key[count],"",1) == 0 && strncmp(VRF_data.block_verifiers_random_data[count],"",1) == 0)
     {
       memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],vrf_secret_key_data,VRF_SECRET_KEY_LENGTH);
       memcpy(VRF_data.block_verifiers_vrf_secret_key[count],vrf_secret_key,crypto_vrf_SECRETKEYBYTES);
@@ -696,7 +696,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   }
 
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_PROOF_LENGTH+VRF_BETA_LENGTH || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || memcmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_PROOF_LENGTH+VRF_BETA_LENGTH || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not parse the data");
   }
@@ -704,7 +704,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   // process the vote data
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (memcmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0 && memcmp(VRF_data.block_blob_signature[count],"",1) == 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0 && strncmp(VRF_data.block_blob_signature[count],"",1) == 0)
     {
       memcpy(VRF_data.block_blob_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
     }

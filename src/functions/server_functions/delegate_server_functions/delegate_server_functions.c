@@ -144,7 +144,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
   }
 
   // check if the data is valid
-  if (strlen(reserve_proof->public_address_voted_for) != XCASH_WALLET_LENGTH || memcmp(reserve_proof->public_address_voted_for,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(reserve_proof->public_address_created_reserve_proof) != XCASH_WALLET_LENGTH || memcmp(reserve_proof->public_address_created_reserve_proof,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(reserve_proof->reserve_proof) > BUFFER_SIZE_RESERVE_PROOF)
+  if (strlen(reserve_proof->public_address_voted_for) != XCASH_WALLET_LENGTH || strncmp(reserve_proof->public_address_voted_for,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(reserve_proof->public_address_created_reserve_proof) != XCASH_WALLET_LENGTH || strncmp(reserve_proof->public_address_created_reserve_proof,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(reserve_proof->reserve_proof) > BUFFER_SIZE_RESERVE_PROOF)
   {
     return 0;
   }
@@ -557,7 +557,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   } 
   
   // check if the data is valid
-  if (strlen(delegate_name) > MAXIMUM_BUFFER_SIZE_DELEGATES_NAME || strlen(delegate_name) < MINIMUM_BUFFER_SIZE_DELEGATES_NAME || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strstr(delegates_IP_address,".") == NULL || strlen(delegates_IP_address) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || strstr(delegates_IP_address,"http://") != NULL || strstr(delegates_IP_address,"https://") != NULL || strstr(delegates_IP_address,"www.") != NULL || strlen(delegate_public_key) != VRF_PUBLIC_KEY_LENGTH || crypto_vrf_is_valid_key((const unsigned char*)delegate_public_key_data) != 1)
+  if (strlen(delegate_name) > MAXIMUM_BUFFER_SIZE_DELEGATES_NAME || strlen(delegate_name) < MINIMUM_BUFFER_SIZE_DELEGATES_NAME || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || strncmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strstr(delegates_IP_address,".") == NULL || strlen(delegates_IP_address) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || strstr(delegates_IP_address,"http://") != NULL || strstr(delegates_IP_address,"https://") != NULL || strstr(delegates_IP_address,"www.") != NULL || strlen(delegate_public_key) != VRF_PUBLIC_KEY_LENGTH || crypto_vrf_is_valid_key((const unsigned char*)delegate_public_key_data) != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid data}");
   }
@@ -623,7 +623,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(data+strlen(data),"\"}",2);
 
   // add the delegate to the database
-  if (memcmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && strncmp(delegate_name,"delegate_name_1",BUFFER_SIZE) == 0 && memcmp(delegate_public_key,NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH) == 0)
+  if (strncmp(delegate_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && strncmp(delegate_name,"delegate_name_1",BUFFER_SIZE) == 0 && strncmp(delegate_public_key,NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH) == 0)
   {
     if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data) == 0)
     {
@@ -667,7 +667,7 @@ int check_for_valid_fee_structure(const char* MESSAGE)
 
   for (count = 0, settings = 0, settings2 = 0; count < (int)strlen(MESSAGE); count++)
   {
-    if ((memcmp(&MESSAGE[count],"0",1) != 0 && memcmp(&MESSAGE[count],"1",1) != 0 && memcmp(&MESSAGE[count],"2",1) != 0 && memcmp(&MESSAGE[count],"3",1) != 0 && memcmp(&MESSAGE[count],"4",1) != 0 && memcmp(&MESSAGE[count],"5",1) != 0 && memcmp(&MESSAGE[count],"6",1) != 0 && memcmp(&MESSAGE[count],"7",1) != 0 && memcmp(&MESSAGE[count],"8",1) != 0 && memcmp(&MESSAGE[count],"9",1) != 0 && memcmp(&MESSAGE[count],".",1) != 0) || (count == 0 && memcmp(&MESSAGE[count],".",1) == 0))
+    if ((strncmp(&MESSAGE[count],"0",1) != 0 && strncmp(&MESSAGE[count],"1",1) != 0 && strncmp(&MESSAGE[count],"2",1) != 0 && strncmp(&MESSAGE[count],"3",1) != 0 && strncmp(&MESSAGE[count],"4",1) != 0 && strncmp(&MESSAGE[count],"5",1) != 0 && strncmp(&MESSAGE[count],"6",1) != 0 && strncmp(&MESSAGE[count],"7",1) != 0 && strncmp(&MESSAGE[count],"8",1) != 0 && strncmp(&MESSAGE[count],"9",1) != 0 && strncmp(&MESSAGE[count],".",1) != 0) || (count == 0 && strncmp(&MESSAGE[count],".",1) == 0))
     {
       return 0;
     }
@@ -679,7 +679,7 @@ int check_for_valid_fee_structure(const char* MESSAGE)
     {
       return 0;
     }
-    if (memcmp(&MESSAGE[count],".",1) == 0)
+    if (strncmp(&MESSAGE[count],".",1) == 0)
     {
       settings = 1;
     }
@@ -783,19 +783,19 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   }
 
   // check if the data is valid
-  if (strlen(delegate_public_address) != XCASH_WALLET_LENGTH || memcmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (strlen(delegate_public_address) != XCASH_WALLET_LENGTH || strncmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid data}");
   }
 
   // check if the item is valid
-  if (memcmp(item,"IP_address",10) != 0 && memcmp(item,"about",5) != 0 && memcmp(item,"website",7) != 0 && memcmp(item,"team",4) != 0 && memcmp(item,"pool_mode",9) != 0 && memcmp(item,"fee_structure",13) != 0 && memcmp(item,"server_settings",15) != 0)
+  if (strncmp(item,"IP_address",10) != 0 && strncmp(item,"about",5) != 0 && strncmp(item,"website",7) != 0 && strncmp(item,"team",4) != 0 && strncmp(item,"pool_mode",9) != 0 && strncmp(item,"fee_structure",13) != 0 && strncmp(item,"server_settings",15) != 0)
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update}");
   }
 
   // check if the value is valid
-  if ((memcmp(item,"IP_address",10) == 0 && strlen(value) > 255) || (memcmp(item,"about",5) == 0 && strlen(value) > 1024) || (memcmp(item,"website",7) == 0 && strlen(value) > 255) || (memcmp(item,"team",4) == 0 && strlen(value) > 255) || (memcmp(item,"pool_mode",9) == 0 && memcmp(value,"true",4) != 0 && memcmp(value,"false",5) != 0) || (memcmp(item,"fee_structure",13) == 0 && check_for_valid_fee_structure(value) == 0) || (memcmp(item,"server_settings",15) == 0 && strlen(value) > 1024))
+  if ((strncmp(item,"IP_address",10) == 0 && strlen(value) > 255) || (strncmp(item,"about",5) == 0 && strlen(value) > 1024) || (strncmp(item,"website",7) == 0 && strlen(value) > 255) || (strncmp(item,"team",4) == 0 && strlen(value) > 255) || (strncmp(item,"pool_mode",9) == 0 && strncmp(value,"true",4) != 0 && strncmp(value,"false",5) != 0) || (strncmp(item,"fee_structure",13) == 0 && check_for_valid_fee_structure(value) == 0) || (strncmp(item,"server_settings",15) == 0 && strlen(value) > 1024))
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item value to update}");
   }

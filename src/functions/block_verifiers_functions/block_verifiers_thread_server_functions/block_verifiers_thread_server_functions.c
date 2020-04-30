@@ -797,7 +797,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     
     // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
     memset(data,0,strlen(data));
-    if (select_random_unique_reserve_proof(&reserve_proof) == 1 && (check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof) != 1 || memcmp(data,reserve_proof.reserve_proof_amount,strlen(data)) != 0))
+    if (select_random_unique_reserve_proof(&reserve_proof) == 1 && (check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof) != 1 || strncmp(data,reserve_proof.reserve_proof_amount,strlen(data)) != 0))
     { 
       send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
     }
@@ -846,7 +846,7 @@ void remove_inactive_delegates(void)
     sscanf(delegates[count].total_vote_count, "%lld", &total_votes);
 
     // check if each delegate has not mined a block, and their vote count is under the MINIMUM_AMOUNT_REGISTER_DELEGATE
-    if (memcmp(delegates[count].block_producer_block_heights,"",1) == 0 && total_votes < MINIMUM_AMOUNT_REGISTER_DELEGATE && memcmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && memcmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && memcmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && memcmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && memcmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0)
+    if (strncmp(delegates[count].block_producer_block_heights,"",1) == 0 && total_votes < MINIMUM_AMOUNT_REGISTER_DELEGATE && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0)
     {
       // remove the delegate from the database
       memset(data,0,strlen(data));
