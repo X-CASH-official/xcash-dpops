@@ -288,11 +288,11 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not parse the data");
   }
 
-  /*// make sure the message is coming from the main network data node
+  // make sure the message is coming from the main network data node
   if ((production_settings == 0 && strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0) || (production_settings == 1 && strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0))
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Invalid message");
-  }*/
+  }
 
   // add the data to the database
   memset(data2,0,sizeof(data2));

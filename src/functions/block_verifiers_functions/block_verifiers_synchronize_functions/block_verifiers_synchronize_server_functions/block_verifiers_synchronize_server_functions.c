@@ -218,7 +218,7 @@ Parameters:
 
 int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
 {
-  if (test_settings == 0)
+  if (test_settings == 1)
   {
     return 1;
   }
@@ -287,17 +287,13 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     memset(data2,0,sizeof(data2));
 
     // check to make sure that the IP address is registered to a delegate and the delegate has the DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT
-    if (test_settings == 0 && read_document_field_from_collection(database_name,DATABASE_COLLECTION,data3,"total_vote_count",data2) == 1)
+    if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data3,"total_vote_count",data2) == 1)
     {
       sscanf(data2, "%lld", &number);
       if ((production_settings == 1 && number < DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT) || (production_settings == 0 && number < 0))
       {
         return 0;
       }
-    }
-    else if (test_settings == 1)
-    {
-      
     }
     else
     {
@@ -344,11 +340,11 @@ Parameters:
 
 int server_limit_IP_addresses(const int SETTINGS, const char* IP_ADDRESS)
 {
-  if (test_settings == 0)
+  if (test_settings == 1)
   {
     return 1;
   }
-  
+
   // Variables
   char data[SMALL_BUFFER_SIZE];
 

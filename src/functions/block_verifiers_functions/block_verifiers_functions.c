@@ -2012,7 +2012,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   int count;
   int count2;
   int number;
-  int socket_settings;
 
   // define macros
   #define BLOCK_VERIFIERS_SEND_DATA_SOCKET(message) \
@@ -2098,16 +2097,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
         continue;
       }
 
-      /* Set TCP_NODELAY on the socket, so it will send data immediately
-      IPPROTO_TCP = TCP level
-      TCP_NODELAY = send data immediately
-      */
-      if (setsockopt(block_verifiers_send_data_socket[count].socket, IPPROTO_TCP, TCP_NODELAY,&(int){1}, sizeof(int)) != 0)
-      { 
-        freeaddrinfo(settings);
-        continue;
-      }
-
       /* Set the socket options for sending and receiving data
       SOL_SOCKET = socket level
       SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
@@ -2165,14 +2154,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   {
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
-      // set the socket to blocking mode
-      socket_settings = fcntl(block_verifiers_send_data_socket[count].socket, F_GETFL, NULL);
-      socket_settings &= (~O_NONBLOCK);
-      if (fcntl(block_verifiers_send_data_socket[count].socket, F_SETFL, socket_settings) == -1)
-      {
-        continue;
-      }
-
       // send the message  
       if (debug_settings == 1 && test_settings == 0)
       {  
@@ -2194,7 +2175,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       
       for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
       {
-        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) < 0)
+        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
         {           
           break;
         }

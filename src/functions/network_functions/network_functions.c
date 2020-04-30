@@ -661,7 +661,6 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   long long int total;
   long long int sent;
   long long int bytes;
-  int socket_settings;
 
   if (MESSAGE_SETTINGS == 1)
   {
@@ -717,21 +716,10 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     total = strlen((const char*)data);
   }
 
-  // if loading a file, set the socket to blocking mode
-  if (MESSAGE_SETTINGS > 1)
-  {
-    socket_settings = fcntl(SOCKET, F_GETFL, NULL);
-    socket_settings &= (~O_NONBLOCK);
-    if (fcntl(SOCKET, F_SETFL, socket_settings) == -1)
-    {
-      return 0;
-    }
-  } 
-
   for (sent = 0, bytes = 0; sent < total; sent+= bytes)
   {
     bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL);
-    if (bytes < 0)
+    if (bytes == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
     {      
       return 0;
     }
@@ -773,7 +761,10 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
     memset(buffer,0,sizeof(buffer));
 
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data, but check errno to see if we should exit or try again
-    recvfrom(SOCKET, buffer, sizeof(buffer)-1, MSG_DONTWAIT, NULL, NULL);
+    if (recvfrom(SOCKET, buffer, sizeof(buffer)-1, MSG_DONTWAIT, NULL, NULL) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
+    {
+      return 1;
+    }
 
     if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING) == NULL))
     {
