@@ -13,6 +13,5 @@ int submit_block_template(const char* DATA);
 int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* BLOCK_HEIGHT);
 int get_current_block_height(char *result);
 int get_previous_block_hash(char *result);
-int get_path(char *result);
 int get_previous_block_information(char *block_hash, char *block_reward, char *block_date_and_time);
 #endif
