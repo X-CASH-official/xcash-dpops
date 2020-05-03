@@ -20,6 +20,7 @@
 #include "block_verifiers_server_functions.h"
 #include "block_verifiers_synchronize_server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
+#include "read_database_functions.h"
 #include "database_functions.h"
 #include "delegate_server_functions.h"
 #include "delegates_website_functions.h"
@@ -189,11 +190,10 @@ int create_server(const int MESSAGE_SETTINGS)
 -----------------------------------------------------------------------------------------------------------
 Name: new_socket_thread
 Description: new socket thread
-Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-int new_socket_thread(void)
+void new_socket_thread(void)
 {
   // Variables
   int client_socket;
@@ -214,10 +214,188 @@ int new_socket_thread(void)
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &epevent) < 0)
     {    
       close(client_socket);
-      return 0;
+      return;
     }
   }
-  return 1;
+  return;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_limit_public_addresses
+Description: limits connections based on registered public addresses to the server
+Parameters:
+  SETTINGS - 1 to run the check before running the server code, 0 to remove the IP address so it can make another connection, 2 to not verify any of the previous block hash or current round part
+  MESSAGE - The message
+  Return: 0 if there is multiple connections, 1 if there is a single connection
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
+{
+  if (test_settings == 1)
+  {
+    return 1;
+  }
+
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
+  int count;
+  int count2;
+  long long int number;
+  size_t data_size;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  // parse the data
+  if (SETTINGS == 1 || SETTINGS == 3)
+  {
+    if (parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
+    {
+      return 0;
+    }    
+  }
+  else if (SETTINGS == 2 || SETTINGS == 4)
+  {
+    for (count = 0, count2 = 0; count < GET_RESERVE_BYTES_DATABASE_HASH_PARAMETER_AMOUNT; count++)
+    {
+      if (count == 2)
+      {
+        if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+        {
+          return 0;
+        }
+        memcpy(data2,&MESSAGE[count2],data_size);
+        if (strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+        {
+          return 0;
+        }
+        break;
+      }
+      count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+    }
+  }
+
+  memcpy(data,"|",1);
+  memcpy(data+1,data2,XCASH_WALLET_LENGTH); 
+
+  // start data
+  if (SETTINGS == 1 || SETTINGS == 2)
+  {
+    // verify the message
+    if ((SETTINGS == 1 && verify_data(MESSAGE,1) == 0) || (SETTINGS == 2 && verify_data(MESSAGE,0) == 0))
+    { 
+      return 0;
+    }
+
+    // create the message
+    memcpy(data3,"{\"public_address\":\"",19);
+    memcpy(data3+19,data2,strnlen(data2,XCASH_WALLET_LENGTH));
+    memcpy(data3+strlen(data3),"\"}",2);
+    memset(data2,0,sizeof(data2));
+
+    // check to make sure that the IP address is registered to a delegate and the delegate has the DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT
+    if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data3,"total_vote_count",data2) == 1)
+    {
+      sscanf(data2, "%lld", &number);
+      if ((production_settings == 1 && number < DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT) || (production_settings == 0 && number < 0))
+      {
+        return 0;
+      }
+    }
+    else
+    {
+      return 0;
+    }
+    
+    pthread_mutex_lock(&database_data_IP_address_lock);
+    if (string_count(server_limit_public_address_list,data) > MAXIMUM_CONNECTIONS_IP_ADDRESS_OR_PUBLIC_ADDRESS)
+    {
+      pthread_mutex_unlock(&database_data_IP_address_lock);
+      return 0;
+    }
+    else
+    {
+      memcpy(server_limit_public_address_list+strlen(server_limit_public_address_list),data,strnlen(data,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    }  
+    pthread_mutex_unlock(&database_data_IP_address_lock);
+    return 1;
+  }
+  else if (SETTINGS == 3 || SETTINGS == 4)
+  {
+    pthread_mutex_lock(&database_data_IP_address_lock);
+    string_replace_limit(server_limit_public_address_list,15728640,data,"",1);
+    pthread_mutex_unlock(&database_data_IP_address_lock);
+    return 1;
+  }
+  return 0;
+
+  #undef DATABASE_COLLECTION
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_limit_IP_addresses
+Description: limits connections based on IP addresses to the server
+Parameters:
+  SETTINGS - 1 to run the check before running the server code, 0 to remove the IP address so it can make another connection
+  IP_ADDRESS - The IP address
+  Return: 0 if there is multiple connections, 1 if there is a single connection
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_limit_IP_addresses(const int SETTINGS, const char* IP_ADDRESS)
+{
+  if (test_settings == 1)
+  {
+    return 1;
+  }
+
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+
+  memset(data,0,sizeof(data));
+
+  memcpy(data,"|",1);
+  memcpy(data+1,IP_ADDRESS,strnlen(IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); 
+
+  // start data
+  if (SETTINGS == 1)
+  {
+    pthread_mutex_lock(&database_data_IP_address_lock);
+    if (string_count(server_limit_IP_address_list,data) >= MAXIMUM_CONNECTIONS_IP_ADDRESS_OR_PUBLIC_ADDRESS)
+    {
+      pthread_mutex_unlock(&database_data_IP_address_lock);
+      return 0;
+    }
+    else
+    {
+      memcpy(server_limit_IP_address_list+strlen(server_limit_IP_address_list),data,strnlen(data,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    }  
+    pthread_mutex_unlock(&database_data_IP_address_lock);
+    return 1;
+  }
+  else if (SETTINGS == 0)
+  {
+    pthread_mutex_lock(&database_data_IP_address_lock);
+    string_replace_limit(server_limit_IP_address_list,15728640,data,"",1);
+    pthread_mutex_unlock(&database_data_IP_address_lock);
+    return 1;
+  }
+  return 0;
+
+  #undef DATABASE_COLLECTION
 }
 
 
@@ -228,11 +406,10 @@ Name: socket_thread
 Description: socket thread
 Parameters:
   client_socket - The client socket
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int socket_thread(int client_socket)
+void socket_thread(int client_socket)
 {
   // Constants
   const size_t MAXIMUM_AMOUNT = database_data_socket_settings == 1 ? MAXIMUM_BUFFER_SIZE : BUFFER_SIZE;
@@ -262,21 +439,21 @@ int socket_thread(int client_socket)
   if (receive_data(client_socket,buffer,MAXIMUM_AMOUNT,1,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) < 2)
   {
     pointer_reset(buffer);
-    return 0;
+    return;
   }
 
   // check if the message length is correct for the type of message
   if (strstr(buffer,"POST /") != NULL || strstr(buffer,"PUT /") != NULL || strstr(buffer,"PATCH /") != NULL || strstr(buffer,"DELETE /") != NULL)
   {
     pointer_reset(buffer);
-    return 0;
+    return;
   }
 
   // validate the message
   if (validate_data(buffer) == 0)
   {
     pointer_reset(buffer);
-    return 0;
+    return;
   }
 
   if (strstr(buffer,"GET /") != NULL)
@@ -290,7 +467,7 @@ int socket_thread(int client_socket)
     if ((strncmp(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(data2,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0) && (strlen(buffer) >= MAXIMUM_BUFFER_SIZE))
     {
       pointer_reset(buffer);
-      return 0;
+      return;
     }
   }
   else if (strstr(buffer,"|") != NULL)
@@ -299,13 +476,13 @@ int socket_thread(int client_socket)
     if (strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) != 0 && strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) != 0 && strncmp(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) != 0 && strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REMOVE_DELEGATE",BUFFER_SIZE) != 0 && strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) != 0)
     {
       pointer_reset(buffer);
-      return 0;
+      return;
     }
   }
   else
   {
     pointer_reset(buffer);
-    return 0;
+    return;
   }
     
   // get the IP address
@@ -313,7 +490,7 @@ int socket_thread(int client_socket)
   if (getpeername(client_socket, (struct sockaddr *) &addr, &addrlength) != 0 || getnameinfo((struct sockaddr *)&addr, addrlength, client_IP_address, sizeof(client_IP_address), NULL, 0, NI_NUMERICHOST) != 0)
   {
     pointer_reset(buffer);
-    return 0;
+    return;
   }
   pthread_mutex_unlock(&lock); 
   
@@ -677,7 +854,7 @@ int socket_thread(int client_socket)
    }
 }
 pointer_reset(buffer);
-return 1;
+return;
 }
 
 

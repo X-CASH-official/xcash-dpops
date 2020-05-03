@@ -9,8 +9,6 @@ Function prototypes
 
 int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(const int CLIENT_SOCKET);
 int server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(const int CLIENT_SOCKET);
-int server_limit_IP_addresses(const int SETTINGS, const char* IP_ADDRESS);
-int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE);
 int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check(const char* MESSAGE);
 int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET);
 int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(const int CLIENT_SOCKET, const char* MESSAGE);
