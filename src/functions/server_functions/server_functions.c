@@ -303,18 +303,25 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     memcpy(data3+strlen(data3),"\"}",2);
     memset(data2,0,sizeof(data2));
 
-    // check to make sure that the IP address is registered to a delegate and the delegate has the DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT
-    if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data3,"total_vote_count",data2) == 1)
+    if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,data2,XCASH_WALLET_LENGTH) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,data2,XCASH_WALLET_LENGTH) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,data2,XCASH_WALLET_LENGTH) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,data2,XCASH_WALLET_LENGTH) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,data2,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,data2,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,data2,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,data2,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,data2,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,data2,XCASH_WALLET_LENGTH) == 0))
     {
-      sscanf(data2, "%lld", &number);
-      if ((production_settings == 1 && number < DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT) || (production_settings == 0 && number < 0))
-      {
-        return 0;
-      }
+    
     }
     else
     {
-      return 0;
+      // check to make sure that the IP address is registered to a delegate and the delegate has the DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT
+      if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data3,"total_vote_count",data2) == 1)
+      {
+        sscanf(data2, "%lld", &number);
+        if ((production_settings == 1 && number < DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT) || (production_settings == 0 && number < 0))
+        {
+          return 0;
+        }
+      }
+      else
+      {
+        return 0;
+      }
     }
     
     pthread_mutex_lock(&database_data_IP_address_lock);
