@@ -114,6 +114,7 @@ int sync_previous_current_next_block_verifiers_settings; // sync the previous, c
 int database_data_socket_settings; // 1 to allow database data up to 50MB to be received in the server, 0 to only allow message up to BUFFER_SIZE
 char* server_limit_IP_address_list; // holds all of the IP addresses that are currently running on the server. This can hold up to 1 million IP addresses
 char* server_limit_public_address_list; // holds all of the public addresses that are currently running on the server. This can hold up to 1 million public addresses
+int invalid_block_verifiers_count; // counts how many times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -188,6 +189,7 @@ void initialize_data(void)
   production_settings_database_data_settings = 0;
   sync_previous_current_next_block_verifiers_settings = 1;
   database_data_socket_settings = 0;
+  invalid_block_verifiers_count = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);

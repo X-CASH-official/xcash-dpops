@@ -489,7 +489,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_get_public_address_payment_information
-Description: Runs the code when the server receives /getpublicaddressinformation
+Description: Runs the code when the server receives /getpublicaddresspaymentinformation
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   DATA - The data

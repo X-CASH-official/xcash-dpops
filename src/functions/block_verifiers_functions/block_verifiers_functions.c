@@ -952,7 +952,12 @@ int data_network_node_create_block(void)
     if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
       fprintf(stderr,"\033[1;31m%zu / %d block verifiers have signed the block\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Invalid amount of block verifiers network block signatures");
+      invalid_block_verifiers_count++;
+      if (invalid_block_verifiers_count >= INVALID_BLOCK_VERIFIERS_AMOUNT)
+      {
+        exit(0);
+      }
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Invalid amount of block verifiers network block signatures");      
     }
     else
     {
