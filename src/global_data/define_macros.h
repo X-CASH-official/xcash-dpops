@@ -17,9 +17,10 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_EMMISION_FACTOR 524288 // The emmision factor (2^19)
 #define XCASH_DPOPS_EMMISION_FACTOR 262144 // The XCASH_DPOPS emmision factor (2^18)
 #define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
-//#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 449850 // The start block height for X-CASH proof of stake
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 521850 // The start block height for X-CASH proof of stake
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "521850" // The start block height for X-CASH proof of stake
+//#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 521850 // The start block height for X-CASH proof of stake
+//#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "521850" // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 600000 // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "600000" // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
@@ -66,15 +67,15 @@ Using define statements instead of constants for increased efficiency
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
 #define XCASH_DPOPS_CURRENT_VERSION "XCASH DPOPS - Version 1.0.0\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 20 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 10 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_AMOUNT 26 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 18 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 1000 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 5000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define INVALID_BLOCK_VERIFIERS_AMOUNT 10 // The maximum amount of times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
-#define MINIMUM_AMOUNT_RESERVE_PROOF 1000000 // The minimum amount to create a reserve proof, 2M xcash
+#define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof, 2M xcash
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 1000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet, 20M xcash
-#define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 0 // The minimum amount to sync the database. This is used for delegates below the top 100 deelgates that want to leave the XCASH_DPOPS program running to sync in case they move to the top 100, 100M xcash
+#define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 2000000000000 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the XCASH_DPOPS program running to sync in case they move to the top 100, 100M xcash
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
 #define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 30 // the start time in seconds that the block verifiers synchronize the database each round
 #define START_TIME_MINUTE_NETWORK_BLOCK_ROUND 2 // the start time that the block verifiers start to create the network block
@@ -164,25 +165,25 @@ Using define statements instead of constants for increased efficiency
 
 
 
-#define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1h3yJ318hJGTFeXfYyEcyE7G4hX7jrCbvz21VecJGhf64Tw51yWii2Q1e76fJbB26Ea8CRipmdW6ZHQcRrLKx3cxRkr5M12"
+#define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1a9usG2UKajV1Dqzp8fL1BbN3hzuaaJMYjCo7qDoC4C3Vvc5owiLAqKbVw2cRbwRqx3mgrau1Z7LkX6cxR2NC4ZmFBLe2Mf"
 #define NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION "delegates.xcash.foundation"
-#define NETWORK_DATA_NODE_1_PUBLIC_KEY_PRODUCTION "fe46a3e9f5469f9c288f3293dc863c2876cdfd859170e794661c16e1686725fc"
-#define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION "XCA1dNsv9cGc5kPMrgpdTkGttM17uR2JvCpmraGschxYSEt3MK4NRmmgyc13CTYWBGDNefdem5MFsG384DuUpGKc3ShZa4R56e"
+#define NETWORK_DATA_NODE_1_PUBLIC_KEY_PRODUCTION "52623bf336e1434af40502d04aaaa2a245cd14a481b010a9dea9c474bd68e9d0"
+#define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION "XCA1YhckQgqGQvMsS2xi4n3cHBPo39WYFC1AXskqaFB87Q6EX5LheKK6E3ZqQmD9CDFX8br8Mfvff7RqT6UcuUja46qKC1vEJb"
 #define NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION "europe1.xcash.foundation"
-#define NETWORK_DATA_NODE_2_PUBLIC_KEY_PRODUCTION "7884c9643ac6bcaef9a98754fa03c7564953b9f4cd7031ccf18179f9144b9de0"
-#define NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION "XCA1rU5hFV98QvysF3ByeZSPkt9wPyUxkSErBZADJjsHPMKnmCxKFH2H6aLy3oFbYaGkkYGCJcLF1ERWT5uQweEu8yZodwCtHc"
+#define NETWORK_DATA_NODE_2_PUBLIC_KEY_PRODUCTION "7fb97147e7a435907e3afa722ec9b8cc90a88e70ddcd6b70477b0551db5cb8e3"
+#define NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION "XCA1c2ahjRvBsp35ynTknNYczj9y42hN9ht1vNyns2FCTU4qbLqahtsTw2E7JTKLd3ecSGLe2zWJgCiwrMhecsbT38i3Smy9vW"
 #define NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION "europe2.xcash.foundation"
-#define NETWORK_DATA_NODE_3_PUBLIC_KEY_PRODUCTION "af56bc7e117ed4af520aad208d3179fd76e2be8a8e46a3547bc1fa83f63f6546"
-#define NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION "XCA1kk9q8H7JNe9aWXLYRpG2oqFQxLD7vTy8s3pPZprBVnLRQNAurnabEHsQCSAUyxC8nForSa2C39qAhtFt4f845ZSz2Xz5Mr"
+#define NETWORK_DATA_NODE_3_PUBLIC_KEY_PRODUCTION "5b21c2242f25781dc5eff581cbf39892d4a9b2e02a4c75f9471889c14f5a9cda"
+#define NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION "XCA1jN7CNCKEN1kDuqxiuUPyKWiVp68RsYxshdohaQ1k8NN11ZWX9dSJv3hx6qxfPaKVAnet4LTda9fsK81c9wRN5Aj78KyZEg"
 #define NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION "europe3.xcash.foundation"
-#define NETWORK_DATA_NODE_4_PUBLIC_KEY_PRODUCTION "a2f7a502d4128c0dbe650116ed77df269a6a3623e90b1b361e977d5bdb73c646"
-#define NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION "XCA1diBcGjRhBEdDkphu5oUTTvDHiSGjmZ7unCwBFgdpMiCQoF1BpMWP2E96iFWoWoD41npDcRUo51ih45We29Hd5XZsikzt71"
+#define NETWORK_DATA_NODE_4_PUBLIC_KEY_PRODUCTION "011277b99ae108b6cca4f668f556a73784e922acf5dee942d13646b835e42e95"
+#define NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION "XCA1hKDayQXECEA5Yja4a8CU6Suoo9XT9jET7Ng2Rx2z3fLsGy5iVQCL9hWWTi3TroJxihWY4j84n9WMJvpFvagW5hMNpq1jh9"
 #define NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION "asia1.xcash.foundation"
-#define NETWORK_DATA_NODE_5_PUBLIC_KEY_PRODUCTION "60573e6d8ec50596c8d0ce18a89e4adb8328fc66818f626d280162506d615954"
+#define NETWORK_DATA_NODE_5_PUBLIC_KEY_PRODUCTION "8529c2269830478c498dab8638c79e066922a5144808cbce228b5a8af886368d"
 
-#define OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION "XCA1kkdrRQ9SC7wfJ3F329giei31r13wKEKiD1ZMYf6nBiU8KE6a6LDJTZobfJ58o8A3vtGrAkzfHDd815kac7F17iPhK9zYGG"
+#define OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION "XCA1cYCAbFsKvGRFYpX5QKgBYpx1yimURVcGvdTLdrm5ig9Ka9bMZ9vBXLn9iHKViYRQbmqKfmWRPDziae5rUPaQ3NXtXzKbvC"
 #define OFFICIAL_SHARED_DELEGATE_IP_ADDRESS_PRODUCTION "officialdelegate.xcash.foundation"
-#define OFFICIAL_SHARED_DELEGATE_PUBLIC_KEY_PRODUCTION "844d5b88f5402023dba7823f28d946cb4df77555867d0b7e6aa1ef8a8dfc70e3"
+#define OFFICIAL_SHARED_DELEGATE_PUBLIC_KEY_PRODUCTION "82d23f373613284d33c16b74d70ea12e4ef295e8b8283fcb9e01ba864414ab1e"
 
 #define DATABASE_COLLECTION_DELEGATES_DATA_1_PRODUCTION "{\"public_address\":\"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "\",\"total_vote_count\":\"0\",\"IP_address\":\"" NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION "\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"" NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION "\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"|" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "\",\"public_key\":\"" NETWORK_DATA_NODE_1_PUBLIC_KEY_PRODUCTION "\"}"
 #define DATABASE_COLLECTION_DELEGATES_DATA_2_PRODUCTION "{\"public_address\":\"" NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION "\",\"total_vote_count\":\"0\",\"IP_address\":\"" NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION "\",\"delegate_name\":\"europe1_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"" NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION "\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 8 threads (Intel D-1521 - 2.40GHz RAM = 32GB DDR3 Hard drive = 2x HDD SATA 2 TB\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" NETWORK_DATA_NODE_2_PUBLIC_KEY_PRODUCTION "\"}"
