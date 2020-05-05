@@ -315,7 +315,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     }
     else
     {
-      color_print(data2,"yellow");
+      color_print(data2,"red");
       // check to make sure that the public address is registered to a delegate and the delegate has the DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT
       if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data3,"total_vote_count",data2) == 1)
       {
