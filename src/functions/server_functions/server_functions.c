@@ -258,7 +258,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
 
   if (strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL)
   {
-    color_print("data,"green");
+    color_print("data","green");
   }
 
   // parse the data
