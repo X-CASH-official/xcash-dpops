@@ -548,6 +548,11 @@ void socket_thread(int client_socket)
     memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
     color_print(message,"green");
   }
+
+  if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\"") != NULL)
+ {
+   color_print("anti ddos start","red");
+ } 
  
 
 
