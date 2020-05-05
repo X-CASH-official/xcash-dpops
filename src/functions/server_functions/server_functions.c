@@ -256,11 +256,6 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
-  if (strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL)
-  {
-    color_print("data","green");
-  }
-
   // parse the data
   if (SETTINGS == 1 || SETTINGS == 3)
   {
@@ -290,12 +285,6 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     }
   }
 
-  if (strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL)
-  {
-    color_print(MESSAGE,"yellow");
-    color_print(data2,"yellow");
-  }
-
   memcpy(data,"|",1);
   memcpy(data+1,data2,XCASH_WALLET_LENGTH); 
 
@@ -303,40 +292,22 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
   if (SETTINGS == 1 || SETTINGS == 2)
   {
     // verify the message
-    if ((SETTINGS == 1 && verify_data(MESSAGE,0) == 0) || (SETTINGS == 2 && verify_data(MESSAGE,0) == 0))
+    if ((SETTINGS == 1 && verify_data(MESSAGE,1) == 0) || (SETTINGS == 2 && verify_data(MESSAGE,0) == 0))
     { 
       return 0;
     }
-
-    // create the message
-    memcpy(data3,"{\"public_address\":\"",19);
-    memcpy(data3+19,data2,strnlen(data2,XCASH_WALLET_LENGTH));
-    memcpy(data3+strlen(data3),"\"}",2);
 
     // dont check any amount if its coming from a seed node
     if (strncmp(OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0 || strncmp("XCA1gxReAqF6BHQ8Hs2ne9WYZ6U7Nkq5GK1iRKgzypdn9FdT8JBoKmdD2oAcPgFxA6Ww4WHAJJWqdEfZDwqhFkUQ1foW6fTYgv",data2,BUFFER_SIZE) == 0 || strncmp("XCA1Xb8YQxS728H3oVfeDogpfijhRYTzpMSn7hTWL8NA1oVSoaCb1VMVBbdw9QEq4rHeVVCsnqy7gS2tBLjGZyRe6hcwcicfFC",data2,BUFFER_SIZE) == 0 || strncmp("XCA1Sy6f8UyZ1KBQm56PtvemNhSJJPdb5gywzpcj8TkJTa6AcuZ8kiniKdTUYXfH1zQgWpHDPrXgLdGN6wp5JYcwAUXiTFYj6o",data2,BUFFER_SIZE) == 0 || strncmp("XCA1aMFTo5B5qV8EC8Q9BuTXe6A4pcSphWjPcSZiDEGYToNDhHfN1FvAY5NXSdpoJg3ZFaMjB492DfHLgnFvYnwS5uyyMESMg8",data2,BUFFER_SIZE) == 0 || strncmp("XCA1nbYJfF4b8WvQs6PJiqBVTUN9Y6n4M1z7CmqX4g1CMjrWSea4DYBdSRmUHJm1SUakaZfpqYyb8WX5pPqGpmrr9qByNSCutz",data2,BUFFER_SIZE) == 0 || strncmp("XCA1q3eAJpMcV7u9cx2cnGQv9cT7DGWHFWAPAZpxseAoYQy9HTNXc7XNvniCRQpQnEKMLGvcTFutbZQib5THCty93rquAbjJZW",data2,BUFFER_SIZE) == 0 || strncmp("XCA1XUjHdwdTvoE17Sz5WkNkMJcesfuZoWx8zS3Q6DvtDtz8djGDJeFWGAf4DaeCYR8eY4UmUnrLW2voYfW7zUQK8B2DgwAEFu",data2,BUFFER_SIZE) == 0 || strncmp("XCA1hFcupxhVkTTH22anrz1UQpa41dYTHVDHkgctQtDT1YZUAcbrwQaYpPBV9HshcA49xi19AGfTzKttLaYaxeeu9HTDA6VAG5",data2,BUFFER_SIZE) == 0 || strncmp("XCA1rnKveKL4RCoc3Rby9vXApXXxqmVZRFHVxhvmrmcNBbDxe9ksVHnGdPm5TrS667JJ9mjaCa3VhHX98N4bZHkn1y4tjyDEfR",data2,BUFFER_SIZE) == 0 || strncmp("XCA1pBLeqme3FqrsgMdzgiZrEtshjYYYhU6LLvphhaqqZ5jTe2uy3zPJDGEQe9PiksPXCK8YmRTHJBBJUsmBHH5i5nc73QowtH",data2,BUFFER_SIZE) == 0 || strncmp("XCA1m9Zn8vsGq41omr7tYNXBVhZGpMnWLK8wbZGKVRj6V1UZ9DzUeuPTmuoWPB2jVU3r7EQmKfWV4LKW92GWJh3pA1iGEqomZg",data2,BUFFER_SIZE) == 0 || strncmp("XCA1WdNDNrDHPZgZUJPFF49WyHovKmpJDRMD1ui3aeD2Pu8LtUY3vUfBZHknK1x3JZ78RNpmEVsvjgeJrzGu7vks2sZjW536Sa",data2,BUFFER_SIZE) == 0 || strncmp("",data2,BUFFER_SIZE) == 0 || strncmp("XCA1t6mbscMeao1Eacy3Hg6mE8aq8cjrraT4bB9eGxQbFo4MAJjBAPf1Jhrbi829nTBgAYtJAUgoXbQYocpcBbWu84Gs1GpRkz",data2,BUFFER_SIZE) == 0 || strncmp("XCA1t4AjSMaQo9EvvxhjsgRvz32ii4QweCDx6s32WuGYEFJVnS9vXWmKGfUJpR8Ng5PNh8kUA9UfeCm2kPu8WQ8n5nZ3V15tNn",data2,BUFFER_SIZE) == 0 || strncmp("XCA1pKHPMmF1KSYGdBJ2SNfrzANHtZ6aF7eDFyHSTRi653rbBnnFm7uMijexoG4djPC4T9X83q4Jbgjwxya6UUaE4MkxmkD5kJ",data2,BUFFER_SIZE) == 0 || strncmp("XCA1UArNZKkEYz6qArKgtyJimMBw5xkjE5ec33ymywWU1XvXGzZKWcqWKMjtqwfRdiNeQaeZyJJ7aZfXk3C5TMos4RfueH7ER8",data2,BUFFER_SIZE) == 0 || strncmp("XCA1cC6xQza9AUkL9Cvby49PWSr2aDMfVQi2aaNa5UsJTVddWdn7yJvBcqG2ewnDh3Ee38qWJkEdW52J96zT1C6f7awCAMYxpG",data2,BUFFER_SIZE) == 0 || strncmp("XCA1dJ2TSfwfAeaSTMSzLL83YDnNs6e1mHxkVdx8tdigMSCqqAGDjpi3bV1LCrjHQKh4N1s7kPE3bSoeh4ypwgsj1SRtfhP14K",data2,BUFFER_SIZE) == 0 || strncmp("XCA1sCezaPUYxBAiUXS6xd9kvyNxCcqA65vspMCPAB78Gjjef9E6S7FQ47yFkNA2RdCwybAk2XWhPDT9F1t6c4Jg5JkLy2Wb1p",data2,BUFFER_SIZE) == 0 || strncmp("XCA1gFTg7iiZGJa8RmvT81H66iyLcffBtTYKCRMmnnfLd4yAWcKG4khYD4ESmWGvy6MZZSaTYcvRYC6Exkgd475g3WaoU1tWcY",data2,BUFFER_SIZE) == 0)
     {
       
     }
-    else if (strncmp(TEST_WALLET_1,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_2,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_3,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_4,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_5,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_6,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_7,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_8,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_9,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_10,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_11,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_12,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_13,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_14,data2,BUFFER_SIZE) == 0 || strncmp(TEST_WALLET_15,data2,BUFFER_SIZE) == 0 || strncmp("XCA1pKHPMmF1KSYGdBJ2SNfrzANHtZ6aF7eDFyHSTRi653rbBnnFm7uMijexoG4djPC4T9X83q4Jbgjwxya6UUaE4MkxmkD5kJ",data2,BUFFER_SIZE) == 0 || strncmp("XCA1UArNZKkEYz6qArKgtyJimMBw5xkjE5ec33ymywWU1XvXGzZKWcqWKMjtqwfRdiNeQaeZyJJ7aZfXk3C5TMos4RfueH7ER8",data2,BUFFER_SIZE) == 0 || strncmp("XCA1cC6xQza9AUkL9Cvby49PWSr2aDMfVQi2aaNa5UsJTVddWdn7yJvBcqG2ewnDh3Ee38qWJkEdW52J96zT1C6f7awCAMYxpG",data2,BUFFER_SIZE) == 0 || strncmp("XCA1dJ2TSfwfAeaSTMSzLL83YDnNs6e1mHxkVdx8tdigMSCqqAGDjpi3bV1LCrjHQKh4N1s7kPE3bSoeh4ypwgsj1SRtfhP14K",data2,BUFFER_SIZE) == 0 || strncmp("XCA1sCezaPUYxBAiUXS6xd9kvyNxCcqA65vspMCPAB78Gjjef9E6S7FQ47yFkNA2RdCwybAk2XWhPDT9F1t6c4Jg5JkLy2Wb1p",data2,BUFFER_SIZE) == 0 || strncmp("XCA1gFTg7iiZGJa8RmvT81H66iyLcffBtTYKCRMmnnfLd4yAWcKG4khYD4ESmWGvy6MZZSaTYcvRYC6Exkgd475g3WaoU1tWcY",data2,BUFFER_SIZE) == 0)
+    else if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0))
     {
       
     }
-    else if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0))
-    {
-      if (strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL)
-      {
-        color_print(MESSAGE,"yellow");
-        color_print(data2,"yellow");
-      }
-    }
     else
     {
-      if (strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL)
-      {
-        color_print(MESSAGE,"yellow");
-        color_print(data2,"yellow");
-      }
       // check to make sure that the public address is registered to a delegate and the delegate has the DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT
       memset(data2,0,sizeof(data2));
       if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data3,"total_vote_count",data2) == 1)
@@ -547,13 +518,8 @@ void socket_thread(int client_socket)
     strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
     memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
     color_print(message,"green");
-  }
+  } 
 
-  if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\"") != NULL)
- {
-   color_print("anti ddos start","red");
- } 
- 
 
 
  // check if a certain type of message has been received 
@@ -812,10 +778,8 @@ void socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\"") != NULL && main_network_data_node_create_block == 1)
  {
-   color_print("anti ddos start","yellow");
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     color_print("anti ddos start","yellow");
      server_receive_data_socket_main_network_data_node_to_block_verifier_start_block((const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
