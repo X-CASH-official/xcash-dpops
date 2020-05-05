@@ -256,6 +256,11 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
+  if (strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL)
+  {
+    color_print("data,"green");
+  }
+
   // parse the data
   if (SETTINGS == 1 || SETTINGS == 3)
   {
@@ -802,8 +807,10 @@ void socket_thread(int client_socket)
  }
  else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\"") != NULL && main_network_data_node_create_block == 1)
  {
+   color_print("anti ddos start","yellow");
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
+     color_print("anti ddos start","yellow");
      server_receive_data_socket_main_network_data_node_to_block_verifier_start_block((const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
