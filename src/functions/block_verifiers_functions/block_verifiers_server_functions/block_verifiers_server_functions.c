@@ -276,6 +276,8 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
+  color_print("data","green");
+
   // verify the message
   if (verify_data(MESSAGE,0) == 0)
   {   
@@ -286,18 +288,19 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   if (parse_json_data(MESSAGE,"database_data",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not parse the data");
-  }
+  }color_print("data","green");
 
   // make sure the message is coming from the main network data node
   if ((production_settings == 0 && strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0) || (production_settings == 1 && strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0))
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Invalid message");
-  }
+  }color_print("data","green");
 
   // add the data to the database
   memset(data2,0,sizeof(data2));
   memcpy(data2,data,strlen(data)-2);
   get_reserve_bytes_database(count,0);
+  fprintf(stderr,"!!!!!!%zu\n",count);
   memset(data,0,sizeof(data));
   memcpy(data,"reserve_bytes_",14);
   snprintf(data+strlen(data),sizeof(data)-15,"%zu",count);

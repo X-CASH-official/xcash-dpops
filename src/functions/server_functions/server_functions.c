@@ -285,6 +285,12 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     }
   }
 
+  if (strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL)
+  {
+    color_print(MESSAGE,"yellow");
+    color_print(data2,"yellow");
+  }
+
   memcpy(data,"|",1);
   memcpy(data+1,data2,XCASH_WALLET_LENGTH); 
 
@@ -313,10 +319,19 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     }
     else if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0))
     {
-      
+      if (strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL)
+      {
+        color_print(MESSAGE,"yellow");
+        color_print(data2,"yellow");
+      }
     }
     else
     {
+      if (strstr(MESSAGE,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK") != NULL)
+      {
+        color_print(MESSAGE,"yellow");
+        color_print(data2,"yellow");
+      }
       // check to make sure that the public address is registered to a delegate and the delegate has the DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT
       memset(data2,0,sizeof(data2));
       if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data3,"total_vote_count",data2) == 1)
