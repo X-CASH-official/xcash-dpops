@@ -546,6 +546,9 @@ int start_current_round_start_blocks(void)
   } 
 
   color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
+
+  // wait until the non network data nodes have synced the previous current and next block verifiers list
+  sleep(30);
   
   // create the data
   if (start_blocks_create_data(data,data2) == 0)
