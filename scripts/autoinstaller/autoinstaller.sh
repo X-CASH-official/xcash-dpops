@@ -10,7 +10,7 @@ COLOR_PRINT_YELLOW="\033[1;33m"
 END_COLOR_PRINT="\033[0m"
 
 # Configuration settings
-INSTALLATION_TYPE_SETTINGS=1 # 1 = Install, 2 = Update, 3 = Uninstall
+INSTALLATION_TYPE_SETTINGS=1 # 1 = Install, 2 = Update, 3 = Uninstall, 4 = Install / Update BlockChain, 5 = Change Solo Delegate or Shared Delegate, 6 = Edit Shared Delegate Settings, 7 = Restart Programs, 8 = Stop Programs, 9 = Test Update, 10 = Test Update Reset Delegates, 11 = Firewall, 12 = Shared Delegates Firewall
 INSTALLATION_TYPE="Installation"
 XCASH_DPOPS_INSTALLATION_DIR="$HOME/x-network/"
 XCASH_BLOCKCHAIN_INSTALLATION_DIR="$HOME/.X-CASH/"
@@ -84,10 +84,10 @@ regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 100
 # Functions
 function get_installation_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Change Solo Delegate or Shared Delegate\n5 = Restart Programs\n6 = Stop Programs\n7 = Test Update\n8 = Test Update Reset Delegates\n9 = Firewall\n10 = Shared Delegates Firewall\n11 = Test Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Install / Update Blockchain\n5 = Change Solo Delegate or Shared Delegate\n6 = Edit Shared Delegate Settings\n7 = Restart Programs\n8 = Stop Programs\n9 = Test Update\n10 = Test Update Reset Delegates\n11 = Firewall\n12 = Shared Delegates Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] && echo "$data" || echo "1")
-  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "solo or shared delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Shared_Delegates_Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "11" ] && echo "Test_Firewall" &>/dev/null)
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "InstallOrUpdateBlockchain" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "solo or shared delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "EditSharedDelegateSettings" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "11" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "12" ] && echo "Shared_Delegates_Firewall" &>/dev/null)
   echo -ne "\r"
   echo
   # Check if XCASH_DPOPS is already installed, if the user choose to install
@@ -1926,6 +1926,54 @@ function install_firewall_script_test()
   echo
 }
 
+function install_or_update_blockchain()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing / Updating The BlockChain${END_COLOR_PRINT}"
+  cd $HOME
+  XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name ".X-CASH" -print)/
+  rm -r ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
+  wget -q http://94.130.59.172/xcash-blockchain.7z
+  7z x xcash-blockchain.7z -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
+  cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
+  cp -a .X-CASH/* ./
+  rm -r .X-CASH
+  cd $HOME
+  rm xcash-blockchain.7z
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing / Updating The BlockChain${END_COLOR_PRINT}"
+  echo
+}
+
+function edit_shared_delegate_settings()
+{
+  # check if they are already a shared delegate
+  if grep -Fxq "--shared_delegates_website" /lib/systemd/system/XCASH_DPOPS.service; then
+  while
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
+      read -r DPOPS_FEE
+      echo -ne "\r"
+      echo
+      [[ ! $DPOPS_FEE =~ $regex_DPOPS_FEE ]]
+    do true; done
+    
+  while
+    echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount, minimum is 10K, maximum is 10M (ex: 10000 in whole numbers and not atomic units etc): ${END_COLOR_PRINT}"
+    read -r DPOPS_MINIMUM_AMOUNT
+    echo -ne "\r"
+    echo
+    [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
+  do true; done
+
+  echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegate Settings${END_COLOR_PRINT}"
+  sed -i 's/--fee.*--minimum_amount/--fee $DPOPS_FEE --minimum_amount/g' /lib/systemd/system/XCASH_DPOPS.service
+  sed -i 's/--minimum_amount.*/--minimum_amount $DPOPS_MINIMUM_AMOUNT/g' /lib/systemd/system/XCASH_DPOPS.service
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegate Settings${END_COLOR_PRINT}"
+  echo
+  else
+  echo -ne "\r${COLOR_PRINT_RED}Your delegate is not setup as a shared delegate${END_COLOR_PRINT}"
+  echo
+  fi
+}
+
 # Check for a compatible OS
 check_ubuntu_version
 
@@ -1942,20 +1990,22 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ]; then
   uninstall
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ]; then
-  change_solo_or_shared_delegate
+  install_or_update_blockchain
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
+  change_solo_or_shared_delegate
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
+  edit_shared_delegate_settings
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
   stop_systemd_service_files
   start_systemd_service_files
-elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
-  stop_systemd_service_files
-elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
-  test_update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ]; then
-  test_update_reset_delegates
+  stop_systemd_service_files
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ]; then
-  install_firewall_script
+  test_update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ]; then
-  install_firewall_script_shared_delegates
+  test_update_reset_delegates
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then
-  install_firewall_script_test
+  install_firewall_script
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ]; then
+  install_firewall_script_shared_delegates
 fi
