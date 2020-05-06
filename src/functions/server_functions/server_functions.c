@@ -175,7 +175,6 @@ int create_server(const int MESSAGE_SETTINGS)
     {
       SERVER_ERROR("Error creating the server");
     }
-    break;
   }
 
   return 1;
@@ -199,7 +198,6 @@ void new_socket_thread(void)
   int client_socket;
   struct sockaddr_in addr;
   socklen_t addrlen = sizeof(struct sockaddr_in);
-  struct epoll_event epevent;
 
   while ((client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen)) != -1)
   {
@@ -208,10 +206,10 @@ void new_socket_thread(void)
     EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
     EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
     */
-    epevent.events = EPOLLIN | EPOLLET;
-    epevent.data.fd = client_socket;
+    events_copy.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
+    events_copy.data.fd = client_socket;
 
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &epevent) < 0)
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events_copy) < 0)
     {    
       close(client_socket);
       return;
@@ -923,7 +921,7 @@ void* socket_receive_data_thread(void* parameters)
      {
        // a file descriptor is ready for a current socket connection
       socket_thread(events[count2].data.fd);
-      //epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[count2].data.fd, &events_copy);
+      epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[count2].data.fd, &events_copy);
       close(events[count2].data.fd);
      }
    } 
