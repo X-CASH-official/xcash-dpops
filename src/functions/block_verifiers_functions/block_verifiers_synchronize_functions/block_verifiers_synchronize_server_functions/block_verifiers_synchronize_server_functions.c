@@ -408,6 +408,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR(settings) \
+  color_print(settings,"red"); \
   if (debug_settings == 1) \
   { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash",82); \
