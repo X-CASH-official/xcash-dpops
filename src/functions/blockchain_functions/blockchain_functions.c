@@ -1446,8 +1446,24 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     }
     if (vrf_data_verify_count < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;31m%d / %d block verifiers from the previous block signatures are valid\033[0m\n",vrf_data_verify_count,BLOCK_VERIFIERS_VALID_AMOUNT);
-      VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string, The block was not signed by the required amount of block validation nodes from the previous block");
+      // run the double for loop to check all signatures with all block verifiers public address in case the order is off
+      for (count = 0, vrf_data_verify_count = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
+      { 
+        for (count2 = 0; (int)count2 < BLOCK_VERIFIERS_TOTAL; count2++)
+        { 
+          // check the signed data 
+          if (strlen(VRF_data.block_blob_signature[count2]) == VRF_BETA_LENGTH+VRF_PROOF_LENGTH && VRF_data_verify(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],VRF_data.block_blob_signature[count2],network_block_string) == 1)
+          {
+            vrf_data_verify_count++;
+          }
+        }
+      }
+
+      if (vrf_data_verify_count < BLOCK_VERIFIERS_VALID_AMOUNT)
+      {
+        fprintf(stderr,"\033[1;31m%d / %d block verifiers from the previous block signatures are valid\033[0m\n",vrf_data_verify_count,BLOCK_VERIFIERS_VALID_AMOUNT);
+        VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string, The block was not signed by the required amount of block validation nodes from the previous block");
+      }
     }
     else
     {

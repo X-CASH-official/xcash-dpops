@@ -248,7 +248,7 @@ int optimizations_functions_test(void)
 
 
   start = time(NULL);
-  for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  for (count = 0; (int)count < BLOCK_VERIFIERS_TOTAL_AMOUNT * BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
   }
