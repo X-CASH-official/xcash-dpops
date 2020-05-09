@@ -1160,7 +1160,10 @@ int get_delegates_online_status(void)
     }
 
     // if all network data nodes are offline, its an error so set it to the first one online
-    network_data_nodes_list.online_status[0] == 0 && network_data_nodes_list.online_status[1] == 0 && network_data_nodes_list.online_status[2] == 0 && network_data_nodes_list.online_status[3] == 0 && network_data_nodes_list.online_status[4] == 0 ? network_data_nodes_list.online_status[0] = 1 : network_data_nodes_list.online_status[0] = 0; 
+    if (network_data_nodes_list.online_status[0] == 0 && network_data_nodes_list.online_status[1] == 0 && network_data_nodes_list.online_status[2] == 0 && network_data_nodes_list.online_status[3] == 0 && network_data_nodes_list.online_status[4] == 0)
+    {
+      network_data_nodes_list.online_status[0] = 1; 
+    }
 
     update_document_from_collection(database_name,DATABASE_COLLECTION,data2,data);
 
