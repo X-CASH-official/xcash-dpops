@@ -126,7 +126,7 @@ int start_new_round(void)
   get_delegates_online_status();
 
   // wait so everyone has got the online status
-  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,30);
+  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,15);
 
   // reload the initial previous, current and next block verifiers list if its the first block or if you had to restart
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
