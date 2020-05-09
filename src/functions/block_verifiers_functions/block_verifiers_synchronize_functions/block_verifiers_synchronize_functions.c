@@ -1697,7 +1697,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   // allow the database data to be received over the socket
   database_data_socket_settings = 1;
 
-  if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
+  if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
   {
     database_data_socket_settings = 0;
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
@@ -1831,7 +1831,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   // allow the database data to be received over the socket
   database_data_socket_settings = 1;
 
-  if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
+  if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
   {
     database_data_socket_settings = 0;
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
