@@ -99,7 +99,7 @@ CPU: 2 threads, with at least 2.0GHZ or more for each thread
 RAM: 6GB  
 Hard drive: 50GB (with 18 GB of space needed per year)  
 Bandwidth Transfer: 100GB per month  
-Bandwidth Speed: 25 Mbps
+Bandwidth Speed: 100 Mbps
  
 **Recommended System Requirements:**  
 Operating System: Ubuntu 18.04 (or higher)  
@@ -107,7 +107,7 @@ CPU: 4 threads, with at least 2.0GHZ or more for each thread
 RAM: 8GB  
 Hard drive: 100GB (with 18 GB of space needed per year)  
 Bandwidth Transfer: 500GB per month  
-Bandwidth Speed: 100 Mbps
+Bandwidth Speed: 500 Mbps
 
 
 ## Synchronizing the Time
