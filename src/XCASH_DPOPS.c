@@ -272,10 +272,6 @@ void initialize_data(void)
     memset(network_data_nodes_list.network_data_nodes_public_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_public_address[count]));
     memset(network_data_nodes_list.network_data_nodes_IP_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_IP_address[count]));
     network_data_nodes_list.online_status[count] = 1;
-    if (count == 2 || count == 3)
-    {
-      network_data_nodes_list.online_status[count] = 0;
-    }
   }
 
   // set the network_data_node_settings
