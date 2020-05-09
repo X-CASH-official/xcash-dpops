@@ -256,7 +256,7 @@ Return: Writes the correct code
 do \
 { \
   count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT); \
-} while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0); \
+} while (memcmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || network_data_nodes_list.online_status[count] == 0); \
 
 
 

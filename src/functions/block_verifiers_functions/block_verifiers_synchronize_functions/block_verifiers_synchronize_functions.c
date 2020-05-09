@@ -672,10 +672,7 @@ int sync_all_block_verifiers_list(void)
     memset(data3,0,strlen(data3));
 
     // send the message to a random network data node
-    do
-    {
-      count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-    } while (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
+    get_random_network_data_node(count);
   
     // get the current time
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);   
@@ -864,10 +861,7 @@ int get_synced_block_verifiers(void)
   }
   
   // send the message to a random network data node
-  do
-  {
-    count = (int)(rand() % NETWORK_DATA_NODES_AMOUNT);
-  } while (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
+  get_random_network_data_node(count);
   
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);

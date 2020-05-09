@@ -62,6 +62,7 @@ struct main_nodes_list {
 struct network_data_nodes_list {
     char network_data_nodes_public_address[NETWORK_DATA_NODES_AMOUNT][XCASH_WALLET_LENGTH+1]; // The block verifiers public address
     char network_data_nodes_IP_address[NETWORK_DATA_NODES_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1]; // The block verifiers IP address
+    int online_status[NETWORK_DATA_NODES_AMOUNT]; // 1 for online, 0 for offline
 };
 
 struct current_round_part_vote_data {

@@ -1149,6 +1149,16 @@ int get_delegates_online_status(void)
     {
       memcpy(data,"{\"online_status\":\"false\"}",25);
     }
+
+    // set the online status for network data nodes
+    for (count2 = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
+    {
+      if (strncmp(delegates_online_status[count].public_address,network_data_nodes_list.network_data_nodes_public_address[count2],XCASH_WALLET_LENGTH) == 0)
+      {
+        network_data_nodes_list.online_status[count2] = delegates_online_status[count].settings == 1 ? 1 : 0;
+      }
+    }
+
     update_document_from_collection(database_name,DATABASE_COLLECTION,data2,data);
 
     // remove all of the sockets from the epoll file descriptor and close all of the sockets
