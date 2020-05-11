@@ -313,18 +313,10 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
-  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
-  POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count); \
   return 0;
 
   memset(buffer,0,sizeof(buffer));
   memset(message,0,sizeof(message));
-
-  // initialize the delegates struct
-  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
-
-  // initialize the database_document_fields struct 
-  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS+1,"server_receive_data_socket_get_delegates_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
 
   memset(data2,0,sizeof(data2));
 
@@ -336,6 +328,12 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR("Invalid parameters");
   } 
+
+  // initialize the delegates struct
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"server_receive_data_socket_get_delegates_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
+
+  // initialize the database_document_fields struct 
+  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS+1,"server_receive_data_socket_get_delegates_statistics",buffer,current_date_and_time,current_UTC_date_and_time);
 
   const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
 
@@ -357,12 +355,16 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   // check if there is any data in the database that matches the message
   if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message) <= 0 || read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION,message,&database_data) == 0)
   {
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR("Could not get the data from the delegates database collection");
   }
 
   // organize the delegates
   if ((document_count = organize_delegates(delegates)) == 0)
   {
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR("Could not organize the delegates");
   }
 
@@ -387,7 +389,9 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
 
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_document_array(&database_data,message,DATABASE_FIELDS) == 0)
-  {    
+  {   
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count); 
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_ERROR("Could not create json data");
   }
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
@@ -438,15 +442,11 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   memset(message,0,strlen(message)); \
   memcpy(message,"{\"Error\":\"Could not get the delegates information\"}",51); \
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
-  POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count); \
   return 0;
 
   memset(buffer,0,sizeof(buffer));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-
-  // initialize the database_document_fields struct 
-  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS,"server_receive_data_socket_get_delegates_information",buffer,current_date_and_time,current_UTC_date_and_time);
 
   // get the parameter1
   memcpy(data2,&DATA[40],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-40);
@@ -456,6 +456,9 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR("Invalid parameters");
   } 
+
+  // initialize the database_document_fields struct 
+  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS,"server_receive_data_socket_get_delegates_information",buffer,current_date_and_time,current_UTC_date_and_time);
 
   const size_t DATA_LENGTH = strnlen(data2,BUFFER_SIZE);
   
@@ -477,6 +480,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   // check if there is any data in the database that matches the message
   if (count_documents_in_collection(database_name,DATABASE_COLLECTION,message) <= 0 || read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION,message,&database_data) == 0)
   {
+    POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR("Could not get the delegates information");
   }
   
@@ -485,6 +489,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_document_array(&database_data,message,DATABASE_FIELDS) == 0)
   {
+    POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
     SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR("Could not create json data");
   }
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
