@@ -750,18 +750,17 @@ Return: 0 if an error would have occured from a buffer overflow, 1 if a timeout 
 int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS, const int RECEIVE_DATA_SOCKET_TIMEOUT)
 {
   // Variables
-  char buffer[BUFFER_SIZE];
+  char* buffer = (char*)calloc(LENGTH,sizeof(char)); 
   time_t start = time(NULL);
 
-  memset(buffer,0,sizeof(buffer));
   memset(message,0,strlen(message));
 
   for (;;)
   { 
-    memset(buffer,0,sizeof(buffer));
+    memset(buffer,0,strlen(buffer));
 
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data, but check errno to see if we should exit or try again
-    if (recvfrom(SOCKET, buffer, sizeof(buffer)-1, MSG_DONTWAIT, NULL, NULL) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
+    if (recvfrom(SOCKET, buffer, LENGTH, MSG_DONTWAIT, NULL, NULL) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
     {
       return 1;
     }

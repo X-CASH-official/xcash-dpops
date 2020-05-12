@@ -1436,7 +1436,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
 
   // connect to the block verifier and get the database data
-  if (send_and_receive_data_socket(database_data,sizeof(database_data),block_verifiers_ip_address,SEND_DATA_PORT,data3,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
+  if (send_and_receive_data_socket(database_data,sizeof(database_data),block_verifiers_ip_address,SEND_DATA_PORT,data3,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
   {
     SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
   }
@@ -1573,7 +1573,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   }
 
   // connect to the block verifier and get the database data
-  if (send_and_receive_data_socket(database_data,sizeof(database_data),block_verifiers_ip_address,SEND_DATA_PORT,data3,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
+  if (send_and_receive_data_socket(database_data,sizeof(database_data),block_verifiers_ip_address,SEND_DATA_PORT,data3,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
   {
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
   }

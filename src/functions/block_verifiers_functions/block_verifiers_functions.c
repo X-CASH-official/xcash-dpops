@@ -247,6 +247,15 @@ int start_new_round(void)
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);
       START_NEW_ROUND_ERROR("Error calculating the next block producer.\nYour block verifier will wait until the next round\n");
     }
+
+    // check if the syncing time is over the start time of the round
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME >= 2)
+    {
+      color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
+      sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+      return 2;
+    }
     
     if (block_verifiers_create_block() == 0)
     {
