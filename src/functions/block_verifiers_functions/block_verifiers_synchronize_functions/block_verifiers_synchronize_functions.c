@@ -1356,6 +1356,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   int count;
+  int reset_count = 0;
   
   // define macros
   #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message,data_settings) \
@@ -1376,7 +1377,15 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
     color_print(data,"red"); \
     get_random_network_data_node(settings); \
     settings += 3; \
-    goto start; \
+    if (reset_count >= 15) \
+    { \
+      return 0; \
+    } \
+    else \
+    { \
+      reset_count++; \
+      goto start; \
+    } \
   } 
 
   start:
@@ -1482,6 +1491,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   size_t count;
   size_t count2;
   size_t current_reserve_bytes_database;
+  int reset_count = 0;
   
   // define macros
   #define SYNC_RESERVE_BYTES_DATABASE_ERROR(message,data_settings) \
@@ -1502,8 +1512,16 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
     color_print(data,"red"); \
     get_random_network_data_node(settings); \
     settings += 3; \
-    goto start; \
-  }
+    if (reset_count >= 15) \
+    { \
+      return 0; \
+    } \
+    else \
+    { \
+      reset_count++; \
+      goto start; \
+    } \
+  } 
   
   start:
 
@@ -1622,6 +1640,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
+  int reset_count = 0;
   
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -1645,7 +1664,15 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
     color_print(data,"red"); \
     get_random_network_data_node(settings); \
     settings += 3; \
-    goto start; \
+    if (reset_count >= 15) \
+    { \
+      return 0; \
+    } \
+    else \
+    { \
+      reset_count++; \
+      goto start; \
+    } \
   } 
 
   // check if the memory needed was allocated on the heap successfully
@@ -1756,6 +1783,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
+  int reset_count = 0;
   
   // define macros
   #define DATABASE_COLLECTION "statistics"
@@ -1779,7 +1807,15 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
     color_print(data,"red"); \
     get_random_network_data_node(settings); \
     settings += 3; \
-    goto start; \
+    if (reset_count >= 15) \
+    { \
+      return 0; \
+    } \
+    else \
+    { \
+      reset_count++; \
+      goto start; \
+    } \
   } 
 
   // check if the memory needed was allocated on the heap successfully
