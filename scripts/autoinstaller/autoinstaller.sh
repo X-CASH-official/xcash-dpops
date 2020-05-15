@@ -1664,6 +1664,12 @@ function install()
     make release -j $((CPU_THREADS / 2)) &>/dev/null
   fi
 
+  # Create a swap file if they dont already have one
+  SWAP_FILE=$(sudo swapon --show)
+  if [ -z "$SWAP_FILE" ]; then
+    create_swap_file
+  fi
+
   # Start the systemd service files
   start_systemd_service_files
 
@@ -1974,6 +1980,20 @@ function edit_shared_delegate_settings()
   echo -ne "\r${COLOR_PRINT_RED}Your delegate is not setup as a shared delegate${END_COLOR_PRINT}"
   echo
   fi
+}
+
+function create_swap_file()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Creating Swap File${END_COLOR_PRINT}"
+  cd $HOME
+  sudo fallocate -l ${RAM}G /swapfile
+  sudo chmod 600 /swapfile
+  sudo mkswap /swapfile &>/dev/null
+  sudo swapon /swapfile
+  echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab &>/dev/null
+  sudo sysctl -w vm.swappiness=1 &>/dev/null
+  echo -ne "\r${COLOR_PRINT_GREEN}Creating Swap File${END_COLOR_PRINT}"
+  echo
 }
 
 # Check for a compatible OS
