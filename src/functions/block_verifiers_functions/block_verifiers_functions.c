@@ -210,13 +210,33 @@ int start_new_round(void)
     {
       color_print("Your block verifier is not a network data node, checking to make sure the databases are synced","yellow");
       color_print("Syncing the reserve proofs database","yellow");
-      sync_reserve_proofs_database(2,"");
+      if (sync_reserve_proofs_database(2,"") == 0)
+      {
+        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
+        sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+        return 2;
+      }
       color_print("Syncing the reserve bytes database","yellow");
-      sync_reserve_bytes_database(2,1,"");
+      if (sync_reserve_bytes_database(2,1,"") == 0)
+      {
+        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
+        sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+        return 2;
+      }
       color_print("Syncing the delegates database","yellow");
-      sync_delegates_database(2,"");
+      if (sync_delegates_database(2,"") == 0)
+      {
+        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
+        sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+        return 2;
+      }
       color_print("Syncing the statistics database","yellow");
-      sync_statistics_database(2,"");
+      if (sync_statistics_database(2,"") == 0)
+      {
+        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
+        sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+        return 2;
+      }
       color_print("Successfully synced all databases\n","yellow");
     }
 
@@ -253,7 +273,7 @@ int start_new_round(void)
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME >= 2)
     {
       color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
-      sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+      sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
       return 2;
     }
     
@@ -550,7 +570,7 @@ int start_current_round_start_blocks(void)
   if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0))
   {
     color_print("Your block verifier is not the main data network node so your block verifier will sit out for the remainder of the round\n","yellow");
-    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
     return 1;
   } 
 
@@ -1018,7 +1038,7 @@ int data_network_node_create_block(void)
     memcpy(VRF_data.block_blob,"XCASH_DPOPS",11);
 
     // wait for the block verifiers to process the votes
-    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,4,50);
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
   }
   
   return 1;
