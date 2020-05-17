@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <poll.h>
 #include <time.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
@@ -18,6 +17,8 @@
 
 #include "structures.h"
 #include "variables.h"
+
+#include "block_verifiers_functions.h"
 #include "database_functions.h"
 #include "network_functions.h"
 #include "network_security_functions.h"
@@ -67,7 +68,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   struct tm current_UTC_date_and_time;
   int count; 
   int counter = 0;  
-  struct pollfd socket_file_descriptors;
   int socket_settings;
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
@@ -199,22 +199,25 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     SEND_HTTP_REQUEST_ERROR("Error setting socket timeout",1);
-  }  
-
-  /* set the first poll structure to our socket
-  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
-  */
-  socket_file_descriptors.fd = network_socket;
-  socket_file_descriptors.events = POLLOUT;
+  }
 
   // connect to the socket
-  if (connect(network_socket,settings->ai_addr, settings->ai_addrlen) != 0)
+  count = connect(network_socket,settings->ai_addr, settings->ai_addrlen);
+  if (count == -1 && errno != EINPROGRESS)
   {    
-    count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
-    if ((count != 1) || (count == 1 && getsockopt(network_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    { 
-      SEND_HTTP_REQUEST_ERROR("Error connecting to host",1);
-    } 
+    SEND_HTTP_REQUEST_ERROR("Could not connect to host",1);
+  }
+  else if (count == -1 && errno == EINPROGRESS)
+  {    
+    // wait for the connection timeout
+    sleep(CONNECTION_TIMEOUT_SETTINGS);
+
+    // check if the connection has been created
+    count = connect(network_socket,settings->ai_addr, settings->ai_addrlen);
+    if (count == -1 && errno != EISCONN)
+    {    
+      SEND_HTTP_REQUEST_ERROR("Could not connect to host",1);
+    }
   }
 
   // get the current socket settings
@@ -296,7 +299,6 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char)); 
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  struct pollfd socket_file_descriptors;
   int socket_settings;
   int count;
   struct addrinfo serv_addr;
@@ -388,22 +390,31 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error setting socket timeout",1);
-  }  
-
-  /* set the first poll structure to our socket
-  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
-  */
-  socket_file_descriptors.fd = network_socket;
-  socket_file_descriptors.events = POLLOUT;
+  }
 
   // connect to the socket
-  if (connect(network_socket,settings->ai_addr, settings->ai_addrlen) != 0)
+  count = connect(network_socket,settings->ai_addr, settings->ai_addrlen);
+  if (count == -1 && errno != EINPROGRESS)
   {    
-    count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
-    if ((count != 1) || (count == 1 && getsockopt(network_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    { 
-      SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error connecting to host",1);
-    } 
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Could not connect to host",1);
+  }
+  else if (count == -1 && errno == EINPROGRESS)
+  {    
+    // wait for the connection timeout
+    sleep(CONNECTION_TIMEOUT_SETTINGS);
+
+    // check if the connection has been created
+    count = connect(network_socket,settings->ai_addr, settings->ai_addrlen);
+    if (count == -1 && errno != EISCONN)
+    {    
+      SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Could not connect to host",1);
+    }
+  }
+
+  // if the timeout is longer than the normal timeout check if the delegate is online
+  if (DATA_TIMEOUT_SETTINGS != SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS && check_if_delegate_is_online(HOST) == 0)
+  {
+    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Could not connect to host",1);
   }
 
   // get the current socket settings
@@ -473,7 +484,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   char buffer2[MAXIMUM_NUMBER_SIZE];
   char str[SMALL_BUFFER_SIZE];
   char message[MAXIMUM_AMOUNT];
-  struct pollfd socket_file_descriptors;
   int socket_settings;
   int count;
   struct addrinfo serv_addr;
@@ -569,18 +579,34 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
     return 0;
   }  
 
-  /* set the first poll structure to our socket
-  POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
-  */
-  socket_file_descriptors.fd = SOCKET;
-  socket_file_descriptors.events = POLLOUT;
-
-  // connect to the socket
-  if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
+   // connect to the socket
+  count = connect(SOCKET,settings->ai_addr, settings->ai_addrlen);
+  if (count == -1 && errno != EINPROGRESS)
   {    
-    count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
-    if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
-    { 
+    if (network_functions_test_error_settings == 1)
+      {       
+        memset(str,0,sizeof(str));
+        memcpy(str,"Error connecting to ",20);
+        memcpy(str+20,HOST,HOST_LENGTH);
+        memcpy(str+20+HOST_LENGTH," on port ",9);
+        memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+        memcpy(error_message.function[error_message.total],"send_data_socket",16);
+        memcpy(error_message.data[error_message.total],str,strlen(str));
+        error_message.total++; 
+      }
+      freeaddrinfo(settings);
+      close(SOCKET);
+      return 0;
+  }
+  else if (count == -1 && errno == EINPROGRESS)
+  {    
+    // wait for the connection timeout
+    sleep(CONNECTION_TIMEOUT_SETTINGS);
+
+    // check if the connection has been created
+    count = connect(SOCKET,settings->ai_addr, settings->ai_addrlen);
+    if (count == -1 && errno != EISCONN)
+    {    
       if (network_functions_test_error_settings == 1)
       {       
         memset(str,0,sizeof(str));
@@ -595,7 +621,18 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
       freeaddrinfo(settings);
       close(SOCKET);
       return 0;
-    } 
+    }
+  }  
+  
+  // if the timeout is longer than the normal timeout check if the delegate is online
+  if (DATA_TIMEOUT_SETTINGS != SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS && check_if_delegate_is_online(HOST) == 0)
+  {
+    memcpy(str,"Error connecting to ",20);
+    memcpy(str+20,HOST,HOST_LENGTH);
+    memcpy(str+20+HOST_LENGTH," on port ",9);
+    memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
+    freeaddrinfo(settings);
+    SEND_DATA_SOCKET_ERROR(str);
   }
 
   // get the current socket settings
