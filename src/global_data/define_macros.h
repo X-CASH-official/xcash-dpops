@@ -101,9 +101,7 @@ Using define statements instead of constants for increased efficiency
 #define NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS 15 // the time in seconds that the network data nodes wait to see if the database is synced
 #define CONNECTION_TIMEOUT_SETTINGS 1 // the time in seconds for a connection to be created
 #define SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS 3 // The time to wait for sending or receving socket data
-#define SEND_PAYMENT_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function
-#define DATABASE_SYNCING_TIMEOUT_SETTINGS 60 // The maximum amount of time to wait in seconds to sync any of the databases
-#define CALCULATE_DATABASE_DATA_HASH_TIMEOUT_SETTINGS 20 // The maximum amount of time to wait in seconds for a delegate to calulcate the database data hash
+#define SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function and for syncing the database
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 #define DELEGATES_WEBSITE_PATH "delegates-explorer/" // The delegates website path

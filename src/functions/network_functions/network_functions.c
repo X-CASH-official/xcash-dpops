@@ -71,7 +71,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   int socket_settings;
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
-  socklen_t socket_option_settings = sizeof(int);
   int network_socket;
 
   // define macros
@@ -289,8 +288,7 @@ Return: 0 if an error has occured, 1 if successfull
 
 int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS)
 { 
-  // Constants
-  const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0}; 
+  // Constants 
   const size_t MAXIMUM_AMOUNT = strlen(DATA) >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : strlen(DATA)+BUFFER_SIZE;
 
   // Variables 
@@ -303,7 +301,6 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   int count;
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
-  socklen_t socket_option_settings = sizeof(int);
   int network_socket;
 
   // define macros
@@ -382,16 +379,6 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error creating socket",0);
   }
 
-  /* Set the socket options for sending and receiving data
-  SOL_SOCKET = socket level
-  SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
-  SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
-  */
-  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
-  {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error setting socket timeout",1);
-  }
-
   // connect to the socket
   count = connect(network_socket,settings->ai_addr, settings->ai_addrlen);
   if (count == -1 && errno != EINPROGRESS)
@@ -412,7 +399,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   }
 
   // if the timeout is longer than the normal timeout check if the delegate is online
-  if (DATA_TIMEOUT_SETTINGS != SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS && check_if_delegate_is_online(HOST) == 0)
+  if (DATA_TIMEOUT_SETTINGS > SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS && check_if_delegate_is_online(HOST) == 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Could not connect to host",1);
   }
@@ -477,7 +464,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
 { 
   // Constants
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
-  const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0};
   const size_t MAXIMUM_AMOUNT = strlen(DATA) >= BUFFER_SIZE ? BUFFER_SIZE : strlen(DATA)+BUFFER_SIZE;
   
   // Variables  
@@ -488,7 +474,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   int count;
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
-  socklen_t socket_option_settings = sizeof(int);
 
   // define macros
   #define SEND_DATA_SOCKET_ERROR(message) \
@@ -565,20 +550,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
     return 0;
   }
 
-  /* Set the socket options for sending and receiving data
-  SOL_SOCKET = socket level
-  SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
-  */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
-  {
-    memcpy(error_message.function[error_message.total],"send_data_socket",16);
-    memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
-    error_message.total++;  
-    freeaddrinfo(settings);     
-    close(SOCKET);
-    return 0;
-  }  
-
    // connect to the socket
   count = connect(SOCKET,settings->ai_addr, settings->ai_addrlen);
   if (count == -1 && errno != EINPROGRESS)
@@ -625,7 +596,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   }  
   
   // if the timeout is longer than the normal timeout check if the delegate is online
-  if (DATA_TIMEOUT_SETTINGS != SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS && check_if_delegate_is_online(HOST) == 0)
+  if (DATA_TIMEOUT_SETTINGS > SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS && check_if_delegate_is_online(HOST) == 0)
   {
     memcpy(str,"Error connecting to ",20);
     memcpy(str+20,HOST,HOST_LENGTH);
