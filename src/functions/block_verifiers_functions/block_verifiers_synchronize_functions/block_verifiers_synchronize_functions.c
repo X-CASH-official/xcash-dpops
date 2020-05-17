@@ -1666,6 +1666,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
     settings += 3; \
     if (reset_count >= 15) \
     { \
+      pointer_reset(data); \
       return 0; \
     } \
     else \
@@ -1809,6 +1810,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
     settings += 3; \
     if (reset_count >= 15) \
     { \
+      pointer_reset(data); \
       return 0; \
     } \
     else \

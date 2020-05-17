@@ -48,8 +48,8 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   memcpy(error_message.function[error_message.total],"parse_json_data",15); \
   memcpy(error_message.data[error_message.total],"Could not parse the message",27); \
   error_message.total++; \
-  pointer_reset(message); \
   } \
+  pointer_reset(message); \
   return 0;
 
   // reset the variables

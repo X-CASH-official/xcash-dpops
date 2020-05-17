@@ -111,8 +111,32 @@ int organize_delegates(struct delegates* delegates)
   { \
     print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   } \
+  RESET_DELEGATES; \
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS+1); \
   return 0;
+
+  #define RESET_DELEGATES \
+  for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
+  { \
+    pointer_reset(delegates_copy[count].public_address); \
+    pointer_reset(delegates_copy[count].total_vote_count); \
+    pointer_reset(delegates_copy[count].IP_address); \
+    pointer_reset(delegates_copy[count].delegate_name); \
+    pointer_reset(delegates_copy[count].about); \
+    pointer_reset(delegates_copy[count].website); \
+    pointer_reset(delegates_copy[count].team); \
+    pointer_reset(delegates_copy[count].pool_mode); \
+    pointer_reset(delegates_copy[count].fee_structure); \
+    pointer_reset(delegates_copy[count].server_settings); \
+    pointer_reset(delegates_copy[count].block_verifier_score); \
+    pointer_reset(delegates_copy[count].online_status); \
+    pointer_reset(delegates_copy[count].block_verifier_total_rounds); \
+    pointer_reset(delegates_copy[count].block_verifier_online_total_rounds); \
+    pointer_reset(delegates_copy[count].block_verifier_online_percentage); \
+    pointer_reset(delegates_copy[count].block_producer_total_rounds); \
+    pointer_reset(delegates_copy[count].block_producer_block_heights); \
+    pointer_reset(delegates_copy[count].public_key); \
+ }
 
   memset(data,0,sizeof(data));
 
@@ -157,6 +181,7 @@ int organize_delegates(struct delegates* delegates)
     {
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);
     }
+    RESET_DELEGATES;
     return 0;
   }
 
@@ -493,31 +518,11 @@ int organize_delegates(struct delegates* delegates)
     memcpy(delegates[count].public_key,delegates_copy[count].public_key,strlen(delegates_copy[count].public_key));
   }
 
-  for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    pointer_reset(delegates_copy[count].public_address);
-    pointer_reset(delegates_copy[count].total_vote_count);
-    pointer_reset(delegates_copy[count].IP_address);
-    pointer_reset(delegates_copy[count].delegate_name);
-    pointer_reset(delegates_copy[count].about);
-    pointer_reset(delegates_copy[count].website);
-    pointer_reset(delegates_copy[count].team);
-    pointer_reset(delegates_copy[count].pool_mode);
-    pointer_reset(delegates_copy[count].fee_structure);
-    pointer_reset(delegates_copy[count].server_settings);
-    pointer_reset(delegates_copy[count].block_verifier_score);
-    pointer_reset(delegates_copy[count].online_status);
-    pointer_reset(delegates_copy[count].block_verifier_total_rounds);
-    pointer_reset(delegates_copy[count].block_verifier_online_total_rounds);
-    pointer_reset(delegates_copy[count].block_verifier_online_percentage);
-    pointer_reset(delegates_copy[count].block_producer_total_rounds);
-    pointer_reset(delegates_copy[count].block_producer_block_heights);
-    pointer_reset(delegates_copy[count].public_key);
- }
- 
+  RESET_DELEGATES;
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS+1);
 
   return database_multiple_documents_fields.document_count;
   
   #undef ORGANIZE_DELEGATES_ERROR
+  #undef RESET_DELEGATES
 }

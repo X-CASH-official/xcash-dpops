@@ -762,6 +762,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data, but check errno to see if we should exit or try again
     if (recvfrom(SOCKET, buffer, LENGTH, MSG_DONTWAIT, NULL, NULL) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
     {
+      pointer_reset(buffer);
       return 1;
     }
 
@@ -781,12 +782,14 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
         string_replace(message,MAXIMUM_BUFFER_SIZE,SOCKET_END_STRING,"");
         //message[strlen(message)-(sizeof(SOCKET_END_STRING)-1)] = 0;
       }
+      pointer_reset(buffer);
       return 2;
     }
 
     // check for a timeout in receiving data
     if (RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS == 1 && time(NULL) - start > RECEIVE_DATA_SOCKET_TIMEOUT)
     {
+      pointer_reset(buffer);
       return 1;
     }
   }
