@@ -965,7 +965,7 @@ void database_sync_check(void)
     else
     {
       // check if all of the databases are synced from a random block verifier
-      if (check_if_databases_are_synced(1,0) == 0)
+      if (check_if_databases_are_synced(2,0) == 0)
       {
         DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
       }
