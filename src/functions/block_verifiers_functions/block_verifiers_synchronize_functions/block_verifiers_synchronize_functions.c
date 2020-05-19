@@ -1522,12 +1522,17 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
       goto start; \
     } \
   } 
+  
+  start:
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
   memset(database_data,0,sizeof(database_data));
   memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
+
+  // get a block verifier to sync the database from
+  get_block_verifier_for_syncing_database(settings,DELEGATES_IP_ADDRESS,block_verifiers_ip_address);
 
   // get the current reserve bytes database
   get_reserve_bytes_database(current_reserve_bytes_database,0);
@@ -1585,23 +1590,11 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data",0);
   }
 
-  start:
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-  memset(database_data,0,sizeof(database_data));
-  memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
-
-  // get a block verifier to sync the database from
-  get_block_verifier_for_syncing_database(settings,DELEGATES_IP_ADDRESS,block_verifiers_ip_address);
-
   // connect to the block verifier and get the database data
   if (send_and_receive_data_socket(database_data,sizeof(database_data),block_verifiers_ip_address,SEND_DATA_PORT,data3,SEND_PAYMENT_AND_DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
   {
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
   }
-
-  color_print("done getting data hash from server","yellow");
 
   if (verify_data(database_data,0) == 0)
   {
