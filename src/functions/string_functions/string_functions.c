@@ -516,6 +516,12 @@ int parse_http_response(char *result)
   memset(str,0,sizeof(str));
 
   data = strstr(result,"[") != NULL ? strstr(result,"[") : strstr(result,"{");
+
+  if (data == NULL)
+  {
+    return 0;
+  }
+  
   memcpy(str,data,strnlen(data,sizeof(str)));
   memset(result,0,strlen(result));
   memcpy(result,str,strlen(str));
