@@ -54,7 +54,7 @@ for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
   { \
     memset(data,0,strlen(data)); \
     memset(data2,0,strlen(data2)); \
-    if (send_and_receive_data_socket(data,sizeof(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0 || verify_data(data,0) == 0) \
+    if (send_and_receive_data_socket(data,sizeof(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,CONNECTION_TIMEOUT_SETTINGS) == 0 || verify_data(data,0) == 0) \
     { \
       memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18); \
       synced_block_verifiers.vote_settings_connection_timeout++; \
