@@ -48,7 +48,7 @@ Global Define Macros
 -----------------------------------------------------------------------------------------------------------
 */
 #define SEND_DATABASE_SYNC_CHECK_MESSAGE(database) \
-/*for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
 { \
   if (strncmp((char*)synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
   { \
@@ -72,7 +72,7 @@ Global Define Macros
       memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE)); \
     } \
   } \
-}*/
+}
 
 
 
