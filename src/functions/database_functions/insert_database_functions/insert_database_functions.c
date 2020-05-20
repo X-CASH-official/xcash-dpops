@@ -52,7 +52,6 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   int count2;
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
-  bson_oid_t oid;
   bson_error_t error;
   bson_t* document = NULL;
 

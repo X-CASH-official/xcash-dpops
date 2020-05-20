@@ -136,7 +136,7 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     // get the current document  
     message = bson_as_canonical_extended_json(current_document, NULL);
     strnlen(database_data,MAXIMUM_BUFFER_SIZE) == 0 ? memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),"{",1) : memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),",{",2);
-    memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),&message[51],strnlen(message,BUFFER_SIZE) - 51);    
+    memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),&message[142],strnlen(message,BUFFER_SIZE) - 142);    
     bson_free(message);
     count = 1;
   }
@@ -237,8 +237,6 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   {
     memcpy(data+strlen(data),COLLECTION,strnlen(COLLECTION,sizeof(data)));
   }
-
-  color_print(data,"yellow");
   
   command = strncmp(COLLECTION,"ALL",3) == 0 ? BCON_NEW ("dbHash", BCON_INT32 (1)) : BCON_NEW ("dbHash",BCON_INT32 (1),"collections","[",data,"]");
   memset(data,0,sizeof(data));
