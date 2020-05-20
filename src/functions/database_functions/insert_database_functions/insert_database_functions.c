@@ -73,15 +73,23 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
+  memcpy(data2,DATA,strnlen(DATA,sizeof(data2)));
+
+  // format the data
+  string_replace(data2,sizeof(data2),"\r\n","");
+  string_replace(data2,sizeof(data2),"\n","");
+  string_replace(data2,sizeof(data2),"\" : \"","\":\"");
+  string_replace(data3,sizeof(data2),"\", \"","\",\"");
+  string_replace(data3,sizeof(data2),"\" }","\"}");
+
   // get the data hash of the document
-  crypto_hash_sha512(string,(const unsigned char*)DATA,strlen(DATA));
+  crypto_hash_sha512(string,(const unsigned char*)data2,strlen(data2));
   for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
   {
     snprintf(data_hash+count,sizeof(data_hash)-1,"%02x",string[count2] & 0xFF);
   }
 
-  // add the data hash to the _id field
-  memcpy(data2,DATA,strnlen(DATA,sizeof(data2)));
+  // add the data hash to the _id field 
   memcpy(data2,",",1);
   memcpy(data3,"{\"_id\":\"",8);
   memcpy(data3+strlen(data3),data_hash,DATA_HASH_LENGTH);
@@ -99,7 +107,6 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
 
   if (!(document = bson_new_from_json((const uint8_t *)data3, -1, &error)))
   {
-    color_print(data3,"green");
     INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR("Could not convert the data into a database document");
   }
 
@@ -138,6 +145,10 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
 
   // Variables
   char buffer[1024];
+  unsigned char string[BUFFER_SIZE];
+  char data_hash[DATA_HASH_LENGTH+1];
+  char string2[BUFFER_SIZE];
+  char string3[BUFFER_SIZE];
   char* data2 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   char* data3 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
@@ -149,13 +160,15 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   bson_error_t error;
   size_t count;
   size_t count2;
+  int count3;
+  int counter;
 
   // define macros
   #define pointer_reset_all \
   free(datacopy); \
   datacopy = NULL; \
   free(data3); \
-  data3 = NULL; 
+  data3 = NULL;
 
   #define database_reset_all \
   mongoc_collection_destroy(collection); \
@@ -168,16 +181,8 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   pointer_reset_all; \
   database_reset_all;
 
-  if (data2 == NULL || data3 == NULL)
+  if (data2 == NULL || data3 == NULL || string2 == NULL || string3 == NULL)
   {
-    if (data2 != NULL)
-    {
-      pointer_reset(data2);
-    }
-    if (data3 != NULL)
-    {
-      pointer_reset(data3);
-    }
     memcpy(error_message.function[error_message.total],"insert_multiple_documents_into_collection_json",46);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
@@ -186,6 +191,10 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   }
 
   memset(buffer,0,sizeof(buffer));
+  memset(string,0,sizeof(string));
+  memset(string2,0,sizeof(string2));
+  memset(string3,0,sizeof(string3));
+  memset(data_hash,0,sizeof(data_hash));
 
   // get a temporary connection
   if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
@@ -225,7 +234,32 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
       return 0;
     }
 
-    bson_t* document = bson_new_from_json((const uint8_t *)data3, -1, &error);
+    // format the data
+    string_replace(data3,MAXIMUM_AMOUNT,"\r\n","");
+    string_replace(data3,MAXIMUM_AMOUNT,"\n","");
+    string_replace(data3,MAXIMUM_AMOUNT,"\" : \"","\":\"");
+    string_replace(data3,MAXIMUM_AMOUNT,"\", \"","\",\"");
+    string_replace(data3,MAXIMUM_AMOUNT,"\" }","\"}");
+
+    // get the data hash of the document
+    crypto_hash_sha512(string,(const unsigned char*)data3,strlen(data3));
+    for (count3 = 0, counter = 0; count3 < DATA_HASH_LENGTH / 2; count3++, counter += 2)
+    {
+      snprintf(data_hash+counter,sizeof(data_hash)-1,"%02x",string[count3] & 0xFF);
+    }
+
+    memset(string2,0,sizeof(string2));
+    memset(string3,0,sizeof(string3));
+
+    // add the data hash to the _id field
+    memcpy(string2,data3,strnlen(data3,sizeof(string2)));
+    memcpy(string2,",",1);
+    memcpy(string3,"{\"_id\":\"",8);
+    memcpy(string3+strlen(string3),data_hash,DATA_HASH_LENGTH);
+    memcpy(string3+strlen(string3),"\"",1);
+    memcpy(string3+strlen(string3),string2,strnlen(string2,sizeof(string3)));
+
+    bson_t* document = bson_new_from_json((const uint8_t *)string3, -1, &error);
     if (!document)
     {
       INSERT_MULTIPLE_DOCUMENTS_INTO_COLLECTION_JSON_ERROR("Could not convert the data into a database document");
