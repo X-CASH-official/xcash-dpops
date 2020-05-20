@@ -106,7 +106,7 @@ int block_verifiers_synchronize_functions_test(void)
   network_data_node_settings = 0;
   INITIALIZE_NETWORK_DATA_NODES_TEST
 
-  if (sync_all_block_verifiers_list() == 1)
+  if (sync_all_block_verifiers_list(1) == 1)
   {
     color_print("PASSED! Test for sync_all_block_verifiers_list for block verifiers","green");
     count_test++;
@@ -117,7 +117,7 @@ int block_verifiers_synchronize_functions_test(void)
   }
 
   network_data_node_settings = 1;
-  if (sync_all_block_verifiers_list() == 1)
+  if (sync_all_block_verifiers_list(1) == 1)
   {
     color_print("PASSED! Test for sync_all_block_verifiers_list for network data nodes","green");
     count_test++;
@@ -147,7 +147,7 @@ int block_verifiers_synchronize_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   network_data_node_settings = 1;
-  if (sync_all_block_verifiers_list() == 0)
+  if (sync_all_block_verifiers_list(1) == 0)
   {
     for (count = 0; count < error_message.total; count++)
     {

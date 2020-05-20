@@ -576,10 +576,13 @@ void sync_network_data_nodes_database(void)
 -----------------------------------------------------------------------------------------------------------
 Name: sync_all_block_verifiers_list
 Description: Sync the previous, current and next block verifiers from a network data node. This function is only run at startup, since after that the database is used to get the block verifiers list
+Paramters:
+  SETTINGS - 1 to sync immediately, 0 to wait for the network data nodes to sync
+Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_all_block_verifiers_list(void)
+int sync_all_block_verifiers_list(const int SETTINGS)
 {
   // Variables
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
@@ -646,7 +649,10 @@ int sync_all_block_verifiers_list(void)
   if (network_data_node_settings == 0)
   {
     // wait for the network data nodes to load the previous, current and next block verifiers list, before trying to sync them
-    sleep(10);
+    if (SETTINGS == 0)
+    {
+      sleep(10);
+    }
     
     if (test_settings == 0)
     {

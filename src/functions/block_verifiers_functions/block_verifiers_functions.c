@@ -132,7 +132,7 @@ int start_new_round(void)
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
   {
     sync_previous_current_next_block_verifiers_settings = 0;
-    sync_all_block_verifiers_list();
+    sync_all_block_verifiers_list(0);
   }
 
   // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
@@ -2015,6 +2015,7 @@ int get_network_data_nodes_online_status(void)
   }
   return 0;
 }
+
 
 
 /*

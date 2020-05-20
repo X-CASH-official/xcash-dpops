@@ -67,8 +67,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  int count; 
-  int counter = 0;  
+  int count;  
   struct pollfd socket_file_descriptors;
   int socket_settings;
   struct addrinfo serv_addr;
@@ -106,44 +105,31 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 
   // create the HTTP request
   memcpy(message,HTTP_SETTINGS,HTTP_SETTINGS_LENGTH);
-  counter += HTTP_SETTINGS_LENGTH;
-  memcpy(message+counter," ",1);
-  counter++;
-  memcpy(message+counter,URL,URL_LENGTH);
-  counter += URL_LENGTH;
+  memcpy(message+strlen(message)," ",1);
+  memcpy(message+strlen(message),URL,URL_LENGTH);
   if (strncmp(HTTP_SETTINGS,"GET",BUFFER_SIZE) == 0)
   {
-    memcpy(message+counter,"?",1);
-    counter++;
-    memcpy(message+counter,DATA,DATA_LENGTH);
-    counter += DATA_LENGTH;
+    memcpy(message+strlen(message),"?",1);
+    memcpy(message+strlen(message),DATA,DATA_LENGTH);
   }
-  memcpy(message+counter," HTTP/1.1\r\nHost: ",17);
-  counter += 17;
-  memcpy(message+counter,HOST,HOST_LENGTH);
-  counter += HOST_LENGTH;
-  memcpy(message+counter,"\r\n",2);
-  counter += 2;
+  memcpy(message+strlen(message)," HTTP/1.1\r\nHost: ",17);
+  memcpy(message+strlen(message),HOST,HOST_LENGTH);
+  memcpy(message+strlen(message),"\r\n",2);
   for (count = 0; count < (int)HTTP_HEADERS_LENGTH; count++)
   {
-    memcpy(message+counter,HTTP_HEADERS[count],strnlen(HTTP_HEADERS[count],BUFFER_SIZE));
-    counter += strnlen(HTTP_HEADERS[count],BUFFER_SIZE);
-    memcpy(message+counter,"\r\n",2);
-    counter += 2;
+    memcpy(message+strlen(message),HTTP_HEADERS[count],strnlen(HTTP_HEADERS[count],BUFFER_SIZE));
+    memcpy(message+strlen(message),"\r\n",2);
   }
   if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
   {
-    memcpy(message+counter,"Content-Length: ",16);
-    counter += 16;
+    memcpy(message+strlen(message),"Content-Length: ",16);
     snprintf(str, sizeof(str)-1, "%zu", strlen(DATA));
-    memcpy(message+counter,str,strnlen(str,BUFFER_SIZE));
-    counter += strnlen(str,BUFFER_SIZE);
+    memcpy(message+strlen(message),str,strnlen(str,BUFFER_SIZE));
   } 
-  memcpy(message+counter,"\r\n\r\n",4);   
-  counter += 4; 
+  memcpy(message+strlen(message),"\r\n\r\n",4);  
   if (strncmp(HTTP_SETTINGS,"POST",BUFFER_SIZE) == 0)
   {
-    memcpy(message+counter,DATA,DATA_LENGTH);
+    memcpy(message+strlen(message),DATA,DATA_LENGTH);
   }
 
   // convert the port to a string  
@@ -217,12 +203,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     { 
       SEND_HTTP_REQUEST_ERROR("Error connecting to host",1);
     } 
-  }
-
-  // if the timeout is longer than the normal timeout check if the delegate is online
-  if (DATA_TIMEOUT_SETTINGS != SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS && check_if_delegate_is_online(HOST) == 0)
-  {
-    SEND_HTTP_REQUEST_ERROR("Could not connect to host",1);
   }
 
   if (send_data(network_socket,(unsigned char*)message,0,0,"") == 0)
@@ -301,7 +281,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
 
   // define macros
   #define SEND_AND_RECEIVE_DATA_SOCKET_ERROR(data_settings,socket_settings) \
-  if (test_settings == 1) \
+  if (debug_settings == 1) \
   { \
     memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28); \
     memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
@@ -380,10 +360,10 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_SNDBUF,&(int){8388608}, sizeof(int)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVBUF,&(int){8388608}, sizeof(int)) != 0)
+  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error setting socket timeout",1);
-  }  
+  }
 
   /* set the first poll structure to our socket
   POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
@@ -447,7 +427,6 @@ Return: 0 if an error has occured, 1 if successfull
 int send_data_socket(const char* HOST, const int PORT, const char* DATA, const int DATA_TIMEOUT_SETTINGS)
 { 
   // Constants
-  const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
   const struct timeval SOCKET_TIMEOUT = {DATA_TIMEOUT_SETTINGS, 0};
   const size_t MAXIMUM_AMOUNT = strlen(DATA) >= BUFFER_SIZE ? BUFFER_SIZE : strlen(DATA)+BUFFER_SIZE;
   
@@ -461,13 +440,22 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
+  int network_socket;
 
   // define macros
-  #define SEND_DATA_SOCKET_ERROR(message) \
-  memcpy(error_message.function[error_message.total],"send_data_socket",16); \
-  memcpy(error_message.data[error_message.total],message,strnlen(message,sizeof(error_message.data[error_message.total]))); \
-  error_message.total++; \
-  close(SOCKET); \
+  // define macros
+  #define SEND_DATA_SOCKET_ERROR(data_settings,socket_settings) \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"send_data_socket",16); \
+    memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
+    error_message.total++; \
+  } \
+  freeaddrinfo(settings); \
+  if (socket_settings == 1) \
+  { \
+    close(network_socket); \
+  } \
   return 0;
 
   memset(buffer2,0,sizeof(buffer2));
@@ -475,10 +463,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   memset(message,0,sizeof(message));
   
   // convert the port to a string  
-  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);  
-
-  // get the length of buffer2 and host, since they will not change at this point and we need them for faster string copying
-  const size_t BUFFER2_LENGTH = strnlen(buffer2,BUFFER_SIZE);
+  snprintf(buffer2,sizeof(buffer2)-1,"%d",PORT);
 
   // set up the addrinfo
   memset(&serv_addr, 0, sizeof(serv_addr));
@@ -512,14 +497,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
 
   if (getaddrinfo(str, buffer2, &serv_addr, &settings) != 0)
   {     
-    memset(str,0,sizeof(str));
-    memcpy(str,"Error invalid hostname of ",26);
-    memcpy(str+26,HOST,strnlen(HOST,BUFFER_SIZE));
-    memcpy(error_message.function[error_message.total],"send_data_socket",16);
-    memcpy(error_message.data[error_message.total],str,strnlen(str,BUFFER_SIZE));
-    error_message.total++;  
-    freeaddrinfo(settings);
-    return 0;
+    SEND_DATA_SOCKET_ERROR("Error invalid hostname",0);
   }
 
   /* Create the socket  
@@ -527,74 +505,46 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   SOCK_STREAM = TCP protocol
   SOCK_NONBLOCK = Set the socket to non blocking mode, so it will use the timeout settings when connecting
   */
-  const int SOCKET = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol);
-  if (SOCKET == -1)
+  if ((network_socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
   { 
-    memcpy(error_message.function[error_message.total],"send_data_socket",16);
-    memcpy(error_message.data[error_message.total],"Error creating socket for sending a post request",48);
-    error_message.total++;
-    freeaddrinfo(settings);
-    return 0;
+    SEND_DATA_SOCKET_ERROR("Error creating socket",0);
   }
 
-  /* Set the socket options for sending and receiving data
+   /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
   SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_SNDBUF,&(int){8388608}, sizeof(int)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_RCVBUF,&(int){8388608}, sizeof(int)) != 0)
+  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
-    memcpy(error_message.function[error_message.total],"send_data_socket",16);
-    memcpy(error_message.data[error_message.total],"Error setting socket timeout for sending a post request",55);
-    error_message.total++;  
-    freeaddrinfo(settings);     
-    close(SOCKET);
-    return 0;
-  }  
+    SEND_DATA_SOCKET_ERROR("Error setting socket timeout",1);
+  }
 
   /* set the first poll structure to our socket
   POLLOUT - set it to POLLOUT since the socket is non blocking and it can write data to the socket
   */
-  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.fd = network_socket;
   socket_file_descriptors.events = POLLOUT;
 
   // connect to the socket
-  if (connect(SOCKET,settings->ai_addr, settings->ai_addrlen) != 0)
+  if (connect(network_socket,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
     count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
-    if ((count != 1) || (count == 1 && getsockopt(SOCKET,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
+    if ((count != 1) || (count == 1 && getsockopt(network_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     { 
-      if (network_functions_test_error_settings == 1)
-      {       
-        memset(str,0,sizeof(str));
-        memcpy(str,"Error connecting to ",20);
-        memcpy(str+20,HOST,HOST_LENGTH);
-        memcpy(str+20+HOST_LENGTH," on port ",9);
-        memcpy(str+29+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-        memcpy(error_message.function[error_message.total],"send_data_socket",16);
-        memcpy(error_message.data[error_message.total],str,strlen(str));
-        error_message.total++; 
-      }
-      freeaddrinfo(settings);
-      close(SOCKET);
-      return 0;
-    } 
+      SEND_DATA_SOCKET_ERROR("Error connecting to host",1);
+    }
   }
 
   // send the message 
   memset(message,0,sizeof(message));
   memcpy(message,DATA,strnlen(DATA,sizeof(message)));
-  if (send_data(SOCKET,(unsigned char*)message,0,1,"") == 0)
+  if (send_data(network_socket,(unsigned char*)message,0,1,"") == 0)
   {  
-    memcpy(str,"Error sending data to ",22);
-    memcpy(str+22,HOST,HOST_LENGTH);
-    memcpy(str+22+HOST_LENGTH," on port ",9);
-    memcpy(str+31+HOST_LENGTH,buffer2,BUFFER2_LENGTH);
-    freeaddrinfo(settings);
-    SEND_DATA_SOCKET_ERROR(str);
+    SEND_DATA_SOCKET_ERROR("Error sending data to host",1);
   }
 
   freeaddrinfo(settings);    
-  close(SOCKET);
+  close(network_socket);
   return 1;
 }
 
