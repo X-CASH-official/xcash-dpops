@@ -56,7 +56,6 @@ int delete_database_functions_test(void)
   }
 
   // delete a document from the collection on a separate thread
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE) == 0)
   {
     color_print("FAILED! Test for delete_document_from_collection_thread","red");
@@ -89,7 +88,6 @@ int delete_database_functions_test(void)
   }
 
   // delete a collection from the database on a separate thread
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE) == 0)
   {
     color_print("FAILED! Test for delete_collection_from_database_thread","red");

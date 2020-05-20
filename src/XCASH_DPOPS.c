@@ -941,8 +941,6 @@ void database_sync_check(void)
   mongoc_cleanup(); \
   exit(0);
 
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"item5\":\"value\"}");
-
   // sync the block verifiers list
   if (sync_all_block_verifiers_list() == 0)
   {

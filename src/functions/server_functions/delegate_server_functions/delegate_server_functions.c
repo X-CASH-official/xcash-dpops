@@ -158,7 +158,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
 
   // check if the reserve proof is greater than or equal to the minimum reserve proof amount
   sscanf(data2,"%zu", &reserve_proof_amount);
-  if (reserve_proof_amount < MINIMUM_AMOUNT_RESERVE_PROOF)
+  if (test_settings == 0 && reserve_proof_amount < MINIMUM_AMOUNT_RESERVE_PROOF)
   {
     return 0;
   }

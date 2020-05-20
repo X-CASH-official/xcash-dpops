@@ -55,6 +55,7 @@ int insert_database_functions_test(void)
     color_print("PASSED! Test for insert_document_into_collection_json","green");
     count_test++;
   }
+  delete_database(database_name);
   
   // insert a document into the collection using json data on a separate thread
   struct insert_document_into_collection_json_thread_parameters insert_document_into_collection_json_thread_parameters = {database_name,DATABASE_COLLECTION_TEST,MESSAGE};
@@ -72,8 +73,7 @@ int insert_database_functions_test(void)
   // insert multiple documents into the collection using json data
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
-  memcpy(data_test+strlen(data_test),",",1);
-  memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
+  memcpy(data_test+strlen(data_test),",{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"10\"}",315);
   if (insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION_TEST,data_test,sizeof(data_test)) == 1)
   {
     color_print("PASSED! Test for insert_multiple_documents_into_collection_json","green");
@@ -83,12 +83,12 @@ int insert_database_functions_test(void)
   {
     color_print("FAILED! Test for insert_multiple_documents_into_collection_json","red");    
   }
+  delete_database(database_name);
 
   // insert multiple documents into the collection using json data on a separate thread
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   memcpy(data_test,DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
-  memcpy(data_test+strlen(data_test),",",1);
-  memcpy(data_test+strlen(data_test),DATABASE_COLLECTION_STATISTICS_TEST_DATA,strnlen(DATABASE_COLLECTION_STATISTICS_TEST_DATA,BUFFER_SIZE));
+  memcpy(data_test+strlen(data_test),",{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"10\"}",315);
   struct insert_multiple_documents_into_collection_json_thread_parameters insert_multiple_documents_into_collection_json_thread_parameters = {database_name,DATABASE_COLLECTION_TEST,data_test,BUFFER_SIZE};
   pthread_create(&thread_id, NULL, &insert_multiple_documents_into_collection_json_thread,(void *)&insert_multiple_documents_into_collection_json_thread_parameters);
   if (thread_settings(thread_id) == 1)
