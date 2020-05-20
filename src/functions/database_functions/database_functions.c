@@ -175,6 +175,112 @@ Return: 0 if an error has occured, 1 if successfull
 int get_database_data_hash(char *data_hash, const char* DATABASE, const char* COLLECTION)
 {
   // Variables
+  char data[BUFFER_SIZE];
+  char* message;
+  char* message2;
+  size_t count;
+  size_t count2;
+  mongoc_client_t* database_client_thread = NULL;
+  mongoc_collection_t* collection;
+  bson_error_t error;
+  bson_t* command;
+  bson_t document;
+
+  // define macros
+  #define database_reset_all \
+  bson_destroy(command); \
+  bson_destroy(&document); \
+  mongoc_collection_destroy(collection); \
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+
+  memset(data,0,sizeof(data));
+
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
+  {
+    return 0;
+  }
+
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+
+  // get all of the database collections
+
+  if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
+  {
+    // get the current reserve bytes database
+    get_reserve_bytes_database(count2,0);
+
+    for (count = 1; count <= count2; count++)
+    {
+      memcpy(data+strlen(data),"reserve_bytes_",14);
+      snprintf(data+strlen(data),sizeof(data)-15,"%zu",count);
+      if (count != count2)
+      {
+        memcpy(data+strlen(data),",",1);
+      }
+    }
+  }
+  else if (strncmp(COLLECTION,"reserve_proofs",BUFFER_SIZE) == 0)
+  {
+    for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+    {
+      memcpy(data+strlen(data),"reserve_proofs_",15);
+      snprintf(data+strlen(data),sizeof(data)-16,"%zu",count);
+      if (count != TOTAL_RESERVE_PROOFS_DATABASES)
+      {
+        memcpy(data+strlen(data),",",1);
+      }
+    }
+  }
+  else
+  {
+    memcpy(data+strlen(data),COLLECTION,strnlen(COLLECTION,sizeof(data)));
+  }
+
+  color_print(data,"yellow");
+  
+  command = strncmp(COLLECTION,"ALL",3) == 0 ? BCON_NEW ("dbHash", BCON_INT32 (1)) : BCON_NEW ("dbHash",BCON_INT32 (1),"collections","[",data,"]");
+  memset(data,0,sizeof(data));
+
+  if (!command)
+  {
+    database_reset_all;
+    return 0;
+  }
+
+  if (!mongoc_collection_command_simple(collection, command, NULL, &document, &error))
+  {
+    database_reset_all;
+    return 0;
+  }
+
+  if ((message = bson_as_json(&document, NULL)) == NULL)
+  {
+    database_reset_all;
+    return 0;
+  }
+  
+  memcpy(data,message,strnlen(message,sizeof(data)));
+  bson_free(message);
+
+  message2 = strstr(data,"\"md5\"");
+
+  memset(data_hash,0,strlen(data_hash));
+  memcpy(data_hash,"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",96);
+  memcpy(data_hash+96,&message2[9],32);
+
+  database_reset_all;  
+  return 1;
+
+  #undef database_reset_all
+}
+
+
+
+/*int get_database_data_hash(char *data_hash, const char* DATABASE, const char* COLLECTION)
+{
+  // Variables
   unsigned char* string = (unsigned char*)calloc(BUFFER_SIZE,sizeof(unsigned char));
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char)); // 50 MB
   char data2[BUFFER_SIZE];
@@ -390,4 +496,4 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   return 1;
 
   #undef pointer_reset_all
-}
+}*/

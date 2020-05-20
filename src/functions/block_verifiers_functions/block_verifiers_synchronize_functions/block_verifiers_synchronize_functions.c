@@ -1620,6 +1620,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
 
 
 
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: sync_delegates_database

@@ -941,6 +941,8 @@ void database_sync_check(void)
   mongoc_cleanup(); \
   exit(0);
 
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"item5\":\"value\"}");
+
   // sync the block verifiers list
   if (sync_all_block_verifiers_list() == 0)
   {
@@ -957,7 +959,7 @@ void database_sync_check(void)
     if (network_data_node_settings == 1)
     {
       // check if all of the databases are synced from a random network data node
-      if (check_if_databases_are_synced(2,0) == 0)
+      if (check_if_databases_are_synced(3,0) == 0)
       {
         DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
       }
@@ -965,7 +967,7 @@ void database_sync_check(void)
     else
     {
       // check if all of the databases are synced from a random block verifier
-      if (check_if_databases_are_synced(2,0) == 0)
+      if (check_if_databases_are_synced(3,0) == 0)
       {
         DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
       }

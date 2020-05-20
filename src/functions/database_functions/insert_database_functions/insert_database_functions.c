@@ -44,8 +44,15 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   }
 
   // Variables
+  unsigned char string[BUFFER_SIZE];
+  char data_hash[DATA_HASH_LENGTH+1];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  int count;
+  int count2;
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
+  bson_oid_t oid;
   bson_error_t error;
   bson_t* document = NULL;
 
@@ -62,6 +69,26 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   database_reset_all; \
   return 0;
 
+  memset(string,0,sizeof(string));
+  memset(data_hash,0,sizeof(data_hash));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  // get the data hash of the document
+  crypto_hash_sha512(string,(const unsigned char*)DATA,strlen(DATA));
+  for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
+  {
+    snprintf(data_hash+count,sizeof(data_hash)-1,"%02x",string[count2] & 0xFF);
+  }
+
+  // add the data hash to the _id field
+  memcpy(data2,DATA,strnlen(DATA,sizeof(data2)));
+  memcpy(data2,",",1);
+  memcpy(data3,"{\"_id\":\"",8);
+  memcpy(data3+strlen(data3),data_hash,DATA_HASH_LENGTH);
+  memcpy(data3+strlen(data3),"\"",1);
+  memcpy(data3+strlen(data3),data2,strnlen(data2,sizeof(data3)));
+
   // get a temporary connection
   if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
   {
@@ -71,8 +98,9 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
 
-  if (!(document = bson_new_from_json((const uint8_t *)DATA, -1, &error)))
+  if (!(document = bson_new_from_json((const uint8_t *)data3, -1, &error)))
   {
+    color_print(data3,"green");
     INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR("Could not convert the data into a database document");
   }
 

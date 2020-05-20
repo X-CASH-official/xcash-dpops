@@ -126,14 +126,14 @@ void test(int settings)
     XCASH_DPOPS_total_passed_test += network_functions_test();
     XCASH_DPOPS_total_passed_test += network_security_functions_test();
     XCASH_DPOPS_total_passed_test += network_wallet_functions_test();
-    XCASH_DPOPS_total_passed_test += optimizations_functions_test();
+    //XCASH_DPOPS_total_passed_test += optimizations_functions_test();
     XCASH_DPOPS_total_passed_test += organize_functions_test();
     XCASH_DPOPS_total_passed_test += string_functions_test();
     XCASH_DPOPS_total_passed_test += VRF_functions_test();
-    XCASH_DPOPS_total_passed_test += block_verifiers_server_functions_test();
+    /*XCASH_DPOPS_total_passed_test += block_verifiers_server_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_check_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_functions_test();
-    XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_server_functions_test();
+    */XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_server_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_thread_server_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_update_functions_test();
     XCASH_DPOPS_total_passed_test += delegate_server_functions_test();

@@ -401,23 +401,12 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
     } 
   }
 
-  // if the timeout is longer than the normal timeout check if the delegate is online
-  if (DATA_TIMEOUT_SETTINGS != SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS && check_if_delegate_is_online(HOST) == 0)
-  {
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Could not connect to host",1);
-  }
-
-  color_print("start sending data","yellow");
-
   memset(message,0,strlen(message));
   memcpy(message,DATA,strnlen(DATA,MAXIMUM_AMOUNT));
   if (send_data(network_socket,(unsigned char*)message,0,1,"") == 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error sending data to host",1);
   }
-
-  color_print("end sending data","yellow");
-  color_print("start recving data","yellow");
     
   // get the result
   memset(result,0,strlen(result));
@@ -425,8 +414,6 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host",1);
   }
-
-  color_print("end recving data","yellow");
   
   // validate the data, dont run this is running the test, since it uses send_and_receive_data_socket to check all messages
   if (test_settings == 0 && validate_data(result) == 0)
@@ -591,14 +578,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
       close(SOCKET);
       return 0;
     } 
-  }
-
-  // if the timeout is longer than the normal timeout check if the delegate is online
-  if (DATA_TIMEOUT_SETTINGS != SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS && check_if_delegate_is_online(HOST) == 0)
-  {
-    freeaddrinfo(settings);    
-    close(SOCKET);
-    return 0;
   }
 
   // send the message 

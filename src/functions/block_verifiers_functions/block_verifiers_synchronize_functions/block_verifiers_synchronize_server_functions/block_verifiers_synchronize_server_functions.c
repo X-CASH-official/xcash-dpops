@@ -828,6 +828,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
+  color_print(data2,"green");
 
   // create the message
   strncmp(data,data2,DATA_HASH_LENGTH) == 0 ? memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"true\",\r\n ",147) : memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_bytes_database\": \"false\",\r\n ",148);
@@ -861,6 +862,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
     {
       SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
     }
+    color_print(reserve_bytes_database,"green");
     strncmp(reserve_bytes_database,data,DATA_HASH_LENGTH) == 0 ? memcpy(message+strlen(message),"true",4) : memcpy(message+strlen(message),"false",5);
     memcpy(message+strlen(message),"\",\r\n",4);
   }
