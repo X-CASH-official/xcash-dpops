@@ -1628,6 +1628,9 @@ function install()
   # Install packages
   install_packages
 
+  # Install the blockchain
+  install_blockchain
+
   # Install X-CASH
   install_xcash
 
@@ -1949,6 +1952,23 @@ function install_or_update_blockchain()
   rm xcash-blockchain.7z
   echo -ne "\r${COLOR_PRINT_GREEN}Installing / Updating The BlockChain (This Might Take a While)${END_COLOR_PRINT}"
   echo
+}
+
+function install_blockchain()
+{
+  if [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ]; then
+    echo -ne "${COLOR_PRINT_YELLOW}Installing The BlockChain (This Might Take a While)${END_COLOR_PRINT}"
+    cd $HOME
+    wget -q http://94.130.59.172/xcash-blockchain.7z
+    7z x xcash-blockchain.7z -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR} &>/dev/null
+    cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
+    cp -a .X-CASH/* ./
+    rm -r .X-CASH
+    cd $HOME
+    rm xcash-blockchain.7z
+    echo -ne "\r${COLOR_PRINT_GREEN}Installing The BlockChain (This Might Take a While)${END_COLOR_PRINT}"
+    echo
+  fi
 }
 
 function edit_shared_delegate_settings()
