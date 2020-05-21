@@ -48,8 +48,7 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   char data_hash[DATA_HASH_LENGTH+1];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
-  int count;
-  int count2;
+  char* message;
   mongoc_client_t* database_client_thread = NULL;
   mongoc_collection_t* collection;
   bson_error_t error;
@@ -82,11 +81,39 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   string_replace(data3,sizeof(data2),"\", \"","\",\"");
   string_replace(data3,sizeof(data2),"\" }","\"}");
 
-  // get the data hash of the document
-  crypto_hash_sha512(string,(const unsigned char*)data2,strlen(data2));
-  for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
+  /* get the data hash of the document
+  If the database collection is reserve proofs than the id is the public address created reserve proof
+  If the database collection is reserve bytes than the id is the reserve bytes data hash
+  If the database collection is delegates than the id is the public key
+  If the database collection is statistics than the id is 0
+  */
+
+  if (strstr(COLLECTION,"reserve_proofs") != NULL)
   {
-    snprintf(data_hash+count,sizeof(data_hash)-1,"%02x",string[count2] & 0xFF);
+    message = strstr(data2,"\"public_address_created_reserve_proof\":\"") + 40;
+    memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
+    memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
+  }
+  else if (strstr(COLLECTION,"reserve_bytes") != NULL)
+  {
+    message = strstr(data2,"\"reserve_bytes_data_hash\":\"") + 27;
+    memcpy(data_hash,message,DATA_HASH_LENGTH);
+  }
+  else if (strstr(COLLECTION,"delegates") != NULL)
+  {
+    message = strstr(data2,"\"public_key\":\"") + 14;
+    memcpy(data_hash,"0000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH-VRF_PUBLIC_KEY_LENGTH);
+    memcpy(data_hash+strlen(data_hash),message,VRF_PUBLIC_KEY_LENGTH);
+  }
+  else if (strstr(COLLECTION,"statistics") != NULL)
+  {
+    memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
+  }
+
+  // error check
+  if (strlen(data_hash) != DATA_HASH_LENGTH)
+  {
+    return 0;
   }
 
   // add the data hash to the _id field 
@@ -151,6 +178,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   char string3[BUFFER_SIZE];
   char* data2 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   char* data3 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
+  char* message;
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
   char* datacopy = data2; 
   time_t current_date_and_time;
@@ -160,8 +188,6 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   bson_error_t error;
   size_t count;
   size_t count2;
-  int count3;
-  int counter;
 
   // define macros
   #define pointer_reset_all \
@@ -241,11 +267,39 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     string_replace(data3,MAXIMUM_AMOUNT,"\", \"","\",\"");
     string_replace(data3,MAXIMUM_AMOUNT,"\" }","\"}");
 
-    // get the data hash of the document
-    crypto_hash_sha512(string,(const unsigned char*)data3,strlen(data3));
-    for (count3 = 0, counter = 0; count3 < DATA_HASH_LENGTH / 2; count3++, counter += 2)
+    /* get the data hash of the document
+    If the database collection is reserve proofs than the id is the public address created reserve proof
+    If the database collection is reserve bytes than the id is the reserve bytes data hash
+    If the database collection is delegates than the id is the public key
+    If the database collection is statistics than the id is 0
+    */
+
+    if (strstr(COLLECTION,"reserve_proofs") != NULL)
     {
-      snprintf(data_hash+counter,sizeof(data_hash)-1,"%02x",string[count3] & 0xFF);
+      message = strstr(data3,"\"public_address_created_reserve_proof\":\"") + 40;
+      memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
+      memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
+    }
+    else if (strstr(COLLECTION,"reserve_bytes") != NULL)
+    {
+      message = strstr(data3,"\"reserve_bytes_data_hash\":\"") + 27;
+      memcpy(data_hash,message,DATA_HASH_LENGTH);
+    }
+    else if (strstr(COLLECTION,"delegates") != NULL)
+    {
+      message = strstr(data3,"\"public_key\":\"") + 14;
+      memcpy(data_hash,"0000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH-VRF_PUBLIC_KEY_LENGTH);
+      memcpy(data_hash+strlen(data_hash),message,VRF_PUBLIC_KEY_LENGTH);
+    }
+    else if (strstr(COLLECTION,"statistics") != NULL)
+    {
+      memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
+    }
+
+    // error check
+    if (strlen(data_hash) != DATA_HASH_LENGTH)
+    {
+      return 0;
     }
 
     memset(string2,0,sizeof(string2));
@@ -266,6 +320,8 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
       bson_destroy(document);
       return 0;
     }
+
+    memset(data_hash,0,sizeof(data_hash));
 
     sync_database_threads;
 

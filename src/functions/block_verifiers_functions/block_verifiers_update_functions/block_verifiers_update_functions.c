@@ -984,18 +984,18 @@ int get_delegates_online_status(void)
   snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
   
   for (count = 0; count < total_delegates; count++)
-  {
-    // Variables
-    struct addrinfo serv_addr;
-    struct addrinfo* settings = NULL;
-
-    // initialize the block_verifiers_send_data_socket struct
-    memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
-    memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
-    block_verifiers_send_data_socket[count].settings = 0;
-    
+  { 
     if (strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
+      // Variables
+      struct addrinfo serv_addr;
+      struct addrinfo* settings = NULL;
+
+      // initialize the block_verifiers_send_data_socket struct
+      memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
+      memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
+      block_verifiers_send_data_socket[count].settings = 0;
+
       // set up the addrinfo
       memset(&serv_addr, 0, sizeof(serv_addr));
       if (string_count(block_verifiers_send_data_socket[count].IP_address,".") == 3)
