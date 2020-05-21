@@ -229,6 +229,12 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   size_t data_size;
 
   // define macros
+  #define pointer_reset_all \
+  free(result); \
+  result = NULL; \
+  free(string); \
+  string = NULL;
+
   #define VERIFY_DATA_ERROR(settings) \
   if (network_functions_test_error_settings == 1 && debug_settings == 1) \
   { \
@@ -239,12 +245,6 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   } \
   pointer_reset_all; \
   return 0;
-
-  #define pointer_reset_all \
-  free(result); \
-  result = NULL; \
-  free(string); \
-  string = NULL;
 
   // check if the memory needed was allocated on the heap successfully
   if (result == NULL || string == NULL)

@@ -83,18 +83,6 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings,MESSAGE) \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66); \
-  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
-  error_message.total++; \
-  memset(message,0,strlen(message)); \
-  memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
-  if ((settings) == 0) \
-  { \
-    pointer_reset_database_array; \
-  } \
-  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
-  return 0;
 
   #define pointer_reset_database_array \
   for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
@@ -133,6 +121,19 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
       pointer_reset(database_multiple_documents_fields2.value[count][counter]); \
     } \
   }
+
+  #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(settings,MESSAGE) \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66); \
+  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+  error_message.total++; \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"{\"Error\":\"Could not get the delegates statistics\"}",50); \
+  if ((settings) == 0) \
+  { \
+    pointer_reset_database_array; \
+  } \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
+  return 0;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
