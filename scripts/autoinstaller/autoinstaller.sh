@@ -1664,9 +1664,9 @@ function install()
     make release -j $((CPU_THREADS / 2)) &>/dev/null
   fi
 
-  # Create a swap file if they dont already have one
+  # Create a swap file if they dont already have one and have low ram
   SWAP_FILE=$(sudo swapon --show)
-  if [ -z "$SWAP_FILE" ]; then
+  if [ -z "$SWAP_FILE" ] && [ "$RAM" -lt 10 ]; then
     create_swap_file
   fi
 

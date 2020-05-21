@@ -181,7 +181,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
   pointer_reset_all; \
   database_reset_all;
 
-  if (data2 == NULL || data3 == NULL || string2 == NULL || string3 == NULL)
+  if (data2 == NULL || data3 == NULL)
   {
     memcpy(error_message.function[error_message.total],"insert_multiple_documents_into_collection_json",46);
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
