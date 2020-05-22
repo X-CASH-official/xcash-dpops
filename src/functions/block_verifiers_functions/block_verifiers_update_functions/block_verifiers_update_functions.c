@@ -75,13 +75,8 @@ int update_block_verifiers_list(void)
   memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  database_settings = 1; \
-  pthread_cond_broadcast(&thread_settings_lock); \
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   return 0;
-
-  // set the database to not accept any new data
-  database_settings = 0;
 
   // reset the previous_block_verifiers_list struct
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
@@ -184,12 +179,6 @@ int update_block_verifiers_list(void)
   }
   settings = settings > (BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT) ? 1 : 2;
 
-  // set the database to accept data
-  database_settings = 1;
-
-  // reset any thread that was waiting for the database
-  pthread_cond_broadcast(&thread_settings_lock);
-
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
 
   return settings;
@@ -222,13 +211,8 @@ int update_next_block_verifiers_list(void)
   memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  database_settings = 1; \
-  pthread_cond_broadcast(&thread_settings_lock); \
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   return 0;
-
-  // set the database to not accept any new data
-  database_settings = 0;
 
   // reset the next_block_verifiers_list struct
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
@@ -260,12 +244,6 @@ int update_next_block_verifiers_list(void)
     memcpy(next_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(next_block_verifiers_list.block_verifiers_public_key[count])));
     memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
   }
-
-  // set the database to accept data
-  database_settings = 1;
-
-  // reset any thread that was waiting for the database
-  pthread_cond_broadcast(&thread_settings_lock);
 
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
 

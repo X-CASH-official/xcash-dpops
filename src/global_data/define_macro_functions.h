@@ -277,24 +277,6 @@ synced_block_verifiers.vote_settings_connection_timeout = 0;
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: sync_database_threads
-Description: waits for another thread to finish acessing the database
-Return: Writes the correct code
------------------------------------------------------------------------------------------------------------
-*/
-
-#define sync_database_threads \
-pthread_mutex_lock(&database_lock); \
-while(database_settings != 1) \
-{ \
-  pthread_cond_wait(&thread_settings_lock, &database_lock); \
-} \
-pthread_mutex_unlock(&database_lock); \
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: get_current_UTC_time
 Description: Gets the current UTC time
 Parameters:

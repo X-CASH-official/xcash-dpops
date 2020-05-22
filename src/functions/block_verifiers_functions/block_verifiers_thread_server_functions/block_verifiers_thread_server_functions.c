@@ -713,9 +713,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     pointer_reset(invalid_reserve_proofs.public_address_voted_for[count]); \
     pointer_reset(invalid_reserve_proofs.reserve_proof[count]); \
   } \
-  database_settings = 1; \
   invalid_reserve_proofs.count = 0; \
-  pthread_cond_broadcast(&thread_settings_lock); \
   color_print("Stoping the check reserve proofs timer thread","yellow"); \
   fprintf(stderr,"\n"); \
   pthread_exit((void *)(intptr_t)1);
@@ -739,9 +737,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4)
     {
-      // set the database to not accept data
-      database_settings = 0;
-
       // check if there was any invalid reserve proofs found
       if (invalid_reserve_proofs.count <= 0)
       {
@@ -785,7 +780,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       color_print("Part 4 - Remove the invalid reserve proofs from the database","yellow");
 
       // update the database
-      database_settings = 1;
       check_reserve_proofs_timer_update_database();
 
       color_print("Invalid reserve proofs have been removed from the database","yellow");

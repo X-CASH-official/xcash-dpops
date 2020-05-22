@@ -136,8 +136,6 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   {
     INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR("Could not convert the data into a database document");
   }
-
-  sync_database_threads;
     
   if (!mongoc_collection_insert_one(collection, document, NULL, NULL, &error))
   {
@@ -322,8 +320,6 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     }
 
     memset(data_hash,0,sizeof(data_hash));
-
-    sync_database_threads;
 
     if (!mongoc_collection_insert_one(collection, document, NULL, NULL, &error))
     {

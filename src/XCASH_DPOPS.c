@@ -72,7 +72,6 @@ pthread_mutex_t lock;
 pthread_mutex_t database_lock;
 pthread_mutex_t verify_network_block_lock;
 pthread_mutex_t vote_lock;
-pthread_cond_t thread_settings_lock;
 pthread_mutex_t add_reserve_proof_lock;
 pthread_mutex_t invalid_reserve_proof_lock;
 pthread_mutex_t database_data_IP_address_lock;
@@ -86,7 +85,6 @@ char current_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The current block 
 char previous_block_hash[BLOCK_HASH_LENGTH+1]; // The current block height
 int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
-int database_settings; // 1 if the database can have documents added to it, 0 if not
 int network_data_nodes_sync_databases_settings; // 1 if a block verifier can sync from a network data node, 0 if not
 int log_file_settings; // 0 to use the terminal, 1 to use a log file, 2 to use a log file with color output
 char log_file[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The log file
@@ -174,7 +172,6 @@ void initialize_data(void)
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
   memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
   memset(current_block_producer,0,sizeof(current_block_producer));
-  database_settings = 1;
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
   network_functions_test_settings = 0;
@@ -183,7 +180,6 @@ void initialize_data(void)
   debug_settings = 0;
   registration_settings = 0;
   block_height_start_time = 0;
-  database_settings = 1;
   network_data_nodes_sync_databases_settings = 1;
   production_settings = 1;
   production_settings_database_data_settings = 0;
@@ -197,7 +193,6 @@ void initialize_data(void)
   pthread_mutex_init(&database_lock, NULL);
   pthread_mutex_init(&verify_network_block_lock, NULL);
   pthread_mutex_init(&vote_lock, NULL);
-  pthread_cond_init(&thread_settings_lock,NULL);
   pthread_mutex_init(&add_reserve_proof_lock, NULL);
   pthread_mutex_init(&invalid_reserve_proof_lock, NULL);
   pthread_mutex_init(&database_data_IP_address_lock, NULL);
@@ -572,7 +567,6 @@ int set_parameters(int parameters_count, char* parameters[])
   log_file_settings = 0;
   memcpy(database_name,DATABASE_NAME,sizeof(DATABASE_NAME)-1);
   memcpy(shared_delegates_database_name,DATABASE_NAME_DELEGATES,sizeof(DATABASE_NAME_DELEGATES)-1);
-  database_settings = 1;
   log_file_settings = 0;
   test_settings = 0;
   memcpy(voter_inactivity_count,VOTER_INACTIVITY_COUNT,sizeof(VOTER_INACTIVITY_COUNT)-1);

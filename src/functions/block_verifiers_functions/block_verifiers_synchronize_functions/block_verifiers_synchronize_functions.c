@@ -87,9 +87,6 @@ void sync_network_data_nodes_database(void)
   memset(data2,0,sizeof(data2));
   memset(database_data_hash_majority,0,sizeof(database_data_hash_majority));
 
-  // set the database to not accept any data
-  database_settings = 0;
-
   // reset the synced_network_data_nodes
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
@@ -174,8 +171,6 @@ void sync_network_data_nodes_database(void)
 
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,database_name,"ALL") == 0)
     {
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
     // create the message
@@ -188,8 +183,6 @@ void sync_network_data_nodes_database(void)
     // sign_data
     if (sign_data(data) == 0)
     { 
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
 
@@ -215,8 +208,6 @@ void sync_network_data_nodes_database(void)
 
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,database_name,"ALL") == 0)
     {
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
     // create the message
@@ -229,8 +220,6 @@ void sync_network_data_nodes_database(void)
     // sign_data
     if (sign_data(data) == 0)
     { 
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
      
@@ -256,8 +245,6 @@ void sync_network_data_nodes_database(void)
 
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,database_name,"ALL") == 0)
     {
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
     // create the message
@@ -270,8 +257,6 @@ void sync_network_data_nodes_database(void)
     // sign_data
     if (sign_data(data) == 0)
     { 
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
 
@@ -297,8 +282,6 @@ void sync_network_data_nodes_database(void)
 
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,database_name,"ALL") == 0)
     {
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
     // create the message
@@ -311,8 +294,6 @@ void sync_network_data_nodes_database(void)
     // sign_data
     if (sign_data(data) == 0)
     { 
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
 
@@ -338,8 +319,6 @@ void sync_network_data_nodes_database(void)
 
     if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,database_name,"ALL") == 0)
     {
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
     // create the message
@@ -352,8 +331,6 @@ void sync_network_data_nodes_database(void)
     // sign_data
     if (sign_data(data) == 0)
     { 
-      database_settings = 1;
-      pthread_cond_broadcast(&thread_settings_lock);
       return;
     }
 
@@ -420,9 +397,6 @@ void sync_network_data_nodes_database(void)
   if ((network_data_nodes_valid_count / (NETWORK_DATA_NODES_AMOUNT*(NETWORK_DATA_NODES_AMOUNT-1)) < NETWORK_DATA_NODES_VALID_AMOUNT_PERCENTAGE) || (strncmp(database_data_hash_majority,"",1) == 0))
   {
     color_print("A majority could not be reached between network data nodes for the database sync. Syncing the database from the main network data node","yellow");
-    
-    database_settings = 1;
-    pthread_cond_broadcast(&thread_settings_lock);
 
     // if all previous block settings are false then sync from the main network data node. This should not happen unless its the first block of the network   
     if (network_data_nodes_sync_database_list.network_data_nodes_1_previous_block_settings == 1)
@@ -537,8 +511,6 @@ void sync_network_data_nodes_database(void)
     // the network data node is in the majority
     color_print("A majority has been reached and the block verifier is already synced with the majority","yellow");
     network_data_nodes_sync_databases_settings = 1;
-    database_settings = 1;
-    pthread_cond_broadcast(&thread_settings_lock);
     return;
   }
 
@@ -550,8 +522,6 @@ void sync_network_data_nodes_database(void)
   } while (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || synced_network_data_nodes[count] == -1);
   
   sleep(BLOCK_VERIFIERS_SETTINGS);
-  database_settings = 1;
-  pthread_cond_broadcast(&thread_settings_lock);
 
   // sync the databses from one of the synced network data nodes
   color_print("Syncing the reserve proofs database","yellow");
@@ -618,12 +588,7 @@ int sync_all_block_verifiers_list(const int SETTINGS)
   memcpy(error_message.function[error_message.total],"sync_all_block_verifiers_list",29); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
-  database_settings = 1; \
-  pthread_cond_broadcast(&thread_settings_lock); \
   return 0;
-
-  // set the database to not accept any new data
-  database_settings = 0;
 
   memset(message,0,sizeof(message));
   memset(data2,0,sizeof(data2));
@@ -773,12 +738,6 @@ int sync_all_block_verifiers_list(const int SETTINGS)
       color_print("The previous, current and next block verifiers have been loaded from the database","green");
     }
   }
-
-  // set the database to accept data
-  database_settings = 1;
-
-  // reset any thread that was waiting for the database
-  pthread_cond_broadcast(&thread_settings_lock);
 
   return 1;
   

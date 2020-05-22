@@ -97,8 +97,6 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   {
     UPDATE_DOCUMENT_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
-
-  sync_database_threads;
   
   if (!mongoc_collection_update_one(collection, update, update_settings, NULL, NULL, &error))
   {
@@ -187,8 +185,6 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   {
     UPDATE_ALL_DOCUMENTS_FROM_COLLECTION_ERROR("Could not convert the data into a database document");
   }
-
-  sync_database_threads;
   
   if (!mongoc_collection_update_many(collection, update, update_settings, NULL, NULL, &error))
   {
