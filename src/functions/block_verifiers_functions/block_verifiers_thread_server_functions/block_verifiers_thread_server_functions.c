@@ -699,6 +699,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
+  int settings;
   struct reserve_proof reserve_proof;
   
   // unused parameters
@@ -732,10 +733,28 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   color_print("Started the check reserve proofs timer thread","green");
   color_print("Part 1 - Randomly select reserve proofs and check if they are valid","yellow");
 
+  // check if there are any reserve proofs in the database
+  for (count = 0, settings = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  {
+    memset(data,0,sizeof(data));
+    memcpy(data,"reserve_proofs_",15);
+    snprintf(data+15,sizeof(data)-16,"%d",count);
+    if (count_all_documents_in_collection(database_name,data) > 0)
+    {
+      settings = 1;
+    }
+  }
+
+  if (settings == 0)
+  {
+    color_print("There are no reserve proofs in the database","yellow");
+    RESET_INVALID_RESERVE_PROOFS_DATA;
+  }
+
   for (;;)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4)
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == BLOCK_TIME-1)
     {
       // check if there was any invalid reserve proofs found
       if (invalid_reserve_proofs.count <= 0)
@@ -787,7 +806,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       // reset the invalid_reserve_proofs and the block_verifiers_invalid_reserve_proofs
       RESET_INVALID_RESERVE_PROOFS_DATA;
     }
-
     
     // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
     memset(data,0,strlen(data));

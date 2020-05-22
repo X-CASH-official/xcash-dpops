@@ -635,7 +635,7 @@ void* payment_timer_thread(void* parameters)
     start:
     // check if it is time to send the payments
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_min == 4)
+    if (current_UTC_date_and_time.tm_min == BLOCK_TIME-1)
     {
       color_print("Sending the hourly payments","yellow");
 
