@@ -1848,6 +1848,7 @@ function test_update()
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
+  data="${data%,*}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
   sudo systemctl stop XCASH_Daemon
   sleep 30s
