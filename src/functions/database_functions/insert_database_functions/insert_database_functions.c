@@ -109,6 +109,10 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   {
     memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
   }
+  else
+  {
+    random_string(data_hash,DATA_HASH_LENGTH);
+  }
 
   // error check
   if (strlen(data_hash) != DATA_HASH_LENGTH)
@@ -293,6 +297,11 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     {
       memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
     }
+    else
+    {
+      random_string(data_hash,DATA_HASH_LENGTH);
+    }
+    
 
     // error check
     if (strlen(data_hash) != DATA_HASH_LENGTH)
