@@ -2068,7 +2068,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // convert the port to a string
-  snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
+  snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT);
   
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {    
