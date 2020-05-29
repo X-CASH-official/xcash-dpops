@@ -1948,6 +1948,7 @@ function install_or_update_blockchain()
   if [ $XCASH_BLOCKCHAIN_INSTALLATION_DIR = "/" ]; then
   XCASH_BLOCKCHAIN_INSTALLATION_DIR="/root/.X-CASH/"
   fi
+  cd && rm xcash-blockchain.7z*
   wget -q http://94.130.59.172/xcash-blockchain.7z
   7z x xcash-blockchain.7z -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR} &>/dev/null
   cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
@@ -1964,6 +1965,7 @@ function install_blockchain()
   if [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ]; then
     echo -ne "${COLOR_PRINT_YELLOW}Installing The BlockChain (This Might Take a While)${END_COLOR_PRINT}"
     cd $HOME
+    cd && rm xcash-blockchain.7z*
     wget -q http://94.130.59.172/xcash-blockchain.7z
     7z x xcash-blockchain.7z -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR} &>/dev/null
     cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
