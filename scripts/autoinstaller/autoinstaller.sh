@@ -945,7 +945,11 @@ function build_libgtest()
   cd /usr/src/gtest &>/dev/null
   sudo cmake . &>/dev/null
   sudo make &>/dev/null
-  sudo mv libg* /usr/lib/ &>/dev/null
+  if [ ! -f /usr/src/gtest/lib/libgtest.a ]; then
+    sudo mv libg* /usr/lib/ &>/dev/null
+  else
+    sudo mv lib/libg* /usr/lib/ &>/dev/null
+  fi
 }
 
 
