@@ -93,7 +93,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
     {
       if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= sizeof(data))
       {
-        return 0;
+        return 2;
       }
       memcpy(data,&MESSAGE[count2],data_size);
     }
@@ -101,7 +101,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
     {
       if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= BUFFER_SIZE_RESERVE_PROOF)
       {
-        return 0;
+        return 2;
       }
       memcpy(reserve_proof->reserve_proof,&MESSAGE[count2],data_size);
     }
@@ -109,7 +109,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
     {
       if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
       {
-        return 0;
+        return 2;
       }
       memcpy(reserve_proof->public_address_created_reserve_proof,&MESSAGE[count2],data_size);
     }
@@ -127,7 +127,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
     // get the delegates public address
     if (read_document_field_from_collection(database_name,"delegates",data2,"public_address",data3) == 0)
     {
-      return 0;
+      return 3;
     }
 
     memset(data,0,sizeof(data));
@@ -140,27 +140,27 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
   // check if the delegate has the maximum amount of voters
   if (get_delegates_total_voters_count(reserve_proof->public_address_voted_for) >= MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE)
   {
-    return 0;
+    return 4;
   }
 
   // check if the data is valid
   if (strlen(reserve_proof->public_address_voted_for) != XCASH_WALLET_LENGTH || strncmp(reserve_proof->public_address_voted_for,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(reserve_proof->public_address_created_reserve_proof) != XCASH_WALLET_LENGTH || strncmp(reserve_proof->public_address_created_reserve_proof,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(reserve_proof->reserve_proof) > BUFFER_SIZE_RESERVE_PROOF)
   {
-    return 0;
+    return 5;
   }
 
   // check if the reserve proof is valid and the spent amount is 0
   memset(data2,0,sizeof(data2));
   if (check_reserve_proofs(data2,reserve_proof->public_address_created_reserve_proof,reserve_proof->reserve_proof) == 0)
   {
-    return 0;
+    return 6;
   }
 
   // check if the reserve proof is greater than or equal to the minimum reserve proof amount
   sscanf(data2,"%zu", &reserve_proof_amount);
   if (test_settings == 0 && reserve_proof_amount < MINIMUM_AMOUNT_RESERVE_PROOF)
   {
-    return 0;
+    return 7;
   }
 
   memset(reserve_proof->reserve_proof_amount,0,sizeof(reserve_proof->reserve_proof_amount));
@@ -181,7 +181,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
     // check if the reserve proof is in the database
     if (count_documents_in_collection(database_name,data2,data) > 0)
     {      
-      return 0;
+      return 8;
     }
   }
   RESET_ERROR_MESSAGES;
@@ -347,9 +347,40 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   }
 
   // check if the data is valid and parse the message
-  if (block_verifiers_add_reserve_proof_check_if_data_is_valid(MESSAGE,&reserve_proof) == 0)
+  if ((counter = block_verifiers_add_reserve_proof_check_if_data_is_valid(MESSAGE,&reserve_proof)) != 1)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The data is invalid}");
+    if (counter == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not verify the message}");
+    }
+    else if (counter == 2)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not parse the message}");
+    }
+    else if (counter == 3)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The delegate voted for is invalid}");
+    }
+    else if (counter == 4)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The delegate voted for has the maximum voters}");
+    }
+    else if (counter == 5)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The data is invalid}");
+    }
+    else if (counter == 6)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is invalid}");
+    }
+    else if (counter == 7)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is below the minimum amount}");
+    }
+    else if (counter == 8)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("The reserve proof is already in the database}");
+    }
   }
 
   // create the message
