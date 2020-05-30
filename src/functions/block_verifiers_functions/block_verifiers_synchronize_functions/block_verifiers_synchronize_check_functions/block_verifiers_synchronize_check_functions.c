@@ -87,7 +87,7 @@ Functions
 Name: check_if_databases_are_synced
 Description: Checks if the databases are synced, and if not syncs the databases
 Paramters:
-  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
+  SETTINGS - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority, 4 to sync from the main network data node and not check the majority
   RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ int check_if_databases_are_synced(const int SETTINGS, const int RESERVE_BYTES_ST
 Name: sync_check_reserve_proofs_database
 Description: Checks if the block verifier needs to sync the reserve proofs database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority, 4 to sync from the main network data node and not check the majority
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -267,6 +267,17 @@ int sync_check_reserve_proofs_database(int settings)
       color_print("Syncing from a random network data node","white");
     }
     if (sync_reserve_proofs_database(settings,"") == 0)
+    {
+      SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
+    }
+  }
+  if (settings == 4)
+  {
+    if (test_settings == 0)
+    {
+      color_print("Syncing from the main network data node","white");
+    }
+    if ((production_settings == 0 && sync_reserve_proofs_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_reserve_proofs_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
@@ -391,7 +402,7 @@ Name: sync_check_reserve_bytes_database
 Description: Checks if the block verifier needs to sync the reserve bytes database
 Paramters:
   settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
-  RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database, 2 to only check if the current reserve bytes database needs to be synced
+  RESERVE_BYTES_START_SETTINGS - 0 to sync all of the reserve bytes databases, 1 to only sync the current reserve bytes database, 2 to only check if the current reserve bytes database needs to be synced, 4 to sync from the main network data node and not check the majority
 Return: 0 if an error has occured, 1 if successfull, 2 to indicate the reserve bytes needs to be synced
 -----------------------------------------------------------------------------------------------------------
 */
@@ -519,6 +530,17 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve bytes database");
     }
   }
+  if (settings == 4)
+  {
+    if (test_settings == 0)
+    {
+      color_print("Syncing from the main network data node","white");
+    }
+    if ((production_settings == 0 && sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    {
+      SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve proofs database");
+    }
+  }
 
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
   if ((settings == 1 && RESERVE_BYTES_START_SETTINGS != 2) || (settings == 2))
@@ -644,7 +666,7 @@ int sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SET
 Name: sync_check_delegates_database
 Description: Checks if the block verifier needs to sync the delegates database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority, 4 to sync from the main network data node and not check the majority
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -745,6 +767,18 @@ int sync_check_delegates_database(int settings)
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database database");
     }
   }
+  if (settings == 4)
+  {
+    if (test_settings == 0)
+    {
+      color_print("Syncing from the main network data node","white");
+    }
+    if ((production_settings == 0 && sync_delegates_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_delegates_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    {
+      SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the reserve proofs database");
+    }
+  }
+
 
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
   if (settings != 3)
@@ -848,7 +882,7 @@ int sync_check_majority_delegates_database(void)
 Name: sync_check_statistics_database
 Description: Checks if the block verifier needs to sync the statistics database
 Paramters:
-  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority, 4 to sync from the main network data node and not check the majority
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
@@ -947,6 +981,17 @@ int sync_check_statistics_database(int settings)
     if (sync_statistics_database(settings,"") == 0)
     {
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database database");
+    }
+  }
+  if (settings == 4)
+  {
+    if (test_settings == 0)
+    {
+      color_print("Syncing from the main network data node","white");
+    }
+    if ((production_settings == 0 && sync_statistics_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_statistics_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    {
+      SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
   }
 
