@@ -650,7 +650,6 @@ int validate_data(const char* MESSAGE)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
-  int total_delegates = 0;
 
   // define macros  
   #define VALIDATE_DATA_ERROR(settings) \

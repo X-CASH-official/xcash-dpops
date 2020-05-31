@@ -59,7 +59,7 @@ int check_if_blockchain_is_fully_synced(void)
 
   sscanf(current_block_height,"%zu",&count);
   sscanf(message,"%zu",&count2);
-  return count < count2 ? 0 : 1;
+  return count < count2 || strstr(data,"BUSY") != NULL ? 0 : 1;
   
   #undef MESSAGE
   #undef CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR

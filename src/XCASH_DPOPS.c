@@ -474,6 +474,16 @@ void get_delegates_data(void)
 
   memset(data,0,sizeof(data));
 
+  // wait until the blockchain is fully synced
+  if (check_if_blockchain_is_fully_synced() == 0)
+  {
+    color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue (This might take a while)","yellow");  
+    do
+    {
+      sleep(600);
+    } while (check_if_blockchain_is_fully_synced() == 0);
+  }
+
   // get the wallets public address
   if (get_public_address() == 0)
   { 
@@ -484,16 +494,6 @@ void get_delegates_data(void)
   if (get_current_block_height(current_block_height) == 0)
   {
     GET_DELEGATES_DATA_ERROR("Could not get the current block height");
-  }
-
-  // wait until the blockchain is fully synced
-  if (check_if_blockchain_is_fully_synced() == 0)
-  {
-    color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue","yellow");  
-    do
-    {
-      sleep(60);
-    } while (check_if_blockchain_is_fully_synced() == 0);
   }
 
   // get the previous block hash
