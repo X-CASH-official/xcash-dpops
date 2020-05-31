@@ -412,8 +412,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_proofs_",15);
     snprintf(data3+15,sizeof(data3)-16,"%zu",count);
-    counter = count_documents_in_collection(database_name,data3,data);
-    if (counter != -1 && counter < MAXIMUM_INVALID_RESERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES)
+    if (count_documents_in_collection(database_name,data3,data) < (MAXIMUM_INVALID_RESERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES))
     {
       if (insert_document_into_collection_json(database_name,data3,data) == 1)
       {        
