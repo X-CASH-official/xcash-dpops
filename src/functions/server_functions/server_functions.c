@@ -666,14 +666,6 @@ void socket_thread(int client_socket)
      strstr(buffer,"|") != NULL ? server_limit_public_addresses(4,(const char*)buffer) : server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER\"") != NULL)
- {
-   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
-   {
-     server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(client_socket);
-     server_limit_IP_addresses(0,(const char*)client_IP_address);
-   }
- }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)

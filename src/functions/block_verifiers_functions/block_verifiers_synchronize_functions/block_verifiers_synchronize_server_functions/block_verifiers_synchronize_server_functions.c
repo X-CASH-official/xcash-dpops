@@ -534,42 +534,6 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier
-Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER message
-Parameters:
-  CLIENT_SOCKET - The socket to send data to
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
-
-int server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(const int CLIENT_SOCKET)
-{  
-  // Variables
-  char data[SMALL_BUFFER_SIZE];
-  int count;
-
-  memset(data,0,sizeof(data));
-  memcpy(data,"0}",2);
-
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-    {
-      memset(data,0,2);
-      memcpy(data,"1}",2);
-      break;
-    }    
-  }
-
-  // send the data
-  test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
-  return 1;
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE message
 Parameters:
