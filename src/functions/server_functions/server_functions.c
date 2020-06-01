@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <unistd.h>
+#include <errno.h>
 #include <signal.h>
 #include <pthread.h>
 #include <mongoc/mongoc.h>
@@ -194,22 +195,33 @@ void new_socket_thread(void)
   int client_socket;
   struct sockaddr_in addr;
   socklen_t addrlen = sizeof(struct sockaddr_in);
+  time_t start = time(NULL);
 
-  while ((client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen)) != -1)
+  // accept the connection
+  for (;;)
   {
-    /* create the epoll_event struct
-    EPOLLIN = signal when the file descriptor is ready to read
-    EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
-    EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
-    */
-    events_copy.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
-    events_copy.data.fd = client_socket;
-
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events_copy) < 0)
-    {    
-      close(client_socket);
+    client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen);
+    if ((client_socket == -1 && errno != EAGAIN && errno != EWOULDBLOCK) || (time(NULL) - start > CONNECTION_TIMEOUT_SETTINGS+1))
+    {
       return;
     }
+    else if (client_socket != -1)
+    {
+      break;
+    }    
+  }
+
+  /* create the epoll_event struct
+  EPOLLIN = signal when the file descriptor is ready to read
+  EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
+  EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
+  */
+  events_copy.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
+  events_copy.data.fd = client_socket;
+
+  if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events_copy) < 0)
+  {    
+    close(client_socket);
   }
   return;
 }
@@ -892,7 +904,7 @@ void* socket_receive_data_thread(void* parameters)
   // get the events that have a ready signal
  for (;;)
  { 
-   count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, 1000);
+   count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, -1);
    for (count2 = 0; count2 < count; count2++)
    {    
      if (events[count2].events & EPOLLERR || events[count2].events & EPOLLHUP || !(events[count2].events & EPOLLIN))
