@@ -892,7 +892,7 @@ void* socket_receive_data_thread(void* parameters)
   // get the events that have a ready signal
  for (;;)
  { 
-   count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, 100);
+   count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, 1000);
    for (count2 = 0; count2 < count; count2++)
    {    
      if (events[count2].events & EPOLLERR || events[count2].events & EPOLLHUP || !(events[count2].events & EPOLLIN))
