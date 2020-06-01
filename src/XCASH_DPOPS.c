@@ -85,6 +85,7 @@ char current_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The current block 
 char previous_block_hash[BLOCK_HASH_LENGTH+1]; // The current block height
 int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
+int main_network_data_node_receive_block; // 1 if you have received the block from the main network data node, 0 if not
 int network_data_nodes_sync_databases_settings; // 1 if a block verifier can sync from a network data node, 0 if not
 int log_file_settings; // 0 to use the terminal, 1 to use a log file, 2 to use a log file with color output
 char log_file[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The log file

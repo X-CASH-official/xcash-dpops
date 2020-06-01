@@ -936,6 +936,7 @@ int data_network_node_create_block(void)
 
   // set the main_network_data_node_create_block so the main network data node can create the block
   main_network_data_node_create_block = 1;
+  main_network_data_node_receive_block = 0;
 
   // wait for the block verifiers to process the votes
   sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1));
@@ -979,11 +980,6 @@ int data_network_node_create_block(void)
     if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
     {
       fprintf(stderr,"\033[1;31m%zu / %d block verifiers have signed the block\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-      /*invalid_block_verifiers_count++;
-      if (invalid_block_verifiers_count >= INVALID_BLOCK_VERIFIERS_AMOUNT)
-      {
-        exit(0);
-      }*/
       DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Invalid amount of block verifiers network block signatures");      
     }
     else
@@ -1031,6 +1027,15 @@ int data_network_node_create_block(void)
     // set the VRF data to not empty so it will update the databases on the start of the next round
     memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
     memcpy(VRF_data.block_blob,"XCASH_DPOPS",11);
+
+    // wait to receive the block
+    sleep(20);
+
+    // if you did not receive the block it would usally mean there is a problem, so restart at this point, so you can be ready for the next round
+    if (main_network_data_node_receive_block == 0)
+    {
+      exit(0);
+    }
 
     // wait for the block verifiers to process the votes
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);

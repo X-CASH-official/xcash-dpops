@@ -347,6 +347,8 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not verify data");
   }
 
+  main_network_data_node_receive_block = 1;
+
   // parse the message
   if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0)
   {
