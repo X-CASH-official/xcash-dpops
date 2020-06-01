@@ -66,9 +66,6 @@ int create_server(const int MESSAGE_SETTINGS)
   int count;
   int settings;
 
-  // define macros
-  #define SOCKET_FILE_DESCRIPTORS_LENGTH 1
-
   #define SERVER_ERROR(message) \
   memcpy(error_message.function[error_message.total],"create_server",13); \
   memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
@@ -179,7 +176,6 @@ int create_server(const int MESSAGE_SETTINGS)
 
   return 1;
 
-  #undef SOCKET_FILE_DESCRIPTORS_LENGTH
   #undef SERVER_ERROR
 }
 
@@ -883,7 +879,7 @@ Description: socket receive data thread
 void* socket_receive_data_thread(void* parameters)
 {
   // Constants
-  const int CONNECTIONS_PER_THREAD = MAXIMUM_CONNECTIONS;
+  const int CONNECTIONS_PER_THREAD = MAXIMUM_CONNECTIONS / total_threads;
   
   // Variables
   struct epoll_event events[CONNECTIONS_PER_THREAD];
@@ -893,19 +889,10 @@ void* socket_receive_data_thread(void* parameters)
   // unused parameters
   (void)parameters;
 
-  // define macros
-  #define SOCKET_RECEIVE_DATA_THREAD_ERROR(message) \
-  memcpy(error_message.function[error_message.total],"socket_receive_data_thread",26); \
-  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
-  error_message.total++; \
-  pthread_exit((void *)(intptr_t)1);
-
-  /* get the events that have a ready signal
-  set the timeout settings to -1 to wait until any file descriptor is ready
-  */ 
+  // get the events that have a ready signal
  for (;;)
  { 
-   count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, -1);
+   count = epoll_wait(epoll_fd, events, CONNECTIONS_PER_THREAD, 100);
    for (count2 = 0; count2 < count; count2++)
    {    
      if (events[count2].events & EPOLLERR || events[count2].events & EPOLLHUP || !(events[count2].events & EPOLLIN))
