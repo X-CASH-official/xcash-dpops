@@ -1084,6 +1084,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   memcpy(error_message.function[error_message.total],"verify_network_block_data",25); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  pthread_mutex_lock(&network_data_nodes_valid_count_lock); \
+  network_data_node_valid_amount = 0; \
+  pthread_mutex_unlock(&network_data_nodes_valid_count_lock); \
   return 0; 
 
   memset(block_height,0,sizeof(block_height));
@@ -1091,6 +1094,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   memset(data2,0,sizeof(data2));
   memset(network_block_string,0,sizeof(network_block_string));
   memset(current_block_verifiers_public_address,0,sizeof(current_block_verifiers_public_address));
+
+  // reset the network_data_node_valid_amount
+  pthread_mutex_lock(&network_data_nodes_valid_count_lock);
+  network_data_node_valid_amount = 0;
+  pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
 
   // network_version
   if (blockchain_data.network_version_data_length != sizeof(NETWORK_VERSION)-1 || strncmp(blockchain_data.network_version_data,NETWORK_VERSION,sizeof(NETWORK_VERSION)-1) != 0)
@@ -1455,11 +1463,22 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
           if (strlen(VRF_data.block_blob_signature[count2]) == VRF_BETA_LENGTH+VRF_PROOF_LENGTH && VRF_data_verify(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],VRF_data.block_blob_signature[count2],network_block_string) == 1)
           {
             vrf_data_verify_count++;
+
+            // add to the count of network data nodes if it is a network data node
+            if ((production_settings == 0 && (strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_1_PUBLIC_KEY,BUFFER_SIZE) == 0 || strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_2_PUBLIC_KEY,BUFFER_SIZE) == 0 || strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_3_PUBLIC_KEY,BUFFER_SIZE) == 0 || strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_4_PUBLIC_KEY,BUFFER_SIZE) == 0 || strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_5_PUBLIC_KEY,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_1_PUBLIC_KEY_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_2_PUBLIC_KEY_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_3_PUBLIC_KEY_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_4_PUBLIC_KEY_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],NETWORK_DATA_NODE_5_PUBLIC_KEY_PRODUCTION,BUFFER_SIZE) == 0)))
+            {
+              pthread_mutex_lock(&network_data_nodes_valid_count_lock);
+              network_data_node_valid_amount++;
+              pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
+            }            
           }
         }
       }
-
-      if (vrf_data_verify_count < BLOCK_VERIFIERS_VALID_AMOUNT)
+      if (vrf_data_verify_count >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+      {
+        fprintf(stderr,"\033[1;32m%d / %d block verifiers from the previous block signatures are valid with %d / %d network data nodes\033[0m\n\n",vrf_data_verify_count,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
+      }
+      else
       {
         fprintf(stderr,"\033[1;31m%d / %d block verifiers from the previous block signatures are valid\033[0m\n",vrf_data_verify_count,BLOCK_VERIFIERS_VALID_AMOUNT);
         VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid network_block_string, The block was not signed by the required amount of block validation nodes from the previous block");
@@ -1482,6 +1501,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transaction_amount");
   }
+
+  // reset the network_data_node_valid_amount
+  pthread_mutex_lock(&network_data_nodes_valid_count_lock);
+  network_data_node_valid_amount = 0;
+  pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
   return 1;
 
   #undef VERIFY_NETWORK_BLOCK_DATA_ERROR

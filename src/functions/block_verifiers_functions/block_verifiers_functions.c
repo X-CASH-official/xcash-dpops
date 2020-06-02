@@ -949,6 +949,11 @@ int data_network_node_create_block(void)
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
   memcpy(current_round_part_backup_node,"1",1);
 
+  // reset the network_data_node_valid_amount
+  pthread_mutex_lock(&network_data_nodes_valid_count_lock);
+  network_data_node_valid_amount = network_data_node_settings;
+  pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
+
   // check if the block verifier is the main network data node
   if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
   {   
@@ -977,14 +982,18 @@ int data_network_node_create_block(void)
     }
 
     // check if at least 67 of the block verifiers create the block verifiers signature
-    if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
+    if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have signed the block\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Invalid amount of block verifiers network block signatures");      
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);      
+    }
+    else if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+    {
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block with %d / %d network data nodes\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
     }
     else
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have signed the block\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
+      DATA_NETWORK_NODE_CREATE_BLOCK_ERROR("Invalid amount of block verifiers network block signatures");      
     }
     
 
@@ -1767,6 +1776,11 @@ int block_verifiers_create_block(void)
 
   start:
 
+    // reset the network_data_node_valid_amount
+    pthread_mutex_lock(&network_data_nodes_valid_count_lock);
+    network_data_node_valid_amount = network_data_node_settings;
+    pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
+
     print_block_producer();
     
     color_print("Part 1 - Create and send VRF data to all block verifiers","yellow");
@@ -1815,15 +1829,24 @@ int block_verifiers_create_block(void)
     }
 
     // check if at least 67 of the block verifiers created the data
-    if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
+    if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;31m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("An invalid amount of block verifiers created valid VRF data");
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);      
+    }
+    else if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+    {
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers created valid VRF data with %d / %d network data nodes\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
     }
     else
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-    }  
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
+      RESTART_ROUND("An invalid amount of block verifiers created valid VRF data");     
+    }
+
+    // reset the network_data_node_valid_amount
+    pthread_mutex_lock(&network_data_nodes_valid_count_lock);
+    network_data_node_valid_amount = network_data_node_settings;
+    pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
 
   
 
@@ -1916,15 +1939,24 @@ int block_verifiers_create_block(void)
     }
 
     // check if the network block string has at least 67 of the block verifiers network block signature
-    if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT)
+    if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);     
+    }
+    else if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+    {
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block with %d / %d network data nodes\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
+    }
+    else
     {
       fprintf(stderr,"\033[1;31m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
       RESTART_ROUND("An invalid amount of block verifiers have signed the block");
     }
-    else
-    {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-    }
+
+    // reset the network_data_node_valid_amount
+    pthread_mutex_lock(&network_data_nodes_valid_count_lock);
+    network_data_node_valid_amount = network_data_node_settings;
+    pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
 
     // create the vote results
     if (block_verifiers_create_vote_results(data) == 0)
@@ -1951,14 +1983,18 @@ int block_verifiers_create_block(void)
     sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_NETWORK_BLOCK_PART_5);
 
     // process the vote results
-    if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+    if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;31m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("An invalid amount of block verifiers have the same created data and block");
+      fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);    
+    }
+    else if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+    {
+      fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same created data and block with %d / %d network data nodes\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
     }
     else
     {
-      fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+      fprintf(stderr,"\033[1;31m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+      RESTART_ROUND("An invalid amount of block verifiers have the same created data and block");
     }
 
 

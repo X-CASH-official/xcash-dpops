@@ -46,6 +46,7 @@ extern pthread_mutex_t vote_lock;
 extern pthread_mutex_t add_reserve_proof_lock;
 extern pthread_mutex_t invalid_reserve_proof_lock;
 extern pthread_mutex_t database_data_IP_address_lock;
+extern pthread_mutex_t network_data_nodes_valid_count_lock;
 
 extern pthread_t server_threads[100];
 extern int epoll_fd;
@@ -57,6 +58,7 @@ extern char previous_block_hash[BLOCK_HASH_LENGTH+1]; // The current block heigh
 extern int error_message_count; // The error message count
 extern int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
 extern int main_network_data_node_receive_block; // 1 if you have received the block from the main network data node, 0 if not
+extern int network_data_node_valid_amount; // The amount of network data nodes that were valid
 extern int network_data_nodes_sync_databases_settings; // 1 if a block verifier can sync from a network data node, 0 if not
 extern int log_file_settings; // 0 to use the terminal, 1 to use a log file, 2 to use a log file with color output
 extern char log_file[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The log file

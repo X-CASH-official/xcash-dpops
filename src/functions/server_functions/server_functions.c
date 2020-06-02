@@ -196,32 +196,39 @@ void new_socket_thread(void)
   struct sockaddr_in addr;
   socklen_t addrlen = sizeof(struct sockaddr_in);
   time_t start = time(NULL);
+  int count = 0;
 
-  // accept the connection
-  for (;;)
+  start:
+
+  while ((client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen)) != -1)
   {
-    client_socket = accept(server_socket, (struct sockaddr *) &addr, &addrlen);
-    if ((client_socket == -1 && errno != EAGAIN && errno != EWOULDBLOCK) || (time(NULL) - start > CONNECTION_TIMEOUT_SETTINGS+1))
+    /* create the epoll_event struct
+    EPOLLIN = signal when the file descriptor is ready to read
+    EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
+    EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
+    */
+    events_copy.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
+    events_copy.data.fd = client_socket;
+
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events_copy) < 0 && count != 0)
+    {    
+      close(client_socket);
+      return;
+    }
+    count++;
+  }
+
+  if (count == 0)
+  {
+    if (time(NULL) - start > BLOCK_VERIFIERS_SETTINGS)
     {
       return;
     }
-    else if (client_socket != -1)
+
+    if (client_socket == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
     {
-      break;
-    }    
-  }
-
-  /* create the epoll_event struct
-  EPOLLIN = signal when the file descriptor is ready to read
-  EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
-  EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
-  */
-  events_copy.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
-  events_copy.data.fd = client_socket;
-
-  if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events_copy) < 0)
-  {    
-    close(client_socket);
+      goto start;
+    }
   }
   return;
 }
@@ -664,6 +671,14 @@ void socket_thread(int client_socket)
    {
      server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(client_socket,(const char*)buffer);
      strstr(buffer,"|") != NULL ? server_limit_public_addresses(4,(const char*)buffer) : server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ }
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER\"") != NULL)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(client_socket);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
