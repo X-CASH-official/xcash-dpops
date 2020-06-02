@@ -990,6 +990,10 @@ int data_network_node_create_block(void)
     {
       fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block with %d / %d network data nodes\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
     }
+    else if (count2 <= 1)
+    {
+      exit(0);
+    }
     else
     {
       fprintf(stderr,"\033[1;31m%zu / %d block verifiers have signed the block\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
@@ -2006,7 +2010,7 @@ int block_verifiers_create_block(void)
     // update the database and submit the block to the network
     if (block_verifiers_create_block_and_update_database() == 0)
     {
-      RESTART_ROUND("Could not update the database and create the block");
+      return 0;
     }    
     return 1;
     

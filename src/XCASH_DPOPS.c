@@ -484,7 +484,7 @@ void get_delegates_data(void)
     color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue (This might take a while)","yellow");  
     do
     {
-      sleep(600);
+      sleep(60);
     } while (check_if_blockchain_is_fully_synced() == 0);
   }
 
