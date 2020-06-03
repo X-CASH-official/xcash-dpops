@@ -196,7 +196,7 @@ int update_block_verifiers_list(void)
   if ((total_delegates = organize_delegates(delegates)) == 0)
   {
     POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
-    UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+    return 1;
   }
   else if (total_delegates > BLOCK_VERIFIERS_TOTAL_AMOUNT)
   {
