@@ -1016,9 +1016,6 @@ int get_delegates_online_status(void)
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   int total_delegates;
   int total_delegates_online = 0;
-  int total;
-  int sent;
-  int bytes = 1;
   int count;
   int count2;
   int counter;
@@ -1064,7 +1061,6 @@ int get_delegates_online_status(void)
     GET_DELEGATES_ONLINE_STATUS_ERROR("Could not sign the message");
   }
   memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
-  total = strnlen(data,BUFFER_SIZE);
   
   // create the epoll file descriptor
   if ((epoll_fd_copy = epoll_create1(0)) < 0)

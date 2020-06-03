@@ -1261,7 +1261,7 @@ int main(int parameters_count, char* parameters[])
     INITIALIZE_DATABASE_DATA(production_settings_database_data_settings);
   }
 
-  print_settings();  
+  print_settings();
 
   // check if the block verifier is a network data node
   CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;   
