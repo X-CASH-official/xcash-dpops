@@ -52,6 +52,124 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_block_verifiers_from_network_block
+Description: Gets the block verifiers from the network block
+Parameters:
+  TOTAL_DELEGATES - The total delegates
+  struct delegates - struct delegates
+  BLOCK_HEIGHT - The block height
+  SETTINGS - 0 for current block verifiers, 1 for previous block verifiers
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, struct delegates* delegates, const size_t CURRENT_BLOCK_HEIGHT, const int SETTINGS)
+{
+  // Variables 
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  char* message_copy1;
+  int count;
+  int count2;
+  int count3;
+  size_t block_height;
+
+  // define macros
+  #define GET_BLOCK_VERIFIERS_FROM_NETWORK_BLOCK_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"get_block_verifiers_from_network_block",38); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(message,0,sizeof(message));
+
+  // get the block height
+  block_height = SETTINGS == 0 ? CURRENT_BLOCK_HEIGHT - 1 : CURRENT_BLOCK_HEIGHT - 2;
+
+  // create the message  
+  memcpy(data,"{\"block_height\":\"",17);
+  snprintf(data+17,sizeof(data)-18,"%zu",block_height);
+  memcpy(data+strlen(data),"\"}",2);
+
+  // get the reserve bytes database for the block
+  if (block_height-1 == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || block_height == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  {
+    count = 1;
+  }
+  else
+  {
+    count = ((block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+  }
+
+  // get the blocks reserve bytes
+  memcpy(data3,"reserve_bytes_",14);
+  snprintf(data3+14,sizeof(data3)-15,"%d",count);
+  if (read_document_field_from_collection(database_name,data3,data,"reserve_bytes",message) == 0)
+  {
+    GET_BLOCK_VERIFIERS_FROM_NETWORK_BLOCK_ERROR("Could not get the previous blocks reserve bytes");
+  }
+  
+  // get the next block verifiers public keys from the previous network blocks reserve bytes
+  message_copy1 = message;
+  message_copy1 = strstr(message_copy1,BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING_DATA) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING_DATA)-1);
+  
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {  
+    memset(data,0,sizeof(data)); 
+    memset(data2,0,sizeof(data2)); 
+    memset(data3,0,sizeof(data3)); 
+    memcpy(data,message_copy1,VRF_PUBLIC_KEY_LENGTH*2);
+    message_copy1 += (VRF_PUBLIC_KEY_LENGTH*2) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING_DATA)-1);
+              
+    // convert the hexadecimal string to a string
+    for (count2 = 0, count3 = 0; count2 < VRF_PUBLIC_KEY_LENGTH*2; count3++, count2 += 2)
+    {
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,&data[count2],2);
+      data3[count3] = (int)strtol(data2, NULL, 16);
+    }
+    SETTINGS == 0 ? memcpy(current_block_verifiers_list.block_verifiers_public_key[count],data3,strnlen(data3,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]))) : memcpy(previous_block_verifiers_list.block_verifiers_public_key[count],data3,strnlen(data3,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count])));
+  }
+
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    for (count2 = 0; count2 < TOTAL_DELEGATES; count2++)
+    {
+      if (SETTINGS == 0)
+      {
+        if (strncmp(current_block_verifiers_list.block_verifiers_public_key[count],delegates[count2].public_key,BUFFER_SIZE) == 0)
+        {
+          memcpy(current_block_verifiers_list.block_verifiers_name[count],delegates[count2].delegate_name,strnlen(delegates[count2].delegate_name,sizeof(current_block_verifiers_list.block_verifiers_name[count])));
+          memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],delegates[count2].IP_address,strnlen(delegates[count2].IP_address,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count])));
+          memcpy(current_block_verifiers_list.block_verifiers_public_address[count],delegates[count2].public_address,strnlen(delegates[count2].public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])));
+        }
+      }
+      else if (SETTINGS == 1)
+      {
+        if (strncmp(previous_block_verifiers_list.block_verifiers_public_key[count],delegates[count2].public_key,BUFFER_SIZE) == 0)
+        {
+          memcpy(previous_block_verifiers_list.block_verifiers_name[count],delegates[count2].delegate_name,strnlen(delegates[count2].delegate_name,sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
+          memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],delegates[count2].IP_address,strnlen(delegates[count2].IP_address,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count])));
+          memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],delegates[count2].public_address,strnlen(delegates[count2].public_address,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));
+        }
+      }
+    }
+  }
+
+  return 1;
+  
+  #undef GET_BLOCK_VERIFIERS_FROM_NETWORK_BLOCK_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: update_block_verifiers_list
 Description: Updates the block verifiers list struct
 Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to sync from a random network data node
@@ -69,6 +187,7 @@ int update_block_verifiers_list(void)
   int count2;
   int settings = 0;
   int total_delegates = 0;
+  size_t current_block_height_count;
 
   // define macros
   #define UPDATE_BLOCK_VERIFIERS_LIST_ERROR(settings) \
@@ -77,78 +196,14 @@ int update_block_verifiers_list(void)
   error_message.total++; \
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
   return 0;
-
-  // reset the previous_block_verifiers_list struct
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
-    memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(previous_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
-  }
-
-  // get the delegate amount
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    if (strlen(current_block_verifiers_list.block_verifiers_public_address[count]) != XCASH_WALLET_LENGTH)
-    {
-      total_delegates = count;
-      break;
-    }
-  }
-
-  // copy the current_block_verifiers_list to the previous_block_verifiers_list
-  for (count = 0; (int)count < total_delegates; count++)
-  {
-    memcpy(previous_block_verifiers_list.block_verifiers_name[count],current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
-    memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count],strnlen(current_block_verifiers_list.block_verifiers_public_address[count],sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));
-    memcpy(previous_block_verifiers_list.block_verifiers_public_key[count],current_block_verifiers_list.block_verifiers_public_key[count],strnlen(current_block_verifiers_list.block_verifiers_public_key[count],sizeof(previous_block_verifiers_list.block_verifiers_public_key[count])));
-    memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count])));
-  }
-
-  // reset the current_block_verifiers_list struct
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    memset(current_block_verifiers_list.block_verifiers_name[count],0,sizeof(current_block_verifiers_list.block_verifiers_name[count]));
-    memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(current_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count]));
-  } 
-
-  // get the delegate amount
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    if (strlen(next_block_verifiers_list.block_verifiers_public_address[count]) != XCASH_WALLET_LENGTH)
-    {
-      total_delegates = count;
-      break;
-    }
-  } 
-
-  // copy the next_block_verifiers_list to the current_block_verifiers_list
-  for (count = 0; (int)count < total_delegates; count++)
-  {
-    memcpy(current_block_verifiers_list.block_verifiers_name[count],next_block_verifiers_list.block_verifiers_name[count],strnlen(next_block_verifiers_list.block_verifiers_name[count],sizeof(current_block_verifiers_list.block_verifiers_name[count])));
-    memcpy(current_block_verifiers_list.block_verifiers_public_address[count],next_block_verifiers_list.block_verifiers_public_address[count],strnlen(next_block_verifiers_list.block_verifiers_public_address[count],sizeof(current_block_verifiers_list.block_verifiers_public_address[count])));
-    memcpy(current_block_verifiers_list.block_verifiers_public_key[count],next_block_verifiers_list.block_verifiers_public_key[count],strnlen(next_block_verifiers_list.block_verifiers_public_key[count],sizeof(current_block_verifiers_list.block_verifiers_public_key[count])));
-    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],next_block_verifiers_list.block_verifiers_IP_address[count],strnlen(next_block_verifiers_list.block_verifiers_IP_address[count],sizeof(current_block_verifiers_list.block_verifiers_IP_address[count])));
-  }
-
-  // reset the next_block_verifiers_list struct
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
-    memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
-  }
-
+  
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
 
   // organize the delegates
   if ((total_delegates = organize_delegates(delegates)) == 0)
   {
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
     UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
   }
   else if (total_delegates > BLOCK_VERIFIERS_TOTAL_AMOUNT)
@@ -156,13 +211,137 @@ int update_block_verifiers_list(void)
     total_delegates = BLOCK_VERIFIERS_TOTAL_AMOUNT;
   }
 
-  // copy the database_multiple_documents_fields to the next_block_verifiers_list
-  for (count = 0; (int)count < total_delegates; count++)
+  // get the current block height
+  sscanf(current_block_height,"%zu", &current_block_height_count);
+
+  /*
+  load the next block verifiers from the delegates database in order of vote count
+  load the current block verifiers from the public addresses in the previous block
+  load the previous block verifiers from the public addresses in the previous block before the previous block
+  */
+
+  if (current_block_height_count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
-    memcpy(next_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(next_block_verifiers_list.block_verifiers_name[count])));
-    memcpy(next_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(next_block_verifiers_list.block_verifiers_public_address[count])));
-    memcpy(next_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(next_block_verifiers_list.block_verifiers_public_key[count])));
-    memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
+    // load all of block verifiers from the current delegate database since there are no previous blocks
+    for (count = 0; count < total_delegates; count++)
+    {
+      memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
+      memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count]));
+      memset(previous_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count]));
+      memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
+      memset(current_block_verifiers_list.block_verifiers_name[count],0,sizeof(current_block_verifiers_list.block_verifiers_name[count]));
+      memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count]));
+      memset(current_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]));
+      memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count]));
+      memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
+      memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
+      memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
+      memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
+
+      memcpy(previous_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
+      memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));
+      memcpy(previous_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count])));
+      memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(current_block_verifiers_list.block_verifiers_name[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(current_block_verifiers_list.block_verifiers_public_key[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(next_block_verifiers_list.block_verifiers_name[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(next_block_verifiers_list.block_verifiers_public_address[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(next_block_verifiers_list.block_verifiers_public_key[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
+    }    
+  }
+  else if (current_block_height_count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT+1)
+  {
+    // get the next block verifiers from the database by vote count
+    for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+    {
+      memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
+      memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
+      memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
+      memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
+
+      memcpy(next_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(next_block_verifiers_list.block_verifiers_name[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(next_block_verifiers_list.block_verifiers_public_address[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(next_block_verifiers_list.block_verifiers_public_key[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
+    }
+
+    // copy the current block verifiers to the previous block verifiers
+    for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+    {
+      memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
+      memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count]));
+      memset(previous_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count]));
+      memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
+
+      memcpy(previous_block_verifiers_list.block_verifiers_name[count],current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
+      memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count],strnlen(current_block_verifiers_list.block_verifiers_public_address[count],sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));
+      memcpy(previous_block_verifiers_list.block_verifiers_public_key[count],current_block_verifiers_list.block_verifiers_public_key[count],strnlen(current_block_verifiers_list.block_verifiers_public_key[count],sizeof(previous_block_verifiers_list.block_verifiers_public_key[count])));
+      memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count])));
+    }
+
+    // load the current block verifiers from the previous block
+    for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+    {
+      memset(current_block_verifiers_list.block_verifiers_name[count],0,sizeof(current_block_verifiers_list.block_verifiers_name[count]));
+      memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count]));
+      memset(current_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]));
+      memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count]));
+    }
+
+    if (get_block_verifiers_from_network_block(total_delegates,delegates,current_block_height_count,0) == 0)
+    {
+      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+      UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+    }
+  }
+  else
+  {
+    // get the next block verifiers from the database by vote count
+    for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+    {
+      memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
+      memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
+      memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
+      memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
+
+      memcpy(next_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(next_block_verifiers_list.block_verifiers_name[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(next_block_verifiers_list.block_verifiers_public_address[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(next_block_verifiers_list.block_verifiers_public_key[count])));
+      memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
+    }
+
+    // load the current block verifiers from the previous block
+    for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+    {
+      memset(current_block_verifiers_list.block_verifiers_name[count],0,sizeof(current_block_verifiers_list.block_verifiers_name[count]));
+      memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count]));
+      memset(current_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]));
+      memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count]));
+    }
+
+    if (get_block_verifiers_from_network_block(total_delegates,delegates,current_block_height_count,0) == 0)
+    {
+      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+      UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+    }
+
+    // load the previous block verifiers from the previous block before the previous block
+    for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+    {
+      memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
+      memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count]));
+      memset(previous_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count]));
+      memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
+    }
+
+    if (get_block_verifiers_from_network_block(total_delegates,delegates,current_block_height_count,1) == 0)
+    {
+      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+      UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+    }
   }
 
   // check if more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT are new block verifiers
@@ -184,72 +363,6 @@ int update_block_verifiers_list(void)
   return settings;
   
   #undef UPDATE_BLOCK_VERIFIERS_LIST_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: update_next_block_verifiers_list
-Description: Updates the next block verifiers list struct
-Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to sync from a random network data node
------------------------------------------------------------------------------------------------------------
-*/
-
-int update_next_block_verifiers_list(void)
-{
-  // Variables 
-  char data[1024];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
-  int count;
-  int total_delegates = 0;
-
-  // define macros
-  #define UPDATE_NEXT_BLOCK_VERIFIERS_LIST_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
-  return 0;
-
-  // reset the next_block_verifiers_list struct
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
-    memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
-  }
-
-  // initialize the delegates struct
-  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
-
-  // organize the delegates
-  if ((total_delegates = organize_delegates(delegates)) == 0)
-  {
-    UPDATE_NEXT_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
-  }
-  else if (total_delegates > BLOCK_VERIFIERS_TOTAL_AMOUNT)
-  {
-    total_delegates = BLOCK_VERIFIERS_TOTAL_AMOUNT;
-  }
-
-  // copy the database_multiple_documents_fields to the next_block_verifiers_list
-  for (count = 0; (int)count < total_delegates; count++)
-  {
-    memcpy(next_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(next_block_verifiers_list.block_verifiers_name[count])));
-    memcpy(next_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(next_block_verifiers_list.block_verifiers_public_address[count])));
-    memcpy(next_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(next_block_verifiers_list.block_verifiers_public_key[count])));
-    memcpy(next_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])));
-  }
-
-  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
-
-  return 1;
-
-  #undef UPDATE_NEXT_BLOCK_VERIFIERS_LIST_ERROR
 }
 
 
