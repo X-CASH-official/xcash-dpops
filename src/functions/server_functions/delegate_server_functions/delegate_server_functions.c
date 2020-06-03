@@ -819,13 +819,13 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   }
 
   // check if the item is valid
-  if (strncmp(item,"IP_address",10) != 0 && strncmp(item,"about",5) != 0 && strncmp(item,"website",7) != 0 && strncmp(item,"team",4) != 0 && strncmp(item,"pool_mode",9) != 0 && strncmp(item,"fee_structure",13) != 0 && strncmp(item,"server_settings",15) != 0)
+  if (strncmp(item,"IP_address",BUFFER_SIZE) != 0 && strncmp(item,"about",BUFFER_SIZE) != 0 && strncmp(item,"website",BUFFER_SIZE) != 0 && strncmp(item,"team",BUFFER_SIZE) != 0 && strncmp(item,"pool_mode",BUFFER_SIZE) != 0 && strncmp(item,"fee_structure",BUFFER_SIZE) != 0 && strncmp(item,"server_settings",BUFFER_SIZE) != 0)
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item to update}");
   }
 
   // check if the value is valid
-  if ((strncmp(item,"IP_address",10) == 0 && strlen(value) > 255) || (strncmp(item,"about",5) == 0 && strlen(value) > 1024) || (strncmp(item,"website",7) == 0 && strlen(value) > 255) || (strncmp(item,"team",4) == 0 && strlen(value) > 255) || (strncmp(item,"pool_mode",9) == 0 && strncmp(value,"true",4) != 0 && strncmp(value,"false",5) != 0) || (strncmp(item,"fee_structure",13) == 0 && check_for_valid_fee_structure(value) == 0) || (strncmp(item,"server_settings",15) == 0 && strlen(value) > 1024))
+  if ((strncmp(item,"IP_address",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"about",BUFFER_SIZE) == 0 && strlen(value) > 1024) || (strncmp(item,"website",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"team",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"pool_mode",BUFFER_SIZE) == 0 && strncmp(value,"true",BUFFER_SIZE) != 0 && strncmp(value,"false",BUFFER_SIZE) != 0) || (strncmp(item,"fee_structure",BUFFER_SIZE) == 0 && check_for_valid_fee_structure(value) == 0) || (strncmp(item,"server_settings",BUFFER_SIZE) == 0 && strlen(value) > 1024))
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item value to update}");
   }

@@ -172,7 +172,7 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, struct del
 -----------------------------------------------------------------------------------------------------------
 Name: update_block_verifiers_list
 Description: Updates the block verifiers list struct
-Return: 0 if an error has occured, 1 to sync from a random block verifier, 2 to sync from a random network data node
+Return: 1 to sync from a random block verifier, 2 to sync from a random network data node
 -----------------------------------------------------------------------------------------------------------
 */
 
@@ -188,14 +188,6 @@ int update_block_verifiers_list(void)
   int settings = 0;
   int total_delegates = 0;
   size_t current_block_height_count;
-
-  // define macros
-  #define UPDATE_BLOCK_VERIFIERS_LIST_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"update_block_verifiers_list",27); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
-  return 0;
   
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"update_block_verifiers_list",data,current_date_and_time,current_UTC_date_and_time);
@@ -293,8 +285,10 @@ int update_block_verifiers_list(void)
 
     if (get_block_verifiers_from_network_block(total_delegates,delegates,current_block_height_count,0) == 0)
     {
-      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
-      UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+      memcpy(current_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(current_block_verifiers_list.block_verifiers_name[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(current_block_verifiers_list.block_verifiers_public_key[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count])));
     }
   }
   else
@@ -324,8 +318,10 @@ int update_block_verifiers_list(void)
 
     if (get_block_verifiers_from_network_block(total_delegates,delegates,current_block_height_count,0) == 0)
     {
-      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
-      UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+      memcpy(current_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(current_block_verifiers_list.block_verifiers_name[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(current_block_verifiers_list.block_verifiers_public_key[count])));
+      memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count])));
     }
 
     // load the previous block verifiers from the previous block before the previous block
@@ -339,8 +335,10 @@ int update_block_verifiers_list(void)
 
     if (get_block_verifiers_from_network_block(total_delegates,delegates,current_block_height_count,1) == 0)
     {
-      POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
-      UPDATE_BLOCK_VERIFIERS_LIST_ERROR("Could not organize the delegates");
+      memcpy(previous_block_verifiers_list.block_verifiers_name[count],delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
+      memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));
+      memcpy(previous_block_verifiers_list.block_verifiers_public_key[count],delegates[count].public_key,strnlen(delegates[count].public_key,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count])));
+      memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count])));
     }
   }
 
@@ -361,8 +359,6 @@ int update_block_verifiers_list(void)
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
 
   return settings;
-  
-  #undef UPDATE_BLOCK_VERIFIERS_LIST_ERROR
 }
 
 
@@ -454,7 +450,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     // create the message
     memset(message,0,sizeof(message));
     memcpy(message,"{\"public_address\":\"",19);
-    memcpy(message+19,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+    memcpy(message+19,previous_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
     memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
 
     // add one to the block_verifier_total_rounds for every block verifier
@@ -510,7 +506,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
 
     
     // add one to the block_producer_total_rounds and the current block height to the block_producer_block_heights if the public address is the block producer
-    if (main_network_data_node_create_block == 0 && ((strncmp(current_round_part_backup_node,"0",1) == 0 && strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"1",1) == 0 && strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"2",1) == 0 && strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"3",1) == 0 && strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"4",1) == 0 && strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"5",1) == 0 && strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0)))
+    if (main_network_data_node_create_block == 0 && ((strncmp(current_round_part_backup_node,"0",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"1",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"2",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"3",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"4",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"5",1) == 0 && strncmp(previous_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,XCASH_WALLET_LENGTH) == 0)))
     {
       memset(data,0,sizeof(data));
       if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_producer_total_rounds",data) == 0)
