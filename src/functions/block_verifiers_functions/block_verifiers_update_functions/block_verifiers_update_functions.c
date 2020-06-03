@@ -1220,7 +1220,7 @@ int get_delegates_online_status(void)
   }
 
   // wait for all of the data to be sent to the connected sockets, and for the block verifiers to process the data
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(7);
 
   for (count = 0; count < total_delegates; count++)
   {
