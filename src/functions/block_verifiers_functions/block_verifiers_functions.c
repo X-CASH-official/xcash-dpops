@@ -134,12 +134,6 @@ int start_new_round(void)
     sync_previous_current_next_block_verifiers_settings = 0;
     sync_all_block_verifiers_list(0);
   }
-
-  // update the previous, current and next block verifiers at the begining of the round, so a restart round does not affect the previous, current and next block verifiers
-  if (update_block_verifiers_list() == 0)
-  {
-    START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
-  }
   
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && registration_settings == 0)
   {
