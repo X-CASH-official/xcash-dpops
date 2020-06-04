@@ -21,7 +21,6 @@ The **[X-Cash](https://github.com/X-Cash-Official/xcash-core)** Public Network i
   - [Documentation](#documentation)
   - [Security](#security)
   - [Installation](#installation)
-  - [Important Links](#important-links)
 
 ## Features
 
@@ -108,31 +107,3 @@ bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpo
 ```
 
 > To build everything from source, follow our **[manual installation](https://github.com/X-CASH-official/android-wallet/releases)** guide.
-
-## Important Links
-
-### 🔗 MAIN LINKS
-- **X-Network**: [x-network.io](https://x-network.io/)
-- **X-Cash**: [x-network.io/xcash](https://x-network.io/xcash)
-- **Block explorer**: [explorer.x-cash.org](https://explorer.x-cash.org/Explorer)
-- **Medium**: [medium.com/x-cash](https://medium.com/x-cash)
-- **Help Center**: [Help Portal](https://xcashteam.atlassian.net/servicedesk/)
-- **Mining**: [/xcash/mining/](https://x-network.io/xcash/mining/)
-
-### 👛 WALLET
-- **Download**: [Official Download Page](https://x-network.io/xcash/downloads/)  
-- **Paper wallet**: [X-Cash Paper Wallet Generator](https://x-network.io/xcash/paper-wallet-generator/)  
-- **Android Wallet (beta)**: [Latest releases](https://github.com/X-CASH-official/android-wallet/releases)
-- **Online Storage Solution**: [X-Bank](https://x-bank.io)
-
-### 💱 SUPPORTED EXCHANGES
-- **STEX**: [STEX.com](https://www.stex.com/)  
-- **GRAVIEX**: [graviex.net](https://graviex.net/)  
-- **CITEX**: [citex.co.kr](https://www.citex.co.kr/)  
-
-### 🌍 COMMUNITY
-- **Twitter**: [@xcashcrypto](https://twitter.com/XCashCrypto)  
-- **Discord**: [discord.gg/4CAahnd](https://discord.gg/4CAahnd)  
-- **BitcoinTalk**: [bitcointalk.org/index.php?topic=4781246](https://bitcointalk.org/index.php?topic=4781246)  
-- **Reddit**: [r/xcash/](https://www.reddit.com/r/xcash)  
-- **Telegram**: [t.me/xcashglobal](https://t.me/xcashglobal)
