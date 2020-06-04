@@ -1016,9 +1016,11 @@ int get_delegates_online_status(void)
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   int total_delegates;
   int total_delegates_online = 0;
+  int total;
+  int sent;
+  int bytes = 1;
   int count;
   int count2;
-  int counter;
   int number;
 
   // define macros
@@ -1061,6 +1063,7 @@ int get_delegates_online_status(void)
     GET_DELEGATES_ONLINE_STATUS_ERROR("Could not sign the message");
   }
   memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
+  total = strnlen(data,BUFFER_SIZE);
   
   // create the epoll file descriptor
   if ((epoll_fd_copy = epoll_create1(0)) < 0)
@@ -1082,8 +1085,6 @@ int get_delegates_online_status(void)
       // initialize the block_verifiers_send_data_socket struct
       memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
       memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
-      memset(block_verifiers_send_data_socket[count].public_address,0,sizeof(block_verifiers_send_data_socket[count].public_address));
-      memcpy(block_verifiers_send_data_socket[count].public_address,delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(block_verifiers_send_data_socket[count].public_address)));
       block_verifiers_send_data_socket[count].settings = 0;
 
       // set up the addrinfo
@@ -1189,29 +1190,77 @@ int get_delegates_online_status(void)
   {
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
-      // create the message
-      memset(data,0,sizeof(data));
-      memset(data2,0,sizeof(data2));
-      memcpy(data2,"{\"public_address\":\"",19);
-      memcpy(data2+19,block_verifiers_send_data_socket[count].public_address,XCASH_WALLET_LENGTH);
-      memcpy(data2+117,"\"}",2);
-
-      // check if the delegate is online
-      count2 = check_if_delegate_is_online(block_verifiers_send_data_socket[count].IP_address);
-
-      count2 == 1 ? update_document_from_collection(database_name,DATABASE_COLLECTION,data2,"{\"online_status\":\"true\"}") : update_document_from_collection(database_name,DATABASE_COLLECTION,data2,"{\"online_status\":\"false\"}");
-
-      for (counter = 0; counter < NETWORK_DATA_NODES_AMOUNT; counter++)
+      // send the message  
+      if (debug_settings == 1 && test_settings == 0)
+      {  
+        memset(data2,0,sizeof(data2));   
+        memcpy(data2,"Sending ",8);
+        memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
+        memcpy(data2+strlen(data2),"\n",1);
+        memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
+        memcpy(data2+strlen(data2)," on port ",9);
+        memset(data3,0,sizeof(data3));
+        snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
+        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
+        memcpy(data2+strlen(data2),"\n",1);
+        memset(data3,0,sizeof(data3));
+        strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
+        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
+        color_print(data2,"green");
+      }
+      
+      for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
       {
-        if (strncmp(block_verifiers_send_data_socket[count].public_address,network_data_nodes_list.network_data_nodes_public_address[counter],XCASH_WALLET_LENGTH) == 0)
-        {
-          network_data_nodes_list.online_status[counter] = count2;
+        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
+        {           
+          break;
         }
       }
+    }    
+  }
+
+  // wait for all of the data to be sent to the connected sockets, and for the block verifiers to process the data
+  sleep(BLOCK_VERIFIERS_SETTINGS);
+
+  for (count = 0; count < total_delegates; count++)
+  {
+    // update the delegates online status
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"{\"public_address\":\"",19);
+    memcpy(data2+19,delegates_online_status[count].public_address,XCASH_WALLET_LENGTH);
+    memcpy(data2+117,"\"}",2);
+
+    if (delegates_online_status[count].settings == 1)
+    {
+      memcpy(data,"{\"online_status\":\"true\"}",24);
+      total_delegates_online++;
     }
+    else
+    {
+      memcpy(data,"{\"online_status\":\"false\"}",25);
+    }
+
+    // set the online status for network data nodes
+    for (count2 = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
+    {
+      if (strncmp(delegates_online_status[count].public_address,network_data_nodes_list.network_data_nodes_public_address[count2],XCASH_WALLET_LENGTH) == 0)
+      {
+        network_data_nodes_list.online_status[count2] = delegates_online_status[count].settings == 1 ? 1 : 0;
+      }
+    }
+
+    // if all network data nodes are offline, its an error so set it to the first one online
+    if (network_data_nodes_list.online_status[0] == 0 && network_data_nodes_list.online_status[1] == 0 && network_data_nodes_list.online_status[2] == 0 && network_data_nodes_list.online_status[3] == 0 && network_data_nodes_list.online_status[4] == 0)
+    {
+      network_data_nodes_list.online_status[0] = 1; 
+    }
+
+    update_document_from_collection(database_name,DATABASE_COLLECTION,data2,data);
+
     // remove all of the sockets from the epoll file descriptor and close all of the sockets
     epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
-    close(block_verifiers_send_data_socket[count].socket);    
+    close(block_verifiers_send_data_socket[count].socket);
   }
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   return total_delegates_online;

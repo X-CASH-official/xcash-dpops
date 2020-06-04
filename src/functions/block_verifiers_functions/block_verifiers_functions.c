@@ -123,7 +123,7 @@ int start_new_round(void)
   sscanf(current_block_height,"%zu", &count);
 
   // get the delegates online status
-  get_delegates_online_status();
+  //get_delegates_online_status();
 
   // wait so everyone has got the online status
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,15);
@@ -2009,36 +2009,6 @@ int block_verifiers_create_block(void)
     return 1;
     
     #undef RESTART_ROUND
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: check_if_delegate_is_online
-Description: Checks if a delegate is online
-Return: 0 if an error has occured or if the delegate is not online, 1 if the delegate is online
------------------------------------------------------------------------------------------------------------
-*/
-
-int check_if_delegate_is_online(const char* HOST)
-{
-  // Variables
-  char data[SMALL_BUFFER_SIZE];
-  char data2[SMALL_BUFFER_SIZE];
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-
-  // create the message
-  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}",95);
-
-  // sign_data
-  if (sign_data(data) == 0 || send_and_receive_data_socket(data2,sizeof(data2),HOST,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
-  { 
-    return 0;
-  }
-  return 1;
 }
 
 

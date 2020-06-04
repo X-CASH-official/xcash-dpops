@@ -256,7 +256,6 @@ struct database_multiple_documents_fields {
 
 struct block_verifiers_send_data_socket {
     char IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
-    char public_address[XCASH_WALLET_LENGTH+1];
     int socket;
     int settings;
 };
