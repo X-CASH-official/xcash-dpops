@@ -36,7 +36,7 @@ The unique implementation of **DBFT** into the consensus process enables the X-C
 The selection of the next delegate in charge of forging a block is **completely randomized** through the use of **Verifiable Random Functions (VRF)**, increasing the security of the delegates by preventing attacks to the next block producer.
 
 ### **Stake Delegation with Reserve Proofs**
-Instead of sending your stake to another wallet to vote toward a delegate, you are providing a **cryptographic reserver proof** of your funds to your delegate, meaning that **you keep complete control of your stake at all times**.
+Instead of sending your stake to another wallet to vote toward a delegate, you are providing a **cryptographic reserve proof** of your funds to your delegate, meaning that **you keep complete control of your stake at all times**.
 
 
 > *Have a look at our* 📜 *[Delegated Proof-of-Private-Stake](https://x-network.io/whitepaper/XCASH_Yellowpaper_DPoPS.pdf) yellow paper to learn more about the technical challenge of integrating this consensus on a Monero-based privacy coin.*
