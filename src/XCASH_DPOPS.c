@@ -1262,7 +1262,7 @@ int main(int parameters_count, char* parameters[])
     color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue (This might take a while)","yellow");  
     do
     {
-      sleep(60);
+      sleep(600);
     } while (check_if_blockchain_is_fully_synced() == 0);
   }  
  
