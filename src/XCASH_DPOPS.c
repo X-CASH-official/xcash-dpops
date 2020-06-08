@@ -478,16 +478,6 @@ void get_delegates_data(void)
 
   memset(data,0,sizeof(data));
 
-  // wait until the blockchain is fully synced
-  if (check_if_blockchain_is_fully_synced() == 0)
-  {
-    color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue (This might take a while)","yellow");  
-    do
-    {
-      sleep(60);
-    } while (check_if_blockchain_is_fully_synced() == 0);
-  }
-
   // get the wallets public address
   if (get_public_address() == 0)
   { 
@@ -1264,7 +1254,17 @@ int main(int parameters_count, char* parameters[])
   print_settings();
 
   // check if the block verifier is a network data node
-  CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;   
+  CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE; 
+
+  // wait until the blockchain is fully synced
+  if (network_data_node_settings == 0 && check_if_blockchain_is_fully_synced() == 0)
+  {
+    color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue (This might take a while)","yellow");  
+    do
+    {
+      sleep(60);
+    } while (check_if_blockchain_is_fully_synced() == 0);
+  }  
  
   if (settings != 2)
   {

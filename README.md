@@ -106,4 +106,4 @@ Then, run the `autoinstaller.sh` script and follow [our guide](https://docs.xcas
 bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh)"
 ```
 
-> To build everything from source, follow our **[manual installation](https://github.com/X-CASH-official/android-wallet/releases)** guide.
+> To build everything from source, follow our **[manual installation](https://docs.xcash.foundation/dpops/installation-process#manual-installation-process)** guide.
