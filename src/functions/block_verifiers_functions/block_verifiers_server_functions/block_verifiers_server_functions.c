@@ -584,11 +584,14 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   pthread_mutex_unlock(&vote_lock);
 
   // add to the count of network data nodes if it is a network data node
-  if ((production_settings == 0 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+  if (strncmp(data,"valid",5) == 0 && strncmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0)
   {
-    pthread_mutex_lock(&network_data_nodes_valid_count_lock);
-    network_data_node_valid_amount++;
-    pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
+    if ((production_settings == 0 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+    {
+      pthread_mutex_lock(&network_data_nodes_valid_count_lock);
+      network_data_node_valid_amount++;
+      pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
+    }
   }
   return 1;
   
