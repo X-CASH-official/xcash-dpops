@@ -480,7 +480,14 @@ long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC
   if (update_document_from_collection(shared_delegates_database_name,"public_addresses",data,data2) == 0)
   {
     return 0;
-  } 
+  }
+
+  // if the voter is the delegates public address, dont add a payment to the database since it does not send payments to itself
+  if (strncmp(PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  {
+    sscanf(CURRENT_TOTAL, "%lld", &number);
+    return number;
+  }
 
   // get the current date and time
   memset(data3,0,sizeof(data3));
