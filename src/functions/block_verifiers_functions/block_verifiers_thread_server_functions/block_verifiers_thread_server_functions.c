@@ -763,6 +763,11 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         RESET_INVALID_RESERVE_PROOFS_DATA;
       }
 
+      // reset the network_data_node_valid_amount
+      pthread_mutex_lock(&network_data_nodes_valid_count_lock);
+      network_data_node_valid_amount = network_data_node_settings;
+      pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
+
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
       sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2);
 
@@ -786,14 +791,18 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       color_print("Part 3 - Check if the valid amount of block verifiers had the same invalid reserve proofs","yellow");
 
       // process the vote results
-      if (current_round_part_vote_data.vote_results_valid < BLOCK_VERIFIERS_VALID_AMOUNT)
+      if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT)
       {
-        fprintf(stderr,"\033[1;31m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
-        RESET_INVALID_RESERVE_PROOFS_DATA;
+        fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+      }
+      else if (network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+      {
+        fprintf(stderr,"\033[1;32m%d / %d network data nodes have the same created data and block with %d / %d network data nodes\033[0m\n\n",network_data_node_valid_amount.vote_results_valid,NETWORK_DATA_NODES_AMOUNT-1);      
       }
       else
       {
-        fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+        fprintf(stderr,"\033[1;31m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+        RESET_INVALID_RESERVE_PROOFS_DATA;
       }      
 
       color_print("Part 4 - Remove the invalid reserve proofs from the database","yellow");
@@ -834,6 +843,7 @@ void remove_inactive_delegates(void)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
+  int count2;
   long long int total_votes;
   int total_delegates;
 
@@ -857,8 +867,17 @@ void remove_inactive_delegates(void)
   {
     sscanf(delegates[count].total_vote_count, "%lld", &total_votes);
 
+    // check to make sure it is not a network data node
+    for (count2 = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
+    {
+      if (strncmp(network_data_nodes_list.network_data_nodes_public_address[count2],delegates[count].public_address,XCASH_WALLET_LENGTH) == 0)
+      {
+        continue;
+      }
+    }
+
     // check if each delegate has not mined a block, and their vote count is under the MINIMUM_AMOUNT_REGISTER_DELEGATE
-    if (strncmp(delegates[count].block_producer_block_heights,"",1) == 0 && total_votes < MINIMUM_AMOUNT_REGISTER_DELEGATE && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0 && strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0)
+    if (strncmp(delegates[count].block_producer_block_heights,"",1) == 0 && total_votes < MINIMUM_AMOUNT_REGISTER_DELEGATE)
     {
       // remove the delegate from the database
       memset(data,0,strlen(data));
