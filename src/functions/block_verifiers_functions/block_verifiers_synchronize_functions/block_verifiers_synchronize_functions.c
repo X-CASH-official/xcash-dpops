@@ -151,7 +151,7 @@ void sync_network_data_nodes_database(void)
   get_reserve_bytes_database(count2,1);
   memcpy(data,"reserve_bytes_",14);
   snprintf(data+strlen(data),sizeof(data)-15,"%zu",count2);
-  if (count_documents_in_collection(database_name,data,data2) == 1)
+  if (count_documents_in_collection(database_name,data,data2) == 1 && get_current_block_height_network_data_nodes() == 1)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"true",4);

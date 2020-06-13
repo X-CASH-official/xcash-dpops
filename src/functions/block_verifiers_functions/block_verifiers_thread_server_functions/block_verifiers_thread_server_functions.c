@@ -797,7 +797,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       }
       else if (network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
       {
-        fprintf(stderr,"\033[1;32m%d / %d network data nodes have the same created data and block with %d / %d network data nodes\033[0m\n\n",network_data_node_valid_amount.vote_results_valid,NETWORK_DATA_NODES_AMOUNT-1);      
+        fprintf(stderr,"\033[1;32m%d / %d network data nodes have the same invalid reserve proofs\033[0m\n\n",network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
       }
       else
       {

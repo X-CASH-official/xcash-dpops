@@ -67,7 +67,7 @@ Using define statements instead of constants for increased efficiency
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
 #define XCASH_DPOPS_CURRENT_VERSION "XCASH DPOPS - Version 1.0.0\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 36 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_AMOUNT 39 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_VALID_AMOUNT 20 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE 20 // The amount of block verifiers that need to vote true with at least NETOWRK_DATA_NODES_AMOUNT-1 of the network data nodes for the part of the round to be valid.
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
@@ -80,7 +80,7 @@ Using define statements instead of constants for increased efficiency
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
 #define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 15 // the start time in seconds that the block verifiers synchronize the database each round
 #define START_TIME_MINUTE_NETWORK_BLOCK_ROUND 2 // the start time that the block verifiers start to create the network block
-#define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 50 // The time to submit the network block
+#define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 40 // The time to submit the network block
 #define START_TIME_SECONDS_NETWORK_BLOCK_PART_2 10 // the start time of part 2 of the network block round
 #define START_TIME_SECONDS_NETWORK_BLOCK_PART_3 25 // the start time of part 3 of the network block round
 #define START_TIME_SECONDS_NETWORK_BLOCK_PART_4 35 // the start time of part 4 of the network block round

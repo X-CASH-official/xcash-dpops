@@ -8,6 +8,7 @@ Function prototypes
 */
 
 int check_if_blockchain_is_fully_synced(void);
+int get_current_block_height_network_data_nodes(void);
 int get_block_template(char *result);
 int submit_block_template(const char* DATA);
 int get_block_reserve_byte_data_hash(char *reserve_byte_data_hash, const char* BLOCK_HEIGHT);

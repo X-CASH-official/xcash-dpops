@@ -157,6 +157,116 @@ int check_if_blockchain_is_fully_synced(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_current_block_height_network_data_nodes
+Description: gets the current block height from other network data nodes
+Return: 1 if fully synced, 0 if not or an error
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_current_block_height_network_data_nodes(void)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char network_data_node_1_current_block_height[SMALL_BUFFER_SIZE];
+  char network_data_node_2_current_block_height[SMALL_BUFFER_SIZE];
+  char network_data_node_3_current_block_height[SMALL_BUFFER_SIZE];
+  char network_data_node_4_current_block_height[SMALL_BUFFER_SIZE];
+  char network_data_node_5_current_block_height[SMALL_BUFFER_SIZE];
+  char message[SMALL_BUFFER_SIZE];
+  char block_verifiers_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
+  long long int count;
+  long long int network_data_node_1_current_block_height_count;
+  long long int network_data_node_2_current_block_height_count;
+  long long int network_data_node_3_current_block_height_count;
+  long long int network_data_node_4_current_block_height_count;
+  long long int network_data_node_5_current_block_height_count;
+
+  // define macros
+  #define CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"check_if_blockchain_is_fully_synced",35); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+  
+  memset(data,0,sizeof(data));
+  memset(network_data_node_1_current_block_height,0,sizeof(network_data_node_1_current_block_height));
+  memset(network_data_node_2_current_block_height,0,sizeof(network_data_node_2_current_block_height));
+  memset(network_data_node_3_current_block_height,0,sizeof(network_data_node_3_current_block_height));
+  memset(network_data_node_4_current_block_height,0,sizeof(network_data_node_4_current_block_height));
+  memset(network_data_node_5_current_block_height,0,sizeof(network_data_node_5_current_block_height));
+  memset(message,0,sizeof(message));
+  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
+
+  // get the current block height from each network data node
+  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
+  production_settings == 0 ? memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_1_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_1_IP_ADDRESS)-1) : memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION)-1);
+  memset(data,0,sizeof(data));
+  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_1_current_block_height, BUFFER_SIZE) == 0)
+  {
+    memset(network_data_node_1_current_block_height,0,sizeof(network_data_node_1_current_block_height));
+    memcpy(network_data_node_1_current_block_height,"0",1);
+  }
+
+  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
+  production_settings == 0 ? memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_2_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_2_IP_ADDRESS)-1) : memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION)-1);
+  memset(data,0,sizeof(data));
+  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_2_current_block_height, BUFFER_SIZE) == 0)
+  {
+    memset(network_data_node_2_current_block_height,0,sizeof(network_data_node_2_current_block_height));
+    memcpy(network_data_node_2_current_block_height,"0",1);
+  }
+
+  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
+  production_settings == 0 ? memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_3_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_3_IP_ADDRESS)-1) : memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION)-1);
+  memset(data,0,sizeof(data));
+  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_3_current_block_height, BUFFER_SIZE) == 0)
+  {
+    memset(network_data_node_3_current_block_height,0,sizeof(network_data_node_3_current_block_height));
+    memcpy(network_data_node_3_current_block_height,"0",1);
+  }
+
+  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
+  production_settings == 0 ? memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_4_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_4_IP_ADDRESS)-1) : memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION)-1);
+  memset(data,0,sizeof(data));
+  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_4_current_block_height, BUFFER_SIZE) == 0)
+  {
+    memset(network_data_node_4_current_block_height,0,sizeof(network_data_node_4_current_block_height));
+    memcpy(network_data_node_4_current_block_height,"0",1);
+  }
+
+  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
+  production_settings == 0 ? memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_5_IP_ADDRESS,sizeof(NETWORK_DATA_NODE_5_IP_ADDRESS)-1) : memcpy(block_verifiers_IP_address,NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION)-1);
+  memset(data,0,sizeof(data));
+  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_5_current_block_height, BUFFER_SIZE) == 0)
+  {
+    memset(network_data_node_5_current_block_height,0,sizeof(network_data_node_5_current_block_height));
+    memcpy(network_data_node_5_current_block_height,"0",1);
+  }
+  
+  sscanf(current_block_height,"%lld",&count);
+  sscanf(network_data_node_1_current_block_height,"%lld",&network_data_node_1_current_block_height_count);
+  sscanf(network_data_node_2_current_block_height,"%lld",&network_data_node_2_current_block_height_count);
+  sscanf(network_data_node_3_current_block_height,"%lld",&network_data_node_3_current_block_height_count);
+  sscanf(network_data_node_4_current_block_height,"%lld",&network_data_node_4_current_block_height_count);
+  sscanf(network_data_node_5_current_block_height,"%lld",&network_data_node_5_current_block_height_count);
+
+  if (count - network_data_node_1_current_block_height_count < 0 || count - network_data_node_2_current_block_height_count < 0 || count - network_data_node_3_current_block_height_count < 0 || count - network_data_node_4_current_block_height_count < 0 || count - network_data_node_5_current_block_height_count < 0)
+  {
+    return 0;
+  }
+  return 1;
+  
+  #undef CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_block_template
 Description: Gets the block template for creating a new block
 Parameters:
