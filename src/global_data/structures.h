@@ -270,7 +270,7 @@ struct delegates {
     char* team;
     char* shared_delegate_status;
     char* fee_structure;
-    char* server_settings;
+    char* server_specs;
     char* block_verifier_score;
     char* online_status;
     char* block_verifier_total_rounds;

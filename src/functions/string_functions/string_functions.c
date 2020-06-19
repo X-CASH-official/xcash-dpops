@@ -332,10 +332,10 @@ int create_json_data_from_delegates_array(const struct delegates* delegates, cha
         memcpy(result+strlen(result),delegates[count].fee_structure,strlen(delegates[count].fee_structure));
         memcpy(result+strlen(result),"\",",2);
       }
-      if (strstr(DOCUMENT_FIELDS,"server_settings|") == NULL)
+      if (strstr(DOCUMENT_FIELDS,"server_specs|") == NULL)
       {
-        memcpy(result+strlen(result),"\"server_settings\":\"",19);
-        memcpy(result+strlen(result),delegates[count].server_settings,strlen(delegates[count].server_settings));
+        memcpy(result+strlen(result),"\"server_specs\":\"",19);
+        memcpy(result+strlen(result),delegates[count].server_specs,strlen(delegates[count].server_specs));
         memcpy(result+strlen(result),"\",",2);
       }
       if (strstr(DOCUMENT_FIELDS,"block_verifier_score|") == NULL)
