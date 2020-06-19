@@ -94,7 +94,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     pointer_reset(delegates[count].about); \
     pointer_reset(delegates[count].website); \
     pointer_reset(delegates[count].team); \
-    pointer_reset(delegates[count].pool_mode); \
+    pointer_reset(delegates[count].shared_delegate_status); \
     pointer_reset(delegates[count].fee_structure); \
     pointer_reset(delegates[count].server_settings); \
     pointer_reset(delegates[count].block_verifier_score); \

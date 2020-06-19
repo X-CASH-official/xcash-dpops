@@ -125,7 +125,7 @@ int organize_delegates(struct delegates* delegates)
     pointer_reset(delegates_copy[count].about); \
     pointer_reset(delegates_copy[count].website); \
     pointer_reset(delegates_copy[count].team); \
-    pointer_reset(delegates_copy[count].pool_mode); \
+    pointer_reset(delegates_copy[count].shared_delegate_status); \
     pointer_reset(delegates_copy[count].fee_structure); \
     pointer_reset(delegates_copy[count].server_settings); \
     pointer_reset(delegates_copy[count].block_verifier_score); \
@@ -150,7 +150,7 @@ int organize_delegates(struct delegates* delegates)
     delegates_copy[count].about = (char*)calloc(1025,sizeof(char));
     delegates_copy[count].website = (char*)calloc(256,sizeof(char));
     delegates_copy[count].team = (char*)calloc(256,sizeof(char));
-    delegates_copy[count].pool_mode = (char*)calloc(10,sizeof(char));
+    delegates_copy[count].shared_delegate_status = (char*)calloc(10,sizeof(char));
     delegates_copy[count].fee_structure = (char*)calloc(11,sizeof(char));
     delegates_copy[count].server_settings = (char*)calloc(1025,sizeof(char));
     delegates_copy[count].block_verifier_score = (char*)calloc(10,sizeof(char));
@@ -161,7 +161,7 @@ int organize_delegates(struct delegates* delegates)
     delegates_copy[count].block_producer_total_rounds = (char*)calloc(10,sizeof(char));
     delegates_copy[count].block_producer_block_heights = (char*)calloc(100000,sizeof(char));
     delegates_copy[count].public_key = (char*)calloc(VRF_PUBLIC_KEY_LENGTH+1,sizeof(char));
-    if (delegates_copy[count].public_address == NULL || delegates_copy[count].total_vote_count == NULL || delegates_copy[count].IP_address == NULL || delegates_copy[count].delegate_name == NULL || delegates_copy[count].about == NULL || delegates_copy[count].website == NULL || delegates_copy[count].team == NULL || delegates_copy[count].pool_mode == NULL || delegates_copy[count].fee_structure == NULL || delegates_copy[count].server_settings == NULL || delegates_copy[count].block_verifier_score == NULL || delegates_copy[count].online_status == NULL || delegates_copy[count].block_verifier_total_rounds == NULL || delegates_copy[count].block_verifier_online_total_rounds == NULL || delegates_copy[count].block_verifier_online_percentage == NULL || delegates_copy[count].block_producer_total_rounds == NULL || delegates_copy[count].block_producer_block_heights == NULL || delegates_copy[count].public_key == NULL)
+    if (delegates_copy[count].public_address == NULL || delegates_copy[count].total_vote_count == NULL || delegates_copy[count].IP_address == NULL || delegates_copy[count].delegate_name == NULL || delegates_copy[count].about == NULL || delegates_copy[count].website == NULL || delegates_copy[count].team == NULL || delegates_copy[count].shared_delegate_status == NULL || delegates_copy[count].fee_structure == NULL || delegates_copy[count].server_settings == NULL || delegates_copy[count].block_verifier_score == NULL || delegates_copy[count].online_status == NULL || delegates_copy[count].block_verifier_total_rounds == NULL || delegates_copy[count].block_verifier_online_total_rounds == NULL || delegates_copy[count].block_verifier_online_percentage == NULL || delegates_copy[count].block_producer_total_rounds == NULL || delegates_copy[count].block_producer_block_heights == NULL || delegates_copy[count].public_key == NULL)
     {
       memcpy(error_message.function[error_message.total],"organize_delegates",18);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
@@ -236,7 +236,7 @@ int organize_delegates(struct delegates* delegates)
     memcpy(delegates[count].about,database_multiple_documents_fields.value[count][4],strnlen(database_multiple_documents_fields.value[count][4],1025));
     memcpy(delegates[count].website,database_multiple_documents_fields.value[count][5],strnlen(database_multiple_documents_fields.value[count][5],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].team,database_multiple_documents_fields.value[count][6],strnlen(database_multiple_documents_fields.value[count][6],BUFFER_SIZE_NETWORK_BLOCK_DATA));
-    memcpy(delegates[count].pool_mode,database_multiple_documents_fields.value[count][7],strnlen(database_multiple_documents_fields.value[count][7],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].shared_delegate_status,database_multiple_documents_fields.value[count][7],strnlen(database_multiple_documents_fields.value[count][7],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].fee_structure,database_multiple_documents_fields.value[count][8],strnlen(database_multiple_documents_fields.value[count][8],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].server_settings,database_multiple_documents_fields.value[count][9],strnlen(database_multiple_documents_fields.value[count][9],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].block_verifier_score,database_multiple_documents_fields.value[count][10],strnlen(database_multiple_documents_fields.value[count][10],BUFFER_SIZE_NETWORK_BLOCK_DATA));

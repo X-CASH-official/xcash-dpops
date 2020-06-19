@@ -320,10 +320,10 @@ int create_json_data_from_delegates_array(const struct delegates* delegates, cha
         memcpy(result+strlen(result),delegates[count].team,strlen(delegates[count].team));
         memcpy(result+strlen(result),"\",",2);
       }
-      if (strstr(DOCUMENT_FIELDS,"pool_mode|") == NULL)
+      if (strstr(DOCUMENT_FIELDS,"shared_delegate_status|") == NULL)
       {
-        memcpy(result+strlen(result),"\"pool_mode\":\"",13);
-        memcpy(result+strlen(result),delegates[count].pool_mode,strlen(delegates[count].pool_mode));
+        memcpy(result+strlen(result),"\"shared_delegate_status\":\"",13);
+        memcpy(result+strlen(result),delegates[count].shared_delegate_status,strlen(delegates[count].shared_delegate_status));
         memcpy(result+strlen(result),"\",",2);
       }
       if (strstr(DOCUMENT_FIELDS,"fee_structure|") == NULL)
