@@ -326,10 +326,10 @@ int create_json_data_from_delegates_array(const struct delegates* delegates, cha
         memcpy(result+strlen(result),delegates[count].shared_delegate_status,strlen(delegates[count].shared_delegate_status));
         memcpy(result+strlen(result),"\",",2);
       }
-      if (strstr(DOCUMENT_FIELDS,"fee_structure|") == NULL)
+      if (strstr(DOCUMENT_FIELDS,"delegate_fee|") == NULL)
       {
-        memcpy(result+strlen(result),"\"fee_structure\":\"",17);
-        memcpy(result+strlen(result),delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(result+strlen(result),"\"delegate_fee\":\"",17);
+        memcpy(result+strlen(result),delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(result+strlen(result),"\",",2);
       }
       if (strstr(DOCUMENT_FIELDS,"server_specs|") == NULL)

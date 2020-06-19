@@ -269,7 +269,7 @@ struct delegates {
     char* website;
     char* team;
     char* shared_delegate_status;
-    char* fee_structure;
+    char* delegate_fee;
     char* server_specs;
     char* block_verifier_score;
     char* online_status;

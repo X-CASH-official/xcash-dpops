@@ -126,7 +126,7 @@ int organize_delegates(struct delegates* delegates)
     pointer_reset(delegates_copy[count].website); \
     pointer_reset(delegates_copy[count].team); \
     pointer_reset(delegates_copy[count].shared_delegate_status); \
-    pointer_reset(delegates_copy[count].fee_structure); \
+    pointer_reset(delegates_copy[count].delegate_fee); \
     pointer_reset(delegates_copy[count].server_specs); \
     pointer_reset(delegates_copy[count].block_verifier_score); \
     pointer_reset(delegates_copy[count].online_status); \
@@ -151,7 +151,7 @@ int organize_delegates(struct delegates* delegates)
     delegates_copy[count].website = (char*)calloc(256,sizeof(char));
     delegates_copy[count].team = (char*)calloc(256,sizeof(char));
     delegates_copy[count].shared_delegate_status = (char*)calloc(10,sizeof(char));
-    delegates_copy[count].fee_structure = (char*)calloc(11,sizeof(char));
+    delegates_copy[count].delegate_fee = (char*)calloc(11,sizeof(char));
     delegates_copy[count].server_specs = (char*)calloc(1025,sizeof(char));
     delegates_copy[count].block_verifier_score = (char*)calloc(10,sizeof(char));
     delegates_copy[count].online_status = (char*)calloc(10,sizeof(char));
@@ -161,7 +161,7 @@ int organize_delegates(struct delegates* delegates)
     delegates_copy[count].block_producer_total_rounds = (char*)calloc(10,sizeof(char));
     delegates_copy[count].block_producer_block_heights = (char*)calloc(100000,sizeof(char));
     delegates_copy[count].public_key = (char*)calloc(VRF_PUBLIC_KEY_LENGTH+1,sizeof(char));
-    if (delegates_copy[count].public_address == NULL || delegates_copy[count].total_vote_count == NULL || delegates_copy[count].IP_address == NULL || delegates_copy[count].delegate_name == NULL || delegates_copy[count].about == NULL || delegates_copy[count].website == NULL || delegates_copy[count].team == NULL || delegates_copy[count].shared_delegate_status == NULL || delegates_copy[count].fee_structure == NULL || delegates_copy[count].server_specs == NULL || delegates_copy[count].block_verifier_score == NULL || delegates_copy[count].online_status == NULL || delegates_copy[count].block_verifier_total_rounds == NULL || delegates_copy[count].block_verifier_online_total_rounds == NULL || delegates_copy[count].block_verifier_online_percentage == NULL || delegates_copy[count].block_producer_total_rounds == NULL || delegates_copy[count].block_producer_block_heights == NULL || delegates_copy[count].public_key == NULL)
+    if (delegates_copy[count].public_address == NULL || delegates_copy[count].total_vote_count == NULL || delegates_copy[count].IP_address == NULL || delegates_copy[count].delegate_name == NULL || delegates_copy[count].about == NULL || delegates_copy[count].website == NULL || delegates_copy[count].team == NULL || delegates_copy[count].shared_delegate_status == NULL || delegates_copy[count].delegate_fee == NULL || delegates_copy[count].server_specs == NULL || delegates_copy[count].block_verifier_score == NULL || delegates_copy[count].online_status == NULL || delegates_copy[count].block_verifier_total_rounds == NULL || delegates_copy[count].block_verifier_online_total_rounds == NULL || delegates_copy[count].block_verifier_online_percentage == NULL || delegates_copy[count].block_producer_total_rounds == NULL || delegates_copy[count].block_producer_block_heights == NULL || delegates_copy[count].public_key == NULL)
     {
       memcpy(error_message.function[error_message.total],"organize_delegates",18);
       memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
@@ -237,7 +237,7 @@ int organize_delegates(struct delegates* delegates)
     memcpy(delegates[count].website,database_multiple_documents_fields.value[count][5],strnlen(database_multiple_documents_fields.value[count][5],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].team,database_multiple_documents_fields.value[count][6],strnlen(database_multiple_documents_fields.value[count][6],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].shared_delegate_status,database_multiple_documents_fields.value[count][7],strnlen(database_multiple_documents_fields.value[count][7],BUFFER_SIZE_NETWORK_BLOCK_DATA));
-    memcpy(delegates[count].fee_structure,database_multiple_documents_fields.value[count][8],strnlen(database_multiple_documents_fields.value[count][8],BUFFER_SIZE_NETWORK_BLOCK_DATA));
+    memcpy(delegates[count].delegate_fee,database_multiple_documents_fields.value[count][8],strnlen(database_multiple_documents_fields.value[count][8],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].server_specs,database_multiple_documents_fields.value[count][9],strnlen(database_multiple_documents_fields.value[count][9],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].block_verifier_score,database_multiple_documents_fields.value[count][10],strnlen(database_multiple_documents_fields.value[count][10],BUFFER_SIZE_NETWORK_BLOCK_DATA));
     memcpy(delegates[count].online_status,database_multiple_documents_fields.value[count][11],strnlen(database_multiple_documents_fields.value[count][11],BUFFER_SIZE_NETWORK_BLOCK_DATA));
@@ -266,7 +266,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[0].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[0].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[0].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[0].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[0].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[0].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[0].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[0].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -285,7 +285,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[1].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[1].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[1].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[1].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[1].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[1].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[1].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[1].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -304,7 +304,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[2].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[2].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[2].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[2].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[2].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[2].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[2].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[2].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -323,7 +323,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[3].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[3].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[3].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[3].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[3].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[3].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[3].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[3].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -342,7 +342,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[4].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[4].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[4].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[4].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[4].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[4].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[4].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[4].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -364,7 +364,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[0].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[0].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[0].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[0].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[0].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[0].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[0].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[0].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -383,7 +383,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[1].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[1].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[1].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[1].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[1].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[1].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[1].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[1].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -402,7 +402,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[2].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[2].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[2].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[2].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[2].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[2].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[2].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[2].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -421,7 +421,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[3].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[3].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[3].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[3].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[3].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[3].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[3].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[3].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -440,7 +440,7 @@ int organize_delegates(struct delegates* delegates)
         memcpy(delegates_copy[4].about,delegates[count].about,strlen(delegates[count].about));
         memcpy(delegates_copy[4].website,delegates[count].website,strlen(delegates[count].website));
         memcpy(delegates_copy[4].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[4].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(delegates_copy[4].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(delegates_copy[4].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
         memcpy(delegates_copy[4].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
         memcpy(delegates_copy[4].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -468,7 +468,7 @@ int organize_delegates(struct delegates* delegates)
     memcpy(delegates_copy[count2].about,delegates[count].about,strlen(delegates[count].about));
     memcpy(delegates_copy[count2].website,delegates[count].website,strlen(delegates[count].website));
     memcpy(delegates_copy[count2].team,delegates[count].team,strlen(delegates[count].team));
-    memcpy(delegates_copy[count2].fee_structure,delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+    memcpy(delegates_copy[count2].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
     memcpy(delegates_copy[count2].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
     memcpy(delegates_copy[count2].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
     memcpy(delegates_copy[count2].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
@@ -490,7 +490,7 @@ int organize_delegates(struct delegates* delegates)
     memset(delegates[count].about,0,strlen(delegates[count].about));
     memset(delegates[count].website,0,strlen(delegates[count].website));
     memset(delegates[count].team,0,strlen(delegates[count].team));
-    memset(delegates[count].fee_structure,0,strlen(delegates[count].fee_structure));
+    memset(delegates[count].delegate_fee,0,strlen(delegates[count].delegate_fee));
     memset(delegates[count].block_verifier_score,0,strlen(delegates[count].block_verifier_score));
     memset(delegates[count].online_status,0,strlen(delegates[count].online_status));
     memset(delegates[count].block_verifier_total_rounds,0,strlen(delegates[count].block_verifier_total_rounds));
@@ -507,7 +507,7 @@ int organize_delegates(struct delegates* delegates)
     memcpy(delegates[count].about,delegates_copy[count].about,strlen(delegates_copy[count].about));
     memcpy(delegates[count].website,delegates_copy[count].website,strlen(delegates_copy[count].website));
     memcpy(delegates[count].team,delegates_copy[count].team,strlen(delegates_copy[count].team));
-    memcpy(delegates[count].fee_structure,delegates_copy[count].fee_structure,strlen(delegates_copy[count].fee_structure));
+    memcpy(delegates[count].delegate_fee,delegates_copy[count].delegate_fee,strlen(delegates_copy[count].delegate_fee));
     memcpy(delegates[count].block_verifier_score,delegates_copy[count].block_verifier_score,strlen(delegates_copy[count].block_verifier_score));
     memcpy(delegates[count].online_status,delegates_copy[count].online_status,strlen(delegates_copy[count].online_status));
     memcpy(delegates[count].block_verifier_total_rounds,delegates_copy[count].block_verifier_total_rounds,strlen(delegates_copy[count].block_verifier_total_rounds));
