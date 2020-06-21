@@ -764,7 +764,7 @@ function get_current_xcash_wallet_data()
 
   # add the public address and block verifiers secret key to the XCASH_Daemon systemd service file
   PUBLIC_ADDRESS=${PUBLIC_ADDRESS%?}
-  sudo sed -i "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash-dpops-delegates-public-address $PUBLIC_ADDRESS --xcash-dpops-delegates-secret-key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/XCASH_Daemon.service
+  sudo sed -i "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash_dpops_delegates_public_address $PUBLIC_ADDRESS --xcash_dpops_delegates_secret_key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/XCASH_Daemon.service
   
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
   echo
