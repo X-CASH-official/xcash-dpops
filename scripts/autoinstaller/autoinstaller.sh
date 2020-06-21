@@ -579,7 +579,7 @@ Type=simple
 LimitNOFILE=infinity
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY} --shared_delegates_website --fee ${DPOPS_FEE} --minimum_amount ${DPOPS_MINIMUM_AMOUNT}
+ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY} --shared-delegates-website --fee ${DPOPS_FEE} --minimum-amount ${DPOPS_MINIMUM_AMOUNT}
 Restart=always
  
 [Install]
@@ -1114,7 +1114,7 @@ function create_block_verifier_key()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Block Verifiers Key${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
-  data=$(build/XCASH_DPOPS --generate_key 2>&1 >/dev/null)
+  data=$(build/XCASH_DPOPS --generate-key 2>&1 >/dev/null)
   BLOCK_VERIFIER_SECRET_KEY="${data: -132}"
   BLOCK_VERIFIER_SECRET_KEY="${BLOCK_VERIFIER_SECRET_KEY:0:128}"
   BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
@@ -1999,8 +1999,8 @@ function edit_shared_delegate_settings()
   do true; done
 
   echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegate Settings${END_COLOR_PRINT}"
-  sed -i "s/--fee.*--minimum_amount/--fee $DPOPS_FEE --minimum_amount/g" /lib/systemd/system/XCASH_DPOPS.service
-  sed -i "s/--minimum_amount.*/--minimum_amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/XCASH_DPOPS.service
+  sed -i "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/XCASH_DPOPS.service
+  sed -i "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/XCASH_DPOPS.service
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegate Settings${END_COLOR_PRINT}"
   echo
   else

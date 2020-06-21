@@ -718,16 +718,16 @@ sleep(BLOCK_VERIFIERS_SETTINGS);
 "Parameters\n" \
 "All parameters are optional, except for --block-verifiers-secret-key\n\n" \
 "--parameters - List of all valid parameters\n" \
-"--test - Run a test to validate system compatibility. Can take up to around 24h. Parameter needs to be passed last.\n" \
-"--quick-test - Run a quick test to validate the system compatibility. Can take up to around 10 min.  Parameter needs to be passed last.\n" \
-"--optimization-test - Run a, optimization test to check system performance. Can take up to around 2 min. Parameter needs to be passed last.\n" \
 "--block-verifiers-secret-key <block_verifiers_secret_key> - The block verifiers secret key. Must be the first parameter.\n" \
+"--test - Run a test to validate system compatibility. Can take up to around 24h. Parameter needs to be passed last.\n" \
+"--quick-test - Run a quick test to validate the system compatibility. Can take up to around 10 min. Parameter needs to be passed last.\n" \
+"--optimization-test - Run an optimization test to check system performance. Can take up to around 2 min. Parameter needs to be passed last.\n" \
 "--debug - Show all incoming and outgoing messages from the server.\n" \
 "--test-mode <setting> - Use the test network data nodes, with the specific setting (1-9).\n" \
 "--log-file <log_file> - Write all output to a log file with no colors.\n" \
 "--log-file-color <log_file> - Write all output to a log file with colors.\n" \
 "--total-threads <total_threads> - Total threads to use, the minimum is 2.Default is the CPU total number of threads.\n" \
-"--delegates-IP-address <delegates_IP_address> - The delegates IP address (IPV4 only) to create the node on. Default is 0.0.0.0 (all available networking interfaces).\n" \
+"--delegates-ip-address <delegates_IP_address> - The delegates IP address (IPV4 only) to create the node on. Default is 0.0.0.0 (all available networking interfaces).\n" \
 "--xcash-wallet-port <xcash_wallet_port> - X-Cash wallet port. Default port is 18285.\n" \
 "--database-name - Name of the database. Default name is XCASH_PROOF_OF_STAKE.\n" \
 "--shared-delegates-database-name - Name of the shared delegates database. Default name is XCASH_PROOF_OF_STAKE_DELEGATES.\n" \
