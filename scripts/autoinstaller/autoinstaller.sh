@@ -563,7 +563,7 @@ Type=simple
 LimitNOFILE=infinity
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY}
+ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY}
 Restart=always
  
 [Install]
@@ -579,7 +579,7 @@ Type=simple
 LimitNOFILE=infinity
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY} --shared_delegates_website --fee ${DPOPS_FEE} --minimum_amount ${DPOPS_MINIMUM_AMOUNT}
+ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY} --shared_delegates_website --fee ${DPOPS_FEE} --minimum_amount ${DPOPS_MINIMUM_AMOUNT}
 Restart=always
  
 [Install]
@@ -817,7 +817,7 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
 {
   # get the block verifiers secret key from the systemd service file
   BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/XCASH_DPOPS.service)
-  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block_verifiers_secret_key' '{print $2}')
+  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block-verifiers-secret-key' '{print $2}')
   BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
 
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then

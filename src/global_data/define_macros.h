@@ -715,33 +715,33 @@ sleep(BLOCK_VERIFIERS_SETTINGS);
 // Test
 #define TEST_OUTLINE "-----------------------------------------------------------------------------------------------"
 #define INVALID_PARAMETERS_ERROR_MESSAGE \
-"Parameters\n\n" \
-"All parameters are optional, execept for --block_verifiers_secret_key\n\n" \
-"--parameters - Show a list of all valid parameters\n\n" \
-"--test - Run the test to make sure the program is compatible with your system. This can take around 24 hours. Pass this parameter last.\n\n" \
-"--quick_test - Run the quick test to make sure the program is compatible with your system. This can take around 10 minutes. Pass this parameter last.\n\n" \
-"--optimizations_test - Run the optimizations test only. This will check if your computer is fast enough for XCASH_DPOPS. This can take around 2 minutes. Pass this parameter last.\n\n" \
-"--block_verifiers_secret_key \"block_verifiers_secret_key\" - The block verifiers secret key. This must be the first parameter\n\n" \
-"--debug - Show all incoming and outgoing messages from the server\n\n" \
-"--test_mode \"settings\" - use the test network data nodes, with the specific settings (1-9)\n\n" \
-"--log_file \"log_file\" - Write all output to a log file with no colors\n\n" \
-"--log_file_color \"log_file\" - Write all output to a log file with colors\n\n" \
-"--total_threads \"total_threads\" - The total threads to use, the minimum is 2.\nIf this parameter is not specified, the default is the number of threads the CPU has.\n\n" \
-"--XCASH_DPOPS_delegates_IP_address \"delegates IP address\" - The delegates IP address (IPV4 only) to create the server on.\nIf this parameter is not specified, the default is 0.0.0.0 (all available networking interfaces).\n\n" \
-"--xcash_wallet_port \"xcash_wallet_port\" - The xcash wallet port.\nIf this parameter is not specified, the default port is 18285.\n\n" \
-"--database_name - The name of the database.\nIf this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE.\n\n" \
-"--shared_delegates_database_name - The name of the shared delegates database.\nIf this parameter is not specified, the default name is XCASH_PROOF_OF_STAKE_DELEGATES.\n\n" \
-"--delegates_website - Run the delegates website\n\n" \
-"--shared_delegates_website --fee \"fee\" --minimum_amount \"minimum_amount\" (optional) --voter_inactivity_count NUMBER_OF_DAYS (optional) - Run the shared delegates website, with a fee of \"fee\" and a minimum amount of \"minimum_amount\"\n" \
-"The fee in a percentage (1 would equal 1 percent. You can use up to 6 decimal places.)\n" \
-"The minimum for a public_address to receive a payment (10000 etc. The minimum amount should be in regular units, not atomic units.)\n" \
-"The voter inactivity count is optional. This is the number of consecutive days where a voter would have registered in the database, but is not actively participating towards the shared delegate. If this number of consecutive days is reached, the voter will be removed from the database and all funds that were left over would not sent out, since they were below the MINIMUM AMOUNT. If this parameter is not specified, the default amount is 30 consecutive days.\n" \
-"--generate_key - Generate a public and private key for signing and verifying messages between block verifiers" \
-"--synchronize_database_from_network_data_node - Synchronize the database from a network data node.\n\n" \
-"--synchronize_database_from_specific_delegate DELEGATES_IP_ADDRESS - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nIt should only be used in specific circumstances.\n\n" \
-"--disable_synchronizing_databases_and_starting_timers - Disables synchronizing the databases and starting the timers. Used for testing. Pass this parameter last.\n\n" \
-"--registration_mode - Runs the registration mode only Pass this parameter last.\n\n" \
-"--start_time \"day\" \"hour\" \"minute\" - Starts the current block height timer at a specific time. The day is the day of the month (1-31), the hour is the hour in UTC (0-23) the minute is the minute (0-59)\n\n" \
-"--test_data_add - Add test data to the databases\n\n" \
-"--test_data_remove - Remove test data from the databases\n\n"
+"Parameters\n" \
+"All parameters are optional, except for --block-verifiers-secret-key\n\n" \
+"--parameters - List of all valid parameters\n" \
+"--test - Run a test to validate system compatibility. Can take up to around 24h. Parameter needs to be passed last.\n" \
+"--quick-test - Run a quick test to validate the system compatibility. Can take up to around 10 min.  Parameter needs to be passed last.\n" \
+"--optimization-test - Run a, optimization test to check system performance. Can take up to around 2 min. Parameter needs to be passed last.\n" \
+"--block-verifiers-secret-key <block_verifiers_secret_key> - The block verifiers secret key. Must be the first parameter.\n" \
+"--debug - Show all incoming and outgoing messages from the server.\n" \
+"--test-mode <setting> - Use the test network data nodes, with the specific setting (1-9).\n" \
+"--log-file <log_file> - Write all output to a log file with no colors.\n" \
+"--log-file-color <log_file> - Write all output to a log file with colors.\n" \
+"--total-threads <total_threads> - Total threads to use, the minimum is 2.Default is the CPU total number of threads.\n" \
+"--delegates-IP-address <delegates_IP_address> - The delegates IP address (IPV4 only) to create the node on. Default is 0.0.0.0 (all available networking interfaces).\n" \
+"--xcash-wallet-port <xcash_wallet_port> - X-Cash wallet port. Default port is 18285.\n" \
+"--database-name - Name of the database. Default name is XCASH_PROOF_OF_STAKE.\n" \
+"--shared-delegates-database-name - Name of the shared delegates database. Default name is XCASH_PROOF_OF_STAKE_DELEGATES.\n" \
+"--delegates-website - Run the delegates website.\n" \
+"--shared-delegates-website --fee <fee> --minimum-amount [<minimum_amount>] --voter-inactivity-count [<number_of_days> (optional)] - Run the shared delegates website with a fee of <fee> and a minimum amount of <minimum_amount>\n" \
+"Fee is expressed as a percentage, up to 6 decimals.\n" \
+"Minimum amount of XCASH for a voter to receive a payment in regulat unit, expressed as an integer.\n" \
+"Voter inactivity count is optional. Number of consecutive days where a voter would have registered in the database, but is not actively participating towards the shared delegate. If this number of consecutive days is reached, the voter will be removed from the database and all funds that were left over would not sent out, since they were below the MINIMUM AMOUNT. If this parameter is not specified, the default amount is 30 consecutive days.\n" \
+"--generate-key - Generate a public and private key for signing and verifying messages between block verifiers." \
+"--synchronize-database-from-network-data-node - Synchronize the database from a network data node.\n" \
+"--synchronize-database-from-specific-delegate <delegates_IP_address> - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nShould only be used in specific circumstances.\n" \
+"--disable-synchronizing-databases-and-starting-timers - Disables synchronizing the databases and starting the timers. Used for testing. Parameter needs to be passed last.\n" \
+"--registration-mode - Runs the registration mode only. Parameter needs to be passed last.\n" \
+"--start-time <day> <hour> <minute> - Starts the current block height timer at a specific time. <day> is the day of the month (1-31), <hour> is the hour in UTC (0-23), <minute> is the minute (0-59)\n" \
+"--test-data-add - Add test data to the databases.\n" \
+"--test-data-remove - Remove test data from the databases.\n"
 #endif

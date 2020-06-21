@@ -575,13 +575,13 @@ int set_parameters(int parameters_count, char* parameters[])
   // check all of the parameters to see if there is a block verifier secret key
   if (parameters_count < 3)
   {
-    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block_verifier_secret_key parameter");
+    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block-verifiers-secret-key parameter");
   }
   
   // check the parameters
   for (count = 0, count2 = 0; count < (size_t)parameters_count; count++)
   { 
-    if (strncmp(parameters[count],"--block_verifiers_secret_key",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--block-verifiers-secret-key",BUFFER_SIZE) == 0)
     {
       count2 = 1;
     }
@@ -589,13 +589,13 @@ int set_parameters(int parameters_count, char* parameters[])
 
   if (count2 != 1)
   {
-    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block_verifier_secret_key parameter");
+    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block-verifiers-secret-key parameter");
   }
 
   // check the parameters
   for (count = 0, count2 = 0; count < (size_t)parameters_count; count++)
   { 
-    if (strncmp(parameters[count],"--block_verifiers_secret_key",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--block-verifiers-secret-key",BUFFER_SIZE) == 0)
     {
       if (strlen(parameters[count+1]) != VRF_SECRET_KEY_LENGTH)
       {
@@ -620,14 +620,14 @@ int set_parameters(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
-    if (strncmp(parameters[count],"--quick_test",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--quick-test",BUFFER_SIZE) == 0)
     {
       get_delegates_data();
       test(1);
       database_reset;
       exit(0);
     }
-    if (strncmp(parameters[count],"--optimizations_test",BUFFER_SIZE) == 0)
+    if (strncmp(parameters[count],"--optimization-test",BUFFER_SIZE) == 0)
     {
       get_delegates_data();
       test(2);
@@ -643,7 +643,7 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       debug_settings = 1;
     }
-    if (strncmp(parameters[count],"--XCASH_DPOPS_delegates_IP_address",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
+    if (strncmp(parameters[count],"--delegates_IP_address",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       memset(XCASH_DPOPS_delegates_IP_address,0,strlen(XCASH_DPOPS_delegates_IP_address));
       memcpy(XCASH_DPOPS_delegates_IP_address,parameters[count+1],strnlen(parameters[count+1],sizeof(XCASH_DPOPS_delegates_IP_address)));
