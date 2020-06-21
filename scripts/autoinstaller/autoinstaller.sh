@@ -613,7 +613,7 @@ function setup_lxc_container_profile()
 
 function get_wallet_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Create a New Wallet to Collect Block Rewards (YES): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Create a New Wallet to Collect Block Rewards (leave empty for default: YES): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
@@ -631,13 +631,13 @@ function get_wallet_settings()
 
 function get_password_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Generate a New Password (YES): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Generate a New Password (leave empty for default: YES): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
   WALLET_PASSWORD=$([ "$data" == "" ] && echo "$WALLET_PASSWORD" || echo "NO")
   if [ "$WALLET_PASSWORD" == "NO" ]; then
-  echo -ne "${COLOR_PRINT_YELLOW}Please Enter the Custom Password: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Enter the Custom Password: ${END_COLOR_PRINT}"
   read -r WALLET_PASSWORD
   echo -ne "\r"
   echo
@@ -655,7 +655,7 @@ function get_password()
 function get_block_verifier_key_settings()
 {
   while
-    echo -ne "${COLOR_PRINT_YELLOW}Block Verifier Key Settings: (I)mport or (C)reate: ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Block Verifier Key: (I)mport or (C)reate new: ${END_COLOR_PRINT}"
     read -r BLOCK_VERIFIER_KEY_SETTINGS
     if [ "${BLOCK_VERIFIER_KEY_SETTINGS}" == "" ]; then
       BLOCK_VERIFIER_KEY_SETTINGS="0"
@@ -666,7 +666,7 @@ function get_block_verifier_key_settings()
   do true; done
   if [ ${BLOCK_VERIFIER_KEY_SETTINGS^^} == "I" ]; then
     while
-      echo -ne "${COLOR_PRINT_YELLOW}Please Enter Block Verifiers Secret Key: ${END_COLOR_PRINT}"
+      echo -ne "${COLOR_PRINT_YELLOW}Enter Block Verifiers Secret Key: ${END_COLOR_PRINT}"
       read -r BLOCK_VERIFIER_SECRET_KEY
       echo -ne "\r"
       echo
