@@ -1660,7 +1660,7 @@ function install()
   get_current_xcash_wallet_data
 
   # test change the xcash-core to xcash_proof_of_stake branch
-  systemctl stop XCASH_DPOPS
+  sudo systemctl stop XCASH_DPOPS
   cd "${XCASH_DIR}"
   git checkout --quiet xcash_proof_of_stake
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
