@@ -514,7 +514,7 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_MONGODB="$(cat << EOF
 [Unit]
-Description=MongoDB Database Server
+Description=MongoDB X-Cash Database Server
 After=network.target
 
 [Service]
@@ -540,13 +540,13 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON="$(cat << EOF
 [Unit]
-Description=XCASH Daemon systemd file
+Description=X-Cash Daemon background process
  
 [Service]
 Type=forking
 User=${USER}
-PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash_daemon.pid
-ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --p2p-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
+PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash-daemon.pid
+ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --p2p-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash-daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -556,7 +556,7 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="$(cat << EOF
 [Unit]
-Description=XCASH DPOPS
+Description=X-Cash DPOPS Program background process
  
 [Service]
 Type=simple
@@ -572,7 +572,7 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="$(cat << EOF
 [Unit]
-Description=XCASH DPOPS
+Description=X-Cash DPOPS Program background process
  
 [Service]
 Type=simple
@@ -588,7 +588,7 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="$(cat << EOF
 [Unit]
-Description=XCASH Wallet RPC
+Description=X-Cash RPC wallet background process
  
 [Service]
 Type=simple
@@ -764,7 +764,7 @@ function get_current_xcash_wallet_data()
 
   # add the public address and block verifiers secret key to the XCASH_Daemon systemd service file
   PUBLIC_ADDRESS=${PUBLIC_ADDRESS%?}
-  sudo sed -i "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash_dpops_delegates_public_address $PUBLIC_ADDRESS --xcash_dpops_delegates_secret_key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/XCASH_Daemon.service
+  sudo sed -i "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash_dpops_delegates_public_address $PUBLIC_ADDRESS --xcash_dpops_delegates_secret_key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/xcash-daemon.service
   
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
   echo
@@ -773,12 +773,12 @@ function get_current_xcash_wallet_data()
 function start_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Starting Systemd Service Files${END_COLOR_PRINT}"
-  sudo systemctl start MongoDB &>/dev/null
-  sudo systemctl start XCASH_Daemon &>/dev/null
+  sudo systemctl start mongodb &>/dev/null
+  sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
-  sudo systemctl start XCASH_Wallet &>/dev/null
+  sudo systemctl start xcash-rpc-wallet &>/dev/null
   sleep 30s
-  sudo systemctl start XCASH_DPOPS &>/dev/null
+  sudo systemctl start xcash-dpops &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
@@ -786,7 +786,7 @@ function start_systemd_service_files()
 function stop_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Stoping Systemd Service Files${END_COLOR_PRINT}"
-  sudo systemctl stop MongoDB XCASH_Daemon XCASH_Wallet XCASH_DPOPS &>/dev/null
+  sudo systemctl stop mongodb xcash-daemon xcash-rpc-wallet xcash-dpops &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Stoping Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
@@ -816,7 +816,7 @@ function check_if_solo_node()
 function check_if_upgrade_solo_delegate_and_shared_delegate()
 {
   # get the block verifiers secret key from the systemd service file
-  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/XCASH_DPOPS.service)
+  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/xcash-dpops.service)
   BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block-verifiers-secret-key' '{print $2}')
   BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
 
@@ -829,7 +829,7 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
       SHARED_DELEGATE="NO"
       uninstall_shared_delegates_website
       update_systemd_service_files
-      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
       sudo systemctl daemon-reload
       sudo sed '/node-v/d' -i "${HOME}"/.profile
       sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
@@ -866,7 +866,7 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
       NODEJS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}${NODEJS_LATEST_VERSION}/
       install_shared_delegates_website
       update_systemd_service_files
-      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
       sudo systemctl daemon-reload
       get_installation_directory
       get_dependencies_current_version
@@ -1034,21 +1034,21 @@ function create_directories()
 
 function create_files()
 {
-  touch "${XCASH_SYSTEMPID_DIR}"mongod.pid "${XCASH_SYSTEMPID_DIR}"xcash_daemon.pid
+  touch "${XCASH_SYSTEMPID_DIR}"mongod.pid "${XCASH_SYSTEMPID_DIR}"xcash-daemon.pid
 }
 
 function create_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Systemd Service Files${END_COLOR_PRINT}"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/XCASH_Daemon.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/xcash-daemon.service"
   if [ ! "${SHARED_DELEGATE^^}" == "YES" ]; then
-    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
   else
-    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
   fi
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET}' > /lib/systemd/system/XCASH_Wallet.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.service"
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
   echo
@@ -1318,7 +1318,7 @@ function get_installation_directory()
   echo -ne "${COLOR_PRINT_YELLOW}Getting Installation Directories${END_COLOR_PRINT}"
   XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -exec dirname {} \;)/
   XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name ".X-CASH" -print)/
-  WALLET_PASSWORD=$(cat /lib/systemd/system/XCASH_Wallet.service | awk '/password/ {print $5}')
+  WALLET_PASSWORD=$(cat /lib/systemd/system/xcash-rpc-wallet.service | awk '/password/ {print $5}')
   XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
   XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/
   XCASH_SYSTEMPID_DIR=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/
@@ -1475,7 +1475,7 @@ function update_mongodb()
   sudo rm mongodb-linux-x86_64-*.tgz &>/dev/null
   MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -print)/
   update_systemd_service_files
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
   sudo systemctl daemon-reload
   sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
@@ -1570,7 +1570,7 @@ function uninstall_packages()
 function uninstall_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Uninstall Systemd Service Files${END_COLOR_PRINT}"
-  sudo rm /lib/systemd/system/firewall.service /lib/systemd/system/MongoDB.service /lib/systemd/system/XCASH_Daemon.service /lib/systemd/system/XCASH_Daemon_Block_Verifier.service /lib/systemd/system/XCASH_DPOPS.service /lib/systemd/system/XCASH_Wallet.service
+  sudo rm /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstall Systemd Service Files${END_COLOR_PRINT}"
   echo
@@ -1778,9 +1778,9 @@ function uninstall()
 
   # Restart the X-CASH Daemon and stop the X-CASH Wallet RPC
   echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
-  sudo systemctl restart XCASH_Daemon
+  sudo systemctl restart xcash-daemon
   sleep 10s
-  sudo systemctl stop XCASH_Wallet
+  sudo systemctl stop xcash-rpc-wallet
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   echo
@@ -1981,7 +1981,7 @@ function install_blockchain()
 function edit_shared_delegate_settings()
 {
   # check if they are already a shared delegate
-  if grep -q "shared_delegates_website" /lib/systemd/system/XCASH_DPOPS.service; then
+  if grep -q "shared_delegates_website" /lib/systemd/system/xcash-dpops.service; then
   while
       echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
       read -r DPOPS_FEE
@@ -1999,8 +1999,8 @@ function edit_shared_delegate_settings()
   do true; done
 
   echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegate Settings${END_COLOR_PRINT}"
-  sed -i "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/XCASH_DPOPS.service
-  sed -i "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/XCASH_DPOPS.service
+  sed -i "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/xcash-dpops.service
+  sed -i "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/xcash-dpops.service
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegate Settings${END_COLOR_PRINT}"
   echo
   else

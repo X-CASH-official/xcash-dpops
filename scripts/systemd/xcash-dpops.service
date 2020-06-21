@@ -1,5 +1,5 @@
 [Unit]
-Description=XCASH DPOPS
+Description=X-Cash DPOPS Program background process
  
 [Service]
 Type=simple
