@@ -668,7 +668,7 @@ int set_parameters(int parameters_count, char* parameters[])
       memcpy(log_file,parameters[count+1],strnlen(parameters[count+1],sizeof(log_file)));
 
       memset(data,0,sizeof(data));
-      color_print("\n\n\n\n\nXCASH DPOPS - Version 1.0.0\n","green");
+      color_print("\n\n\n\n\nxcash-dpops - Version 1.0.0\n","green");
       memcpy(data,"Successfully received the public address:",41);
       memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       color_print(data,"green");
@@ -679,7 +679,7 @@ int set_parameters(int parameters_count, char* parameters[])
       memcpy(log_file,parameters[count+1],strnlen(parameters[count+1],sizeof(log_file)));
 
       memset(data,0,sizeof(data));
-      color_print("\n\n\n\n\nXCASH DPOPS - Version 1.0.0\n","green");
+      color_print("\n\n\n\n\nxcash-dpops - Version 1.0.0\n","green");
       memcpy(data,"Successfully received the public address:",41);
       memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
       color_print(data,"green");

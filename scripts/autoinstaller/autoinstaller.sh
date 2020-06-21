@@ -117,7 +117,7 @@ function get_installation_settings()
 function get_xcash_dpops_installation_directory()
 {
   while
-    echo -ne "${COLOR_PRINT_YELLOW}Installation Directory, must be in the form of /directory/ (empty for default: $HOME/xcash-official/): ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Installation Directory, must be in the form of /directory/ (leave empty for default: $HOME/xcash-official/): ${END_COLOR_PRINT}"
     read -r data    
     echo -ne "\r"
     echo
@@ -130,7 +130,7 @@ function get_xcash_dpops_installation_directory()
 function get_xcash_blockchain_xcash_dpops_installation_directory()
 {
   while
-    echo -ne "${COLOR_PRINT_YELLOW}X-CASH Blockchain Installation Directory, must be in the form of /directory/ ($HOME/.X-CASH/): ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}X-CASH Blockchain Installation Directory, must be in the form of /directory/ (leave empty for default: $HOME/.X-CASH/): ${END_COLOR_PRINT}"
     read -r data
     echo -ne "\r"
     echo
@@ -143,7 +143,7 @@ function get_xcash_blockchain_xcash_dpops_installation_directory()
 function get_mongodb_installation_directory()
 {
   while
-    echo -ne "${COLOR_PRINT_YELLOW}MongoDB Installation Directory, must be in the form of /directory/ (/data/db/): ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}MongoDB Installation Directory, must be in the form of /directory/ (leave empty for default: /data/db/): ${END_COLOR_PRINT}"
     read -r data
     echo -ne "\r"
     echo
@@ -175,7 +175,7 @@ function get_shared_delegate_installation_settings()
   echo
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then    
     while
-      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (expressed as a percentage, ex: 1 or 1.52): ${END_COLOR_PRINT}"
       read -r DPOPS_FEE
       echo -ne "\r"
       echo
@@ -183,7 +183,7 @@ function get_shared_delegate_installation_settings()
     do true; done
     
     while
-      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount, minimum is 10K, maximum is 10M (ex: 10000 in whole numbers and not atomic units etc): ${END_COLOR_PRINT}"
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount (whole number between 10000 and 10000000): ${END_COLOR_PRINT}"
       read -r DPOPS_MINIMUM_AMOUNT
       echo -ne "\r"
       echo
@@ -593,7 +593,7 @@ Description=X-Cash RPC wallet background process
 [Service]
 Type=simple
 User=${USER}
-ExecStart=${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+ExecStart=${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/delegate-wallet --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
 Restart=always
  
 [Install]
@@ -744,7 +744,7 @@ function get_current_xcash_wallet_data()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
 
-  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
+  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
   sleep 10s
   
    while
@@ -1170,7 +1170,7 @@ function sync_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}      Syncing X-CASH Wallet (This Might Take A While)${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
-  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
+  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
   
    while
     data=$(curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json') 
@@ -1187,7 +1187,7 @@ function create_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}      Creating X-CASH Wallet (This Might Take A While)  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
+  echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
   echo
   echo
 }
@@ -1197,7 +1197,7 @@ function import_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
+  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
   echo
   echo
 }
