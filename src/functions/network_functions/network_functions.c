@@ -625,7 +625,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     snprintf(message+strlen(message),MAXIMUM_AMOUNT,"%ld",DATA_LENGTH);
     memcpy(message+strlen(message),"\r\nContent-Language: en\r\nContent-Type: ",38);
     memcpy(message+strlen(message),MESSAGE_DATA_SETTINGS,strnlen(MESSAGE_DATA_SETTINGS,MAXIMUM_AMOUNT));
-    memcpy(message+strlen(message),"\r\nServer: XCASH_DPOPS version 1.0.0\r\nDate: ",43);
+    memcpy(message+strlen(message),"\r\nServer: xcash-dpops version 1.0.0\r\nDate: ",43);
     memcpy(message+strlen(message),current_date_and_time_data,strnlen(current_date_and_time_data,MAXIMUM_AMOUNT));
     memcpy(message+strlen(message),HTTP_SOCKET_END_STRING,sizeof(HTTP_SOCKET_END_STRING)-1);
     count = strlen(message);

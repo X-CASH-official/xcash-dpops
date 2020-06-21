@@ -998,7 +998,7 @@ int calculate_main_nodes_roles(void)
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: get_delegates_online_status
-Description: Get all of the delegates online status. They are only online if they are running the XCASH_DPOPS program
+Description: Get all of the delegates online status. They are only online if they are running the xcash-dpops program
 Return: 0 if an error has occured, otherwise the amount of online delegates
 -----------------------------------------------------------------------------------------------------------
 */

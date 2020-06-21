@@ -90,23 +90,23 @@ function get_installation_settings()
   INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Blockchain" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "solo or shared delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "EditSharedDelegateSettings" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "11" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "12" ] && echo "Shared_Delegates_Firewall" &>/dev/null)
   echo -ne "\r"
   echo
-  # Check if XCASH_DPOPS is already installed, if the user choose to install
+  # Check if xcash-dpops is already installed, if the user choose to install
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
-    echo -ne "${COLOR_PRINT_YELLOW}Checking if XCASH_DPOPS is already installed${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Checking if xcash-dpops is already installed${END_COLOR_PRINT}"
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -ne "0" ]; then
-      echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is already installed. You can either update or uninstall${END_COLOR_PRINT}"
+      echo -e "\n${COLOR_PRINT_RED}xcash-dpops is already installed. You can either update or uninstall${END_COLOR_PRINT}"
       exit 1
     fi
     echo -ne "\r                                                    "
     echo
   fi
 
-  # Check if XCASH_DPOPS is not installed, if the user choose to update or uninstall
+  # Check if xcash-dpops is not installed, if the user choose to update or uninstall
   if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "4" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
-      echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is not installed. Please install XCASH_DPOPS before running update or uninstall${END_COLOR_PRINT}"
+      echo -e "\n${COLOR_PRINT_RED}xcash-dpops is not installed. Please install xcash-dpops before running update or uninstall${END_COLOR_PRINT}"
       exit 1
     fi
     echo -ne "\r                                                     "
@@ -563,7 +563,7 @@ Type=simple
 LimitNOFILE=infinity
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY}
+ExecStart=${XCASH_DPOPS_DIR}build/xcash-dpops --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY}
 Restart=always
  
 [Install]
@@ -579,7 +579,7 @@ Type=simple
 LimitNOFILE=infinity
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY} --shared-delegates-website --fee ${DPOPS_FEE} --minimum-amount ${DPOPS_MINIMUM_AMOUNT}
+ExecStart=${XCASH_DPOPS_DIR}build/xcash-dpops --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY} --shared-delegates-website --fee ${DPOPS_FEE} --minimum-amount ${DPOPS_MINIMUM_AMOUNT}
 Restart=always
  
 [Install]
@@ -1088,16 +1088,16 @@ function install_mongoc_driver()
 
 function download_xcash_dpops()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Downloading xcash-dpops${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
   git clone --quiet ${XCASH_DPOPS_URL}
-  echo -ne "\r${COLOR_PRINT_GREEN}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Downloading xcash-dpops${END_COLOR_PRINT}"
   echo
 }
 
 function build_xcash_dpops()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Building XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Building xcash-dpops${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
     echo "y" | make clean &>/dev/null
@@ -1106,7 +1106,7 @@ function build_xcash_dpops()
     echo "y" | make clean &>/dev/null
     make release -j $((CPU_THREADS / 2)) &>/dev/null
   fi
-  echo -ne "\r${COLOR_PRINT_GREEN}Building XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Building xcash-dpops${END_COLOR_PRINT}"
   echo
 }
 
@@ -1114,7 +1114,7 @@ function create_block_verifier_key()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Block Verifiers Key${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
-  data=$(build/XCASH_DPOPS --generate-key 2>&1 >/dev/null)
+  data=$(build/xcash-dpops --generate-key 2>&1 >/dev/null)
   BLOCK_VERIFIER_SECRET_KEY="${data: -132}"
   BLOCK_VERIFIER_SECRET_KEY="${BLOCK_VERIFIER_SECRET_KEY:0:128}"
   BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
@@ -1143,7 +1143,7 @@ function install_xcash_dpops()
   echo
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}                Installing XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                Installing xcash-dpops${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   install_mongodb
   install_mongoc_driver
@@ -1342,7 +1342,7 @@ function get_installation_directory()
     install_xcash
   fi
   if [ "$XCASH_DPOPS_DIR" == "xcash-dpops/" ]; then
-    echo -e "${COLOR_PRINT_RED}Can not find XCASH_DPOPS${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_RED}Can not find xcash-dpops${END_COLOR_PRINT}"
     download_xcash_dpops
     build_xcash_dpops
   fi
@@ -1416,7 +1416,7 @@ function update_xcash()
 
 function update_xcash_dpops()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Updating xcash-dpops${END_COLOR_PRINT}"
   if [ ! -d "$XCASH_DPOPS_DIR" ]; then
     cd "${XCASH_DPOPS_INSTALLATION_DIR}"
     git clone --quiet "${XCASH_DPOPS_URL}"
@@ -1434,7 +1434,7 @@ function update_xcash_dpops()
       make release -j $((CPU_THREADS / 2)) &>/dev/null
     fi
   fi
-  echo -ne "\r${COLOR_PRINT_GREEN}Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating xcash-dpops${END_COLOR_PRINT}"
   echo
 }
 
@@ -1638,7 +1638,7 @@ function install()
   # Install X-CASH
   install_xcash
 
-  # Install XCASH_DPOPS
+  # Install xcash-dpops
   install_xcash_dpops
 
   # Install shared delegates website
@@ -1697,7 +1697,7 @@ function install()
 function update()
 {
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}                  Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Updating xcash-dpops${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
   echo
@@ -1717,7 +1717,7 @@ function update()
   # Update the package list
   update_packages_list
 
-  # Update all system packages that are XCASH_DPOPS dependencies
+  # Update all system packages that are xcash-dpops dependencies
   update_packages
 
   # Update all repositories
@@ -1768,7 +1768,7 @@ function uninstall()
     exit
   fi
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}                Uninstalling XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                Uninstalling xcash-dpops${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
   echo
@@ -1805,9 +1805,9 @@ function uninstall()
   echo
 
   # Uninstall the installation folder
-  echo -ne "${COLOR_PRINT_YELLOW}Uninstalling XCASH_DPOPS Installation Directory${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Uninstalling xcash-dpops Installation Directory${END_COLOR_PRINT}"
   sudo rm -r "${XCASH_DPOPS_INSTALLATION_DIR}"
-  echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling XCASH_DPOPS Installation Directory${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling xcash-dpops Installation Directory${END_COLOR_PRINT}"
   echo
 
   # Update profile

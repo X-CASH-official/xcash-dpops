@@ -575,7 +575,7 @@ int set_parameters(int parameters_count, char* parameters[])
   // check all of the parameters to see if there is a block verifier secret key
   if (parameters_count < 3)
   {
-    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block-verifiers-secret-key parameter");
+    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run xcash-dpops with the --block-verifiers-secret-key parameter");
   }
   
   // check the parameters
@@ -589,7 +589,7 @@ int set_parameters(int parameters_count, char* parameters[])
 
   if (count2 != 1)
   {
-    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run XCASH_DPOPS with the --block-verifiers-secret-key parameter");
+    SET_PARAMETERS_ERROR("Could not get the block verifiers secret key.\nMake sure to run xcash-dpops with the --block-verifiers-secret-key parameter");
   }
 
   // check the parameters

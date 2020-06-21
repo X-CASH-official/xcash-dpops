@@ -358,7 +358,7 @@ function STEP_6_XCASH_BUILD_DEVELOPMENT()
 
 function STEP_7_XCASH_DPOPS_BUILD()
 {
-  echo -e "Updating XCASH_DPOPS\n" >> "${LOGFILE_STEP_7_XCASH_DPOPS_BUILD}" 2>&1 || return 1
+  echo -e "Updating xcash-dpops\n" >> "${LOGFILE_STEP_7_XCASH_DPOPS_BUILD}" 2>&1 || return 1
   cd "${XCASH_DPOPS_DIR}" || return 1
   make clean  >> "${LOGFILE_STEP_7_XCASH_DPOPS_BUILD}" 2>&1 || return 1
   make release -j "${CPU_THREADS}" >> "${LOGFILE_STEP_7_XCASH_DPOPS_BUILD}" 2>&1 || return 1
@@ -379,10 +379,10 @@ function STEP_8_CPP_CHECK()
 
 function STEP_9_XCASH_DPOPS_TEST()
 {
-  echo -e "XCASH_DPOPS Test\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
+  echo -e "xcash-dpops Test\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
   cd "${XCASH_DPOPS_DIR}" || return 1
   systemctl start MongoDB XCASH_DPOPS && sleep 30s && systemctl start XCASH_Wallet
-  build/XCASH_DPOPS --block-verifiers-secret-key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a --quick-test >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
+  build/xcash-dpops --block-verifiers-secret-key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a --quick-test >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
   echo -e "\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
 }
 
