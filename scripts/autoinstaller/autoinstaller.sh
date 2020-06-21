@@ -1660,7 +1660,7 @@ function install()
   get_current_xcash_wallet_data
 
   # test change the xcash-core to xcash_proof_of_stake branch
-  systemctl stop XCASH_DPOPS
+  sudo systemctl stop xcash-dpops
   cd "${XCASH_DIR}"
   git checkout --quiet xcash_proof_of_stake
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
@@ -1848,13 +1848,13 @@ function test_update()
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
-  sudo systemctl start XCASH_Daemon MongoDB
+  sudo systemctl start xcash-daemon mongodb
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data="${data%,*}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  sudo systemctl stop XCASH_Daemon
+  sudo systemctl stop xcash-daemon
   sleep 30s
   if [ $data -ne 0 ]; then
     "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
@@ -1878,12 +1878,12 @@ function test_update_reset_delegates()
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
-  sudo systemctl start XCASH_Daemon MongoDB
+  sudo systemctl start xcash-daemon mongodb
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  sudo systemctl stop XCASH_Daemon
+  sudo systemctl stop xcash-daemon
   sleep 30s
   echo "${XCASH_DIR}"
   echo "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}"
