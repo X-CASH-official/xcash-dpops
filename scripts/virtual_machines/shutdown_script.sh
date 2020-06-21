@@ -8,5 +8,5 @@ pkill -f mongod
 pkill -f mongo
 pkill -f xcash-wallet-rpc
 pkill -f xcashd
-pkill -f "/usr/share/code/code --user-data-dir /root/Installed-Programs/vscode/"
+pkill -f "/usr/share/code/code --user-data-dir /root/xcash-official/vscode/"
 shutdown now

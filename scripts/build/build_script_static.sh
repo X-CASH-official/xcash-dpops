@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration settings
-INSTALLATION_DIRECTORY="$HOME/x-network/"
+INSTALLATION_DIRECTORY="$HOME/xcash-official/"
 PROGRAMS_INSTALLATION_DIRECTORY="${INSTALLATION_DIRECTORY}Installed-Programs/"
 
 # Latest versions
