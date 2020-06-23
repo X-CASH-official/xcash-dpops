@@ -12,7 +12,7 @@ END_COLOR_PRINT="\033[0m"
 # Configuration settings
 INSTALLATION_TYPE_SETTINGS=1 # 1 = Install, 2 = Update, 3 = Uninstall, 4 = Install / Update BlockChain, 5 = Change Solo Delegate or Shared Delegate, 6 = Edit Shared Delegate Settings, 7 = Restart Programs, 8 = Stop Programs, 9 = Test Update, 10 = Test Update Reset Delegates, 11 = Firewall, 12 = Shared Delegates Firewall
 INSTALLATION_TYPE="Installation"
-XCASH_DPOPS_INSTALLATION_DIR="$HOME/x-network/"
+XCASH_DPOPS_INSTALLATION_DIR="$HOME/xcash-official/"
 XCASH_BLOCKCHAIN_INSTALLATION_DIR="$HOME/.X-CASH/"
 MONGODB_INSTALLATION_DIR="/data/db/"
 SHARED_DELEGATE="YES"
@@ -90,23 +90,23 @@ function get_installation_settings()
   INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Blockchain" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "solo or shared delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "EditSharedDelegateSettings" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "11" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "12" ] && echo "Shared_Delegates_Firewall" &>/dev/null)
   echo -ne "\r"
   echo
-  # Check if XCASH_DPOPS is already installed, if the user choose to install
+  # Check if xcash-dpops is already installed, if the user choose to install
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
-    echo -ne "${COLOR_PRINT_YELLOW}Checking if XCASH_DPOPS is already installed${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Checking if xcash-dpops is already installed${END_COLOR_PRINT}"
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -ne "0" ]; then
-      echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is already installed. You can either update or uninstall${END_COLOR_PRINT}"
+      echo -e "\n${COLOR_PRINT_RED}xcash-dpops is already installed. You can either update or uninstall${END_COLOR_PRINT}"
       exit 1
     fi
     echo -ne "\r                                                    "
     echo
   fi
 
-  # Check if XCASH_DPOPS is not installed, if the user choose to update or uninstall
+  # Check if xcash-dpops is not installed, if the user choose to update or uninstall
   if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "4" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
-      echo -e "\n${COLOR_PRINT_RED}XCASH_DPOPS is not installed. Please install XCASH_DPOPS before running update or uninstall${END_COLOR_PRINT}"
+      echo -e "\n${COLOR_PRINT_RED}xcash-dpops is not installed. Please install xcash-dpops before running update or uninstall${END_COLOR_PRINT}"
       exit 1
     fi
     echo -ne "\r                                                     "
@@ -117,7 +117,7 @@ function get_installation_settings()
 function get_xcash_dpops_installation_directory()
 {
   while
-    echo -ne "${COLOR_PRINT_YELLOW}Installation Directory, must be in the form of /directory/ ($HOME/x-network/): ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Installation Directory, must be in the form of /directory/ (leave empty for default: $HOME/xcash-official/): ${END_COLOR_PRINT}"
     read -r data    
     echo -ne "\r"
     echo
@@ -130,7 +130,7 @@ function get_xcash_dpops_installation_directory()
 function get_xcash_blockchain_xcash_dpops_installation_directory()
 {
   while
-    echo -ne "${COLOR_PRINT_YELLOW}X-CASH Blockchain Installation Directory, must be in the form of /directory/ ($HOME/.X-CASH/): ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}X-CASH Blockchain Installation Directory, must be in the form of /directory/ (leave empty for default: $HOME/.X-CASH/): ${END_COLOR_PRINT}"
     read -r data
     echo -ne "\r"
     echo
@@ -143,7 +143,7 @@ function get_xcash_blockchain_xcash_dpops_installation_directory()
 function get_mongodb_installation_directory()
 {
   while
-    echo -ne "${COLOR_PRINT_YELLOW}MongoDB Installation Directory, must be in the form of /directory/ (/data/db/): ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}MongoDB Installation Directory, must be in the form of /directory/ (leave empty for default: /data/db/): ${END_COLOR_PRINT}"
     read -r data
     echo -ne "\r"
     echo
@@ -156,7 +156,7 @@ function get_mongodb_installation_directory()
 function update_global_variables()
 {
   XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
-  XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/
+  XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/
   XCASH_SYSTEMPID_DIR=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/
   XCASH_LOGS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}logs/
   XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-dpops/
@@ -175,7 +175,7 @@ function get_shared_delegate_installation_settings()
   echo
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then    
     while
-      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (expressed as a percentage, ex: 1 or 1.52): ${END_COLOR_PRINT}"
       read -r DPOPS_FEE
       echo -ne "\r"
       echo
@@ -183,7 +183,7 @@ function get_shared_delegate_installation_settings()
     do true; done
     
     while
-      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount, minimum is 10K, maximum is 10M (ex: 10000 in whole numbers and not atomic units etc): ${END_COLOR_PRINT}"
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount (whole number between 10000 and 10000000): ${END_COLOR_PRINT}"
       read -r DPOPS_MINIMUM_AMOUNT
       echo -ne "\r"
       echo
@@ -514,7 +514,7 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_MONGODB="$(cat << EOF
 [Unit]
-Description=MongoDB Database Server
+Description=MongoDB X-Cash Database Server
 After=network.target
 
 [Service]
@@ -540,13 +540,13 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON="$(cat << EOF
 [Unit]
-Description=XCASH Daemon systemd file
+Description=X-Cash Daemon background process
  
 [Service]
 Type=forking
 User=${USER}
-PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash_daemon.pid
-ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --p2p-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}XCASH_Daemon_log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash_daemon.pid
+PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash-daemon.pid
+ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --p2p-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}xcash-daemon-log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash-daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
@@ -556,14 +556,14 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="$(cat << EOF
 [Unit]
-Description=XCASH DPOPS
+Description=X-Cash DPOPS Program background process
  
 [Service]
 Type=simple
 LimitNOFILE=infinity
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY}
+ExecStart=${XCASH_DPOPS_DIR}build/xcash-dpops --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY}
 Restart=always
  
 [Install]
@@ -572,14 +572,14 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="$(cat << EOF
 [Unit]
-Description=XCASH DPOPS
+Description=X-Cash DPOPS Program background process
  
 [Service]
 Type=simple
 LimitNOFILE=infinity
 User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/XCASH_DPOPS --block_verifiers_secret_key ${BLOCK_VERIFIER_SECRET_KEY} --shared_delegates_website --fee ${DPOPS_FEE} --minimum_amount ${DPOPS_MINIMUM_AMOUNT}
+ExecStart=${XCASH_DPOPS_DIR}build/xcash-dpops --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY} --shared-delegates-website --fee ${DPOPS_FEE} --minimum-amount ${DPOPS_MINIMUM_AMOUNT}
 Restart=always
  
 [Install]
@@ -588,12 +588,12 @@ EOF
 )"
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="$(cat << EOF
 [Unit]
-Description=XCASH Wallet RPC
+Description=X-Cash RPC wallet background process
  
 [Service]
 Type=simple
 User=${USER}
-ExecStart=${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/XCASH_DPOPS_WALLET --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+ExecStart=${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/delegate-wallet --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
 Restart=always
  
 [Install]
@@ -613,7 +613,7 @@ function setup_lxc_container_profile()
 
 function get_wallet_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Create a New Wallet to Collect Block Rewards (YES): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Create a New Wallet to Collect Block Rewards (leave empty for default: YES): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
@@ -631,13 +631,13 @@ function get_wallet_settings()
 
 function get_password_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Generate a New Password (YES): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Generate a New Password (leave empty for default: YES): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
   WALLET_PASSWORD=$([ "$data" == "" ] && echo "$WALLET_PASSWORD" || echo "NO")
   if [ "$WALLET_PASSWORD" == "NO" ]; then
-  echo -ne "${COLOR_PRINT_YELLOW}Please Enter the Custom Password: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Enter the Custom Password: ${END_COLOR_PRINT}"
   read -r WALLET_PASSWORD
   echo -ne "\r"
   echo
@@ -655,7 +655,7 @@ function get_password()
 function get_block_verifier_key_settings()
 {
   while
-    echo -ne "${COLOR_PRINT_YELLOW}Block Verifier Key Settings: (I)mport or (C)reate: ${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Block Verifier Key: (I)mport or (C)reate new: ${END_COLOR_PRINT}"
     read -r BLOCK_VERIFIER_KEY_SETTINGS
     if [ "${BLOCK_VERIFIER_KEY_SETTINGS}" == "" ]; then
       BLOCK_VERIFIER_KEY_SETTINGS="0"
@@ -666,7 +666,7 @@ function get_block_verifier_key_settings()
   do true; done
   if [ ${BLOCK_VERIFIER_KEY_SETTINGS^^} == "I" ]; then
     while
-      echo -ne "${COLOR_PRINT_YELLOW}Please Enter Block Verifiers Secret Key: ${END_COLOR_PRINT}"
+      echo -ne "${COLOR_PRINT_YELLOW}Enter Block Verifiers Secret Key: ${END_COLOR_PRINT}"
       read -r BLOCK_VERIFIER_SECRET_KEY
       echo -ne "\r"
       echo
@@ -744,7 +744,7 @@ function get_current_xcash_wallet_data()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
 
-  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
+  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
   sleep 10s
   
    while
@@ -764,7 +764,7 @@ function get_current_xcash_wallet_data()
 
   # add the public address and block verifiers secret key to the XCASH_Daemon systemd service file
   PUBLIC_ADDRESS=${PUBLIC_ADDRESS%?}
-  sudo sed -i "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash-dpops-delegates-public-address $PUBLIC_ADDRESS --xcash-dpops-delegates-secret-key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/XCASH_Daemon.service
+  sudo sed -i "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash-dpops-delegates-public-address $PUBLIC_ADDRESS --xcash-dpops-delegates-secret-key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/xcash-daemon.service
   
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
   echo
@@ -773,12 +773,12 @@ function get_current_xcash_wallet_data()
 function start_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Starting Systemd Service Files${END_COLOR_PRINT}"
-  sudo systemctl start MongoDB &>/dev/null
-  sudo systemctl start XCASH_Daemon &>/dev/null
+  sudo systemctl start mongodb &>/dev/null
+  sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
-  sudo systemctl start XCASH_Wallet &>/dev/null
+  sudo systemctl start xcash-rpc-wallet &>/dev/null
   sleep 30s
-  sudo systemctl start XCASH_DPOPS &>/dev/null
+  sudo systemctl start xcash-dpops &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
@@ -786,7 +786,7 @@ function start_systemd_service_files()
 function stop_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Stoping Systemd Service Files${END_COLOR_PRINT}"
-  sudo systemctl stop MongoDB XCASH_Daemon XCASH_Wallet XCASH_DPOPS &>/dev/null
+  sudo systemctl stop mongodb xcash-daemon xcash-rpc-wallet xcash-dpops &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Stoping Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
@@ -816,8 +816,8 @@ function check_if_solo_node()
 function check_if_upgrade_solo_delegate_and_shared_delegate()
 {
   # get the block verifiers secret key from the systemd service file
-  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/XCASH_DPOPS.service)
-  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block_verifiers_secret_key' '{print $2}')
+  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/xcash-dpops.service)
+  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block-verifiers-secret-key' '{print $2}')
   BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
 
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
@@ -829,7 +829,7 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
       SHARED_DELEGATE="NO"
       uninstall_shared_delegates_website
       update_systemd_service_files
-      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
       sudo systemctl daemon-reload
       sudo sed '/node-v/d' -i "${HOME}"/.profile
       sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
@@ -866,7 +866,7 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
       NODEJS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}${NODEJS_LATEST_VERSION}/
       install_shared_delegates_website
       update_systemd_service_files
-      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+      sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
       sudo systemctl daemon-reload
       get_installation_directory
       get_dependencies_current_version
@@ -1034,21 +1034,21 @@ function create_directories()
 
 function create_files()
 {
-  touch "${XCASH_SYSTEMPID_DIR}"mongod.pid "${XCASH_SYSTEMPID_DIR}"xcash_daemon.pid
+  touch "${XCASH_SYSTEMPID_DIR}"mongod.pid "${XCASH_SYSTEMPID_DIR}"xcash-daemon.pid
 }
 
 function create_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Systemd Service Files${END_COLOR_PRINT}"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/XCASH_Daemon.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/xcash-daemon.service"
   if [ ! "${SHARED_DELEGATE^^}" == "YES" ]; then
-    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
   else
-    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/XCASH_DPOPS.service"
+    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
   fi
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET}' > /lib/systemd/system/XCASH_Wallet.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.service"
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
   echo
@@ -1088,16 +1088,16 @@ function install_mongoc_driver()
 
 function download_xcash_dpops()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Downloading xcash-dpops${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
   git clone --quiet ${XCASH_DPOPS_URL}
-  echo -ne "\r${COLOR_PRINT_GREEN}Downloading XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Downloading xcash-dpops${END_COLOR_PRINT}"
   echo
 }
 
 function build_xcash_dpops()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Building XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Building xcash-dpops${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
     echo "y" | make clean &>/dev/null
@@ -1106,7 +1106,7 @@ function build_xcash_dpops()
     echo "y" | make clean &>/dev/null
     make release -j $((CPU_THREADS / 2)) &>/dev/null
   fi
-  echo -ne "\r${COLOR_PRINT_GREEN}Building XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Building xcash-dpops${END_COLOR_PRINT}"
   echo
 }
 
@@ -1114,7 +1114,7 @@ function create_block_verifier_key()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Block Verifiers Key${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
-  data=$(build/XCASH_DPOPS --generate_key 2>&1 >/dev/null)
+  data=$(build/xcash-dpops --generate-key 2>&1 >/dev/null)
   BLOCK_VERIFIER_SECRET_KEY="${data: -132}"
   BLOCK_VERIFIER_SECRET_KEY="${BLOCK_VERIFIER_SECRET_KEY:0:128}"
   BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
@@ -1143,7 +1143,7 @@ function install_xcash_dpops()
   echo
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}                Installing XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                Installing xcash-dpops${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   install_mongodb
   install_mongoc_driver
@@ -1170,7 +1170,7 @@ function sync_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}      Syncing X-CASH Wallet (This Might Take A While)${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
-  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
+  screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
   
    while
     data=$(curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json') 
@@ -1187,7 +1187,7 @@ function create_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}      Creating X-CASH Wallet (This Might Take A While)  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
+  echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
   echo
   echo
 }
@@ -1197,7 +1197,7 @@ function import_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
+  (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address usseed1.x-cash.org:18281 &>/dev/null
   echo
   echo
 }
@@ -1318,9 +1318,9 @@ function get_installation_directory()
   echo -ne "${COLOR_PRINT_YELLOW}Getting Installation Directories${END_COLOR_PRINT}"
   XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -exec dirname {} \;)/
   XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name ".X-CASH" -print)/
-  WALLET_PASSWORD=$(cat /lib/systemd/system/XCASH_Wallet.service | awk '/password/ {print $5}')
+  WALLET_PASSWORD=$(cat /lib/systemd/system/xcash-rpc-wallet.service | awk '/password/ {print $5}')
   XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
-  XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash_wallets/
+  XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/
   XCASH_SYSTEMPID_DIR=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/
   XCASH_LOGS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}logs/
   XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-dpops/
@@ -1342,7 +1342,7 @@ function get_installation_directory()
     install_xcash
   fi
   if [ "$XCASH_DPOPS_DIR" == "xcash-dpops/" ]; then
-    echo -e "${COLOR_PRINT_RED}Can not find XCASH_DPOPS${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_RED}Can not find xcash-dpops${END_COLOR_PRINT}"
     download_xcash_dpops
     build_xcash_dpops
   fi
@@ -1416,7 +1416,7 @@ function update_xcash()
 
 function update_xcash_dpops()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Updating xcash-dpops${END_COLOR_PRINT}"
   if [ ! -d "$XCASH_DPOPS_DIR" ]; then
     cd "${XCASH_DPOPS_INSTALLATION_DIR}"
     git clone --quiet "${XCASH_DPOPS_URL}"
@@ -1434,7 +1434,7 @@ function update_xcash_dpops()
       make release -j $((CPU_THREADS / 2)) &>/dev/null
     fi
   fi
-  echo -ne "\r${COLOR_PRINT_GREEN}Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating xcash-dpops${END_COLOR_PRINT}"
   echo
 }
 
@@ -1475,7 +1475,7 @@ function update_mongodb()
   sudo rm mongodb-linux-x86_64-*.tgz &>/dev/null
   MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -print)/
   update_systemd_service_files
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/MongoDB.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
   sudo systemctl daemon-reload
   sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
@@ -1570,7 +1570,7 @@ function uninstall_packages()
 function uninstall_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Uninstall Systemd Service Files${END_COLOR_PRINT}"
-  sudo rm /lib/systemd/system/firewall.service /lib/systemd/system/MongoDB.service /lib/systemd/system/XCASH_Daemon.service /lib/systemd/system/XCASH_Daemon_Block_Verifier.service /lib/systemd/system/XCASH_DPOPS.service /lib/systemd/system/XCASH_Wallet.service
+  sudo rm /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstall Systemd Service Files${END_COLOR_PRINT}"
   echo
@@ -1638,7 +1638,7 @@ function install()
   # Install X-CASH
   install_xcash
 
-  # Install XCASH_DPOPS
+  # Install xcash-dpops
   install_xcash_dpops
 
   # Install shared delegates website
@@ -1660,7 +1660,7 @@ function install()
   get_current_xcash_wallet_data
 
   # test change the xcash-core to xcash_proof_of_stake branch
-  sudo systemctl stop XCASH_DPOPS
+  sudo systemctl stop xcash-dpops
   cd "${XCASH_DIR}"
   git checkout --quiet xcash_proof_of_stake
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
@@ -1697,7 +1697,7 @@ function install()
 function update()
 {
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}                  Updating XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Updating xcash-dpops${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
   echo
@@ -1717,7 +1717,7 @@ function update()
   # Update the package list
   update_packages_list
 
-  # Update all system packages that are XCASH_DPOPS dependencies
+  # Update all system packages that are xcash-dpops dependencies
   update_packages
 
   # Update all repositories
@@ -1768,7 +1768,7 @@ function uninstall()
     exit
   fi
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}                Uninstalling XCASH_DPOPS${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                Uninstalling xcash-dpops${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
   echo
@@ -1778,9 +1778,9 @@ function uninstall()
 
   # Restart the X-CASH Daemon and stop the X-CASH Wallet RPC
   echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
-  sudo systemctl restart XCASH_Daemon
+  sudo systemctl restart xcash-daemon
   sleep 10s
-  sudo systemctl stop XCASH_Wallet
+  sudo systemctl stop xcash-rpc-wallet
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   echo
@@ -1805,9 +1805,9 @@ function uninstall()
   echo
 
   # Uninstall the installation folder
-  echo -ne "${COLOR_PRINT_YELLOW}Uninstalling XCASH_DPOPS Installation Directory${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Uninstalling xcash-dpops Installation Directory${END_COLOR_PRINT}"
   sudo rm -r "${XCASH_DPOPS_INSTALLATION_DIR}"
-  echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling XCASH_DPOPS Installation Directory${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling xcash-dpops Installation Directory${END_COLOR_PRINT}"
   echo
 
   # Update profile
@@ -1848,13 +1848,13 @@ function test_update()
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
-  sudo systemctl start XCASH_Daemon MongoDB
+  sudo systemctl start xcash-daemon mongodb
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data="${data%,*}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  sudo systemctl stop XCASH_Daemon
+  sudo systemctl stop xcash-daemon
   sleep 30s
   if [ $data -ne 0 ]; then
     "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
@@ -1878,12 +1878,12 @@ function test_update_reset_delegates()
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
-  sudo systemctl start XCASH_Daemon MongoDB
+  sudo systemctl start xcash-daemon mongodb
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  sudo systemctl stop XCASH_Daemon
+  sudo systemctl stop xcash-daemon
   sleep 30s
   echo "${XCASH_DIR}"
   echo "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}"
@@ -1981,7 +1981,7 @@ function install_blockchain()
 function edit_shared_delegate_settings()
 {
   # check if they are already a shared delegate
-  if grep -q "shared_delegates_website" /lib/systemd/system/XCASH_DPOPS.service; then
+  if grep -q "shared_delegates_website" /lib/systemd/system/xcash-dpops.service; then
   while
       echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
       read -r DPOPS_FEE
@@ -1999,8 +1999,8 @@ function edit_shared_delegate_settings()
   do true; done
 
   echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegate Settings${END_COLOR_PRINT}"
-  sed -i "s/--fee.*--minimum_amount/--fee $DPOPS_FEE --minimum_amount/g" /lib/systemd/system/XCASH_DPOPS.service
-  sed -i "s/--minimum_amount.*/--minimum_amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/XCASH_DPOPS.service
+  sed -i "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/xcash-dpops.service
+  sed -i "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/xcash-dpops.service
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegate Settings${END_COLOR_PRINT}"
   echo
   else

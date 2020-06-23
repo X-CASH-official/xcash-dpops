@@ -268,9 +268,9 @@ struct delegates {
     char* about;
     char* website;
     char* team;
-    char* pool_mode;
-    char* fee_structure;
-    char* server_settings;
+    char* shared_delegate_status;
+    char* delegate_fee;
+    char* server_specs;
     char* block_verifier_score;
     char* online_status;
     char* block_verifier_total_rounds;

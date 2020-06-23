@@ -320,22 +320,22 @@ int create_json_data_from_delegates_array(const struct delegates* delegates, cha
         memcpy(result+strlen(result),delegates[count].team,strlen(delegates[count].team));
         memcpy(result+strlen(result),"\",",2);
       }
-      if (strstr(DOCUMENT_FIELDS,"pool_mode|") == NULL)
+      if (strstr(DOCUMENT_FIELDS,"shared_delegate_status|") == NULL)
       {
-        memcpy(result+strlen(result),"\"pool_mode\":\"",13);
-        memcpy(result+strlen(result),delegates[count].pool_mode,strlen(delegates[count].pool_mode));
+        memcpy(result+strlen(result),"\"shared_delegate_status\":\"",26);
+        memcpy(result+strlen(result),delegates[count].shared_delegate_status,strlen(delegates[count].shared_delegate_status));
         memcpy(result+strlen(result),"\",",2);
       }
-      if (strstr(DOCUMENT_FIELDS,"fee_structure|") == NULL)
+      if (strstr(DOCUMENT_FIELDS,"delegate_fee|") == NULL)
       {
-        memcpy(result+strlen(result),"\"fee_structure\":\"",17);
-        memcpy(result+strlen(result),delegates[count].fee_structure,strlen(delegates[count].fee_structure));
+        memcpy(result+strlen(result),"\"delegate_fee\":\"",16);
+        memcpy(result+strlen(result),delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(result+strlen(result),"\",",2);
       }
-      if (strstr(DOCUMENT_FIELDS,"server_settings|") == NULL)
+      if (strstr(DOCUMENT_FIELDS,"server_specs|") == NULL)
       {
-        memcpy(result+strlen(result),"\"server_settings\":\"",19);
-        memcpy(result+strlen(result),delegates[count].server_settings,strlen(delegates[count].server_settings));
+        memcpy(result+strlen(result),"\"server_specs\":\"",17);
+        memcpy(result+strlen(result),delegates[count].server_specs,strlen(delegates[count].server_specs));
         memcpy(result+strlen(result),"\",",2);
       }
       if (strstr(DOCUMENT_FIELDS,"block_verifier_score|") == NULL)

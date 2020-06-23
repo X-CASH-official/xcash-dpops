@@ -5,7 +5,7 @@ Description=firewall
 Type=oneshot
 RemainAfterExit=yes
 User=root
-ExecStart=/root/x-network/firewall_script.sh
+ExecStart=/root/xcash-official/firewall_script.sh
  
 [Install]
 WantedBy=multi-user.target

@@ -4,10 +4,10 @@
 set -e
  
 # Configuration get_install_settings
-XCASH_DIR="/root/Installed-Programs/X-CASH/build/release/bin/"
-XCASH_BLOCKCHAIN_DIR="/root/Installed-Programs/XCASH_BLOCKCHAIN/"
-XCASH_WALLETS_DIR="/root/Installed-Programs/xcash_wallets/"
-MONGODB_DIR="/root/Installed-Programs/mongodb-linux-x86_64-ubuntu1804-4.2.1/bin/"
+XCASH_DIR="/root/xcash-official/X-CASH/build/release/bin/"
+XCASH_BLOCKCHAIN_DIR="/root/xcash-official/XCASH_BLOCKCHAIN/"
+XCASH_WALLETS_DIR="/root/xcash-official/xcash-wallets/"
+MONGODB_DIR="/root/xcash-official/mongodb-linux-x86_64-ubuntu1804-4.2.1/bin/"
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
 MAIN_NODES_IP_ADDRESS="192.168.1.201"
 XCASH_DPOPS_BLOCK_HEIGHT=521850

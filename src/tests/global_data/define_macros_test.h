@@ -615,15 +615,15 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define CHECK_RESERVE_PROOF_TEST_PUBLIC_ADDRESS "XCA1va68ZVYVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rk16g7dYjbcKDwsAggp8Z1dNjPgcCzkcV7hDg99Wtk8nyUBBK4K7"
 #define CHECK_RESERVE_PROOF_TEST_RESERVE_PROOF "ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118PRh4AT7VvXjWBm8SAPTf55QJP1E3fkm8f3oe3VWeT5o8YybH9113USPdfBXLfpWTHYMCJAmGa2CcFiyHn5Gj9PCuHaKB3VHdqTEy6shyi4bW8FuTLyhTpDcnS7uEAyQcijSuHEUcgTwUSNSwuzvT113ka91zQXMcjYwZ39zAJVS16DuJZNRWnQaiNJVsracFDmUsXCCWcMx5HpKDNn5N3H1qSCxhV4CdUN2cB8Z2iirSgiL2frFA1DrVCKJm5kNHSANEGjHe4mw5L6L2Yeabna74FLszbBPKso42fpctQ8Djj25hqj6pEQqHY4tTaAYfkVRuB4m8DU4aNZN1Ak9vkBxvZtVDRzX3mpqVD8iWbxviCsUigMkyogxAWSQR5rjh4uUTRP7QHCpCm1o34Qc1vrDsLzXWbvcwC1g1VUh3S5dDKX2FXGJT4DX2REwtCNCZX2MZE2wGcbLRZ3vj4jQ6NzwTqT"
 #define CHECK_RESERVE_PROOF_TEST_AMOUNT "10"
-#define HTTP_RESPONSE_DATA "HTTP/1.1 200 OK\nConnection: close\nAccess-Control-Allow-Origin: *\nAccess-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept\nContent-Length: 329\nContent-Language: en\nContent-Type: application/json\nServer: XCASH_DPOPS version 1.0.0\nDate: Sun, 09 Feb 2020 02:16:07 GMT\n\n{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"current_delegate_rank\":\"2\",\"total_votes\":\"0\",\"online_percentage\":\"0\",\"total_blocks_found\":\"1\",\"total_xcash_from_blocks_found\":\"15\",\"total_payments\":\"1\",\"total_voters\":\"0\",\"fee\":\"0.000000\",\"minimum_amount\":\"0\"}"
+#define HTTP_RESPONSE_DATA "HTTP/1.1 200 OK\nConnection: close\nAccess-Control-Allow-Origin: *\nAccess-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept\nContent-Length: 329\nContent-Language: en\nContent-Type: application/json\nServer: xcash-dpops version 1.0.0\nDate: Sun, 09 Feb 2020 02:16:07 GMT\n\n{\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"current_delegate_rank\":\"2\",\"total_votes\":\"0\",\"online_percentage\":\"0\",\"total_blocks_found\":\"1\",\"total_xcash_from_blocks_found\":\"15\",\"total_payments\":\"1\",\"total_voters\":\"0\",\"fee\":\"0.000000\",\"minimum_amount\":\"0\"}"
 #define DATABASE_NAME_TEST "XCASH_PROOF_OF_STAKE_TEST"
 #define DATABASE_COLLECTION_TEST "XCASH_PROOF_OF_STAKE_TEST_DATA"
 #define DATABASE_COLLECTION_STATISTICS_TEST_DATA "{\"username\":\"XCASH\",\"most_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"DELEGATE_NAME\",\"best_block_verifier_online_percentage\":\"10\",\"most_block_producer_total_rounds_delegate_name\":\"DELEGATE_NAME\",\"most_block_producer_total_rounds\":\"15\"}"
-#define DATABASE_COLLECTION_DELEGATES_TEST_DATA "{\"public_address\":\"XCA\",\"total_vote_count\":\"XCA\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"XCA\",\"about\":\"XCA\",\"website\":\"XCA\",\"team\":\"XCA\",\"pool_mode\":\"XCA\",\"fee_structure\":\"XCA\",\"server_settings\":\"XCA\",\"block_verifier_score\":\"XCA\",\"online_status\":\"XCA\",\"block_verifier_total_rounds\":\"XCA\",\"block_verifier_online_total_rounds\":\"XCA\",\"block_verifier_online_percentage\":\"XCA\",\"block_producer_total_rounds\":\"XCA\",\"block_producer_block_heights\":\"XCA\"}"
+#define DATABASE_COLLECTION_DELEGATES_TEST_DATA "{\"public_address\":\"XCA\",\"total_vote_count\":\"XCA\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"XCA\",\"about\":\"XCA\",\"website\":\"XCA\",\"team\":\"XCA\",\"shared_delegate_status\":\"XCA\",\"delegate_fee\":\"XCA\",\"server_specs\":\"XCA\",\"block_verifier_score\":\"XCA\",\"online_status\":\"XCA\",\"block_verifier_total_rounds\":\"XCA\",\"block_verifier_online_total_rounds\":\"XCA\",\"block_verifier_online_percentage\":\"XCA\",\"block_producer_total_rounds\":\"XCA\",\"block_producer_block_heights\":\"XCA\"}"
 #define DATABASE_COLLECTION_STATISTICS_PARSE_JSON_TEST_DATA "{ \"_id\" : { \"$oid\" : \"5\", \"username\" : \"XCASH\", \"most_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_total_rounds\" : \"5\", \"best_block_verifier_online_percentage_delegate_name\" : \"DELEGATE_NAME\", \"best_block_verifier_online_percentage\" : \"10\", \"most_block_producer_total_rounds_delegate_name\" : \"DELEGATE_NAME\", \"most_block_producer_total_rounds\" : \"15\" }"
-#define ORGANIZE_DELEGATES_TEST_DATA_1 "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"15\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"false\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
-#define ORGANIZE_DELEGATES_TEST_DATA_2 "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"5\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
-#define ORGANIZE_DELEGATES_TEST_DATA_3 "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"10\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"pool_mode\":\"false\",\"fee_structure\":\"\",\"server_settings\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
+#define ORGANIZE_DELEGATES_TEST_DATA_1 "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"15\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"false\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
+#define ORGANIZE_DELEGATES_TEST_DATA_2 "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"5\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
+#define ORGANIZE_DELEGATES_TEST_DATA_3 "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"10\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
 #define RESERVE_BYTES_TEST_DATA "{\"block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}"
 
 #define XCASH_DPOPS_TOTAL_TEST 456
@@ -724,9 +724,9 @@ for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
   delegates[count].about = (char*)calloc(1025,sizeof(char)); \
   delegates[count].website = (char*)calloc(256,sizeof(char)); \
   delegates[count].team = (char*)calloc(256,sizeof(char)); \
-  delegates[count].pool_mode = (char*)calloc(10,sizeof(char)); \
-  delegates[count].fee_structure = (char*)calloc(11,sizeof(char)); \
-  delegates[count].server_settings = (char*)calloc(1025,sizeof(char)); \
+  delegates[count].shared_delegate_status = (char*)calloc(10,sizeof(char)); \
+  delegates[count].delegate_fee = (char*)calloc(11,sizeof(char)); \
+  delegates[count].server_specs = (char*)calloc(1025,sizeof(char)); \
   delegates[count].block_verifier_score = (char*)calloc(10,sizeof(char)); \
   delegates[count].online_status = (char*)calloc(10,sizeof(char)); \
   delegates[count].block_verifier_total_rounds = (char*)calloc(10,sizeof(char)); \
@@ -735,7 +735,7 @@ for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
   delegates[count].block_producer_total_rounds = (char*)calloc(10,sizeof(char)); \
   delegates[count].block_producer_block_heights = (char*)calloc(100000,sizeof(char)); \
   delegates[count].public_key = (char*)calloc(VRF_PUBLIC_KEY_LENGTH+1,sizeof(char)); \
-  if (delegates[count].public_address == NULL || delegates[count].total_vote_count == NULL || delegates[count].IP_address == NULL || delegates[count].delegate_name == NULL || delegates[count].about == NULL || delegates[count].website == NULL || delegates[count].team == NULL || delegates[count].pool_mode == NULL || delegates[count].fee_structure == NULL || delegates[count].server_settings == NULL || delegates[count].block_verifier_score == NULL || delegates[count].online_status == NULL || delegates[count].block_verifier_total_rounds == NULL || delegates[count].block_verifier_online_total_rounds == NULL || delegates[count].block_verifier_online_percentage == NULL || delegates[count].block_producer_total_rounds == NULL || delegates[count].block_producer_block_heights == NULL || delegates[count].public_key == NULL) \
+  if (delegates[count].public_address == NULL || delegates[count].total_vote_count == NULL || delegates[count].IP_address == NULL || delegates[count].delegate_name == NULL || delegates[count].about == NULL || delegates[count].website == NULL || delegates[count].team == NULL || delegates[count].shared_delegate_status == NULL || delegates[count].delegate_fee == NULL || delegates[count].server_specs == NULL || delegates[count].block_verifier_score == NULL || delegates[count].online_status == NULL || delegates[count].block_verifier_total_rounds == NULL || delegates[count].block_verifier_online_total_rounds == NULL || delegates[count].block_verifier_online_percentage == NULL || delegates[count].block_producer_total_rounds == NULL || delegates[count].block_producer_block_heights == NULL || delegates[count].public_key == NULL) \
   { \
     color_print("Could not allocate the memory needed on the heap","red"); \
     exit(0); \
@@ -748,9 +748,9 @@ memcpy(delegates[0].delegate_name,"delegates_xcash_foundation",26); \
 memcpy(delegates[0].about,"Official X-Network node",23); \
 memcpy(delegates[0].website,"delegates.xcash.foundation",26); \
 memcpy(delegates[0].team,"X-Network Team",14); \
-memcpy(delegates[0].pool_mode,"false",5); \
-memcpy(delegates[0].fee_structure,"0",1); \
-memcpy(delegates[0].server_settings,"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download",219); \
+memcpy(delegates[0].shared_delegate_status,"false",5); \
+memcpy(delegates[0].delegate_fee,"0",1); \
+memcpy(delegates[0].server_specs,"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download",219); \
 memcpy(delegates[0].block_verifier_score,"0",1); \
 memcpy(delegates[0].online_status,"true",4); \
 memcpy(delegates[0].block_verifier_total_rounds,"0",1); \
@@ -766,9 +766,9 @@ memcpy(delegates[1].delegate_name,"officialdelegate_xcash_foundation",33); \
 memcpy(delegates[1].about,"Official X-Network Shared Delegate",34); \
 memcpy(delegates[1].website,"officialdelegate.xcash.foundation",33); \
 memcpy(delegates[1].team,"X-Network Team",14); \
-memcpy(delegates[1].pool_mode,"true",4); \
-memcpy(delegates[1].fee_structure,"0",1); \
-memcpy(delegates[1].server_settings,"Operating System = Ubuntu 18.04 CPU = 8 threads (Intel E3-1246 v3 - 3.50GHz RAM = 32GB DDR3 Hard drive = 2x HDD SATA 2 TB Bandwidth Transfer = Unlimited Bandwidth Speed = 1 Gbps upload and 1 Gbps download",204); \
+memcpy(delegates[1].shared_delegate_status,"true",4); \
+memcpy(delegates[1].delegate_fee,"0",1); \
+memcpy(delegates[1].server_specs,"Operating System = Ubuntu 18.04 CPU = 8 threads (Intel E3-1246 v3 - 3.50GHz RAM = 32GB DDR3 Hard drive = 2x HDD SATA 2 TB Bandwidth Transfer = Unlimited Bandwidth Speed = 1 Gbps upload and 1 Gbps download",204); \
 memcpy(delegates[1].block_verifier_score,"0",1); \
 memcpy(delegates[1].online_status,"true",4); \
 memcpy(delegates[1].block_verifier_total_rounds,"0",1); \
@@ -810,9 +810,9 @@ for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++) \
   memset(delegates[count].about,0,strlen(delegates[count].about)); \
   memset(delegates[count].website,0,strlen(delegates[count].website)); \
   memset(delegates[count].team,0,strlen(delegates[count].team)); \
-  memset(delegates[count].pool_mode,0,strlen(delegates[count].pool_mode)); \
-  memset(delegates[count].fee_structure,0,strlen(delegates[count].fee_structure)); \
-  memset(delegates[count].server_settings,0,strlen(delegates[count].server_settings)); \
+  memset(delegates[count].shared_delegate_status,0,strlen(delegates[count].shared_delegate_status)); \
+  memset(delegates[count].delegate_fee,0,strlen(delegates[count].delegate_fee)); \
+  memset(delegates[count].server_specs,0,strlen(delegates[count].server_specs)); \
   memset(delegates[count].block_verifier_score,0,strlen(delegates[count].block_verifier_score)); \
   memset(delegates[count].online_status,0,strlen(delegates[count].online_status)); \
   memset(delegates[count].block_verifier_total_rounds,0,strlen(delegates[count].block_verifier_total_rounds)); \
@@ -987,7 +987,7 @@ memset(data_test,0,sizeof(data_test));
 #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
 
 #define RESERVE_PROOFS_TEST_DATA "{\"public_address_created_reserve_proof\":\"" TEST_WALLET "\",\"public_address_voted_for\":\"" TEST_WALLET "\",\"total\":\"0\",\"reserve_proof\":\"DATA\"}"
-#define DELEGATES_TEST_DATA "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"pool_mode\":\"false\",\"fee_structure\":\"0\",\"server_settings\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
+#define DELEGATES_TEST_DATA "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"0\",\"IP_address\":\"127.0.0.1\",\"delegate_name\":\"delegate_name_1\",\"about\":\"about\",\"website\":\"website\",\"team\":\"team\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"0\",\"server_specs\":\"server settings\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
 #define SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA "GET /delegateswebsitegetstatistics HTTP/ " TEST_WALLET
 #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_TEST_DATA "GET /getdelegates HTTP/ " TEST_WALLET
 #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_STATISTICS_TEST_DATA "GET /getdelegatesstatistics?parameter1=XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP HTTP/"
@@ -1265,7 +1265,7 @@ memset(data_test,0,sizeof(data_test));
   The purpose of this message is for a node to send all block verifiers a message to update the delegates information
 
   message_settings - The type of the message
-  item - The field name to update (about, website, team, pool_mode, fee_structure, server_settings)
+  item - The field name to update (about, website, team, shared_delegate_status, delegate_fee, server_specs)
   value - The field names value
   public_address - The public address of the node that is sending the data.
   XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.

@@ -208,7 +208,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   int total_delegates;
 
   // define macros
-  #define DATABASE_FIELDS "public_address|IP_address|public_key|about|website|team|server_settings|block_verifier_online_total_rounds|block_producer_total_rounds|block_producer_block_heights|"
+  #define DATABASE_FIELDS "public_address|IP_address|public_key|about|website|team|server_specs|block_verifier_online_total_rounds|block_producer_total_rounds|block_producer_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates",40); \
@@ -234,7 +234,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   // count how many bytes to allocate for the json data
   for (count = 0, counter = BUFFER_SIZE; count < total_delegates; count++)
   {
-    counter += strlen("\"public_address\":") + strlen("\"total_vote_count\":") + strlen("\"IP_address\":") + strlen("\"delegate_name\":") + strlen("\"about\":") + strlen("\"website\":") + strlen("\"team\":") + strlen("\"pool_mode\":") + strlen("\"fee_structure\":") + strlen("\"server_settings\":") + strlen("\"block_verifier_score\":") + strlen("\"online_status\":") + strlen("\"block_verifier_total_rounds\":") + strlen("\"block_verifier_online_total_rounds\":") + strlen("\"block_verifier_online_percentage\":") + strlen("\"block_producer_total_rounds\":") + strlen("\"block_producer_block_heights\":") + strlen("\"public_key\":") + 36; // 36 is for quotes for the values
+    counter += strlen("\"public_address\":") + strlen("\"total_vote_count\":") + strlen("\"IP_address\":") + strlen("\"delegate_name\":") + strlen("\"about\":") + strlen("\"website\":") + strlen("\"team\":") + strlen("\"shared_delegate_status\":") + strlen("\"delegate_fee\":") + strlen("\"server_specs\":") + strlen("\"block_verifier_score\":") + strlen("\"online_status\":") + strlen("\"block_verifier_total_rounds\":") + strlen("\"block_verifier_online_total_rounds\":") + strlen("\"block_verifier_online_percentage\":") + strlen("\"block_producer_total_rounds\":") + strlen("\"block_producer_block_heights\":") + strlen("\"public_key\":") + 36; // 36 is for quotes for the values
     counter += strlen(delegates[count].public_address);
     counter += strlen(delegates[count].total_vote_count);
     counter += strlen(delegates[count].IP_address);
@@ -242,9 +242,9 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
     counter += strlen(delegates[count].about);
     counter += strlen(delegates[count].website);
     counter += strlen(delegates[count].team);
-    counter += strlen(delegates[count].pool_mode);
-    counter += strlen(delegates[count].fee_structure);
-    counter += strlen(delegates[count].server_settings);
+    counter += strlen(delegates[count].shared_delegate_status);
+    counter += strlen(delegates[count].delegate_fee);
+    counter += strlen(delegates[count].server_specs);
     counter += strlen(delegates[count].block_verifier_score);
     counter += strlen(delegates[count].online_status);
     counter += strlen(delegates[count].block_verifier_total_rounds);

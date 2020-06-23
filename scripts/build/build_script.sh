@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration settings
-XCASH_DPOPS_INSTALLATION_DIR="$HOME/x-network/"
+XCASH_DPOPS_INSTALLATION_DIR="$HOME/xcash-official/"
 XCASH_BLOCKCHAIN_INSTALLATION_DIR="$HOME/.X-CASH/"
 MONGODB_INSTALLATION_DIR="/data/db/"
 
@@ -130,7 +130,7 @@ function start_processes()
   screen -dmS MongoDB "${MONGODB_DIR}"bin/mongod --dbpath ${MONGODB_INSTALLATION_DIR} || return 1
   screen -dmS XCASH_Daemon "${XCASH_DIR}"build/release/bin/xcashd --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind || return 1
   sleep 10s || return 1
-  screen -dmS XCASH_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash_wallets/XCASH_DPOPS_WALLET --password password --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon || return 1
+  screen -dmS XCASH_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password password --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon || return 1
   sleep 10s || return 1
   echo -e "\n" >> "${LOGFILE_STEP_1_PROGRAMS}" 2>&1 || return 1
 }
@@ -358,7 +358,7 @@ function STEP_6_XCASH_BUILD_DEVELOPMENT()
 
 function STEP_7_XCASH_DPOPS_BUILD()
 {
-  echo -e "Updating XCASH_DPOPS\n" >> "${LOGFILE_STEP_7_XCASH_DPOPS_BUILD}" 2>&1 || return 1
+  echo -e "Updating xcash-dpops\n" >> "${LOGFILE_STEP_7_XCASH_DPOPS_BUILD}" 2>&1 || return 1
   cd "${XCASH_DPOPS_DIR}" || return 1
   make clean  >> "${LOGFILE_STEP_7_XCASH_DPOPS_BUILD}" 2>&1 || return 1
   make release -j "${CPU_THREADS}" >> "${LOGFILE_STEP_7_XCASH_DPOPS_BUILD}" 2>&1 || return 1
@@ -379,10 +379,10 @@ function STEP_8_CPP_CHECK()
 
 function STEP_9_XCASH_DPOPS_TEST()
 {
-  echo -e "XCASH_DPOPS Test\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
+  echo -e "xcash-dpops Test\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
   cd "${XCASH_DPOPS_DIR}" || return 1
   systemctl start MongoDB XCASH_DPOPS && sleep 30s && systemctl start XCASH_Wallet
-  build/XCASH_DPOPS --block_verifiers_secret_key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a --quick_test >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
+  build/xcash-dpops --block-verifiers-secret-key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a --quick-test >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
   echo -e "\n" >> "${LOGFILE_STEP_9_XCASH_DPOPS_TEST}" 2>&1 || return 1
 }
 

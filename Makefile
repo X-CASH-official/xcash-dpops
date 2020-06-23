@@ -12,7 +12,7 @@ PRINT_CURRENT_FILE = echo -ne $(COLOR_PRINT_GREEN)"\r Currently Building File" $
 endif
 
 # The binary name
-TARGET_BINARY ?= XCASH_DPOPS
+TARGET_BINARY ?= xcash-dpops
 
 # The build directory, where the target binary will be stored
 BUILD_DIR ?= ./build
