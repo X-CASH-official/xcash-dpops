@@ -322,19 +322,19 @@ int create_json_data_from_delegates_array(const struct delegates* delegates, cha
       }
       if (strstr(DOCUMENT_FIELDS,"shared_delegate_status|") == NULL)
       {
-        memcpy(result+strlen(result),"\"shared_delegate_status\":\"",13);
+        memcpy(result+strlen(result),"\"shared_delegate_status\":\"",26);
         memcpy(result+strlen(result),delegates[count].shared_delegate_status,strlen(delegates[count].shared_delegate_status));
         memcpy(result+strlen(result),"\",",2);
       }
       if (strstr(DOCUMENT_FIELDS,"delegate_fee|") == NULL)
       {
-        memcpy(result+strlen(result),"\"delegate_fee\":\"",17);
+        memcpy(result+strlen(result),"\"delegate_fee\":\"",16);
         memcpy(result+strlen(result),delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
         memcpy(result+strlen(result),"\",",2);
       }
       if (strstr(DOCUMENT_FIELDS,"server_specs|") == NULL)
       {
-        memcpy(result+strlen(result),"\"server_specs\":\"",19);
+        memcpy(result+strlen(result),"\"server_specs\":\"",17);
         memcpy(result+strlen(result),delegates[count].server_specs,strlen(delegates[count].server_specs));
         memcpy(result+strlen(result),"\",",2);
       }
