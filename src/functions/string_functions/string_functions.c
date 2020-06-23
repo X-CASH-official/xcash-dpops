@@ -334,7 +334,7 @@ int create_json_data_from_delegates_array(const struct delegates* delegates, cha
       }
       if (strstr(DOCUMENT_FIELDS,"server_specs|") == NULL)
       {
-        memcpy(result+strlen(result),"\"server_specs\":\"",17);
+        memcpy(result+strlen(result),"\"server_specs\":\"",16);
         memcpy(result+strlen(result),delegates[count].server_specs,strlen(delegates[count].server_specs));
         memcpy(result+strlen(result),"\",",2);
       }
