@@ -648,7 +648,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
   memcpy(data+strlen(data),"\",\"delegate_name\":\"",19);
   memcpy(data+strlen(data),delegate_name,strnlen(delegate_name,sizeof(data)));
-  memcpy(data+strlen(data),"\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"\":\"false\",\"delegate_fee\":\"\",\"servshared_delegate_statuser_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"",351);
+  memcpy(data+strlen(data),"\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"",351);
   memcpy(data+strlen(data),delegate_public_key,VRF_PUBLIC_KEY_LENGTH);
   memcpy(data+strlen(data),"\"}",2);
 
