@@ -2013,7 +2013,7 @@ function create_swap_file()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Swap File${END_COLOR_PRINT}"
   cd $HOME
-  sudo fallocate -l ${RAM}G /swapfile
+  sudo fallocate -l 8G /swapfile
   sudo chmod 600 /swapfile
   sudo mkswap /swapfile &>/dev/null
   sudo swapon /swapfile
