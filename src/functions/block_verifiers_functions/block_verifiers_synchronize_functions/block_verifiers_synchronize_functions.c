@@ -1710,6 +1710,12 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
   }
 
+  if (strncmp(data2,"",1) == 0)
+  {
+    pointer_reset(data);
+    return 1;
+  }
+
   // delete the collection from the database
   delete_collection_from_database(database_name,DATABASE_COLLECTION);
 
@@ -1852,6 +1858,12 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   if (parse_json_data(data,"statistics_database",data2,sizeof(data2)) == 0)
   {
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
+  }
+
+  if (strncmp(data2,"",1) == 0)
+  {
+    pointer_reset(data);
+    return 1;
   }
 
   // delete the collection from the database
