@@ -65,7 +65,7 @@ function check_height(){
 
 function get_node_balance(){
 	if lsof -Pi :18285 -sTCP:LISTEN -t >/dev/null ; then
-		DATA=`$CURL GET $WALLET_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_balance"}'`
+        DATA=`$CURL GET $WALLET_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_balance","params":{"account_index":0,"address_indices":[0]}}'`
 		
 		ADDR=$(echo "$DATA" | grep '"address"' | awk {'print $2'} | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
 		UNSPENT_OUTPUTS=$(echo "$DATA" | grep '"num_unspent_outputs"' | awk {'print $2'} | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
