@@ -4,7 +4,7 @@
 XCASH_DAEMON_SRV=xcash-daemon
 
 # Adjust this variable to the name of your xcash-wallets unit file name
-XCASH_WALLET_SRV=xcash-wallet
+XCASH_WALLET_SRV=xcash-rpc-wallet
 
 # Adjust this variable to the name of your xcash-dpops unit file name
 XCASH_DPOPS_SRV=xcash-dpops
