@@ -825,7 +825,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   }
 
   // check if the value is valid
-  if ((strncmp(item,"IP_address",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"about",BUFFER_SIZE) == 0 && strlen(value) > 1024) || (strncmp(item,"website",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"team",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"shared_delegate_status",BUFFER_SIZE) == 0 && strncmp(value,"true",BUFFER_SIZE) != 0 && strncmp(value,"false",BUFFER_SIZE) != 0) || (strncmp(item,"delegate_fee",BUFFER_SIZE) == 0 && check_for_valid_delegate_fee(value) == 0) || (strncmp(item,"server_specs",BUFFER_SIZE) == 0 && strlen(value) > 1024))
+  if ((strncmp(item,"IP_address",BUFFER_SIZE) == 0 && (strlen(value) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || string_count(value,".") < 1)) || (strncmp(item,"about",BUFFER_SIZE) == 0 && strlen(value) > 1024) || (strncmp(item,"website",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"team",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"shared_delegate_status",BUFFER_SIZE) == 0 && strncmp(value,"true",BUFFER_SIZE) != 0 && strncmp(value,"false",BUFFER_SIZE) != 0) || (strncmp(item,"delegate_fee",BUFFER_SIZE) == 0 && check_for_valid_delegate_fee(value) == 0) || (strncmp(item,"server_specs",BUFFER_SIZE) == 0 && strlen(value) > 1024))
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item value to update}");
   }
