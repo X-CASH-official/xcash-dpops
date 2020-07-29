@@ -434,11 +434,11 @@ int server_limit_IP_addresses(const int SETTINGS, const char* IP_ADDRESS)
 Name: socket_thread
 Description: socket thread
 Parameters:
-  client_socket - The client socket
+  CLIENT_SOCKET - The client socket
 -----------------------------------------------------------------------------------------------------------
 */
 
-void socket_thread(int client_socket)
+void socket_thread(const int CLIENT_SOCKET)
 {
   // Constants
   const size_t MAXIMUM_AMOUNT = database_data_socket_settings == 1 ? MAXIMUM_BUFFER_SIZE : BUFFER_SIZE;
@@ -465,7 +465,7 @@ void socket_thread(int client_socket)
   snprintf(buffer2,sizeof(buffer2)-1,"%d",SEND_DATA_PORT); 
 
   // receive the data
-  if (receive_data(client_socket,buffer,MAXIMUM_AMOUNT,1,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) < 2)
+  if (receive_data(CLIENT_SOCKET,buffer,MAXIMUM_AMOUNT,1,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) < 2)
   {
     pointer_reset(buffer);
     return;
@@ -516,7 +516,7 @@ void socket_thread(int client_socket)
     
   // get the IP address
   pthread_mutex_lock(&lock);
-  if (getpeername(client_socket, (struct sockaddr *) &addr, &addrlength) != 0 || getnameinfo((struct sockaddr *)&addr, addrlength, client_IP_address, sizeof(client_IP_address), NULL, 0, NI_NUMERICHOST) != 0)
+  if (getpeername(CLIENT_SOCKET, (struct sockaddr *) &addr, &addrlength) != 0 || getnameinfo((struct sockaddr *)&addr, addrlength, client_IP_address, sizeof(client_IP_address), NULL, 0, NI_NUMERICHOST) != 0)
   {
     pointer_reset(buffer);
     return;
@@ -549,7 +549,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_received_data_XCASH_DPOPS_test_data(client_socket,buffer);
+     server_received_data_XCASH_DPOPS_test_data(CLIENT_SOCKET,buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
@@ -557,7 +557,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_delegates_website_get_statistics(client_socket);
+     server_receive_data_socket_delegates_website_get_statistics(CLIENT_SOCKET);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -565,7 +565,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_delegates(client_socket);
+     server_receive_data_socket_get_delegates(CLIENT_SOCKET);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -573,7 +573,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_delegates_statistics(client_socket,(const char*)buffer);
+     server_receive_data_socket_get_delegates_statistics(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -581,7 +581,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_delegates_information(client_socket,(const char*)buffer);
+     server_receive_data_socket_get_delegates_information(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -589,7 +589,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_delegates_voters_list(client_socket,(const char*)buffer);
+     server_receive_data_socket_get_delegates_voters_list(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -597,7 +597,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_round_statistics(client_socket,(const char*)buffer);
+     server_receive_data_socket_get_round_statistics(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -605,7 +605,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_shared_delegates_website_get_statistics(client_socket);
+     server_receive_data_socket_shared_delegates_website_get_statistics(CLIENT_SOCKET);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -613,7 +613,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_blocks_found(client_socket);
+     server_receive_data_socket_get_blocks_found(CLIENT_SOCKET);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -621,7 +621,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_public_address_information(client_socket,(const char*)buffer);
+     server_receive_data_socket_get_public_address_information(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -629,7 +629,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_public_address_payment_information(client_socket,(const char*)buffer);
+     server_receive_data_socket_get_public_address_payment_information(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -637,7 +637,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(client_socket);
+     server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(CLIENT_SOCKET);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  } 
@@ -645,7 +645,7 @@ void socket_thread(int client_socket)
  {
    if ((strstr(buffer,"\"public_address\"") != NULL && server_limit_public_addresses(1,(const char*)buffer) == 1) || (strstr(buffer,"\"public_address\"") == NULL && server_limit_IP_addresses(1,(const char*)client_IP_address) == 1))
    { 
-     server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(client_socket);
+     server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET);
      strstr(buffer,"\"public_address\"") != NULL ? server_limit_public_addresses(3,(const char*)buffer) : server_limit_IP_addresses(0,(const char*)client_IP_address);
    }   
  } 
@@ -661,7 +661,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket);
+     server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
@@ -669,7 +669,7 @@ void socket_thread(int client_socket)
  {
    if ((strstr(buffer,"|") != NULL && server_limit_public_addresses(2,(const char*)buffer) == 1) || (strstr(buffer,"|") == NULL && server_limit_IP_addresses(1,(const char*)client_IP_address) == 1))
    {
-     server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(client_socket,(const char*)buffer);
+     server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(CLIENT_SOCKET,(const char*)buffer);
      strstr(buffer,"|") != NULL ? server_limit_public_addresses(4,(const char*)buffer) : server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
@@ -677,7 +677,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(client_socket);
+     server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(CLIENT_SOCKET);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
@@ -685,7 +685,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(client_socket,(const char*)buffer);
+     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
@@ -693,7 +693,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(client_socket,(const char*)buffer);
+     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }  
@@ -701,7 +701,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(client_socket,(const char*)buffer);
+     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET,(const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
@@ -709,7 +709,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(client_socket,(const char*)buffer);
+     server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
@@ -717,7 +717,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(client_socket,(const char*)buffer);
+     server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
@@ -725,7 +725,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-    server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(client_socket);
+    server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(CLIENT_SOCKET);
     server_limit_public_addresses(3,(const char*)buffer);
    }
  }
@@ -733,7 +733,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(client_socket,(const char*)buffer);
+     server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(CLIENT_SOCKET,(const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
@@ -741,7 +741,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(client_socket);
+     server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(CLIENT_SOCKET);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
@@ -751,7 +751,7 @@ void socket_thread(int client_socket)
    {
      // since this function will modify the delegates total vote count, only add one reserve proof at a time
      pthread_mutex_lock(&add_reserve_proof_lock);
-     server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(client_socket,(const char*)buffer);
+     server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(CLIENT_SOCKET,(const char*)buffer);
      pthread_mutex_unlock(&add_reserve_proof_lock);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
@@ -770,7 +770,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_nodes_to_block_verifiers_register_delegates(client_socket,(const char*)buffer);
+     server_receive_data_socket_nodes_to_block_verifiers_register_delegates(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
@@ -778,7 +778,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_nodes_to_block_verifiers_update_delegates(client_socket,(const char*)buffer);
+     server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -786,7 +786,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
-     server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(client_socket);
+     server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(CLIENT_SOCKET);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
@@ -858,7 +858,7 @@ void socket_thread(int client_socket)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_files(client_socket,(const char*)buffer);
+     server_receive_data_socket_get_files(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }

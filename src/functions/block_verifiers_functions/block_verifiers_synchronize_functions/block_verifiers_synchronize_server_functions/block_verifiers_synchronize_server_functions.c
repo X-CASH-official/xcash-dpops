@@ -54,11 +54,10 @@ Name: server_receive_data_socket_node_to_network_data_nodes_get_previous_current
 Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(const int CLIENT_SOCKET)
+void server_receive_data_socket_node_to_network_data_nodes_get_previous_current_next_block_verifiers_list(const int CLIENT_SOCKET)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -73,7 +72,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   #define COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA(settings,block_verifiers_data) \
   memcpy(data+strlen(data),"\",\r\n \"",6); \
@@ -121,7 +120,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_previous_current_n
 
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
-  return 1;
+  return;
 
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_ERROR
   #undef COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA
@@ -135,11 +134,10 @@ Name: server_receive_data_socket_node_to_network_data_nodes_get_current_block_ve
 Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(const int CLIENT_SOCKET)
+void server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(const int CLIENT_SOCKET)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -155,7 +153,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
   error_message.total++; \
   } \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get a list of the current block verifiers",0,1,""); \
-  return 0;
+  return;
   
   memset(data,0,sizeof(data));
 
@@ -198,7 +196,7 @@ int server_receive_data_socket_node_to_network_data_nodes_get_current_block_veri
 
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
-  return 1;
+  return;
 
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR
 }
@@ -211,11 +209,10 @@ Name: server_receive_data_socket_network_data_nodes_to_network_data_nodes_databa
 Description: Runs the code when the server receives the NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK message
 Parameters:
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check(const char* MESSAGE)
+void server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check(const char* MESSAGE)
 {
   // Variables
   char data_hash[DATA_HASH_LENGTH+1];
@@ -230,7 +227,7 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data_hash,0,sizeof(data_hash));
@@ -273,7 +270,7 @@ int server_receive_data_socket_network_data_nodes_to_network_data_nodes_database
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,data_hash,DATA_HASH_LENGTH);
     network_data_nodes_sync_database_list.network_data_nodes_5_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
   }
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR
 }
@@ -286,11 +283,10 @@ Name: server_receive_data_socket_node_to_network_data_nodes_get_current_block_ve
 Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET)
+void server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET)
 {
    // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
@@ -314,7 +310,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   } \
   pointer_reset(data2); \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the reserve bytes data hash}",0,0,""); \
-  return 0;
+  return;
 
   // check if the memory needed was allocated on the heap successfully
   if (data2 == NULL)
@@ -372,7 +368,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_s
   // send the data
   test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
   pointer_reset(data2);
-  return 1;
+  return;
 
   #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
@@ -387,11 +383,10 @@ Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(const int CLIENT_SOCKET, const char* MESSAGE)
 {  
   // Variables
   char data[BUFFER_SIZE];
@@ -416,7 +411,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   } \
   pointer_reset(message2); \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes database hash}",0,0,""); \
-  return 0;
+  return;
 
   // check if the memory needed was allocated on the heap successfully
   if (message2 == NULL)
@@ -525,7 +520,7 @@ int server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databas
   // send the data
   test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)message2,0,1,"");
   pointer_reset(message2);
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR
 }
@@ -538,11 +533,10 @@ Name: server_receive_data_socket_node_to_block_verifiers_check_if_current_block_
 Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(const int CLIENT_SOCKET)
+void server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(const int CLIENT_SOCKET)
 {  
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -563,7 +557,7 @@ int server_receive_data_socket_node_to_block_verifiers_check_if_current_block_ve
 
   // send the data
   test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
-  return 1;
+  return;
 }
 
 
@@ -575,11 +569,10 @@ Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
   char message[BUFFER_SIZE];
@@ -596,7 +589,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(message,0,sizeof(message));
   memset(reserve_proofs_database,0,sizeof(reserve_proofs_database));
@@ -606,7 +599,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return 0;
+    return;
   }
 
   // parse the message
@@ -667,7 +660,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
 
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)message,0,1,"");
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
 }
@@ -681,16 +674,15 @@ Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return 0;
+    return;
   }
   
   // Variables
@@ -715,7 +707,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   error_message.total++; \
   } \
   pointer_reset_all; \
-  return 0;
+  return;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -763,7 +755,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   pointer_reset_all;
-  return 1;
+  return;
 
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR
@@ -778,11 +770,10 @@ Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
   char message[BUFFER_SIZE];
@@ -801,7 +792,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(message,0,sizeof(message));
   memset(reserve_bytes_database,0,sizeof(reserve_bytes_database));
@@ -812,7 +803,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return 0;
+    return;
   }
 
   // parse the message
@@ -875,7 +866,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
 
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)message,0,1,"");
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
 }
@@ -889,16 +880,15 @@ Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return 0;
+    return;
   }
 
   // Variables
@@ -923,7 +913,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   error_message.total++; \
   } \
   pointer_reset_all; \
-  return 0;
+  return;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -971,7 +961,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   pointer_reset_all;
-  return 1;
+  return;
 
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR
@@ -986,11 +976,10 @@ Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -1005,7 +994,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1043,7 +1032,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
-  return 1;
+  return;
 
   #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR
@@ -1057,16 +1046,15 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_da
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(const int CLIENT_SOCKET)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(const int CLIENT_SOCKET)
 {
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return 0;
+    return;
   }
 
   // Variables
@@ -1092,7 +1080,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   error_message.total++; \
   } \
   pointer_reset_all; \
-  return 0;
+  return;
 
   memset(buffer,0,sizeof(buffer));
 
@@ -1135,7 +1123,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   pointer_reset_all;
-  return 1;
+  return;
 
   #undef DATABASE_COLLECTION
   #undef pointer_reset_all
@@ -1151,11 +1139,10 @@ Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -1170,7 +1157,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1208,7 +1195,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE_ERROR
 }
@@ -1221,16 +1208,15 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_d
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(const int CLIENT_SOCKET)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(const int CLIENT_SOCKET)
 {
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return 0;
+    return;
   }
 
   // Variables
@@ -1256,7 +1242,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
     error_message.total++; \
   } \
   pointer_reset_all; \
-  return 0;
+  return;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -1297,7 +1283,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_dat
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
   pointer_reset_all;
-  return 1;
+  return;
 
   #undef DATABASE_COLLECTION
   #undef pointer_reset_all
