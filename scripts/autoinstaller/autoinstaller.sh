@@ -170,7 +170,7 @@ function get_shared_delegate_installation_settings()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate (YES): ${END_COLOR_PRINT}"
   read -r data
-  SHARED_DELEGATE=$([ "$data" == "" ] && echo "${SHARED_DELEGATE^^}" || echo "NO")
+  SHARED_DELEGATE=$([ "$data" == "" ] && echo "$SHARED_DELEGATE" || echo "$data")
   echo -ne "\r"
   echo
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then    
