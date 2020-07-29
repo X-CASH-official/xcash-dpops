@@ -18,6 +18,7 @@ XCASH_WALLET_LOG_FILE=/var/x-network/logs/rpc.log
 
 DAEMON_URL="http://127.0.0.1:18281/json_rpc"
 WALLET_URL="http://127.0.0.1:18285/json_rpc"
+DPOPS_QUERY="curl -s -H \"Content-Type: application/json\" -X GET http://127.0.0.1:18283"
 CURL='curl -w "\n" -s -H "Content-Type: application/json" -X'
 
 red=`tput setaf 1`
@@ -29,6 +30,7 @@ Please enter an option: '
 
 options=(
 	"Check blockchain height"
+	"Get node statistics"
 	"Get node balance"
 	"Check services status"
 	"Start stopped services"
@@ -65,7 +67,7 @@ function check_height(){
 
 function get_node_balance(){
 	if lsof -Pi :18285 -sTCP:LISTEN -t >/dev/null ; then
-        DATA=`$CURL GET $WALLET_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_balance","params":{"account_index":0,"address_indices":[0]}}'`
+		DATA=`$CURL GET $WALLET_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_balance","params":{"account_index":0,"address_indices":[0]}}'`
 		
 		ADDR=$(echo "$DATA" | grep '"address"' | awk {'print $2'} | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
 		UNSPENT_OUTPUTS=$(echo "$DATA" | grep '"num_unspent_outputs"' | awk {'print $2'} | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
@@ -85,6 +87,46 @@ function get_node_balance(){
 		echo "X-Cash RCP Wallet service is not running...."
 		echo "Check the $XCASH_WALLET_SRV service status"
 	fi
+}
+
+function shared_delegates_website_statistics(){
+    if lsof -Pi :18283 -sTCP:LISTEN -t >/dev/null ; then
+        DATA=`$DPOPS_QUERY/shareddelegateswebsitegetstatistics | python3 -m json.tool`
+        RANK=$(echo "$DATA" | grep '"current_delegate_rank"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        TOTAL_VOTES=$(($(echo "$DATA" | grep '"total_votes"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')/1000000))
+        ONLINE_PCT=$(echo "$DATA" | grep '"online_percentage"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        ROUNDS=$(echo "$DATA" | grep '"block_verifier_total_rounds"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        BLOCKS_FOUND=$(echo "$DATA" | grep '"total_blocks_found"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        XCASH_FOUND=$(($(echo "$DATA" | grep '"total_xcash_from_blocks_found"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')/1000000))
+        TOTAL_PAYMENTS=$(echo "$DATA" | grep '"total_payments"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        VOTERS=$(echo "$DATA" | grep '"total_voters"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        FEE=$(echo "$DATA" | grep '"fee"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        MIN_AMOUNT=$(echo "$DATA" | grep '"minimum_amount"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+
+
+        echo
+        echo "######### DELEGATE STATUS #########"
+        if (( $RANK <= 50 )); then
+            echo -e "Rank....................${green}$RANK${reset}"
+        else
+            echo -e "Rank....................${red}$RANK${reset}"
+        fi
+        echo "Total Votes.............$TOTAL_VOTES XCASH"
+        echo "Online Percentage.......$ONLINE_PCT %"
+        echo "Total Rounds............$ROUNDS"
+        echo "Blocks Found............$BLOCKS_FOUND"
+        echo "X-Cash Found............$XCASH_FOUND XCASH"
+        echo "Total Payments..........$TOTAL_PAYMENTS"
+        echo "Total Voters............$VOTERS"
+        echo "Fee.....................$FEE XCASH"
+        echo "Minimum Amount..........$MIN_AMOUNT XCASH"
+
+    else
+        echo
+        echo "X-Cash DPoPS service is not running...."
+        echo "Check the $XCASH_DPOPS_SRV service status"
+    fi
+
 }
 
 function check_services_status(){
@@ -207,6 +249,7 @@ select opt in "${options[@]}"; do
 	case $opt in
 		"Check blockchain height") check_height ;;
 		"Get node balance") get_node_balance ;;
+		"Get node statistics") shared_delegates_website_statistics;;
 		"Check services status") check_services_status ;;
         "Start stopped services") start_stopped_services ;;
 		"Stop all services") stop_all_services ;;
