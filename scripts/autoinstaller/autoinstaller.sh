@@ -863,8 +863,21 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
         [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
       do true; done  
 
-      NODEJS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}${NODEJS_LATEST_VERSION}/
-      install_shared_delegates_website
+      NODEJS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}${NODEJS_LATEST_VERSION}/ 
+      echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+      echo -e "${COLOR_PRINT_GREEN}            Installing Shared Delegate Website${END_COLOR_PRINT}"
+      echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+      install_nodejs
+      configure_npm
+      update_npm
+      install_npm_global_packages
+      download_shared_delegate_website
+      get_installation_directory
+      install_shared_delegates_website_npm_packages
+      build_shared_delegates_website
+      . "${HOME}"/.profile
+      echo
+      echo
       update_systemd_service_files
       sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
       sudo systemctl daemon-reload
@@ -1583,6 +1596,8 @@ function uninstall_shared_delegates_website()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}            Uninstalling Shared Delegate Website${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  get_installation_directory
 
   if [ -d "${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}" ]; then
     sudo rm -r "${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}"
