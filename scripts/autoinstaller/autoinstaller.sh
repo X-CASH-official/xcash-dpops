@@ -1575,7 +1575,7 @@ function uninstall_packages()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Uninstalling Packages${END_COLOR_PRINT}"
-    sudo apt --purge remove "${XCASH_DPOPS_PACKAGES}" -y &>/dev/null
+    sudo apt --purge remove ${XCASH_DPOPS_PACKAGES} -y &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling Packages${END_COLOR_PRINT}"
     echo
 }
@@ -1799,6 +1799,12 @@ function uninstall()
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   echo
+  
+  # get the block verifiers secret key from the systemd service file
+  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/xcash-dpops.service)
+  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block-verifiers-secret-key' '{print $2}')
+  BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
+  BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
 
   # Get the current xcash wallet data
   get_current_xcash_wallet_data
