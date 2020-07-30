@@ -118,7 +118,7 @@ function shared_delegates_website_statistics(){
         echo "X-Cash Found............$XCASH_FOUND XCASH"
         echo "Total Payments..........$TOTAL_PAYMENTS"
         echo "Total Voters............$VOTERS"
-        echo "Fee.....................$FEE XCASH"
+        echo "Fee.....................$FEE %"
         echo "Minimum Amount..........$MIN_AMOUNT XCASH"
 
     else
