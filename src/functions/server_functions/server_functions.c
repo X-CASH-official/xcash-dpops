@@ -448,7 +448,6 @@ void socket_thread(const int CLIENT_SOCKET)
   char buffer2[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char message[BUFFER_SIZE];
-  char client_address[BUFFER_SIZE]; 
   char client_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -458,7 +457,6 @@ void socket_thread(const int CLIENT_SOCKET)
   memset(buffer2,0,sizeof(buffer2));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
-  memset(client_address,0,sizeof(client_address));
   memset(client_IP_address,0,sizeof(client_IP_address));
 
   // convert the port to a string
@@ -532,7 +530,7 @@ void socket_thread(const int CLIENT_SOCKET)
     memcpy(message,"Received ",9);
     memcpy(message+9,data2,strnlen(data2,sizeof(message)));
     memcpy(message+strlen(message),"\n",1);
-    memcpy(message+strlen(message),client_address,strnlen(client_address,sizeof(message)));
+    memcpy(message+strlen(message),client_IP_address,strnlen(client_IP_address,sizeof(message)));
     memcpy(message+strlen(message)," on port ",9);
     memcpy(message+strlen(message),buffer2,strnlen(buffer2,sizeof(message)));
     memcpy(message+strlen(message),"\n",1);
