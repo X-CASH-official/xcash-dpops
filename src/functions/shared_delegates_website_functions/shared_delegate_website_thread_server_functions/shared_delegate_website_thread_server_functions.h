@@ -7,6 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
+int check_if_previous_block_producer(void);
 long long int add_block_to_blocks_found(void);
 int get_delegates_total_voters_count(const char* DELEGATES_PUBLIC_ADDRESS);
 long long int get_delegates_total_voters(struct voters* voters);
