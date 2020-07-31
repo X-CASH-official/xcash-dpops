@@ -1015,7 +1015,7 @@ int get_delegates_online_status(void)
   int epoll_fd_copy;
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   int total_delegates;
-  int total_delegates_online = 0;
+  int total_delegates_online;
   int total;
   int sent;
   int bytes = 1;
@@ -1053,7 +1053,7 @@ int get_delegates_online_status(void)
   {
     memset(delegates_online_status[count].public_address,0,sizeof(delegates_online_status[count].public_address));
     memcpy(delegates_online_status[count].public_address,delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(delegates_online_status[count].public_address)));
-    delegates_online_status[count].settings = strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0 ? 0 : 1;
+    delegates_online_status[count].settings = strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 ? 1 : 0;
   }
 
   // create the message
@@ -1220,9 +1220,9 @@ int get_delegates_online_status(void)
   }
 
   // wait for all of the data to be sent to the connected sockets, and for the block verifiers to process the data
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(10);
 
-  for (count = 0; count < total_delegates; count++)
+  for (count = 0, total_delegates_online = 0; count < total_delegates; count++)
   {
     // update the delegates online status
     memset(data,0,sizeof(data));

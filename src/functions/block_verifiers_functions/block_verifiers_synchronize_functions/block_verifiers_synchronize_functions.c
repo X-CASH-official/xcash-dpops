@@ -53,10 +53,13 @@ Functions
 -----------------------------------------------------------------------------------------------------------
 Name: sync_network_data_nodes_database
 Description: Sync all of the network data nodes to the same database data
+Parameters:
+  START_TIME_MINUTE - The start time (in minutes) to start the function
+  START_TIME_SECOND - The start time (in seconds) to start the function
 -----------------------------------------------------------------------------------------------------------
 */
 
-void sync_network_data_nodes_database(void)
+void sync_network_data_nodes_database(const int START_TIME_MINUTE, const int START_TIME_SECOND)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -140,7 +143,7 @@ void sync_network_data_nodes_database(void)
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
 
   // wait so all network data nodes start at the same time, this way one is not reseting the variables as another one is sending them data
-  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,25);
+  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE,START_TIME_SECOND);
 
   // get if the network data node has the previous blocks reserve bytes, because if not this network data node should not be synced from
   memcpy(data2,"{\"block_height\":\"",17);

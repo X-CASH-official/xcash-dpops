@@ -122,12 +122,6 @@ int start_new_round(void)
   // get the current block height
   sscanf(current_block_height,"%zu", &count);
 
-  // get the delegates online status
-  //get_delegates_online_status();
-
-  // wait so everyone has got the online status
-  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,15);
-
   // reload the initial previous, current and next block verifiers list if its the first block or if you had to restart
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
   {
@@ -180,9 +174,18 @@ int start_new_round(void)
     // all network data nodes will sync and make sure they have the same database, before the block verifiers sync from them
     if (network_data_node_settings == 1)
     {
+      // sync check the databases without checking the delegates online status
       color_print("Your block verifier is a network data node, checking to make sure all network data nodes databases are synced","yellow");
-      sync_network_data_nodes_database();
+      sync_network_data_nodes_database(0,7);
+
+      sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,0,35);
+
+      get_delegates_online_status();
+
+      // sync check the databases after checking the delegates online status
+      sync_network_data_nodes_database(0,55);
     }
+
 
     sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE,START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);
 

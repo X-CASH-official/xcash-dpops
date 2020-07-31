@@ -78,7 +78,7 @@ Using define statements instead of constants for increased efficiency
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 1000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet, 20M xcash
 #define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 0 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the xcash-dpops program running to sync in case they move to the top 100, 100M xcash
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
-#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 15 // the start time in seconds that the block verifiers synchronize the database each round
+#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 30 // the start time in seconds that the block verifiers synchronize the database each round
 #define START_TIME_MINUTE_NETWORK_BLOCK_ROUND 2 // the start time that the block verifiers start to create the network block
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 40 // The time to submit the network block
 #define START_TIME_SECONDS_NETWORK_BLOCK_PART_2 10 // the start time of part 2 of the network block round
