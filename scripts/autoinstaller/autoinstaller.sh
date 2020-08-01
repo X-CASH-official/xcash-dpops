@@ -1025,10 +1025,7 @@ function create_directories()
   echo -ne "${COLOR_PRINT_YELLOW}Creating Directories${END_COLOR_PRINT}"
   if [ ! -d "$XCASH_DPOPS_INSTALLATION_DIR" ]; then
     mkdir -p "${XCASH_DPOPS_INSTALLATION_DIR}"
-  fi 
-  if [ ! -d "$XCASH_BLOCKCHAIN_INSTALLATION_DIR" ]; then
-    mkdir -p "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}"
-  fi 
+  fi
   if [ ! -d "$MONGODB_INSTALLATION_DIR" ]; then
     sudo mkdir -p "${MONGODB_INSTALLATION_DIR}"
     sudo chmod 770 "${MONGODB_INSTALLATION_DIR}"
