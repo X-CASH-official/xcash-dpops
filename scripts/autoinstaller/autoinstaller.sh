@@ -742,6 +742,7 @@ function installation_settings()
 
 function get_current_xcash_wallet_data()
 {
+  echo
   echo -ne "${COLOR_PRINT_YELLOW}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
 
   screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
@@ -767,6 +768,7 @@ function get_current_xcash_wallet_data()
   sudo sed -i "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash-dpops-delegates-public-address $PUBLIC_ADDRESS --xcash-dpops-delegates-secret-key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/xcash-daemon.service
   
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
+  echo
   echo
 }
 
@@ -1673,6 +1675,17 @@ function install()
 
   # Get the current xcash wallet data
   get_current_xcash_wallet_data
+
+  # import the wallet if they created the wallet before. This should fix any 0 balance error
+  if [ "${WALLET_SETTINGS^^}" == "YES" ]; then
+    echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+    rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet*
+    (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${MNEMONIC_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address us1.xcash.foundation:18281 &>/dev/null
+    echo
+    echo
+  fi
 
   # test change the xcash-core to xcash_proof_of_stake branch
   sudo systemctl stop xcash-dpops
