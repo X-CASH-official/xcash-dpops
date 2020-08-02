@@ -111,7 +111,6 @@ int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network 
 int production_settings; // 0 for production, 1 for test
 int production_settings_database_data_settings; // The initialize the database settings
 char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
-char current_block_producer[XCASH_WALLET_LENGTH+1]; // The public address of the current block producer
 int sync_previous_current_next_block_verifiers_settings; // sync the previous, current and next block verifiers if you had to restart
 int database_data_socket_settings; // 1 to allow database data up to 50MB to be received in the server, 0 to only allow message up to BUFFER_SIZE
 char* server_limit_IP_address_list; // holds all of the IP addresses that are currently running on the server. This can hold up to 1 million IP addresses
@@ -175,7 +174,6 @@ void initialize_data(void)
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
   memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
-  memset(current_block_producer,0,sizeof(current_block_producer));
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
   network_functions_test_settings = 0;
@@ -955,7 +953,7 @@ void database_sync_check(void)
     else
     {
       // check if all of the databases are synced from a random block verifier
-      if (check_if_databases_are_synced(3,0) == 0)
+      if (check_if_databases_are_synced(1,0) == 0)
       {
         DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
       }
