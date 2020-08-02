@@ -7,6 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
+int sync_all_delegates(void);
 int start_new_round(void);
 int start_blocks_create_vrf_data(void);
 int start_blocks_create_data(char* message, char* network_block_string);
