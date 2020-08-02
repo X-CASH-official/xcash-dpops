@@ -1324,14 +1324,83 @@ int block_verifiers_create_block_signature(char* message)
   // change the network block nonce to the block producer network block nonce
   memcpy(blockchain_data.nonce_data,BLOCK_PRODUCER_NETWORK_BLOCK_NONCE,sizeof(BLOCK_PRODUCER_NETWORK_BLOCK_NONCE)-1);
 
-  // add all of the VRF data to the blockchain_data struct 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  // get the current block producer
+  if (strncmp(current_round_part_backup_node,"0",1) == 0)
   {
-    if (strncmp(main_nodes_list.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,BUFFER_SIZE) == 0)
+      {
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+        break;
+      }
     }
+  }
+  else if (strncmp(current_round_part_backup_node,"1",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,BUFFER_SIZE) == 0)
+      {
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+        break;
+      }
+    }
+  }
+  else if (strncmp(current_round_part_backup_node,"2",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,BUFFER_SIZE) == 0)
+      {
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+        break;
+      }
+    }
+  }
+  else if (strncmp(current_round_part_backup_node,"3",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,BUFFER_SIZE) == 0)
+      {
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+        break;
+      }
+    }
+  }
+  else if (strncmp(current_round_part_backup_node,"4",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,BUFFER_SIZE) == 0)
+      {
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+        break;
+      }
+    }
+  }
+  else if (strncmp(current_round_part_backup_node,"5",1) == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,BUFFER_SIZE) == 0)
+      {
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+        break;
+      }
+    }
+  }
+
+  // add all of the VRF data to the blockchain_data struct  
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {    
     if (strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
       block_producer_backup_settings[0] = count;
