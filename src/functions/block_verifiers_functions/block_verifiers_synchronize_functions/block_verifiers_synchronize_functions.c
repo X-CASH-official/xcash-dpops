@@ -894,24 +894,9 @@ void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES
 {
   // Variables
   int count;
-  int count2;
   
   if (strncmp(DELEGATES_IP_ADDRESS,"",1) == 0)
   {
-    // check if all block verifiers were not from the majority, and if so sync from a network data node
-    for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-    {
-      if (strncmp(synced_block_verifiers.vote_settings[count],"true",4) != 0)
-      {
-        count2++;
-      }
-    }
-
-    if (count2 == BLOCK_VERIFIERS_AMOUNT)
-    {
-      settings = 2;
-    }
-
     /* select a random block verifier from the majority vote settings to sync the database from, making sure not to select your own block verifier node
        select a random network data node to sync from if there was a lot of connection_timeouts, to where a majority vote could not be calculated, there were more than BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT new block verifiers
     */
@@ -921,7 +906,7 @@ void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES
       do
       {
         count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
-      } while (strncmp(synced_block_verifiers.vote_settings[count],"true",4) != 0 || strncmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
+      } while (strncmp(synced_block_verifiers.vote_settings[count],"true",4) == 0 || strncmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
       memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
     }
     else if (settings == 2)

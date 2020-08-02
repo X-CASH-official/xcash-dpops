@@ -47,9 +47,11 @@
 Global Define Macros
 -----------------------------------------------------------------------------------------------------------
 */
+
 #define SEND_DATABASE_SYNC_CHECK_MESSAGE(database) \
 for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
 { \
+  memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count])); \
   if (strncmp((char*)synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
   { \
     memset(data,0,strlen(data)); \
@@ -61,15 +63,16 @@ for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
     } \
     else \
     { \
-      if (strstr(data,database) != NULL && parse_json_data(data,database,data2,sizeof(data2)) != 0 && strncmp(data2,"true",4) == 0) \
+      if ((strncmp(database,"reserve_proofs_database",sizeof(database)) == 0 && string_count(data,"false") > 1) || (strncmp(database,"reserve_proofs_database",sizeof(database)) != 0 && strstr(data,"false") != NULL)) \
       { \
-        synced_block_verifiers.vote_settings_true++; \
+        memcpy(synced_block_verifiers.vote_settings[count],"false",5); \
+        synced_block_verifiers.vote_settings_false++; \
       } \
       else \
       { \
-        synced_block_verifiers.vote_settings_false++; \
+        memcpy(synced_block_verifiers.vote_settings[count],"true",4); \
+        synced_block_verifiers.vote_settings_true++; \
       } \
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE)); \
     } \
   } \
 }
