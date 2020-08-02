@@ -73,6 +73,13 @@ int check_if_previous_block_producer(void)
   memset(data3,0,sizeof(data3));
   memset(previous_block_producer,0,sizeof(previous_block_producer));  
 
+  // check if it is a valid block height
+  sscanf(current_block_height, "%zu", &count);
+  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT+2)
+  {
+    return 0;
+  }
+
   if (test_settings == 0)
   {
     // create the message
