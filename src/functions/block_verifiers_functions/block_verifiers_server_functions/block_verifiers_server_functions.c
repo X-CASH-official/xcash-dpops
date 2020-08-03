@@ -279,7 +279,7 @@ void server_receive_data_socket_main_network_data_node_to_block_verifier_start_b
   }
 
   // make sure the message is coming from the main network data node
-  if ((production_settings == 0 && strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0) || (production_settings == 1 && strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0))
+  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Invalid message");
   }
@@ -363,7 +363,7 @@ void server_receive_data_socket_main_network_data_node_to_block_verifier_create_
   }
   
   // send the network block signature to the main network data node
-  production_settings == 0 ? send_data_socket(NETWORK_DATA_NODE_1_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) : send_data_socket(NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(network_data_nodes_list.network_data_nodes_IP_address[0],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK
@@ -434,7 +434,7 @@ void server_receive_data_socket_block_verifier_to_main_network_data_node_create_
   }
 
   // add to the count of network data nodes if it is a network data node
-  if ((production_settings == 0 && (strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[1],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[2],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[3],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[4],BUFFER_SIZE) == 0)
   {
     pthread_mutex_lock(&network_data_nodes_valid_count_lock);
     network_data_node_valid_amount++;
@@ -571,7 +571,7 @@ void server_receive_data_socket_node_to_node(const char* MESSAGE)
   // add to the count of network data nodes if it is a network data node
   if (strncmp(data,"valid",5) == 0 && strncmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0)
   {
-    if ((production_settings == 0 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+    if (strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[1],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[2],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[3],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[4],BUFFER_SIZE) == 0)
     {
       pthread_mutex_lock(&network_data_nodes_valid_count_lock);
       network_data_node_valid_amount++;
@@ -667,7 +667,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(cons
   }
 
   // add to the count of network data nodes if it is a network data node
-  if ((production_settings == 0 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+  if (strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[1],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[2],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[3],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[4],BUFFER_SIZE) == 0)
   {
     pthread_mutex_lock(&network_data_nodes_valid_count_lock);
     network_data_node_valid_amount++;
@@ -731,7 +731,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_si
   }
 
   // add to the count of network data nodes if it is a network data node
-  if ((production_settings == 0 && (strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[1],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[2],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[3],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[4],BUFFER_SIZE) == 0)
   {
     pthread_mutex_lock(&network_data_nodes_valid_count_lock);
     network_data_node_valid_amount++;

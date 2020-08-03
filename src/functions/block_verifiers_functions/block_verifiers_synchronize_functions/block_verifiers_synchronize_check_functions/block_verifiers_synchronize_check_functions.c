@@ -280,7 +280,7 @@ int sync_check_reserve_proofs_database(int settings)
     {
       color_print("Syncing from the main network data node","white");
     }
-    if ((production_settings == 0 && sync_reserve_proofs_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_reserve_proofs_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    if (sync_reserve_proofs_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
@@ -539,7 +539,7 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
     {
       color_print("Syncing from the main network data node","white");
     }
-    if ((production_settings == 0 && sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    if (sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
@@ -776,7 +776,7 @@ int sync_check_delegates_database(int settings)
     {
       color_print("Syncing from the main network data node","white");
     }
-    if ((production_settings == 0 && sync_delegates_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_delegates_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    if (sync_delegates_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
@@ -992,7 +992,7 @@ int sync_check_statistics_database(int settings)
     {
       color_print("Syncing from the main network data node","white");
     }
-    if ((production_settings == 0 && sync_statistics_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_statistics_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    if (sync_statistics_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the reserve proofs database");
     }

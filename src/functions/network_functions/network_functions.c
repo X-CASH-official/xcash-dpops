@@ -394,8 +394,6 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host",1);
   }
-
-  color_print(result,"yellow");
   
   // validate the data, dont run this is running the test, since it uses send_and_receive_data_socket to check all messages
   if (test_settings == 0 && validate_data(result) == 0)

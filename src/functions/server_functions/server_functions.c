@@ -324,7 +324,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     {
       
     }
-    else if ((production_settings == 0 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 0 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0) || (production_settings == 1 && strncmp(NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,data2,BUFFER_SIZE) == 0))
+    else if (strncmp(network_data_nodes_list.network_data_nodes_public_address[0],data2,BUFFER_SIZE) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[1],data2,BUFFER_SIZE) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[2],data2,BUFFER_SIZE) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[3],data2,BUFFER_SIZE) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[4],data2,BUFFER_SIZE) == 0)
     {
       
     }

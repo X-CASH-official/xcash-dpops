@@ -253,209 +253,53 @@ int organize_delegates(struct delegates* delegates)
   qsort(delegates,database_multiple_documents_fields.document_count,sizeof(struct delegates),organize_delegates_settings);
 
   // make sure the network data nodes are always the first delegates
-  for (count = 0; count < (int)database_multiple_documents_fields.document_count; count++)
+  for (count = 0; count < (int)database_multiple_documents_fields.document_count; count++, count2 = BLOCK_VERIFIERS_TOTAL_AMOUNT)
   {
-    if (production_settings == 1)
+    if (strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) == 0)
     {
-      if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[0].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[0].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[0].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[0].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[0].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[0].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[0].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[0].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[0].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[0].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[0].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[0].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[0].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[0].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[0].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[0].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
-      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[1].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[1].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[1].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[1].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[1].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[1].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[1].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[1].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[1].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[1].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[1].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[1].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[1].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[1].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[1].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[1].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
-      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[2].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[2].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[2].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[2].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[2].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[2].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[2].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[2].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[2].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[2].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[2].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[2].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[2].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[2].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[2].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[2].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
-      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[3].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[3].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[3].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[3].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[3].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[3].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[3].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[3].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[3].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[3].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[3].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[3].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[3].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[3].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[3].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[3].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
-      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[4].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[4].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[4].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[4].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[4].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[4].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[4].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[4].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[4].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[4].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[4].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[4].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[4].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[4].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[4].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[4].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
+      count2 = 0;
     }
-    else if (production_settings == 0)
+    else if (strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[1],XCASH_WALLET_LENGTH) == 0)
     {
-      if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[0].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[0].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[0].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[0].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[0].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[0].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[0].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[0].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[0].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[0].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[0].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[0].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[0].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[0].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[0].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[0].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
-      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[1].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[1].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[1].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[1].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[1].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[1].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[1].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[1].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[1].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[1].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[1].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[1].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[1].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[1].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[1].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[1].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
-      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[2].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[2].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[2].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[2].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[2].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[2].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[2].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[2].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[2].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[2].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[2].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[2].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[2].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[2].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[2].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[2].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
-      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[3].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[3].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[3].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[3].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[3].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[3].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[3].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[3].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[3].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[3].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[3].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[3].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[3].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[3].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[3].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[3].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
-      else if (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)
-      {
-        memcpy(delegates_copy[4].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
-        memcpy(delegates_copy[4].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
-        memcpy(delegates_copy[4].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
-        memcpy(delegates_copy[4].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
-        memcpy(delegates_copy[4].about,delegates[count].about,strlen(delegates[count].about));
-        memcpy(delegates_copy[4].website,delegates[count].website,strlen(delegates[count].website));
-        memcpy(delegates_copy[4].team,delegates[count].team,strlen(delegates[count].team));
-        memcpy(delegates_copy[4].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
-        memcpy(delegates_copy[4].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
-        memcpy(delegates_copy[4].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
-        memcpy(delegates_copy[4].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
-        memcpy(delegates_copy[4].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
-        memcpy(delegates_copy[4].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
-        memcpy(delegates_copy[4].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
-        memcpy(delegates_copy[4].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
-        memcpy(delegates_copy[4].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
-      }
+      count2 = 1;
+    }
+    else if (strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[2],XCASH_WALLET_LENGTH) == 0)
+    {
+      count2 = 2;
+    }
+    else if (strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[3],XCASH_WALLET_LENGTH) == 0)
+    {
+      count2 = 3;
+    }
+    else if (strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[4],XCASH_WALLET_LENGTH) == 0)
+    {
+      count2 = 4;
+    }
+
+    if (count2 != BLOCK_VERIFIERS_TOTAL_AMOUNT)
+    {
+      memcpy(delegates_copy[count2].public_address,delegates[count].public_address,strlen(delegates[count].public_address));
+      memcpy(delegates_copy[count2].total_vote_count,delegates[count].total_vote_count,strlen(delegates[count].total_vote_count));
+      memcpy(delegates_copy[count2].IP_address,delegates[count].IP_address,strlen(delegates[count].IP_address));
+      memcpy(delegates_copy[count2].delegate_name,delegates[count].delegate_name,strlen(delegates[count].delegate_name));
+      memcpy(delegates_copy[count2].about,delegates[count].about,strlen(delegates[count].about));
+      memcpy(delegates_copy[count2].website,delegates[count].website,strlen(delegates[count].website));
+      memcpy(delegates_copy[count2].team,delegates[count].team,strlen(delegates[count].team));
+      memcpy(delegates_copy[count2].delegate_fee,delegates[count].delegate_fee,strlen(delegates[count].delegate_fee));
+      memcpy(delegates_copy[count2].block_verifier_score,delegates[count].block_verifier_score,strlen(delegates[count].block_verifier_score));
+      memcpy(delegates_copy[count2].online_status,delegates[count].online_status,strlen(delegates[count].online_status));
+      memcpy(delegates_copy[count2].block_verifier_total_rounds,delegates[count].block_verifier_total_rounds,strlen(delegates[count].block_verifier_total_rounds));
+      memcpy(delegates_copy[count2].block_verifier_online_total_rounds,delegates[count].block_verifier_online_total_rounds,strlen(delegates[count].block_verifier_online_total_rounds));
+      memcpy(delegates_copy[count2].block_verifier_online_percentage,delegates[count].block_verifier_online_percentage,strlen(delegates[count].block_verifier_online_percentage));
+      memcpy(delegates_copy[count2].block_producer_total_rounds,delegates[count].block_producer_total_rounds,strlen(delegates[count].block_producer_total_rounds));
+      memcpy(delegates_copy[count2].block_producer_block_heights,delegates[count].block_producer_block_heights,strlen(delegates[count].block_producer_block_heights));
+      memcpy(delegates_copy[count2].public_key,delegates[count].public_key,strlen(delegates[count].public_key));
     }
   }
 
   for (count = 0, count2 = NETWORK_DATA_NODES_AMOUNT; count < (int)database_multiple_documents_fields.document_count; count++)
   {
-    if ((production_settings == 1 && (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0)) || (production_settings == 0 && (strncmp(delegates[count].public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)))
+    if (strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[1],XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[2],XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[3],XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].public_address,network_data_nodes_list.network_data_nodes_public_address[4],XCASH_WALLET_LENGTH) == 0)
     {
       // skip the network data nodes since they have already been added
       continue;
