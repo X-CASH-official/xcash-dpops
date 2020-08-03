@@ -403,6 +403,9 @@ void initialize_data(void)
       INITIALIZE_DATA_ERROR;
     }
   }
+
+  // initialize the network data nodes
+  INITIALIZE_NETWORK_DATA_NODES;
   return;
 
   #undef INITIALIZE_DATA_ERROR
@@ -1140,9 +1143,6 @@ int main(int parameters_count, char* parameters[])
   create_overall_database_connection();
 
   settings = set_parameters(parameters_count, parameters);
-
-  // initialize the network data nodes
-  INITIALIZE_NETWORK_DATA_NODES;
 
   get_delegates_data();
 

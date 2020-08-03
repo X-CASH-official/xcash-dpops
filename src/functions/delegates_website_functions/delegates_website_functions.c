@@ -166,6 +166,8 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   database_data.count++;
   
   memset(data,0,strlen(data));
+  memcpy(data,"data",4);
+  
 
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_document_array(&database_data,data,DATABASE_FIELDS) == 0)

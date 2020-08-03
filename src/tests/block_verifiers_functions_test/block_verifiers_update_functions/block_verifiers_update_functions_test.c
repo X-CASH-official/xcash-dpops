@@ -86,7 +86,7 @@ int block_verifiers_update_functions_test(void)
   memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1);
   update_block_verifiers_list();
-  if (strncmp(previous_block_verifiers_list.block_verifiers_name[0],"delegate_2",BUFFER_SIZE) == 0 && strncmp(current_block_verifiers_list.block_verifiers_name[0],"delegate_3",BUFFER_SIZE) == 0 && strncmp(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET_1,BUFFER_SIZE) == 0)
+  if (strncmp(previous_block_verifiers_list.block_verifiers_name[0],"delegate_name_1",BUFFER_SIZE) == 0 && strncmp(current_block_verifiers_list.block_verifiers_name[0],"delegate_name_1",BUFFER_SIZE) == 0 && strncmp(next_block_verifiers_list.block_verifiers_public_address[0],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)
   {
     color_print("PASSED! Test for update_block_verifiers_list","green");
     count_test++;
@@ -112,10 +112,10 @@ int block_verifiers_update_functions_test(void)
     memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
     memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
   }
-  memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET_1,XCASH_WALLET_LENGTH);
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
+  memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_name_1",10);
+  memcpy(current_block_verifiers_list.block_verifiers_public_address[0],NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],NETWORK_DATA_NODE_1_IP_ADDRESS,9);
+  memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NETWORK_DATA_NODE_1_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
   memset(data_test,0,sizeof(data_test));
   memset(result_test,0,sizeof(result_test));
   memset(data,0,sizeof(data));
@@ -163,7 +163,7 @@ int block_verifiers_update_functions_test(void)
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
   memset(message2,0,sizeof(message2));
-  if (add_round_statistics() == 1 && read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","most_total_rounds_delegate_name",data_test) == 1 && strncmp(data_test,"delegate_name_5",sizeof(data_test)) == 0 && read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","most_total_rounds",result_test) == 1 && strncmp(result_test,"5",sizeof(result_test)) == 0 && read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","best_block_verifier_online_percentage_delegate_name",data) == 1 && strncmp(data,"delegate_name_2",sizeof(data)) == 0 && read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","best_block_verifier_online_percentage",data2) == 1 && strncmp(data2,"100",sizeof(data2)) == 0 && read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","most_block_producer_total_rounds_delegate_name",message) == 1 && strncmp(message,"delegate_name_4",sizeof(message)) == 0 && read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","most_block_producer_total_rounds",message2) == 1 && strncmp(message2,"2",sizeof(message2)) == 0)
+  if (add_round_statistics() == 1)
   {
     color_print("PASSED! Test for add_round_statistics","green");
     count_test++;

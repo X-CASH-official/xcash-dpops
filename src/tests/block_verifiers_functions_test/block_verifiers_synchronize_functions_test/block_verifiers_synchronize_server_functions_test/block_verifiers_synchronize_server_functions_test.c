@@ -37,7 +37,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   // define macros
   #define GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_TEST_DATA "{\r\n \"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST\",\r\n \"previous_block_verifiers_name_list\": \"delegate_1|delegate_1|\",\r\n \"previous_block_verifiers_public_address_list\": \"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|\",\r\n \"previous_block_verifiers_public_key_list\": \"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a|ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a|\",\r\n \"previous_block_verifiers_IP_address_list\": \"127.0.0.1|127.0.0.1|\",\r\n \"current_block_verifiers_name_list\": \"delegate_1|delegate_1|\",\r\n \"current_block_verifiers_public_address_list\": \"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|\",\r\n \"current_block_verifiers_public_key_list\": \"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a|ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a|\",\r\n \"current_block_verifiers_IP_address_list\": \"127.0.0.1|127.0.0.1|\",\r\n \"next_block_verifiers_name_list\": \"delegate_1|delegate_1|\",\r\n \"next_block_verifiers_public_address_list\": \"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|\",\r\n \"next_block_verifiers_public_key_list\": \"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a|ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a|\",\r\n \"next_block_verifiers_IP_address_list\": \"127.0.0.1|127.0.0.1|\""
   #define GET_CURRENT_BLOCK_VERIFIERS_LIST_TEST_DATA "{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|\",\r\n \"block_verifiers_public_key_list\": \"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a|ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a|\",\r\n \"block_verifiers_IP_address_list\": \"127.0.0.1|127.0.0.1|\""
-  #define RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA "BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD|000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f0183e1f40c427df35b8e1063a83f040|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|"
+  #define RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA "BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD|00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000064bfb449381660ce9f2f70fe58234921|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|"
   #define GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001|00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002|00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003|00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004|}"
   #define GET_RESERVE_BYTES_DATABASE_HASH_LIVE_SYNCING_TEST_DATA "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005|}"
   #define RESERVE_PROOFS_SYNC_CHECK_ALL_UPDATE_TEST_DATA "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_DOWNLOAD\",\r\n \"reserve_proofs_database\": \"false\",\r\n \"reserve_proofs_database_1\": \"true\",\r\n\"reserve_proofs_database_2\": \"false\",\r\n\"reserve_proofs_database_3\": \"false\",\r\n\"reserve_proofs_database_4\": \"false\",\r\n\"reserve_proofs_database_5\": \"false\",\r\n\"reserve_proofs_database_6\": \"false\",\r\n\"reserve_proofs_database_7\": \"false\",\r\n\"reserve_proofs_database_8\": \"false\",\r\n\"reserve_proofs_database_9\": \"false\",\r\n\"reserve_proofs_database_10\": \"false\",\r\n\"reserve_proofs_database_11\": \"false\",\r\n\"reserve_proofs_database_12\": \"false\",\r\n\"reserve_proofs_database_13\": \"false\",\r\n\"reserve_proofs_database_14\": \"false\",\r\n\"reserve_proofs_database_15\": \"false\",\r\n\"reserve_proofs_database_16\": \"false\",\r\n\"reserve_proofs_database_17\": \"false\",\r\n\"reserve_proofs_database_18\": \"false\",\r\n\"reserve_proofs_database_19\": \"false\",\r\n\"reserve_proofs_database_20\": \"false\",\r\n\"reserve_proofs_database_21\": \"false\",\r\n\"reserve_proofs_database_22\": \"false\",\r\n\"reserve_proofs_database_23\": \"false\",\r\n\"reserve_proofs_database_24\": \"false\",\r\n\"reserve_proofs_database_25\": \"false\",\r\n\"reserve_proofs_database_26\": \"false\",\r\n\"reserve_proofs_database_27\": \"false\",\r\n\"reserve_proofs_database_28\": \"false\",\r\n\"reserve_proofs_database_29\": \"false\",\r\n\"reserve_proofs_database_30\": \"false\",\r\n\"reserve_proofs_database_31\": \"false\",\r\n\"reserve_proofs_database_32\": \"false\",\r\n\"reserve_proofs_database_33\": \"false\",\r\n\"reserve_proofs_database_34\": \"false\",\r\n\"reserve_proofs_database_35\": \"false\",\r\n\"reserve_proofs_database_36\": \"false\",\r\n\"reserve_proofs_database_37\": \"false\",\r\n\"reserve_proofs_database_38\": \"false\",\r\n\"reserve_proofs_database_39\": \"false\",\r\n\"reserve_proofs_database_40\": \"false\",\r\n\"reserve_proofs_database_41\": \"false\",\r\n\"reserve_proofs_database_42\": \"false\",\r\n\"reserve_proofs_database_43\": \"false\",\r\n\"reserve_proofs_database_44\": \"false\",\r\n\"reserve_proofs_database_45\": \"false\",\r\n\"reserve_proofs_database_46\": \"false\",\r\n\"reserve_proofs_database_47\": \"false\",\r\n\"reserve_proofs_database_48\": \"false\",\r\n\"reserve_proofs_database_49\": \"false\",\r\n\"reserve_proofs_database_50\": \"false\""
@@ -102,7 +102,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
   delete_database(database_name);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strstr(result_test,RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA) != NULL)
@@ -191,7 +191,6 @@ int block_verifiers_synchronize_server_functions_test(void)
   }
   else
   {
-    color_print(result_test,"blue");
     color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_sync_check_all_update","red");
   }
   RESET_ERROR_MESSAGES;
@@ -216,11 +215,9 @@ int block_verifiers_synchronize_server_functions_test(void)
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
   delete_database(database_name);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1);
-  color_print("green","green");
-  sleep(60);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strncmp(result_test,RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA_RESULTS,sizeof(RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA_RESULTS)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update","green");
@@ -228,7 +225,6 @@ int block_verifiers_synchronize_server_functions_test(void)
   }
   else
   {
-    color_print(result_test,"yellow");
     color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_sync_check_all_update","red");
   }
   RESET_ERROR_MESSAGES;
@@ -236,7 +232,7 @@ int block_verifiers_synchronize_server_functions_test(void)
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
   delete_database(database_name);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
   RESET_ERROR_MESSAGES;
   memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strncmp(result_test,RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,sizeof(RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA)-1) == 0)
@@ -263,7 +259,6 @@ int block_verifiers_synchronize_server_functions_test(void)
   }
   else
   {
-    color_print(result_test,"yellow");
     color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_sync_check_update","red");
   }
   RESET_ERROR_MESSAGES;
@@ -281,7 +276,6 @@ int block_verifiers_synchronize_server_functions_test(void)
   }
   else
   {
-    color_print(result_test,"yellow");
     color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update","red");
   }
   RESET_ERROR_MESSAGES;

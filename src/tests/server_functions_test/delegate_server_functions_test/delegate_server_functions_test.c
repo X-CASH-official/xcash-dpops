@@ -162,7 +162,7 @@ int delegate_server_functions_test(void)
   sleep(5);
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
-  if (count_documents_in_collection(database_name,"reserve_proofs_5","{\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiub05pa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}") == 0 && read_document_field_from_collection(database_name,"reserve_proofs_5","{\"reserve_proof\":\"" TEST_RESERVE_PROOF_DELEGATES_REGISTER "\"}","total",result_test) == 1 && strncmp(result_test,"120000000",BUFFER_SIZE) == 0 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET "\"}","total_vote_count",data_test) == 1 && strncmp(data_test,"170000000",BUFFER_SIZE) == 0)
+  if (count_documents_in_collection(database_name,"reserve_proofs_5","{\"reserve_proof\":\"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiub05pa5jPey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed4jJUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti\"}") == 0 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET "\"}","total_vote_count",data_test) == 1 && strncmp(data_test,"170000000",BUFFER_SIZE) == 0)
   {
     fprintf(stderr,"\033[1;32mPASSED! Test for server_receive_data_socket_node_to_block_verifiers_add_reserve_proof checking for when a voter votes for another delegate and the old vote is cancelled and the old delegates total is adjusted\033[0m\n");
     count_test++;
@@ -276,7 +276,7 @@ int delegate_server_functions_test(void)
   memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
   insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1);
   memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|" TEST_WALLET "|" TEST_RESERVE_PROOF_DELEGATES_REGISTER "|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_ADD_RESERVE_PROOF "|",872);
-  if (block_verifiers_add_reserve_proof_check_if_data_is_valid(result_test,&reserve_proof) == 0)
+  if (block_verifiers_add_reserve_proof_check_if_data_is_valid(result_test,&reserve_proof) == 8)
   {
     fprintf(stderr,"\033[1;32mPASSED! Test for block_verifiers_add_reserve_proof_check_if_data_is_valid checking for reserve proof is already in the database\033[0m\n");
     count_test++;

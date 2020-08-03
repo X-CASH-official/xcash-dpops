@@ -52,7 +52,7 @@ int block_verifiers_synchronize_check_functions_test(void)
   // run the test
   // sync_reserve_proofs_database
   insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"521850\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   INITIALIZE_NETWORK_DATA_NODES_TEST
