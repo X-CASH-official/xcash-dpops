@@ -451,6 +451,7 @@ void* block_height_timer_thread(void* parameters)
 {
   // Variables
   char data[1024];
+  char previous_block_height[500];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   long long int block_reward_number;
@@ -474,6 +475,17 @@ void* block_height_timer_thread(void* parameters)
     // check if you found the previous block in the network
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == START_TIME_MINUTE_NETWORK_BLOCK_ROUND && current_UTC_date_and_time.tm_sec == 0 && check_if_previous_block_producer() == 1)
     {
+      // make sure the round is not replayed
+      if (strncmp(previous_block_height,current_block_height,BUFFER_SIZE) == 0)
+      {
+        sleep(1);
+        continue;
+      }
+
+      // copy the current block height
+      memset(previous_block_height,0,sizeof(previous_block_height));
+      memcpy(previous_block_height,current_block_height,strnlen(current_block_height,sizeof(previous_block_height)));
+
       if ((block_reward_number = add_block_to_blocks_found()) == 0)
       {
         BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not add the previous block that the block verifier found to the database");
