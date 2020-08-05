@@ -141,10 +141,13 @@ bson_error_t error;
 -----------------------------------------------------------------------------------------------------------
 Name: initialize_data
 Description: Initializes the global variables
+Parameters:
+  parameters_count - The parameter count
+  parameters - The parameters
 -----------------------------------------------------------------------------------------------------------
 */
 
-void initialize_data(void)
+void initialize_data(int parameters_count, char* parameters[])
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -404,6 +407,16 @@ void initialize_data(void)
     }
   }
 
+  // set the production settings
+  for (count = 0; count < (size_t)parameters_count; count++)
+  { 
+    if (strncmp(parameters[count],"--test-mode",BUFFER_SIZE) == 0)
+    {
+      production_settings = 0;
+      sscanf(parameters[count+1], "%d", &production_settings_database_data_settings);
+    }
+  }
+
   // initialize the network data nodes
   INITIALIZE_NETWORK_DATA_NODES;
   return;
@@ -635,11 +648,6 @@ int set_parameters(int parameters_count, char* parameters[])
       test(2);
       database_reset;
       exit(0);
-    }
-    if (strncmp(parameters[count],"--test-mode",BUFFER_SIZE) == 0)
-    {
-      production_settings = 0;
-      sscanf(parameters[count+1], "%d", &production_settings_database_data_settings);
     }
     if (strncmp(parameters[count],"--debug",BUFFER_SIZE) == 0)
     {
@@ -956,7 +964,7 @@ void database_sync_check(void)
     else
     {
       // check if all of the databases are synced from a random block verifier
-      if (check_if_databases_are_synced(1,0) == 0)
+      if (check_if_databases_are_synced(3,0) == 0)
       {
         DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
       }
@@ -1122,7 +1130,7 @@ int main(int parameters_count, char* parameters[])
 
   memset(data,0,sizeof(data));
 
-  initialize_data();
+  initialize_data(parameters_count, parameters);
 
   // write the message
   color_print(XCASH_DPOPS_CURRENT_VERSION,"green");
