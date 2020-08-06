@@ -1906,8 +1906,6 @@ int block_verifiers_create_block(void)
     print_block_producer();
     
     color_print("Part 1 - Create and send VRF data to all block verifiers","yellow");
-    
-    RESTART_ROUND("Could not create a VRF secret key and a VRF public key");
 
     // create a random VRF public key and secret key
     if (block_verifiers_create_VRF_secret_key_and_VRF_public_key(data) == 0)
