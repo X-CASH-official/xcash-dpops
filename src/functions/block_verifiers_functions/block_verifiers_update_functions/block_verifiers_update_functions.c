@@ -552,13 +552,13 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     }
   }
 
-  // update the main network data node if it had to create the block as the backup block producer
+  // update the backup network data node if it had to create the block as the backup block producer
   if (main_network_data_node_create_block == 1)
   {
     // create the message
     memset(message,0,sizeof(message));
     memcpy(message,"{\"public_address\":\"",19);
-    memcpy(message+strlen(message),network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH);
+    memcpy(message+strlen(message),network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH);
     memcpy(message+strlen(message),"\"}",2);
 
     memset(data,0,sizeof(data));
@@ -873,7 +873,13 @@ int calculate_main_nodes_roles(void)
   {
     memset(data,0,sizeof(data));
     memcpy(data,&data3[count],2);
-    count2 = (int)strtol(data, NULL, 16);  
+    count2 = (int)strtol(data, NULL, 16); 
+
+    // set the backup network data node setting
+    if (count == 0)
+    {
+      backup_network_data_node_settings = count2 % NETWORK_DATA_NODES_AMOUNT;
+    } 
    
     for (counter = 0, settings = 0; counter < count3; counter++)
     {

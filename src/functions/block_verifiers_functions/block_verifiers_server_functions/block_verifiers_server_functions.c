@@ -279,7 +279,7 @@ void server_receive_data_socket_main_network_data_node_to_block_verifier_start_b
   }
 
   // make sure the message is coming from the main network data node
-  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) != 0)
+  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Invalid message");
   }
@@ -339,10 +339,18 @@ void server_receive_data_socket_main_network_data_node_to_block_verifier_create_
   main_network_data_node_receive_block = 1;
 
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0)
+  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not parse the data");
   }
+
+  // make sure the message is coming from the main network data node
+  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Invalid message");
+  }
+
+  memset(data2,0,sizeof(data2));
 
   // sign the network block string
   if (sign_network_block_string(data2,data) == 0)
@@ -363,7 +371,7 @@ void server_receive_data_socket_main_network_data_node_to_block_verifier_create_
   }
   
   // send the network block signature to the main network data node
-  send_data_socket(network_data_nodes_list.network_data_nodes_IP_address[0],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  send_data_socket(network_data_nodes_list.network_data_nodes_IP_address[backup_network_data_node_settings],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK

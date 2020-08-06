@@ -962,8 +962,17 @@ int data_network_node_create_block(void)
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  memcpy(data,"The block producer and all backup block producers have not been able to create the network block\nThe main network data node will now create the network block",157);
+  memcpy(data,"The block producer and all backup block producers have not been able to create the network block\nThe backup network data node will now create the network block",159);
   print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2);
+
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],BUFFER_SIZE) == 0)
+    {
+      fprintf(stderr,"\033[1;33m%s is the backup network data node\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+      break;
+    }
+  }
 
   // set the main_network_data_node_create_block so the main network data node can create the block
   main_network_data_node_create_block = 1;
@@ -986,9 +995,9 @@ int data_network_node_create_block(void)
   pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
 
   // check if the block verifier is the main network data node
-  if (strncmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+  if (strncmp(network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
   {   
-    color_print("Your block verifier is the main data network node so your block verifier will create the block\n","yellow");
+    color_print("Your block verifier is the backup network data node so your block verifier will create the block\n","yellow");
     color_print("Part 1 - Create the block and VRF data and send it to all block verifiers","yellow");
 
     // create the block
@@ -1017,10 +1026,10 @@ int data_network_node_create_block(void)
     {
       fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);      
     }
-    else if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+    /*else if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
     {
       fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block with %d / %d network data nodes\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
-    }
+    }*/
     else if (count2 <= 1)
     {
       exit(0);
@@ -1066,7 +1075,7 @@ int data_network_node_create_block(void)
   }
   else
   {
-    color_print("Your block verifier is not the main data network node so your block verifier will wait until the network data node creates the block, and will sign the block\n","yellow");
+    color_print("Your block verifier is not the backup network data node so your block verifier will wait until the network data node creates the block, and will sign the block\n","yellow");
 
     // set the VRF data to not empty so it will update the databases on the start of the next round
     memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
@@ -1874,6 +1883,8 @@ int block_verifiers_create_block(void)
     print_block_producer();
     
     color_print("Part 1 - Create and send VRF data to all block verifiers","yellow");
+    
+    RESTART_ROUND("Could not create a VRF secret key and a VRF public key");
 
     // create a random VRF public key and secret key
     if (block_verifiers_create_VRF_secret_key_and_VRF_public_key(data) == 0)
