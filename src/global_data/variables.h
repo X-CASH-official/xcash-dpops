@@ -82,12 +82,13 @@ extern int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced n
 extern int production_settings; // 1 for production, 0 for test
 extern int production_settings_database_data_settings; // The initialize the database settings
 extern char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
-extern char current_block_producer[XCASH_WALLET_LENGTH+1]; // The public address of the current block producer
 extern int sync_previous_current_next_block_verifiers_settings; // sync the previous, current and next block verifiers if you had to restart
 extern int database_data_socket_settings; // 1 to allow database data up to 50MB to be received in the server, 0 to only allow message up to BUFFER_SIZE
 extern char* server_limit_IP_address_list; // holds all of the IP addresses that are currently running on the server. This can hold up to 1 million IP addresses
 extern char* server_limit_public_address_list; // holds all of the public addresses that are currently running on the server. This can hold up to 1 million public addresses
 extern int invalid_block_verifiers_count; // counts how many times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
+extern int backup_network_data_node_settings; // The network data node that will attempt to create the block if the block producer and backup block producer fail
+extern int replayed_round_settings; // 1 if the round is a replayed round, 0 if not
 
 extern int delegates_website; // 1 if the running the delegates websites, 0 if not
 extern int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not

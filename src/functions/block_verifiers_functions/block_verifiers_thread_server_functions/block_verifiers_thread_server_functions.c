@@ -64,6 +64,7 @@ void* current_block_height_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char previous_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
@@ -133,6 +134,13 @@ void* current_block_height_timer_thread(void* parameters)
 
       get_current_block_height(current_block_height);
       get_previous_block_hash(previous_block_hash);
+
+      // check if this round is a replayed round
+      replayed_round_settings = strncmp(previous_block_height,current_block_height,BUFFER_SIZE) == 0 ? 1 : 0;
+
+      // copy the current block height
+      memset(previous_block_height,0,sizeof(previous_block_height));
+      memcpy(previous_block_height,current_block_height,strnlen(current_block_height,sizeof(previous_block_height)));
 
       if ((block_verifier_settings = start_new_round()) == 0)
       {

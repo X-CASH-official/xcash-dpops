@@ -116,6 +116,8 @@ int database_data_socket_settings; // 1 to allow database data up to 50MB to be 
 char* server_limit_IP_address_list; // holds all of the IP addresses that are currently running on the server. This can hold up to 1 million IP addresses
 char* server_limit_public_address_list; // holds all of the public addresses that are currently running on the server. This can hold up to 1 million public addresses
 int invalid_block_verifiers_count; // counts how many times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
+int backup_network_data_node_settings; // The network data node that will attempt to create the block if the block producer and backup block producer fail
+int replayed_round_settings; // 1 if the round is a replayed round, 0 if not
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -191,6 +193,7 @@ void initialize_data(int parameters_count, char* parameters[])
   sync_previous_current_next_block_verifiers_settings = 1;
   database_data_socket_settings = 0;
   invalid_block_verifiers_count = 0;
+  replayed_round_settings = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
