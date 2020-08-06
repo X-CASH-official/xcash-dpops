@@ -217,8 +217,8 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_online_status
 
   memset(public_address,0,sizeof(public_address));
 
-  // verify and parse the message
-  if (verify_data(MESSAGE,0) == 0 || parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
+  // parse the message
+  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
   {   
     return;
   }
