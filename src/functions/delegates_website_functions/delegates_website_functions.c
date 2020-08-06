@@ -210,7 +210,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   int total_delegates;
 
   // define macros
-  #define DATABASE_FIELDS "public_address|IP_address|public_key|about|website|team|server_specs|block_verifier_online_total_rounds|block_producer_total_rounds|block_producer_block_heights|"
+  #define DATABASE_FIELDS "public_address|IP_address|public_key|about|website|team|server_specs|block_verifier_online_total_rounds|block_verifier_score|block_producer_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates",40); \
