@@ -684,13 +684,36 @@ int data_network_node_create_block_data(char *message)
 
   // add the delegates data to the network_block_string
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,"network_data_node_1",19);
+  memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,BUFFER_SIZE));
+  if (backup_network_data_node_settings == 0)
+  {
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,"network_data_node_1",19);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1",99);
+  }
+  else if (backup_network_data_node_settings == 1)
+  {
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,"network_data_node_2",19);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_2,network_data_node_2,network_data_node_2,network_data_node_2,network_data_node_2",99);
+  }
+  else if (backup_network_data_node_settings == 2)
+  {
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,"network_data_node_3",19);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_3,network_data_node_3,network_data_node_3,network_data_node_3,network_data_node_3",99);
+  }
+  else if (backup_network_data_node_settings == 3)
+  {
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,"network_data_node_4",19);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_4,network_data_node_4,network_data_node_4,network_data_node_4,network_data_node_4",99);
+  }
+  else if (backup_network_data_node_settings == 4)
+  {
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,"network_data_node_5",19);
+    memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_5,network_data_node_5,network_data_node_5,network_data_node_5,network_data_node_5",99);
+  }
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH);
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"1",1);
-  memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1",99);
 
   // create the VRF data
   if (create_random_VRF_keys(VRF_data.vrf_public_key,VRF_data.vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key) != 1)
