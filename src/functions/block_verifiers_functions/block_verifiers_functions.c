@@ -711,7 +711,7 @@ int data_network_node_create_block_data(char *message)
     memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_5,network_data_node_5,network_data_node_5,network_data_node_5,network_data_node_5",99);
   }
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH);
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"1",1);
 
