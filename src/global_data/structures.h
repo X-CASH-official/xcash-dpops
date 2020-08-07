@@ -294,11 +294,6 @@ struct votes {
     char* reserve_proof;
 };
 
-struct delegates_online_status {
-    char public_address[XCASH_WALLET_LENGTH+1];
-    int settings;
-};
-
  // Thread functions
  struct socket_thread_parameters {
     int client_socket;  // The client socket

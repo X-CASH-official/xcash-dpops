@@ -788,14 +788,6 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS\"") != NULL)
- {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
-   {
-     server_receive_data_socket_block_verifiers_to_block_verifiers_online_status((const char*)buffer);
-     server_limit_public_addresses(3,(const char*)buffer);
-   }
- }
  else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK\"") != NULL && main_network_data_node_create_block == 1)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)

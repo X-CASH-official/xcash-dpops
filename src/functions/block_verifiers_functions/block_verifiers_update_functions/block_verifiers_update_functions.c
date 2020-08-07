@@ -1015,8 +1015,6 @@ int get_delegates_online_status(void)
   int sent;
   int bytes = 1;
   int count;
-  int count2;
-  int number;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));

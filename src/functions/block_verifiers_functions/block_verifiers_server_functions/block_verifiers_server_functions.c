@@ -202,43 +202,6 @@ void server_receive_data_socket_block_verifiers_to_network_data_nodes_block_veri
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_block_verifiers_to_block_verifiers_online_status
-Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS message
-Parameters:
-  MESSAGE - The message
------------------------------------------------------------------------------------------------------------
-*/
-
-void server_receive_data_socket_block_verifiers_to_block_verifiers_online_status(const char* MESSAGE)
-{
-  // Variables
-  char public_address[XCASH_WALLET_LENGTH+1];
-  int count;
-
-  memset(public_address,0,sizeof(public_address));
-
-  // parse the message
-  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
-  {   
-    return;
-  }
-
-  // update the block verifiers online status
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    if (strncmp(delegates_online_status[count].public_address,public_address,XCASH_WALLET_LENGTH) == 0)
-    {
-      delegates_online_status[count].settings = 1;
-      break;
-    }
-  }
-  return;
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_main_network_data_node_to_block_verifier_start_block
 Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK message
 Parameters:
