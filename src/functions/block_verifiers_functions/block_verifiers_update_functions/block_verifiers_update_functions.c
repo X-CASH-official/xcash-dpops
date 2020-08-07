@@ -989,6 +989,19 @@ Return: 0 if an error has occured, otherwise the amount of online delegates
 
 int get_delegates_online_status(void)
 {
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS\",\r\n}|END|"
+  #define GET_DELEGATES_ONLINE_STATUS_ERROR(message) \
+  memcpy(error_message.function[error_message.total],"get_delegates_online_status",27); \
+  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
+  error_message.total++; \
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
+  return 0;
+
+  // Constants
+  const int TOTAL = sizeof(MESSAGE)-1;
+
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
@@ -999,22 +1012,11 @@ int get_delegates_online_status(void)
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   int total_delegates;
   int total_delegates_online;
-  int total;
   int sent;
   int bytes = 1;
   int count;
   int count2;
   int number;
-
-  // define macros
-  #define DATABASE_COLLECTION "delegates"
-  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS\",\r\n}|END|"
-  #define GET_DELEGATES_ONLINE_STATUS_ERROR(message) \
-  memcpy(error_message.function[error_message.total],"get_delegates_online_status",27); \
-  memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
-  error_message.total++; \
-  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES); \
-  return 0;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1034,7 +1036,6 @@ int get_delegates_online_status(void)
 
   // create the message
   memcpy(data,MESSAGE,sizeof(MESSAGE)-1);
-  total = sizeof(MESSAGE)-1;
   
   // convert the port to a string
   snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
@@ -1150,9 +1151,9 @@ int get_delegates_online_status(void)
         color_print(data2,"green");
       }
       
-      for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
+      for (sent = 0; sent < TOTAL || bytes <= 0; sent+= bytes)
       {
-        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
+        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,TOTAL-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
         {
           block_verifiers_send_data_socket[count].settings = 0;    
           break;
@@ -1170,7 +1171,7 @@ int get_delegates_online_status(void)
     memset(data,0,sizeof(data));
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\"public_address\":\"",19);
-    memcpy(data2+19,delegates_online_status[count].public_address,XCASH_WALLET_LENGTH);
+    memcpy(data2+19,delegates[count].public_address,XCASH_WALLET_LENGTH);
     memcpy(data2+117,"\"}",2);
 
     if (block_verifiers_send_data_socket[count].settings == 1)
@@ -1180,7 +1181,7 @@ int get_delegates_online_status(void)
     }
     else
     {
-      fprintf(stderr,"delegate is offline %s\n",block_verifiers_send_data_socket[count].IP_address);
+      fprintf(stderr,"delegate is offline %s\n",delegates[count].delegate_name);
       memcpy(data,"{\"online_status\":\"false\"}",25);
     }
 
