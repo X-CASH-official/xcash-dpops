@@ -1028,8 +1028,6 @@ int get_delegates_online_status(void)
     GET_DELEGATES_ONLINE_STATUS_ERROR("Could not organize the delegates");
   }
 
-  fprintf(stderr,"total delegates in database = %d\n",total_delegates);
-
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[total_delegates];
 
   // create the message
@@ -1169,8 +1167,8 @@ int get_delegates_online_status(void)
     memset(data,0,sizeof(data));
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\"public_address\":\"",19);
-    memcpy(data2+19,delegates[count].public_address,XCASH_WALLET_LENGTH);
-    memcpy(data2+117,"\"}",2);
+    memcpy(data2+strlen(data2),delegates[count].public_address,XCASH_WALLET_LENGTH);
+    memcpy(data2+strlen(data2),"\"}",2);
 
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
@@ -1179,7 +1177,6 @@ int get_delegates_online_status(void)
     }
     else
     {
-      fprintf(stderr,"delegate is offline %s\n",delegates[count].delegate_name);
       memcpy(data,"{\"online_status\":\"false\"}",25);
     }
 
@@ -1188,6 +1185,8 @@ int get_delegates_online_status(void)
     // close all of the sockets
     close(block_verifiers_send_data_socket[count].socket);
   }
+
+  RESET_ERROR_MESSAGES;
 
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
 

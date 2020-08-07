@@ -90,7 +90,7 @@ int sync_all_delegates(void)
   {
     // sync check the databases with checking the delegates online status
     color_print("Your block verifier is a network data node, syncing the online status of the delegates","yellow");
-    sync_network_data_nodes_database(0,55);
+    sync_network_data_nodes_database(0,50);
   }
   
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE,START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);
