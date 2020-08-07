@@ -996,7 +996,6 @@ int get_delegates_online_status(void)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
-  int epoll_fd_copy;
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   int total_delegates;
   int total_delegates_online;
@@ -1009,7 +1008,7 @@ int get_delegates_online_status(void)
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS\",\r\n}"
+  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS\",\r\n}|END|"
   #define GET_DELEGATES_ONLINE_STATUS_ERROR(message) \
   memcpy(error_message.function[error_message.total],"get_delegates_online_status",27); \
   memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
@@ -1031,155 +1030,107 @@ int get_delegates_online_status(void)
 
   fprintf(stderr,"total delegates in database = %d\n",total_delegates);
 
-  struct epoll_event events[total_delegates];
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[total_delegates];
-
-  // reset the struct delegates_online_status
-  for (count = 0; count < total_delegates; count++)
-  {
-    memset(delegates_online_status[count].public_address,0,sizeof(delegates_online_status[count].public_address));
-    memcpy(delegates_online_status[count].public_address,delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(delegates_online_status[count].public_address)));
-    delegates_online_status[count].settings = strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 ? 1 : 0;
-  }
 
   // create the message
   memcpy(data,MESSAGE,sizeof(MESSAGE)-1);
-  if (sign_data(data) == 0)
-  {
-    GET_DELEGATES_ONLINE_STATUS_ERROR("Could not sign the message");
-  }
-  memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
-  total = strnlen(data,BUFFER_SIZE);
+  total = sizeof(MESSAGE)-1;
   
-  // create the epoll file descriptor
-  if ((epoll_fd_copy = epoll_create1(0)) < 0)
-  {
-    GET_DELEGATES_ONLINE_STATUS_ERROR("Error creating the epoll file descriptor");
-  }
-
   // convert the port to a string
   snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
   
   for (count = 0; count < total_delegates; count++)
   { 
-    if (strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    if (strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
-      // Variables
-      struct addrinfo serv_addr;
-      struct addrinfo* settings = NULL;
+      block_verifiers_send_data_socket[count].settings = 1;
+      continue;
+    }
+   
+    // Variables
+    struct addrinfo serv_addr;
+    struct addrinfo* settings = NULL;
 
-      // initialize the block_verifiers_send_data_socket struct
-      memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
-      memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
-      block_verifiers_send_data_socket[count].settings = 0;
+    // initialize the block_verifiers_send_data_socket struct
+    memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
+    memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
+    block_verifiers_send_data_socket[count].settings = 0;
 
-      // set up the addrinfo
-      memset(&serv_addr, 0, sizeof(serv_addr));
-      if (string_count(block_verifiers_send_data_socket[count].IP_address,".") == 3)
-      {
-        /* the host is an IP address
-        AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
-        AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
-        AF_INET = IPV4 support
-        SOCK_STREAM = TCP protocol
-        */
-        serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
-        serv_addr.ai_family = AF_INET;
-        serv_addr.ai_socktype = SOCK_STREAM;
-      }
-      else
-      {
-        /* the host is a domain name
-        AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
-        AF_INET = IPV4 support
-        SOCK_STREAM = TCP protocol
-        */
-        serv_addr.ai_flags = AI_NUMERICSERV;
-        serv_addr.ai_family = AF_INET;
-        serv_addr.ai_socktype = SOCK_STREAM;
-      }
-  
-      // convert the hostname if used, to an IP address
-      memset(data3,0,sizeof(data3));
-      memcpy(data3,block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data3)));
-      if (getaddrinfo(data3, data2, &serv_addr, &settings) != 0)
-      { 
-        freeaddrinfo(settings);
-        continue;
-      }
-
-      /* Create the socket  
+    // set up the addrinfo
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    if (string_count(block_verifiers_send_data_socket[count].IP_address,".") == 3)
+    {
+      /* the host is an IP address
+      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+      AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
       AF_INET = IPV4 support
       SOCK_STREAM = TCP protocol
-      SOCK_NONBLOCK = Non blocking socket, so it will be able to use a custom timeout
       */
-      if ((block_verifiers_send_data_socket[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
-      {
-        freeaddrinfo(settings);
-        continue;
-      }
-
-      /* Set the socket options for sending and receiving data
-      SOL_SOCKET = socket level
-      SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
-      */
-      if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
-      { 
-        freeaddrinfo(settings);
-        continue;
-      } 
-
-      /* create the epoll_event struct
-      EPOLLIN = signal when the file descriptor is ready to read
-      EPOLLOUT = signal when the file descriptor is ready to write
-      EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
-      */  
-      events[count].events = EPOLLIN | EPOLLOUT | EPOLLONESHOT;
-      events[count].data.fd = block_verifiers_send_data_socket[count].socket;
-
-      // add the delegates socket to the epoll file descriptor
-      epoll_ctl(epoll_fd_copy, EPOLL_CTL_ADD, block_verifiers_send_data_socket[count].socket, &events[count]);
-
-      // connect to the delegate
-      connect(block_verifiers_send_data_socket[count].socket,settings->ai_addr, settings->ai_addrlen);
-
-      freeaddrinfo(settings);
+      serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
+      serv_addr.ai_family = AF_INET;
+      serv_addr.ai_socktype = SOCK_STREAM;
     }
+    else
+    {
+      /* the host is a domain name
+      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+      AF_INET = IPV4 support
+      SOCK_STREAM = TCP protocol
+      */
+      serv_addr.ai_flags = AI_NUMERICSERV;
+      serv_addr.ai_family = AF_INET;
+      serv_addr.ai_socktype = SOCK_STREAM;
+    }
+  
+    // convert the hostname if used, to an IP address
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data3)));
+    if (getaddrinfo(data3, data2, &serv_addr, &settings) != 0)
+    { 
+      freeaddrinfo(settings);
+      continue;
+    }
+
+    /* Create the socket  
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    SOCK_NONBLOCK = Non blocking socket, so it will be able to use a custom timeout
+    */
+    if ((block_verifiers_send_data_socket[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
+    {
+      freeaddrinfo(settings);
+      continue;
+    }
+
+    /* Set the socket options for sending and receiving data
+    SOL_SOCKET = socket level
+    SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
+    */
+    if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+    { 
+      freeaddrinfo(settings);
+      continue;
+    }
+
+    // connect to the delegate
+    connect(block_verifiers_send_data_socket[count].socket,settings->ai_addr, settings->ai_addrlen);
+
+    freeaddrinfo(settings);
   }
 
   // wait for all of the sockets to connect
   sleep(BLOCK_VERIFIERS_SETTINGS);
-
-  // get the total amount of sockets that are ready
-  number = epoll_wait(epoll_fd_copy, events, total_delegates, 0);
-
-  fprintf(stderr,"connected to = %d sockets\n\n",number);
-
-  for (count = 0; count < number; count++)
-  {
-    // check that the socket is connected
-    if (events[count].events & EPOLLIN || events[count].events & EPOLLOUT)
-    {
-      // set the settings of the delegate to 1
-      for (count2 = 0; count2 < total_delegates; count2++)
-      {
-        if (events[count].data.fd == block_verifiers_send_data_socket[count2].socket)
-        {
-          block_verifiers_send_data_socket[count2].settings = 1;
-          fprintf(stderr,"setting %s to true\n\n\n\n\n",block_verifiers_send_data_socket[count2].IP_address);
-        }
-      }
-    }
-  }
 
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   for (count = 0; count < total_delegates; count++)
   {
-    fprintf(stderr,"sending data to %s\n",block_verifiers_send_data_socket[count].IP_address);
-    //if (block_verifiers_send_data_socket[count].settings == 1)
-    //{
+    if (block_verifiers_send_data_socket[count].settings == 0)
+    {
+      // set the status to online, and set it to offline if sending data fails
+      block_verifiers_send_data_socket[count].settings = 1;
+
       // send the message  
       if (debug_settings == 1 && test_settings == 0)
       {  
@@ -1203,15 +1154,15 @@ int get_delegates_online_status(void)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
         {
-          fprintf(stderr,"error sending data to %s\n",block_verifiers_send_data_socket[count].IP_address);      
+          block_verifiers_send_data_socket[count].settings = 0;    
           break;
         }
       }
-    //}    
+    }    
   }
 
   // wait for all of the data to be sent to the connected sockets, and for the block verifiers to process the data
-  sleep(10);
+  sleep(BLOCK_VERIFIERS_SETTINGS);
 
   for (count = 0, total_delegates_online = 0; count < total_delegates; count++)
   {
@@ -1222,38 +1173,25 @@ int get_delegates_online_status(void)
     memcpy(data2+19,delegates_online_status[count].public_address,XCASH_WALLET_LENGTH);
     memcpy(data2+117,"\"}",2);
 
-    if (delegates_online_status[count].settings == 1)
+    if (block_verifiers_send_data_socket[count].settings == 1)
     {
       memcpy(data,"{\"online_status\":\"true\"}",24);
       total_delegates_online++;
     }
     else
     {
+      fprintf(stderr,"delegate is offline %s\n",block_verifiers_send_data_socket[count].IP_address);
       memcpy(data,"{\"online_status\":\"false\"}",25);
-    }
-
-    // set the online status for network data nodes
-    for (count2 = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
-    {
-      if (strncmp(delegates_online_status[count].public_address,network_data_nodes_list.network_data_nodes_public_address[count2],XCASH_WALLET_LENGTH) == 0)
-      {
-        network_data_nodes_list.online_status[count2] = delegates_online_status[count].settings == 1 ? 1 : 0;
-      }
-    }
-
-    // if all network data nodes are offline, its an error so set it to the first one online
-    if (network_data_nodes_list.online_status[0] == 0 && network_data_nodes_list.online_status[1] == 0 && network_data_nodes_list.online_status[2] == 0 && network_data_nodes_list.online_status[3] == 0 && network_data_nodes_list.online_status[4] == 0)
-    {
-      network_data_nodes_list.online_status[0] = 1; 
     }
 
     update_document_from_collection(database_name,DATABASE_COLLECTION,data2,data);
 
-    // remove all of the sockets from the epoll file descriptor and close all of the sockets
-    epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
+    // close all of the sockets
     close(block_verifiers_send_data_socket[count].socket);
   }
+
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+
   return total_delegates_online;
 
   #undef DATABASE_COLLECTION
