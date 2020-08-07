@@ -1029,6 +1029,8 @@ int get_delegates_online_status(void)
     GET_DELEGATES_ONLINE_STATUS_ERROR("Could not organize the delegates");
   }
 
+  fprintf(stderr,"total delegates in database = %d\n",total_delegates);
+
   struct epoll_event events[total_delegates];
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[total_delegates];
 
@@ -1151,6 +1153,8 @@ int get_delegates_online_status(void)
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, total_delegates, 0);
 
+  fprintf(stderr,"connected to = %d sockets\n\n",number);
+
   for (count = 0; count < number; count++)
   {
     // check that the socket is connected
@@ -1162,6 +1166,7 @@ int get_delegates_online_status(void)
         if (events[count].data.fd == block_verifiers_send_data_socket[count2].socket)
         {
           block_verifiers_send_data_socket[count2].settings = 1;
+          fprintf(stderr,"setting %s to true\n",block_verifiers_send_data_socket[count2].IP_address);
         }
       }
     }
@@ -1196,7 +1201,8 @@ int get_delegates_online_status(void)
       for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
-        {           
+        {
+          fprintf(stderr,"error sending data to %s\n",block_verifiers_send_data_socket[count].IP_address);      
           break;
         }
       }
