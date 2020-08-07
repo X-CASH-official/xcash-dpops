@@ -81,7 +81,7 @@ int sync_all_delegates(void)
 
   color_print("Getting the online status of the delegates\n","blue");
 
-  //get_delegates_online_status();
+  get_delegates_online_status();
 
   color_print("Waiting for all network data nodes to sync the online status of the delegates\n","blue");
 

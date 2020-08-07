@@ -1166,7 +1166,7 @@ int get_delegates_online_status(void)
         if (events[count].data.fd == block_verifiers_send_data_socket[count2].socket)
         {
           block_verifiers_send_data_socket[count2].settings = 1;
-          fprintf(stderr,"setting %s to true\n",block_verifiers_send_data_socket[count2].IP_address);
+          fprintf(stderr,"setting %s to true\n\n\n\n\n",block_verifiers_send_data_socket[count2].IP_address);
         }
       }
     }
@@ -1177,8 +1177,9 @@ int get_delegates_online_status(void)
 
   for (count = 0; count < total_delegates; count++)
   {
-    if (block_verifiers_send_data_socket[count].settings == 1)
-    {
+    fprintf(stderr,"sending data to %s\n",block_verifiers_send_data_socket[count].IP_address);
+    //if (block_verifiers_send_data_socket[count].settings == 1)
+    //{
       // send the message  
       if (debug_settings == 1 && test_settings == 0)
       {  
@@ -1206,7 +1207,7 @@ int get_delegates_online_status(void)
           break;
         }
       }
-    }    
+    //}    
   }
 
   // wait for all of the data to be sent to the connected sockets, and for the block verifiers to process the data
