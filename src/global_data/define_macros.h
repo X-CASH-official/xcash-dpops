@@ -76,9 +76,9 @@ Using define statements instead of constants for increased efficiency
 #define INVALID_BLOCK_VERIFIERS_AMOUNT 10 // The maximum amount of times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
 #define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof, 2M xcash
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 1000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet, 20M xcash
-#define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 0 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the xcash-dpops program running to sync in case they move to the top 100, 100M xcash
+#define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 2000000000000 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the xcash-dpops program running to sync in case they move to the top 100, 100M xcash
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
-#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 25 // the start time in seconds that the block verifiers synchronize the database each round
+#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 30 // the start time in seconds that the block verifiers synchronize the database each round
 #define START_TIME_MINUTE_NETWORK_BLOCK_ROUND 2 // the start time that the block verifiers start to create the network block
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 40 // The time to submit the network block
 #define START_TIME_SECONDS_NETWORK_BLOCK_PART_2 10 // the start time of part 2 of the network block round
@@ -99,7 +99,7 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_CONNECTIONS_IP_ADDRESS_OR_PUBLIC_ADDRESS 20 // The maximum connections a specific IP address or specific public address can have at one time
 #define BLOCK_VERIFIERS_SETTINGS 3 // The time in seconds to wait to send data to the block verifiers
 #define MAIN_NETWORK_DATA_NODE_SEND_BLOCK_SETTINGS 10 // The time in seconds that the main network data node waits for the block verifiers signatures
-#define NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS 15 // the time in seconds that the network data nodes wait to see if the database is synced
+#define NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS 7 // the time in seconds that the network data nodes wait to see if the database is synced
 #define CONNECTION_TIMEOUT_SETTINGS 1 // the time in seconds for a connection to be created
 #define SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS 3 // The time to wait for sending or receving socket data
 #define SEND_PAYMENT_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function

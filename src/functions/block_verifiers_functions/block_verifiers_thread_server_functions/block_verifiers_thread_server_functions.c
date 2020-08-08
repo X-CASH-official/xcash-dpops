@@ -73,7 +73,6 @@ void* current_block_height_timer_thread(void* parameters)
   int block_verifier_settings;
   
   memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
 
   // unused parameters
   (void)parameters;

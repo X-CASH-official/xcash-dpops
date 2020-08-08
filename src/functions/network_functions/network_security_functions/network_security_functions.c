@@ -281,13 +281,6 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   // parse the message
   if (strstr(MESSAGE,"}") != NULL)
   {
-    // check to make sure this is not a message sent from your own delegate
-    if (test_settings == 0 && parse_json_data(MESSAGE,"public_address",message_settings,sizeof(message_settings)) == 1 && strncmp(message_settings,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
-    {
-      VERIFY_DATA_ERROR("Message was sent from your own delegate");
-    }
-    memset(message_settings,0,sizeof(message_settings));
-
     if (parse_json_data(MESSAGE,"message_settings",message_settings,sizeof(message_settings)) == 0)
     {
       VERIFY_DATA_ERROR("Could not parse the message");
