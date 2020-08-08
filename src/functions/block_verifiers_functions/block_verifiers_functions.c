@@ -90,7 +90,7 @@ int sync_all_delegates(void)
   {
     // sync check the databases with checking the delegates online status
     color_print("Your block verifier is a network data node, syncing the online status of the delegates","yellow");
-    sync_network_data_nodes_database(0,50);
+    sync_network_data_nodes_database(0,55);
   }
   
   sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE,START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);
@@ -2147,31 +2147,137 @@ Return: 0 if no network data nodes are online, 1 if there is at least one networ
 
 int get_network_data_nodes_online_status(void)
 {
+  // define macros
+  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS\",\r\n}|END|"
+
+  // Constants
+  const int TOTAL = sizeof(MESSAGE)-1;
+
   // Variables
-  char data[SMALL_BUFFER_SIZE];
-  char data2[SMALL_BUFFER_SIZE];
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};  
+  int network_data_nodes_sockets[NETWORK_DATA_NODES_AMOUNT];
+  int sent;
+  int bytes = 1;
   int count;
+  int count2;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
-  
-  // create the message
-  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\",\r\n}",95);
 
-  // sign_data
-  if (sign_data(data) == 0)
+  // create the message
+  memcpy(data,MESSAGE,sizeof(MESSAGE)-1);
+  
+  // convert the port to a string
+  snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT); 
+  
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   { 
-    return 0;
+    if (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {      
+      continue;
+    }
+   
+    // Variables
+    struct addrinfo serv_addr;
+    struct addrinfo* settings = NULL;
+
+    // set up the addrinfo
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    if (string_count(network_data_nodes_list.network_data_nodes_IP_address[count],".") == 3)
+    {
+      /* the host is an IP address
+      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+      AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
+      AF_INET = IPV4 support
+      SOCK_STREAM = TCP protocol
+      */
+      serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
+      serv_addr.ai_family = AF_INET;
+      serv_addr.ai_socktype = SOCK_STREAM;
+    }
+    else
+    {
+      /* the host is a domain name
+      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+      AF_INET = IPV4 support
+      SOCK_STREAM = TCP protocol
+      */
+      serv_addr.ai_flags = AI_NUMERICSERV;
+      serv_addr.ai_family = AF_INET;
+      serv_addr.ai_socktype = SOCK_STREAM;
+    }
+  
+    // convert the hostname if used, to an IP address
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(data3)));
+    if (getaddrinfo(data3, data2, &serv_addr, &settings) != 0)
+    { 
+      freeaddrinfo(settings);
+      continue;
+    }
+
+    /* Create the socket  
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    SOCK_NONBLOCK = Non blocking socket, so it will be able to use a custom timeout
+    */
+    if ((network_data_nodes_sockets[count] = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
+    {
+      freeaddrinfo(settings);
+      continue;
+    }
+
+    /* Set the socket options for sending and receiving data
+    SOL_SOCKET = socket level
+    SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
+    */
+    if (setsockopt(network_data_nodes_sockets[count], SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+    { 
+      freeaddrinfo(settings);
+      continue;
+    }
+
+    // connect to the delegate
+    connect(network_data_nodes_sockets[count],settings->ai_addr, settings->ai_addrlen);
+
+    freeaddrinfo(settings);
   }
 
+  // wait for all of the sockets to connect
+  sleep(1);
+
+  for (count = 0, count2 = 1; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  { 
+    if (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {      
+      continue;
+    }
+
+    for (sent = 0; sent < TOTAL || bytes <= 0; sent+= bytes)
+    {
+      if ((bytes = send(network_data_nodes_sockets[count],data+sent,TOTAL-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
+      {
+        count2++;    
+        break;
+      }
+    } 
+  }
+
+  // wait for all of the data to be sent to the connected sockets
+  sleep(1);
+
+  // close all of the sockets
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
-    if (send_and_receive_data_socket(data2,sizeof(data2),network_data_nodes_list.network_data_nodes_IP_address[count],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1)
-    {
-      return 1;
-    }
+    close(network_data_nodes_sockets[count]);
   }
-  return 0;
+
+  return count2 == NETWORK_DATA_NODES_AMOUNT ? 0 : 1;
+
+  #undef MESSAGE
 }
 
 
@@ -2187,9 +2293,9 @@ Return: 0 if an error has occured, 1 if successfull
 */
 
 int block_verifiers_send_data_socket(const char* MESSAGE)
-{
+{  
   // Constants
-  const int TOTAL_BLOCK_VERIFIERS = test_settings == 0 ? BLOCK_VERIFIERS_AMOUNT : BLOCK_VERIFIERS_TOTAL_AMOUNT; 
+  const int TOTAL_BLOCK_VERIFIERS = test_settings == 0 ? BLOCK_VERIFIERS_AMOUNT : BLOCK_VERIFIERS_TOTAL_AMOUNT;  
 
   // Variables
   char data[BUFFER_SIZE];
@@ -2197,16 +2303,12 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   char data3[BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  int epoll_fd_copy;
-  struct epoll_event events[TOTAL_BLOCK_VERIFIERS];
-  struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
-  struct block_verifiers_send_data_socket block_verifiers_send_data_socket[TOTAL_BLOCK_VERIFIERS];
-  int total;
+  struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};  
+  int block_verifiers_sockets[TOTAL_BLOCK_VERIFIERS];
   int sent;
+  int total;
   int bytes = 1;
   int count;
-  int count2;
-  int number;
 
   // define macros
   #define BLOCK_VERIFIERS_SEND_DATA_SOCKET(message) \
@@ -2223,169 +2325,131 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   memcpy(data,MESSAGE,strnlen(MESSAGE,sizeof(data)));
   memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
   total = strnlen(data,BUFFER_SIZE);
-  
-  // create the epoll file descriptor
-  if ((epoll_fd_copy = epoll_create1(0)) < 0)
-  {
-    BLOCK_VERIFIERS_SEND_DATA_SOCKET("Error creating the epoll file descriptor");
-  }
 
   // convert the port to a string
   snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT);
   
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {    
-    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
-      // Variables
-      struct addrinfo serv_addr;
-      struct addrinfo* settings = NULL;
+      continue;
+    }
+    
+    // Variables
+    struct addrinfo serv_addr;
+    struct addrinfo* settings = NULL;
 
-      // initialize the block_verifiers_send_data_socket struct
-      memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
-      memcpy(block_verifiers_send_data_socket[count].IP_address,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(block_verifiers_send_data_socket[count].IP_address)));
-      block_verifiers_send_data_socket[count].settings = 0;
-
-      // set up the addrinfo
-      memset(&serv_addr, 0, sizeof(serv_addr));
-      if (string_count(block_verifiers_send_data_socket[count].IP_address,".") == 3)
-      {
-        /* the host is an IP address
-        AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
-        AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
-        AF_INET = IPV4 support
-        SOCK_STREAM = TCP protocol
-        */
-        serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
-        serv_addr.ai_family = AF_INET;
-        serv_addr.ai_socktype = SOCK_STREAM;
-      }
-      else
-      {
-        /* the host is a domain name
-        AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
-        AF_INET = IPV4 support
-        SOCK_STREAM = TCP protocol
-        */
-        serv_addr.ai_flags = AI_NUMERICSERV;
-        serv_addr.ai_family = AF_INET;
-        serv_addr.ai_socktype = SOCK_STREAM;
-      }
-  
-      // convert the hostname if used, to an IP address
-      memset(data3,0,sizeof(data3));
-      memcpy(data3,block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data3)));
-      if (getaddrinfo(data3, data2, &serv_addr, &settings) != 0)
-      { 
-        freeaddrinfo(settings);
-        continue;
-      }
-
-      /* Create the socket  
+    // set up the addrinfo
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    if (string_count(current_block_verifiers_list.block_verifiers_IP_address[count],".") == 3)
+    {
+      /* the host is an IP address
+      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+      AI_NUMERICHOST = The host is already an IP address, and this will have getaddrinfo not lookup the hostname
       AF_INET = IPV4 support
       SOCK_STREAM = TCP protocol
-      SOCK_NONBLOCK = Non blocking socket, so it will be able to use a custom timeout
       */
-      if ((block_verifiers_send_data_socket[count].socket = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
-      {
-        freeaddrinfo(settings);
-        continue;
-      }
-
-      /* Set the socket options for sending and receiving data
-      SOL_SOCKET = socket level
-      SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
-      */
-      if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
-      { 
-        freeaddrinfo(settings);
-        continue;
-      } 
-
-      /* create the epoll_event struct
-      EPOLLIN = signal when the file descriptor is ready to read
-      EPOLLOUT = signal when the file descriptor is ready to write
-      EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
-      */  
-      events[count].events = EPOLLIN | EPOLLOUT | EPOLLONESHOT;
-      events[count].data.fd = block_verifiers_send_data_socket[count].socket;
-
-      // add the delegates socket to the epoll file descriptor
-      epoll_ctl(epoll_fd_copy, EPOLL_CTL_ADD, block_verifiers_send_data_socket[count].socket, &events[count]);
-
-      // connect to the delegate
-      connect(block_verifiers_send_data_socket[count].socket,settings->ai_addr, settings->ai_addrlen);
-
-      freeaddrinfo(settings);
+      serv_addr.ai_flags = AI_NUMERICSERV | AI_NUMERICHOST;
+      serv_addr.ai_family = AF_INET;
+      serv_addr.ai_socktype = SOCK_STREAM;
     }
+    else
+    {
+      /* the host is a domain name
+      AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
+      AF_INET = IPV4 support
+      SOCK_STREAM = TCP protocol
+      */
+      serv_addr.ai_flags = AI_NUMERICSERV;
+      serv_addr.ai_family = AF_INET;
+      serv_addr.ai_socktype = SOCK_STREAM;
+    }
+  
+    // convert the hostname if used, to an IP address
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(data3)));
+    if (getaddrinfo(data3, data2, &serv_addr, &settings) != 0)
+    { 
+      freeaddrinfo(settings);
+      continue;
+     }
+
+    /* Create the socket  
+    AF_INET = IPV4 support
+    SOCK_STREAM = TCP protocol
+    SOCK_NONBLOCK = Non blocking socket, so it will be able to use a custom timeout
+    */
+    if ((block_verifiers_sockets[count] = socket(settings->ai_family, settings->ai_socktype | SOCK_NONBLOCK, settings->ai_protocol)) == -1)
+    {
+      freeaddrinfo(settings);
+      continue;
+    }
+
+    /* Set the socket options for sending and receiving data
+    SOL_SOCKET = socket level
+    SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
+    */
+    if (setsockopt(block_verifiers_sockets[count], SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+    { 
+      freeaddrinfo(settings);
+      continue;
+    } 
+
+    // connect to the delegate
+    connect(block_verifiers_sockets[count],settings->ai_addr, settings->ai_addrlen);
+
+    freeaddrinfo(settings);
   }
 
   // wait for all of the sockets to connect
   sleep(BLOCK_VERIFIERS_SETTINGS);
-
-  // get the total amount of sockets that are ready
-  number = epoll_wait(epoll_fd_copy, events, TOTAL_BLOCK_VERIFIERS, 0);
-
-  for (count = 0; count < number; count++)
-  {
-    // check that the socket is connected
-    if (events[count].events & EPOLLIN || events[count].events & EPOLLOUT)
-    {
-      // set the settings of the delegate to 1
-      for (count2 = 0; count2 < TOTAL_BLOCK_VERIFIERS; count2++)
-      {
-        if (events[count].data.fd == block_verifiers_send_data_socket[count2].socket)
-        {
-          block_verifiers_send_data_socket[count2].settings = 1;
-        }
-      }
-    }
-  }
 
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {
-    if (block_verifiers_send_data_socket[count].settings == 1)
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
-      // send the message  
-      if (debug_settings == 1 && test_settings == 0)
-      {  
-        memset(data2,0,sizeof(data2));   
-        memcpy(data2,"Sending ",8);
-        memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
-        memcpy(data2+strlen(data2),"\n",1);
-        memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
-        memcpy(data2+strlen(data2)," on port ",9);
-        memset(data3,0,sizeof(data3));
-        snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
-        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
-        memcpy(data2+strlen(data2),"\n",1);
-        memset(data3,0,sizeof(data3));
-        strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
-        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
-        color_print(data2,"green");
-      }
+      continue;
+    }
+
+    // send the message  
+    if (debug_settings == 1 && test_settings == 0)
+    {  
+      memset(data2,0,sizeof(data2));   
+      memcpy(data2,"Sending ",8);
+      memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
+      memcpy(data2+strlen(data2),"\n",1);
+      memcpy(data2+strlen(data2),current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(data2)));
+      memcpy(data2+strlen(data2)," on port ",9);
+      memset(data3,0,sizeof(data3));
+      snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
+      memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
+      memcpy(data2+strlen(data2),"\n",1);
+      memset(data3,0,sizeof(data3));
+      strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
+      memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
+      color_print(data2,"green");
+    }
       
-      for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
+    for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
+    {
+      if ((bytes = send(block_verifiers_sockets[count],data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
       {
-        if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
-        {           
-          break;
-        }
+        break;
       }
-    }    
+    } 
   }
 
   // wait for all of the data to be sent to the connected sockets
   sleep(BLOCK_VERIFIERS_SETTINGS);
 
-  // remove all of the sockets from the epoll file descriptor and close all of the sockets
+  // close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {
-    epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
-    close(block_verifiers_send_data_socket[count].socket);
+    close(block_verifiers_sockets[count]);
   }
   return 1;
   

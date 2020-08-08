@@ -64,6 +64,7 @@ void* current_block_height_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   char previous_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -72,6 +73,7 @@ void* current_block_height_timer_thread(void* parameters)
   int block_verifier_settings;
   
   memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // unused parameters
   (void)parameters;
