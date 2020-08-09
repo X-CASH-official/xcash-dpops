@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/random.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -725,23 +726,42 @@ Return: 0 if an error has occured, 1 if successfull
 int random_string(char *result, const size_t LENGTH)
 {  
   // define macros
-  #define STRING "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" 
-  #define MINIMUM 0
-  #define MAXIMUM 61
+  #define STRING "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  #define MAXIMUM_COUNT 1000
   
   // Variables
-  char data[100];
-  size_t count;
-  
-  memset(data,0,sizeof(data));
-  memcpy(data,STRING,sizeof(STRING)-1);
-  for (count = 0; count < LENGTH; count++)
+  char data2[BUFFER_SIZE];
+  int count;
+  int count2;
+  int count3 = 0;
+
+  memset(result,0,strlen(result));
+
+  do
   {
-    memcpy(result+count,&data[(rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM],1);
-  }
-  return 1;
-  
+    memset(data2,0,sizeof(data2));
+    
+    count2 = getrandom(data2,sizeof(data2)-1,0);
+
+    // only use specific bytes
+    for (count = 0; count < count2; count++)
+    {
+      if (strstr(STRING,&data2[count]) != NULL)
+      {
+        memcpy(result+strlen(result),&data2[count],sizeof(char));
+      }
+
+      // check if the random string is at the maximum number of bytes
+      if (strlen(result) == LENGTH)
+      {
+        break;
+      }
+    }
+    count3++;
+  } while (strlen(result) != LENGTH && count3 != MAXIMUM_COUNT);
+
+  return strlen(result) == LENGTH ? 1 : 0;
+
   #undef STRING
-  #undef MINIMUM
-  #undef MAXIMUM  
+  #undef MAXIMUM_COUNT
 }
