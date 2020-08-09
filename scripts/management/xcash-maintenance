@@ -4,7 +4,7 @@
 XCASH_DAEMON_SRV=xcash-daemon
 
 # Adjust this variable to the name of your xcash-wallets unit file name
-XCASH_WALLET_SRV=xcash-rpc-wallet
+XCASH_WALLET_SRV=xcash-wallet
 
 # Adjust this variable to the name of your xcash-dpops unit file name
 XCASH_DPOPS_SRV=xcash-dpops
@@ -18,12 +18,21 @@ XCASH_WALLET_LOG_FILE=/var/x-network/logs/rpc.log
 
 DAEMON_URL="http://127.0.0.1:18281/json_rpc"
 WALLET_URL="http://127.0.0.1:18285/json_rpc"
-DPOPS_QUERY="curl -s -H \"Content-Type: application/json\" -X GET http://127.0.0.1:18283"
-CURL='curl -w "\n" -s -H "Content-Type: application/json" -X'
+DPOPS_QUERY=('curl -s -H "Content-Type: application/json" -X GET http://127.0.0.1:18283')
+CURL=('curl -w "\n" -s -H "Content-Type: application/json" -X')
 
-red=`tput setaf 1`
-green=`tput setaf 2`
-reset=`tput sgr0`
+SEED_NODE1_URL="http://us1.xcash.foundation:18281/json_rpc"
+SEED_NODE2_URL="http://us2.xcash.foundation:18281/json_rpc"
+SEED_NODE3_URL="http://europe1.xcash.foundation:18281/json_rpc"
+SEED_NODE4_URL="http://europe2.xcash.foundation:18281/json_rpc"
+SEED_NODE5_URL="http://europe3.xcash.foundation:18281/json_rpc"
+
+declare -ir TOTAL_DELEGATES=50
+declare -ir ATOMIC_DIVISOR=1000000
+
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+reset=$(tput sgr0)
 
 PS3='
 Please enter an option: '
@@ -34,25 +43,61 @@ options=(
 	"Get node balance"
 	"Check services status"
 	"Start stopped services"
-    "Stop all services"
+    	"Stop all services"
 	"Restart all services"
 	"Get X-Cash DPoPS log"
-    "Get X-Cash Daemon log"
-    "Get X-Cash RPC Wallet log"
+    	"Get X-Cash Daemon log"
+    	"Get X-Cash RPC Wallet log"
 	"Quit"
 )
 
 function check_height(){
 	if lsof -Pi :18281 -sTCP:LISTEN -t >/dev/null ; then
-        DATA=`$CURL GET $DAEMON_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}'`
+	        DATA=$($CURL GET $DAEMON_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}')
 
-		HEIGHT=$(echo "$DATA" | grep '"count"' | awk {'print $2'} | sed s'|,||g' | tr -d $'\r')
-		STATUS=$(echo "$DATA" | grep '"status"' | awk {'print $2'} | sed s'|"||g' | tr -d $'\r')
-		
-		if [ $STATUS == "OK" ]; then
+		SEED_NODE1_DATA=$($CURL GET $SEED_NODE1_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}')
+		SEED_NODE1_HEIGHT=$(($(echo "$SEED_NODE1_DATA" | grep '"count"' | awk '{print $2}' | sed s'|,||g' | tr -d $'\r') + 0))
+
+		SEED_NODE2_DATA=$($CURL GET $SEED_NODE2_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}')
+		SEED_NODE2_HEIGHT=$(($(echo "$SEED_NODE2_DATA" | grep '"count"' | awk '{print $2}' | sed s'|,||g' | tr -d $'\r') + 0))
+
+		SEED_NODE3_DATA=$($CURL GET $SEED_NODE3_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}')
+		SEED_NODE3_HEIGHT=$(($(echo "$SEED_NODE3_DATA" | grep '"count"' | awk '{print $2}' | sed s'|,||g' | tr -d $'\r') + 0))
+
+		SEED_NODE4_DATA=$($CURL GET $SEED_NODE4_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}')
+		SEED_NODE4_HEIGHT=$(($(echo "$SEED_NODE4_DATA" | grep '"count"' | awk '{print $2}' | sed s'|,||g' | tr -d $'\r') + 0))
+
+		SEED_NODE5_DATA=$($CURL GET $SEED_NODE5_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}')
+		SEED_NODE5_HEIGHT=$(($(echo "$SEED_NODE5_DATA" | grep '"count"' | awk '{print $2}' | sed s'|,||g' | tr -d $'\r') + 0))
+
+		HEIGHT=$(echo "$DATA" | grep '"count"' | awk '{print $2}' | sed s'|,||g' | tr -d $'\r')
+		STATUS_COUNT=0
+
+		if (( HEIGHT >= SEED_NODE1_HEIGHT && SEED_NODE1_HEIGHT != 0 )); then 
+			(( STATUS_COUNT++ ))
+		fi
+
+                if (( HEIGHT >= SEED_NODE2_HEIGHT && SEED_NODE2_HEIGHT != 0 )); then
+                        (( STATUS_COUNT++ ))
+                fi
+
+                if (( HEIGHT >= SEED_NODE3_HEIGHT && SEED_NODE3_HEIGHT != 0 )); then
+                        (( STATUS_COUNT++ ))
+                fi
+
+                if (( HEIGHT >= SEED_NODE4_HEIGHT && SEED_NODE4_HEIGHT != 0 )); then
+                        (( STATUS_COUNT++ ))
+                fi
+
+                if (( HEIGHT >= SEED_NODE5_HEIGHT && SEED_NODE5_HEIGHT != 0 )); then
+                        (( STATUS_COUNT++ ))
+                fi
+
+
+		if (( STATUS_COUNT >= 3 )); then
 			STATUS=${green}OK${reset}
 		else 
-			SATTUS=${red}FAIL${reset}
+			STATUS=${red}FAIL${reset}
 		fi
 
 		echo
@@ -67,15 +112,15 @@ function check_height(){
 
 function get_node_balance(){
 	if lsof -Pi :18285 -sTCP:LISTEN -t >/dev/null ; then
-		DATA=`$CURL GET $WALLET_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_balance","params":{"account_index":0,"address_indices":[0]}}'`
+		DATA=$($CURL GET $WALLET_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_balance","params":{"account_index":0,"address_indices":[0]}}')
 		
-		ADDR=$(echo "$DATA" | grep '"address"' | awk {'print $2'} | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
-		UNSPENT_OUTPUTS=$(echo "$DATA" | grep '"num_unspent_outputs"' | awk {'print $2'} | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
+		ADDR=$(echo "$DATA" | grep '"address"' | awk '{print $2}' | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
+		UNSPENT_OUTPUTS=$(echo "$DATA" | grep '"num_unspent_outputs"' | awk '{print $2}' | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
 
-		ATOMIC_TOTAL_BALANCE=$(echo "$DATA" | grep '"balance"' | awk {'print $2'} | sed s'|,||g' | head -1 | tr -d $'\r')
-		ATOMIC_UNLOCKED_BALANCE=$(echo "$DATA" | grep '"unlocked_balance"' | awk {'print $2'} | sed s'|,||g' | head -1 | sed s"|^M||g" | tr -d $'\r')
-		TOTAL_BALANCE=$((ATOMIC_TOTAL_BALANCE/1000000))
-		UNLOCKED_BALANCE=$((ATOMIC_UNLOCKED_BALANCE/1000000))
+		ATOMIC_TOTAL_BALANCE=$(echo "$DATA" | grep '"balance"' | awk '{print $2}' | sed s'|,||g' | head -1 | tr -d $'\r')
+		ATOMIC_UNLOCKED_BALANCE=$(echo "$DATA" | grep '"unlocked_balance"' | awk '{print $2}' | sed s'|,||g' | head -1 | sed s"|^M||g" | tr -d $'\r')
+		TOTAL_BALANCE=$((ATOMIC_TOTAL_BALANCE/ATOMIC_DIVISOR))
+		UNLOCKED_BALANCE=$((ATOMIC_UNLOCKED_BALANCE/ATOMIC_DIVISOR))
 
 		echo
 		echo "Public address:   $ADDR"
@@ -91,22 +136,22 @@ function get_node_balance(){
 
 function shared_delegates_website_statistics(){
     if lsof -Pi :18283 -sTCP:LISTEN -t >/dev/null ; then
-        DATA=`$DPOPS_QUERY/shareddelegateswebsitegetstatistics | python3 -m json.tool`
-        RANK=$(echo "$DATA" | grep '"current_delegate_rank"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
-        TOTAL_VOTES=$(($(echo "$DATA" | grep '"total_votes"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')/1000000))
-        ONLINE_PCT=$(echo "$DATA" | grep '"online_percentage"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
-        ROUNDS=$(echo "$DATA" | grep '"block_verifier_total_rounds"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
-        BLOCKS_FOUND=$(echo "$DATA" | grep '"total_blocks_found"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
-        XCASH_FOUND=$(($(echo "$DATA" | grep '"total_xcash_from_blocks_found"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')/1000000))
-        TOTAL_PAYMENTS=$(echo "$DATA" | grep '"total_payments"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
-        VOTERS=$(echo "$DATA" | grep '"total_voters"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
-        FEE=$(echo "$DATA" | grep '"fee"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
-        MIN_AMOUNT=$(echo "$DATA" | grep '"minimum_amount"' | awk {'print $2'} | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        DATA=$("$DPOPS_QUERY"/shareddelegateswebsitegetstatistics | python3 -m json.tool)
+        RANK=$(echo "$DATA" | grep '"current_delegate_rank"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        TOTAL_VOTES=$(($(echo "$DATA" | grep '"total_votes"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')/ATOMIC_DIVISOR))
+        ONLINE_PCT=$(echo "$DATA" | grep '"online_percentage"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        ROUNDS=$(echo "$DATA" | grep '"block_verifier_total_rounds"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        BLOCKS_FOUND=$(echo "$DATA" | grep '"total_blocks_found"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        XCASH_FOUND=$(($(echo "$DATA" | grep '"total_xcash_from_blocks_found"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')/ATOMIC_DIVISOR))
+        TOTAL_PAYMENTS=$(echo "$DATA" | grep '"total_payments"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        VOTERS=$(echo "$DATA" | grep '"total_voters"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        FEE=$(echo "$DATA" | grep '"fee"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
+        MIN_AMOUNT=$(echo "$DATA" | grep '"minimum_amount"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
 
 
         echo
         echo "######### DELEGATE STATUS #########"
-        if (( $RANK <= 50 )); then
+        if (( RANK <= TOTAL_DELEGATES )); then
             echo -e "Rank....................${green}$RANK${reset}"
         else
             echo -e "Rank....................${red}$RANK${reset}"
@@ -137,20 +182,20 @@ function check_services_status(){
     XCASH_DPOPS_UP_SINCE=$(systemctl show $XCASH_DPOPS_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
 
     systemctl is-active $MONGODB_SRV --quiet \
-		&& echo -e ${green}\\u2714 MongoDB service is running since...............$MONGODB_UP_SINCE${reset} \
-		|| echo -e ${red}\\u2716 MongoDB service is not running${reset}
+		&& echo -e "${green}"\\u2714 MongoDB service is running since..............."$MONGODB_UP_SINCE""${reset}" \
+		|| echo -e "${red}"\\u2716 MongoDB service is not running"${reset}"
 
 	systemctl is-active $XCASH_DAEMON_SRV --quiet \
-		&& echo -e ${green}\\u2714 X-Cash Daemon service is running since.........$XCASH_DAEMON_UP_SINCE${reset} \
-		|| echo -e ${red}\\u2716 X-Cash Daemon service is not running${reset}
+		&& echo -e "${green}"\\u2714 X-Cash Daemon service is running since........."$XCASH_DAEMON_UP_SINCE""${reset}" \
+		|| echo -e "${red}"\\u2716 X-Cash Daemon service is not running"${reset}"
 
 	systemctl is-active $XCASH_WALLET_SRV --quiet \
-		&& echo -e ${green}\\u2714 X-Cash RPC Wallet service is running since.....$XCASH_WALLET_UP_SINCE${reset} \
-		|| echo -e ${red}\\u2716 X-Cash RPC Wallet service is not running${reset}
+		&& echo -e "${green}"\\u2714 X-Cash RPC Wallet service is running since....."$XCASH_WALLET_UP_SINCE""${reset}" \
+		|| echo -e "${red}"\\u2716 X-Cash RPC Wallet service is not running"${reset}"
 
 	systemctl is-active $XCASH_DPOPS_SRV --quiet \
-		&& echo -e ${green}\\u2714 X-Cash DPoPS service is running since..........$XCASH_DPOPS_UP_SINCE${reset} \
-		|| echo -e ${red}\\u2716 X-Cash DPoPS service is not running${reset}
+		&& echo -e "${green}"\\u2714 X-Cash DPoPS service is running since.........."$XCASH_DPOPS_UP_SINCE""${reset}" \
+		|| echo -e "${red}"\\u2716 X-Cash DPoPS service is not running"${reset}"
 }
 
 function start_stopped_services(){
@@ -159,76 +204,76 @@ function start_stopped_services(){
 
 	if (systemctl is-active $MONGODB_SRV --quiet); then
 		MONGODB_UP_SINCE=$(systemctl show $MONGODB_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
-		echo -e ${green}\\u2714 MongoDB service is running since...............$MONGODB_UP_SINCE${reset}
+		echo -e "${green}"\\u2714 MongoDB service is running since..............."$MONGODB_UP_SINCE""${reset}"
 	else
-		echo -en ${red}\\u2716 MongoDB service is not running, starting it.............${reset}
+		echo -en "${red}"\\u2716 MongoDB service is not running, starting it............."${reset}"
 		systemctl start $MONGODB_SRV && sleep 3
 		systemctl is-active $MONGODB_SRV --quiet \
-		&& echo -e ${green}\\u2714${reset} || echo -e ${red}\\u2716${reset}
+		&& echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
 	fi
 
     if (systemctl is-active $XCASH_DAEMON_SRV --quiet); then
         XCASH_DAEMON_UP_SINCE=$(systemctl show $XCASH_DAEMON_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
-        echo -e ${green}\\u2714 X-Cash Daemon service is running since.........$XCASH_DAEMON_UP_SINCE${reset}
+        echo -e "${green}"\\u2714 X-Cash Daemon service is running since........."$XCASH_DAEMON_UP_SINCE""${reset}"
     else
-        echo -en ${red}\\u2716 X-Cash Daemon service is not running, starting it.......${reset}
+        echo -en "${red}"\\u2716 X-Cash Daemon service is not running, starting it......."${reset}"
         systemctl start $XCASH_DAEMON_SRV && sleep 3 
         systemctl is-active $XCASH_DAEMON_SRV --quiet \
-		&& echo -e ${green}\\u2714${reset} || echo -e ${red}\\u2716${reset}
+		&& echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
     fi
 
     if (systemctl is-active $XCASH_WALLET_SRV --quiet); then
         XCASH_WALLET_UP_SINCE=$(systemctl show $XCASH_WALLET_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
-        echo -e ${green}\\u2714 X-Cash RPC Wallet service is running since.....$XCASH_WALLET_UP_SINCE${reset}
+        echo -e "${green}"\\u2714 X-Cash RPC Wallet service is running since....."$XCASH_WALLET_UP_SINCE""${reset}"
     else
-        echo -en ${red}\\u2716 X-Cash RPC Wallet service is not running, starting it...${reset} \
+        echo -en "${red}"\\u2716 X-Cash RPC Wallet service is not running, starting it..."${reset}" \
         && systemctl start $XCASH_WALLET_SRV && sleep 3 \
         && systemctl is-active $XCASH_WALLET_SRV --quiet \
-		&& echo -e ${green}\\u2714${reset} || echo -e ${red}\\u2716${reset}
+		&& echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
     fi
 
     if (systemctl is-active $XCASH_DPOPS_SRV --quiet); then
         XCASH_DPOPS_UP_SINCE=$(systemctl show $XCASH_DPOPS_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
-        echo -e ${green}\\u2714 X-Cash DPoPS service is running since..........$XCASH_DPOPS_UP_SINCE${reset}
+        echo -e "${green}"\\u2714 X-Cash DPoPS service is running since.........."$XCASH_DPOPS_UP_SINCE""${reset}"
     else
-        echo -en ${red}\\u2716 X-Cash DPoPS service is not running, starting it........${reset}
+        echo -en "${red}"\\u2716 X-Cash DPoPS service is not running, starting it........"${reset}"
         systemctl start $XCASH_DPOPS_SRV && sleep 3
         systemctl is-active $XCASH_DPOPS_SRV --quiet \
-		&& echo -e ${green}\\u2714${reset} || echo -e ${red}\\u2716${reset}
+		&& echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
     fi
 
 }
 
 function stop_all_services(){
 	echo
-    echo -en ${green}Stopping X-Cash DPoPS service...............................................${reset} \
-        && systemctl stop $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e ${red}\\u2716${reset} || echo -e ${green}\\u2714${reset}
-    echo -en ${green}Stopping MongoDB service....................................................${reset} \
-        && systemctl stop $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e ${red}\\u2716${reset} || echo -e ${green}\\u2714${reset}
-    echo -en ${green}Stopping X-Cash RPC Wallet service..........................................${reset} \
-        && systemctl stop $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e ${red}\\u2716${reset} || echo -e ${green}\\u2714${reset}
-    echo -en ${green}Stopping X-Cash Daemon service..............................................${reset} \
-        && systemctl stop $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e ${red}\\u2716${reset} || echo -e ${green}\\u2714${reset}
+    echo -en "${green}"Stopping X-Cash DPoPS service..............................................."${reset}" \
+        && systemctl stop $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
+    echo -en "${green}"Stopping MongoDB service...................................................."${reset}" \
+        && systemctl stop $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
+    echo -en "${green}"Stopping X-Cash RPC Wallet service.........................................."${reset}" \
+        && systemctl stop $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
+    echo -en "${green}"Stopping X-Cash Daemon service.............................................."${reset}" \
+        && systemctl stop $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
 }
 
 function restart_all_services(){
 	echo
-	echo -en ${green}Stopping X-Cash DPoPS service...............................................${reset} \
-		&& systemctl stop $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e ${red}\\u2716${reset} || echo -e ${green}\\u2714${reset}
-    echo -en ${green}Stopping MongoDB service....................................................${reset} \
-		&& systemctl stop $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e ${red}\\u2716${reset} || echo -e ${green}\\u2714${reset}
-    echo -en ${green}Stopping X-Cash RPC Wallet service..........................................${reset} \
-		&& systemctl stop $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e ${red}\\u2716${reset} || echo -e ${green}\\u2714${reset}
-    echo -en ${green}Stopping X-Cash Daemon service..............................................${reset} \
-		&& systemctl stop $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e ${red}\\u2716${reset} || echo -e ${green}\\u2714${reset}
-	echo -en ${green}Starting X-Cash Daemon service..............................................${reset} \
-		&& sleep 3 && systemctl start $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e ${green}\\u2714${reset} || echo -e ${red}\\u2716${reset}
-    echo -en ${green}Starting X-Cash Wallet service..............................................${reset} \
-		&& sleep 3 && systemctl start $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e ${green}\\u2714${reset} || echo -e ${red}\\u2716${reset}
-    echo -en ${green}Starting MongoDB service....................................................${reset} \
-		&& sleep 3 && systemctl start $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e ${green}\\u2714${reset} || echo -e ${red}\\u2716${reset}
-    echo -en ${green}Starting X-Cash DPoPS service...............................................${reset} \
-		&& sleep 3 && systemctl start $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e ${green}\\u2714${reset} || echo -e ${red}\\u2716${reset}
+	echo -en "${green}"Stopping X-Cash DPoPS service..............................................."${reset}" \
+		&& systemctl stop $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
+    echo -en "${green}"Stopping MongoDB service...................................................."${reset}" \
+		&& systemctl stop $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
+    echo -en "${green}"Stopping X-Cash RPC Wallet service.........................................."${reset}" \
+		&& systemctl stop $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
+    echo -en "${green}"Stopping X-Cash Daemon service.............................................."${reset}" \
+		&& systemctl stop $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
+	echo -en "${green}"Starting X-Cash Daemon service.............................................."${reset}" \
+		&& sleep 3 && systemctl start $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+    echo -en "${green}"Starting X-Cash Wallet service.............................................."${reset}" \
+		&& sleep 3 && systemctl start $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+    echo -en "${green}"Starting MongoDB service...................................................."${reset}" \
+		&& sleep 3 && systemctl start $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+    echo -en "${green}"Starting X-Cash DPoPS service..............................................."${reset}" \
+		&& sleep 3 && systemctl start $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
 
 	check_services_status
 }
@@ -251,12 +296,12 @@ select opt in "${options[@]}"; do
 		"Get node balance") get_node_balance ;;
 		"Get node statistics") shared_delegates_website_statistics;;
 		"Check services status") check_services_status ;;
-        "Start stopped services") start_stopped_services ;;
+        	"Start stopped services") start_stopped_services ;;
 		"Stop all services") stop_all_services ;;
-        "Restart all services") restart_all_services ;;
+        	"Restart all services") restart_all_services ;;
 		"Get X-Cash DPoPS log") get_xcash_dpops_log ;;
-        "Get X-Cash Daemon log") get_xcash_daemon_log ;;
-        "Get X-Cash RPC Wallet log") get_xcash_wallet_log ;;
+        	"Get X-Cash Daemon log") get_xcash_daemon_log ;;
+        	"Get X-Cash RPC Wallet log") get_xcash_wallet_log ;;
 		"Quit") break ;;
 
 		*) echo && echo "Invalid option \"$REPLY\"";;
