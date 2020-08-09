@@ -170,7 +170,7 @@ function get_shared_delegate_installation_settings()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate (YES): ${END_COLOR_PRINT}"
   read -r data
-  SHARED_DELEGATE=$([ "$data" == "" ] && echo "${SHARED_DELEGATE^^}" || echo "NO")
+  SHARED_DELEGATE=$([ "$data" == "" ] && echo "$SHARED_DELEGATE" || echo "$data")
   echo -ne "\r"
   echo
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then    
@@ -541,7 +541,8 @@ EOF
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON="$(cat << EOF
 [Unit]
 Description=X-Cash Daemon background process
- 
+After=network.target
+
 [Service]
 Type=forking
 User=${USER}
@@ -557,7 +558,8 @@ EOF
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="$(cat << EOF
 [Unit]
 Description=X-Cash DPOPS Program background process
- 
+After=network.target xcash-daemon.service xcash-rpc-wallet.service mongodb.service
+
 [Service]
 Type=simple
 LimitNOFILE=infinity
@@ -573,7 +575,8 @@ EOF
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="$(cat << EOF
 [Unit]
 Description=X-Cash DPOPS Program background process
- 
+After=network.target xcash-daemon.service xcash-rpc-wallet.service mongodb.service
+
 [Service]
 Type=simple
 LimitNOFILE=infinity
@@ -589,6 +592,7 @@ EOF
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="$(cat << EOF
 [Unit]
 Description=X-Cash RPC wallet background process
+After=network.target xcash-daemon.service
  
 [Service]
 Type=simple
@@ -742,6 +746,7 @@ function installation_settings()
 
 function get_current_xcash_wallet_data()
 {
+  echo
   echo -ne "${COLOR_PRINT_YELLOW}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
 
   screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --daemon-address usseed1.x-cash.org:18281 --trusted-daemon
@@ -768,6 +773,7 @@ function get_current_xcash_wallet_data()
   
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
   echo
+  echo
 }
 
 function start_systemd_service_files()
@@ -785,9 +791,9 @@ function start_systemd_service_files()
 
 function stop_systemd_service_files()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Stoping Systemd Service Files${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Stopping Systemd Service Files${END_COLOR_PRINT}"
   sudo systemctl stop mongodb xcash-daemon xcash-rpc-wallet xcash-dpops &>/dev/null
-  echo -ne "\r${COLOR_PRINT_GREEN}Stoping Systemd Service Files${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Stopping Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
 
@@ -863,8 +869,21 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
         [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
       do true; done  
 
-      NODEJS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}${NODEJS_LATEST_VERSION}/
-      install_shared_delegates_website
+      NODEJS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}${NODEJS_LATEST_VERSION}/ 
+      echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+      echo -e "${COLOR_PRINT_GREEN}            Installing Shared Delegate Website${END_COLOR_PRINT}"
+      echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+      install_nodejs
+      configure_npm
+      update_npm
+      install_npm_global_packages
+      download_shared_delegate_website
+      get_installation_directory
+      install_shared_delegates_website_npm_packages
+      build_shared_delegates_website
+      . "${HOME}"/.profile
+      echo
+      echo
       update_systemd_service_files
       sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
       sudo systemctl daemon-reload
@@ -1010,10 +1029,7 @@ function create_directories()
   echo -ne "${COLOR_PRINT_YELLOW}Creating Directories${END_COLOR_PRINT}"
   if [ ! -d "$XCASH_DPOPS_INSTALLATION_DIR" ]; then
     mkdir -p "${XCASH_DPOPS_INSTALLATION_DIR}"
-  fi 
-  if [ ! -d "$XCASH_BLOCKCHAIN_INSTALLATION_DIR" ]; then
-    mkdir -p "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}"
-  fi 
+  fi
   if [ ! -d "$MONGODB_INSTALLATION_DIR" ]; then
     sudo mkdir -p "${MONGODB_INSTALLATION_DIR}"
     sudo chmod 770 "${MONGODB_INSTALLATION_DIR}"
@@ -1562,7 +1578,7 @@ function uninstall_packages()
         ((i=i+1))
     done
     echo -ne "${COLOR_PRINT_YELLOW}Uninstalling Packages${END_COLOR_PRINT}"
-    sudo apt --purge remove "${XCASH_DPOPS_PACKAGES}" -y &>/dev/null
+    sudo apt --purge remove ${XCASH_DPOPS_PACKAGES} -y &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling Packages${END_COLOR_PRINT}"
     echo
 }
@@ -1583,6 +1599,8 @@ function uninstall_shared_delegates_website()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}            Uninstalling Shared Delegate Website${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  get_installation_directory
 
   if [ -d "${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}" ]; then
     sudo rm -r "${XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR}"
@@ -1658,6 +1676,17 @@ function install()
 
   # Get the current xcash wallet data
   get_current_xcash_wallet_data
+
+  # import the wallet if they created the wallet before. This should fix any 0 balance error
+  if [ "${WALLET_SETTINGS^^}" == "YES" ]; then
+    echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+    rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet*
+    (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${MNEMONIC_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address us1.xcash.foundation:18281 &>/dev/null
+    echo
+    echo
+  fi
 
   # test change the xcash-core to xcash_proof_of_stake branch
   sudo systemctl stop xcash-dpops
@@ -1784,6 +1813,12 @@ function uninstall()
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   echo
+  
+  # get the block verifiers secret key from the systemd service file
+  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/xcash-dpops.service)
+  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block-verifiers-secret-key' '{print $2}')
+  BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
+  BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
 
   # Get the current xcash wallet data
   get_current_xcash_wallet_data
