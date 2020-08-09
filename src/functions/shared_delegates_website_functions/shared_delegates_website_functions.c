@@ -83,6 +83,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   #define DATABASE_COLLECTION "delegates"
 
   #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(MESSAGE) \
+  color_print(MESSAGE,"yellow"); \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66); \
   memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
   error_message.total++; \
@@ -180,7 +181,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+117,"\"}",2);
-  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"total_vote_count",total_votes_data) == 0 || read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_online_percentage",data) || read_document_field_from_collection(database_name,"delegates",message,"block_verifier_total_rounds",data2))
+  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"total_vote_count",total_votes_data) == 0 || read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_online_percentage",data) == 0 || read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data2) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR("Could not get the shared delegates statistics");
   }
