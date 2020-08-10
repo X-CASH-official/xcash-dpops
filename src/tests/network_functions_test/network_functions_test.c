@@ -91,8 +91,8 @@ int network_functions_test(void)
   // set the current_round_part and current_round_part_backup_node
   memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
   memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
-  memcpy(current_round_part,"1",1);
-  memcpy(current_round_part_backup_node,"0",1); 
+  memcpy(current_round_part,"1",sizeof(char));
+  memcpy(current_round_part_backup_node,"0",sizeof(char)); 
   pthread_rwlock_unlock(&rwlock);
 
   // test send_http_request

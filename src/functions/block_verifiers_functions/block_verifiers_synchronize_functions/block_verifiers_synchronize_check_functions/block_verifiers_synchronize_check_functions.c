@@ -223,7 +223,7 @@ int sync_check_reserve_proofs_database(int settings)
       memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
       memcpy(message+strlen(message),"\",\r\n ",5);
     }
-    memcpy(message+strlen(message),"}",1);
+    memcpy(message+strlen(message),"}",sizeof(char));
 
     // sign_data
     if (sign_data(message) == 0)
@@ -370,7 +370,7 @@ int sync_check_majority_reserve_proofs_database(void)
     memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
     memcpy(message+strlen(message),"\",\r\n ",5);
   }
-  memcpy(message+strlen(message),"}",1);
+  memcpy(message+strlen(message),"}",sizeof(char));
 
   // sign_data
   if (sign_data(message) == 0)
@@ -477,7 +477,7 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
       memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
       memcpy(message+strlen(message),"\",\r\n ",5);
     }
-    memcpy(message+strlen(message),"}",1);
+    memcpy(message+strlen(message),"}",sizeof(char));
 
     // sign_data
     if (sign_data(message) == 0)
@@ -635,7 +635,7 @@ int sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SET
     memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
     memcpy(message+strlen(message),"\",\r\n ",5);
   }
-  memcpy(message+strlen(message),"}",1);
+  memcpy(message+strlen(message),"}",sizeof(char));
 
   // sign_data
   if (sign_data(message) == 0)

@@ -1273,7 +1273,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
     memset(data3,0,strlen(data3));
     memcpy(data3,"Getting the database data from ",31);
     memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BUFFER_SIZE));
-    memcpy(data3+strlen(data3),"\n",1);
+    memcpy(data3+strlen(data3),"\n",sizeof(char));
     color_print(data3,"white");
   }
   if (get_database_data_hash(data,database_name,"reserve_proofs") == 0)
@@ -1304,7 +1304,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
     memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
     memcpy(data3+strlen(data3),"\",\r\n ",5);
   }
-  memcpy(data3+strlen(data3),"}",1);
+  memcpy(data3+strlen(data3),"}",sizeof(char));
 
   // sign_data
   if (sign_data(data3) == 0)
@@ -1411,7 +1411,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
     memset(data3,0,strlen(data3));
     memcpy(data3,"Getting the database data from ",31);
     memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BUFFER_SIZE));
-    memcpy(data3+strlen(data3),"\n",1);
+    memcpy(data3+strlen(data3),"\n",sizeof(char));
     color_print(data3,"white");
   }
   if (get_database_data_hash(data,database_name,"reserve_bytes") == 0)
@@ -1450,7 +1450,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
     memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
     memcpy(data3+strlen(data3),"\",\r\n ",5);
   }
-  memcpy(data3+strlen(data3),"}",1);
+  memcpy(data3+strlen(data3),"}",sizeof(char));
 
   // sign_data
   if (sign_data(data3) == 0)
@@ -1572,7 +1572,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
     memset(data2,0,sizeof(data2));
     memcpy(data2,"Getting the database data from ",31);
     memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
-    memcpy(data2+strlen(data2),"\n",1);
+    memcpy(data2+strlen(data2),"\n",sizeof(char));
     color_print(data2,"white");
   }
   if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
@@ -1722,7 +1722,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
     memset(data2,0,sizeof(data2));
     memcpy(data2,"Getting the database data from ",31);
     memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
-    memcpy(data2+strlen(data2),"\n",1);
+    memcpy(data2+strlen(data2),"\n",sizeof(char));
     color_print(data2,"white");
   }
   if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)

@@ -81,7 +81,7 @@ void server_receive_data_socket_node_to_network_data_nodes_get_previous_current_
   for (count = 0; count < total_delegates; count++) \
   { \
     memcpy(data+strlen(data),(block_verifiers_data)[count],strnlen((block_verifiers_data)[count],sizeof(data))); \
-    memcpy(data+strlen(data),"|",1); \
+    memcpy(data+strlen(data),"|",sizeof(char)); \
   }
 
   memset(data,0,sizeof(data));
@@ -172,19 +172,19 @@ void server_receive_data_socket_node_to_network_data_nodes_get_current_block_ver
   for (count = 0; count < total_delegates; count++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
-    memcpy(data+strlen(data),"|",1);
+    memcpy(data+strlen(data),"|",sizeof(char));
   }
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_public_key_list\": \"",41);
   for (count = 0; count < total_delegates; count++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_key[count],VRF_PUBLIC_KEY_LENGTH);
-    memcpy(data+strlen(data),"|",1);
+    memcpy(data+strlen(data),"|",sizeof(char));
   }
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_IP_address_list\": \"",41);
   for (count = 0; count < total_delegates; count++)
   {
     memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
+    memcpy(data+strlen(data),"|",sizeof(char));
   }
   memcpy(data+strlen(data),"\",\r\n}",5);
   
@@ -334,7 +334,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_
   // create the message
   memcpy(data,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD|",72);
   memcpy(data+72,data2,DATA_HASH_LENGTH);
-  memcpy(data+200,"|",1);
+  memcpy(data+200,"|",sizeof(char));
   
   // sign_data
   memset(data2,0,strlen(data2));
@@ -361,7 +361,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_
   }
 
   memcpy(data+strlen(data),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(data+strlen(data),"|",1);
+  memcpy(data+strlen(data),"|",sizeof(char));
   memcpy(data+strlen(data),message,XCASH_SIGN_DATA_LENGTH);
   memcpy(data+strlen(data),"|}",2);
 
@@ -512,10 +512,10 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
     }
     memcpy(message2+strlen(message2),message,strnlen(message,1500000));
-    memcpy(message2+strlen(message2),"|",1);
+    memcpy(message2+strlen(message2),"|",sizeof(char));
   }
   
-  memcpy(message2+strlen(message2),"}",1);
+  memcpy(message2+strlen(message2),"}",sizeof(char));
   
   // send the data
   test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)message2,0,1,"");
@@ -649,7 +649,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
       memcpy(message+strlen(message),"\",\r\n",4);
     }
     RESET_ERROR_MESSAGES;
-    memcpy(message+strlen(message),"}",1);
+    memcpy(message+strlen(message),"}",sizeof(char));
   //}
   
   // sign_data
@@ -856,7 +856,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
     strncmp(reserve_bytes_database,data,DATA_HASH_LENGTH) == 0 ? memcpy(message+strlen(message),"true",4) : memcpy(message+strlen(message),"false",5);
     memcpy(message+strlen(message),"\",\r\n",4);
   }
-  memcpy(message+strlen(message),"}",1);
+  memcpy(message+strlen(message),"}",sizeof(char));
   
   // sign_data
   if (sign_data(message) == 0)

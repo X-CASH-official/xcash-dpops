@@ -253,9 +253,9 @@ int start_new_round(void)
     
     // reset the current_round_part and current_round_part_backup_node after the databases have been updated for the previous rounds statistics
     memset(current_round_part,0,sizeof(current_round_part));
-    memcpy(current_round_part,"1",1);
+    memcpy(current_round_part,"1",sizeof(char));
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-    memcpy(current_round_part_backup_node,"0",1);
+    memcpy(current_round_part_backup_node,"0",sizeof(char));
 
     // check if it is time to remove the inactive delegates
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
@@ -476,7 +476,7 @@ int start_blocks_create_data(char* message, char* network_block_string)
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH);
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"0",1);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"0",sizeof(char));
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names,"network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1,network_data_node_1",99);
 
@@ -713,7 +713,7 @@ int data_network_node_create_block_data(char *message)
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,BUFFER_SIZE));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH);
   memset(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,0,strnlen(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"1",1);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,"1",sizeof(char));
 
   // create the VRF data
   if (create_random_VRF_keys(VRF_data.vrf_public_key,VRF_data.vrf_secret_key) == 1 && crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key) != 1)
@@ -1006,11 +1006,11 @@ int data_network_node_create_block(void)
 
   // set the current_round_part
   memset(current_round_part,0,sizeof(current_round_part));
-  memcpy(current_round_part,"1",1);
+  memcpy(current_round_part,"1",sizeof(char));
 
   // set the current_round_part_backup_node
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-  memcpy(current_round_part_backup_node,"1",1);
+  memcpy(current_round_part_backup_node,"1",sizeof(char));
 
   // reset the network_data_node_valid_amount
   pthread_mutex_lock(&network_data_nodes_valid_count_lock);
@@ -1455,16 +1455,16 @@ int block_verifiers_create_block_signature(char* message)
     }
   }
 
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,current_round_part_backup_node,1);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,current_round_part_backup_node,sizeof(char));
     
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[0]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[0]],BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",1);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",sizeof(char));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[1]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[1]],BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",1);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",sizeof(char));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[2]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[2]],BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",1);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",sizeof(char));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[3]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[3]],BUFFER_SIZE));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",1);
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",sizeof(char));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[4]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[4]],BUFFER_SIZE));
 
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_secret_key,VRF_data.vrf_secret_key,crypto_vrf_SECRETKEYBYTES);
@@ -1867,9 +1867,9 @@ int block_verifiers_create_block(void)
   if (strncmp(current_round_part_backup_node,"0",1) == 0) \
   { \
     memset(current_round_part,0,sizeof(current_round_part)); \
-    memcpy(current_round_part,"1",1); \
+    memcpy(current_round_part,"1",sizeof(char)); \
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
-    memcpy(current_round_part_backup_node,"1",1); \
+    memcpy(current_round_part_backup_node,"1",sizeof(char)); \
     memcpy(data,"Restarting the round with backup block producer 1 for block ",60); \
     memcpy(data+60,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
     print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2); \
@@ -2355,13 +2355,13 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
         memset(data2,0,sizeof(data2));   
         memcpy(data2,"Sending ",8);
         memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
-        memcpy(data2+strlen(data2),"\n",1);
+        memcpy(data2+strlen(data2),"\n",sizeof(char));
         memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
         memcpy(data2+strlen(data2)," on port ",9);
         memset(data3,0,sizeof(data3));
         snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
         memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
-        memcpy(data2+strlen(data2),"\n",1);
+        memcpy(data2+strlen(data2),"\n",sizeof(char));
         memset(data3,0,sizeof(data3));
         strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
         memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));

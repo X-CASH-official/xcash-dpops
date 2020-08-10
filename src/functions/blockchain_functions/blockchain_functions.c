@@ -89,7 +89,7 @@ int varint_encode(long long int number, char *result, const size_t RESULT_TOTAL_
   length = strnlen(data,sizeof(data));
   for (count = 0; count <= length; count++)
   {
-    memcpy(result+strlen(result),&data[length - count],1);
+    memcpy(result+strlen(result),&data[length - count],sizeof(char));
   }
   memset(data,0,sizeof(data));
   append_string(data,result,sizeof(data));

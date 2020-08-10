@@ -81,7 +81,7 @@ int check_if_blockchain_is_fully_synced(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_1_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_1_current_block_height,0,sizeof(network_data_node_1_current_block_height));
-    memcpy(network_data_node_1_current_block_height,"0",1);
+    memcpy(network_data_node_1_current_block_height,"0",sizeof(char));
   }
 
   memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
@@ -90,7 +90,7 @@ int check_if_blockchain_is_fully_synced(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_2_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_2_current_block_height,0,sizeof(network_data_node_2_current_block_height));
-    memcpy(network_data_node_2_current_block_height,"0",1);
+    memcpy(network_data_node_2_current_block_height,"0",sizeof(char));
   }
 
   memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
@@ -99,7 +99,7 @@ int check_if_blockchain_is_fully_synced(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_3_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_3_current_block_height,0,sizeof(network_data_node_3_current_block_height));
-    memcpy(network_data_node_3_current_block_height,"0",1);
+    memcpy(network_data_node_3_current_block_height,"0",sizeof(char));
   }
 
   memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
@@ -108,7 +108,7 @@ int check_if_blockchain_is_fully_synced(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_4_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_4_current_block_height,0,sizeof(network_data_node_4_current_block_height));
-    memcpy(network_data_node_4_current_block_height,"0",1);
+    memcpy(network_data_node_4_current_block_height,"0",sizeof(char));
   }
 
   memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
@@ -117,7 +117,7 @@ int check_if_blockchain_is_fully_synced(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_5_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_5_current_block_height,0,sizeof(network_data_node_5_current_block_height));
-    memcpy(network_data_node_5_current_block_height,"0",1);
+    memcpy(network_data_node_5_current_block_height,"0",sizeof(char));
   }
   
   sscanf(message,"%zu",&count);
@@ -208,7 +208,7 @@ int get_current_block_height_network_data_nodes(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_1_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_1_current_block_height,0,sizeof(network_data_node_1_current_block_height));
-    memcpy(network_data_node_1_current_block_height,"0",1);
+    memcpy(network_data_node_1_current_block_height,"0",sizeof(char));
   }
 
   memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
@@ -217,7 +217,7 @@ int get_current_block_height_network_data_nodes(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_2_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_2_current_block_height,0,sizeof(network_data_node_2_current_block_height));
-    memcpy(network_data_node_2_current_block_height,"0",1);
+    memcpy(network_data_node_2_current_block_height,"0",sizeof(char));
   }
 
   memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
@@ -226,7 +226,7 @@ int get_current_block_height_network_data_nodes(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_3_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_3_current_block_height,0,sizeof(network_data_node_3_current_block_height));
-    memcpy(network_data_node_3_current_block_height,"0",1);
+    memcpy(network_data_node_3_current_block_height,"0",sizeof(char));
   }
 
   memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
@@ -235,7 +235,7 @@ int get_current_block_height_network_data_nodes(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_4_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_4_current_block_height,0,sizeof(network_data_node_4_current_block_height));
-    memcpy(network_data_node_4_current_block_height,"0",1);
+    memcpy(network_data_node_4_current_block_height,"0",sizeof(char));
   }
 
   memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
@@ -244,7 +244,7 @@ int get_current_block_height_network_data_nodes(void)
   if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_5_current_block_height, BUFFER_SIZE) == 0)
   {
     memset(network_data_node_5_current_block_height,0,sizeof(network_data_node_5_current_block_height));
-    memcpy(network_data_node_5_current_block_height,"0",1);
+    memcpy(network_data_node_5_current_block_height,"0",sizeof(char));
   }
   
   sscanf(current_block_height,"%lld",&count);

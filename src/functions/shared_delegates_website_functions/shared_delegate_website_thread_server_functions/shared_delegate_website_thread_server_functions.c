@@ -788,7 +788,7 @@ void* payment_timer_thread(void* parameters)
       snprintf(data+strlen(data),sizeof(data)-1,"%lld",amount_of_payments);
       memcpy(data+strlen(data),"\nTotal amount: ",15);
       snprintf(data+strlen(data),sizeof(data)-1,"%lf",total);
-      memcpy(data+strlen(data),"\n",1);
+      memcpy(data+strlen(data),"\n",sizeof(char));
       color_print(data,"yellow");
       sleep(60);
     }

@@ -121,10 +121,10 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   }
 
   // add the data hash to the _id field 
-  memcpy(data2,",",1);
+  memcpy(data2,",",sizeof(char));
   memcpy(data3,"{\"_id\":\"",8);
   memcpy(data3+strlen(data3),data_hash,DATA_HASH_LENGTH);
-  memcpy(data3+strlen(data3),"\"",1);
+  memcpy(data3+strlen(data3),"\"",sizeof(char));
   memcpy(data3+strlen(data3),data2,strnlen(data2,sizeof(data3)));
 
   // get a temporary connection
@@ -314,10 +314,10 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
 
     // add the data hash to the _id field
     memcpy(string2,data3,strnlen(data3,sizeof(string2)));
-    memcpy(string2,",",1);
+    memcpy(string2,",",sizeof(char));
     memcpy(string3,"{\"_id\":\"",8);
     memcpy(string3+strlen(string3),data_hash,DATA_HASH_LENGTH);
-    memcpy(string3+strlen(string3),"\"",1);
+    memcpy(string3+strlen(string3),"\"",sizeof(char));
     memcpy(string3+strlen(string3),string2,strnlen(string2,sizeof(string3)));
 
     bson_t* document = bson_new_from_json((const uint8_t *)string3, -1, &error);

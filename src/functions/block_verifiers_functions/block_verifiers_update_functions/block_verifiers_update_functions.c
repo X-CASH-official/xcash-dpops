@@ -533,7 +533,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database");
       }      
-      memcpy(data+strlen(data),"|",1);
+      memcpy(data+strlen(data),"|",sizeof(char));
       memcpy(data+strlen(data),BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,sizeof(data)));
       memset(data2,0,sizeof(data2));
       memcpy(data2,"{\"block_producer_block_heights\":\"",33);
@@ -582,7 +582,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not read the block_producer_block_heights from the database");
     }      
-    memcpy(data+strlen(data),"|",1);
+    memcpy(data+strlen(data),"|",sizeof(char));
     memcpy(data+strlen(data),BLOCK_HEIGHT,strnlen(BLOCK_HEIGHT,sizeof(data)));
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\"block_producer_block_heights\":\"",33);
@@ -1134,13 +1134,13 @@ int get_delegates_online_status(void)
         memset(data2,0,sizeof(data2));   
         memcpy(data2,"Sending ",8);
         memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
-        memcpy(data2+strlen(data2),"\n",1);
+        memcpy(data2+strlen(data2),"\n",sizeof(char));
         memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
         memcpy(data2+strlen(data2)," on port ",9);
         memset(data3,0,sizeof(data3));
         snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
         memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
-        memcpy(data2+strlen(data2),"\n",1);
+        memcpy(data2+strlen(data2),"\n",sizeof(char));
         memset(data3,0,sizeof(data3));
         strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
         memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));

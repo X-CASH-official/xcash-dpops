@@ -94,15 +94,15 @@ void test(int settings)
 
   // print the start message
   memcpy(data_test,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1);
-  memcpy(data_test+strlen(data_test),"\n",1);
+  memcpy(data_test+strlen(data_test),"\n",sizeof(char));
   memcpy(data_test+strlen(data_test),"Starting xcash-dpops Test",25);
   color_print(data_test,"yellow");
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); 
   memset(data_test,0,sizeof(data_test));
   strftime(data_test,sizeof(data_test),"%a %d %b %Y %H:%M:%S UTC",&current_UTC_date_and_time);
-  memcpy(data_test+strlen(data_test),"\n",1);
+  memcpy(data_test+strlen(data_test),"\n",sizeof(char));
   memcpy(data_test+strlen(data_test),TEST_OUTLINE,sizeof(TEST_OUTLINE)-1);
-  memcpy(data_test+strlen(data_test),"\n",1);
+  memcpy(data_test+strlen(data_test),"\n",sizeof(char));
   color_print(data_test,"yellow");
   
   // run the tests
@@ -160,7 +160,7 @@ void test(int settings)
 
   // write the end test message
   memcpy(data_test,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1);
-  memcpy(data_test+strlen(data_test),"\n",1);
+  memcpy(data_test+strlen(data_test),"\n",sizeof(char));
   memcpy(data_test+strlen(data_test),"xcash-dpops Test Results - Passed test: ",40);
   snprintf(data_test+strlen(data_test),sizeof(data_test)-1,"%d",XCASH_DPOPS_total_passed_test);
   memcpy(data_test+strlen(data_test),", Failed test: ",15);
@@ -169,9 +169,9 @@ void test(int settings)
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); 
   memset(data_test,0,sizeof(data_test));
   strftime(data_test,sizeof(data_test),"%a %d %b %Y %H:%M:%S UTC",&current_UTC_date_and_time);
-  memcpy(data_test+strlen(data_test),"\n",1);
+  memcpy(data_test+strlen(data_test),"\n",sizeof(char));
   memcpy(data_test+strlen(data_test),TEST_OUTLINE,sizeof(TEST_OUTLINE)-1);
-  memcpy(data_test+strlen(data_test),"\n",1);
+  memcpy(data_test+strlen(data_test),"\n",sizeof(char));
   color_print(data_test,"yellow");
   return;
 }

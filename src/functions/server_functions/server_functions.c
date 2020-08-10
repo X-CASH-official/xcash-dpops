@@ -298,7 +298,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     }
   }
 
-  memcpy(data,"|",1);
+  memcpy(data,"|",sizeof(char));
   memcpy(data+1,data2,XCASH_WALLET_LENGTH); 
 
   // start data
@@ -396,7 +396,7 @@ int server_limit_IP_addresses(const int SETTINGS, const char* IP_ADDRESS)
 
   memset(data,0,sizeof(data));
 
-  memcpy(data,"|",1);
+  memcpy(data,"|",sizeof(char));
   memcpy(data+1,IP_ADDRESS,strnlen(IP_ADDRESS,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); 
 
   // start data
@@ -529,11 +529,11 @@ void socket_thread(const int CLIENT_SOCKET)
   {  
     memcpy(message,"Received ",9);
     memcpy(message+9,data2,strnlen(data2,sizeof(message)));
-    memcpy(message+strlen(message),"\n",1);
+    memcpy(message+strlen(message),"\n",sizeof(char));
     memcpy(message+strlen(message),client_IP_address,strnlen(client_IP_address,sizeof(message)));
     memcpy(message+strlen(message)," on port ",9);
     memcpy(message+strlen(message),buffer2,strnlen(buffer2,sizeof(message)));
-    memcpy(message+strlen(message),"\n",1);
+    memcpy(message+strlen(message),"\n",sizeof(char));
     memset(data2,0,sizeof(data2));
     strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
     memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));

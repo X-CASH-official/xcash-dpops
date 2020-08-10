@@ -217,7 +217,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       snprintf(data+strlen(data),sizeof(data)-15,"%zu",count);
       if (count != count2)
       {
-        memcpy(data+strlen(data),",",1);
+        memcpy(data+strlen(data),",",sizeof(char));
       }
     }
   }
@@ -229,7 +229,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       snprintf(data+strlen(data),sizeof(data)-16,"%zu",count);
       if (count != TOTAL_RESERVE_PROOFS_DATABASES)
       {
-        memcpy(data+strlen(data),",",1);
+        memcpy(data+strlen(data),",",sizeof(char));
       }
     }
   }
