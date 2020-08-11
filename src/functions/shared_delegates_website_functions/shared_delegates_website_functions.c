@@ -83,7 +83,6 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   #define DATABASE_COLLECTION "delegates"
 
   #define SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR(MESSAGE) \
-  color_print(MESSAGE,"yellow"); \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_shared_delegates_website_get_statistics",66); \
   memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
   error_message.total++; \

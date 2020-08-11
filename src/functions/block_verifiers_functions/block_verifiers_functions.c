@@ -116,6 +116,8 @@ int start_new_round(void)
   // get the current block height
   sscanf(current_block_height,"%zu", &count);
 
+  color_print("getting the delegates online status","blue");
+
   // get the delegates online status
   get_delegates_online_status();
 
@@ -233,6 +235,9 @@ int start_new_round(void)
     {
       START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
     }
+
+    // save a copy of the database, since we can confirm that it has the previous blocks reserve bytes data at this point
+    system("cd ~ && rm -r dump ; mongodump");
 
     // check if it is running in registration mode only
     if (registration_settings == 1)
