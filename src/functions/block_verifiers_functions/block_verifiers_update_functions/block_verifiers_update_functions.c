@@ -1037,7 +1037,7 @@ int get_delegates_online_status(void)
   {
     memset(delegates_online_status[count].public_address,0,sizeof(delegates_online_status[count].public_address));
     memcpy(delegates_online_status[count].public_address,delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(delegates_online_status[count].public_address)));
-    delegates_online_status[count].settings = strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 ? 1 : 0;
+    delegates_online_status[count].settings = 0;
 
     memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
     memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
