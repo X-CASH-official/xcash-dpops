@@ -922,7 +922,7 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   memcpy(database_data.value[0],"XCASH",5);  
   memcpy(database_data.value[1],"DELEGATE_NAME",13);
-  memcpy(database_data.value[2],"5",1);
+  memcpy(database_data.value[2],"5",sizeof(char));
   memcpy(database_data.value[3],"DELEGATE_NAME",13);
   memcpy(database_data.value[4],"10",2);
   memcpy(database_data.value[5],"DELEGATE_NAME",13);  
@@ -963,14 +963,14 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   memcpy(database_multiple_documents_fields.value[0][0],"XCASH",5);  
   memcpy(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",13);
-  memcpy(database_multiple_documents_fields.value[0][2],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][2],"5",sizeof(char));
   memcpy(database_multiple_documents_fields.value[0][3],"DELEGATE_NAME",13);
   memcpy(database_multiple_documents_fields.value[0][4],"10",2);
   memcpy(database_multiple_documents_fields.value[0][5],"DELEGATE_NAME",13);  
   memcpy(database_multiple_documents_fields.value[0][6],"15",2);
   memcpy(database_multiple_documents_fields.value[1][0],"XCASH",5);  
   memcpy(database_multiple_documents_fields.value[1][1],"DELEGATE_NAME",13);
-  memcpy(database_multiple_documents_fields.value[1][2],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][2],"5",sizeof(char));
   memcpy(database_multiple_documents_fields.value[1][3],"DELEGATE_NAME",13);
   memcpy(database_multiple_documents_fields.value[1][4],"10",2);
   memcpy(database_multiple_documents_fields.value[1][5],"DELEGATE_NAME",13);  
@@ -1010,13 +1010,13 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(transactions[1],"871eb7b29c72582572041c597ff092143031bfcef5fa1fa92808dacab2ba226f",64);
   memcpy(transactions[2],"72f97600db9d7522a2a39fc690d25e1cc9a17535064b08f81bd7424a51bba931",64);
   memcpy(transactions[3],"b180489867776c7e39c07ddb0d88609dac6f748dec554e2d96b6a168785bdb44",64);
-  memcpy(transactions[4],"",1);
+  memcpy(transactions[4],"",sizeof(char));
 
   // set the current_round_part and current_round_part_backup_node
   memset(current_round_part,0,sizeof(current_round_part));
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-  memcpy(current_round_part,"1",1);
-  memcpy(current_round_part_backup_node,"0",1); 
+  memcpy(current_round_part,"1",sizeof(char));
+  memcpy(current_round_part_backup_node,"0",sizeof(char)); 
 
   // reset the variables
   memset(data3,0,sizeof(data3));
@@ -1071,7 +1071,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(database_data.item[6],"most_block_producer_total_rounds",32);
   memcpy(database_data.value[0],"XCASH",5);  
   memcpy(database_data.value[1],"DELEGATE_NAME",13);
-  memcpy(database_data.value[2],"5",1);
+  memcpy(database_data.value[2],"5",sizeof(char));
   memcpy(database_data.value[3],"DELEGATE_NAME",13);
   memcpy(database_data.value[4],"10",2);
   memcpy(database_data.value[5],"DELEGATE_NAME",13);  
@@ -1344,7 +1344,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data3,0,sizeof(data3));
   memcpy(result_test,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF|XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3|RESERVE_PROOF_TEST_DATA|",165);
   memcpy(result_test+strlen(result_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(result_test+strlen(result_test),"|",1);
+  memcpy(result_test+strlen(result_test),"|",sizeof(char));
   memcpy(data_test,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(data_test+60,result_test,strnlen(result_test,sizeof(data_test)));
   memcpy(data_test+strlen(data_test),"\"}}",3);  
@@ -1352,7 +1352,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data_test,0,sizeof(data_test));
   parse_json_data(data3,"signature",data_test,MAXIMUM_BUFFER_SIZE);
   memcpy(result_test+strlen(result_test),data_test,XCASH_SIGN_DATA_LENGTH);
-  memcpy(result_test+strlen(result_test),"|",1);
+  memcpy(result_test+strlen(result_test),"|",sizeof(char));
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_node_to_block_verifiers_add_reserve_proof",DELEGATES_SERVER_FUNCTIONS_TEST_CODE);
 
   memset(result_test,0,sizeof(result_test));
@@ -1360,9 +1360,9 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data3,0,sizeof(data3));
   memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE|delegate_name_1|127.0.0.1|",69);
   memcpy(result_test+strlen(result_test),NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(result_test+strlen(result_test),"|",1);
+  memcpy(result_test+strlen(result_test),"|",sizeof(char));
   memcpy(result_test+strlen(result_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(result_test+strlen(result_test),"|",1);
+  memcpy(result_test+strlen(result_test),"|",sizeof(char));
   memcpy(data_test,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(data_test+60,result_test,strnlen(result_test,sizeof(data_test)));
   memcpy(data_test+strlen(data_test),"\"}}",3);  
@@ -1370,7 +1370,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data_test,0,sizeof(data_test));
   parse_json_data(data3,"signature",data_test,MAXIMUM_BUFFER_SIZE);
   memcpy(result_test+strlen(result_test),data_test,XCASH_SIGN_DATA_LENGTH);
-  memcpy(result_test+strlen(result_test),"|",1);
+  memcpy(result_test+strlen(result_test),"|",sizeof(char));
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_nodes_to_block_verifiers_register_delegates",DELEGATES_SERVER_FUNCTIONS_TEST_CODE);
 
   memset(result_test,0,sizeof(result_test));
@@ -1378,7 +1378,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data3,0,sizeof(data3));
   memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|about|data|",52);
   memcpy(result_test+strlen(result_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(result_test+strlen(result_test),"|",1);
+  memcpy(result_test+strlen(result_test),"|",sizeof(char));
   memcpy(data_test,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
   memcpy(data_test+60,result_test,strnlen(result_test,sizeof(data_test)));
   memcpy(data_test+strlen(data_test),"\"}}",3);  
@@ -1386,7 +1386,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   memset(data_test,0,sizeof(data_test));
   parse_json_data(data3,"signature",data_test,MAXIMUM_BUFFER_SIZE);
   memcpy(result_test+strlen(result_test),data_test,XCASH_SIGN_DATA_LENGTH);
-  memcpy(result_test+strlen(result_test),"|",1);
+  memcpy(result_test+strlen(result_test),"|",sizeof(char));
   CHECK_RESET_VARIABLES_ON_THE_HEAP("server_receive_data_socket_nodes_to_block_verifiers_update_delegates",DELEGATES_SERVER_FUNCTIONS_TEST_CODE);
   sleep(60);
   delete_database(database_name);

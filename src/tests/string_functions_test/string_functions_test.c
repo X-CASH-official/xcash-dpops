@@ -79,17 +79,17 @@ int string_functions_test(void)
 
   memcpy(database_data.value[0],"XCASH",5);  
   memcpy(database_data.value[1],"DELEGATE_NAME",13);
-  memcpy(database_data.value[2],"5",1);
+  memcpy(database_data.value[2],"5",sizeof(char));
   memcpy(database_data.value[3],"DELEGATE_NAME",13);
   memcpy(database_data.value[4],"10",2);
   memcpy(database_data.value[5],"DELEGATE_NAME",13);  
   memcpy(database_data.value[6],"15",2);
   memcpy(database_data.value[7],"DELEGATE_NAME",13);  
-  memcpy(database_data.value[8],"5",1);
+  memcpy(database_data.value[8],"5",sizeof(char));
   memcpy(database_data.value[9],"DELEGATE_NAME",13);  
   memcpy(database_data.value[10],"10",2);  
   memcpy(database_data.value[11],"15",2);
-  memcpy(database_data.value[12],"5",1);
+  memcpy(database_data.value[12],"5",sizeof(char));
   memcpy(database_data.value[13],"10",2);
 
   database_data.count = DATABASE_DATA;
@@ -141,31 +141,31 @@ int string_functions_test(void)
 
   memcpy(database_multiple_documents_fields.value[0][0],"XCASH",5);  
   memcpy(database_multiple_documents_fields.value[0][1],"DELEGATE_NAME",13);
-  memcpy(database_multiple_documents_fields.value[0][2],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][2],"5",sizeof(char));
   memcpy(database_multiple_documents_fields.value[0][3],"DELEGATE_NAME",13);
   memcpy(database_multiple_documents_fields.value[0][4],"10",2);
   memcpy(database_multiple_documents_fields.value[0][5],"DELEGATE_NAME",13);  
   memcpy(database_multiple_documents_fields.value[0][6],"15",2);
   memcpy(database_multiple_documents_fields.value[0][7],"DELEGATE_NAME",13);  
-  memcpy(database_multiple_documents_fields.value[0][8],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][8],"5",sizeof(char));
   memcpy(database_multiple_documents_fields.value[0][9],"DELEGATE_NAME",13);  
   memcpy(database_multiple_documents_fields.value[0][10],"10",2);  
   memcpy(database_multiple_documents_fields.value[0][11],"15",2);
-  memcpy(database_multiple_documents_fields.value[0][12],"5",1);
+  memcpy(database_multiple_documents_fields.value[0][12],"5",sizeof(char));
   memcpy(database_multiple_documents_fields.value[0][13],"10",2);
   memcpy(database_multiple_documents_fields.value[1][0],"XCASH",5);  
   memcpy(database_multiple_documents_fields.value[1][1],"DELEGATE_NAME",13);
-  memcpy(database_multiple_documents_fields.value[1][2],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][2],"5",sizeof(char));
   memcpy(database_multiple_documents_fields.value[1][3],"DELEGATE_NAME",13);
   memcpy(database_multiple_documents_fields.value[1][4],"10",2);
   memcpy(database_multiple_documents_fields.value[1][5],"DELEGATE_NAME",13);  
   memcpy(database_multiple_documents_fields.value[1][6],"15",2);
   memcpy(database_multiple_documents_fields.value[1][7],"DELEGATE_NAME",13);  
-  memcpy(database_multiple_documents_fields.value[1][8],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][8],"5",sizeof(char));
   memcpy(database_multiple_documents_fields.value[1][9],"DELEGATE_NAME",13);  
   memcpy(database_multiple_documents_fields.value[1][10],"10",2);  
   memcpy(database_multiple_documents_fields.value[1][11],"15",2);
-  memcpy(database_multiple_documents_fields.value[1][12],"5",1);
+  memcpy(database_multiple_documents_fields.value[1][12],"5",sizeof(char));
   memcpy(database_multiple_documents_fields.value[1][13],"10",2);
 
   database_multiple_documents_fields.document_count = 2;

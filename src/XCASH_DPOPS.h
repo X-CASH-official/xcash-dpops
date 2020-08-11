@@ -7,7 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-void initialize_data(void);
+void initialize_data(int parameters_count, char* parameters[]);
 void create_overall_database_connection(void);
 void get_delegates_data(void);
 int set_parameters(int parameters_count, char* parameters[]);

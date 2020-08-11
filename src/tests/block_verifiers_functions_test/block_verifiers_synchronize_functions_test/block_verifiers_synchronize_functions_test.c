@@ -64,7 +64,7 @@ int block_verifiers_synchronize_functions_test(void)
   }
 
   // sync_reserve_bytes_database
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
   RESET_ERROR_MESSAGES;
   if (sync_reserve_bytes_database(0,1,XCASH_DPOPS_delegates_IP_address) == 1)
   {

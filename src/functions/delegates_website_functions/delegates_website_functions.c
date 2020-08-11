@@ -166,6 +166,8 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   database_data.count++;
   
   memset(data,0,strlen(data));
+  memcpy(data,"data",4);
+  
 
   // create a json string out of the database array of item and value
   if (create_json_data_from_database_document_array(&database_data,data,DATABASE_FIELDS) == 0)
@@ -208,7 +210,7 @@ int server_receive_data_socket_get_delegates(const int CLIENT_SOCKET)
   int total_delegates;
 
   // define macros
-  #define DATABASE_FIELDS "public_address|IP_address|public_key|about|website|team|server_specs|block_verifier_online_total_rounds|block_producer_total_rounds|block_producer_block_heights|"
+  #define DATABASE_FIELDS "public_address|IP_address|public_key|about|website|team|server_specs|block_verifier_online_total_rounds|block_verifier_score|block_producer_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_delegates",40); \

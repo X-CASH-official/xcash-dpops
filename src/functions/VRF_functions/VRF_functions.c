@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/random.h>
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
@@ -31,32 +32,17 @@ Return: 0 if an error has occured, 1 if successfull
 int create_random_VRF_keys(unsigned char *VRF_public_key, unsigned char *VRF_secret_key)
 {  
   // Variables
-  unsigned char data[crypto_vrf_SEEDBYTES];
-  int count;
+  unsigned char data[crypto_vrf_SEEDBYTES+1];
 
-  // define macros
-  #define MINIMUM 1
-  #define MAXIMUM 255
-
-  do
+  if (getrandom(data,crypto_vrf_SEEDBYTES,0) != crypto_vrf_SEEDBYTES)
   {
-    memset(VRF_public_key,0,strlen((char*)VRF_public_key));
-    memset(VRF_secret_key,0,strlen((char*)VRF_secret_key));
+    return 0;
+  }
 
-    for (count = 0; count < (int)crypto_vrf_SEEDBYTES; count++)
-    {
-      data[count] = ((rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM);
-    }
+  // create the VRF private and secret key
+  crypto_vrf_keypair_from_seed(VRF_public_key, VRF_secret_key, data);
 
-    // create the VRF private and secret key
-    crypto_vrf_keypair_from_seed(VRF_public_key, VRF_secret_key, data);
-
-  } while (strnlen((char*)VRF_public_key,crypto_vrf_PUBLICKEYBYTES) != crypto_vrf_PUBLICKEYBYTES || strnlen((char*)VRF_secret_key,crypto_vrf_SECRETKEYBYTES) != crypto_vrf_SECRETKEYBYTES);
-  
   return 1;
-
-  #undef MINIMUM
-  #undef MAXIMUM
 }
 
 
@@ -99,11 +85,9 @@ void generate_key()
     snprintf(vrf_public_key+count,VRF_PUBLIC_KEY_LENGTH-1,"%02x",vrf_public_key_data[count2] & 0xFF);
   }
 
-  fprintf(stderr,"\n");
-  color_print("Public Key:","green");
+  color_print("\nPublic Key:","green");
   color_print(vrf_public_key,"green");
-  fprintf(stderr,"\n");
-  color_print("Secret Key:","green");
+  color_print("\nSecret Key:","green");
   color_print(vrf_secret_key,"green"); 
   
   return;

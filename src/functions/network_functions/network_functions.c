@@ -105,11 +105,11 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 
   // create the HTTP request
   memcpy(message,HTTP_SETTINGS,HTTP_SETTINGS_LENGTH);
-  memcpy(message+strlen(message)," ",1);
+  memcpy(message+strlen(message)," ",sizeof(char));
   memcpy(message+strlen(message),URL,URL_LENGTH);
   if (strncmp(HTTP_SETTINGS,"GET",BUFFER_SIZE) == 0)
   {
-    memcpy(message+strlen(message),"?",1);
+    memcpy(message+strlen(message),"?",sizeof(char));
     memcpy(message+strlen(message),DATA,DATA_LENGTH);
   }
   memcpy(message+strlen(message)," HTTP/1.1\r\nHost: ",17);

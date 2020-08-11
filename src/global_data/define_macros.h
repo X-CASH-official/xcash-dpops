@@ -67,18 +67,18 @@ Using define statements instead of constants for increased efficiency
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
 #define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.0.0\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 50 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 34 // The amount of block verifiers that need to vote true for the part of the round to be valid
-#define BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE 34 // The amount of block verifiers that need to vote true with at least NETOWRK_DATA_NODES_AMOUNT-1 of the network data nodes for the part of the round to be valid.
+#define BLOCK_VERIFIERS_AMOUNT 20 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 15 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE 15 // The amount of block verifiers that need to vote true with at least NETOWRK_DATA_NODES_AMOUNT-1 of the network data nodes for the part of the round to be valid.
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 5000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define INVALID_BLOCK_VERIFIERS_AMOUNT 10 // The maximum amount of times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
 #define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof, 2M xcash
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 1000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet, 20M xcash
-#define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 2000000000000 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the xcash-dpops program running to sync in case they move to the top 100, 100M xcash
+#define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 0 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the xcash-dpops program running to sync in case they move to the top 100, 100M xcash
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
-#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 15 // the start time in seconds that the block verifiers synchronize the database each round
+#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 30 // the start time in seconds that the block verifiers synchronize the database each round
 #define START_TIME_MINUTE_NETWORK_BLOCK_ROUND 2 // the start time that the block verifiers start to create the network block
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 40 // The time to submit the network block
 #define START_TIME_SECONDS_NETWORK_BLOCK_PART_2 10 // the start time of part 2 of the network block round
@@ -99,7 +99,7 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_CONNECTIONS_IP_ADDRESS_OR_PUBLIC_ADDRESS 20 // The maximum connections a specific IP address or specific public address can have at one time
 #define BLOCK_VERIFIERS_SETTINGS 3 // The time in seconds to wait to send data to the block verifiers
 #define MAIN_NETWORK_DATA_NODE_SEND_BLOCK_SETTINGS 10 // The time in seconds that the main network data node waits for the block verifiers signatures
-#define NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS 15 // the time in seconds that the network data nodes wait to see if the database is synced
+#define NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS 7 // the time in seconds that the network data nodes wait to see if the database is synced
 #define CONNECTION_TIMEOUT_SETTINGS 1 // the time in seconds for a connection to be created
 #define SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS 3 // The time to wait for sending or receving socket data
 #define SEND_PAYMENT_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function
@@ -168,23 +168,23 @@ Using define statements instead of constants for increased efficiency
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1a9usG2UKajV1Dqzp8fL1BbN3hzuaaJMYjCo7qDoC4C3Vvc5owiLAqKbVw2cRbwRqx3mgrau1Z7LkX6cxR2NC4ZmFBLe2Mf"
 #define NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION "us1.xcash.foundation"
-#define NETWORK_DATA_NODE_1_PUBLIC_KEY_PRODUCTION "52623bf336e1434af40502d04aaaa2a245cd14a481b010a9dea9c474bd68e9d0"
+#define NETWORK_DATA_NODE_1_PUBLIC_KEY_PRODUCTION "5fb63257a8ea3c74addb07fb06dd14a42e21cff0d9cabb8e555c6b5e6f0959cf"
 #define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION "XCA1YhckQgqGQvMsS2xi4n3cHBPo39WYFC1AXskqaFB87Q6EX5LheKK6E3ZqQmD9CDFX8br8Mfvff7RqT6UcuUja46qKC1vEJb"
 #define NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION "europe1.xcash.foundation"
-#define NETWORK_DATA_NODE_2_PUBLIC_KEY_PRODUCTION "7fb97147e7a435907e3afa722ec9b8cc90a88e70ddcd6b70477b0551db5cb8e3"
+#define NETWORK_DATA_NODE_2_PUBLIC_KEY_PRODUCTION "db1f54fd9a52ee96c529eef5002e428e7f808fc4c47fcf55467f69ea73271fc1"
 #define NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION "XCA1c2ahjRvBsp35ynTknNYczj9y42hN9ht1vNyns2FCTU4qbLqahtsTw2E7JTKLd3ecSGLe2zWJgCiwrMhecsbT38i3Smy9vW"
 #define NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION "europe2.xcash.foundation"
-#define NETWORK_DATA_NODE_3_PUBLIC_KEY_PRODUCTION "5b21c2242f25781dc5eff581cbf39892d4a9b2e02a4c75f9471889c14f5a9cda"
+#define NETWORK_DATA_NODE_3_PUBLIC_KEY_PRODUCTION "b8e7c84b2ccecae9c8cf8a462e56986936086285c0a046957097f689db7e7340"
 #define NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION "XCA1jN7CNCKEN1kDuqxiuUPyKWiVp68RsYxshdohaQ1k8NN11ZWX9dSJv3hx6qxfPaKVAnet4LTda9fsK81c9wRN5Aj78KyZEg"
 #define NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION "europe3.xcash.foundation"
-#define NETWORK_DATA_NODE_4_PUBLIC_KEY_PRODUCTION "011277b99ae108b6cca4f668f556a73784e922acf5dee942d13646b835e42e95"
+#define NETWORK_DATA_NODE_4_PUBLIC_KEY_PRODUCTION "8a38de7edd55437abeda49cf5a2aa6f53a7d05b1b2e8be1ab4679c306c3fc6d4"
 #define NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION "XCA1hKDayQXECEA5Yja4a8CU6Suoo9XT9jET7Ng2Rx2z3fLsGy5iVQCL9hWWTi3TroJxihWY4j84n9WMJvpFvagW5hMNpq1jh9"
 #define NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION "us2.xcash.foundation"
-#define NETWORK_DATA_NODE_5_PUBLIC_KEY_PRODUCTION "8529c2269830478c498dab8638c79e066922a5144808cbce228b5a8af886368d"
+#define NETWORK_DATA_NODE_5_PUBLIC_KEY_PRODUCTION "338bdb7894a9168de0da30b74d5f9c5d362343b1951c573d535e33ea3bed07c4"
 
 #define OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION "XCA1cYCAbFsKvGRFYpX5QKgBYpx1yimURVcGvdTLdrm5ig9Ka9bMZ9vBXLn9iHKViYRQbmqKfmWRPDziae5rUPaQ3NXtXzKbvC"
 #define OFFICIAL_SHARED_DELEGATE_IP_ADDRESS_PRODUCTION "officialdelegate.xcash.foundation"
-#define OFFICIAL_SHARED_DELEGATE_PUBLIC_KEY_PRODUCTION "82d23f373613284d33c16b74d70ea12e4ef295e8b8283fcb9e01ba864414ab1e"
+#define OFFICIAL_SHARED_DELEGATE_PUBLIC_KEY_PRODUCTION "1d20ac52c1b1bf5669d980bd839073b89e40cfe9f066dbbb18935aa0d9dd920c"
 
 #define DATABASE_COLLECTION_DELEGATES_DATA_1_PRODUCTION "{\"public_address\":\"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "\",\"total_vote_count\":\"0\",\"IP_address\":\"" NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION "\",\"delegate_name\":\"us1_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"" NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION "\",\"team\":\"X-Network Team\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"|" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "\",\"public_key\":\"" NETWORK_DATA_NODE_1_PUBLIC_KEY_PRODUCTION "\"}"
 #define DATABASE_COLLECTION_DELEGATES_DATA_2_PRODUCTION "{\"public_address\":\"" NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION "\",\"total_vote_count\":\"0\",\"IP_address\":\"" NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION "\",\"delegate_name\":\"europe1_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"" NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION "\",\"team\":\"X-Network Team\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"Operating System = Ubuntu 18.04 CPU = 8 threads (Intel D-1521 - 2.40GHz RAM = 32GB DDR3 Hard drive = 2x HDD SATA 2 TB\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" NETWORK_DATA_NODE_2_PUBLIC_KEY_PRODUCTION "\"}"
@@ -225,7 +225,7 @@ else \
 
 
 #define CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE \
-if ((production_settings == 0 && (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) == 0)) || (production_settings == 1 && (memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) == 0))) \
+if (memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[1],XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[2],XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[3],XCASH_WALLET_LENGTH) == 0 || memcmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[4],XCASH_WALLET_LENGTH) == 0) \
 { \
   network_data_node_settings = 1; \
 }
@@ -741,7 +741,7 @@ sleep(BLOCK_VERIFIERS_SETTINGS);
 "--synchronize-database-from-specific-delegate <delegates_IP_address> - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nShould only be used in specific circumstances.\n" \
 "--disable-synchronizing-databases-and-starting-timers - Disables synchronizing the databases and starting the timers. Used for testing. Parameter needs to be passed last.\n" \
 "--registration-mode - Runs the registration mode only. Parameter needs to be passed last.\n" \
-"--start-time <day> <hour> <minute> - Starts the current block height timer at a specific time. <day> is the day of the month (1-31), <hour> is the hour in UTC (0-23), <minute> is the minute (0-59)\n" \
+"--start-time <month> <day> <hour> <minute> - Starts the current block height timer at a specific time. <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (0-23), <minute> is the minute (0-59)\n" \
 "--test-data-add - Add test data to the databases.\n" \
 "--test-data-remove - Remove test data from the databases.\n"
 #endif

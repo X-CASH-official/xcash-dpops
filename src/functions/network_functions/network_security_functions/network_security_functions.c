@@ -101,9 +101,9 @@ int sign_data(char *message)
   memcpy(result+strlen(result),"\",\r\n \"previous_block_hash\": \"",29);
   memcpy(result+strlen(result),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
   memcpy(result+strlen(result),"\",\r\n \"current_round_part\": \"",28);
-  memcpy(result+strlen(result),current_round_part,1);
+  memcpy(result+strlen(result),current_round_part,sizeof(char));
   memcpy(result+strlen(result),"\",\r\n \"current_round_part_backup_node\": \"",40);
-  memcpy(result+strlen(result),current_round_part_backup_node,1);
+  memcpy(result+strlen(result),current_round_part_backup_node,sizeof(char));
   memcpy(result+strlen(result),"\",\r\n \"data\": \"",14);
   memcpy(result+strlen(result),random_data,RANDOM_STRING_LENGTH);
   memcpy(result+strlen(result),"\",\r\n}",5);
@@ -127,9 +127,9 @@ int sign_data(char *message)
     memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
     memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
     memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
-    memcpy(message+strlen(message),current_round_part,1);
+    memcpy(message+strlen(message),current_round_part,sizeof(char));
     memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);
-    memcpy(message+strlen(message),current_round_part_backup_node,1);
+    memcpy(message+strlen(message),current_round_part_backup_node,sizeof(char));
     memcpy(message+strlen(message),"\",\r\n \"data\": \"",14);
     memcpy(message+strlen(message),random_data,RANDOM_STRING_LENGTH);
     memcpy(message+strlen(message),"\",\r\n \"XCASH_DPOPS_signature\": \"",31);
@@ -169,9 +169,9 @@ int sign_data(char *message)
     memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
     memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
     memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
-    memcpy(message+strlen(message),current_round_part,1);
+    memcpy(message+strlen(message),current_round_part,sizeof(char));
     memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);
-    memcpy(message+strlen(message),current_round_part_backup_node,1);
+    memcpy(message+strlen(message),current_round_part_backup_node,sizeof(char));
     memcpy(message+strlen(message),"\",\r\n \"data\": \"",14);
     memcpy(message+strlen(message),random_data,RANDOM_STRING_LENGTH);
     memcpy(message+strlen(message),"\",\r\n \"XCASH_DPOPS_signature\": \"",31);
@@ -280,7 +280,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
 
   // parse the message
   if (strstr(MESSAGE,"}") != NULL)
-  { 
+  {
     if (parse_json_data(MESSAGE,"message_settings",message_settings,sizeof(message_settings)) == 0)
     {
       VERIFY_DATA_ERROR("Could not parse the message");
@@ -489,14 +489,14 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
     {
       message_length = strlen(MESSAGE) - 320;
       memcpy(result,MESSAGE,message_length);
-      memcpy(result+message_length,"}",1);  
+      memcpy(result+message_length,"}",sizeof(char));  
       string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"");
     }
     else
     {      
       message_length = strlen(MESSAGE) - 125;
       memcpy(result,MESSAGE,message_length);
-      memcpy(result+message_length,"}",1);  
+      memcpy(result+message_length,"}",sizeof(char));  
       string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"");
     }
   }
@@ -506,14 +506,14 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
     {
       message_length = strlen(MESSAGE) - 320;
       memcpy(result,MESSAGE,message_length);
-      memcpy(result+message_length,"}",1);  
+      memcpy(result+message_length,"}",sizeof(char));  
       string_replace(result,MAXIMUM_AMOUNT,"\"","\\\""); 
     }
     else
     {      
       message_length = strlen(MESSAGE) - 125;
       memcpy(result,MESSAGE,message_length);
-      memcpy(result+message_length,"}",1);  
+      memcpy(result+message_length,"}",sizeof(char));  
       string_replace(result,MAXIMUM_AMOUNT,"\"","\\\"");
     }
   }

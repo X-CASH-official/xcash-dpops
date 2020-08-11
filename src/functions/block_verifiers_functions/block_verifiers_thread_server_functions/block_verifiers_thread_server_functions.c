@@ -64,6 +64,8 @@ void* current_block_height_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char previous_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
@@ -83,13 +85,7 @@ void* current_block_height_timer_thread(void* parameters)
     {
       get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
       nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);  
-    } while (current_UTC_date_and_time.tm_mday != block_height_start_time_day || current_UTC_date_and_time.tm_hour != block_height_start_time_hour || current_UTC_date_and_time.tm_min != block_height_start_time_minute);
-
-    // restart so they can sync from the network data nodes before starting the round
-    if (network_data_node_settings == 0)
-    {
-      exit(0);
-    }
+    } while (current_UTC_date_and_time.tm_mon != block_height_start_time_month || current_UTC_date_and_time.tm_mday != block_height_start_time_day || current_UTC_date_and_time.tm_hour != block_height_start_time_hour || current_UTC_date_and_time.tm_min != block_height_start_time_minute);
   }
   
   // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT
@@ -139,6 +135,28 @@ void* current_block_height_timer_thread(void* parameters)
 
       get_current_block_height(current_block_height);
       get_previous_block_hash(previous_block_hash);
+
+      // check if this round is a replayed round
+      replayed_round_settings = strncmp(previous_block_height,current_block_height,BUFFER_SIZE) == 0 ? 1 : 0;
+
+      // remove any database data if its a replayed round
+      if (replayed_round_settings == 1)
+      {
+        memset(data,0,sizeof(data));
+        memset(data2,0,sizeof(data2));
+        get_reserve_bytes_database(count,0); 
+        memcpy(data,"reserve_bytes_",14);
+        snprintf(data+14,sizeof(data)-15,"%zu",count);  
+        memcpy(data2,"{\"block_height\":\"",17);
+        memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+        memcpy(data2+strlen(data2),"\"}",2);   
+        delete_document_from_collection(database_name,data,data2);
+        RESET_ERROR_MESSAGES;
+      }
+
+      // copy the current block height
+      memset(previous_block_height,0,sizeof(previous_block_height));
+      memcpy(previous_block_height,current_block_height,strnlen(current_block_height,sizeof(previous_block_height)));
 
       if ((block_verifier_settings = start_new_round()) == 0)
       {

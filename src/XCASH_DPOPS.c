@@ -63,7 +63,6 @@ struct blockchain_data blockchain_data; // The data for a new block to be added 
 struct error_message error_message; // holds all of the error messages and the functions for an error.
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
-struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 char current_round_part[2]; // The current round part (1-4)
 char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 pthread_rwlock_t rwlock;
@@ -103,19 +102,21 @@ int vrf_data_verify_count; // holds the amount of block verifiers signatures tha
 int debug_settings; // 1 to show all incoming and outgoing message from the server
 int registration_settings; // 1 when the registration mode is running, 0 when it is not
 int block_height_start_time; // 1 to start the current_block_height_timer_thread at a specific time, 0 if not
-int block_height_start_time_day; // The minute to start the current_block_height_timer_thread
+int block_height_start_time_month; // The month to start the current_block_height_timer_thread
+int block_height_start_time_day; // The day to start the current_block_height_timer_thread
 int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
 int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
 int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
 int production_settings; // 0 for production, 1 for test
 int production_settings_database_data_settings; // The initialize the database settings
 char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
-char current_block_producer[XCASH_WALLET_LENGTH+1]; // The public address of the current block producer
 int sync_previous_current_next_block_verifiers_settings; // sync the previous, current and next block verifiers if you had to restart
 int database_data_socket_settings; // 1 to allow database data up to 50MB to be received in the server, 0 to only allow message up to BUFFER_SIZE
 char* server_limit_IP_address_list; // holds all of the IP addresses that are currently running on the server. This can hold up to 1 million IP addresses
 char* server_limit_public_address_list; // holds all of the public addresses that are currently running on the server. This can hold up to 1 million public addresses
 int invalid_block_verifiers_count; // counts how many times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
+int backup_network_data_node_settings; // The network data node that will attempt to create the block if the block producer and backup block producer fail
+int replayed_round_settings; // 1 if the round is a replayed round, 0 if not
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -141,10 +142,13 @@ bson_error_t error;
 -----------------------------------------------------------------------------------------------------------
 Name: initialize_data
 Description: Initializes the global variables
+Parameters:
+  parameters_count - The parameter count
+  parameters - The parameters
 -----------------------------------------------------------------------------------------------------------
 */
 
-void initialize_data(void)
+void initialize_data(int parameters_count, char* parameters[])
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -174,7 +178,6 @@ void initialize_data(void)
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
   memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
-  memset(current_block_producer,0,sizeof(current_block_producer));
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
   network_functions_test_settings = 0;
@@ -189,6 +192,7 @@ void initialize_data(void)
   sync_previous_current_next_block_verifiers_settings = 1;
   database_data_socket_settings = 0;
   invalid_block_verifiers_count = 0;
+  replayed_round_settings = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -404,6 +408,19 @@ void initialize_data(void)
       INITIALIZE_DATA_ERROR;
     }
   }
+
+  // set the production settings
+  for (count = 0; count < (size_t)parameters_count; count++)
+  { 
+    if (strncmp(parameters[count],"--test-mode",BUFFER_SIZE) == 0)
+    {
+      production_settings = 0;
+      sscanf(parameters[count+1], "%d", &production_settings_database_data_settings);
+    }
+  }
+
+  // initialize the network data nodes
+  INITIALIZE_NETWORK_DATA_NODES;
   return;
 
   #undef INITIALIZE_DATA_ERROR
@@ -569,8 +586,8 @@ int set_parameters(int parameters_count, char* parameters[])
   // set the current_round_part, current_round_part_backup_node and server message, this way the node will start at the begining of a round
   memset(current_round_part,0,sizeof(current_round_part));
   memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-  memcpy(current_round_part,"1",1);
-  memcpy(current_round_part_backup_node,"0",1);
+  memcpy(current_round_part,"1",sizeof(char));
+  memcpy(current_round_part_backup_node,"0",sizeof(char));
 
   // check all of the parameters to see if there is a block verifier secret key
   if (parameters_count < 3)
@@ -633,11 +650,6 @@ int set_parameters(int parameters_count, char* parameters[])
       test(2);
       database_reset;
       exit(0);
-    }
-    if (strncmp(parameters[count],"--test-mode",BUFFER_SIZE) == 0)
-    {
-      production_settings = 0;
-      sscanf(parameters[count+1], "%d", &production_settings_database_data_settings);
     }
     if (strncmp(parameters[count],"--debug",BUFFER_SIZE) == 0)
     {
@@ -785,13 +797,14 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--start-time",BUFFER_SIZE) == 0)
     {
-      sscanf(parameters[count+1], "%d", &block_height_start_time_day);
-      sscanf(parameters[count+2], "%d", &block_height_start_time_hour);
-      sscanf(parameters[count+3], "%d", &block_height_start_time_minute);
+      sscanf(parameters[count+1], "%d", &block_height_start_time_month);
+      sscanf(parameters[count+2], "%d", &block_height_start_time_day);
+      sscanf(parameters[count+3], "%d", &block_height_start_time_hour);
+      sscanf(parameters[count+4], "%d", &block_height_start_time_minute);
 
       // if the program restarts dont wait for the start_time again
       get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-      if ((current_UTC_date_and_time.tm_mday > block_height_start_time_day) || (current_UTC_date_and_time.tm_mday == block_height_start_time_day && current_UTC_date_and_time.tm_hour > block_height_start_time_hour) || (current_UTC_date_and_time.tm_mday == block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time_hour && current_UTC_date_and_time.tm_min > block_height_start_time_minute))
+      if ((current_UTC_date_and_time.tm_mon > block_height_start_time_month) || (current_UTC_date_and_time.tm_mon == block_height_start_time_month && current_UTC_date_and_time.tm_mday > block_height_start_time_day) || (current_UTC_date_and_time.tm_mon == block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time_day && current_UTC_date_and_time.tm_hour > block_height_start_time_hour) || (current_UTC_date_and_time.tm_mon == block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time_hour && current_UTC_date_and_time.tm_min > block_height_start_time_minute))
       {
         block_height_start_time = 0;
       }
@@ -1119,7 +1132,7 @@ int main(int parameters_count, char* parameters[])
 
   memset(data,0,sizeof(data));
 
-  initialize_data();
+  initialize_data(parameters_count, parameters);
 
   // write the message
   color_print(XCASH_DPOPS_CURRENT_VERSION,"green");
@@ -1140,9 +1153,6 @@ int main(int parameters_count, char* parameters[])
   create_overall_database_connection();
 
   settings = set_parameters(parameters_count, parameters);
-
-  // initialize the network data nodes
-  INITIALIZE_NETWORK_DATA_NODES;
 
   get_delegates_data();
 

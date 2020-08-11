@@ -52,27 +52,26 @@ Description: Runs the code when the server receives the XCASH_DPOPS_test_data me
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   message - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, char* MESSAGE)
+void server_received_data_XCASH_DPOPS_test_data(const int CLIENT_SOCKET, char* MESSAGE)
 {
   // verify the message
   if (verify_data(MESSAGE,1) == 0)
   { 
-    return 0;
+    return;
   }
   else
   {
     if (send_data(CLIENT_SOCKET,(unsigned char*)MESSAGE,0,1,"") == 1)
     {
       network_functions_test_settings = 1;
-      return 1;
+      return;
     }
     else
     {
-      return 0;
+      return;
     }
   }  
 }
@@ -85,11 +84,10 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_rese
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS message
 Parameters:
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs(const char* MESSAGE)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs(const char* MESSAGE)
 {
   // Variables
   char block_verifiers_public_address[XCASH_WALLET_LENGTH+1];
@@ -107,7 +105,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(block_verifiers_public_address,0,sizeof(block_verifiers_public_address));
   memset(public_address,0,sizeof(public_address));
@@ -150,7 +148,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserv
       invalid_reserve_proofs.count++;
     }    
   }
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR
 }
@@ -163,11 +161,10 @@ Name: server_receive_data_socket_block_verifiers_to_network_data_nodes_block_ver
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME message
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(const int CLIENT_SOCKET)
+void server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verifiers_current_time(const int CLIENT_SOCKET)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -181,7 +178,7 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
   error_message.total++; \
   } \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not update the delegates information}",0,0,""); \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   
@@ -196,52 +193,9 @@ int server_receive_data_socket_block_verifiers_to_network_data_nodes_block_verif
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR("Could not sign_data");
   }
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_block_verifiers_to_block_verifiers_online_status
-Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_ONLINE_STATUS message
-Parameters:
-  MESSAGE - The message
------------------------------------------------------------------------------------------------------------
-*/
-
-void server_receive_data_socket_block_verifiers_to_block_verifiers_online_status(const char* MESSAGE)
-{
-  // Variables
-  char public_address[XCASH_WALLET_LENGTH+1];
-  int count;
-
-  memset(public_address,0,sizeof(public_address));
-
-  // verify the message
-  if (verify_data(MESSAGE,0) == 0)
-  {   
-    return;
-  }
-
-  // parse the message
-  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
-  {
-    return;
-  }
-
-  // update the block verifiers online status
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
-  {
-    if (strncmp(delegates_online_status[count].public_address,public_address,XCASH_WALLET_LENGTH) == 0)
-    {
-      delegates_online_status[count].settings = 1;
-      break;
-    }
-  }
-  return;
 }
 
 
@@ -252,11 +206,10 @@ Name: server_receive_data_socket_main_network_data_node_to_block_verifier_start_
 Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK message
 Parameters:
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_network_data_node_to_block_verifier_start_block(const char* MESSAGE)
+void server_receive_data_socket_main_network_data_node_to_block_verifier_start_block(const char* MESSAGE)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -271,7 +224,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -289,7 +242,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   }
 
   // make sure the message is coming from the main network data node
-  if ((production_settings == 0 && strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH) != 0) || (production_settings == 1 && strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH) != 0))
+  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Invalid message");
   }
@@ -305,7 +258,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_start_bl
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");
   }  
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK
 }
@@ -318,11 +271,10 @@ Name: server_receive_data_socket_main_network_data_node_to_block_verifier_create
 Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK message
 Parameters:
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(const char* MESSAGE)
+void server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(const char* MESSAGE)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -336,7 +288,7 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -350,10 +302,18 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   main_network_data_node_receive_block = 1;
 
   // parse the message
-  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0)
+  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not parse the data");
   }
+
+  // make sure the message is coming from the main network data node
+  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Invalid message");
+  }
+
+  memset(data2,0,sizeof(data2));
 
   // sign the network block string
   if (sign_network_block_string(data2,data) == 0)
@@ -374,8 +334,8 @@ int server_receive_data_socket_main_network_data_node_to_block_verifier_create_n
   }
   
   // send the network block signature to the main network data node
-  production_settings == 0 ? send_data_socket(NETWORK_DATA_NODE_1_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) : send_data_socket(NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
-  return 1;
+  send_data_socket(network_data_nodes_list.network_data_nodes_IP_address[backup_network_data_node_settings],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK
 }
@@ -388,11 +348,10 @@ Name: server_receive_data_socket_block_verifier_to_main_network_data_node_create
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK message
 Parameters:
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block(const char* MESSAGE)
+void server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block(const char* MESSAGE)
 {
   // Variables
   char data[VRF_PROOF_LENGTH+VRF_BETA_LENGTH+1];
@@ -407,7 +366,7 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -446,14 +405,13 @@ int server_receive_data_socket_block_verifier_to_main_network_data_node_create_n
   }
 
   // add to the count of network data nodes if it is a network data node
-  if ((production_settings == 0 && (strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[1],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[2],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[3],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[4],BUFFER_SIZE) == 0)
   {
     pthread_mutex_lock(&network_data_nodes_valid_count_lock);
     network_data_node_valid_amount++;
     pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
   }
-
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK
 }
@@ -466,11 +424,10 @@ Name: server_receive_data_socket_main_node_to_node_message_part_4
 Description: Runs the code when the server receives the MAIN_NODES_TO_NODES_PART_4_OF_ROUND message
 Parameters:
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESSAGE)
+void server_receive_data_socket_main_node_to_node_message_part_4(const char* MESSAGE)
 {
   // Variables
   char data[BUFFER_SIZE];
@@ -485,7 +442,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -522,7 +479,7 @@ int server_receive_data_socket_main_node_to_node_message_part_4(const char* MESS
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Invalid main node");
   }
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR
 }
@@ -535,11 +492,10 @@ Name: server_receive_data_socket_node_to_node
 Description: Runs the code when the server receives the NODES_TO_NODES_VOTE_RESULTS message
 Parameters:
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_node_to_node(const char* MESSAGE)
+void server_receive_data_socket_node_to_node(const char* MESSAGE)
 {
   // Variables
   char data[10]; 
@@ -554,7 +510,7 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -586,14 +542,14 @@ int server_receive_data_socket_node_to_node(const char* MESSAGE)
   // add to the count of network data nodes if it is a network data node
   if (strncmp(data,"valid",5) == 0 && strncmp(data2,current_round_part_vote_data.current_vote_results,DATA_HASH_LENGTH) == 0)
   {
-    if ((production_settings == 0 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+    if (strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[1],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[2],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[3],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[4],BUFFER_SIZE) == 0)
     {
       pthread_mutex_lock(&network_data_nodes_valid_count_lock);
       network_data_node_valid_amount++;
       pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
     }
   }
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR
 }
@@ -606,11 +562,10 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA message
 Parameters:
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const char* MESSAGE)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const char* MESSAGE)
 {
   // Variables  
   char public_address[XCASH_WALLET_LENGTH+1];
@@ -631,7 +586,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(public_address,0,sizeof(public_address));
   memset(vrf_secret_key_data,0,sizeof(vrf_secret_key_data));
@@ -683,13 +638,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const
   }
 
   // add to the count of network data nodes if it is a network data node
-  if ((production_settings == 0 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(public_address,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(public_address,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+  if (strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[1],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[2],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[3],BUFFER_SIZE) == 0 || strncmp(public_address,network_data_nodes_list.network_data_nodes_public_address[4],BUFFER_SIZE) == 0)
   {
     pthread_mutex_lock(&network_data_nodes_valid_count_lock);
     network_data_node_valid_amount++;
     pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
   }
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR
 }
@@ -702,11 +657,10 @@ Name: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_s
 Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE message
 Parameters:
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature(const char* MESSAGE)
+void server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature(const char* MESSAGE)
 {
   // Variables
   char data[VRF_PROOF_LENGTH+VRF_BETA_LENGTH+1]; 
@@ -721,7 +675,7 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -748,13 +702,13 @@ int server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_sig
   }
 
   // add to the count of network data nodes if it is a network data node
-  if ((production_settings == 0 && (strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS,BUFFER_SIZE) == 0)) || (production_settings == 1 && (strncmp(data2,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0 || strncmp(data2,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)))
+  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[1],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[2],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[3],BUFFER_SIZE) == 0 || strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[4],BUFFER_SIZE) == 0)
   {
     pthread_mutex_lock(&network_data_nodes_valid_count_lock);
     network_data_node_valid_amount++;
     pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
   }  
-  return 1;
+  return;
 
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR
 }

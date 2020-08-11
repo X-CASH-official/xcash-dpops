@@ -17,6 +17,7 @@
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
+#include "define_macros_test.h"
 #include "structures.h"
 #include "variables.h"
 #include "initialize_and_reset_structs_define_macros.h"
@@ -47,6 +48,83 @@
 Functions
 -----------------------------------------------------------------------------------------------------------
 */
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: check_if_previous_block_producer
+Description: Checks if the delegate is the previous block producer
+Return: 0 if an error has occured or if the delegate is not the previous block producer, 1 if the delegate is the previous block producer
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_if_previous_block_producer(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  char previous_block_producer[XCASH_WALLET_LENGTH+1];
+  char* message;
+  size_t count;
+  size_t count2;
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(previous_block_producer,0,sizeof(previous_block_producer));  
+
+  // check if it is a valid block height
+  sscanf(current_block_height, "%zu", &count);
+  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT+2)
+  {
+    return 0;
+  }
+
+  if (test_settings == 0)
+  {
+    // create the message
+    memcpy(data2,"\"block_height\":\"",16);
+    memcpy(data2+16,current_block_height,strnlen(current_block_height,sizeof(data2)));
+    memcpy(data2+strlen(data2),"\"}",2);
+
+    // get the current reserve_bytes database
+    get_reserve_bytes_database(count,1);
+    memcpy(data3,"reserve_bytes_",14);
+    snprintf(data3+14,sizeof(data3)-15,"%zu",count);
+
+    // get the previous blocks reserve bytes
+    if (read_document_field_from_collection(database_name,data3,data2,"reserve_bytes",data) == 0)
+    {    
+      return 0;
+    }
+  }
+  else if (test_settings == 1)
+  {
+    memcpy(data,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
+  }
+  
+  if ((message = strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING)) == NULL)
+  {
+    return 0;
+  }
+
+  memset(data3,0,sizeof(data3));
+
+  memcpy(data3,&message[(sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1)],XCASH_WALLET_LENGTH*2);
+
+  // convert the hexadecimal string to a string
+  for (count = 0, count2 = 0; count < XCASH_WALLET_LENGTH*2; count2++, count += 2)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,&data3[count],2);
+    previous_block_producer[count2] = (int)strtol(data2, NULL, 16);
+  }
+
+  // check if the delegate is the previous block producer
+  return strncmp(previous_block_producer,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 ? 1 : 0;
+}
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -394,8 +472,15 @@ void* block_height_timer_thread(void* parameters)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
     // check if you found the previous block in the network
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 0 && current_UTC_date_and_time.tm_sec == 10 && strncmp(current_block_producer,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == START_TIME_MINUTE_NETWORK_BLOCK_ROUND && current_UTC_date_and_time.tm_sec == 0 && check_if_previous_block_producer() == 1)
     {
+      // make sure the round is not replayed
+      if (replayed_round_settings == 1)
+      {
+        sleep(1);
+        continue;
+      }
+
       if ((block_reward_number = add_block_to_blocks_found()) == 0)
       {
         BLOCK_HEIGHT_TIMER_THREAD_ERROR("Could not add the previous block that the block verifier found to the database");
@@ -703,7 +788,7 @@ void* payment_timer_thread(void* parameters)
       snprintf(data+strlen(data),sizeof(data)-1,"%lld",amount_of_payments);
       memcpy(data+strlen(data),"\nTotal amount: ",15);
       snprintf(data+strlen(data),sizeof(data)-1,"%lf",total);
-      memcpy(data+strlen(data),"\n",1);
+      memcpy(data+strlen(data),"\n",sizeof(char));
       color_print(data,"yellow");
       sleep(60);
     }

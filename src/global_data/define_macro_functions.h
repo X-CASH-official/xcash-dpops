@@ -147,7 +147,7 @@ if (error_message.total != 0) \
   memset(buffer,0,sizeof(buffer)); \
   memcpy(buffer,"\n\n",2); \
   memcpy(buffer+2,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
-  memcpy(buffer+strlen(buffer),"\n",1); \
+  memcpy(buffer+strlen(buffer),"\n",sizeof(char)); \
   memcpy(buffer+strlen(buffer),error_message.function[0],strlen(error_message.function[0])); \
   memcpy(buffer+strlen(buffer),": Error",7); \
   color_print(buffer,"red"); \
@@ -160,13 +160,13 @@ if (error_message.total != 0) \
   memcpy(buffer+strlen(buffer),"\nFunction Calls:\n",17); \
   for (error_message_count = 0; error_message_count < error_message.total; error_message_count++) \
   { \
-    memcpy(buffer+strlen(buffer),"#",1); \
+    memcpy(buffer+strlen(buffer),"#",sizeof(char)); \
     sprintf(buffer+strlen(buffer),"%d",error_message_count+1); \
-    memcpy(buffer+strlen(buffer)," ",1); \
+    memcpy(buffer+strlen(buffer)," ",sizeof(char)); \
     memcpy(buffer+strlen(buffer),error_message.function[error_message_count],strnlen(error_message.function[error_message_count],sizeof(buffer))); \
     memcpy(buffer+strlen(buffer),": ",2); \
     memcpy(buffer+strlen(buffer),error_message.data[error_message_count],strnlen(error_message.data[error_message_count],sizeof(buffer))); \
-    memcpy(buffer+strlen(buffer),"\n",1); \
+    memcpy(buffer+strlen(buffer),"\n",sizeof(char)); \
   } \
   color_print(buffer,"red"); \
   for (error_message_count = 0; error_message_count < TOTAL_DELEGATES_DATABASE_FIELDS; error_message_count++) \
@@ -194,9 +194,9 @@ Description: Prints the start message of a section
 
 #define print_start_message(current_date_and_time,current_UTC_date_and_time,string,buffer) \
 memset(buffer,0,sizeof(buffer)); \
-memcpy(buffer,"\n",1); \
+memcpy(buffer,"\n",sizeof(char)); \
 memcpy(buffer+1,TEST_OUTLINE,sizeof(TEST_OUTLINE)-1); \
-memcpy(buffer+strlen(buffer),"\n",1); \
+memcpy(buffer+strlen(buffer),"\n",sizeof(char)); \
 memcpy(buffer+strlen(buffer),string,strnlen(string,sizeof(buffer))); \
 color_print(buffer,"blue"); \
 get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \

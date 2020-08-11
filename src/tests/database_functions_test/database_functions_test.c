@@ -42,14 +42,13 @@ int database_test(void)
 
   // define macros
   #define MESSAGE "{\"message_settings\" : \"XCASH_DPOPS_TEST_DATA\" }"
-  #define DATA_HASH "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008fb47efae4253533cc04467def75eb70"
-  #define DATA_HASH_SPECIFIC_RESERVE_PROOFS_COLLECTION "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000042ae832cc1c124b37875629a0307961"
-  #define DATA_HASH_SPECIFIC_RESERVE_BYTES_COLLECTION "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f0183e1f40c427df35b8e1063a83f040"
-  #define DATA_HASH_DELEGATES_COLLECTION "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000039e1a0c6ca4d4f1c0db37bca848c5c85"
-  #define DATA_HASH_STATISTICS_COLLECTION "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000bc618f4f1e9cab65d9c53cd496b2a3d3"
+  #define DATA_HASH_SPECIFIC_RESERVE_PROOFS_COLLECTION "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000075ac78b518b997f798f9d52540c9011f"
+  #define DATA_HASH_SPECIFIC_RESERVE_BYTES_COLLECTION "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000064bfb449381660ce9f2f70fe58234921"
+  #define DATA_HASH_DELEGATES_COLLECTION "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005d0543cbfbf03c0ca92862ec7c07bab0"
+  #define DATA_HASH_STATISTICS_COLLECTION "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a7acbe295605ef75b73129d637178ca6"
   #define DATA_HASH_ALL_RESERVE_PROOFS_COLLECTIONS "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d41d8cd98f00b204e9800998ecf8427e"
-  #define DATA_HASH_ALL_RESERVE_BYTES_COLLECTIONS "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000f0183e1f40c427df35b8e1063a83f040"
-  #define DATA_HASH_ALL_COLLECTIONS "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a37799518241e1f8d1fd3c8e2f1f3f49"
+  #define DATA_HASH_ALL_RESERVE_BYTES_COLLECTIONS "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000064bfb449381660ce9f2f70fe58234921"
+  #define DATA_HASH_ALL_COLLECTIONS "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000019ac46867a5e67ca1347db33273f295f"
 
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
 
@@ -74,24 +73,12 @@ int database_test(void)
 
   // get the database data hash
   delete_database(database_name);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA);
   insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
   insert_document_into_collection_json(database_name,"reserve_proofs_10",RESERVE_PROOFS_TEST_DATA);
   insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
   insert_document_into_collection_json(database_name,"reserve_bytes_10",RESERVE_BYTES_TEST_DATA);
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  if (get_database_data_hash(data_test,database_name,DATABASE_COLLECTION_TEST) == 1 && strncmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
-  {
-    color_print("PASSED! Test for get_database_data_hash for XCASH_PROOF_OF_STAKE_TEST_DATA collection","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for get_database_data_hash for XCASH_PROOF_OF_STAKE_TEST_DATA collection","red");
-  }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   if (get_database_data_hash(data_test,database_name,"reserve_proofs_1") == 1 && strncmp(data_test,DATA_HASH_SPECIFIC_RESERVE_PROOFS_COLLECTION,DATA_HASH_LENGTH) == 0)
   {
@@ -152,6 +139,14 @@ int database_test(void)
   {
     color_print("FAILED! Test for get_database_data_hash for all reserve bytes collections","red");
   }
+
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_proofs_10",RESERVE_PROOFS_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"reserve_bytes_10",RESERVE_BYTES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   if (get_database_data_hash(data_test,database_name,"ALL") == 1 && strncmp(data_test,DATA_HASH_ALL_COLLECTIONS,DATA_HASH_LENGTH) == 0)
   {
@@ -165,25 +160,6 @@ int database_test(void)
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
   delete_database(database_name);
 
-  // get the database data hash on a separate thread
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,DATABASE_COLLECTION_STATISTICS_TEST_DATA);
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  struct get_database_data_hash_thread_parameters get_database_data_hash_thread_parameters = {data_test,database_name,DATABASE_COLLECTION_TEST};
-  pthread_create(&thread_id, NULL, &get_database_data_hash_thread,(void *)&get_database_data_hash_thread_parameters);
-  if (thread_settings(thread_id) == 1 && strncmp(data_test,DATA_HASH,DATA_HASH_LENGTH) == 0)
-  {
-    color_print("PASSED! Test for get_database_data_hash_thread","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for get_database_data_hash_thread","red");
-  }
-  memset(data_test,0,strnlen(data_test,BUFFER_SIZE));
-  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
-
   insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,MESSAGE);
   // get the database data
   memset(result_test,0,sizeof(result_test));
@@ -194,7 +170,6 @@ int database_test(void)
   }
   else
   {
-    color_print(result_test,"yellow");
     color_print("FAILED! Test for get_database_data","red");
   }
 
@@ -209,6 +184,7 @@ int database_test(void)
   }
   else
   {
+    color_print(result_test,"yellow");
     color_print("FAILED! Test for get_database_data_thread","red");
   }
   memset(data_test,0,strnlen(data_test,BUFFER_SIZE));

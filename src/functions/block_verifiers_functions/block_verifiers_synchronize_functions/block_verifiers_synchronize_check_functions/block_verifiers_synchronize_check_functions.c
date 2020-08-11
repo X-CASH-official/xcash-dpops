@@ -47,9 +47,11 @@
 Global Define Macros
 -----------------------------------------------------------------------------------------------------------
 */
+
 #define SEND_DATABASE_SYNC_CHECK_MESSAGE(database) \
 for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
 { \
+  memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count])); \
   if (strncmp((char*)synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
   { \
     memset(data,0,strlen(data)); \
@@ -61,15 +63,16 @@ for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
     } \
     else \
     { \
-      if (strstr(data,database) != NULL && parse_json_data(data,database,data2,sizeof(data2)) != 0 && strncmp(data2,"true",4) == 0) \
+      if ((strncmp(database,"reserve_proofs_database",sizeof(database)) == 0 && string_count(data,"false") > 1) || (strncmp(database,"reserve_proofs_database",sizeof(database)) != 0 && strstr(data,"false") != NULL)) \
       { \
-        synced_block_verifiers.vote_settings_true++; \
+        memcpy(synced_block_verifiers.vote_settings[count],"false",5); \
+        synced_block_verifiers.vote_settings_false++; \
       } \
       else \
       { \
-        synced_block_verifiers.vote_settings_false++; \
+        memcpy(synced_block_verifiers.vote_settings[count],"true",4); \
+        synced_block_verifiers.vote_settings_true++; \
       } \
-      memcpy(synced_block_verifiers.vote_settings[count],data2,strnlen(data2,BUFFER_SIZE)); \
     } \
   } \
 }
@@ -220,7 +223,7 @@ int sync_check_reserve_proofs_database(int settings)
       memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
       memcpy(message+strlen(message),"\",\r\n ",5);
     }
-    memcpy(message+strlen(message),"}",1);
+    memcpy(message+strlen(message),"}",sizeof(char));
 
     // sign_data
     if (sign_data(message) == 0)
@@ -277,7 +280,7 @@ int sync_check_reserve_proofs_database(int settings)
     {
       color_print("Syncing from the main network data node","white");
     }
-    if ((production_settings == 0 && sync_reserve_proofs_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_reserve_proofs_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    if (sync_reserve_proofs_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
       SYNC_CHECK_RESERVE_PROOFS_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
@@ -367,7 +370,7 @@ int sync_check_majority_reserve_proofs_database(void)
     memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
     memcpy(message+strlen(message),"\",\r\n ",5);
   }
-  memcpy(message+strlen(message),"}",1);
+  memcpy(message+strlen(message),"}",sizeof(char));
 
   // sign_data
   if (sign_data(message) == 0)
@@ -474,7 +477,7 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
       memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
       memcpy(message+strlen(message),"\",\r\n ",5);
     }
-    memcpy(message+strlen(message),"}",1);
+    memcpy(message+strlen(message),"}",sizeof(char));
 
     // sign_data
     if (sign_data(message) == 0)
@@ -536,7 +539,7 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
     {
       color_print("Syncing from the main network data node","white");
     }
-    if ((production_settings == 0 && sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    if (sync_reserve_bytes_database(settings, RESERVE_BYTES_START_SETTINGS,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
       SYNC_CHECK_RESERVE_BYTES_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
@@ -632,7 +635,7 @@ int sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SET
     memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
     memcpy(message+strlen(message),"\",\r\n ",5);
   }
-  memcpy(message+strlen(message),"}",1);
+  memcpy(message+strlen(message),"}",sizeof(char));
 
   // sign_data
   if (sign_data(message) == 0)
@@ -773,7 +776,7 @@ int sync_check_delegates_database(int settings)
     {
       color_print("Syncing from the main network data node","white");
     }
-    if ((production_settings == 0 && sync_delegates_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_delegates_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    if (sync_delegates_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
       SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the reserve proofs database");
     }
@@ -989,7 +992,7 @@ int sync_check_statistics_database(int settings)
     {
       color_print("Syncing from the main network data node","white");
     }
-    if ((production_settings == 0 && sync_statistics_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS) == 0) || (production_settings == 1 && sync_statistics_database(settings,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION) == 0))
+    if (sync_statistics_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
       SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the reserve proofs database");
     }

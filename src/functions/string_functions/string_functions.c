@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/random.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
@@ -56,9 +57,9 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   memset(result,0,strlen(result));
   memset(str,0,sizeof(str));
 
-  memcpy(str,"\"",1);
+  memcpy(str,"\"",sizeof(char));
   memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
-  memcpy(str+strlen(str),"\"",1);
+  memcpy(str+strlen(str),"\"",sizeof(char));
 
   // check if the field is in the data
   if (strstr(DATA,str) != NULL)
@@ -66,7 +67,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     memset(str,0,sizeof(str));
 
     // modify the field to add the field syntax
-    memcpy(str,"\"",1);
+    memcpy(str,"\"",sizeof(char));
     memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
     memcpy(str+strlen(str),"\": ",3);
 
@@ -154,19 +155,19 @@ int create_json_data_from_database_document_array(const struct database_document
   size_t item_length;
   size_t value_length;
 
-  memcpy(result,"{",1); 
+  memcpy(result,"{",sizeof(char)); 
   for (count = 0; count < database_data->count; count++)
   {
     memset(data,0,sizeof(data));
     memcpy(data,database_data->item[count],strnlen(database_data->item[count],sizeof(data)));
-    memcpy(data+strlen(data),"|",1);
+    memcpy(data+strlen(data),"|",sizeof(char));
     if (strstr(DOCUMENT_FIELDS,data) == NULL)
     {
       // get the length of the item and the value
       item_length = strnlen(database_data->item[count],sizeof(data));
       value_length = strnlen(database_data->value[count],sizeof(data));
       // copy the item and the value to the json string
-      memcpy(result+counter,"\"",1);
+      memcpy(result+counter,"\"",sizeof(char));
       counter++;
       memcpy(result+counter,database_data->item[count],item_length);
       counter += item_length;
@@ -174,13 +175,13 @@ int create_json_data_from_database_document_array(const struct database_document
       counter += 3; 
       memcpy(result+counter,database_data->value[count],value_length);
       counter += value_length;
-      memcpy(result+counter,"\"",1);
+      memcpy(result+counter,"\"",sizeof(char));
       counter++;
-      memcpy(result+counter,",",1);
+      memcpy(result+counter,",",sizeof(char));
       counter++;
     }
   }
-  memcpy(result+counter-1,"}",1);
+  memcpy(result+counter-1,"}",sizeof(char));
   return 1;
 }
 
@@ -213,24 +214,24 @@ int create_json_data_from_database_multiple_documents_array(const struct databas
   size_t item_length;
   size_t value_length; 
 
-  memcpy(result,"[",1); 
+  memcpy(result,"[",sizeof(char)); 
   
   for (count = 0; count < database_data->document_count; count++)
   {
-    memcpy(result+data_count,"{",1); 
+    memcpy(result+data_count,"{",sizeof(char)); 
     data_count++;
     for (counter = 0; counter < database_data->database_fields_count; counter++)
     {
       memset(data,0,sizeof(data));
       memcpy(data,database_data->item[count][counter],strnlen(database_data->item[count][counter],sizeof(data)));
-      memcpy(data+strlen(data),"|",1);
+      memcpy(data+strlen(data),"|",sizeof(char));
       if (strstr(DOCUMENT_FIELDS,data) == NULL)
       {
         // get the length of the item and the value
         item_length = strnlen(database_data->item[count][counter],sizeof(data));
         value_length = strnlen(database_data->value[count][counter],sizeof(data));
         // copy the item and the value to the json string
-        memcpy(result+data_count,"\"",1);
+        memcpy(result+data_count,"\"",sizeof(char));
         data_count++;
         memcpy(result+data_count,database_data->item[count][counter],item_length);
         data_count += item_length;
@@ -238,16 +239,16 @@ int create_json_data_from_database_multiple_documents_array(const struct databas
         data_count += 3; 
         memcpy(result+data_count,database_data->value[count][counter],value_length);
         data_count += value_length;
-        memcpy(result+data_count,"\"",1);
+        memcpy(result+data_count,"\"",sizeof(char));
         data_count++;
-        memcpy(result+data_count,",",1);
+        memcpy(result+data_count,",",sizeof(char));
         data_count++;
       }      
     }
     memcpy(result+data_count-1,"},",2);
     data_count += 1;    
   }
-  memcpy(result+data_count-1,"]",1);
+  memcpy(result+data_count-1,"]",sizeof(char));
   return 1;
 }
 
@@ -271,13 +272,13 @@ int create_json_data_from_delegates_array(const struct delegates* delegates, cha
   int count = 0;
   
   memset(result,0,strlen(result));
-  memcpy(result,"[",1); 
+  memcpy(result,"[",sizeof(char)); 
   
   for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
     if (strncmp(delegates[count].public_address,"",1) != 0)
     {
-      memcpy(result+strlen(result),"{",1);
+      memcpy(result+strlen(result),"{",sizeof(char));
       if (strstr(DOCUMENT_FIELDS,"public_address|") == NULL)
       {
         memcpy(result+strlen(result),"\"public_address\":\"",18);
@@ -383,7 +384,7 @@ int create_json_data_from_delegates_array(const struct delegates* delegates, cha
       memcpy(result+strlen(result)-1,"},",2);
     }
   }
-  memcpy(result+strlen(result)-1,"]",1);
+  memcpy(result+strlen(result)-1,"]",sizeof(char));
   return 1;
 }
 
@@ -407,13 +408,13 @@ int create_json_data_from_votes_array(const struct votes* votes, char *result, c
   int count = 0;
   
   memset(result,0,strlen(result));
-  memcpy(result,"[",1); 
+  memcpy(result,"[",sizeof(char)); 
   
   for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
     if (strncmp(votes[count].public_address_created_reserve_proof,"",1) != 0)
     {
-      memcpy(result+strlen(result),"{",1);
+      memcpy(result+strlen(result),"{",sizeof(char));
       if (strstr(DOCUMENT_FIELDS,"public_address_created_reserve_proof|") == NULL)
       {
         memcpy(result+strlen(result),"\"public_address_created_reserve_proof\":\"",40);
@@ -441,7 +442,7 @@ int create_json_data_from_votes_array(const struct votes* votes, char *result, c
       memcpy(result+strlen(result)-1,"},",2);
     }
   }
-  memcpy(result+strlen(result)-1,"]",1);
+  memcpy(result+strlen(result)-1,"]",sizeof(char));
   return 1;
 }
 
@@ -725,23 +726,42 @@ Return: 0 if an error has occured, 1 if successfull
 int random_string(char *result, const size_t LENGTH)
 {  
   // define macros
-  #define STRING "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" 
-  #define MINIMUM 0
-  #define MAXIMUM 61
+  #define STRING "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  #define MAXIMUM_COUNT 1000
   
   // Variables
-  char data[100];
-  size_t count;
-  
-  memset(data,0,sizeof(data));
-  memcpy(data,STRING,sizeof(STRING)-1);
-  for (count = 0; count < LENGTH; count++)
+  char data2[BUFFER_SIZE];
+  int count;
+  int count2;
+  int count3 = 0;
+
+  memset(result,0,strlen(result));
+
+  do
   {
-    memcpy(result+count,&data[(rand() % (MAXIMUM - MINIMUM + 1)) + MINIMUM],1);
-  }
-  return 1;
-  
+    memset(data2,0,sizeof(data2));
+    
+    count2 = getrandom(data2,sizeof(data2)-1,0);
+
+    // only use specific bytes
+    for (count = 0; count < count2; count++)
+    {
+      if (strstr(STRING,&data2[count]) != NULL)
+      {
+        memcpy(result+strlen(result),&data2[count],sizeof(char));
+      }
+
+      // check if the random string is at the maximum number of bytes
+      if (strlen(result) == LENGTH)
+      {
+        break;
+      }
+    }
+    count3++;
+  } while (strlen(result) != LENGTH && count3 != MAXIMUM_COUNT);
+
+  return strlen(result) == LENGTH ? 1 : 0;
+
   #undef STRING
-  #undef MINIMUM
-  #undef MAXIMUM  
+  #undef MAXIMUM_COUNT
 }

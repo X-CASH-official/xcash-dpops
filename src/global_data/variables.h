@@ -34,7 +34,6 @@ extern struct blockchain_data blockchain_data; // The data for a new block to be
 extern struct error_message error_message; // holds all of the error messages and the functions for an error.
 extern struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 extern struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
-extern struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 extern char current_round_part[2]; // The current round part (1-4)
 extern char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 extern pthread_rwlock_t rwlock;
@@ -74,19 +73,21 @@ extern int vrf_data_verify_count; // holds the amount of block verifiers signatu
 extern int debug_settings; // 1 to show all incoming and outgoing message from the server
 extern int registration_settings; // 1 when the registration mode is running, 0 when it is not
 extern int block_height_start_time; // 1 to start the current_block_height_timer_thread at a specific time, 0 if not
-extern int block_height_start_time_day; // The minute to start the current_block_height_timer_thread
+extern int block_height_start_time_month; // The month to start the current_block_height_timer_thread
+extern int block_height_start_time_day; // The day to start the current_block_height_timer_thread
 extern int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
 extern int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
 extern int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
 extern int production_settings; // 1 for production, 0 for test
 extern int production_settings_database_data_settings; // The initialize the database settings
 extern char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
-extern char current_block_producer[XCASH_WALLET_LENGTH+1]; // The public address of the current block producer
 extern int sync_previous_current_next_block_verifiers_settings; // sync the previous, current and next block verifiers if you had to restart
 extern int database_data_socket_settings; // 1 to allow database data up to 50MB to be received in the server, 0 to only allow message up to BUFFER_SIZE
 extern char* server_limit_IP_address_list; // holds all of the IP addresses that are currently running on the server. This can hold up to 1 million IP addresses
 extern char* server_limit_public_address_list; // holds all of the public addresses that are currently running on the server. This can hold up to 1 million public addresses
 extern int invalid_block_verifiers_count; // counts how many times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
+extern int backup_network_data_node_settings; // The network data node that will attempt to create the block if the block producer and backup block producer fail
+extern int replayed_round_settings; // 1 if the round is a replayed round, 0 if not
 
 extern int delegates_website; // 1 if the running the delegates websites, 0 if not
 extern int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
