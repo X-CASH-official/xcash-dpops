@@ -51,109 +51,7 @@ Functions
 -----------------------------------------------------------------------------------------------------------
 */
 
-/*
------------------------------------------------------------------------------------------------------------
-Name: sync_all_delegates
-Description: Syncs the network data nodes database, then syncs the online status of the delegates, and then syncs all non network data node delegates
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
 
-int sync_all_delegates(void)
-{
-  // Variables
-  char data[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-
-  color_print("Waiting for all network data nodes to sync the databases\n","blue");
-
-  // all network data nodes will sync and make sure they have the same database, before the block verifiers sync from them
-  if (network_data_node_settings == 1)
-  {
-    // sync check the databases without checking the delegates online status
-    color_print("Your block verifier is a network data node, checking to make sure all network data nodes databases are synced","yellow");
-    sync_network_data_nodes_database(0,7);
-  }
-
-  // get the online status of the delegates
-  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,0,35);
-
-  color_print("Getting the online status of the delegates\n","blue");
-
-  get_delegates_online_status();
-
-  color_print("Waiting for all network data nodes to sync the online status of the delegates\n","blue");
-
-  // all network data nodes will sync and make sure they have the same database, before the block verifiers sync from them
-  if (network_data_node_settings == 1)
-  {
-    // sync check the databases with checking the delegates online status
-    color_print("Your block verifier is a network data node, syncing the online status of the delegates","yellow");
-    sync_network_data_nodes_database(0,55);
-  }
-  
-  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE,START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);
-
-  // wait for all block verifiers to sync the database
-  color_print("Waiting for all block verifiers to sync the databases\n","blue");
-
-  // check if it should create the default database data
-  memset(data,0,sizeof(data));
-  if ((read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","username",data) == 0) || (read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","username",data) == 1 && count_all_documents_in_collection(database_name,"delegates") < NETWORK_DATA_NODES_AMOUNT))
-  {
-    delete_collection_from_database(database_name,"reserve_proofs_1");
-    delete_collection_from_database(database_name,"delegates");
-    delete_collection_from_database(database_name,"statistics");
-    RESET_ERROR_MESSAGES;
-    INITIALIZE_DATABASE_DATA(0);
-  }
-
-  if (network_data_node_settings != 1)
-  {
-    color_print("Your block verifier is not a network data node, checking to make sure the databases are synced","yellow");
-    color_print("Syncing the reserve proofs database","yellow");
-    if (sync_reserve_proofs_database(2,"") == 0)
-    {
-      color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
-      sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-      return 0;
-    }
-    color_print("Syncing the reserve bytes database","yellow");
-    if (sync_reserve_bytes_database(2,1,"") == 0)
-    {
-      color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
-      sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-      return 0;
-    }
-    color_print("Syncing the delegates database","yellow");
-    if (sync_delegates_database(2,"") == 0)
-    {
-      color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
-      sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-      return 0;
-    }
-    color_print("Syncing the statistics database","yellow");
-    if (sync_statistics_database(2,"") == 0)
-    {
-      color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
-      sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-      return 0;
-    }
-    color_print("Successfully synced all databases\n","yellow");
-  }
-  return 1;
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: start_new_round
-Description: Checks if the round is a start block round or not
-Return: 0 if an error has occured, 1 if successfull
------------------------------------------------------------------------------------------------------------
-*/
 
 int start_new_round(void)
 {
@@ -218,6 +116,12 @@ int start_new_round(void)
   // get the current block height
   sscanf(current_block_height,"%zu", &count);
 
+  // get the delegates online status
+  get_delegates_online_status();
+
+  // wait so everyone has got the online status
+  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,15);
+
   // reload the initial previous, current and next block verifiers list if its the first block or if you had to restart
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
   {
@@ -253,9 +157,9 @@ int start_new_round(void)
     
     // reset the current_round_part and current_round_part_backup_node after the databases have been updated for the previous rounds statistics
     memset(current_round_part,0,sizeof(current_round_part));
-    memcpy(current_round_part,"1",sizeof(char));
+    memcpy(current_round_part,"1",1);
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-    memcpy(current_round_part_backup_node,"0",sizeof(char));
+    memcpy(current_round_part_backup_node,"0",1);
 
     // check if it is time to remove the inactive delegates
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
@@ -265,10 +169,63 @@ int start_new_round(void)
       //remove_inactive_delegates();
     }
 
-    // sync all of the delegates
-    if (sync_all_delegates() == 0)
+    color_print("Waiting for all network data nodes to sync the databases\n","blue");
+
+    // all network data nodes will sync and make sure they have the same database, before the block verifiers sync from them
+    if (network_data_node_settings == 1)
     {
-      return 2;
+      color_print("Your block verifier is a network data node, checking to make sure all network data nodes databases are synced","yellow");
+      sync_network_data_nodes_database();
+    }
+
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE,START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);
+
+    // wait for all block verifiers to sync the database
+    color_print("Waiting for all block verifiers to sync the databases\n","blue");
+
+    // check if it should create the default database data
+    memset(data,0,sizeof(data));
+    if ((read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","username",data) == 0) || (read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","username",data) == 1 && count_all_documents_in_collection(database_name,"delegates") < NETWORK_DATA_NODES_AMOUNT))
+    {
+      delete_collection_from_database(database_name,"reserve_proofs_1");
+      delete_collection_from_database(database_name,"delegates");
+      delete_collection_from_database(database_name,"statistics");
+      RESET_ERROR_MESSAGES;
+      INITIALIZE_DATABASE_DATA(0);
+    }
+
+    if (network_data_node_settings != 1)
+    {
+      color_print("Your block verifier is not a network data node, checking to make sure the databases are synced","yellow");
+      color_print("Syncing the reserve proofs database","yellow");
+      if (sync_reserve_proofs_database(2,"") == 0)
+      {
+        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
+        sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+        return 2;
+      }
+      color_print("Syncing the reserve bytes database","yellow");
+      if (sync_reserve_bytes_database(2,1,"") == 0)
+      {
+        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
+        sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+        return 2;
+      }
+      color_print("Syncing the delegates database","yellow");
+      if (sync_delegates_database(2,"") == 0)
+      {
+        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
+        sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+        return 2;
+      }
+      color_print("Syncing the statistics database","yellow");
+      if (sync_statistics_database(2,"") == 0)
+      {
+        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
+        sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+        return 2;
+      }
+      color_print("Successfully synced all databases\n","yellow");
     }
 
     // update the previous, current and next block verifiers after syncing the database
