@@ -1032,12 +1032,16 @@ int get_delegates_online_status(void)
   struct epoll_event events[total_delegates];
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[total_delegates];
 
-  // reset the struct delegates_online_status
+  // reset the struct delegates_online_status and struct block_verifiers_send_data_socket
   for (count = 0; count < total_delegates; count++)
   {
     memset(delegates_online_status[count].public_address,0,sizeof(delegates_online_status[count].public_address));
     memcpy(delegates_online_status[count].public_address,delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(delegates_online_status[count].public_address)));
     delegates_online_status[count].settings = strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 ? 1 : 0;
+
+    memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
+    memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
+    block_verifiers_send_data_socket[count].settings = 0;
   }
 
   // create the message
@@ -1064,12 +1068,7 @@ int get_delegates_online_status(void)
     {
       // Variables
       struct addrinfo serv_addr;
-      struct addrinfo* settings = NULL;
-
-      // initialize the block_verifiers_send_data_socket struct
-      memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
-      memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
-      block_verifiers_send_data_socket[count].settings = 0;
+      struct addrinfo* settings = NULL;      
 
       // set up the addrinfo
       memset(&serv_addr, 0, sizeof(serv_addr));
@@ -1182,13 +1181,13 @@ int get_delegates_online_status(void)
         memset(data2,0,sizeof(data2));   
         memcpy(data2,"Sending ",8);
         memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
-        memcpy(data2+strlen(data2),"\n",1);
+        memcpy(data2+strlen(data2),"\n",sizeof(char));
         memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
         memcpy(data2+strlen(data2)," on port ",9);
         memset(data3,0,sizeof(data3));
         snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
         memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
-        memcpy(data2+strlen(data2),"\n",1);
+        memcpy(data2+strlen(data2),"\n",sizeof(char));
         memset(data3,0,sizeof(data3));
         strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
         memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));

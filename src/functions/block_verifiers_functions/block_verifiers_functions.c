@@ -157,9 +157,9 @@ int start_new_round(void)
     
     // reset the current_round_part and current_round_part_backup_node after the databases have been updated for the previous rounds statistics
     memset(current_round_part,0,sizeof(current_round_part));
-    memcpy(current_round_part,"1",1);
+    memcpy(current_round_part,"1",sizeof(char));
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
-    memcpy(current_round_part_backup_node,"0",1);
+    memcpy(current_round_part_backup_node,"0",sizeof(char));
 
     // check if it is time to remove the inactive delegates
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
