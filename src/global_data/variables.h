@@ -66,6 +66,8 @@ extern char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LE
 extern int xcash_wallet_port; // The xcash wallet port
 extern char database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 extern char shared_delegates_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+extern char database_path_write[1024]; // holds the database write path
+extern char database_path_read[1024]; // holds the database read path
 extern int network_functions_test_settings;
 extern int network_functions_test_error_settings; // 1 to display errors, 0 to not display errors when running the reset variables allocated on the heap test
 extern int network_functions_test_server_messages_settings; // 1 to display server messages, 0 to not display server messages when running the test
