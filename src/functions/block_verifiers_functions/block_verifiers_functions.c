@@ -2335,7 +2335,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
         color_print(data2,"green");
       }
       
-      for (sent = 0; sent < total; sent+= bytes)
+      for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
         {           

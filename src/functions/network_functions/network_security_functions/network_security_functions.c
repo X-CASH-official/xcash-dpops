@@ -450,7 +450,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
     // check if the public address is in the current_block_verifiers_list struct
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strncmp(public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0 || strncmp(public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
+      if (strncmp(public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
       {
         break;
       }
