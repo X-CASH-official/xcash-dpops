@@ -123,7 +123,10 @@ int start_new_round(void)
   get_delegates_online_status();
 
   // save a copy of the database
-  count2 = system("cd ~ && rm -r dump ; mongodump");
+  if (production_settings == 1)
+  {
+    count2 = system("cd ~ && rm -r dump ; mongodump");
+  }
   
 
   // wait so everyone has got the online status
@@ -264,8 +267,7 @@ int start_new_round(void)
     {
       color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
       sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-      count2 = 2;
-      return count2;
+      return 2;
     }
     
     if (block_verifiers_create_block() == 0)
@@ -273,7 +275,8 @@ int start_new_round(void)
       START_NEW_ROUND_ERROR("Your block verifier will wait until the next round\n");
     }
   }
-  return 2;
+  count2 = 2;
+  return count2;
 
   #undef START_NEW_ROUND_ERROR
   #undef RESET_VARIABLES
@@ -2260,7 +2263,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       SOL_SOCKET = socket level
       SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
       */
-      if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+      if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_SNDTIMEO,&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
       { 
         freeaddrinfo(settings);
         continue;

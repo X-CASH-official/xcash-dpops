@@ -973,10 +973,6 @@ int validate_data(const char* MESSAGE)
         }
       }
     }
-    else
-    {
-      
-    }
   }
   else if (shared_delegates_website == 1)
   {
@@ -1000,14 +996,6 @@ int validate_data(const char* MESSAGE)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       } 
-    }
-    else if (strstr(MESSAGE,"GET /shareddelegateswebsitegetstatistics") != NULL || strstr(MESSAGE,"GET /getblocksfound") != NULL)
-    {
-     
-    }
-    else
-    {
-     
     }
   }
   else

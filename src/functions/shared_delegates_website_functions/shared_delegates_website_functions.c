@@ -123,7 +123,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   }
 
   // get the current_delegate_rank
-  for (count = 0; (int)count < delegates_count; count++)
+  for (count = 0; count < delegates_count; count++)
   {
     if (strncmp(delegates[count].public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
     {
@@ -140,7 +140,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
     }
 
     // get the total xcash from found blocks
-    for (total_xcash_from_found_blocks = 0, count = 0; (int)count < document_count; count++)
+    for (total_xcash_from_found_blocks = 0, count = 0; count < document_count; count++)
     {
       sscanf(database_multiple_documents_fields.value[count][3], "%lld", &block_reward_number);
       total_xcash_from_found_blocks += block_reward_number;

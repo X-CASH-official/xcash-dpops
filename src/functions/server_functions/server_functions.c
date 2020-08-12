@@ -294,7 +294,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
         }
         break;
       }
-      count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+      count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
     }
   }
 

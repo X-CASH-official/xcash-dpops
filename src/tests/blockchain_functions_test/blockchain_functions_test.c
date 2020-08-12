@@ -181,7 +181,7 @@ int blockchain_functions_test(void)
   }
 
   // get_generated_supply
-  if (get_generated_supply(521850) - 77824360540.643250 <= (double)1.0)
+  if (get_generated_supply(521850) - 77824360540.643250 <= 1.0)
   {
     color_print("PASSED! Test for get_generated_supply","green");
     count_test++;
@@ -272,7 +272,7 @@ int blockchain_functions_test(void)
   #undef VERIFY_NETWORK_BLOCK_DATA_ERROR
   #undef INVALID_NETWORK_VERSION_CODE
   #undef INVALID_TIMESTAMP_CODE
-  #undef INVALID_NETWORK_BLOCK_NONCE_CODe
+  #undef INVALID_NETWORK_BLOCK_NONCE_CODE
   #undef INVALID_BLOCK_REWARD_TRANSACTION_VERSION_CODE
   #undef INVALID_UNLOCK_BLOCK_CODE
   #undef INVALID_BLOCK_REWARD_INPUT_CODE

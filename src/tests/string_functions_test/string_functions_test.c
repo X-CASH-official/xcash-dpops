@@ -362,7 +362,7 @@ int string_functions_test(void)
   }
 
   // reset the delegates struct
-  for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
     pointer_reset(delegates[count].public_address);
     pointer_reset(delegates[count].total_vote_count);
@@ -399,6 +399,4 @@ int string_functions_test(void)
   
   #undef DATABASE_DATA
   #undef MESSAGE
-  #undef DATA1
-  #undef DATA2
 }

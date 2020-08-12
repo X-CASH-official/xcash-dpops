@@ -93,7 +93,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     }
     
     // get the length of the field's data
-    const int LENGTH = str2 - str1 - start;
+    const size_t LENGTH = str2 - str1 - start;
     if (LENGTH <= 0)
     {
       PARSE_JSON_DATA_ERROR;
@@ -741,7 +741,7 @@ int random_string(char *result, const size_t LENGTH)
   {
     memset(data2,0,sizeof(data2));
     
-    count2 = getrandom(data2,sizeof(data2)-1,0);
+    count2 = (int)getrandom(data2,sizeof(data2)-1,0);
 
     // only use specific bytes
     for (count = 0; count < count2; count++)

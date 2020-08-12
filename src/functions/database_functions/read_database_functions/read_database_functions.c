@@ -651,7 +651,7 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
       string_replace(data,sizeof(data)," }, ",", ");   
 
       // parse the json data  
-      if (database_multiple_documents_parse_json_data(data,result,counter) == 0)
+      if (database_multiple_documents_parse_json_data(data,result,(int)counter) == 0)
       {
         READ_MULTIPLE_DOCUMENTS_ALL_FIELDS_FROM_COLLECTION_ERROR("Could not read all of the fields for all of the documents in the database collection");
       }

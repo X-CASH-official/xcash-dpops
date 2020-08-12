@@ -207,7 +207,7 @@ int organize_delegates(struct delegates* delegates)
 
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,count2,TOTAL_DELEGATES_DATABASE_FIELDS+1);
 
-  return database_multiple_documents_fields.document_count;
+  return (int)database_multiple_documents_fields.document_count;
   
   #undef ORGANIZE_DELEGATES_ERROR
 }

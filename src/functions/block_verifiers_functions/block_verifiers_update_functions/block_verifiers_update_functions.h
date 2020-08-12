@@ -7,7 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
-int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, struct delegates* delegates, const size_t CURRENT_BLOCK_HEIGHT, const int SETTINGS);
+int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const struct delegates* delegates, const size_t CURRENT_BLOCK_HEIGHT, const int SETTINGS);
 int update_block_verifiers_list(void);
 int update_databases(void);
 int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT);

@@ -63,7 +63,7 @@ Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, struct delegates* delegates, const size_t CURRENT_BLOCK_HEIGHT, const int SETTINGS)
+int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const struct delegates* delegates, const size_t CURRENT_BLOCK_HEIGHT, const int SETTINGS)
 {
   // Variables 
   char data[BUFFER_SIZE];
@@ -99,20 +99,23 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, struct del
   // get the reserve bytes database for the block
   if (block_height-1 == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || block_height == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
-    count = 1;
+    block_height = 1;
   }
   else
   {
-    count = ((block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+    block_height = ((block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   }
 
   // get the blocks reserve bytes
   memcpy(data3,"reserve_bytes_",14);
-  snprintf(data3+14,sizeof(data3)-15,"%d",count);
+  snprintf(data3+14,sizeof(data3)-15,"%zu",block_height);
   if (read_document_field_from_collection(database_name,data3,data,"reserve_bytes",message) == 0)
   {
     // restore the database from the backup
-    count = system("cd ~ && mongorestore");
+    if (production_settings == 1)
+    {
+      count = system("cd ~ && mongorestore");
+    }
     GET_BLOCK_VERIFIERS_FROM_NETWORK_BLOCK_ERROR("Could not get the previous blocks reserve bytes, restoring the database from the backup");
   }
   
@@ -142,23 +145,17 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, struct del
   {
     for (count2 = 0; count2 < TOTAL_DELEGATES; count2++)
     {
-      if (SETTINGS == 0)
+      if (SETTINGS == 0 && strncmp(current_block_verifiers_list.block_verifiers_public_key[count],delegates[count2].public_key,BUFFER_SIZE) == 0)
       {
-        if (strncmp(current_block_verifiers_list.block_verifiers_public_key[count],delegates[count2].public_key,BUFFER_SIZE) == 0)
-        {
-          memcpy(current_block_verifiers_list.block_verifiers_name[count],delegates[count2].delegate_name,strnlen(delegates[count2].delegate_name,sizeof(current_block_verifiers_list.block_verifiers_name[count])));
-          memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],delegates[count2].IP_address,strnlen(delegates[count2].IP_address,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count])));
-          memcpy(current_block_verifiers_list.block_verifiers_public_address[count],delegates[count2].public_address,strnlen(delegates[count2].public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])));
-        }
+        memcpy(current_block_verifiers_list.block_verifiers_name[count],delegates[count2].delegate_name,strnlen(delegates[count2].delegate_name,sizeof(current_block_verifiers_list.block_verifiers_name[count])));
+        memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],delegates[count2].IP_address,strnlen(delegates[count2].IP_address,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count])));
+        memcpy(current_block_verifiers_list.block_verifiers_public_address[count],delegates[count2].public_address,strnlen(delegates[count2].public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])));
       }
-      else if (SETTINGS == 1)
+      else if (SETTINGS == 1 && strncmp(previous_block_verifiers_list.block_verifiers_public_key[count],delegates[count2].public_key,BUFFER_SIZE) == 0)
       {
-        if (strncmp(previous_block_verifiers_list.block_verifiers_public_key[count],delegates[count2].public_key,BUFFER_SIZE) == 0)
-        {
-          memcpy(previous_block_verifiers_list.block_verifiers_name[count],delegates[count2].delegate_name,strnlen(delegates[count2].delegate_name,sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
-          memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],delegates[count2].IP_address,strnlen(delegates[count2].IP_address,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count])));
-          memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],delegates[count2].public_address,strnlen(delegates[count2].public_address,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));
-        }
+        memcpy(previous_block_verifiers_list.block_verifiers_name[count],delegates[count2].delegate_name,strnlen(delegates[count2].delegate_name,sizeof(previous_block_verifiers_list.block_verifiers_name[count])));
+        memcpy(previous_block_verifiers_list.block_verifiers_IP_address[count],delegates[count2].IP_address,strnlen(delegates[count2].IP_address,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count])));
+        memcpy(previous_block_verifiers_list.block_verifiers_public_address[count],delegates[count2].public_address,strnlen(delegates[count2].public_address,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count])));
       }
     }
   }
@@ -804,6 +801,7 @@ int calculate_main_nodes_roles(void)
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   size_t count;
+  size_t block_height;
   int count2;
   int count3;
   int counter;
@@ -841,9 +839,9 @@ int calculate_main_nodes_roles(void)
 
   // calculate the database to get the reserve byte data
   get_reserve_bytes_database(count,1);
-  count2 = count;
+  block_height = count;
   memcpy(data,"reserve_bytes_",14);
-  snprintf(data+14,sizeof(data)-15,"%d",count2);
+  snprintf(data+14,sizeof(data)-15,"%zu",block_height);
 
   // create the message
   memcpy(data3,"{\"block_height\":\"",17);

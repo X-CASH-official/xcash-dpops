@@ -1529,9 +1529,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   fprintf(stderr,"\033[1;33m\n\n%s\nreset variables allocated on the heap functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST-count_test,TEST_OUTLINE);
   pointer_reset(process_id_file);
   return count_test;
-
-  #undef RESET_VARAIBLES_ALLOCATED_ON_THE_HEAP_TEST
-  #undef RESET_ERROR_MESSAGES
+  
   #undef GET_PUBLIC_ADDRESS_DATA
   #undef GET_BLOCK_TEMPLATE_RPC_CALL_TEST_DATA
   #undef DATA1

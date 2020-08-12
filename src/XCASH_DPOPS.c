@@ -458,7 +458,12 @@ void create_overall_database_connection(void)
   mongoc_init();
 
   // create a connection to the database
-  if (!(uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error)) || !(database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool)))
+  if (!(uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error)))
+  {
+    CREATE_OVERALL_DATABASE_CONNECTION_ERROR;
+  }
+
+  if (!(database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool)))
   {
     CREATE_OVERALL_DATABASE_CONNECTION_ERROR;
   }
@@ -611,7 +616,7 @@ int set_parameters(int parameters_count, char* parameters[])
   }
 
   // check the parameters
-  for (count = 0, count2 = 0; count < (size_t)parameters_count; count++)
+  for (count = 0; count < (size_t)parameters_count; count++)
   { 
     if (strncmp(parameters[count],"--block-verifiers-secret-key",BUFFER_SIZE) == 0)
     {
@@ -950,28 +955,21 @@ void database_sync_check(void)
   }
 
   // check if the database is synced, unless this is the main network data node
-  if (network_data_node_settings == 1 && get_network_data_nodes_online_status() == 0)
+  if (network_data_node_settings == 1 && get_network_data_nodes_online_status() == 1)
   {
-
-  }
-  else
-  {
-    if (network_data_node_settings == 1)
+    // check if all of the databases are synced from a random network data node
+    if (check_if_databases_are_synced(3,0) == 0)
     {
-      // check if all of the databases are synced from a random network data node
-      if (check_if_databases_are_synced(3,0) == 0)
-      {
-        DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
-      }
+      DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
     }
-    else
+  }
+  else if (network_data_node_settings == 0)
+  {
+    // check if all of the databases are synced from a random block verifier
+    if (check_if_databases_are_synced(3,0) == 0)
     {
-      // check if all of the databases are synced from a random block verifier
-      if (check_if_databases_are_synced(3,0) == 0)
-      {
-        DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
-      }
-    } 
+      DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
+    }
   }
 
   // check the block verifiers current time, if it is not a network data node
