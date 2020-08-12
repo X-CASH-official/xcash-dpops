@@ -164,7 +164,7 @@ int VRF_sign_data(char *beta_string, char *proof, const char* data)
   memset(beta_string_data,0,sizeof(beta_string_data));
 
   // sign data
-  if (crypto_vrf_prove((unsigned char*)proof_data,(const unsigned char*)secret_key_data,(const unsigned char*)data,(unsigned long long)strlen((const char*)data)) != 0 || crypto_vrf_proof_to_hash((unsigned char*)beta_string_data,(const unsigned char*)proof_data) != 0)
+  if (crypto_vrf_prove((unsigned char*)proof_data,(const unsigned char*)secret_key_data,(const unsigned char*)data,(unsigned long long)strlen(data)) != 0 || crypto_vrf_proof_to_hash((unsigned char*)beta_string_data,(const unsigned char*)proof_data) != 0)
   {
     return 0;
   }
@@ -229,5 +229,5 @@ int VRF_data_verify(const char* BLOCK_VERIFIERS_PUBLIC_KEY, const char* BLOCK_VE
     beta_string_data[count2] = (int)strtol(data, NULL, 16);
   }
 
-  return crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)DATA,(unsigned long long)strlen((const char*)DATA)) != 0 ? 0 : 1;
+  return crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)DATA,(unsigned long long)strlen(DATA)) != 0 ? 0 : 1;
 }

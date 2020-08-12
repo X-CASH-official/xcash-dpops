@@ -1085,7 +1085,6 @@ int data_network_node_create_block(void)
   return 1;
 
   #undef DATA_NETWORK_NODE_CREATE_BLOCK_ERROR
-  #undef SEND_DATA_SOCKET_THREAD
 }
 
 
@@ -1117,7 +1116,7 @@ int block_verifiers_create_VRF_secret_key_and_VRF_public_key(char* message)
   memset(data,0,sizeof(data));
   
   // create a random VRF public key and secret key
-  if (create_random_VRF_keys((unsigned char*)VRF_data.vrf_public_key,(unsigned char*)VRF_data.vrf_secret_key) != 1 || crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key) != 1)
+  if (create_random_VRF_keys(VRF_data.vrf_public_key,VRF_data.vrf_secret_key) != 1 || crypto_vrf_is_valid_key((const unsigned char*)VRF_data.vrf_public_key) != 1)
   {
     BLOCK_VERIFIERS_CREATE_VRF_SECRET_KEY_AND_VRF_PUBLIC_KEY_ERROR("Could not create the VRF secret key or VRF public key for the VRF data");
   }  
@@ -1400,23 +1399,23 @@ int block_verifiers_create_block_signature(char* message)
   {    
     if (strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
-      block_producer_backup_settings[0] = count;
+      block_producer_backup_settings[0] = (int)count;
     }
     if (strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
-      block_producer_backup_settings[1] = count;
+      block_producer_backup_settings[1] = (int)count;
     }
     if (strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
-      block_producer_backup_settings[2] = count;
+      block_producer_backup_settings[2] = (int)count;
     }
     if (strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
-      block_producer_backup_settings[3] = count;
+      block_producer_backup_settings[3] = (int)count;
     }
     if (strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH) == 0)
     {
-      block_producer_backup_settings[4] = count;
+      block_producer_backup_settings[4] = (int)count;
     }
   }
 
