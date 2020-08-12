@@ -125,7 +125,7 @@ int start_new_round(void)
   // save a copy of the database
   if (production_settings == 1)
   {
-    count2 = system("cd ~ && rm -r dump ; mongodump");
+    count2 = system(database_path_write);
   }
   
 

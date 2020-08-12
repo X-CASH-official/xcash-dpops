@@ -114,7 +114,7 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
     // restore the database from the backup
     if (production_settings == 1)
     {
-      count = system("cd ~ && mongorestore");
+      count = system(database_path_read);
     }
     GET_BLOCK_VERIFIERS_FROM_NETWORK_BLOCK_ERROR("Could not get the previous blocks reserve bytes, restoring the database from the backup");
   }
