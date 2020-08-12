@@ -124,6 +124,7 @@ int start_new_round(void)
 
   // save a copy of the database
   count2 = system("cd ~ && rm -r dump ; mongodump");
+  
 
   // wait so everyone has got the online status
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,15);
@@ -263,7 +264,8 @@ int start_new_round(void)
     {
       color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
       sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-      return 2;
+      count2 = 2;
+      return count2;
     }
     
     if (block_verifiers_create_block() == 0)
@@ -1510,7 +1512,7 @@ int block_verifiers_create_vote_results(char* message)
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data3[BUFFER_SIZE+SMALL_BUFFER_SIZE];
   size_t count;
   size_t count2;
 

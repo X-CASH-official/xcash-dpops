@@ -1287,7 +1287,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memcpy(data3+strlen(data3),"\"reserve_proofs_data_hash_",26);
-    snprintf(data3+strlen(data3),MAXIMUM_BUFFER_SIZE-1,"%d",count);
+    snprintf(data3+strlen(data3),sizeof(data3)-2,"%d",count);
     memcpy(data3+strlen(data3),"\": \"",4);
     // get the database data hash for the reserve proofs database
     memset(data,0,strlen(data));

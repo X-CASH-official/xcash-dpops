@@ -59,8 +59,8 @@ void generate_key()
   // Variables
   unsigned char vrf_secret_key_data[crypto_vrf_SECRETKEYBYTES+1];
   unsigned char vrf_public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
-  char vrf_secret_key[VRF_SECRET_KEY_LENGTH+1];
-  char vrf_public_key[VRF_PUBLIC_KEY_LENGTH+1];
+  char vrf_secret_key[VRF_SECRET_KEY_LENGTH+SMALL_BUFFER_SIZE];
+  char vrf_public_key[VRF_PUBLIC_KEY_LENGTH+SMALL_BUFFER_SIZE];
   int count;
   int count2; 
 
@@ -110,8 +110,8 @@ Return: 0 if an error has occured, 1 if successfull
 int sign_network_block_string(char *data, const char* MESSAGE)
 {
   // Variables
-  char beta_string[VRF_BETA_LENGTH+1];
-  char proof[VRF_PROOF_LENGTH+1];
+  char beta_string[SMALL_BUFFER_SIZE];
+  char proof[SMALL_BUFFER_SIZE];
 
   // define macros
   #define SIGN_NETWORK_BLOCK_STRING_ERROR(settings) \
