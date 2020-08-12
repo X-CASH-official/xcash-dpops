@@ -1021,7 +1021,7 @@ int add_data_hash_to_network_block_string(const char* NETWORK_BLOCK_STRING, char
   // convert the SHA512 data hash to a string
   for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
   {
-    snprintf(data2+count,sizeof(data2)-1,"%02x",data[count2] & 0xFF);
+    snprintf(data2+count,MAXIMUM_NUMBER_SIZE,"%02x",data[count2] & 0xFF);
   }
 
   // copy the reserve bytes data hash
@@ -1265,7 +1265,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   memset(data2,0,strnlen(data2,BUFFER_SIZE));
   for (count = 0, number = 0; count < BLOCK_HASH_LENGTH; count++, number += 2)
   {
-    snprintf(data2+number,sizeof(data2)-2,"%02x",blockchain_data.previous_block_hash_data[count] & 0xFF);
+    snprintf(data2+number,MAXIMUM_NUMBER_SIZE,"%02x",blockchain_data.previous_block_hash_data[count] & 0xFF);
   }
   if ((int)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length != ((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_TOTAL) + (BLOCK_HASH_LENGTH*2) || strncmp(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data,data2,BLOCK_HASH_LENGTH*2) != 0)
   {

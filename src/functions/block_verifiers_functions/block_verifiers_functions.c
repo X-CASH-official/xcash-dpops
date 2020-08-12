@@ -1512,7 +1512,7 @@ int block_verifiers_create_vote_results(char* message)
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE+SMALL_BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
   size_t count;
   size_t count2;
 
@@ -1569,7 +1569,7 @@ int block_verifiers_create_vote_results(char* message)
   // convert the SHA512 data hash to a string
   for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
   {
-    snprintf(data3+count,sizeof(data3)-1,"%02x",data2[count2] & 0xFF);
+    snprintf(data3+count,MAXIMUM_NUMBER_SIZE,"%02x",data2[count2] & 0xFF);
   }
 
   // reset the current_round_part_vote_data.vote_results_valid struct
