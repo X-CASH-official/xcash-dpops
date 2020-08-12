@@ -1002,9 +1002,9 @@ int get_delegates_online_status(void)
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   int total_delegates;
   int total_delegates_online;
-  int total;
-  int sent;
-  int bytes = 1;
+  size_t total;
+  size_t sent;
+  long long int bytes = 1;
   int count;
   int count2;
   int number;
@@ -1196,7 +1196,7 @@ int get_delegates_online_status(void)
         color_print(data2,"green");
       }
       
-      for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
+      for (sent = 0; sent < total; sent+= bytes)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
         {      

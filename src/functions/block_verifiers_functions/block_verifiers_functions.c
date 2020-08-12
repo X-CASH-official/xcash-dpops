@@ -2165,9 +2165,9 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   struct epoll_event events[TOTAL_BLOCK_VERIFIERS];
   struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[TOTAL_BLOCK_VERIFIERS];
-  int total;
-  int sent;
-  int bytes = 1;
+  size_t total;
+  size_t sent;
+  long long int bytes = 1;
   int count;
   int count2;
   int number;
@@ -2332,7 +2332,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
         color_print(data2,"green");
       }
       
-      for (sent = 0; sent < total || bytes <= 0; sent+= bytes)
+      for (sent = 0; sent < total; sent+= bytes)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
         {           
