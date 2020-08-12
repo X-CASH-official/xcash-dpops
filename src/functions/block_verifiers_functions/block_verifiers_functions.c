@@ -121,6 +121,9 @@ int start_new_round(void)
   // get the delegates online status
   get_delegates_online_status();
 
+  // save a copy of the database
+  system("cd ~ && rm -r dump ; mongodump");
+
   // wait so everyone has got the online status
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,15);
 
@@ -235,9 +238,6 @@ int start_new_round(void)
     {
       START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
     }
-
-    // save a copy of the database, since we can confirm that it has the previous blocks reserve bytes data at this point
-    system("cd ~ && rm -r dump ; mongodump");
 
     // check if it is running in registration mode only
     if (registration_settings == 1)
