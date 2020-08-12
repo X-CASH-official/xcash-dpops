@@ -112,7 +112,7 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, struct del
   if (read_document_field_from_collection(database_name,data3,data,"reserve_bytes",message) == 0)
   {
     // restore the database from the backup
-    system("cd ~ && mongorestore");
+    count = system("cd ~ && mongorestore");
     GET_BLOCK_VERIFIERS_FROM_NETWORK_BLOCK_ERROR("Could not get the previous blocks reserve bytes, restoring the database from the backup");
   }
   

@@ -61,6 +61,7 @@ int start_new_round(void)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
+  int count2;
 
    // threads
   pthread_t thread_id;
@@ -122,7 +123,7 @@ int start_new_round(void)
   get_delegates_online_status();
 
   // save a copy of the database
-  system("cd ~ && rm -r dump ; mongodump");
+  count2 = system("cd ~ && rm -r dump ; mongodump");
 
   // wait so everyone has got the online status
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,15);
