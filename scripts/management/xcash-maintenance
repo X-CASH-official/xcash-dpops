@@ -43,12 +43,14 @@ options=(
 	"Get node balance"
 	"Check services status"
 	"Start stopped services"
-    	"Stop all services"
+    "Stop all services"
 	"Restart all services"
-	"Get X-Cash DPoPS log"
-    	"Get X-Cash Daemon log"
-    	"Get X-Cash RPC Wallet log"
-	"Quit"
+    "Enable services autostart"
+    "Disable services autostart"
+    "Get X-Cash DPoPS log"
+    "Get X-Cash Daemon log"
+    "Get X-Cash RPC Wallet log"
+    "Quit"
 )
 
 function check_height(){
@@ -267,11 +269,11 @@ function restart_all_services(){
     echo -en "${green}"Stopping X-Cash Daemon service.............................................."${reset}" \
 		&& systemctl stop $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
 	echo -en "${green}"Starting X-Cash Daemon service.............................................."${reset}" \
-		&& sleep 3 && systemctl start $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+		&& sleep 3 && systemctl start $XCASH_DAEMON_SRV && sleep 5 && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
     echo -en "${green}"Starting X-Cash Wallet service.............................................."${reset}" \
-		&& sleep 3 && systemctl start $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+		&& sleep 3 && systemctl start $XCASH_WALLET_SRV && sleep 5 && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
     echo -en "${green}"Starting MongoDB service...................................................."${reset}" \
-		&& sleep 3 && systemctl start $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+		&& sleep 3 && systemctl start $MONGODB_SRV && sleep 3 &&  systemctl is-active $MONGODB_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
     echo -en "${green}"Starting X-Cash DPoPS service..............................................."${reset}" \
 		&& sleep 3 && systemctl start $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
 
@@ -290,18 +292,51 @@ function get_xcash_wallet_log(){
     less -R $XCASH_WALLET_LOG_FILE
 }
 
+function enable_services_autostart(){
+    echo
+    echo -e "${green}Enabling services autostart...${reset}"
+    systemctl enable ${MONGODB_SRV}.service ${XCASH_DAEMON_SRV}.service ${XCASH_WALLET_SRV}.timer ${XCASH_DPOPS_SRV}.timer
+    systemctl disable ${XCASH_WALLET_SRV}.service ${XCASH_DPOPS_SRV}.service
+
+	ENABLED_SERVICES=$(systemctl list-unit-files --state=enabled | grep -wc "${MONGODB_SRV}.service\|${XCASH_DAEMON_SRV}.service\|${XCASH_WALLET_SRV}.timer\|${XCASH_DPOPS_SRV}.timer")
+	DISABLED_SERVICES=$(systemctl list-unit-files --state=disabled | grep -wc "${XCASH_WALLET_SRV}.service\|${XCASH_DPOPS_SRV}.service")
+    
+	if (( ENABLED_SERVICES == 4 )) && (( DISABLED_SERVICES == 2 )); then
+        echo -e "${green}done${reset}"
+    else
+        echo -e "${red}failed${reset}"
+    fi
+}
+
+function disable_services_autostart(){
+    echo
+    echo -e "${green}Disabling services autostart...${reset}"
+    systemctl disable ${XCASH_WALLET_SRV}.service ${XCASH_DPOPS_SRV}.service ${MONGODB_SRV}.service ${XCASH_DAEMON_SRV}.service ${XCASH_WALLET_SRV}.timer ${XCASH_DPOPS_SRV}.timer
+	DISABLED_SERVICES=$(systemctl list-unit-files --state=disabled | grep -wc "${XCASH_WALLET_SRV}.service\|${XCASH_DPOPS_SRV}.service\|${MONGODB_SRV}.service\|${XCASH_DAEMON_SRV}.service\|${XCASH_WALLET_SRV}.timer\|${XCASH_DPOPS_SRV}.timer")
+
+	if (( DISABLED_SERVICES == 6 )); then
+        echo -e "${green}done${reset}"
+    else
+        echo -e "${red}failed${reset}"
+    fi
+
+
+}
+
 select opt in "${options[@]}"; do
 	case $opt in
 		"Check blockchain height") check_height ;;
 		"Get node balance") get_node_balance ;;
 		"Get node statistics") shared_delegates_website_statistics;;
 		"Check services status") check_services_status ;;
-        	"Start stopped services") start_stopped_services ;;
+       	"Start stopped services") start_stopped_services ;;
 		"Stop all services") stop_all_services ;;
-        	"Restart all services") restart_all_services ;;
-		"Get X-Cash DPoPS log") get_xcash_dpops_log ;;
-        	"Get X-Cash Daemon log") get_xcash_daemon_log ;;
-        	"Get X-Cash RPC Wallet log") get_xcash_wallet_log ;;
+       	"Restart all services") restart_all_services ;;
+        "Enable services autostart") enable_services_autostart ;;
+        "Disable services autostart") disable_services_autostart ;;
+        "Get X-Cash DPoPS log") get_xcash_dpops_log ;;
+       	"Get X-Cash Daemon log") get_xcash_daemon_log ;;
+       	"Get X-Cash RPC Wallet log") get_xcash_wallet_log ;;
 		"Quit") break ;;
 
 		*) echo && echo "Invalid option \"$REPLY\"";;
