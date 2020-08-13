@@ -34,6 +34,7 @@ extern struct blockchain_data blockchain_data; // The data for a new block to be
 extern struct error_message error_message; // holds all of the error messages and the functions for an error.
 extern struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 extern struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
+extern struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 extern char current_round_part[2]; // The current round part (1-4)
 extern char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 extern pthread_rwlock_t rwlock;
@@ -65,6 +66,8 @@ extern char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LE
 extern int xcash_wallet_port; // The xcash wallet port
 extern char database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 extern char shared_delegates_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+extern char database_path_write[1024]; // holds the database write path
+extern char database_path_read[1024]; // holds the database read path
 extern int network_functions_test_settings;
 extern int network_functions_test_error_settings; // 1 to display errors, 0 to not display errors when running the reset variables allocated on the heap test
 extern int network_functions_test_server_messages_settings; // 1 to display server messages, 0 to not display server messages when running the test

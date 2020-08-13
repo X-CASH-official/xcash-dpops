@@ -349,8 +349,6 @@ int submit_block_template(const char* DATA)
 
   send_http_request(data,XCASH_DPOPS_delegates_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   return 1;
-
-  #undef SUBMIT_BLOCK_TEMPLATE_ERROR
 }
 
 

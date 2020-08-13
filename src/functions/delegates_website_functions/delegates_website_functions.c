@@ -371,7 +371,7 @@ int server_receive_data_socket_get_delegates_statistics(const int CLIENT_SOCKET,
   }
 
   // get the delegates rank
-  for (count = 0, count2 = 0; (int)count < document_count; count++)
+  for (count = 0, count2 = 0; count < document_count; count++)
   {
     if (strncmp(delegates[count].public_address,data2,XCASH_WALLET_LENGTH) == 0 || strncmp(delegates[count].delegate_name,data2,BUFFER_SIZE) == 0)
     {
@@ -631,7 +631,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
         memcpy(votes[counter].reserve_proof,database_multiple_documents_fields.value[counter][3],strnlen(database_multiple_documents_fields.value[counter][3],BUFFER_SIZE_RESERVE_PROOF+1));
       }
 
-      total_delegates = database_multiple_documents_fields.document_count;
+      total_delegates = (int)database_multiple_documents_fields.document_count;
 
       // reset the database_multiple_documents_fields struct
       RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(counter,count2,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS);

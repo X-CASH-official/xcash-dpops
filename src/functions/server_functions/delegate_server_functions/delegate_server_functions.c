@@ -113,7 +113,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
       }
       memcpy(reserve_proof->public_address_created_reserve_proof,&MESSAGE[count2],data_size);
     }
-    count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
   }
 
   // check if they have voted using the delegates name or delegates public address
@@ -575,7 +575,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
       }
       memcpy(delegate_public_address,&MESSAGE[count2],data_size);
     }
-    count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
   }
 
   // convert the VRF public key string to a VRF public key
@@ -809,7 +809,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
       }
       memcpy(delegate_public_address,&MESSAGE[count2],data_size);
     }
-    count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
   }
 
   // check if the data is valid

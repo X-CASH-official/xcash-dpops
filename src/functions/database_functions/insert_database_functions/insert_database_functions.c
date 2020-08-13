@@ -306,6 +306,7 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     // error check
     if (strlen(data_hash) != DATA_HASH_LENGTH)
     {
+      pointer_reset_all;
       return 0;
     }
 

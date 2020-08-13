@@ -196,5 +196,4 @@ int database_test(void)
   return count_test;
   
   #undef MESSAGE
-  #undef DATA_HASH
 }

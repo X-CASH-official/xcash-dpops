@@ -59,8 +59,8 @@ void generate_key()
   // Variables
   unsigned char vrf_secret_key_data[crypto_vrf_SECRETKEYBYTES+1];
   unsigned char vrf_public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
-  char vrf_secret_key[VRF_SECRET_KEY_LENGTH+1];
-  char vrf_public_key[VRF_PUBLIC_KEY_LENGTH+1];
+  char vrf_secret_key[VRF_SECRET_KEY_LENGTH+SMALL_BUFFER_SIZE];
+  char vrf_public_key[VRF_PUBLIC_KEY_LENGTH+SMALL_BUFFER_SIZE];
   int count;
   int count2; 
 
@@ -110,8 +110,8 @@ Return: 0 if an error has occured, 1 if successfull
 int sign_network_block_string(char *data, const char* MESSAGE)
 {
   // Variables
-  char beta_string[VRF_BETA_LENGTH+1];
-  char proof[VRF_PROOF_LENGTH+1];
+  char beta_string[SMALL_BUFFER_SIZE];
+  char proof[SMALL_BUFFER_SIZE];
 
   // define macros
   #define SIGN_NETWORK_BLOCK_STRING_ERROR(settings) \
@@ -164,7 +164,7 @@ int VRF_sign_data(char *beta_string, char *proof, const char* data)
   memset(beta_string_data,0,sizeof(beta_string_data));
 
   // sign data
-  if (crypto_vrf_prove((unsigned char*)proof_data,(const unsigned char*)secret_key_data,(const unsigned char*)data,(unsigned long long)strlen((const char*)data)) != 0 || crypto_vrf_proof_to_hash((unsigned char*)beta_string_data,(const unsigned char*)proof_data) != 0)
+  if (crypto_vrf_prove((unsigned char*)proof_data,(const unsigned char*)secret_key_data,(const unsigned char*)data,(unsigned long long)strlen(data)) != 0 || crypto_vrf_proof_to_hash((unsigned char*)beta_string_data,(const unsigned char*)proof_data) != 0)
   {
     return 0;
   }
@@ -229,5 +229,5 @@ int VRF_data_verify(const char* BLOCK_VERIFIERS_PUBLIC_KEY, const char* BLOCK_VE
     beta_string_data[count2] = (int)strtol(data, NULL, 16);
   }
 
-  return crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)DATA,(unsigned long long)strlen((const char*)DATA)) != 0 ? 0 : 1;
+  return crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)DATA,(unsigned long long)strlen(DATA)) != 0 ? 0 : 1;
 }

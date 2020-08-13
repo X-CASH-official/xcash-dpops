@@ -53,7 +53,7 @@ int organize_functions_test(void)
   }
 
   // initialize the delegates struct
-  for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
     delegates[count].public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
     delegates[count].total_vote_count = (char*)calloc(100,sizeof(char));
@@ -334,7 +334,7 @@ int organize_functions_test(void)
   }
 
   // reset the delegates struct
-  for (count = 0; (int)count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
   {
     pointer_reset(delegates[count].public_address);
     pointer_reset(delegates[count].total_vote_count);

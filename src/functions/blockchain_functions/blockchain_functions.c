@@ -53,7 +53,7 @@ int varint_encode(long long int number, char *result, const size_t RESULT_TOTAL_
   size_t count2 = 0;
   int binary_numbers[BITS_IN_BYTE] = {0,0,0,0,0,0,0,0};
   int binary_number_copy;
-  long long int number_copy = (long long int)number;  
+  long long int number_copy = number;  
 
   memset(data,0,sizeof(data));
   memset(result,0,RESULT_TOTAL_LENGTH);  
@@ -1008,7 +1008,7 @@ int add_data_hash_to_network_block_string(const char* NETWORK_BLOCK_STRING, char
 {
   // Variables
   char data[BUFFER_SIZE];
-  char data2[DATA_HASH_LENGTH+1];
+  char data2[DATA_HASH_LENGTH+SMALL_BUFFER_SIZE];
   int count;
   int count2;
 
@@ -1021,7 +1021,7 @@ int add_data_hash_to_network_block_string(const char* NETWORK_BLOCK_STRING, char
   // convert the SHA512 data hash to a string
   for (count2 = 0, count = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count += 2)
   {
-    snprintf(data2+count,BUFFER_SIZE,"%02x",data[count2] & 0xFF);
+    snprintf(data2+count,MAXIMUM_NUMBER_SIZE,"%02x",data[count2] & 0xFF);
   }
 
   // copy the reserve bytes data hash
@@ -1265,7 +1265,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   memset(data2,0,strnlen(data2,BUFFER_SIZE));
   for (count = 0, number = 0; count < BLOCK_HASH_LENGTH; count++, number += 2)
   {
-    snprintf(data2+number,BUFFER_SIZE,"%02x",blockchain_data.previous_block_hash_data[count] & 0xFF);
+    snprintf(data2+number,MAXIMUM_NUMBER_SIZE,"%02x",blockchain_data.previous_block_hash_data[count] & 0xFF);
   }
   if ((int)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data_length != ((RANDOM_STRING_LENGTH*2)*BLOCK_VERIFIERS_TOTAL) + (BLOCK_HASH_LENGTH*2) || strncmp(blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data,data2,BLOCK_HASH_LENGTH*2) != 0)
   {
@@ -1285,7 +1285,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   }
 
   // vrf_data_round
-  if (crypto_vrf_verify((unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_beta_string,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_public_key,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_proof,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data,(unsigned long long)strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data)) != 0)
+  if (crypto_vrf_verify(blockchain_data.blockchain_reserve_bytes.vrf_beta_string,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_public_key,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_proof,(const unsigned char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data,(unsigned long long)strlen((const char*)blockchain_data.blockchain_reserve_bytes.vrf_alpha_string_data)) != 0)
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid vrf_data_round");
   }
@@ -1331,7 +1331,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {
     if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) == 0)
     {
-      counter = count;
+      counter = (int)count;
       break;
     }
   }

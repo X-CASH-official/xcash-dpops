@@ -163,7 +163,7 @@ int VRF_functions_test(void)
 
   for (count = 0, count2 = 0; count < DATA_HASH_LENGTH / 2; count++, count2 += 2)
   {
-    snprintf(data3+count2,BUFFER_SIZE,"%02x",data2[count] & 0xFF);
+    snprintf(data3+count2,MAXIMUM_NUMBER_SIZE,"%02x",data2[count] & 0xFF);
   }
   if (strncmp(data3,DATA_HASH,DATA_HASH_LENGTH) == 0)
   {

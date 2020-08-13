@@ -110,7 +110,7 @@ int check_if_previous_block_producer(void)
 
   memset(data3,0,sizeof(data3));
 
-  memcpy(data3,&message[(sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1)],XCASH_WALLET_LENGTH*2);
+  memcpy(data3,&message[sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1],XCASH_WALLET_LENGTH*2);
 
   // convert the hexadecimal string to a string
   for (count = 0, count2 = 0; count < XCASH_WALLET_LENGTH*2; count2++, count += 2)
@@ -223,13 +223,12 @@ int get_delegates_total_voters_count(const char* DELEGATES_PUBLIC_ADDRESS)
   memcpy(data+strlen(data),"\"}",2);
 
   // get the count of how many public addresses voted for the delegate
-  for (public_address_count = 0, count = 1, counter = 0; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  for (public_address_count = 0, count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   { 
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
-    counter = count_documents_in_collection(database_name,data2,data);
-    if (counter != -1)
+    if ((counter = count_documents_in_collection(database_name,data2,data)) != -1)
     {
       public_address_count += counter;
     }
@@ -797,5 +796,5 @@ void* payment_timer_thread(void* parameters)
   pthread_exit((void *)(intptr_t)1);
   
   #undef DATABASE_COLLECTION
-  #undef BLOCK_HEIGHT_TIMER_THREAD_ERROR
+  #undef PAYMENT_TIMER_THREAD_ERROR
 }

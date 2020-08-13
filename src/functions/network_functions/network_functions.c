@@ -184,7 +184,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     SEND_HTTP_REQUEST_ERROR("Error setting socket timeout",1);
   }  
@@ -360,7 +360,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   SO_RCVTIMEO = allow the socket on receiving data, to use the timeout settings
   */
-  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0 || setsockopt(network_socket, SOL_SOCKET, SO_RCVTIMEO,&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error setting socket timeout",1);
   }
@@ -514,7 +514,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   SOL_SOCKET = socket level
   SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
   */
-  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,(const struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+  if (setsockopt(network_socket, SOL_SOCKET, SO_SNDTIMEO,&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
   {
     SEND_DATA_SOCKET_ERROR("Error setting socket timeout",1);
   }
@@ -573,9 +573,9 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   size_t count;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  long long int total;
-  long long int sent;
-  long long int bytes;
+  size_t total;
+  size_t sent;
+  long long int bytes = 1;
 
    /* Set the socket options for sending and receiving data
   SOL_SOCKET = socket level
@@ -640,17 +640,12 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     total = strlen((const char*)data);
   }
 
-  for (sent = 0, bytes = 0; sent < total; sent+= bytes)
+  for (sent = 0; sent < total; sent+= bytes)
   {
-    bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL);
-    if (bytes == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
+    if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
     {      
       return 0;
     }
-    else if (bytes == 0)  
-    {
-      break;
-    }       
   }
   return 1;
 }

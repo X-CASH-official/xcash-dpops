@@ -53,13 +53,10 @@ Functions
 -----------------------------------------------------------------------------------------------------------
 Name: sync_network_data_nodes_database
 Description: Sync all of the network data nodes to the same database data
-Parameters:
-  START_TIME_MINUTE - The start time (in minutes) to start the function
-  START_TIME_SECOND - The start time (in seconds) to start the function
 -----------------------------------------------------------------------------------------------------------
 */
 
-void sync_network_data_nodes_database(const int START_TIME_MINUTE, const int START_TIME_SECOND)
+void sync_network_data_nodes_database(void)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -127,7 +124,7 @@ void sync_network_data_nodes_database(const int START_TIME_MINUTE, const int STA
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
 
   // wait so all network data nodes start at the same time, this way one is not reseting the variables as another one is sending them data
-  sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_MINUTE,START_TIME_SECOND);
+  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,25);
 
   // get if the network data node has the previous blocks reserve bytes, because if not this network data node should not be synced from
   memcpy(data2,"{\"block_height\":\"",17);
@@ -436,7 +433,7 @@ void sync_network_data_nodes_database(const int START_TIME_MINUTE, const int STA
   color_print("The database is not synced with the majority of network data nodes, syncing the database from a random network data node that is in the majority","yellow");
   do
   {
-    count = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT));
+    count = ((rand() % NETWORK_DATA_NODES_AMOUNT));
   } while (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || synced_network_data_nodes[count] == -1);
   
   sleep(BLOCK_VERIFIERS_SETTINGS);
@@ -593,7 +590,7 @@ int sync_all_block_verifiers_list(const int SETTINGS)
       SYNC_ALL_BLOCK_VERIFIERS_LIST_ERROR("Could not verify data");
     }
 
-    total_delegates = string_count(data3,"|") / 12;
+    total_delegates = (int)(string_count(data3,"|") / 12);
     
     PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_name_list",previous_block_verifiers_list.block_verifiers_name);
     PARSE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA("previous_block_verifiers_public_address_list",previous_block_verifiers_list.block_verifiers_public_address);
@@ -777,7 +774,7 @@ int get_synced_block_verifiers(void)
   }
 
   // get the delegate amount
-  total_delegates = string_count(data2,"|") / 3;
+  total_delegates = (int)(string_count(data2,"|") / 3);
 
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_public_address_list",synced_block_verifiers.synced_block_verifiers_public_address);
   PARSE_BLOCK_VERIFIERS_LIST_DATA("block_verifiers_public_key_list",synced_block_verifiers.synced_block_verifiers_public_key);
@@ -820,7 +817,7 @@ void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES
     {
       do
       {
-        count = (int)(rand() % BLOCK_VERIFIERS_AMOUNT);
+        count = (rand() % BLOCK_VERIFIERS_AMOUNT);
       } while (strncmp(synced_block_verifiers.vote_settings[count],"true",4) == 0 || strncmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
       memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
     }
@@ -841,7 +838,7 @@ void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES
       // get a random network data node that is a synced network data node
       do
       {
-        count = ((int)(rand() % NETWORK_DATA_NODES_AMOUNT));
+        count = ((rand() % NETWORK_DATA_NODES_AMOUNT));
       } while (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || synced_network_data_nodes[count] == -1);
       memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     }
@@ -1290,7 +1287,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memcpy(data3+strlen(data3),"\"reserve_proofs_data_hash_",26);
-    snprintf(data3+strlen(data3),MAXIMUM_BUFFER_SIZE-1,"%d",count);
+    snprintf(data3+strlen(data3),sizeof(data3)-2,"%d",count);
     memcpy(data3+strlen(data3),"\": \"",4);
     // get the database data hash for the reserve proofs database
     memset(data,0,strlen(data));
@@ -1477,7 +1474,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   }
 
   // check if the block verifier needs to sync any of the reserve bytes databases and sync them if needed
-  if (sync_check_reserve_bytes_specific_database(database_data,(const char*)block_verifiers_ip_address,count2,(const size_t)current_reserve_bytes_database) == 0)
+  if (sync_check_reserve_bytes_specific_database(database_data,(const char*)block_verifiers_ip_address,count2,current_reserve_bytes_database) == 0)
   {
     SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not check if any of the specific databases needed to be synced, from ",1);
   }

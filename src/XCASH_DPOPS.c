@@ -63,6 +63,7 @@ struct blockchain_data blockchain_data; // The data for a new block to be added 
 struct error_message error_message; // holds all of the error messages and the functions for an error.
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
+struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 char current_round_part[2]; // The current round part (1-4)
 char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 pthread_rwlock_t rwlock;
@@ -94,6 +95,8 @@ char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; 
 int xcash_wallet_port; // The xcash wallet port
 char database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 char shared_delegates_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+char database_path_write[1024]; // holds the database write path
+char database_path_read[1024]; // holds the database read path
 int network_functions_test_settings;
 int network_functions_test_error_settings; // 1 to display errors, 0 to not display errors when running the reset variables allocated on the heap test
 int network_functions_test_server_messages_settings; // 1 to display server messages, 0 to not display server messages when running the test
@@ -177,6 +180,8 @@ void initialize_data(int parameters_count, char* parameters[])
   memcpy(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9);
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
+  memset(database_path_write,0,sizeof(database_path_write));
+  memset(database_path_read,0,sizeof(database_path_read));
   memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
   log_file_settings = 0;
   xcash_wallet_port = XCASH_WALLET_PORT;
@@ -457,7 +462,12 @@ void create_overall_database_connection(void)
   mongoc_init();
 
   // create a connection to the database
-  if (!(uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error)) || !(database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool)))
+  if (!(uri_thread_pool = mongoc_uri_new_with_error(DATABASE_CONNECTION, &error)))
+  {
+    CREATE_OVERALL_DATABASE_CONNECTION_ERROR;
+  }
+
+  if (!(database_client_thread_pool = mongoc_client_pool_new(uri_thread_pool)))
   {
     CREATE_OVERALL_DATABASE_CONNECTION_ERROR;
   }
@@ -478,6 +488,7 @@ Description: Gets the delegates data
 void get_delegates_data(void)
 {
   // Variables
+  FILE* file;
   char data[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -512,6 +523,28 @@ void get_delegates_data(void)
   {
     GET_DELEGATES_DATA_ERROR("Could not get the previous block hash");
   }
+
+  // get the database_path_write
+  memcpy(database_path_write,"cd ~ && rm -r dump ; ",21);
+
+  file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
+
+  if (fgets(database_path_write+strlen(database_path_write),sizeof(database_path_write)-strlen(database_path_write),file) == NULL)
+  {
+    GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
+  }
+  memcpy(database_path_write+strlen(database_path_write)-1,"/bin/mongodump --quiet",22);
+
+  // get the database_path_read
+  memcpy(database_path_read,"cd ~ && ",8);
+
+  file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
+
+  if (fgets(database_path_read+strlen(database_path_read),sizeof(database_path_read)-strlen(database_path_read),file) == NULL)
+  {
+    GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
+  }
+  memcpy(database_path_read+strlen(database_path_read)-1,"/bin/mongorestore --quiet",25);
 
   // get the website path
   memset(website_path,0,sizeof(website_path));
@@ -610,7 +643,7 @@ int set_parameters(int parameters_count, char* parameters[])
   }
 
   // check the parameters
-  for (count = 0, count2 = 0; count < (size_t)parameters_count; count++)
+  for (count = 0; count < (size_t)parameters_count; count++)
   { 
     if (strncmp(parameters[count],"--block-verifiers-secret-key",BUFFER_SIZE) == 0)
     {
@@ -949,28 +982,21 @@ void database_sync_check(void)
   }
 
   // check if the database is synced, unless this is the main network data node
-  if (network_data_node_settings == 1 && get_network_data_nodes_online_status() == 0)
+  if (network_data_node_settings == 1 && get_network_data_nodes_online_status() == 1)
   {
-
-  }
-  else
-  {
-    if (network_data_node_settings == 1)
+    // check if all of the databases are synced from a random network data node
+    if (check_if_databases_are_synced(3,0) == 0)
     {
-      // check if all of the databases are synced from a random network data node
-      if (check_if_databases_are_synced(3,0) == 0)
-      {
-        DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
-      }
+      DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
     }
-    else
+  }
+  else if (network_data_node_settings == 0)
+  {
+    // check if all of the databases are synced from a random block verifier
+    if (check_if_databases_are_synced(3,0) == 0)
     {
-      // check if all of the databases are synced from a random block verifier
-      if (check_if_databases_are_synced(3,0) == 0)
-      {
-        DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
-      }
-    } 
+      DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
+    }
   }
 
   // check the block verifiers current time, if it is not a network data node
@@ -1290,7 +1316,7 @@ int main(int parameters_count, char* parameters[])
   if (settings != 2)
   {
     start_timer_threads();
-  }  
+  }
 
   for (;;)
   {

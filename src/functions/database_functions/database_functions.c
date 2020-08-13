@@ -65,7 +65,6 @@ int check_if_database_collection_exist(const char* DATABASE, const char* COLLECT
   return 1;
 
   #undef database_reset_all
-  #undef CHECK_IF_DATABASE_COLLECTION_EXIST_ERROR
 }
 
 
