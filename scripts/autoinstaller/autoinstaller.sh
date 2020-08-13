@@ -1038,7 +1038,11 @@ function build_xcash()
     make release -j "${CPU_THREADS}" &>/dev/null
   else
     echo "y" | make clean &>/dev/null
-    make release -j $((CPU_THREADS / 2)) &>/dev/null
+    if [ "$RAM_CPU_RATIO" -eq 0 ]; then
+        make release &>/dev/null
+    else
+        make release -j $((CPU_THREADS / 2)) &>/dev/null
+    fi
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   echo
