@@ -589,6 +589,17 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 )"
+SYSTEMD_TIMER_FILE_XCASH_DPOPS="$(cat << EOF
+[Unit]
+Description=xcash-dpops timer
+
+[Timer]
+OnBootSec=30sec
+
+[Install]
+WantedBy=timers.target
+EOF
+)"
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="$(cat << EOF
 [Unit]
 Description=X-Cash RPC wallet background process
@@ -602,6 +613,17 @@ Restart=always
  
 [Install]
 WantedBy=multi-user.target
+EOF
+)"
+SYSTEMD_TIMER_FILE_XCASH_WALLET="$(cat << EOF
+[Unit]
+Description=xcash-rpc-wallet timer
+
+[Timer]
+OnBootSec=20sec
+
+[Install]
+WantedBy=timers.target
 EOF
 )"
 }
