@@ -836,7 +836,9 @@ function stop_systemd_service_files()
 
 function enable_service_files_at_startup()
 {
-    sudo systemctl enable mongodb.service xcash-daemon.service xcash-rpc-wallet.timer xcash-dpops.timer 2> /dev/null
+  echo -ne "${COLOR_PRINT_YELLOW}Enabling services to autostart on reboot${END_COLOR_PRINT}"
+  sudo systemctl enable mongodb.service xcash-daemon.service xcash-rpc-wallet.timer xcash-dpops.timer 2> /dev/null
+  echo -ne "\r${COLOR_PRINT_GREEN}Enabling services to autostart on reboot${END_COLOR_PRINT}"
 }
 
 
