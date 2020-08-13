@@ -640,7 +640,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     total = strlen((const char*)data);
   }
 
-  for (sent = 0; sent < total; sent+= bytes)
+  for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
   {
     if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
     {      

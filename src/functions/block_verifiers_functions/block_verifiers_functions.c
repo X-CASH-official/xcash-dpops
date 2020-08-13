@@ -120,7 +120,7 @@ int start_new_round(void)
   color_print("getting the delegates online status","blue");
 
   // get the delegates online status
-  get_delegates_online_status();
+  //get_delegates_online_status();
 
   // save a copy of the database
   if (production_settings == 1)
