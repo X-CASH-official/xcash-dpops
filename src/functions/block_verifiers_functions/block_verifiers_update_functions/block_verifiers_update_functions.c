@@ -877,7 +877,7 @@ int calculate_main_nodes_roles(void)
     CALCULATE_MAIN_NODES_ROLES("Could not get the database data hash for calculating the main nodes role");
   }
 
-  // combine the vrf_beta_string and the current data hash for the database. This will generate 2 different block producers for replayed rounds
+  // combine the vrf_beta_string and the current data hash for the db. This will generate 2 different block producers for replayed rounds if db data changes
   memcpy(data3+strlen(data3),data,strnlen(data,sizeof(data3)));
   memset(data,0,sizeof(data));
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)data3,(unsigned long long)strlen(data3));
@@ -914,6 +914,13 @@ int calculate_main_nodes_roles(void)
     if (count2 != 0 && count2 <= 200 && settings == 0)
     {
       count2 = count2 % total_block_verifiers;
+
+      // check if this is a network data node, since they will not produce the blocks
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count2],network_data_nodes_list.network_data_nodes_public_address[0],XCASH_WALLET_LENGTH) == 0 || strncmp(current_block_verifiers_list.block_verifiers_public_address[count2],network_data_nodes_list.network_data_nodes_public_address[1],XCASH_WALLET_LENGTH) == 0 || strncmp(current_block_verifiers_list.block_verifiers_public_address[count2],network_data_nodes_list.network_data_nodes_public_address[2],XCASH_WALLET_LENGTH) == 0 || strncmp(current_block_verifiers_list.block_verifiers_public_address[count2],network_data_nodes_list.network_data_nodes_public_address[3],XCASH_WALLET_LENGTH) == 0 || strncmp(current_block_verifiers_list.block_verifiers_public_address[count2],network_data_nodes_list.network_data_nodes_public_address[4],XCASH_WALLET_LENGTH) == 0)
+      {
+        goto start;
+      }
+
       if (main_nodes_count == 0)
       {
         // calculate the block_producer
@@ -959,6 +966,8 @@ int calculate_main_nodes_roles(void)
         break;
       }
     }
+
+    start:
     if (((count + 2) == VRF_BETA_LENGTH) && (main_nodes_count != BLOCK_PRODUCERS_BACKUP_AMOUNT+1))
     {
       color_print("The main nodes calculation process has run out of bytes to read.\nnetwork data nodes will be the block producer and backup block producers","yellow");
