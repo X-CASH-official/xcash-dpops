@@ -28,6 +28,7 @@
 #include "block_verifiers_synchronize_functions.h"
 #include "block_verifiers_thread_server_functions.h"
 #include "block_verifiers_update_functions.h"
+#include "database_functions.h"
 #include "read_database_functions.h"
 #include "update_database_functions.h"
 #include "file_functions.h"
@@ -869,6 +870,26 @@ int calculate_main_nodes_roles(void)
     CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
   }
 
+  // get the database data hash for the entire current database
+  memset(data,0,sizeof(data));
+  if (get_database_data_hash(data,database_name,"ALL") == 0)
+  {
+    CALCULATE_MAIN_NODES_ROLES("Could not get the database data hash for calculating the main nodes role");
+  }
+
+  // combine the vrf_beta_string and the current data hash for the database. This will generate 2 different block producers for replayed rounds
+  memcpy(data3+strlen(data3),data,strnlen(data,sizeof(data3)));
+  memset(data,0,sizeof(data));
+  crypto_hash_sha512((unsigned char*)data,(const unsigned char*)data3,(unsigned long long)strlen(data3));
+  memset(data3,0,sizeof(data3));
+
+  // convert the SHA512 data hash to a string
+  for (count2 = 0, count3 = 0; count2 < DATA_HASH_LENGTH / 2; count2++, count3 += 2)
+  {
+    snprintf(data3+count3,MAXIMUM_NUMBER_SIZE,"%02x",data[count2] & 0xFF);
+  }
+
+  // calculate the main nodes role
   for (count = 0, count3 = 0, main_nodes_count = 0; count < VRF_BETA_LENGTH || main_nodes_count == 6; count += 2)
   {
     memset(data,0,sizeof(data));

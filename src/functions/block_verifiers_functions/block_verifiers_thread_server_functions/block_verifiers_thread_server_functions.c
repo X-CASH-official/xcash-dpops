@@ -64,7 +64,6 @@ void* current_block_height_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
-  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   char previous_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -139,28 +138,13 @@ void* current_block_height_timer_thread(void* parameters)
       // check if this round is a replayed round
       replayed_round_settings = strncmp(previous_block_height,current_block_height,BUFFER_SIZE) == 0 ? 1 : 0;
 
-      // remove any database data if its a replayed round
-      if (replayed_round_settings == 1)
-      {
-        memset(data,0,sizeof(data));
-        memset(data2,0,sizeof(data2));
-        get_reserve_bytes_database(count,0); 
-        memcpy(data,"reserve_bytes_",14);
-        snprintf(data+14,sizeof(data)-15,"%zu",count);  
-        memcpy(data2,"{\"block_height\":\"",17);
-        memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
-        memcpy(data2+strlen(data2),"\"}",2);   
-        delete_document_from_collection(database_name,data,data2);
-        RESET_ERROR_MESSAGES;
-      }
-
       // copy the current block height
       memset(previous_block_height,0,sizeof(previous_block_height));
       memcpy(previous_block_height,current_block_height,strnlen(current_block_height,sizeof(previous_block_height)));
 
       if ((block_verifier_settings = start_new_round()) == 0)
       {
-        print_error_message(current_date_and_time,current_UTC_date_and_time,data);
+        color_print("both the block producer and backup block producer failed, waiting for the next round to begin","red");
       }
       else if (block_verifier_settings == 1)
       {
