@@ -113,7 +113,7 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
   if (read_document_field_from_collection(database_name,data3,data,"reserve_bytes",message) == 0)
   {
     // restore the database from the backup
-    if (production_settings == 1)
+    if (production_settings == 1 && network_data_node_settings == 1)
     {
       count = system(database_path_read);
     }

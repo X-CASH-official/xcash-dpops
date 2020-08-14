@@ -123,7 +123,7 @@ int start_new_round(void)
   get_delegates_online_status();
 
   // save a copy of the database
-  if (production_settings == 1)
+  if (production_settings == 1 && network_data_node_settings == 1)
   {
     count2 = system(database_path_write);
   }

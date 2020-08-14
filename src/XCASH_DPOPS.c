@@ -524,27 +524,31 @@ void get_delegates_data(void)
     GET_DELEGATES_DATA_ERROR("Could not get the previous block hash");
   }
 
-  // get the database_path_write
-  memcpy(database_path_write,"cd ~ && rm -r dump ; ",21);
-
-  file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
-
-  if (fgets(database_path_write+strlen(database_path_write),sizeof(database_path_write)-strlen(database_path_write),file) == NULL)
+  // get the database paths
+  if (production_settings == 1 && network_data_node_settings == 1)
   {
-    GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
+    // get the database_path_write
+    memcpy(database_path_write,"cd ~ && rm -r dump ; ",21);
+
+    file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
+
+    if (fgets(database_path_write+strlen(database_path_write),sizeof(database_path_write)-strlen(database_path_write),file) == NULL)
+    {
+      GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
+    }
+    memcpy(database_path_write+strlen(database_path_write)-1,"/bin/mongodump --quiet",22);
+
+    // get the database_path_read
+    memcpy(database_path_read,"cd ~ && ",8);
+
+    file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
+
+    if (fgets(database_path_read+strlen(database_path_read),sizeof(database_path_read)-strlen(database_path_read),file) == NULL)
+    {
+      GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
+    }
+    memcpy(database_path_read+strlen(database_path_read)-1,"/bin/mongorestore --quiet",25);
   }
-  memcpy(database_path_write+strlen(database_path_write)-1,"/bin/mongodump --quiet",22);
-
-  // get the database_path_read
-  memcpy(database_path_read,"cd ~ && ",8);
-
-  file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
-
-  if (fgets(database_path_read+strlen(database_path_read),sizeof(database_path_read)-strlen(database_path_read),file) == NULL)
-  {
-    GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
-  }
-  memcpy(database_path_read+strlen(database_path_read)-1,"/bin/mongorestore --quiet",25);
 
   // get the website path
   memset(website_path,0,sizeof(website_path));
