@@ -1186,18 +1186,6 @@ int block_verifiers_create_block_and_update_database(void)
       submit_block_template(data);
     }
   }
-  sleep(BLOCK_VERIFIERS_SETTINGS);
-
-  // check if the block was submited
-  sscanf(current_block_height,"%zu", &count);
-  memset(data3,0,strlen(data3));
-  get_current_block_height(data3);
-  sscanf(data3,"%zu", &count2);
-  
-  if (count2 - count != 1)
-  {
-    BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the new block to the network");
-  }  
   return 1;
 
   #undef BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS
