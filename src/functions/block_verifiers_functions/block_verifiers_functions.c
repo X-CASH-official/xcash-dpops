@@ -1419,9 +1419,10 @@ int block_verifiers_create_block(void)
     {
       fprintf(stderr,"\033[1;32m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);      
     }
-    else if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+    else if (count2 == 1)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers created valid VRF data with %d / %d network data nodes\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
+      // restart the delegate, as it could only verify its own message and not anyone elses message
+      exit(0);
     }
     else
     {
@@ -1529,9 +1530,10 @@ int block_verifiers_create_block(void)
     {
       fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);     
     }
-    else if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+    else if (count2 == 1)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block with %d / %d network data nodes\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
+      // restart the delegate, as it could only verify its own message and not anyone elses message
+      exit(0);
     }
     else
     {
@@ -1573,9 +1575,10 @@ int block_verifiers_create_block(void)
     {
       fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);    
     }
-    else if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE && network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+    else if (current_round_part_vote_data.vote_results_valid == 1)
     {
-      fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same created data and block with %d / %d network data nodes\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE,network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
+      // restart the delegate, as it could only verify its own message and not anyone elses message
+      exit(0);
     }
     else
     {
