@@ -1347,8 +1347,12 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
         memcpy(data,&data2[count],2);
         counter = (int)strtol(data, NULL, 16); 
    
-        // if it is not in the range of 01 - C8 then skip the byte
-        if (counter != 0 && counter <= 200)
+        /* if it is not in the range of 01 - FA or it has already been calculated then skip the byte
+           This number needs to be evenly divisible by how many maximum block verifiers there will be
+           This is so block verifiers in specific spots do not have more of a chance to be the block producer than others
+           The goal is to use as many bytes as possible, since the more unused bytes, the more chance that it will run out of bytes when selecting the block producer
+        */
+        if (counter != 0 && counter <= 250)
         {
           counter = counter % BLOCK_VERIFIERS_TOTAL; 
 

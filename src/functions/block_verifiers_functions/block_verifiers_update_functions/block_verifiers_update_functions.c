@@ -910,8 +910,14 @@ int calculate_main_nodes_roles(void)
         settings = 1;
       }
     }
-    // if it is not in the range of 01 - C8 or it has already been calculated then skip the byte
-    if (count2 != 0 && count2 <= 200 && settings == 0)
+    
+    /* if it is not in the range of 01 - FA or it has already been calculated then skip the byte
+       This number needs to be evenly divisible by how many maximum block verifiers there will be
+       This is so block verifiers in specific spots do not have more of a chance to be the block producer than others
+       The goal is to use as many bytes as possible, since the more unused bytes, the more chance that it will run out of bytes when selecting the block producer
+    */
+
+    if (count2 != 0 && count2 <= 250 && settings == 0)
     {
       count2 = count2 % total_block_verifiers;
 
