@@ -1090,7 +1090,7 @@ int get_delegates_online_status(void)
   total = strnlen(data,BUFFER_SIZE);
   
   // create the epoll file descriptor
-  if ((epoll_fd_copy = epoll_create1(0)) < 0)
+  if ((epoll_fd_copy = epoll_create1(0)) == -1)
   {
     GET_DELEGATES_ONLINE_STATUS_ERROR("Error creating the epoll file descriptor");
   }

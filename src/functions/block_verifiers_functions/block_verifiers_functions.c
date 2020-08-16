@@ -1121,7 +1121,6 @@ int block_verifiers_create_block_and_update_database(void)
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
-  size_t count2;
 
   // threads
   pthread_t thread_id;
@@ -1341,6 +1340,7 @@ int block_verifiers_create_block(void)
   } \
   else if (strncmp(current_round_part_backup_node,"1",1) == 0) \
   { \
+    color_print("both the block producer and backup block producer failed, waiting for the next round to begin","red"); \
     return 0; \
   } \
   sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,0); \
@@ -1692,7 +1692,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   total = strnlen(data,BUFFER_SIZE);
   
   // create the epoll file descriptor
-  if ((epoll_fd_copy = epoll_create1(0)) < 0)
+  if ((epoll_fd_copy = epoll_create1(0)) == -1)
   {
     BLOCK_VERIFIERS_SEND_DATA_SOCKET("Error creating the epoll file descriptor");
   }

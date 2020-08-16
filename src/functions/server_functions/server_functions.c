@@ -61,6 +61,7 @@ int create_server(const int MESSAGE_SETTINGS)
   // Variables
   char buffer[MAXIMUM_NUMBER_SIZE];
   char data[SMALL_BUFFER_SIZE];
+  struct epoll_event events;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   struct sockaddr_in addr; 
@@ -150,7 +151,7 @@ int create_server(const int MESSAGE_SETTINGS)
   }
 
   // create the epoll file descriptor
-  if ((epoll_fd = epoll_create1(0)) < 0)
+  if ((epoll_fd = epoll_create1(0)) == -1)
   {
     SERVER_ERROR("Error creating the server");
   }
@@ -159,10 +160,10 @@ int create_server(const int MESSAGE_SETTINGS)
   EPOLLIN = signal when the file descriptor is ready to read
   EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
   */  
-  events_copy.events = EPOLLIN | EPOLLET;
-  events_copy.data.fd = server_socket;
+  events.events = EPOLLIN | EPOLLET;
+  events.data.fd = server_socket;
 
-  if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &events_copy) < 0)
+  if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &events) == -1)
   {
     SERVER_ERROR("Error creating the server");
   }
@@ -193,6 +194,7 @@ void new_socket_thread(void)
 {
   // Variables
   int client_socket;
+  struct epoll_event events;
   struct sockaddr_in addr;
   socklen_t addrlen = sizeof(struct sockaddr_in);
   time_t start = time(NULL);
@@ -207,15 +209,15 @@ void new_socket_thread(void)
     EPOLLET = use edge triggered mode, this will only signal that a file descriptor is ready when that file descriptor changes states
     EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
     */
-    events_copy.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
-    events_copy.data.fd = client_socket;
+    events.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
+    events.data.fd = client_socket;
 
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events_copy) < 0 && count != 0)
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_socket, &events) == -1)
     {    
       close(client_socket);
       return;
     }
-    count++;
+    count = 1;
   }
 
   if (count == 0)
@@ -914,9 +916,8 @@ void* socket_receive_data_thread(void* parameters)
      else
      {
        // a file descriptor is ready for a current socket connection
-      socket_thread(events[count2].data.fd);
-      epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[count2].data.fd, &events_copy);
-      close(events[count2].data.fd);
+       socket_thread(events[count2].data.fd);
+       close(events[count2].data.fd);
      }
    } 
 }

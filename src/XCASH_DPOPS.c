@@ -79,7 +79,6 @@ pthread_mutex_t network_data_nodes_valid_count_lock;
 
 pthread_t server_threads[100];
 int epoll_fd;
-struct epoll_event events_copy;
 int server_socket;
 
 char current_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The current block height

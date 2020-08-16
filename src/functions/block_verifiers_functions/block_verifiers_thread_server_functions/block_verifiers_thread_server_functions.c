@@ -144,7 +144,7 @@ void* current_block_height_timer_thread(void* parameters)
 
       if ((block_verifier_settings = start_new_round()) == 0)
       {
-        color_print("both the block producer and backup block producer failed, waiting for the next round to begin","red");
+        print_error_message(current_date_and_time,current_UTC_date_and_time,data);
       }
       else if (block_verifier_settings == 1)
       {

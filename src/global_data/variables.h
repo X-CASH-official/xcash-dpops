@@ -50,7 +50,6 @@ extern pthread_mutex_t network_data_nodes_valid_count_lock;
 
 extern pthread_t server_threads[100];
 extern int epoll_fd;
-extern struct epoll_event events_copy;
 extern int server_socket;
 
 extern char current_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The current block height
