@@ -826,9 +826,13 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     
     // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
     memset(data,0,strlen(data));
-    if (select_random_unique_reserve_proof(&reserve_proof) == 1 && (check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof) != 1 || strncmp(data,reserve_proof.reserve_proof_amount,strlen(data)) != 0))
+    if (select_random_unique_reserve_proof(&reserve_proof) == 1)
     { 
-      send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
+      count = check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof);
+      if (count == 0 || (count == 1 && strncmp(data,reserve_proof.reserve_proof_amount,BUFFER_SIZE) != 0))
+      {
+        send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
+      }
     }
     sleep(INVALID_RESERVE_PROOFS_SETTINGS);
   }
