@@ -978,12 +978,6 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
         SYNC_CHECK_RESERVE_PROOFS_SPECIFIC_DATABASE_ERROR("Could not receive data from the block verifier");
       }
 
-      // if the delegate did send data over, but the database is empty then just exit the loop
-      if (strncmp(data3,"",1) == 0)
-      {
-        break;
-      }
-
       // add the data to the database
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);
@@ -992,12 +986,16 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       // delete the collection from the database
       delete_collection_from_database(database_name,data2);
 
-      // add the data to the database
-      memset(data,0,strlen(data));
-      memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE);
-      //data3[strlen(data3)-2] = 0;
-      //insert_multiple_documents_into_collection_json(database_name,data2,data3,MAXIMUM_BUFFER_SIZE);
+      // if the database is empty dont add any data
+      if (strncmp(data3,DATABASE_EMPTY_STRING,BUFFER_SIZE) != 0)
+      {
+        // add the data to the database
+        memset(data,0,strlen(data));
+        memcpy(data,data3,strlen(data3)-2);
+        insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE);
+        //data3[strlen(data3)-2] = 0;
+        //insert_multiple_documents_into_collection_json(database_name,data2,data3,MAXIMUM_BUFFER_SIZE);
+      }     
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_proofs_",15);
@@ -1154,12 +1152,6 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
         SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not receive data from the block verifier1");
       }
 
-      // if the delegate did send data over, but the database is empty then just exit the loop
-      if (strncmp(data3,"",1) == 0)
-      {
-        break;
-      }
-
       // add the data to the database
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);
@@ -1168,12 +1160,16 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       // delete the collection from the database
       delete_collection_from_database(database_name,data2);
 
-      // add the data to the database
-      memset(data,0,strlen(data));
-      memcpy(data,data3,strlen(data3)-2);
-      insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE);
-      //data3[strlen(data3)-2] = 0;
-      //insert_multiple_documents_into_collection_json(database_name,data2,data3,MAXIMUM_BUFFER_SIZE);
+      // if the database is empty dont add any data
+      if (strncmp(data3,DATABASE_EMPTY_STRING,BUFFER_SIZE) != 0)
+      {
+        // add the data to the database
+        memset(data,0,strlen(data));
+        memcpy(data,data3,strlen(data3)-2);
+        insert_multiple_documents_into_collection_json(database_name,data2,data,MAXIMUM_BUFFER_SIZE);
+        //data3[strlen(data3)-2] = 0;
+        //insert_multiple_documents_into_collection_json(database_name,data2,data3,MAXIMUM_BUFFER_SIZE);
+      }      
 
       memset(data,0,strlen(data));
       memcpy(data,"reserve_bytes_",14);
@@ -1610,21 +1606,19 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
     SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
   }
 
-  if (strncmp(data2,"",1) == 0)
-  {
-    pointer_reset(data);
-    return 1;
-  }
-
   // delete the collection from the database
   delete_collection_from_database(database_name,DATABASE_COLLECTION);
 
-  // add the data to the database
-  //data2[strlen(data2)-2] = 0;
-  // insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data2,sizeof(data2));
-  memset(data,0,strlen(data));
-  memcpy(data,data2,strlen(data2)-2);
-  insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE);
+  // if the database is empty dont add any data
+  if (strncmp(data2,DATABASE_EMPTY_STRING,BUFFER_SIZE) != 0)
+  {
+    // add the data to the database
+    //data2[strlen(data2)-2] = 0;
+    // insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data2,sizeof(data2));
+    memset(data,0,strlen(data));
+    memcpy(data,data2,strlen(data2)-2);
+    insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE);
+  }  
 
   pointer_reset(data);
   return 1;
@@ -1760,21 +1754,19 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
   }
 
-  if (strncmp(data2,"",1) == 0)
-  {
-    pointer_reset(data);
-    return 1;
-  }
-
   // delete the collection from the database
   delete_collection_from_database(database_name,DATABASE_COLLECTION);
 
-  // add the data to the database
-  //data2[strlen(data2)-2] = 0;
-  //insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data2);
-  memset(data,0,strlen(data));
-  memcpy(data,data2,strlen(data2)-2);
-  insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data);
+  // if the database is empty dont add any data
+  if (strncmp(data2,DATABASE_EMPTY_STRING,BUFFER_SIZE) != 0)
+  {
+    // add the data to the database
+    //data2[strlen(data2)-2] = 0;
+    //insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data2);
+    memset(data,0,strlen(data));
+    memcpy(data,data2,strlen(data2)-2);
+    insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data);
+  }
 
   pointer_reset(data);
   return 1;

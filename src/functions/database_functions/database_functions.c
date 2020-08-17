@@ -140,14 +140,11 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     count = 1;
   }
 
+  // if the database collection is empty, have it say empty for database syncing
   if (count != 1)
   {
-    if (test_settings == 1)
-    {
-      GET_DATABASE_DATA_ERROR("Could not get the database data");
-    }
-    database_reset_all;
-    return 0;
+    memset(database_data,0,strlen(database_data));
+    memcpy(database_data,DATABASE_EMPTY_STRING,sizeof(DATABASE_EMPTY_STRING)-1);
   }
   
   database_reset_all;
