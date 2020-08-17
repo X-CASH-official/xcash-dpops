@@ -299,6 +299,14 @@ struct delegates_online_status {
     int settings;
 };
 
+struct block_height_start_time {
+    int block_height_start_time; // 1 to start the current_block_height_timer_thread at a specific time, 0 if not
+    int block_height_start_time_month; // The month to start the current_block_height_timer_thread
+    int block_height_start_time_day; // The day to start the current_block_height_timer_thread
+    int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
+    int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
+};
+
  // Thread functions
  struct socket_thread_parameters {
     int client_socket;  // The client socket

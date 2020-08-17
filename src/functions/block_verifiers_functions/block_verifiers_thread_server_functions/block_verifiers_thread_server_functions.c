@@ -77,14 +77,14 @@ void* current_block_height_timer_thread(void* parameters)
   (void)parameters;
 
   // wait for the specific start time if the block_height_start_time is on
-  if (block_height_start_time == 1)
+  if (block_height_start_time.block_height_start_time == 1)
   {
     color_print("Waiting for the specific start time","yellow");
     do
     {
       get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
       nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);  
-    } while (current_UTC_date_and_time.tm_mon != block_height_start_time_month || current_UTC_date_and_time.tm_mday != block_height_start_time_day || current_UTC_date_and_time.tm_hour != block_height_start_time_hour || current_UTC_date_and_time.tm_min != block_height_start_time_minute);
+    } while (current_UTC_date_and_time.tm_mon != block_height_start_time.block_height_start_time_month || current_UTC_date_and_time.tm_mday != block_height_start_time.block_height_start_time_day || current_UTC_date_and_time.tm_hour != block_height_start_time.block_height_start_time_hour || current_UTC_date_and_time.tm_min != block_height_start_time.block_height_start_time_minute);
   }
   
   // get the current block height and wait until the block height is at the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT

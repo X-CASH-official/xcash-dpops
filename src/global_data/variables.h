@@ -35,6 +35,7 @@ extern struct error_message error_message; // holds all of the error messages an
 extern struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 extern struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
 extern struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
+extern struct block_height_start_time block_height_start_time; // Holds the block height start time data
 extern char current_round_part[2]; // The current round part (1-4)
 extern char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 extern pthread_rwlock_t rwlock;
@@ -74,11 +75,6 @@ extern int test_settings; // 1 when the test are running, 0 if not
 extern int vrf_data_verify_count; // holds the amount of block verifiers signatures that are verified for the current network block
 extern int debug_settings; // 1 to show all incoming and outgoing message from the server
 extern int registration_settings; // 1 when the registration mode is running, 0 when it is not
-extern int block_height_start_time; // 1 to start the current_block_height_timer_thread at a specific time, 0 if not
-extern int block_height_start_time_month; // The month to start the current_block_height_timer_thread
-extern int block_height_start_time_day; // The day to start the current_block_height_timer_thread
-extern int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
-extern int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
 extern int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
 extern int production_settings; // 1 for production, 0 for test
 extern int production_settings_database_data_settings; // The initialize the database settings

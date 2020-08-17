@@ -64,6 +64,7 @@ struct error_message error_message; // holds all of the error messages and the f
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
 struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
+struct block_height_start_time block_height_start_time; // Holds the block height start time data
 char current_round_part[2]; // The current round part (1-4)
 char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 pthread_rwlock_t rwlock;
@@ -103,11 +104,6 @@ int test_settings; // 1 when the test are running, 0 if not
 int vrf_data_verify_count; // holds the amount of block verifiers signatures that are verified for the current network block
 int debug_settings; // 1 to show all incoming and outgoing message from the server
 int registration_settings; // 1 when the registration mode is running, 0 when it is not
-int block_height_start_time; // 1 to start the current_block_height_timer_thread at a specific time, 0 if not
-int block_height_start_time_month; // The month to start the current_block_height_timer_thread
-int block_height_start_time_day; // The day to start the current_block_height_timer_thread
-int block_height_start_time_hour; // The hour to start the current_block_height_timer_thread
-int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
 int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
 int production_settings; // 0 for production, 1 for test
 int production_settings_database_data_settings; // The initialize the database settings
@@ -189,7 +185,7 @@ void initialize_data(int parameters_count, char* parameters[])
   network_functions_test_server_messages_settings = 1;
   debug_settings = 0;
   registration_settings = 0;
-  block_height_start_time = 0;
+  block_height_start_time.block_height_start_time = 0;
   network_data_nodes_sync_databases_settings = 1;
   production_settings = 1;
   production_settings_database_data_settings = 0;
@@ -833,20 +829,20 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--start-time",BUFFER_SIZE) == 0)
     {
-      sscanf(parameters[count+1], "%d", &block_height_start_time_month);
-      sscanf(parameters[count+2], "%d", &block_height_start_time_day);
-      sscanf(parameters[count+3], "%d", &block_height_start_time_hour);
-      sscanf(parameters[count+4], "%d", &block_height_start_time_minute);
+      sscanf(parameters[count+1], "%d", &block_height_start_time.block_height_start_time_month);
+      sscanf(parameters[count+2], "%d", &block_height_start_time.block_height_start_time_day);
+      sscanf(parameters[count+3], "%d", &block_height_start_time.block_height_start_time_hour);
+      sscanf(parameters[count+4], "%d", &block_height_start_time.block_height_start_time_minute);
 
       // if the program restarts dont wait for the start_time again
       get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-      if ((current_UTC_date_and_time.tm_mon > block_height_start_time_month) || (current_UTC_date_and_time.tm_mon == block_height_start_time_month && current_UTC_date_and_time.tm_mday > block_height_start_time_day) || (current_UTC_date_and_time.tm_mon == block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time_day && current_UTC_date_and_time.tm_hour > block_height_start_time_hour) || (current_UTC_date_and_time.tm_mon == block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time_hour && current_UTC_date_and_time.tm_min > block_height_start_time_minute))
+      if ((current_UTC_date_and_time.tm_mon > block_height_start_time.block_height_start_time_month) || (current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday > block_height_start_time.block_height_start_time_day) || (current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour > block_height_start_time.block_height_start_time_hour) || (current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time.block_height_start_time_hour && current_UTC_date_and_time.tm_min > block_height_start_time.block_height_start_time_minute))
       {
-        block_height_start_time = 0;
+        block_height_start_time.block_height_start_time = 0;
       }
       else
       {
-        block_height_start_time = 1;
+        block_height_start_time.block_height_start_time = 1;
       }
     }
     if (strncmp(parameters[count],"--delegates-website",BUFFER_SIZE) == 0)
