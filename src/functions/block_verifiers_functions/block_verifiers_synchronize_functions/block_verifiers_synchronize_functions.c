@@ -909,15 +909,6 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
 
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
-    if (test_settings == 0)
-    {
-      memset(data,0,strlen(data));
-      memcpy(data,"Checking if reserve_proofs_",27);
-      snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%d",count);
-      memcpy(data+strlen(data)," is synced",10);
-      color_print(data,"white");
-    }
-
     // parse the database_data
     memset(data,0,strlen(data));
     memset(data2,0,strlen(data2));
@@ -1002,17 +993,6 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%d",count);
       memcpy(data+strlen(data)," has been synced successfully\n",31);
       color_print(data,"green");
-    }
-    else
-    {
-      if (test_settings == 0)
-      {
-        memset(data,0,strlen(data));
-        memcpy(data,"reserve_proofs_",15);
-        snprintf(data+strlen(data),MAXIMUM_BUFFER_SIZE-1,"%d",count);
-        memcpy(data+strlen(data)," is already synced\n",19);
-        color_print(data,"green");
-      }
     }
   }
 
