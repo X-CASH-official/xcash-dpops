@@ -2204,8 +2204,8 @@ function install_blockchain()
 function edit_shared_delegate_settings()
 {
   # check if they are already a shared delegate
-  if grep -q "shared_delegates_website" /lib/systemd/system/xcash-dpops.service; then
-  while
+  if grep -q "shared-delegates-website" /lib/systemd/system/xcash-dpops.service; then
+    while
       echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
       read -r DPOPS_FEE
       echo -ne "\r"
@@ -2213,22 +2213,22 @@ function edit_shared_delegate_settings()
       [[ ! $DPOPS_FEE =~ $regex_DPOPS_FEE ]]
     do true; done
     
-  while
-    echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount, minimum is 10K, maximum is 10M (ex: 10000 in whole numbers and not atomic units etc): ${END_COLOR_PRINT}"
-    read -r DPOPS_MINIMUM_AMOUNT
-    echo -ne "\r"
-    echo
-    [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
-  do true; done
+    while
+      echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Minimum Payment Amount, minimum is 10K, maximum is 10M (ex: 10000 in whole numbers and not atomic units etc): ${END_COLOR_PRINT}"
+      read -r DPOPS_MINIMUM_AMOUNT
+      echo -ne "\r"
+      echo
+      [[ ! $DPOPS_MINIMUM_AMOUNT =~ $regex_DPOPS_MINIMUM_AMOUNT ]]
+    do true; done
 
-  echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegate Settings${END_COLOR_PRINT}"
-  sed_services "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/xcash-dpops.service
-  sed_services "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/xcash-dpops.service
-  echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegate Settings${END_COLOR_PRINT}"
-  echo
+    echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegate Settings${END_COLOR_PRINT}"
+    sed_services "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/xcash-dpops.service
+    sed_services "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/xcash-dpops.service
+    echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegate Settings${END_COLOR_PRINT}"
+    echo
   else
-  echo -ne "\r${COLOR_PRINT_RED}Your delegate is not setup as a shared delegate${END_COLOR_PRINT}"
-  echo
+    echo -ne "\r${COLOR_PRINT_RED}Your delegate is not setup as a shared delegate${END_COLOR_PRINT}"
+    echo
   fi
 }
 
