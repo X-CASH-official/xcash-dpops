@@ -12,8 +12,8 @@ XCASH_DPOPS_SRV=xcash-dpops
 # Adjust this variable to the name of your mongodb unit file name
 MONGODB_SRV=mongodb
 
-XCASH_DAEMON_LOG_FILE=/var/x-network/logs/blockchain.log
-XCASH_WALLET_LOG_FILE=/var/x-network/logs/rpc.log
+XCASH_DAEMON_LOG_FILE=~/xcash-official/logs/xcash-daemon-log.txt
+XCASH_WALLET_LOG_FILE=~/xcash-official/xcash-core/build/release/bin/xcash-wallet-rpc.log
 ### CUSTOM VARIABLES ###
 
 DAEMON_URL="http://127.0.0.1:18281/json_rpc"
