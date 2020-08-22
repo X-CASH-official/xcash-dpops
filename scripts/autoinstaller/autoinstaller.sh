@@ -10,7 +10,7 @@ COLOR_PRINT_YELLOW="\033[1;33m"
 END_COLOR_PRINT="\033[0m"
 
 # Configuration settings
-INSTALLATION_TYPE_SETTINGS=1 # 1 = Install, 2 = Update, 3 = Uninstall, 4 = Install / Update BlockChain, 5 = Change Solo Delegate or Shared Delegate, 6 = Edit Shared Delegate Settings, 7 = Restart Programs, 8 = Stop Programs, 9 = Test Update, 10 = Test Update Reset Delegates, 11 = Firewall, 12 = Shared Delegates Firewall
+INSTALLATION_TYPE_SETTINGS=1 # 1 = Install, 2 = Update, 3 = Uninstall, 4 = Install / Update BlockChain, 5 = Change Solo Delegate or Shared Delegate, 6 = Edit Shared Delegate Settings, 7 = Restart Programs, 8 = Stop Programs, 9 = Test Update, 10 = Test Update Reset Delegates, 11 = Configure Installation, 12 = Firewall, 13 = Shared Delegates Firewall
 INSTALLATION_TYPE="Installation"
 XCASH_DPOPS_INSTALLATION_DIR="$HOME/xcash-official/"
 XCASH_BLOCKCHAIN_INSTALLATION_DIR="$HOME/.X-CASH/"
@@ -55,7 +55,7 @@ MONGODB_CURRENT_VERSION=""
 MONGOC_DRIVER_URL="https://github.com/mongodb/mongo-c-driver/releases/download/${MONGOC_DRIVER_LATEST_VERSION:15}/${MONGOC_DRIVER_LATEST_VERSION}.tar.gz"
 MONGOC_DRIVER_DIR=""
 MONGOC_DRIVER_CURRENT_VERSION=""
-XCASH_DPOPS_PACKAGES="build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libpcsclite-dev git screen p7zip-full"
+XCASH_DPOPS_PACKAGES="build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libpcsclite-dev git screen p7zip-full moreutils"
 CURRENT_XCASH_WALLET_INFORMATION=""
 
 # Files
@@ -85,12 +85,24 @@ regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 100
 
 
 # Functions
+
+# Sed used when modifying service files (if used inside containers use sponge utility - moreutils package)
+function sed_services()
+{
+  if [ "$container" == "lxc" ]; then
+    cat $2 | command sed "$1" | sponge $2
+  else
+    sudo sed -i "$1" $2
+  fi
+}
+
+
 function get_installation_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Install / Update Blockchain\n5 = Change Solo Delegate or Shared Delegate\n6 = Edit Shared Delegate Settings\n7 = Restart Programs\n8 = Stop Programs\n9 = Test Update\n10 = Test Update Reset Delegates\n11 = Firewall\n12 = Shared Delegates Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Install / Update Blockchain\n5 = Change Solo Delegate or Shared Delegate\n6 = Edit Shared Delegate Settings\n7 = Restart Programs\n8 = Stop Programs\n9 = Test Update\n10 = Test Update Reset Delegates\n11 = Configure Installation\n12 = Firewall\n13 = Shared Delegates Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] && echo "$data" || echo "1")
-  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Blockchain" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "solo or shared delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "EditSharedDelegateSettings" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "11" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "12" ] && echo "Shared_Delegates_Firewall" &>/dev/null)
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Blockchain" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "solo or shared delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "EditSharedDelegateSettings" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "11" ] && echo "Configure Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "12" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "13" ] && echo "Shared_Delegates_Firewall" &>/dev/null)
   echo -ne "\r"
   echo
   # Check if xcash-dpops is already installed, if the user choose to install
@@ -105,11 +117,11 @@ function get_installation_settings()
     echo
   fi
 
-  # Check if xcash-dpops is not installed, if the user choose to update or uninstall
-  if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "4" ]; then
+  # Check if xcash-dpops is not installed, if the user choose to update or uninstall or configure
+  if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "4" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "11" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
-      echo -e "\n${COLOR_PRINT_RED}xcash-dpops is not installed. Please install xcash-dpops before running update or uninstall${END_COLOR_PRINT}"
+      echo -e "\n${COLOR_PRINT_RED}xcash-dpops is not installed. Please install xcash-dpops before running update, configure or uninstall${END_COLOR_PRINT}"
       exit 1
     fi
     echo -ne "\r                                                     "
@@ -570,6 +582,7 @@ User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
 ExecStart=${XCASH_DPOPS_DIR}build/xcash-dpops --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY}
 Restart=always
+RestartSec=5
  
 [Install]
 WantedBy=multi-user.target
@@ -587,6 +600,7 @@ User=${USER}
 WorkingDirectory=${XCASH_DPOPS_DIR}build
 ExecStart=${XCASH_DPOPS_DIR}build/xcash-dpops --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY} --shared-delegates-website --fee ${DPOPS_FEE} --minimum-amount ${DPOPS_MINIMUM_AMOUNT}
 Restart=always
+RestartSec=5
  
 [Install]
 WantedBy=multi-user.target
@@ -613,6 +627,7 @@ Type=simple
 User=${USER}
 ExecStart=${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/delegate-wallet --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
 Restart=always
+RestartSec=5
  
 [Install]
 WantedBy=multi-user.target
@@ -719,7 +734,7 @@ function print_installation_settings()
 {
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}                    Installation Settings${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                    Installation/Configuration Settings${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
   echo -e "${COLOR_PRINT_GREEN}Installation Type: ${INSTALLATION_TYPE}${END_COLOR_PRINT}"
@@ -770,12 +785,27 @@ function installation_settings()
     get_autostart_services_settings
     print_installation_settings
   fi
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then 
+    echo
+    echo -e "${COLOR_PRINT_RED}WARNING: Old wallet, old block verifier key and old settings (service files)${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_RED}will be overwritten if already existent! Please make a backup if required!${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Press ENTER to continue or press Ctrl + C to cancel! ${END_COLOR_PRINT}"
+    read -r data
+    echo -ne "\r"
+    echo
+    get_installation_directory
+    get_shared_delegate_installation_settings
+    get_wallet_settings
+    get_password_settings
+    get_block_verifier_key_settings
+    if [ "$container" == "lxc" ]; then
+      AUTOSTART_SETTINGS="YES"
+    else
+      get_autostart_services_settings
+    fi
+    print_installation_settings
+  fi
 }
-
-
-
-
-
 
 
 
@@ -806,7 +836,7 @@ function get_current_xcash_wallet_data()
 
   # add the public address and block verifiers secret key to the XCASH_Daemon systemd service file
   PUBLIC_ADDRESS=${PUBLIC_ADDRESS%?}
-  sudo sed -i "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash-dpops-delegates-public-address $PUBLIC_ADDRESS --xcash-dpops-delegates-secret-key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/xcash-daemon.service
+  sed_services "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash-dpops-delegates-public-address $PUBLIC_ADDRESS --xcash-dpops-delegates-secret-key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/xcash-daemon.service
   
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
   echo
@@ -935,6 +965,32 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
   fi
 }
 
+
+function check_if_remove_shared_delegate_configure_install()
+{
+  # get the block verifiers secret key from the systemd service file
+  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/xcash-dpops.service)
+  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block-verifiers-secret-key' '{print $2}')
+  BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
+
+  if [ "${SHARED_DELEGATE^^}" == "NO" ]; then
+    echo -ne "Installation configured as Solo delegate. Removing all the preinstalled Shared Delegate website"
+    echo
+    uninstall_shared_delegates_website
+    update_systemd_service_files
+    sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
+    sudo systemctl daemon-reload
+    sudo sed '/node-v/d' -i "${HOME}"/.profile
+    sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
+    sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
+    sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
+    . "${HOME}"/.profile
+    get_installation_directory
+    get_dependencies_current_version
+  fi
+}
+
+
 function check_ubuntu_version()
 {   
     command -v lsb_release > /dev/null 2>&1 ||
@@ -1017,11 +1073,6 @@ function build_libgtest()
 
 
 
-
-
-
-
-
 function download_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Downloading X-CASH${END_COLOR_PRINT}"
@@ -1060,9 +1111,6 @@ function install_xcash()
   download_xcash
   build_xcash
 }
-
-
-
 
 
 
@@ -1233,6 +1281,24 @@ function install_xcash_dpops()
   echo
 }
 
+function configure_xcash_dpops()
+{
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                Configuring xcash-dpops Installation${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  # Create the block verifier key if they choose to create a block verifier key
+  if [ "${BLOCK_VERIFIER_KEY_SETTINGS^^}" == "C" ]; then
+    create_block_verifier_key
+  fi
+  update_systemd_service_files
+  create_systemd_service_files
+  echo
+  echo
+}
+
 function sync_xcash_wallet()
 {
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
@@ -1372,9 +1438,6 @@ function install_shared_delegates_website()
   echo
   echo
 }
-
-
-
 
 
 
@@ -1611,19 +1674,6 @@ function update_nodejs()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 function uninstall_packages()
 {
     i=0
@@ -1765,11 +1815,14 @@ function install()
     fi
   fi
 
-  # Create a swap file if they dont already have one and have low ram
-  SWAP_FILE=$(sudo swapon --show)
-  if [ -z "$SWAP_FILE" ] && [ "$RAM" -lt 10 ]; then
-    create_swap_file
+  # Create a swap file if they don't already have one and have low ram, if not inside container
+  if [ ! "$container" == "lxc" ]; then
+    SWAP_FILE=$(sudo swapon --show)
+    if [ -z "$SWAP_FILE" ] && [ "$RAM" -lt 10 ]; then
+      create_swap_file
+    fi
   fi
+
 
   # Start the systemd service files
   start_systemd_service_files
@@ -1791,6 +1844,76 @@ function install()
   echo
   echo
   echo -e "${COLOR_PRINT_YELLOW}Make sure to run source ~/.profile in your terminal${END_COLOR_PRINT}"
+}
+
+
+function configure()
+{
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Starting Configure Installation${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  # Stop service files
+  stop_systemd_service_files
+
+  # Remove shared website if solo 
+  check_if_remove_shared_delegate_configure_install
+
+  # Ask if use already present blockchain or use bootstrap file
+  echo -ne "${COLOR_PRINT_YELLOW}Download and use the blockchain bootstrap? (leave empty for default: YES): ${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  BOOTSTRAP_BLOCKCHAIN_OPTION=$([ "$data" == "" ] && echo "YES" || echo "NO")
+  if [ "$BOOTSTRAP_BLOCKCHAIN_OPTION" == "YES" ]; then
+    install_or_update_blockchain
+  fi
+
+  # Configure xcash-dpops
+  configure_xcash_dpops
+
+  # Create or import the wallet
+  if [ "${WALLET_SETTINGS^^}" == "YES" ]; then
+    create_xcash_wallet
+  else
+    import_xcash_wallet
+  fi
+
+  # Sync the wallet
+  sync_xcash_wallet
+
+  # Get the current xcash wallet data
+  get_current_xcash_wallet_data
+
+  # import the wallet if they created the wallet before. This should fix any 0 balance error
+  if [ "${WALLET_SETTINGS^^}" == "YES" ]; then
+    echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+    rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet*
+    (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${MNEMONIC_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --daemon-address us1.xcash.foundation:18281 &>/dev/null
+    echo
+    echo
+  fi
+
+  # Start the systemd service files
+  start_systemd_service_files
+
+  if [ "${AUTOSTART_SETTINGS^^}" == "YES" ]; then
+    enable_service_files_at_startup
+  fi
+
+  # Display X-CASH current wallet data  
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Configuration Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+  echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
+  echo
 }
 
 function update()
@@ -2104,8 +2227,8 @@ function edit_shared_delegate_settings()
   do true; done
 
   echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegate Settings${END_COLOR_PRINT}"
-  sed -i "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/xcash-dpops.service
-  sed -i "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/xcash-dpops.service
+  sed_services "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/xcash-dpops.service
+  sed_services "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/xcash-dpops.service
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegate Settings${END_COLOR_PRINT}"
   echo
   else
@@ -2159,7 +2282,9 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ]; then
   test_update_reset_delegates
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then
-  install_firewall_script
+  configure
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ]; then
+  install_firewall_script
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ]; then
   install_firewall_script_shared_delegates
 fi
