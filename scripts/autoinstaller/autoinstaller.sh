@@ -2012,7 +2012,7 @@ function install_blockchain()
 function edit_shared_delegate_settings()
 {
   # check if they are already a shared delegate
-  if grep -q "shared_delegates_website" /lib/systemd/system/xcash-dpops.service; then
+  if grep -q "shared-delegates-website" /lib/systemd/system/xcash-dpops.service; then
   while
       echo -ne "${COLOR_PRINT_YELLOW}Shared Delegate Fee (in percentage ex: 1 or 1.5 etc): ${END_COLOR_PRINT}"
       read -r DPOPS_FEE
@@ -2030,8 +2030,9 @@ function edit_shared_delegate_settings()
   do true; done
 
   echo -ne "${COLOR_PRINT_YELLOW}Updating Shared Delegate Settings${END_COLOR_PRINT}"
-  sed -i "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/xcash-dpops.service
-  sed -i "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/xcash-dpops.service
+  sudo sed -i "s/--fee.*--minimum-amount/--fee $DPOPS_FEE --minimum-amount/g" /lib/systemd/system/xcash-dpops.service
+  sudo sed -i "s/--minimum-amount.*/--minimum-amount $DPOPS_MINIMUM_AMOUNT/g" /lib/systemd/system/xcash-dpops.service
+  sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Shared Delegate Settings${END_COLOR_PRINT}"
   echo
   else
