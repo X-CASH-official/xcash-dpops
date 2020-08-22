@@ -968,11 +968,6 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
 
 function check_if_remove_shared_delegate_configure_install()
 {
-  # get the block verifiers secret key from the systemd service file
-  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/xcash-dpops.service)
-  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block-verifiers-secret-key' '{print $2}')
-  BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
-
   if [ "${SHARED_DELEGATE^^}" == "NO" ]; then
     echo -ne "Installation configured as Solo delegate. Removing all the preinstalled Shared Delegate website"
     echo
