@@ -323,6 +323,25 @@ function disable_services_autostart(){
 
 }
 
+
+function get_overview(){
+	check_services_status
+	check_height
+	get_node_balance
+	shared_delegates_website_statistics
+	echo 
+}
+
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -s | --status | --overview )    get_overview
+					exit
+    esac
+    shift
+done
+
+
 select opt in "${options[@]}"; do
 	case $opt in
 		"Check blockchain height") check_height ;;
