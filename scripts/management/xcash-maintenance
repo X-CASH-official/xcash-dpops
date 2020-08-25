@@ -281,15 +281,18 @@ function restart_all_services(){
 }
 
 function get_xcash_dpops_log(){
-	journalctl --unit=xcash-dpops -n 500 --output cat
+	# Read the log starting from end of file
+	journalctl --unit=xcash-dpops --output cat | less -R +G
 }
 
 function get_xcash_daemon_log(){
-	less -R $XCASH_DAEMON_LOG_FILE
+	# Read the log starting from end of file
+	less -R +G $XCASH_DAEMON_LOG_FILE
 }
 
 function get_xcash_wallet_log(){
-    less -R $XCASH_WALLET_LOG_FILE
+	# Read the log starting from end of file
+    	less -R +G $XCASH_WALLET_LOG_FILE
 }
 
 function enable_services_autostart(){
