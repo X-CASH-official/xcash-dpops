@@ -782,7 +782,12 @@ function installation_settings()
     get_wallet_settings
     get_password_settings
     get_block_verifier_key_settings
-    get_autostart_services_settings
+    if [ "$container" == "lxc" ]; then
+      echo -e "${COLOR_PRINT_YELLOW}Autostart enabled as default for services (because this is a container installation)${END_COLOR_PRINT}"
+      AUTOSTART_SETTINGS="YES"
+    else
+      get_autostart_services_settings
+    fi
     print_installation_settings
   fi
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then 
@@ -799,6 +804,7 @@ function installation_settings()
     get_password_settings
     get_block_verifier_key_settings
     if [ "$container" == "lxc" ]; then
+      echo -e "${COLOR_PRINT_YELLOW}Autostart enabled as default for services (because this is a container installation)${END_COLOR_PRINT}"
       AUTOSTART_SETTINGS="YES"
     else
       get_autostart_services_settings
@@ -1692,7 +1698,11 @@ function uninstall_packages()
 function uninstall_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Uninstall Systemd Service Files${END_COLOR_PRINT}"
-  sudo rm /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service
+  if [ "$container" == "lxc" ]; then
+    sudo truncate --size 0 /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service
+  else
+    sudo rm /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service
+  fi
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstall Systemd Service Files${END_COLOR_PRINT}"
   echo
@@ -1817,7 +1827,9 @@ function install()
       create_swap_file
     fi
   fi
-
+  
+  # Create xcash wallet log hardlink
+  sudo rm -f "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && ln "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" "${XCASH_LOGS_DIR}xcash-wallet-rpc.log"
 
   # Start the systemd service files
   start_systemd_service_files
@@ -1963,6 +1975,9 @@ function update()
     fi
     update_npm
   fi
+  
+  # Create xcash wallet log hardlink
+  sudo rm -f "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && ln "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" "${XCASH_LOGS_DIR}xcash-wallet-rpc.log"  
 
   # Start the systemd service files
   start_systemd_service_files
@@ -2027,11 +2042,16 @@ function uninstall()
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling Mongo C Driver${END_COLOR_PRINT}"
   echo
 
+
   # Uninstall the installation folder
   echo -ne "${COLOR_PRINT_YELLOW}Uninstalling xcash-dpops Installation Directory${END_COLOR_PRINT}"
-  sudo rm -r "${XCASH_DPOPS_INSTALLATION_DIR}"
+  sudo rm -rf "${XCASH_DPOPS_INSTALLATION_DIR}" 2&> /dev/null || true
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling xcash-dpops Installation Directory${END_COLOR_PRINT}"
   echo
+  if [ "$container" == "lxc" ]; then
+    echo -e "${COLOR_PRINT_YELLOW}This is a container installation, please remove the container and also the host data files (bind mounts) to complete the uninstall${END_COLOR_PRINT}"
+  fi
+
 
   # Update profile
   echo -ne "${COLOR_PRINT_YELLOW}Updating Profile${END_COLOR_PRINT}"
