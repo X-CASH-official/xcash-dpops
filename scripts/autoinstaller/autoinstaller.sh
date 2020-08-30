@@ -1829,7 +1829,7 @@ function install()
   fi
   
   # Create xcash wallet log hardlink
-  sudo rm -f "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && ln "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" "${XCASH_LOGS_DIR}xcash-wallet-rpc.log"
+  sudo rm -f "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && touch "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" "${XCASH_LOGS_DIR}xcash-wallet-rpc.log"
 
   # Start the systemd service files
   start_systemd_service_files
@@ -1977,7 +1977,7 @@ function update()
   fi
   
   # Create xcash wallet log hardlink
-  sudo rm -f "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && ln "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" "${XCASH_LOGS_DIR}xcash-wallet-rpc.log"  
+  sudo rm -f "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && touch "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" 
 
   # Start the systemd service files
   start_systemd_service_files
