@@ -10,7 +10,7 @@ COLOR_PRINT_YELLOW="\033[1;33m"
 END_COLOR_PRINT="\033[0m"
 
 # Configuration settings
-INSTALLATION_TYPE_SETTINGS=1 # 1 = Install, 2 = Update, 3 = Uninstall, 4 = Install / Update BlockChain, 5 = Change Solo Delegate or Shared Delegate, 6 = Edit Shared Delegate Settings, 7 = Restart Programs, 8 = Stop Programs, 9 = Test Update, 10 = Test Update Reset Delegates, 11 = Configure Installation, 12 = Firewall, 13 = Shared Delegates Firewall
+INSTALLATION_TYPE_SETTINGS=1 # 1 = Install, 2 = Update, 3 = Uninstall, 4 = Install / Update BlockChain, 5 = Change Solo Delegate or Shared Delegate, 6 = Edit Shared Delegate Settings, 7 = Restart Programs, 8 = Stop Programs, 9 = Test Update, 10 = Test Update Reset Delegates, 11 = Configure Installation, 12 = Register/Update Delegate, 13 = Firewall, 14 = Shared Delegates Firewall
 INSTALLATION_TYPE="Installation"
 XCASH_DPOPS_INSTALLATION_DIR="$HOME/xcash-official/"
 XCASH_BLOCKCHAIN_INSTALLATION_DIR="$HOME/.X-CASH/"
@@ -99,10 +99,10 @@ function sed_services()
 
 function get_installation_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Install / Update Blockchain\n5 = Change Solo Delegate or Shared Delegate\n6 = Edit Shared Delegate Settings\n7 = Restart Programs\n8 = Stop Programs\n9 = Test Update\n10 = Test Update Reset Delegates\n11 = Configure Installation\n12 = Firewall\n13 = Shared Delegates Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Install / Update Blockchain\n5 = Change Solo Delegate or Shared Delegate\n6 = Edit Shared Delegate Settings\n7 = Restart Programs\n8 = Stop Programs\n9 = Test Update\n10 = Test Update Reset Delegates\n11 = Configure Installation\n12 = Register/Update Delegate\n13 = Firewall\n14 = Shared Delegates Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] && echo "$data" || echo "1")
-  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Blockchain" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "solo or shared delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "EditSharedDelegateSettings" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "11" ] && echo "Configure Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "12" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "13" ] && echo "Shared_Delegates_Firewall" &>/dev/null)
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE=$([ "$INSTALLATION_TYPE_SETTINGS" == "1" ] && echo "Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "2" ] && echo "Update" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "3" ] && echo "Uninstall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "4" ] && echo "Blockchain" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "5" ] && echo "solo or shared delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "6" ] && echo "EditSharedDelegateSettings" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "7" ] && echo "Restart" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "8" ] && echo "Stop" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "9" ] && echo "Test" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "10" ] && echo "Test_Reset_Delegates" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "11" ] && echo "Configure Installation" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "12" ] && echo "Register Update Delegate" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "13" ] && echo "Firewall" &>/dev/null) || ([ "$INSTALLATION_TYPE_SETTINGS" == "14" ] && echo "Shared_Delegates_Firewall" &>/dev/null)
   echo -ne "\r"
   echo
   # Check if xcash-dpops is already installed, if the user choose to install
@@ -2253,6 +2253,102 @@ function edit_shared_delegate_settings()
   fi
 }
 
+
+function register_update_delegate()
+{
+  XCASH_DELEGATE_NAME=""
+  echo
+  echo -ne "${COLOR_PRINT_YELLOW}Do you want to register a new delegate? (leave empty for default: YES): ${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  if [ "$data" == "" ]; then
+    echo -ne "${COLOR_PRINT_YELLOW}Enter your delegate name: ${END_COLOR_PRINT}"
+    read -r XCASH_DELEGATE_NAME
+    echo -ne "\r"
+    echo
+    echo -ne "${COLOR_PRINT_YELLOW}Enter your domain name or IP address: ${END_COLOR_PRINT}"
+    read -r XCASH_DELEGATE_DOMAIN
+    echo -ne "\r"
+    echo
+    # Stop the rpc wallet service
+    sudo systemctl stop xcash-rpc-wallet
+    # Get required information
+    get_installation_directory
+    # get the block verifiers secret key from the systemd service file
+    BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/xcash-dpops.service)
+    BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block-verifiers-secret-key' '{print $2}')
+    BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
+    BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
+    # Run the wallet passing the registration information  
+    (echo "set ask-password 0"; echo ${WALLET_PASSWORD}; echo "delegate_register ${XCASH_DELEGATE_NAME} ${XCASH_DELEGATE_DOMAIN} ${BLOCK_VERIFIER_PUBLIC_KEY}"; echo "exit" ) | ./${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon
+    # Start the rpc wallet service
+    sudo systemctl start xcash-rpc-wallet
+  fi
+  echo
+  echo -ne "${COLOR_PRINT_YELLOW}Do you want to update the delegate information? (leave empty for default: YES): ${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  if [ "$data" == "" ]; then
+    if [ "$XCASH_DELEGATE_NAME" == "" ]; then
+      # Get required information
+      get_installation_directory
+      echo -ne "${COLOR_PRINT_YELLOW}Enter your delegate name: ${END_COLOR_PRINT}"
+      read -r XCASH_DELEGATE_NAME
+      echo -ne "\r"
+      echo
+    fi
+    echo -e "${COLOR_PRINT_GREEN}Please see https://docs.xcash.foundation/dpops/register-delegate${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}For best compatibility use only alphanumeric characters and . , ! ? - _${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Enter new domain name or IP (leave empty to skip): ${END_COLOR_PRINT}"
+    read -r UPDATE_NEW_DOMAIN_IP
+    echo -ne "\r"
+    echo
+    echo -ne "${COLOR_PRINT_YELLOW}Enter About description (leave empty to skip): ${END_COLOR_PRINT}"
+    read -r UPDATE_ABOUT_DESCRIPTION
+    echo -ne "\r"
+    echo
+    echo -ne "${COLOR_PRINT_YELLOW}Enter Website - Landing page (leave empty to skip): ${END_COLOR_PRINT}"
+    read -r UPDATE_WEBSITE
+    echo -ne "\r"
+    echo
+    echo -ne "${COLOR_PRINT_YELLOW}Enter Shared delegate status, true or false (leave empty to skip): ${END_COLOR_PRINT}"
+    read -r UPDATE_SHARED_DELEGATE_STATUS
+    echo -ne "\r"
+    echo
+    echo -ne "${COLOR_PRINT_YELLOW}Enter Shared delegate Fee (leave empty to skip): ${END_COLOR_PRINT}"
+    read -r UPDATE_SHARED_DELEGATE_FEE
+    echo -ne "\r"
+    echo
+    echo -ne "${COLOR_PRINT_YELLOW}Enter Shared Delegate Team Info (leave empty to skip): ${END_COLOR_PRINT}"
+    read -r UPDATE_TEAM
+    echo -ne "\r"
+    echo
+    echo -ne "${COLOR_PRINT_YELLOW}Enter Server Specifications (leave empty to skip): ${END_COLOR_PRINT}"
+    read -r UPDATE_SERVER_SPECS
+    echo -ne "\r"
+    echo
+    COMMAND_STRING=""
+    if [ ! "$UPDATE_NEW_DOMAIN_IP" == "" ]; then COMMAND_STRING="${COMMAND_STRING}delegate_update IP_address ${UPDATE_NEW_DOMAIN_IP}\n"; fi
+    if [ ! "$UPDATE_ABOUT_DESCRIPTION" == "" ]; then COMMAND_STRING="${COMMAND_STRING}delegate_update about ${UPDATE_ABOUT_DESCRIPTION}\n"; fi
+    if [ ! "$UPDATE_WEBSITE" == "" ]; then COMMAND_STRING="${COMMAND_STRING}delegate_update website ${UPDATE_WEBSITE}\n"; fi
+    if [ ! "$UPDATE_SHARED_DELEGATE_STATUS" == "" ]; then COMMAND_STRING="${COMMAND_STRING}delegate_update shared_delegate_status ${UPDATE_SHARED_DELEGATE_STATUS}\n"; fi
+    if [ ! "$UPDATE_SHARED_DELEGATE_FEE" == "" ]; then COMMAND_STRING="${COMMAND_STRING}delegate_update delegate_fee ${UPDATE_SHARED_DELEGATE_FEE}\n"; fi
+    if [ ! "$UPDATE_TEAM" == "" ]; then COMMAND_STRING="${COMMAND_STRING}delegate_update team ${UPDATE_TEAM}\n"; fi
+    if [ ! "$UPDATE_SERVER_SPECS" == "" ]; then COMMAND_STRING="${COMMAND_STRING}delegate_update server_specs ${UPDATE_SERVER_SPECS}\n"; fi
+    # Stop the rpc wallet service
+    sudo systemctl stop xcash-rpc-wallet
+    # Run the wallet passing the registration information  
+    (echo "set ask-password 0"; echo ${WALLET_PASSWORD}; echo -ne ${COMMAND_STRING}; echo "exit" ) | ./${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon
+    # Start the rpc wallet service
+    sudo systemctl start xcash-rpc-wallet
+  fi
+  echo -e "${COLOR_PRINT_GREEN}Operation completed!${END_COLOR_PRINT}"
+}
+
+
+
 function create_swap_file()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Swap File${END_COLOR_PRINT}"
@@ -2300,7 +2396,9 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then
   configure
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ]; then
-  install_firewall_script
+  register_update_delegate
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ]; then
+  install_firewall_script
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ]; then
   install_firewall_script_shared_delegates
 fi
