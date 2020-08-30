@@ -2205,7 +2205,7 @@ function install_or_update_blockchain()
 
 function install_blockchain()
 {
-  if [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ]; then
+  if [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ] || [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}lmdb/ ]; then
     echo -ne "${COLOR_PRINT_YELLOW}Installing The BlockChain (This Might Take a While)${END_COLOR_PRINT}"
     cd $HOME
     cd && test -f xcash-blockchain.7z && rm -rf xcash-blockchain.7z*
