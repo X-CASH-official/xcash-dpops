@@ -13,7 +13,7 @@ XCASH_DPOPS_SRV=xcash-dpops
 MONGODB_SRV=mongodb
 
 XCASH_DAEMON_LOG_FILE=~/xcash-official/logs/xcash-daemon-log.txt
-XCASH_WALLET_LOG_FILE=~/xcash-official/xcash-core/build/release/bin/xcash-wallet-rpc.log
+XCASH_WALLET_LOG_FILE=~/xcash-official/logs/xcash-wallet-rpc.log
 ### CUSTOM VARIABLES ###
 
 DAEMON_URL="http://127.0.0.1:18281/json_rpc"
