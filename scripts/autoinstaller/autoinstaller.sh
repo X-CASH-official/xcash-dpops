@@ -2282,7 +2282,7 @@ function register_update_delegate()
     BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
     BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
     # Run the wallet passing the registration information  
-    (echo "set ask-password 0"; echo ${WALLET_PASSWORD}; echo "delegate_register ${XCASH_DELEGATE_NAME} ${XCASH_DELEGATE_DOMAIN} ${BLOCK_VERIFIER_PUBLIC_KEY}"; echo "exit" ) | .${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
+    (echo "set ask-password 0"; echo ${WALLET_PASSWORD}; echo "delegate_register ${XCASH_DELEGATE_NAME} ${XCASH_DELEGATE_DOMAIN} ${BLOCK_VERIFIER_PUBLIC_KEY}"; echo "exit" ) | ${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
     # Start the rpc wallet service
     sudo systemctl start xcash-rpc-wallet
   fi
@@ -2341,7 +2341,7 @@ function register_update_delegate()
     # Stop the rpc wallet service
     sudo systemctl stop xcash-rpc-wallet
     # Run the wallet passing the registration information  
-    (echo "set ask-password 0"; echo ${WALLET_PASSWORD}; echo -ne ${COMMAND_STRING}; echo "exit" ) | .${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
+    (echo "set ask-password 0"; echo ${WALLET_PASSWORD}; echo -ne ${COMMAND_STRING}; echo "exit" ) | ${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
     # Start the rpc wallet service
     sudo systemctl start xcash-rpc-wallet
   fi
