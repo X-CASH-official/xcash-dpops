@@ -870,15 +870,13 @@ int calculate_main_nodes_roles(void)
     CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
   }
 
-  // get the database data hash for the entire current database
+  // add the current time to have different block producers selected if the round is replayed
   memset(data,0,sizeof(data));
-  if (get_database_data_hash(data,database_name,"ALL") == 0)
-  {
-    CALCULATE_MAIN_NODES_ROLES("Could not get the database data hash for calculating the main nodes role");
-  }
+  snprintf(data,MAXIMUM_NUMBER_SIZE,"%ld",time(NULL));
 
-  // combine the vrf_beta_string and the current data hash for the db. This will generate 2 different block producers for replayed rounds if db data changes
-  memcpy(data3+strlen(data3),data,strnlen(data,sizeof(data3)));
+  // remove the last two bytes to have a 100 second buffer
+  memcpy(data3+strlen(data3),data,strnlen(data,sizeof(data3))-2);
+
   memset(data,0,sizeof(data));
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)data3,(unsigned long long)strlen(data3));
   memset(data3,0,sizeof(data3));
