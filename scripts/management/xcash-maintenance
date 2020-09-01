@@ -138,7 +138,7 @@ function get_node_balance(){
 
 function shared_delegates_website_statistics(){
     if lsof -Pi :18283 -sTCP:LISTEN -t >/dev/null ; then
-        DATA=$("$DPOPS_QUERY"/shareddelegateswebsitegetstatistics | python3 -m json.tool)
+        DATA=$($DPOPS_QUERY/shareddelegateswebsitegetstatistics | python3 -m json.tool)
         RANK=$(echo "$DATA" | grep '"current_delegate_rank"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
         TOTAL_VOTES=$(($(echo "$DATA" | grep '"total_votes"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')/ATOMIC_DIVISOR))
         ONLINE_PCT=$(echo "$DATA" | grep '"online_percentage"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
