@@ -348,19 +348,26 @@ function configure_init_lxc()
     # Initialize LXD config and create storage pool, network adapter, etc
     sudo lxd init --preseed <<< "$LXD_INIT_CONFIG"
     # Configure default editor for LXD
-    echo 'export EDITOR=nano' >> ~/.profile
+    if ! cat ~/.profile | grep -q "export EDITOR=nano"; then
+      echo 'export EDITOR=nano' >> ~/.profile
+    fi
     source ~/.profile
     # Enable lxc command execution from current user
     sudo usermod --append --groups lxd $USERNAME
-    su $USERNAME
     # Enable write permission to bind mounts
-    printf "lxd:$(id -u):1\nroot:$(id -u):1\n" | sudo tee -a /etc/subuid
-    printf "lxd:$(id -g):1\nroot:$(id -g):1\n" | sudo tee -a /etc/subgid
+    SUBUID=$(printf "lxd:$(id -u):1\nroot:$(id -u):1\n")
+    SUBGID=$(printf "lxd:$(id -g):1\nroot:$(id -g):1\n")
+    if ! cat /etc/subuid | grep -q "${SUBUID}"; then
+      echo "${SUBUID}" | sudo tee -a /etc/subuid
+    fi
+    if ! cat /etc/subgid | grep -q "${SUBGID}"; then
+      echo "${SUBGID}" | sudo tee -a /etc/subgid
+    fi
     sudo systemctl restart lxcfs.service 
     sudo systemctl reload snap.lxd.daemon
     echo -ne "\r${COLOR_PRINT_GREEN}Installing and configuring LXC snap version${END_COLOR_PRINT}"
     echo
-    echo -e "${COLOR_PRINT_RED}Please logout/login again (you can do su username) or reboot the system!${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_RED}Please logout/login again or reboot the system!${END_COLOR_PRINT}"
 }
 
 
@@ -368,18 +375,28 @@ function install_update_lxc()
 {
   # Ask for password 
   get_password
+  # Install byobu (a must have)
+  sudo apt-get install byobu
   echo
-  echo -ne "${COLOR_PRINT_GREEN}Checking if LXC (snap version) is installed${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Checking if LXC (snap version) is installed${END_COLOR_PRINT}"
   lxc_which=$(which lxc)
   if [ "$lxc_which" == "/snap/bin/lxc" ]; then
     # Found snap version, force update it
     sudo snap refresh lxd
     echo
     echo -e "${COLOR_PRINT_GREEN}LXC snap version found and updated!${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Do you want to configure LXD? Do this only if it's the first time you run the script and LXD was already installed. The configuration will change the LXC bridge IP and create the default storage pool file (/var/snap/lxd/common/lxd/disks/default.img) if does not exists. If you are running also other LXD containers please change the LXC_BRIDGE_DEV_NAME and LXC_XCASH_CONTAINER_IP variables in the lxc_autoinstaller.sh script accordingly to your setup. Continue with the default LXD configuration? (enter Y for YES, leave empty for default: NO): ${END_COLOR_PRINT}"
+    read -r data
+    echo -ne "\r"
+    if [ "$data" == "Y" ] || [  "$data" == "y" ]; then
+      echo
+      echo -ne "${COLOR_PRINT_YELLOW}Installing and configuring LXC snap version${END_COLOR_PRINT}"
+      configure_init_lxc
+    fi
   elif [ "$lxc_which" == "" ]; then
     # Nothing installed
     echo
-    echo -ne "${COLOR_PRINT_GREEN}Installing and configuring LXC snap version${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_YELLOW}Installing and configuring LXC snap version${END_COLOR_PRINT}"
     sudo snap install lxd
     configure_init_lxc
   else
@@ -390,11 +407,14 @@ function install_update_lxc()
     sudo snap install lxd
     configure_init_lxc
   fi
+  echo -e "${COLOR_PRINT_GREEN}Use of 'byobu' (just installed) is STRONGLY SUGGESTED when connecting trough SSH to maintain the session active also in case of disconnection. Just type 'byobu' to create/reattach the session. If you want to automatically reconnect to the session after ssh login type 'byobu-enable'. You can manage multiple terminal tabs, quick guide: F2 for new tab, F3 and F4 move between tabs, CTRL+D close a tab (when nothin in execution), SHIFT+F12 enable/disable F keys, SHIFT+F6 detach the session (it remains in background).${END_COLOR_PRINT}"
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}       LXC Install/Update Has Completed Successfully  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
+  # Enable instant use of lxc command from the local user
+  sudo su $USERNAME
 }
 
 
