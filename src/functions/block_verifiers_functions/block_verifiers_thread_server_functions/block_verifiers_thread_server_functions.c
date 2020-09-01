@@ -22,6 +22,7 @@
 #include "initialize_and_reset_structs_define_macros.h"
 #include "define_macros_test.h"
 
+#include "blockchain_functions.h"
 #include "block_verifiers_functions.h"
 #include "block_verifiers_synchronize_functions.h"
 #include "block_verifiers_thread_server_functions.h"
@@ -54,6 +55,68 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_if_replayed_round
+Description: Checks if the round is replayed
+Return: 0 if an error has occured or the round is not a replayed round, 1 if the round is a replayed round
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_if_replayed_round(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  size_t count;
+  size_t count2;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  // check if its the first block as it cant be a replayed round
+  sscanf(current_block_height,"%zu", &count);
+  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  {
+    return 0;
+  }
+
+  // get the reserve bytes data from the previous block
+  count--;
+  count2 = count;
+
+  // calculate the database to get the reserve byte data
+  get_reserve_bytes_database(count,0);
+  memcpy(data2,"reserve_bytes_",14);
+  snprintf(data2+14,sizeof(data2)-15,"%zu",count);
+
+  memcpy(data,"{\"block_height\":\"",17);
+  snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",count2);
+  memcpy(data+strlen(data),"\"}",2);
+
+  // get the block verifiers score
+  if (read_document_field_from_collection(database_name,data2,data,"reserve_bytes",data3) == 0)
+  {
+    return 0;
+  }
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+  // get the timestamp from the previous blocks reserve bytes
+  memcpy(data,&data3[(sizeof(NETWORK_VERSION)-1)],TIMESTAMP_LENGTH);
+
+  // convert the timestamp from varint to the timestamp
+  count = varint_decode((size_t)strtol(data, NULL, 16));
+
+  // check if the previous blocks timestamp is longer than 5 minutes
+  return ((time(NULL) - (long int)count) > (BLOCK_TIME * 60)) ? 1 : 0;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: current_block_height_timer_thread
 Description: Gets the current block height and determines if a new round has started
 Return: NULL
@@ -64,7 +127,6 @@ void* current_block_height_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
-  char previous_block_height[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
@@ -136,11 +198,7 @@ void* current_block_height_timer_thread(void* parameters)
       get_previous_block_hash(previous_block_hash);
 
       // check if this round is a replayed round
-      replayed_round_settings = strncmp(previous_block_height,current_block_height,BUFFER_SIZE) == 0 ? 1 : 0;
-
-      // copy the current block height
-      memset(previous_block_height,0,sizeof(previous_block_height));
-      memcpy(previous_block_height,current_block_height,strnlen(current_block_height,sizeof(previous_block_height)));
+      replayed_round_settings = check_if_replayed_round();
 
       if ((block_verifier_settings = start_new_round()) == 0)
       {
