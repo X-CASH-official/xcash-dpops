@@ -157,6 +157,9 @@ void* current_block_height_timer_thread(void* parameters)
       {
         if (registration_settings == 0)
         {
+          // wait for the reserve proof checking before displaying the message
+          sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),45);
+
           memset(data,0,strlen(data));
           memcpy(data,"Network Block ",14);
           memcpy(data+14,current_block_height,strnlen(current_block_height,sizeof(data)));
@@ -803,7 +806,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       {
         fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
       }
-      else if (network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-1)
+      else if (network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-2)
       {
         fprintf(stderr,"\033[1;32m%d / %d network data nodes have the same invalid reserve proofs\033[0m\n\n",network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
       }
