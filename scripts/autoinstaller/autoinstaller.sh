@@ -516,6 +516,7 @@ EOF
 SYSTEMD_SERVICE_FILE_FIREWALL="$(cat << EOF
 [Unit]
 Description=firewall
+Before=snap.lxd.daemon.service docker.service
  
 [Service]
 Type=oneshot
