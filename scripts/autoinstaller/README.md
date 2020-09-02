@@ -6,6 +6,12 @@ Run the LXC Autoinstaller
 rm -f lxc_autoinstaller.sh 2&> /dev/null && wget https://raw.githubusercontent.com/n3me5is-git/xcash-dpops/master/scripts/autoinstaller/lxc_autoinstaller.sh && chmod +x lxc_autoinstaller.sh && ./lxc_autoinstaller.sh
 ```
 
+## Short version
+
+Simply run option (1) the first time (to install LXD on your system), then run option (2) to download th x-cash image (using the handle provided below), then run the option (3) to configure your node (creating/importing wallet/keys, setting shared delegate parameters and optionally register your delegate, with all the extra info). Use the other options of the installer to check logs, do maintenance, etc...
+
+## Longer version
+
 First you have to install and configure LXD (if it's the first time you do it). So select the option (1) of the autoinstaller and wait the end of the process
 
 Run the LXC autoinstaller again with `./lxc_autoinstaller.sh` to create the X-Cash container. The best option is to use a pre-built and updated X-Cash image. The autoinstaller supports download with a static URL (using wget) or a fast download from Opacity (encrypted anonymous cloud powered by cryptocurrencies). In the last case (default) the autoinstaller will download a python CLI tool for interacting with Opacity Storage, automatically removed after the download procedure. You have to copy/paste the provided file handle to download the X-Cash image.
@@ -40,8 +46,8 @@ If you want to update your node you have 2 options:
 - Use the option (10) and then select the option (2) in the internal installer to update the X-Cash stuff (traditional way). After the update you can also backup the container generating the image with option (15). The image will contain only OS, dependencies and binaries. All the personal data and DBs are on the Host bind-mounted folders. You have to backup them manually if needed (but keeping your seed, wallet password and validator private key in a safe place is sufficient to recover your node in case of a "issue").
 - Use the option (2) of the LXC installer, that will automatically download the X-Cash Image and recreate the container. So the only thing to do is, in case, to provide the updated file handle 
 
-> If you want to create the container from scratch, so start from an empty Ubuntu 18.04 container (preconfigured for installing/running X-Cash node) you can select the option (14). In this case the X-Cash `autoinstaller.sh` (version modified by n3me5is to support the installation/configuration inside the LXC container) is used to install the X-Cash node in the traditional way. After the installation you can create an image from the container with option (15), export it with option (16) and redistribute the file (pre-built image)
+## Creating the X-Cash container from scratch
 
+If you want to create the container from scratch, so start from an empty Ubuntu 18.04 container (preconfigured for installing/running X-Cash node) you can select the option (14). In this case the X-Cash `autoinstaller.sh` (version modified by n3me5is to support the installation/configuration inside the LXC container) is used to install the X-Cash node in the traditional way. After the installation you can create an image from the container with option (15), export it with option (16) and redistribute the file (pre-built image)
 
-
-
+> See the script for detailed operations if you want to install all manually
