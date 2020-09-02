@@ -6,6 +6,8 @@ Run the LXC Autoinstaller
 rm -f lxc_autoinstaller.sh 2&> /dev/null && wget https://raw.githubusercontent.com/n3me5is-git/xcash-dpops/master/scripts/autoinstaller/lxc_autoinstaller.sh && chmod +x lxc_autoinstaller.sh && ./lxc_autoinstaller.sh
 ```
 
+<blockquote class="imgur-embed-pub" lang="en" data-id="a/SypnuS5"  ><a href="//imgur.com/a/SypnuS5"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+
 ## Short version
 
 Simply run option (1) the first time (to install LXD on your system), then run option (2) to download th x-cash image (using the handle provided below), then run the option (3) to configure your node (creating/importing wallet/keys, setting shared delegate parameters and optionally register your delegate, with all the extra info). Use the other options of the installer to check logs, do maintenance, etc...
