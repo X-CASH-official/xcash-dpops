@@ -94,7 +94,7 @@ iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --upda
 iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
  
 # Redirect HTTP to port 18283
-# iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283
+# iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-ports 18283
  
 # DROP all INPUT and FORWARD packets if they have reached this point
 iptables -A INPUT -j DROP
