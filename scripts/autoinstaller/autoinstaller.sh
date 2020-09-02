@@ -2150,6 +2150,7 @@ function install_firewall_script()
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
+  sudo systemctl daemon-reload
   echo "$FIREWALL" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
   sudo ${HOME}/firewall_script.sh
@@ -2164,6 +2165,7 @@ function install_firewall_script_shared_delegates()
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
+  sudo systemctl daemon-reload
   echo "$FIREWALL_SHARED_DELEGATES" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
   sudo ${HOME}/firewall_script.sh
@@ -2178,6 +2180,7 @@ function install_firewall_script_test()
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
+  sudo systemctl daemon-reload
   echo "$FIREWALL_TEST" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
   sudo ${HOME}/firewall_script.sh
