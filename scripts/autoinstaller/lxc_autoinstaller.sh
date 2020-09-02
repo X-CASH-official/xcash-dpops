@@ -919,7 +919,12 @@ function xcash_container_create_scratch()
     cloud_init_outcome=$(lxc exec ${XCASH_LXC_CONTAINER_NAME} -- cloud-init status)
     if [ "$cloud_init_outcome" == "Error: not found" ]; then
       echo
-      echo -e "${COLOR_PRINT_RED}An error during container initialization has occurred. Try again! Exiting.${END_COLOR_PRINT}"
+      echo -e "${COLOR_PRINT_RED}An error during container initialization has occurred. Try to generate the container again! Exiting.${END_COLOR_PRINT}"
+      exit
+    fi
+    if [ "$cloud_init_outcome" == "status: error" ]; then
+      echo
+      echo -e "${COLOR_PRINT_RED}An error during container initialization has occurred. Check your internet connection/firewall and try to generate the container again! Exiting.${END_COLOR_PRINT}"
       exit
     fi
     [[ ! "${cloud_init_outcome}" == "status: done" ]]
