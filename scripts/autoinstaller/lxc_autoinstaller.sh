@@ -346,8 +346,8 @@ function check_ubuntu_version()
 function configure_init_lxc()
 {
     # Check if default pool exists in the system but not in lxc storage list 
-    if ! sudo zpool list | grep -q "default "; then
-      # Default pool not present on system
+    if sudo zpool list | grep -q "default "; then
+      # Default pool present on system
       if ! sudo lxc storage list | grep -q "default "; then
         # Default pool not in LXD storage
         echo
@@ -358,6 +358,14 @@ function configure_init_lxc()
         echo
         sudo zpool destroy default
         sleep 1
+      fi
+    else
+      if ! sudo lxc storage list | grep -q "default "; then
+        # Default pool not in LXD storage
+        echo
+        echo -e "${COLOR_PRINT_RED}ERROR: there is a default ZFS pool in the LXD database, but there is no default pool in your system (verified with zpool tool). Something is wrong with your installation. You need to reboot your system and then purge LXD with 'sudo snap remove --purge lxd' and then retry the installation.${END_COLOR_PRINT}"
+        echo
+        exit
       fi
     fi
     # Initialize LXD config and create storage pool, network adapter, etc
@@ -393,7 +401,7 @@ function install_update_lxc()
   # Install zfsutils (useful to check storage pool with 'sudo zpool list' and 'sudo zfs list')
   sudo apt install -y zfsutils-linux
   # Install byobu (a must have)
-  sudo aptinstall -y byobu
+  sudo apt install -y byobu
   sleep 1
   echo
   echo -e "${COLOR_PRINT_GREEN}Checking if LXC (snap version) is installed${END_COLOR_PRINT}"
@@ -409,18 +417,21 @@ function install_update_lxc()
     if [ "$data" == "Y" ] || [  "$data" == "y" ]; then
       echo
       echo -ne "${COLOR_PRINT_GREEN}Installing and configuring LXC snap version${END_COLOR_PRINT}"
+      echo
       configure_init_lxc
     fi
   elif [ "$lxc_which" == "" ]; then
     # Nothing installed
     echo
     echo -ne "${COLOR_PRINT_GREEN}Installing and configuring LXC snap version${END_COLOR_PRINT}"
+    echo
     sudo snap install lxd
     configure_init_lxc
   else
     # Installed with ubuntu package, so remove and install with SNAP
     echo
     echo -ne "${COLOR_PRINT_GREEN}Installing and configuring LXC snap version${END_COLOR_PRINT}"
+    echo
     sudo apt remove -y --purge lxd lxd-client
     sudo apt autoremove -y
     sudo snap install lxd
