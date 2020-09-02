@@ -1,11 +1,12 @@
 [Unit]
 Description=firewall
+Before=snap.lxd.daemon.service docker.service
  
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 User=root
-ExecStart=/root/xcash-official/firewall_script.sh
+ExecStart=/root/firewall_script.sh
  
 [Install]
 WantedBy=multi-user.target
