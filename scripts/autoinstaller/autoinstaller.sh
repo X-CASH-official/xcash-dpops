@@ -1509,7 +1509,7 @@ function get_dependencies_current_version()
 
 function update_packages()
 {
-    i=0systemctl enable mongodb.service xcash-daemon.service xcash-rpc-wallet.timer xcash-dpops.timer 2> /dev/null
+    i=0
     while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
         case $((i % 4)) in
             0 ) j="-" ;;
