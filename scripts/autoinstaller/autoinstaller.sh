@@ -2152,6 +2152,8 @@ function test_update_reset_delegates()
 function install_firewall_script()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
+  # Reinstall iptables (solves some issues with some VPS)
+  sudo apt-get install --reinstall iptables
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo systemctl daemon-reload
@@ -2167,6 +2169,8 @@ function install_firewall_script()
 function install_firewall_script_shared_delegates()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
+  # Reinstall iptables (solves some issues with some VPS)
+  sudo apt-get install --reinstall iptables
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo systemctl daemon-reload
@@ -2182,6 +2186,8 @@ function install_firewall_script_shared_delegates()
 function install_firewall_script_test()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
+  # Reinstall iptables (solves some issues with some VPS)
+  sudo apt-get install --reinstall iptables
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo systemctl daemon-reload
