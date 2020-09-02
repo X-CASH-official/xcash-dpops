@@ -72,6 +72,7 @@ SYSTEMD_TIMER_FILE_XCASH_WALLET=""
 
 # System settings
 CPU_THREADS=$(nproc)
+DEFAULT_NETWORK_DEVICE=$(ip route | grep default | sed -e "s/^.*dev.//" -e "s/.proto.*//")
 RAM=$(awk '/MemTotal/ { printf "%d \n", $2/1024/1024 }' /proc/meminfo)
 RAM_CPU_RATIO=$((RAM / CPU_THREADS))
 RAM_CPU_RATIO_ALL_CPU_THREADS=4
@@ -408,7 +409,7 @@ iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --upda
 iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
  
 # Redirect HTTP to port 18283
-iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 18283
+iptables -A PREROUTING -t nat -i ${DEFAULT_NETWORK_DEVICE} -p tcp --dport 80 -j REDIRECT --to-ports 18283
  
 # DROP all INPUT and FORWARD packets if they have reached this point
 iptables -A INPUT -j DROP
