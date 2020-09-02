@@ -44,6 +44,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
  
 # block ip spoofing. these are the ranges of local IP address.
 iptables -A INPUT -s 45.76.169.83 -j DROP
+iptables -A INPUT -s 10.12.242.0/32 -j ACCEPT
 iptables -A INPUT -s 10.0.0.0/8 -j DROP
 iptables -A INPUT -s 169.254.0.0/16 -j DROP
 iptables -A INPUT -s 172.16.0.0/12 -j DROP
