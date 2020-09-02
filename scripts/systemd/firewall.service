@@ -1,6 +1,7 @@
 [Unit]
 Description=firewall
-Before=snap.lxd.daemon.service docker.service
+Before=network-pre.target
+Wants=network-pre.target
  
 [Service]
 Type=oneshot
@@ -9,4 +10,4 @@ User=root
 ExecStart=/root/firewall_script.sh
  
 [Install]
-WantedBy=multi-user.target
+WantedBy=network.target
