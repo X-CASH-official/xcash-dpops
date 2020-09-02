@@ -257,6 +257,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
  
 # block ip spoofing. these are the ranges of local IP address.
 iptables -A INPUT -s 45.76.169.83 -j DROP
+iptables -A INPUT -s 10.12.242.0/32 -j ACCEPT
 iptables -A INPUT -s 10.0.0.0/8 -j DROP
 iptables -A INPUT -s 169.254.0.0/16 -j DROP
 iptables -A INPUT -s 172.16.0.0/12 -j DROP
@@ -357,6 +358,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
  
 # block ip spoofing. these are the ranges of local IP address.
 iptables -A INPUT -s 45.76.169.83 -j DROP
+iptables -A INPUT -s 10.12.242.0/32 -j ACCEPT
 iptables -A INPUT -s 10.0.0.0/8 -j DROP
 iptables -A INPUT -s 169.254.0.0/16 -j DROP
 iptables -A INPUT -s 172.16.0.0/12 -j DROP
@@ -460,6 +462,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
  
 # block ip spoofing. these are the ranges of local IP address.
 iptables -A INPUT -s 45.76.169.83 -j DROP
+iptables -A INPUT -s 10.12.242.0/32 -j ACCEPT
 iptables -A INPUT -s 10.0.0.0/8 -j DROP
 iptables -A INPUT -s 169.254.0.0/16 -j DROP
 iptables -A INPUT -s 172.16.0.0/12 -j DROP
@@ -516,7 +519,8 @@ EOF
 SYSTEMD_SERVICE_FILE_FIREWALL="$(cat << EOF
 [Unit]
 Description=firewall
-Before=snap.lxd.daemon.service docker.service
+Before=network-pre.target
+Wants=network-pre.target
  
 [Service]
 Type=oneshot
@@ -525,7 +529,7 @@ User=root
 ExecStart=${HOME}/firewall_script.sh
  
 [Install]
-WantedBy=multi-user.target
+WantedBy=network.target
 EOF
 )"
 SYSTEMD_SERVICE_FILE_MONGODB="$(cat << EOF
