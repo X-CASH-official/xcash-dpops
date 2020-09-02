@@ -10,11 +10,11 @@ USERNAME=$(whoami)
 XCASH_LXC_AUTOINSTALLER_MENU_OPTION=1
 XCASH_HOST_DATA_BASE_DIR=${HOME}/xcash-shared-node/
 XCASH_AUTOINSTALLER_NAME="autoinstaller.sh"
-XCASH_AUTOINSTALLER_INSTALL_OPTION_NUMBER="1"
-XCASH_AUTOINSTALLER_CONFIGURATOR_OPTION_NUMBER="11"
-XCASH_AUTOINSTALLER_REGISTER_DELEGATE_OPTION_NUMBER="12"
-XCASH_AUTOINSTALLER_FIREWALL_OPTION_NUMBER="13"
-XCASH_AUTOINSTALLER_FIREWALL_SHARED_OPTION_NUMBER="14"
+XCASH_AUTOINSTALLER_INSTALL_OPTION_NUMBER=1
+XCASH_AUTOINSTALLER_CONFIGURATOR_OPTION_NUMBER=11
+XCASH_AUTOINSTALLER_REGISTER_DELEGATE_OPTION_NUMBER=12
+XCASH_AUTOINSTALLER_FIREWALL_OPTION_NUMBER=13
+XCASH_AUTOINSTALLER_FIREWALL_SHARED_OPTION_NUMBER=14
 XCASH_MAINTENANCE_SCRIPT_NAME="xcash-maintenance"
 XCASH_DPOPS_SRV="xcash-dpops"
 XCASH_AUTOINSTALLER_SCRIPT_SCRATCH_URL="https://raw.githubusercontent.com/n3me5is-git/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh"
@@ -828,13 +828,19 @@ function install_firewall_host()
   elif [ ${firewall_choice^^} == "1" ]; then
     # Install Solo Firewall with autoinstaller
     wget ${XCASH_AUTOINSTALLER_HOST_FIREWALL_URL} && chmod +x ${XCASH_AUTOINSTALLER_NAME}
-    (echo '${XCASH_AUTOINSTALLER_FIREWALL_OPTION_NUMBER}'; cat) | ./${XCASH_AUTOINSTALLER_NAME}
+    sleep 0.1
+    (echo "${XCASH_AUTOINSTALLER_FIREWALL_OPTION_NUMBER}"; cat) | ./${XCASH_AUTOINSTALLER_NAME}
     rm ${XCASH_AUTOINSTALLER_NAME}
+    sudo systemctl reload snap.lxd.daemon
+    echo
   elif [ ${firewall_choice^^} == "2" ]; then
     # Install Delegate Firewall with autoinstaller
     wget ${XCASH_AUTOINSTALLER_HOST_FIREWALL_URL} && chmod +x ${XCASH_AUTOINSTALLER_NAME}
-    (echo '${XCASH_AUTOINSTALLER_FIREWALL_SHARED_OPTION_NUMBER}'; cat) | ./${XCASH_AUTOINSTALLER_NAME}
+    sleep 0.1
+    (echo "${XCASH_AUTOINSTALLER_FIREWALL_SHARED_OPTION_NUMBER}"; cat) | ./${XCASH_AUTOINSTALLER_NAME}
     rm ${XCASH_AUTOINSTALLER_NAME}
+    sudo systemctl reload snap.lxd.daemon
+    echo
   fi
 }
 
@@ -959,6 +965,7 @@ function create_image_from_container()
   lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "rm -rf /var/lib/apt/lists/* /tmp/* 2&> /dev/null || true"
   lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "rm -f /var/log/syslog* 2&> /dev/null || true"
   lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "truncate --size 0 /var/log/syslog"
+  lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "rm -f .bash_history"
   lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "history -c"
   # Create temporary snapshot
   lxc snapshot ${XCASH_LXC_CONTAINER_NAME} image_creation_snapshot
