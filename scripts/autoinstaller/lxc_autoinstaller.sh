@@ -26,7 +26,7 @@ DOWNLOAD_USE_OPACITY_DOWNLOADER="YES"
 DOWNLOAD_TOOL_URL_OPACITY_CLI="https://github.com/n3me5is-git/opacity-cly-py.git"
 DIRECT_DOWNLOAD_URL=""
 
-XCASH_LXC_IMAGE_NAME="xcash-shared-node-beta"
+XCASH_LXC_IMAGE_NAME="xcash-shared-node-image"
 XCASH_LXC_CONTAINER_NAME="xcash-shared-node"
 XCASH_LXC_PROFILE_RUN_NAME="xcash-node"
 XCASH_LXC_PROFILE_SCRATCH_INIT_NAME="xcash-node-scratch-init"
@@ -345,6 +345,21 @@ function check_ubuntu_version()
 
 function configure_init_lxc()
 {
+    # Check if default pool exists in the system but not in lxc storage list 
+    if ! sudo zpool list | grep -q "default "; then
+      # Default pool not present on system
+      if ! sudo lxc storage list | grep -q "default "; then
+        # Default pool not in LXD storage
+        echo
+        echo -e "${COLOR_PRINT_RED}WARNING: A default ZFS pool is already present in the system, but it's not present in the LXD database (probably you uninstalled LXD in the past without purging the pool). If you continue with the configuration the old default storage pool will be removed (with all the old images/containers inside it, if any). If you are looking for a 'disaster recovery' procedure please search on google.${END_COLOR_PRINT}"
+        echo -ne "${COLOR_PRINT_YELLOW}Press ENTER to continue or press Ctrl + C to cancel! ${END_COLOR_PRINT}"
+        read -r data
+        echo -ne "\r"
+        echo
+        sudo zpool destroy default
+        sleep 1
+      fi
+    fi
     # Initialize LXD config and create storage pool, network adapter, etc
     sudo lxd init --preseed <<< "$LXD_INIT_CONFIG"
     # Configure default editor for LXD
@@ -363,9 +378,8 @@ function configure_init_lxc()
     if ! cat /etc/subgid | grep -q "${SUBGID}"; then
       echo "${SUBGID}" | sudo tee -a /etc/subgid
     fi
-    sudo systemctl restart lxcfs.service 
     sudo systemctl reload snap.lxd.daemon
-    echo -ne "\r${COLOR_PRINT_GREEN}Installing and configuring LXC snap version${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}Configuration of LXC completed${END_COLOR_PRINT}"
     echo
     echo -e "${COLOR_PRINT_RED}Please logout/login again or reboot the system!${END_COLOR_PRINT}"
 }
@@ -375,8 +389,12 @@ function install_update_lxc()
 {
   # Ask for password 
   get_password
+  sleep 1
+  # Install zfsutils (useful to check storage pool with 'sudo zpool list' and 'sudo zfs list')
+  sudo apt install -y zfsutils-linux
   # Install byobu (a must have)
-  sudo apt-get install byobu
+  sudo aptinstall -y byobu
+  sleep 1
   echo
   echo -e "${COLOR_PRINT_GREEN}Checking if LXC (snap version) is installed${END_COLOR_PRINT}"
   lxc_which=$(which lxc)
@@ -390,13 +408,13 @@ function install_update_lxc()
     echo -ne "\r"
     if [ "$data" == "Y" ] || [  "$data" == "y" ]; then
       echo
-      echo -ne "${COLOR_PRINT_YELLOW}Installing and configuring LXC snap version${END_COLOR_PRINT}"
+      echo -ne "${COLOR_PRINT_GREEN}Installing and configuring LXC snap version${END_COLOR_PRINT}"
       configure_init_lxc
     fi
   elif [ "$lxc_which" == "" ]; then
     # Nothing installed
     echo
-    echo -ne "${COLOR_PRINT_YELLOW}Installing and configuring LXC snap version${END_COLOR_PRINT}"
+    echo -ne "${COLOR_PRINT_GREEN}Installing and configuring LXC snap version${END_COLOR_PRINT}"
     sudo snap install lxd
     configure_init_lxc
   else
@@ -404,9 +422,11 @@ function install_update_lxc()
     echo
     echo -ne "${COLOR_PRINT_GREEN}Installing and configuring LXC snap version${END_COLOR_PRINT}"
     sudo apt remove -y --purge lxd lxd-client
+    sudo apt autoremove -y
     sudo snap install lxd
     configure_init_lxc
   fi
+  echo
   echo -e "${COLOR_PRINT_GREEN}Use of 'byobu' (just installed) is STRONGLY SUGGESTED when connecting trough SSH to maintain the session active also in case of disconnection. Just type 'byobu' to create/reattach the session. If you want to automatically reconnect to the session after ssh login type 'byobu-enable'. You can manage multiple terminal tabs, quick guide: F2 for new tab, F3 and F4 move between tabs, CTRL+D close a tab (when nothin in execution), SHIFT+F12 enable/disable F keys, SHIFT+F6 detach the session (it remains in background).${END_COLOR_PRINT}"
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
@@ -428,32 +448,35 @@ function download_update_xcash_image()
   echo -ne "\r"
   echo
   cwd=$(pwd)
-  if [ ! "$DOWNLOAD_USE_OPACITY_DOWNLOADER" == "YES" ]; then
+  if [ "$DOWNLOAD_USE_OPACITY_DOWNLOADER" == "YES" ]; then
     # Install Opacity CLI tool, remove if already existent (with already downloaded file inside)
     if [ -d opacity-cly-py ]; then
       rm -rf opacity-cly-py 2&> /dev/null || true
     fi
     git clone ${DOWNLOAD_TOOL_URL_OPACITY_CLI} && cd opacity-cly-py && chmod +x *.sh && ./install.sh
+    echo
     # Ask for Update Handle
     echo -ne "${COLOR_PRINT_YELLOW}Enter the X-Cash Image Download Handle (Opacity): ${END_COLOR_PRINT}"
     read -r data
     echo -ne "\r"
     echo
     # Download file
+    download_string="download ${data} \".\""
     echo -e "${COLOR_PRINT_GREEN}Starting download with Opacity tool${END_COLOR_PRINT}"
-    (echo 'download ${data} "."'; echo 'exit') | ./opacity-cli.sh    
+    (echo; echo ${download_string}; echo "exit") | ./opacity-cli.sh    
   else
     rm -f *.tar.gz 2&> /dev/null || true
     echo -e "${COLOR_PRINT_GREEN}Starting download with wget${END_COLOR_PRINT}"
     wget ${DIRECT_DOWNLOAD_URL}
   fi
-  source_file=$(ls "${XCASH_LXC_IMAGE_NAME}_" 2> /dev/null)
+  source_file=$(ls "${XCASH_LXC_IMAGE_NAME}_"* 2> /dev/null)
+  echo ${source_file}
   if [ "$source_file" == "" ]; then
     # File not exists, so an error occurred
     echo -e "${COLOR_PRINT_RED}File does not exists! Something went wrong during download! Try again! Cleaning and exiting.${END_COLOR_PRINT}"
     # Clean
     rm -f *.tar.gz 2&> /dev/null || true
-    cd cwd
+    cd ${cwd}
     rm -f *.tar.gz 2&> /dev/null || true
     rm -rf opacity-cly-py 2&> /dev/null || true
     exit
@@ -472,7 +495,7 @@ function download_update_xcash_image()
   # Clean downloaded file and tool
   echo -e "${COLOR_PRINT_GREEN}Removing temp files and download tool${END_COLOR_PRINT}"
   rm -f *.tar.gz 2&> /dev/null || true
-  cd cwd
+  cd ${cwd}
   rm -f *.tar.gz 2&> /dev/null || true
   rm -rf opacity-cly-py 2&> /dev/null || true
   # Re-Create the container
@@ -740,22 +763,27 @@ function purge_xcash()
     fi
   fi
   echo
-  echo -ne "${COLOR_PRINT_YELLOW}Do you want to uninstall LXC? (enter Y for YES, leave empty for default: NO): ${END_COLOR_PRINT}"
+  echo
+  echo -ne "${COLOR_PRINT_YELLOW}Do you want to uninstall and purge LXD? (enter Y for YES, leave empty for default: NO): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   if [ "$data" == "Y" ] || [  "$data" == "y" ]; then
-    echo
-    echo -e "${COLOR_PRINT_RED}LXD (snap version) will be removed. Configuration files and LXD default volume (/var/snap/lxd/common/lxd/disks/default.img) will not be removed (you can remove it manually if needed)${END_COLOR_PRINT}"
-    echo -ne "${COLOR_PRINT_YELLOW}Press ENTER to continue or press Ctrl + C to cancel! ${END_COLOR_PRINT}"
-    read -r data
-    echo -ne "\r"
-    echo
     if lxc image list | grep -q "${XCASH_LXC_IMAGE_NAME} " || lxc list | grep -q "${XCASH_LXC_CONTAINER_NAME} "; then
       # Container and/or image exist
+      echo
       echo -e "${COLOR_PRINT_RED}Error: you can not uninstall LXD if you still have the X-Cash Container and/or the X-Cash Image in your system. Please purge Image and Container first. Skipping...${END_COLOR_PRINT}"
     else
-      sudo snap remove lxd
-      echo -e "${COLOR_PRINT_GREEN}LXD snap package uninstalled successfully!${END_COLOR_PRINT}" 
+      echo
+      echo -e "${COLOR_PRINT_RED}LXD (snap version) will be removed (purged). The LXD default volume (/var/snap/lxd/common/lxd/disks/default.img) WILL BE REMOVED TOO, with all the images/containers/configurations inside (not only X-Cash stuff). If you don't want to do this, please uninstall LXD manually with all its consequences...${END_COLOR_PRINT}"
+      echo -ne "${COLOR_PRINT_YELLOW}Press ENTER to continue or press Ctrl + C to cancel! ${END_COLOR_PRINT}"
+      read -r data
+      echo -ne "\r"
+      echo
+      sudo snap remove --purge lxd
+      # Make sure zpool tool is installed
+      sudo apt install -y zfsutils-linux
+      sudo zpool destroy default
+      echo -e "${COLOR_PRINT_GREEN}LXD snap package uninstalled successfully! Default storage pool destroyed!${END_COLOR_PRINT}" 
     fi
   fi
   echo
