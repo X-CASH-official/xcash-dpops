@@ -2364,12 +2364,12 @@ function create_swap_file()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Swap File${END_COLOR_PRINT}"
   cd $HOME
-  sudo fallocate -l 8G /swapfile
-  sudo chmod 600 /swapfile
-  sudo mkswap /swapfile &>/dev/null
-  sudo swapon /swapfile
-  echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab &>/dev/null
-  sudo sysctl -w vm.swappiness=1 &>/dev/null
+  sudo fallocate -l 8G /swapfile || true
+  sudo chmod 600 /swapfile || true
+  sudo mkswap /swapfile &>/dev/null || true
+  sudo swapon /swapfile || true
+  echo "/swapfile swap swap defaults 0 0" | sudo tee -a /etc/fstab &>/dev/null || true
+  sudo sysctl -w vm.swappiness=1 &>/dev/null || true
   echo -ne "\r${COLOR_PRINT_GREEN}Creating Swap File${END_COLOR_PRINT}"
   echo
 }
