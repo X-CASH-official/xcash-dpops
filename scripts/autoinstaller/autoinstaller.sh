@@ -1151,7 +1151,6 @@ function create_files()
 function create_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Systemd Service Files${END_COLOR_PRINT}"
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/xcash-daemon.service"
   sudo bash -c "echo '${SYSTEMD_TIMER_FILE_XCASH_DPOPS}' > /lib/systemd/system/xcash-dpops.timer"
@@ -2149,6 +2148,7 @@ function install_firewall_script()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   update_systemd_service_files
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   echo "$FIREWALL" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
   sudo ${HOME}/firewall_script.sh
@@ -2162,6 +2162,7 @@ function install_firewall_script_shared_delegates()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   update_systemd_service_files
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   echo "$FIREWALL_SHARED_DELEGATES" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
   sudo ${HOME}/firewall_script.sh
@@ -2175,6 +2176,7 @@ function install_firewall_script_test()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   update_systemd_service_files
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   echo "$FIREWALL_TEST" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
   sudo ${HOME}/firewall_script.sh
