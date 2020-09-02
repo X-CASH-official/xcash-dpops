@@ -6,7 +6,7 @@ Run the LXC Autoinstaller
 rm -f lxc_autoinstaller.sh 2&> /dev/null && wget https://raw.githubusercontent.com/n3me5is-git/xcash-dpops/master/scripts/autoinstaller/lxc_autoinstaller.sh && chmod +x lxc_autoinstaller.sh && ./lxc_autoinstaller.sh
 ```
 
-<blockquote class="imgur-embed-pub" lang="en" data-id="a/SypnuS5"  ><a href="//imgur.com/a/SypnuS5"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+![{E1A63E86-014B-4C7C-A5BC-3F16C5AC1354} png](https://user-images.githubusercontent.com/68710094/92037635-5f59d980-ed72-11ea-909c-128aeb20f91e.jpg)
 
 ## Short version
 
