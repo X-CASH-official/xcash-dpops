@@ -117,8 +117,8 @@ function get_installation_settings()
     echo
   fi
 
-  # Check if xcash-dpops is not installed, if the user choose to update or uninstall or configure
-  if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "4" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "11" ]; then
+  # Check if xcash-dpops is not installed, if the user choose to update or uninstall or configure...
+  if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "4" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "13" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "14" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}xcash-dpops is not installed. Please install xcash-dpops before running update, configure or uninstall${END_COLOR_PRINT}"
