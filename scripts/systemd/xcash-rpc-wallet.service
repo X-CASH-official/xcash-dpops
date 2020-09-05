@@ -5,7 +5,6 @@ After=network.target xcash-daemon.service
 [Service]
 Type=simple
 User=root
-ExecStartPre=/usr/bin/sleep 10
 ExecStart=/root/xcash-official/xcash-core/build/release/bin/xcash-wallet-rpc --wallet-file /root/xcash-official/xcash-wallets/WALLET_FILE_NAME --password PASSWORD --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon --log-file /root/xcash-official/logs/xcash-wallet-rpc.log
 Restart=always
 RestartSec=5
