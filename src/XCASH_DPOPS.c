@@ -1304,6 +1304,7 @@ int main(int parameters_count, char* parameters[])
   if (settings != 2)
   {
     database_sync_check();
+    RESET_ERROR_MESSAGES;
   }
   
   // start the server

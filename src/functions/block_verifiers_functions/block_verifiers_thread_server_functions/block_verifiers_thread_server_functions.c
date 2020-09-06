@@ -127,6 +127,7 @@ void* current_block_height_timer_thread(void* parameters)
 {
   // Variables
   char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char data2[BUFFER_SIZE_NETWORK_BLOCK_DATA];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
@@ -134,6 +135,7 @@ void* current_block_height_timer_thread(void* parameters)
   int block_verifier_settings;
   
   memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // unused parameters
   (void)parameters;
@@ -199,6 +201,21 @@ void* current_block_height_timer_thread(void* parameters)
 
       // check if this round is a replayed round
       replayed_round_settings = check_if_replayed_round();
+
+      // remove any database data if its a replayed round
+      if (replayed_round_settings == 1)
+      {
+        memset(data,0,sizeof(data));
+        memset(data2,0,sizeof(data2));
+        get_reserve_bytes_database(count,0); 
+        memcpy(data,"reserve_bytes_",14);
+        snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",count);  
+        memcpy(data2,"{\"block_height\":\"",17);
+        memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+        memcpy(data2+strlen(data2),"\"}",2);   
+        delete_document_from_collection(database_name,data,data2);
+        RESET_ERROR_MESSAGES;
+      }
 
       if ((block_verifier_settings = start_new_round()) == 0)
       {
