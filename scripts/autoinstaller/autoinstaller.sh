@@ -2153,6 +2153,7 @@ function test_update_reset_delegates()
 
 function install_firewall_script()
 {
+  echo
   echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
@@ -2175,6 +2176,7 @@ function install_firewall_script()
 
 function install_firewall_script_shared_delegates()
 {
+  echo
   echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
@@ -2197,6 +2199,7 @@ function install_firewall_script_shared_delegates()
 
 function install_firewall_script_test()
 {
+  echo
   echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
