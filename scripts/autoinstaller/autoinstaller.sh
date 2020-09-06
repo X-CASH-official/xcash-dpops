@@ -46,6 +46,7 @@ XCASH_DPOPS_DIR=""
 XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=""
 SHARED_DELEGATES_WEBSITE_URL="https://github.com/X-CASH-official/delegates-pool-website.git"
 SHARED_DELEGATES_WEBSITE_DIR=""
+SSH_PORT_NUMBER=22
 NODEJS_URL="https://nodejs.org/dist/${NODEJS_LATEST_VERSION:5:7}/${NODEJS_LATEST_VERSION}.tar.xz"
 NODEJS_DIR=""
 NODEJS_CURRENT_VERSION=""
@@ -258,7 +259,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
  
 # block ip spoofing. these are the ranges of local IP address.
 iptables -A INPUT -s 45.76.169.83 -j DROP
-iptables -A INPUT -s 10.12.242.0/32 -j ACCEPT
+iptables -A INPUT -s 10.12.242.0/24 -j ACCEPT
 iptables -A INPUT -s 10.0.0.0/8 -j DROP
 iptables -A INPUT -s 169.254.0.0/16 -j DROP
 iptables -A INPUT -s 172.16.0.0/12 -j DROP
@@ -303,9 +304,9 @@ iptables -A INPUT -p tcp --dport 18281 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
  
 # Allow ssh (allow 10 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
-iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
-iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -j ACCEPT
  
 # DROP all INPUT and FORWARD packets if they have reached this point
 iptables -A INPUT -j DROP
@@ -359,7 +360,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
  
 # block ip spoofing. these are the ranges of local IP address.
 iptables -A INPUT -s 45.76.169.83 -j DROP
-iptables -A INPUT -s 10.12.242.0/32 -j ACCEPT
+iptables -A INPUT -s 10.12.242.0/24 -j ACCEPT
 iptables -A INPUT -s 10.0.0.0/8 -j DROP
 iptables -A INPUT -s 169.254.0.0/16 -j DROP
 iptables -A INPUT -s 172.16.0.0/12 -j DROP
@@ -404,9 +405,9 @@ iptables -A INPUT -p tcp --dport 18281 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
  
 # Allow ssh (allow 10 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
-iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
-iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -j ACCEPT
  
 # Redirect HTTP to port 18283
 iptables -A PREROUTING -t nat -i ${DEFAULT_NETWORK_DEVICE} -p tcp --dport 80 -j REDIRECT --to-ports 18283
@@ -463,7 +464,7 @@ iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
  
 # block ip spoofing. these are the ranges of local IP address.
 iptables -A INPUT -s 45.76.169.83 -j DROP
-iptables -A INPUT -s 10.12.242.0/32 -j ACCEPT
+iptables -A INPUT -s 10.12.242.0/24 -j ACCEPT
 iptables -A INPUT -s 10.0.0.0/8 -j DROP
 iptables -A INPUT -s 169.254.0.0/16 -j DROP
 iptables -A INPUT -s 172.16.0.0/12 -j DROP
@@ -508,9 +509,9 @@ iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.16
 iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.169.59,54.255.223.94,136.243.102.93,78.46.213.190,88.198.90.83,116.202.180.102,116.203.71.44,116.203.71.47,116.203.71.60,116.203.71.36,116.203.71.48,116.203.71.45 --dport 18283 -j ACCEPT
  
 # Allow ssh (allow 10 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
-iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
-iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -j ACCEPT
  
 # DROP all INPUT and FORWARD packets if they have reached this point
 iptables -A INPUT -j DROP
@@ -2152,9 +2153,14 @@ function test_update_reset_delegates()
 
 function install_firewall_script()
 {
+  echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  SSH_PORT_NUMBER=$([ ! "$data" == "" ] && echo "$data" || echo "$SSH_PORT_NUMBER")
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
-  sudo apt-get install --reinstall iptables
+  sudo apt-get install --reinstall iptables &>/dev/null
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo systemctl daemon-reload
@@ -2169,9 +2175,14 @@ function install_firewall_script()
 
 function install_firewall_script_shared_delegates()
 {
+  echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  SSH_PORT_NUMBER=$([ ! "$data" == "" ] && echo "$data" || echo "$SSH_PORT_NUMBER")
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
-  sudo apt-get install --reinstall iptables
+  sudo apt-get install --reinstall iptables &>/dev/null
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo systemctl daemon-reload
@@ -2186,9 +2197,14 @@ function install_firewall_script_shared_delegates()
 
 function install_firewall_script_test()
 {
+  echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  SSH_PORT_NUMBER=$([ ! "$data" == "" ] && echo "$data" || echo "$SSH_PORT_NUMBER")
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
-  sudo apt-get install --reinstall iptables
+  sudo apt-get install --reinstall iptables &>/dev/null
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo systemctl daemon-reload
