@@ -75,7 +75,9 @@ int check_if_previous_block_producer(void)
 
   // check if it is a valid block height
   sscanf(current_block_height, "%zu", &count);
-  if (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT+2)
+  count--;
+
+  if (count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
     return 0;
   }
@@ -84,13 +86,13 @@ int check_if_previous_block_producer(void)
   {
     // create the message
     memcpy(data2,"\"block_height\":\"",16);
-    memcpy(data2+16,current_block_height,strnlen(current_block_height,sizeof(data2)));
+    snprintf(data2+16,MAXIMUM_NUMBER_SIZE,"%zu",count);
     memcpy(data2+strlen(data2),"\"}",2);
 
     // get the current reserve_bytes database
     get_reserve_bytes_database(count,1);
     memcpy(data3,"reserve_bytes_",14);
-    snprintf(data3+14,sizeof(data3)-15,"%zu",count);
+    snprintf(data3+14,MAXIMUM_NUMBER_SIZE,"%zu",count);
 
     // get the previous blocks reserve bytes
     if (read_document_field_from_collection(database_name,data3,data2,"reserve_bytes",data) == 0)
@@ -121,7 +123,7 @@ int check_if_previous_block_producer(void)
   }
 
   // check if the delegate is the previous block producer
-  return strncmp(previous_block_producer,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 ? 1 : 0;
+  return strncmp(previous_block_producer,xcash_wallet_public_address,BUFFER_SIZE) == 0 ? 1 : 0;
 }
 
 
