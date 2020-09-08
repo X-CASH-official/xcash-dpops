@@ -151,7 +151,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
 
   // check if the reserve proof is valid and the spent amount is 0
   memset(data2,0,sizeof(data2));
-  if (check_reserve_proofs(data2,reserve_proof->public_address_created_reserve_proof,reserve_proof->reserve_proof) == 0)
+  if (check_reserve_proofs(data2,reserve_proof->public_address_created_reserve_proof,reserve_proof->reserve_proof) != 1)
   {
     return 6;
   }

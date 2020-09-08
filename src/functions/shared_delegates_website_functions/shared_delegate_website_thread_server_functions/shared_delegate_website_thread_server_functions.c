@@ -286,9 +286,8 @@ long long int get_delegates_total_voters(struct voters* voters)
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
     snprintf(data2+15,sizeof(data2)-16,"%d",counter);
-    count2 = count_documents_in_collection(database_name,data2,data);
 
-    if (count2 > 0)
+    if ((count2 = count_documents_in_collection(database_name,data2,data)) > 0)
     {
       if (read_multiple_documents_all_fields_from_collection(database_name,data2,data,&database_multiple_documents_fields,1,count2,0,"") == 0)
       {
