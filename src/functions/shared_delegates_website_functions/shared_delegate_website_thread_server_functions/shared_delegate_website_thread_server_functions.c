@@ -85,8 +85,8 @@ int check_if_previous_block_producer(void)
   if (test_settings == 0)
   {
     // create the message
-    memcpy(data2,"\"block_height\":\"",16);
-    snprintf(data2+16,MAXIMUM_NUMBER_SIZE,"%zu",count);
+    memcpy(data2,"{\"block_height\":\"",17);
+    snprintf(data2+17,MAXIMUM_NUMBER_SIZE,"%zu",count);
     memcpy(data2+strlen(data2),"\"}",2);
 
     // get the current reserve_bytes database
