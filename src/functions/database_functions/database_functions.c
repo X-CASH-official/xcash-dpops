@@ -135,7 +135,7 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
     // get the current document  
     message = bson_as_canonical_extended_json(current_document, NULL);
     strnlen(database_data,MAXIMUM_BUFFER_SIZE) == 0 ? memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),"{",1) : memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),",{",2);
-    memcpy(database_data+strnlen(database_data,MAXIMUM_BUFFER_SIZE),&message[142],strnlen(message,BUFFER_SIZE) - 142);    
+    memcpy(database_data+strlen(database_data),&message[142],strnlen(message,BUFFER_SIZE) - 142);    
     bson_free(message);
     count = 1;
   }

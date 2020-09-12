@@ -117,7 +117,8 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
     {
       count = system(database_path_read);
     }
-    GET_BLOCK_VERIFIERS_FROM_NETWORK_BLOCK_ERROR("Could not get the previous blocks reserve bytes, restoring the database from the backup");
+    color_print("Could not get the previous blocks reserve bytes, restoring the database from the backup","red");
+    exit(0);
   }
   
   // get the next block verifiers public keys from the previous network blocks reserve bytes

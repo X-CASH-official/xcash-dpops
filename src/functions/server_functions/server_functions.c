@@ -18,6 +18,7 @@
 #include "variables.h"
 
 #include "blockchain_functions.h"
+#include "block_verifiers_functions.h"
 #include "block_verifiers_server_functions.h"
 #include "block_verifiers_synchronize_server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
@@ -689,7 +690,7 @@ void socket_thread(const int CLIENT_SOCKET)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
+   if (server_limit_public_addresses(1,(const char*)buffer) == 1 && check_if_delegate_is_a_block_verifier((const char*)buffer) == 1)
    {
      server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
@@ -705,7 +706,7 @@ void socket_thread(const int CLIENT_SOCKET)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
+   if (server_limit_public_addresses(1,(const char*)buffer) == 1 && check_if_delegate_is_a_block_verifier((const char*)buffer) == 1)
    {
      server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(CLIENT_SOCKET,(const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
@@ -721,7 +722,7 @@ void socket_thread(const int CLIENT_SOCKET)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
+   if (server_limit_public_addresses(1,(const char*)buffer) == 1 && check_if_delegate_is_a_block_verifier((const char*)buffer) == 1)
    {
     server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(CLIENT_SOCKET);
     server_limit_public_addresses(3,(const char*)buffer);
@@ -737,7 +738,7 @@ void socket_thread(const int CLIENT_SOCKET)
  }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL)
  {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
+   if (server_limit_public_addresses(1,(const char*)buffer) == 1 && check_if_delegate_is_a_block_verifier((const char*)buffer) == 1)
    {
      server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(CLIENT_SOCKET);
      server_limit_public_addresses(3,(const char*)buffer);
