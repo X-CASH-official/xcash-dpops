@@ -801,7 +801,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     pointer_reset(invalid_reserve_proofs.reserve_proof[count]); \
   } \
   invalid_reserve_proofs.count = 0; \
-  color_print("Stoping the check reserve proofs timer thread","yellow"); \
+  color_print("Stopping the check reserve proofs timer thread","yellow"); \
   fprintf(stderr,"\n"); \
   pthread_exit((void *)(intptr_t)1);
 
