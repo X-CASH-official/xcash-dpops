@@ -17,6 +17,7 @@ XCASH_BLOCKCHAIN_INSTALLATION_DIR="$HOME/.X-CASH/"
 MONGODB_INSTALLATION_DIR="/data/db/"
 SHARED_DELEGATE="YES"
 WALLET_SETTINGS="YES"
+AUTOSTART_SETTINGS="NO"
 WALLET_SEED=""
 WALLET_PASSWORD=$(< /dev/urandom tr -dc 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' | head -c"${1:-32}";echo;)
 BLOCK_VERIFIER_KEY_SETTINGS=""
@@ -66,6 +67,8 @@ SYSTEMD_SERVICE_FILE_XCASH_DAEMON=""
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE=""
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE=""
 SYSTEMD_SERVICE_FILE_XCASH_WALLET=""
+SYSTEMD_TIMER_FILE_XCASH_DPOPS=""
+SYSTEMD_TIMER_FILE_XCASH_WALLET=""
 
 # System settings
 CPU_THREADS=$(nproc)
@@ -541,7 +544,8 @@ EOF
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON="$(cat << EOF
 [Unit]
 Description=X-Cash Daemon background process
- 
+After=network.target
+
 [Service]
 Type=forking
 User=${USER}
@@ -557,7 +561,8 @@ EOF
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="$(cat << EOF
 [Unit]
 Description=X-Cash DPOPS Program background process
- 
+After=network.target xcash-daemon.service xcash-rpc-wallet.service mongodb.service
+
 [Service]
 Type=simple
 LimitNOFILE=infinity
@@ -573,7 +578,8 @@ EOF
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="$(cat << EOF
 [Unit]
 Description=X-Cash DPOPS Program background process
- 
+After=network.target xcash-daemon.service xcash-rpc-wallet.service mongodb.service
+
 [Service]
 Type=simple
 LimitNOFILE=infinity
@@ -586,9 +592,21 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 )"
+SYSTEMD_TIMER_FILE_XCASH_DPOPS="$(cat << EOF
+[Unit]
+Description=xcash-dpops timer
+
+[Timer]
+OnBootSec=30sec
+
+[Install]
+WantedBy=timers.target
+EOF
+)"
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="$(cat << EOF
 [Unit]
 Description=X-Cash RPC wallet background process
+After=network.target xcash-daemon.service
  
 [Service]
 Type=simple
@@ -598,6 +616,17 @@ Restart=always
  
 [Install]
 WantedBy=multi-user.target
+EOF
+)"
+SYSTEMD_TIMER_FILE_XCASH_WALLET="$(cat << EOF
+[Unit]
+Description=xcash-rpc-wallet timer
+
+[Timer]
+OnBootSec=20sec
+
+[Install]
+WantedBy=timers.target
 EOF
 )"
 }
@@ -676,6 +705,16 @@ function get_block_verifier_key_settings()
   fi
 }
 
+function get_autostart_services_settings()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Do you want to autostart the services when you restart the server? (leave empty for default: NO): ${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  AUTOSTART_SETTINGS=$([ "$data" == "" ] && echo "$AUTOSTART_SETTINGS" || echo "YES")
+
+}
+
 function print_installation_settings()
 {
   echo
@@ -693,6 +732,7 @@ function print_installation_settings()
   echo -e "${COLOR_PRINT_GREEN}User: ${USER} ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}DPOPS Fee: ${DPOPS_FEE} ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}DPOPS Minimum Payment Amount: ${DPOPS_MINIMUM_AMOUNT} ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Autostart services when reboot: ${AUTOSTART_SETTINGS} ${END_COLOR_PRINT}"
 
   seconds=10
   while [ "$seconds" -ne 0 ]
@@ -727,6 +767,7 @@ function installation_settings()
     get_wallet_settings
     get_password_settings
     get_block_verifier_key_settings
+    get_autostart_services_settings
     print_installation_settings
   fi
 }
@@ -793,7 +834,12 @@ function stop_systemd_service_files()
   echo
 }
 
-
+function enable_service_files_at_startup()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Enabling services to autostart on reboot${END_COLOR_PRINT}"
+  sudo systemctl enable mongodb.service xcash-daemon.service xcash-rpc-wallet.timer xcash-dpops.timer 2> /dev/null
+  echo -ne "\r${COLOR_PRINT_GREEN}Enabling services to autostart on reboot${END_COLOR_PRINT}"
+}
 
 
 
@@ -994,7 +1040,11 @@ function build_xcash()
     make release -j "${CPU_THREADS}" &>/dev/null
   else
     echo "y" | make clean &>/dev/null
-    make release -j $((CPU_THREADS / 2)) &>/dev/null
+    if [ "$RAM_CPU_RATIO" -eq 0 ]; then
+        make release &>/dev/null
+    else
+        make release -j $((CPU_THREADS / 2)) &>/dev/null
+    fi
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   echo
@@ -1055,12 +1105,15 @@ function create_systemd_service_files()
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/xcash-daemon.service"
+  sudo bash -c "echo '${SYSTEMD_TIMER_FILE_XCASH_DPOPS}' > /lib/systemd/system/xcash-dpops.timer"
+
   if [ ! "${SHARED_DELEGATE^^}" == "YES" ]; then
     sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
   else
     sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
   fi
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.service"
+  sudo bash -c "echo '${SYSTEMD_TIMER_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.timer"
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
   echo
@@ -1116,7 +1169,11 @@ function build_xcash_dpops()
     make release -j "${CPU_THREADS}" &>/dev/null
   else
     echo "y" | make clean &>/dev/null
-    make release -j $((CPU_THREADS / 2)) &>/dev/null
+    if [ "$RAM_CPU_RATIO" -eq 0 ]; then
+        make release &>/dev/null
+    else
+        make release -j $((CPU_THREADS / 2)) &>/dev/null
+    fi
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Building xcash-dpops${END_COLOR_PRINT}"
   echo
@@ -1384,7 +1441,7 @@ function get_dependencies_current_version()
 
 function update_packages()
 {
-    i=0
+    i=0systemctl enable mongodb.service xcash-daemon.service xcash-rpc-wallet.timer xcash-dpops.timer 2> /dev/null
     while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
         case $((i % 4)) in
             0 ) j="-" ;;
@@ -1419,7 +1476,11 @@ function update_xcash()
       make release -j "${CPU_THREADS}" &>/dev/null
     else
       echo "y" | make clean &>/dev/null
-      make release -j $((CPU_THREADS / 2)) &>/dev/null
+      if [ "$RAM_CPU_RATIO" -eq 0 ]; then
+          make release &>/dev/null
+      else
+          make release -j $((CPU_THREADS / 2)) &>/dev/null
+      fi
     fi 
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
@@ -1443,7 +1504,11 @@ function update_xcash_dpops()
       make release -j "${CPU_THREADS}" &>/dev/null
     else
       echo "y" | make clean &>/dev/null
-      make release -j $((CPU_THREADS / 2)) &>/dev/null
+      if [ "$RAM_CPU_RATIO" -eq 0 ]; then
+          make release &>/dev/null
+      else
+          make release -j $((CPU_THREADS / 2)) &>/dev/null
+      fi
     fi
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Updating xcash-dpops${END_COLOR_PRINT}"
@@ -1693,7 +1758,11 @@ function install()
     make release -j "${CPU_THREADS}" &>/dev/null
   else
     echo "y" | make clean &>/dev/null
-    make release -j $((CPU_THREADS / 2)) &>/dev/null
+    if [ "$RAM_CPU_RATIO" -eq 0 ]; then
+        make release &>/dev/null
+    else
+        make release -j $((CPU_THREADS / 2)) &>/dev/null
+    fi
   fi
 
   # Create a swap file if they dont already have one and have low ram
@@ -1704,6 +1773,11 @@ function install()
 
   # Start the systemd service files
   start_systemd_service_files
+
+
+  if [ "${AUTOSTART_SETTINGS^^}" == "YES" ]; then
+    enable_service_files_at_startup
+  fi
 
   # Display X-CASH current wallet data  
   echo
