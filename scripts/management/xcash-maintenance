@@ -30,9 +30,10 @@ SEED_NODE5_URL="http://europe3.xcash.foundation:18281/json_rpc"
 declare -ir TOTAL_DELEGATES=50
 declare -ir ATOMIC_DIVISOR=1000000
 
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-reset=$(tput sgr0)
+# Color print variables
+COLOR_PRINT_RED="\033[1;31m"
+COLOR_PRINT_GREEN="\033[1;32m"
+END_COLOR_PRINT="\033[0m"
 
 PS3='
 Please enter an option: '
@@ -97,9 +98,9 @@ function check_height(){
 
 
 		if (( STATUS_COUNT >= 3 )); then
-			STATUS=${green}OK${reset}
+			STATUS=${COLOR_PRINT_GREEN}OK${END_COLOR_PRINT}
 		else 
-			STATUS=${red}FAIL${reset}
+			STATUS=${COLOR_PRINT_RED}FAIL${END_COLOR_PRINT}
 		fi
 
 		echo
@@ -154,9 +155,9 @@ function shared_delegates_website_statistics(){
         echo
         echo "######### DELEGATE STATUS #########"
         if (( RANK <= TOTAL_DELEGATES )); then
-            echo -e "Rank....................${green}$RANK${reset}"
+            echo -e "Rank....................${COLOR_PRINT_GREEN}$RANK${END_COLOR_PRINT}"
         else
-            echo -e "Rank....................${red}$RANK${reset}"
+            echo -e "Rank....................${COLOR_PRINT_RED}$RANK${END_COLOR_PRINT}"
         fi
         echo "Total Votes.............$TOTAL_VOTES XCASH"
         echo "Online Percentage.......$ONLINE_PCT %"
@@ -184,20 +185,20 @@ function check_services_status(){
     XCASH_DPOPS_UP_SINCE=$(systemctl show $XCASH_DPOPS_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
 
     systemctl is-active $MONGODB_SRV --quiet \
-		&& echo -e "${green}"\\u2714 MongoDB service is running since..............."$MONGODB_UP_SINCE""${reset}" \
-		|| echo -e "${red}"\\u2716 MongoDB service is not running"${reset}"
+		&& echo -e "${COLOR_PRINT_GREEN}"\\u2714 MongoDB service is running since..............."$MONGODB_UP_SINCE""${END_COLOR_PRINT}" \
+		|| echo -e "${COLOR_PRINT_RED}"\\u2716 MongoDB service is not running"${END_COLOR_PRINT}"
 
 	systemctl is-active $XCASH_DAEMON_SRV --quiet \
-		&& echo -e "${green}"\\u2714 X-Cash Daemon service is running since........."$XCASH_DAEMON_UP_SINCE""${reset}" \
-		|| echo -e "${red}"\\u2716 X-Cash Daemon service is not running"${reset}"
+		&& echo -e "${COLOR_PRINT_GREEN}"\\u2714 X-Cash Daemon service is running since........."$XCASH_DAEMON_UP_SINCE""${END_COLOR_PRINT}" \
+		|| echo -e "${COLOR_PRINT_RED}"\\u2716 X-Cash Daemon service is not running"${END_COLOR_PRINT}"
 
 	systemctl is-active $XCASH_WALLET_SRV --quiet \
-		&& echo -e "${green}"\\u2714 X-Cash RPC Wallet service is running since....."$XCASH_WALLET_UP_SINCE""${reset}" \
-		|| echo -e "${red}"\\u2716 X-Cash RPC Wallet service is not running"${reset}"
+		&& echo -e "${COLOR_PRINT_GREEN}"\\u2714 X-Cash RPC Wallet service is running since....."$XCASH_WALLET_UP_SINCE""${END_COLOR_PRINT}" \
+		|| echo -e "${COLOR_PRINT_RED}"\\u2716 X-Cash RPC Wallet service is not running"${END_COLOR_PRINT}"
 
 	systemctl is-active $XCASH_DPOPS_SRV --quiet \
-		&& echo -e "${green}"\\u2714 X-Cash DPoPS service is running since.........."$XCASH_DPOPS_UP_SINCE""${reset}" \
-		|| echo -e "${red}"\\u2716 X-Cash DPoPS service is not running"${reset}"
+		&& echo -e "${COLOR_PRINT_GREEN}"\\u2714 X-Cash DPoPS service is running since.........."$XCASH_DPOPS_UP_SINCE""${END_COLOR_PRINT}" \
+		|| echo -e "${COLOR_PRINT_RED}"\\u2716 X-Cash DPoPS service is not running"${END_COLOR_PRINT}"
 }
 
 function start_stopped_services(){
@@ -206,76 +207,76 @@ function start_stopped_services(){
 
 	if (systemctl is-active $MONGODB_SRV --quiet); then
 		MONGODB_UP_SINCE=$(systemctl show $MONGODB_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
-		echo -e "${green}"\\u2714 MongoDB service is running since..............."$MONGODB_UP_SINCE""${reset}"
+		echo -e "${COLOR_PRINT_GREEN}"\\u2714 MongoDB service is running since..............."$MONGODB_UP_SINCE""${END_COLOR_PRINT}"
 	else
-		echo -en "${red}"\\u2716 MongoDB service is not running, starting it............."${reset}"
+		echo -en "${COLOR_PRINT_RED}"\\u2716 MongoDB service is not running, starting it............."${END_COLOR_PRINT}"
 		systemctl start $MONGODB_SRV && sleep 3
 		systemctl is-active $MONGODB_SRV --quiet \
-		&& echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+		&& echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}"
 	fi
 
     if (systemctl is-active $XCASH_DAEMON_SRV --quiet); then
         XCASH_DAEMON_UP_SINCE=$(systemctl show $XCASH_DAEMON_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
-        echo -e "${green}"\\u2714 X-Cash Daemon service is running since........."$XCASH_DAEMON_UP_SINCE""${reset}"
+        echo -e "${COLOR_PRINT_GREEN}"\\u2714 X-Cash Daemon service is running since........."$XCASH_DAEMON_UP_SINCE""${END_COLOR_PRINT}"
     else
-        echo -en "${red}"\\u2716 X-Cash Daemon service is not running, starting it......."${reset}"
+        echo -en "${COLOR_PRINT_RED}"\\u2716 X-Cash Daemon service is not running, starting it......."${END_COLOR_PRINT}"
         systemctl start $XCASH_DAEMON_SRV && sleep 3 
         systemctl is-active $XCASH_DAEMON_SRV --quiet \
-		&& echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+		&& echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}"
     fi
 
     if (systemctl is-active $XCASH_WALLET_SRV --quiet); then
         XCASH_WALLET_UP_SINCE=$(systemctl show $XCASH_WALLET_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
-        echo -e "${green}"\\u2714 X-Cash RPC Wallet service is running since....."$XCASH_WALLET_UP_SINCE""${reset}"
+        echo -e "${COLOR_PRINT_GREEN}"\\u2714 X-Cash RPC Wallet service is running since....."$XCASH_WALLET_UP_SINCE""${END_COLOR_PRINT}"
     else
-        echo -en "${red}"\\u2716 X-Cash RPC Wallet service is not running, starting it..."${reset}" \
+        echo -en "${COLOR_PRINT_RED}"\\u2716 X-Cash RPC Wallet service is not running, starting it..."${END_COLOR_PRINT}" \
         && systemctl start $XCASH_WALLET_SRV && sleep 3 \
         && systemctl is-active $XCASH_WALLET_SRV --quiet \
-		&& echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+		&& echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}"
     fi
 
     if (systemctl is-active $XCASH_DPOPS_SRV --quiet); then
         XCASH_DPOPS_UP_SINCE=$(systemctl show $XCASH_DPOPS_SRV --property=ActiveEnterTimestamp | sed s"|ActiveEnterTimestamp=||g")
-        echo -e "${green}"\\u2714 X-Cash DPoPS service is running since.........."$XCASH_DPOPS_UP_SINCE""${reset}"
+        echo -e "${COLOR_PRINT_GREEN}"\\u2714 X-Cash DPoPS service is running since.........."$XCASH_DPOPS_UP_SINCE""${END_COLOR_PRINT}"
     else
-        echo -en "${red}"\\u2716 X-Cash DPoPS service is not running, starting it........"${reset}"
+        echo -en "${COLOR_PRINT_RED}"\\u2716 X-Cash DPoPS service is not running, starting it........"${END_COLOR_PRINT}"
         systemctl start $XCASH_DPOPS_SRV && sleep 3
         systemctl is-active $XCASH_DPOPS_SRV --quiet \
-		&& echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+		&& echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}"
     fi
 
 }
 
 function stop_all_services(){
 	echo
-    echo -en "${green}"Stopping X-Cash DPoPS service..............................................."${reset}" \
-        && systemctl stop $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
-    echo -en "${green}"Stopping MongoDB service...................................................."${reset}" \
-        && systemctl stop $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
-    echo -en "${green}"Stopping X-Cash RPC Wallet service.........................................."${reset}" \
-        && systemctl stop $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
-    echo -en "${green}"Stopping X-Cash Daemon service.............................................."${reset}" \
-        && systemctl stop $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
+    echo -en "${COLOR_PRINT_GREEN}"Stopping X-Cash DPoPS service..............................................."${END_COLOR_PRINT}" \
+        && systemctl stop $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}"
+    echo -en "${COLOR_PRINT_GREEN}"Stopping MongoDB service...................................................."${END_COLOR_PRINT}" \
+        && systemctl stop $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}"
+    echo -en "${COLOR_PRINT_GREEN}"Stopping X-Cash RPC Wallet service.........................................."${END_COLOR_PRINT}" \
+        && systemctl stop $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}"
+    echo -en "${COLOR_PRINT_GREEN}"Stopping X-Cash Daemon service.............................................."${END_COLOR_PRINT}" \
+        && systemctl stop $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}"
 }
 
 function restart_all_services(){
 	echo
-	echo -en "${green}"Stopping X-Cash DPoPS service..............................................."${reset}" \
-		&& systemctl stop $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
-    echo -en "${green}"Stopping MongoDB service...................................................."${reset}" \
-		&& systemctl stop $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
-    echo -en "${green}"Stopping X-Cash RPC Wallet service.........................................."${reset}" \
-		&& systemctl stop $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
-    echo -en "${green}"Stopping X-Cash Daemon service.............................................."${reset}" \
-		&& systemctl stop $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${red}"\\u2716"${reset}" || echo -e "${green}"\\u2714"${reset}"
-	echo -en "${green}"Starting X-Cash Daemon service.............................................."${reset}" \
-		&& sleep 3 && systemctl start $XCASH_DAEMON_SRV && sleep 5 && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
-    echo -en "${green}"Starting X-Cash Wallet service.............................................."${reset}" \
-		&& sleep 3 && systemctl start $XCASH_WALLET_SRV && sleep 5 && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
-    echo -en "${green}"Starting MongoDB service...................................................."${reset}" \
-		&& sleep 3 && systemctl start $MONGODB_SRV && sleep 3 &&  systemctl is-active $MONGODB_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
-    echo -en "${green}"Starting X-Cash DPoPS service..............................................."${reset}" \
-		&& sleep 3 && systemctl start $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${green}"\\u2714"${reset}" || echo -e "${red}"\\u2716"${reset}"
+	echo -en "${COLOR_PRINT_GREEN}"Stopping X-Cash DPoPS service..............................................."${END_COLOR_PRINT}" \
+		&& systemctl stop $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}"
+    echo -en "${COLOR_PRINT_GREEN}"Stopping MongoDB service...................................................."${END_COLOR_PRINT}" \
+		&& systemctl stop $MONGODB_SRV && systemctl is-active $MONGODB_SRV --quiet && echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}"
+    echo -en "${COLOR_PRINT_GREEN}"Stopping X-Cash RPC Wallet service.........................................."${END_COLOR_PRINT}" \
+		&& systemctl stop $XCASH_WALLET_SRV && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}"
+    echo -en "${COLOR_PRINT_GREEN}"Stopping X-Cash Daemon service.............................................."${END_COLOR_PRINT}" \
+		&& systemctl stop $XCASH_DAEMON_SRV && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}"
+	echo -en "${COLOR_PRINT_GREEN}"Starting X-Cash Daemon service.............................................."${END_COLOR_PRINT}" \
+		&& sleep 3 && systemctl start $XCASH_DAEMON_SRV && sleep 5 && systemctl is-active $XCASH_DAEMON_SRV --quiet && echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}"
+    echo -en "${COLOR_PRINT_GREEN}"Starting X-Cash Wallet service.............................................."${END_COLOR_PRINT}" \
+		&& sleep 3 && systemctl start $XCASH_WALLET_SRV && sleep 5 && systemctl is-active $XCASH_WALLET_SRV --quiet && echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}"
+    echo -en "${COLOR_PRINT_GREEN}"Starting MongoDB service...................................................."${END_COLOR_PRINT}" \
+		&& sleep 3 && systemctl start $MONGODB_SRV && sleep 3 &&  systemctl is-active $MONGODB_SRV --quiet && echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}"
+    echo -en "${COLOR_PRINT_GREEN}"Starting X-Cash DPoPS service..............................................."${END_COLOR_PRINT}" \
+		&& sleep 3 && systemctl start $XCASH_DPOPS_SRV && systemctl is-active $XCASH_DPOPS_SRV --quiet && echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}"
 
 	check_services_status
 }
@@ -297,7 +298,7 @@ function get_xcash_wallet_log(){
 
 function enable_services_autostart(){
     echo
-    echo -e "${green}Enabling services autostart...${reset}"
+    echo -e "${COLOR_PRINT_GREEN}Enabling services autostart...${END_COLOR_PRINT}"
     systemctl enable ${MONGODB_SRV}.service ${XCASH_DAEMON_SRV}.service ${XCASH_WALLET_SRV}.timer ${XCASH_DPOPS_SRV}.timer
     systemctl disable ${XCASH_WALLET_SRV}.service ${XCASH_DPOPS_SRV}.service
 
@@ -305,22 +306,22 @@ function enable_services_autostart(){
 	DISABLED_SERVICES=$(systemctl list-unit-files --state=disabled | grep -wc "${XCASH_WALLET_SRV}.service\|${XCASH_DPOPS_SRV}.service")
     
 	if (( ENABLED_SERVICES == 4 )) && (( DISABLED_SERVICES == 2 )); then
-        echo -e "${green}done${reset}"
+        echo -e "${COLOR_PRINT_GREEN}done${END_COLOR_PRINT}"
     else
-        echo -e "${red}failed${reset}"
+        echo -e "${COLOR_PRINT_RED}failed${END_COLOR_PRINT}"
     fi
 }
 
 function disable_services_autostart(){
     echo
-    echo -e "${green}Disabling services autostart...${reset}"
+    echo -e "${COLOR_PRINT_GREEN}Disabling services autostart...${END_COLOR_PRINT}"
     systemctl disable ${XCASH_WALLET_SRV}.service ${XCASH_DPOPS_SRV}.service ${MONGODB_SRV}.service ${XCASH_DAEMON_SRV}.service ${XCASH_WALLET_SRV}.timer ${XCASH_DPOPS_SRV}.timer
 	DISABLED_SERVICES=$(systemctl list-unit-files --state=disabled | grep -wc "${XCASH_WALLET_SRV}.service\|${XCASH_DPOPS_SRV}.service\|${MONGODB_SRV}.service\|${XCASH_DAEMON_SRV}.service\|${XCASH_WALLET_SRV}.timer\|${XCASH_DPOPS_SRV}.timer")
 
 	if (( DISABLED_SERVICES == 6 )); then
-        echo -e "${green}done${reset}"
+        echo -e "${COLOR_PRINT_GREEN}done${END_COLOR_PRINT}"
     else
-        echo -e "${red}failed${reset}"
+        echo -e "${COLOR_PRINT_RED}failed${END_COLOR_PRINT}"
     fi
 
 
