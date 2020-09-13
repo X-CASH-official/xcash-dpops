@@ -1180,7 +1180,7 @@ int get_delegates_online_status(void)
   }
 
   // wait for all of the sockets to connect
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(2);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, total_delegates, 0);

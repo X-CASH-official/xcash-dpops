@@ -1831,7 +1831,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the sockets to connect
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(2);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, TOTAL_BLOCK_VERIFIERS, 0);
@@ -1889,7 +1889,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(5);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
