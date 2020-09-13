@@ -1352,7 +1352,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
            This is so block verifiers in specific spots do not have more of a chance to be the block producer than others
            The goal is to use as many bytes as possible, since the more unused bytes, the more chance that it will run out of bytes when selecting the block producer
         */
-        if (counter != 0 && counter <= 250)
+        if (counter >= MINIMUM_BYTE_RANGE && counter <= MAXIMUM_BYTE_RANGE)
         {
           counter = counter % BLOCK_VERIFIERS_TOTAL; 
 

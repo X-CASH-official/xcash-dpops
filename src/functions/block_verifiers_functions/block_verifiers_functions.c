@@ -1217,7 +1217,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1228,7 +1228,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1239,7 +1239,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1250,7 +1250,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1261,7 +1261,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1272,7 +1272,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }

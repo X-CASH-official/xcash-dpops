@@ -916,7 +916,7 @@ int calculate_main_nodes_roles(void)
        The goal is to use as many bytes as possible, since the more unused bytes, the more chance that it will run out of bytes when selecting the block producer
     */
 
-    if (count2 != 0 && count2 <= 250 && settings == 0)
+    if (count2 >= MINIMUM_BYTE_RANGE && count2 <= MAXIMUM_BYTE_RANGE && settings == 0)
     {
       count2 = count2 % total_block_verifiers;
 
