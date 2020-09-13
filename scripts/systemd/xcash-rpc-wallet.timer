@@ -1,0 +1,9 @@
+[Unit]
+Description=xcash-rpc-wallet timer
+
+[Timer]
+OnBootSec=20sec
+
+[Install]
+WantedBy=timers.target
+
