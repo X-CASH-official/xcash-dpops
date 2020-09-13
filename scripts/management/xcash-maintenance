@@ -12,8 +12,8 @@ XCASH_DPOPS_SRV=xcash-dpops
 # Adjust this variable to the name of your mongodb unit file name
 MONGODB_SRV=mongodb
 
-XCASH_DAEMON_LOG_FILE=/var/x-network/logs/blockchain.log
-XCASH_WALLET_LOG_FILE=/var/x-network/logs/rpc.log
+XCASH_DAEMON_LOG_FILE=~/xcash-official/logs/xcash-daemon-log.txt
+XCASH_WALLET_LOG_FILE=~/xcash-official/logs/xcash-wallet-rpc.log
 ### CUSTOM VARIABLES ###
 
 DAEMON_URL="http://127.0.0.1:18281/json_rpc"
@@ -138,7 +138,7 @@ function get_node_balance(){
 
 function shared_delegates_website_statistics(){
     if lsof -Pi :18283 -sTCP:LISTEN -t >/dev/null ; then
-        DATA=$("$DPOPS_QUERY"/shareddelegateswebsitegetstatistics | python3 -m json.tool)
+        DATA=$($DPOPS_QUERY/shareddelegateswebsitegetstatistics | python3 -m json.tool)
         RANK=$(echo "$DATA" | grep '"current_delegate_rank"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
         TOTAL_VOTES=$(($(echo "$DATA" | grep '"total_votes"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')/ATOMIC_DIVISOR))
         ONLINE_PCT=$(echo "$DATA" | grep '"online_percentage"' | awk '{print $2}' | sed s'|,||g' | sed s'|"||g' | tr -d $'\r')
@@ -281,15 +281,18 @@ function restart_all_services(){
 }
 
 function get_xcash_dpops_log(){
-	journalctl --unit=xcash-dpops -n 500 --output cat
+	# Read the log starting from end of file
+	journalctl --unit=xcash-dpops --output cat | less -R +G
 }
 
 function get_xcash_daemon_log(){
-	less -R $XCASH_DAEMON_LOG_FILE
+	# Read the log starting from end of file
+	less -R +G $XCASH_DAEMON_LOG_FILE
 }
 
 function get_xcash_wallet_log(){
-    less -R $XCASH_WALLET_LOG_FILE
+	# Read the log starting from end of file
+    	less -R +G $XCASH_WALLET_LOG_FILE
 }
 
 function enable_services_autostart(){
@@ -322,6 +325,25 @@ function disable_services_autostart(){
 
 
 }
+
+
+function get_overview(){
+	check_services_status
+	check_height
+	get_node_balance
+	shared_delegates_website_statistics
+	echo 
+}
+
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -s | --status | --overview )    get_overview
+					exit
+    esac
+    shift
+done
+
 
 select opt in "${options[@]}"; do
 	case $opt in

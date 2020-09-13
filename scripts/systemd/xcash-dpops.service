@@ -7,9 +7,9 @@ Type=simple
 LimitNOFILE=infinity
 User=root
 WorkingDirectory=/root/xcash-official/xcash-dpops/build
-ExecStartPre=/usr/bin/sleep 10
 ExecStart=/root/xcash-official/xcash-dpops/build/xcash-dpops --block-verifiers-secret-key c8c066b90e8059c505971e710267a48d01191a3d2be233f9081cde0e08f30ccfad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a
 Restart=always
+RestartSec=5
  
 [Install]
 WantedBy=multi-user.target
