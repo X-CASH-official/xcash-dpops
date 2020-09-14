@@ -31,6 +31,8 @@ XCASH_LXC_CONTAINER_NAME="xcash-shared-node"
 XCASH_LXC_PROFILE_RUN_NAME="xcash-node"
 XCASH_LXC_PROFILE_SCRATCH_INIT_NAME="xcash-node-scratch-init"
 
+VPS_MAIN_ADAPTER=$(ip route | grep default | sed -e "s/^.*dev.//" -e "s/.proto.*//")
+VPS_EXTERNAL_IP=$(ip addr show $VPS_MAIN_ADAPTER | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
 LXC_BRIDGE_IP_RANGE="10.12.242.1/24"
 LXC_BRIDGE_IPV6_RANGE="fd42:a89:1b3f:e728::1/64"
 LXC_BRIDGE_DEV_NAME="lxdbr0"
@@ -162,16 +164,19 @@ devices:
     readonly: false
     type: disk  
   # END bind-mount definition
-  # START Port forwarding (proxy or nat-iptables, default proxy)
-  # Daemon (RPC) and DPOPS ports (needs to be available to outside)
+  # START Port forwarding (proxy or nat-iptables)
+  # Daemon Ports (P2P port and RPC port). 
+  # P2P port needs incoming connections preserving client IP
   xcash-proxy-18280:
-    listen: tcp:0.0.0.0:18280
+    listen: tcp:${VPS_EXTERNAL_IP}:18280
     connect: tcp:${LXC_XCASH_CONTAINER_IP}:18280
     type: proxy
+    nat: true
   xcash-proxy-18281:
-    listen: tcp:0.0.0.0:18281
+    listen: tcp:${VPS_EXTERNAL_IP}:18281
     connect: tcp:${LXC_XCASH_CONTAINER_IP}:18281
     type: proxy
+    nat: true
   # DPOPS port (and shared delegate website dashboard) 
   xcash-proxy-18283:
     listen: tcp:0.0.0.0:18283
@@ -1014,6 +1019,9 @@ function set_chown_bind_mounts()
     echo -e "${COLOR_PRINT_GREEN}Setting Chown for the host bind-mounted folders${END_COLOR_PRINT}"
   fi
   sudo chown -R 1000000:1000000 ${XCASH_HOST_DATA_BASE_DIR}{logs,xcash-wallets,xcash-services,xcash-blockchain,xcash-dbdata}
+  # Must be correct owner for syslog folders and syslog, otherwise syslog will be lost after reboot
+  sudo chown 1000000:1000106 ${XCASH_HOST_DATA_BASE_DIR}logs/xcash-node-syslogs
+  sudo chown 1000102:1000004 ${XCASH_HOST_DATA_BASE_DIR}logs/xcash-node-syslogs/syslog*
 }
 
 
@@ -1259,7 +1267,7 @@ function run_DPOPS_log_check_grep()
       read -r grep_string
       echo -ne "\r"
       echo
-      lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "journalctl --unit=${XCASH_DPOPS_SRV} | grep -B 10 -A 10 -C 1 '${grep_string}' | less -R +G"
+      lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "journalctl --unit=${XCASH_DPOPS_SRV} --output cat | grep -B 10 -A 15 -C 1 --color=always '${grep_string}' | less -R +G"
       exit     
     fi
   else
