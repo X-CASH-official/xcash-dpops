@@ -1651,43 +1651,6 @@ int get_network_data_nodes_online_status(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: check_if_delegate_is_a_block_verifier
-Description: Checks if the delegate is a current or next block verifier
-Parameters:
-  MESSAGE - The message
-Return: 0 if there is an error or the delegate is not a current or next block verifier, 1 if the delegate is a current or next block verifier
------------------------------------------------------------------------------------------------------------
-*/
-
-int check_if_delegate_is_a_block_verifier(const char* MESSAGE)
-{
-  // Variables
-  char public_address[XCASH_WALLET_LENGTH+1];
-  int count;
-
-  memset(public_address,0,sizeof(public_address));
-
-  // parse the message
-  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
-  {
-    return 0;
-  }
-
-  // check if the delegate is in the current block verifiers or the next block verifiers to prevent extra bandwidth usage
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,BUFFER_SIZE) == 0 || strncmp(next_block_verifiers_list.block_verifiers_public_address[count],public_address,BUFFER_SIZE) == 0)
-    {
-      return 1;
-    }
-  }
-  return 0;
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: block_verifiers_send_data_socket
 Description: Sends the message to all of the block verifiers
 Parameters:

@@ -674,8 +674,6 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
 
   memset(message,0,strlen(message));
 
-  color_print("start receive loop","yellow");
-
   for (;;)
   { 
     memset(buffer,0,strlen(buffer));
@@ -696,7 +694,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
     {
       // there is data, and this is the final data
       append_string(message,buffer,LENGTH);
-color_print("final message","yellow");
+
       // if the final message has the SOCKET_END_STRING in the message, remove it
       if (strstr(buffer,SOCKET_END_STRING) != NULL)
       {
@@ -704,7 +702,6 @@ color_print("final message","yellow");
         //message[strlen(message)-(sizeof(SOCKET_END_STRING)-1)] = 0;
       }
       pointer_reset(buffer);
-      color_print("end receive loop","yellow");
       return 2;
     }
 
