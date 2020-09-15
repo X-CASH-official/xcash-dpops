@@ -17,9 +17,9 @@ XCASH_AUTOINSTALLER_FIREWALL_OPTION_NUMBER=13
 XCASH_AUTOINSTALLER_FIREWALL_SHARED_OPTION_NUMBER=14
 XCASH_MAINTENANCE_SCRIPT_NAME="xcash-maintenance"
 XCASH_DPOPS_SRV="xcash-dpops"
-XCASH_AUTOINSTALLER_SCRIPT_SCRATCH_URL="https://raw.githubusercontent.com/n3me5is-git/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh"
-XCASH_MAINTENANCE_SCRIPT_SCRATCH_URL="https://raw.githubusercontent.com/n3me5is-git/xcash-dpops/master/scripts/management/xcash-maintenance"
-XCASH_AUTOINSTALLER_HOST_FIREWALL_URL="https://raw.githubusercontent.com/n3me5is-git/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh"
+XCASH_AUTOINSTALLER_SCRIPT_SCRATCH_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh"
+XCASH_MAINTENANCE_SCRIPT_SCRATCH_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/management/xcash-maintenance"
+XCASH_AUTOINSTALLER_HOST_FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh"
 
 # If Opacity is "NO" will be used the direct download link. If Opacity is "YES" will be used the Opacity CLI download tool with the possibility to download a given file handle (asked to the user from stdin)
 DOWNLOAD_USE_OPACITY_DOWNLOADER="YES"
@@ -464,6 +464,35 @@ function download_update_xcash_image()
   echo -ne "\r"
   echo
   cwd=$(pwd)
+  # Ask the user if wants to use Opacity o direct download from url (wget)
+  echo -ne "${COLOR_PRINT_YELLOW}Do you want to download the image using an Opacity Handle or with a direct link (using wget)? (leave empty for: Opacity Hanlde - Type N for: direct link): ${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  if [ "$data" == "" ]; then
+    DOWNLOAD_USE_OPACITY_DOWNLOADER="YES"
+  else
+    DOWNLOAD_USE_OPACITY_DOWNLOADER="NO"
+    # Ask the url
+    if [ ! "$DIRECT_DOWNLOAD_URL" == "" ]; then
+      echo -ne "${COLOR_PRINT_YELLOW}Use the default download URL (${DIRECT_DOWNLOAD_URL})? Leave empty and press enter to YES or type N and press enter to privide a custom URL: ${END_COLOR_PRINT}"
+      read -r data
+      echo -ne "\r"
+      echo
+      if [ ! "$data" == "" ]; then
+        echo -ne "${COLOR_PRINT_YELLOW}Enter the X-Cash Image direct download URL (must be a tar.gz file downloadable with wget): ${END_COLOR_PRINT}"
+        read -r DIRECT_DOWNLOAD_URL
+        echo -ne "\r"
+        echo
+      fi
+    else
+      echo -ne "${COLOR_PRINT_YELLOW}Enter the X-Cash Image direct download URL (must be a tar.gz file downloadable with wget): ${END_COLOR_PRINT}"
+      read -r DIRECT_DOWNLOAD_URL
+      echo -ne "\r"
+      echo
+    fi
+  fi
+  # Process the choice 
   if [ "$DOWNLOAD_USE_OPACITY_DOWNLOADER" == "YES" ]; then
     # Install Opacity CLI tool, remove if already existent (with already downloaded file inside)
     if [ -d opacity-cly-py ]; then
@@ -1021,7 +1050,7 @@ function set_chown_bind_mounts()
   sudo chown -R 1000000:1000000 ${XCASH_HOST_DATA_BASE_DIR}{logs,xcash-wallets,xcash-services,xcash-blockchain,xcash-dbdata}
   # Must be correct owner for syslog folders and syslog, otherwise syslog will be lost after reboot
   sudo chown 1000000:1000106 ${XCASH_HOST_DATA_BASE_DIR}logs/xcash-node-syslogs
-  sudo chown 1000102:1000004 ${XCASH_HOST_DATA_BASE_DIR}logs/xcash-node-syslogs/syslog*
+  sudo chown 1000102:1000004 ${XCASH_HOST_DATA_BASE_DIR}logs/xcash-node-syslogs/syslog* 2&> /dev/null || true
 }
 
 
