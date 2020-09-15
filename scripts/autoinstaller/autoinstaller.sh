@@ -31,9 +31,9 @@ DPOPS_MINIMUM_AMOUNT=0
 XCASH_DPOPS_BLOCK_HEIGHT=640000
 
 # Latest versions
-MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.2.3"
-MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.16.2"
-NODEJS_LATEST_VERSION="node-v13.9.0-linux-x64"
+MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.4.1"
+MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.17.0"
+NODEJS_LATEST_VERSION="node-v14.10.1-linux-x64"
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
@@ -47,16 +47,16 @@ XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=""
 SHARED_DELEGATES_WEBSITE_URL="https://github.com/X-CASH-official/delegates-pool-website.git"
 SHARED_DELEGATES_WEBSITE_DIR=""
 SSH_PORT_NUMBER=22
-NODEJS_URL="https://nodejs.org/dist/${NODEJS_LATEST_VERSION:5:7}/${NODEJS_LATEST_VERSION}.tar.xz"
+NODEJS_URL="https://nodejs.org/dist/${NODEJS_LATEST_VERSION:5:8}/${NODEJS_LATEST_VERSION}.tar.xz"
 NODEJS_DIR=""
 NODEJS_CURRENT_VERSION=""
-MONGODB_URL="http://downloads.mongodb.org/linux/${MONGODB_LATEST_VERSION}.tgz"
+MONGODB_URL="http://fastdl.mongodb.org/linux/${MONGODB_LATEST_VERSION}.tgz"
 MONGODB_DIR=""
 MONGODB_CURRENT_VERSION=""
 MONGOC_DRIVER_URL="https://github.com/mongodb/mongo-c-driver/releases/download/${MONGOC_DRIVER_LATEST_VERSION:15}/${MONGOC_DRIVER_LATEST_VERSION}.tar.gz"
 MONGOC_DRIVER_DIR=""
 MONGOC_DRIVER_CURRENT_VERSION=""
-XCASH_DPOPS_PACKAGES="build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libpcsclite-dev git screen p7zip-full moreutils"
+XCASH_DPOPS_PACKAGES="build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libpcsclite-dev git screen p7zip-full moreutils iptables"
 CURRENT_XCASH_WALLET_INFORMATION=""
 
 # Files
@@ -1977,6 +1977,7 @@ function update()
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     if [ ! "$NODEJS_CURRENT_VERSION" == "$NODEJS_LATEST_VERSION" ]; then
       update_nodejs
+      install_npm_global_packages
     else
       echo -e "${COLOR_PRINT_GREEN}NodeJS Is Already Up To Date${END_COLOR_PRINT}"
     fi
@@ -2439,3 +2440,4 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ]; then
   install_firewall_script_shared_delegates
 fi
+

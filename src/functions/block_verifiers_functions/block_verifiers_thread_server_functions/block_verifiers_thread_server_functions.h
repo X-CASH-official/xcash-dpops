@@ -7,6 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
+int check_if_replayed_round(void);
 void* current_block_height_timer_thread(void* parameters);
 int check_reserve_proofs_timer_create_message(char *block_verifiers_message);
 int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF_COUNT);

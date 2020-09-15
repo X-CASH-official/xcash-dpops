@@ -18,6 +18,7 @@
 #include "variables.h"
 
 #include "blockchain_functions.h"
+#include "block_verifiers_functions.h"
 #include "block_verifiers_server_functions.h"
 #include "block_verifiers_synchronize_server_functions.h"
 #include "block_verifiers_synchronize_functions.h"

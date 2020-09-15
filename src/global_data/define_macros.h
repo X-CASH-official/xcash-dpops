@@ -12,7 +12,7 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_WALLET_PREFIX "XCA" // The prefix of a XCA address
 #define XCASH_TOTAL_SUPPLY 100000000000 // The total supply
 #define XCASH_PREMINE_TOTAL_SUPPLY 40000000000 // The total supply of the premine
-#define XCASH_PREMINE_CIRCULATING_SUPPLY 12823298491 // The circulating supply of the premine
+#define XCASH_PREMINE_CIRCULATING_SUPPLY 14200000000 // The circulating supply of the premine
 #define XCASH_WALLET_DECIMAL_PLACES_AMOUNT 1000000
 #define XCASH_EMMISION_FACTOR 524288 // The emmision factor (2^19)
 #define XCASH_DPOPS_EMMISION_FACTOR 262144 // The xcash-dpops emmision factor (2^18)
@@ -68,10 +68,10 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.0.0\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
 #define BLOCK_VERIFIERS_AMOUNT 50 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 34 // The amount of block verifiers that need to vote true for the part of the round to be valid
-#define BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE 34 // The amount of block verifiers that need to vote true with at least NETOWRK_DATA_NODES_AMOUNT-1 of the network data nodes for the part of the round to be valid.
+#define BLOCK_VERIFIERS_VALID_AMOUNT 27 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE 5 // The amount of block verifiers that need to vote true with at least NETOWRK_DATA_NODES_AMOUNT-1 of the network data nodes for the part of the round to be valid.
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
-#define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 5000 // The maximum amount of voters that a delegate can have
+#define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 1000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define INVALID_BLOCK_VERIFIERS_AMOUNT 10 // The maximum amount of times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
 #define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof, 2M xcash
@@ -90,6 +90,8 @@ Using define statements instead of constants for increased efficiency
 #define START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3 25 // the start time of part 3 of the invalid reserve proofs
 #define INVALID_RESERVE_PROOFS_SETTINGS 2 // The time in seconds to wait to in between invalid reserve proof checks
 #define MAXIMUM_NUMBER_SIZE 20 // The maximum amount of bytes a number could take up in X-CASH
+#define MINIMUM_BYTE_RANGE 1 // The minimum byte range to use when calculating the next block producer
+#define MAXIMUM_BYTE_RANGE 250 // The maximum byte range to use when calculating the next block producer
 
 // Network
 #define XCASH_DAEMON_PORT 18281 // The X-CASH Daemon RPC port
@@ -103,7 +105,7 @@ Using define statements instead of constants for increased efficiency
 #define CONNECTION_TIMEOUT_SETTINGS 1 // the time in seconds for a connection to be created
 #define SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS 3 // The time to wait for sending or receving socket data
 #define SEND_PAYMENT_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function
-#define DATABASE_SYNCING_TIMEOUT_SETTINGS 10 // The maximum amount of time to wait in seconds to sync any of the databases
+#define DATABASE_SYNCING_TIMEOUT_SETTINGS 100 // The maximum amount of time to wait in seconds to sync any of the databases
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 #define DELEGATES_WEBSITE_PATH "delegates-explorer/" // The delegates website path
@@ -115,7 +117,7 @@ Using define statements instead of constants for increased efficiency
 // Lengths
 #define BUFFER_SIZE 200000
 #define SMALL_BUFFER_SIZE 2000
-#define BUFFER_SIZE_RESERVE_PROOF 35000
+#define BUFFER_SIZE_RESERVE_PROOF 25000
 #define BUFFER_SIZE_NETWORK_BLOCK_DATA 500
 #define BUFFER_SIZE_NETWORK_BLOCK_TRANSACTIONS_DATA 100
 #define MAXIMUM_BUFFER_SIZE 52428800 // 50 MB

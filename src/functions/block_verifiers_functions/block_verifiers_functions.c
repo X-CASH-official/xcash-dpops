@@ -120,7 +120,10 @@ int start_new_round(void)
   color_print("getting the delegates online status","blue");
 
   // get the delegates online status
-  get_delegates_online_status();
+  if (registration_settings != 1)
+  {
+    get_delegates_online_status();
+  }
 
   // save a copy of the database
   if (production_settings == 1 && network_data_node_settings == 1)
@@ -254,6 +257,9 @@ int start_new_round(void)
       sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS); 
       return 2;
     }
+
+    // wait for all block verifiers to sync, as this will ensure when we calculate the main node roles we have the same buffer
+    sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,1,55);
 
     if (calculate_main_nodes_roles() == 0)
     {
@@ -1211,7 +1217,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1222,7 +1228,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1233,7 +1239,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1244,7 +1250,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1255,7 +1261,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1266,7 +1272,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;33m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1788,7 +1794,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the sockets to connect
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(2);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, TOTAL_BLOCK_VERIFIERS, 0);
@@ -1846,7 +1852,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(5);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)

@@ -117,7 +117,8 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
     {
       count = system(database_path_read);
     }
-    GET_BLOCK_VERIFIERS_FROM_NETWORK_BLOCK_ERROR("Could not get the previous blocks reserve bytes, restoring the database from the backup");
+    color_print("Could not get the previous blocks reserve bytes, restoring the database from the backup","red");
+    exit(0);
   }
   
   // get the next block verifiers public keys from the previous network blocks reserve bytes
@@ -870,15 +871,13 @@ int calculate_main_nodes_roles(void)
     CALCULATE_MAIN_NODES_ROLES("Could not get the previous blocks reserve bytes");
   }
 
-  // get the database data hash for the entire current database
+  // add the current time to have different block producers selected if the round is replayed
   memset(data,0,sizeof(data));
-  if (get_database_data_hash(data,database_name,"ALL") == 0)
-  {
-    CALCULATE_MAIN_NODES_ROLES("Could not get the database data hash for calculating the main nodes role");
-  }
+  snprintf(data,MAXIMUM_NUMBER_SIZE,"%ld",time(NULL));
 
-  // combine the vrf_beta_string and the current data hash for the db. This will generate 2 different block producers for replayed rounds if db data changes
-  memcpy(data3+strlen(data3),data,strnlen(data,sizeof(data3)));
+  // remove the last two bytes to have a 100 second buffer
+  memcpy(data3+strlen(data3),data,strnlen(data,sizeof(data3))-2);
+
   memset(data,0,sizeof(data));
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)data3,(unsigned long long)strlen(data3));
   memset(data3,0,sizeof(data3));
@@ -917,7 +916,7 @@ int calculate_main_nodes_roles(void)
        The goal is to use as many bytes as possible, since the more unused bytes, the more chance that it will run out of bytes when selecting the block producer
     */
 
-    if (count2 != 0 && count2 <= 250 && settings == 0)
+    if (count2 >= MINIMUM_BYTE_RANGE && count2 <= MAXIMUM_BYTE_RANGE && settings == 0)
     {
       count2 = count2 % total_block_verifiers;
 
@@ -1181,7 +1180,7 @@ int get_delegates_online_status(void)
   }
 
   // wait for all of the sockets to connect
-  sleep(BLOCK_VERIFIERS_SETTINGS);
+  sleep(2);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, total_delegates, 0);
@@ -1250,7 +1249,7 @@ int get_delegates_online_status(void)
   }
 
   // wait for all of the data to be sent to the connected sockets, and for the block verifiers to process the data
-  sleep(10);
+  sleep(5);
 
   for (count = 0, total_delegates_online = 0; count < total_delegates; count++)
   {

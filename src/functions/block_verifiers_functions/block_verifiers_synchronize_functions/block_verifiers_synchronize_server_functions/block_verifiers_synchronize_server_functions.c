@@ -1057,6 +1057,8 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_dat
     return;
   }
 
+  // check if this node
+
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));

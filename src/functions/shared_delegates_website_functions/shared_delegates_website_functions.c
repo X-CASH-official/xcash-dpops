@@ -61,6 +61,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   // Variables
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
   char message[BUFFER_SIZE];
   char total_votes_data[BUFFER_SIZE];
   time_t current_date_and_time;
@@ -95,6 +96,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
   memset(message,0,sizeof(message));
   memset(total_votes_data,0,sizeof(total_votes_data));
 
@@ -173,14 +175,15 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   }
   RESET_ERROR_MESSAGES;
 
-  // get the total votes, block_verifier_online_percentage and block_verifier_total_rounds
+  // get the delegate_name, total votes, block_verifier_online_percentage and block_verifier_total_rounds
 
   // create the message
   memset(message,0,sizeof(message));
   memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+117,"\"}",2);
-  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"total_vote_count",total_votes_data) == 0 || read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_online_percentage",data) == 0 || read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data2) == 0)
+
+  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"delegate_name",data3) == 0 || read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"total_vote_count",total_votes_data) == 0 || read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_online_percentage",data) == 0 || read_document_field_from_collection(database_name,DATABASE_COLLECTION,message,"block_verifier_total_rounds",data2) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_SHARED_DELEGATES_WEBSITE_GET_STATISTICS_ERROR("Could not get the shared delegates statistics");
   }
@@ -188,6 +191,8 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memset(message,0,sizeof(message));
   memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\",\"delegate_name\":\"",19);
+  memcpy(message+strlen(message),data3,strnlen(data3,sizeof(message)));
   memcpy(message+strlen(message),"\",\"current_delegate_rank\":\"",27);
   snprintf(message+strlen(message),sizeof(message),"%d",current_delegate_rank);
   memcpy(message+strlen(message),"\",\"total_votes\":\"",17);
