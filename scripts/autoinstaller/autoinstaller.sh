@@ -794,6 +794,7 @@ function installation_settings()
       AUTOSTART_SETTINGS="YES"
     else
       get_autostart_services_settings
+      get_ssh_port
     fi
     print_installation_settings
   fi
@@ -1249,6 +1250,8 @@ function create_block_verifier_key()
 function install_firewall()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
+  # Reinstall iptables (solves some issues with some VPS)
+  sudo apt-get install --reinstall iptables &>/dev/null
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     echo "$FIREWALL_SHARED_DELEGATES" > ${HOME}/firewall_script.sh
   else
@@ -2152,7 +2155,7 @@ function test_update_reset_delegates()
   update
 }
 
-function install_firewall_script()
+function get_ssh_port()
 {
   echo
   echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
@@ -2160,6 +2163,11 @@ function install_firewall_script()
   echo -ne "\r"
   echo
   SSH_PORT_NUMBER=$([ ! "$data" == "" ] && echo "$data" || echo "$SSH_PORT_NUMBER")
+}
+
+function install_firewall_script()
+{
+  get_ssh_port
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
   sudo apt-get install --reinstall iptables &>/dev/null
@@ -2177,12 +2185,7 @@ function install_firewall_script()
 
 function install_firewall_script_shared_delegates()
 {
-  echo
-  echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
-  read -r data
-  echo -ne "\r"
-  echo
-  SSH_PORT_NUMBER=$([ ! "$data" == "" ] && echo "$data" || echo "$SSH_PORT_NUMBER")
+  get_ssh_port
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
   sudo apt-get install --reinstall iptables &>/dev/null
@@ -2200,12 +2203,7 @@ function install_firewall_script_shared_delegates()
 
 function install_firewall_script_test()
 {
-  echo
-  echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
-  read -r data
-  echo -ne "\r"
-  echo
-  SSH_PORT_NUMBER=$([ ! "$data" == "" ] && echo "$data" || echo "$SSH_PORT_NUMBER")
+  get_ssh_port
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
   sudo apt-get install --reinstall iptables &>/dev/null
