@@ -1158,6 +1158,7 @@ function create_files()
 function create_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Systemd Service Files${END_COLOR_PRINT}"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/xcash-daemon.service"
   sudo bash -c "echo '${SYSTEMD_TIMER_FILE_XCASH_DPOPS}' > /lib/systemd/system/xcash-dpops.timer"
