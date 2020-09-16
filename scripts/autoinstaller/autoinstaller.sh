@@ -1206,7 +1206,7 @@ function install_mongoc_driver()
   cd mongo-c-driver-*
   mkdir cmake-build &>/dev/null
   cd cmake-build &>/dev/null
-  sudo cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. &>/dev/null
+  sudo cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DCMAKE_BUILD_TYPE=Release .. &>/dev/null
   sudo make -j "${CPU_THREADS}" &>/dev/null
   sudo make install &>/dev/null
   sudo ldconfig
@@ -1677,7 +1677,7 @@ function update_mongoc_driver()
   cd mongo-c-driver-*
   mkdir cmake-build
   cd cmake-build
-  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF .. &>/dev/null
+  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DCMAKE_BUILD_TYPE=Release .. &>/dev/null
   sudo make -j "${CPU_THREADS}" &>/dev/null
   sudo make install &>/dev/null
   sudo ldconfig
