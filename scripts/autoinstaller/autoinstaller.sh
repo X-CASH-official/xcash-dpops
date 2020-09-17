@@ -664,7 +664,7 @@ function setup_lxc_container_profile()
 
 function get_wallet_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Create a New Wallet to Collect Block Rewards (leave empty for default: YES): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Create a New Wallet to Collect Block Rewards? Leave empty for YES, write N for NO: ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
@@ -682,7 +682,7 @@ function get_wallet_settings()
 
 function get_password_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Generate a New Password (leave empty for default: YES): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Generate a New Password? Leave empty for YES, write N for NO: ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
@@ -1915,7 +1915,7 @@ function configure()
   check_if_remove_shared_delegate_configure_install
 
   # Ask if use already present blockchain or use bootstrap file
-  echo -ne "${COLOR_PRINT_YELLOW}Download and use the blockchain bootstrap? (leave empty for default: YES): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Download and use the blockchain bootstrap? Leave empty for YES, write N for NO: ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
@@ -2339,7 +2339,7 @@ function register_update_delegate()
 {
   XCASH_DELEGATE_NAME=""
   echo
-  echo -ne "${COLOR_PRINT_YELLOW}Do you want to register a new delegate? (leave empty for default: YES): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Do you want to register a new delegate? Leave empty for YES, write N for NO: ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
@@ -2367,7 +2367,7 @@ function register_update_delegate()
     sudo systemctl start xcash-rpc-wallet
   fi
   echo
-  echo -ne "${COLOR_PRINT_YELLOW}Do you want to update the delegate information? (leave empty for default: YES): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Do you want to update the delegate information? Leave empty for YES, write N for NO: ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
