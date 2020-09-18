@@ -213,6 +213,7 @@ config:
       - cron
       - rsyslog
       - python2.7-minimal
+      - iproute2
     # Set the locale
     locale: en_US.UTF-8
     # Set the timezone (eg. Europe/Rome or UTC)
@@ -266,6 +267,8 @@ config:
           # hostname resolution (www.website.com)
           systemctl enable systemd-resolved
           systemctl start systemd-resolved
+          ln -fs /run/systemd/resolve/resolv.conf /etc/resolv.conf
+          systemctl restart systemd-resolved
           # Cron service
           systemctl enable cron
           systemctl start cron
@@ -365,8 +368,9 @@ function configure_init_lxc()
         sleep 1
       fi
     else
-      if ! sudo lxc storage list | grep -q "default "; then
-        # Default pool not in LXD storage
+      # Default pool not present on system
+      if sudo lxc storage list | grep -q "default "; then
+        # Default pool present LXD storage
         echo
         echo -e "${COLOR_PRINT_RED}ERROR: there is a default ZFS pool in the LXD database, but there is no default pool in your system (verified with zpool tool). Something is wrong with your installation. You need to reboot your system and then purge LXD with 'sudo snap remove --purge lxd' and then retry the installation.${END_COLOR_PRINT}"
         echo
