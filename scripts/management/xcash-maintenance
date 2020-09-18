@@ -329,11 +329,12 @@ function disable_services_autostart(){
 }
 
 function check_repositories_status(){
+	XHOME=$(eval echo "~$USER")
 	echo
   echo "Check if repos are up to date:"
-	(cd ~/xcash-official/xcash-dpops && [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] \
+	(cd $XHOME/xcash-official/xcash-dpops && [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] \
 	&& echo -e ${COLOR_PRINT_GREEN}xcash-dpops is up to date${END_COLOR_PRINT} || echo -e ${COLOR_PRINT_RED}xcash-dpops is not up to date${END_COLOR_PRINT}  \
-	&& cd ~/xcash-official/xcash-core && [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] \
+	&& cd $XHOME/xcash-official/xcash-core && [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] \
 	&& echo -e ${COLOR_PRINT_GREEN}xcash-core is up to date${END_COLOR_PRINT} || echo -e ${COLOR_PRINT_RED}xcash-core is not up to date${END_COLOR_PRINT})
 	echo
 }
