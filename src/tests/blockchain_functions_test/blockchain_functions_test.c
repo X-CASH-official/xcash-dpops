@@ -107,7 +107,8 @@ int blockchain_functions_test(void)
   #define VERIFY_NETWORK_BLOCK_DATA_ERROR(CODE,TEST) \
   network_block_string_to_blockchain_data(NETWORK_BLOCK,NETWORK_BLOCK_HEIGHT,BLOCK_VERIFIERS_TOTAL_AMOUNT); \
   CODE; \
-  if (verify_network_block_data(0,0,NETWORK_BLOCK_HEIGHT,NETWORK_BLOCK,BLOCK_VERIFIERS_TOTAL_AMOUNT) == 0 && strncmp(error_message.data[0],TEST,BUFFER_SIZE) == 0) \
+  INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST; \
+  if (verify_network_block_data(0,0,NETWORK_BLOCK_HEIGHT,BLOCK_VERIFIERS_TOTAL_AMOUNT) == 0 && strncmp(error_message.data[0],TEST,BUFFER_SIZE) == 0) \
   { \
     fprintf(stderr,"\033[1;32mPASSED! Test for verify_network_block_data checking for %s\033[0m\n",TEST); \
     count_test++; \
@@ -203,7 +204,8 @@ int blockchain_functions_test(void)
   }
 
   // verify the blockchain_data
-  if (verify_network_block_data(0,0,NETWORK_BLOCK_HEIGHT,NETWORK_BLOCK,BLOCK_VERIFIERS_TOTAL_AMOUNT) == 1)
+  INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST;
+  if (verify_network_block_data(0,0,NETWORK_BLOCK_HEIGHT,BLOCK_VERIFIERS_TOTAL_AMOUNT) == 1)
   {
     color_print("PASSED! Test for verify_network_block_data","green");
     count_test++;
