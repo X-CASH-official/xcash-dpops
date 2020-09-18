@@ -36,7 +36,7 @@ int delegate_website_functions_test(void)
   int count;
 
   // define macros
-  #define DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA "{\"most_total_rounds_delegate_name\":\"delegate_name_5\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_2\",\"best_block_verifier_online_percentage\":\"100\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_4\",\"most_block_producer_total_rounds\":\"2\",\"current_block_height\":\"521850\",\"XCASH_DPOPS_round_number\":\"0\",\"total_votes\":\"50000000\",\"XCASH_DPOPS_circulating_percentage\":\"0\"}"
+  #define DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA "{\"most_total_rounds_delegate_name\":\"delegate_name_5\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_2\",\"best_block_verifier_online_percentage\":\"100\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_4\",\"most_block_producer_total_rounds\":\"2\",\"current_block_height\":\"521850\",\"XCASH_DPOPS_round_number\":\"0\",\"total_votes\":\"10000000\",\"XCASH_DPOPS_circulating_percentage\":\"0\"}"
   #define DELEGATE_WEBSITE_GET_DELEGATES_TEST_DATA "[{\"total_vote_count\":\"10000000\",\"delegate_name\":\"delegate_name_1\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"1\",\"block_verifier_online_percentage\":\"0\"}]"
   #define DELEGATE_WEBSITE_GET_DELEGATES_STATISTICS_TEST_DATA "{\"public_address\":\"" TEST_WALLET_1 "\",\"total_vote_count\":\"10000000\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"1\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"current_delegate_rank\":\"1\"}"
   #define DELEGATE_WEBSITE_GET_DELEGATES_INFORMATION_TEST_DATA "{\"public_address\":\"" TEST_WALLET_1 "\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"\"}"
@@ -79,7 +79,6 @@ int delegate_website_functions_test(void)
   }
   else
   {
-    color_print(data_test,"yellow");
     color_print("FAILED! Test for server_receive_data_socket_delegates_website_get_statistics","red");
   }
   RESET_ERROR_MESSAGES;

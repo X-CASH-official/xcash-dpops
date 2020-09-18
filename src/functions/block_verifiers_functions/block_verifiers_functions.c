@@ -1044,26 +1044,8 @@ int block_verifiers_create_vote_results(char* message)
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
-  // get the previous network block string
-  sscanf(current_block_height,"%zu", &count);
-  count--;
-  snprintf(data3,sizeof(data3)-1,"%zu",count);
-  
-  memcpy(data,"{\"block_height\":\"",17);
-  memcpy(data+17,data3,strnlen(data3,sizeof(data)));
-  memcpy(data+strlen(data),"\"}",2);
-  memset(data3,0,strlen(data3));
-  memcpy(data3,"reserve_bytes_",14);
-  get_reserve_bytes_database(count,1);  
-  snprintf(data3+14,sizeof(data3)-15,"%zu",count);
-
-  if (read_document_field_from_collection(database_name,data3,data,"reserve_bytes",data2) == 0)
-  {
-    BLOCK_VERIFIERS_CREATE_VOTE_RESULTS_ERROR("Could not get the previous blocks reserve bytes");
-  }
-
   // verify the block
-  if (verify_network_block_data(1,1,"0",data2,BLOCK_VERIFIERS_AMOUNT) == 0)
+  if (verify_network_block_data(1,1,"0",BLOCK_VERIFIERS_AMOUNT) == 0)
   {
     BLOCK_VERIFIERS_CREATE_VOTE_RESULTS_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
   }

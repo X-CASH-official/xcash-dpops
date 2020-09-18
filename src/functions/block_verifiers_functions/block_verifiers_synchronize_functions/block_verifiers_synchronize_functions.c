@@ -957,11 +957,6 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       }
       database_data_socket_settings = 0;
 
-      if (verify_data(data,0) == 0)
-      {
-        SYNC_CHECK_RESERVE_PROOFS_SPECIFIC_DATABASE_ERROR("Could not verify data from the block verifier");
-      }
-
       // parse the message
       memset(data3,0,strlen(data3));
       if (parse_json_data(data,"reserve_proofs_database",data3,MAXIMUM_BUFFER_SIZE) == 0)
@@ -1119,11 +1114,6 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
         SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not receive data from the block verifier3");
       }
       database_data_socket_settings = 0;
-
-      if (verify_data(data,0) == 0)
-      {
-        SYNC_CHECK_RESERVE_BYTES_SPECIFIC_DATABASE_ERROR("Could not verify data from the block verifier2");
-      }
 
       // parse the message
       memset(data3,0,strlen(data3));
@@ -1574,11 +1564,6 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
   database_data_socket_settings = 0;
 
-  if (verify_data(data,0) == 0)
-  {
-    SYNC_DELEGATES_DATABASE_ERROR("Could not verify data from ",1);
-  }
-
   // parse the message
   memset(data2,0,strlen(data2));
   if (parse_json_data(data,"delegates_database",data2,sizeof(data2)) == 0)
@@ -1721,11 +1706,6 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
     SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
   }
   database_data_socket_settings = 0;
-
-  if (verify_data(data,0) == 0)
-  {
-    SYNC_STATISTICS_DATABASE_ERROR("Could not verify data from ",1);
-  }
 
   // parse the message
   memset(data2,0,strlen(data2));

@@ -21,14 +21,6 @@
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Global Variables
------------------------------------------------------------------------------------------------------------
-*/
-
-char previous_network_block_reserve_bytes_block_verifiers_public_addresses[BLOCK_VERIFIERS_TOTAL_AMOUNT][VRF_PUBLIC_KEY_LENGTH+1];
-
-/*
------------------------------------------------------------------------------------------------------------
 Functions
 -----------------------------------------------------------------------------------------------------------
 */
@@ -1050,13 +1042,12 @@ Parameters:
   BLOCK_VALIDATION_SIGNATURES_SETTINGS - 0 to not verify the block validation signatures, 1 to verify the block validation signatures. The consensus node when submitting the block should be the only time when the block validation signatures are verified
   PREVIOUS_BLOCK_HASH_SETTINGS - 0 to not verify the previous block hash, 1 to verify the previous block hash. The blockchain_test should be the only time when the previous block hash is not verified
   BLOCK_HEIGHT - The block height of the network block string, 0 to get the current block height
-  PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES - The previous network blocks reserve bytes
   BLOCK_VERIFIERS_TOTAL - The maximum amount of block verifiers
 Return: 0 if an error has occured or it is not verified, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const char* BLOCK_HEIGHT, char* PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES, const int BLOCK_VERIFIERS_TOTAL)
+int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, const int PREVIOUS_BLOCK_HASH_SETTINGS, const char* BLOCK_HEIGHT, const int BLOCK_VERIFIERS_TOTAL)
 {
   // Variables
   char block_height[MAXIMUM_NUMBER_SIZE];
@@ -1064,11 +1055,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   char data2[BUFFER_SIZE];
   char network_block_string[BUFFER_SIZE];
   char current_block_verifiers_public_address[(VRF_PUBLIC_KEY_LENGTH*2)+1];
-  char* message_copy1;
   int counter = 0;
   size_t count;
   size_t count2;
-  size_t count3;
   size_t number;
 
   // define macros
@@ -1406,26 +1395,6 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     }
     else
     {
-      // get the next block verifiers public addresses from the previous network blocks reserve bytes
-      message_copy1 = PREVIOUS_NETWORK_BLOCK_RESERVE_BYTES;
-      message_copy1 = strstr(message_copy1,BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING_DATA) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING_DATA)-1);
-
-      for (count = 0;(int)count < BLOCK_VERIFIERS_TOTAL; count++)
-      {    
-        memset(current_block_verifiers_public_address,0,sizeof(current_block_verifiers_public_address));
-        memcpy(current_block_verifiers_public_address,message_copy1,VRF_PUBLIC_KEY_LENGTH*2);
-        message_copy1 += (VRF_PUBLIC_KEY_LENGTH*2) + (sizeof(BLOCKCHAIN_DATA_SEGMENT_PUBLIC_ADDRESS_STRING_DATA)-1);
-        memset(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],0,sizeof(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count]));
-              
-        // convert the hexadecimal string to a string
-        for (number = 0, count3 = 0; number < VRF_PUBLIC_KEY_LENGTH*2; count3++, number += 2)
-        {
-          memset(data,0,strnlen(data,BUFFER_SIZE));
-          memcpy(data,&current_block_verifiers_public_address[number],2);
-          previous_network_block_reserve_bytes_block_verifiers_public_addresses[count][count3] = (int)strtol(data, NULL, 16);
-        }      
-      }
-
       // create a network block string
       if (blockchain_data_to_network_block_string(network_block_string,BLOCK_VERIFIERS_TOTAL) == 0)
       {
@@ -1438,11 +1407,11 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
         string_replace(network_block_string,sizeof(network_block_string),blockchain_data.blockchain_reserve_bytes.block_validation_node_signature_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE_DATA);
       }
 
-      // check if at least 67 of the next block verifiers in the previous block signed the data in the current block
+      // check if at least 67 of the next block verifiers in the previous block (or current block verifiers) signed the data in the current block
       for (count = 0, vrf_data_verify_count = 0; (int)count < BLOCK_VERIFIERS_TOTAL; count++)
       { 
         // check the signed data 
-        if (strlen(VRF_data.block_blob_signature[count]) == VRF_BETA_LENGTH+VRF_PROOF_LENGTH && VRF_data_verify(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],VRF_data.block_blob_signature[count],network_block_string) == 1)
+        if (VRF_data_verify(current_block_verifiers_list.block_verifiers_public_key[count],VRF_data.block_blob_signature[count],network_block_string) == 1)
         {
           vrf_data_verify_count++;
         }
@@ -1456,7 +1425,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
         for (count2 = 0; (int)count2 < BLOCK_VERIFIERS_TOTAL; count2++)
         { 
           // check the signed data 
-          if (strlen(VRF_data.block_blob_signature[count2]) == VRF_BETA_LENGTH+VRF_PROOF_LENGTH && VRF_data_verify(previous_network_block_reserve_bytes_block_verifiers_public_addresses[count],VRF_data.block_blob_signature[count2],network_block_string) == 1)
+          if (VRF_data_verify(current_block_verifiers_list.block_verifiers_public_key[count],VRF_data.block_blob_signature[count2],network_block_string) == 1)
           {
             vrf_data_verify_count++;
 

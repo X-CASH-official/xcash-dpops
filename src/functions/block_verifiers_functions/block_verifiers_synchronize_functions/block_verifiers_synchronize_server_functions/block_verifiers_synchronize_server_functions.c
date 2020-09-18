@@ -745,12 +745,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
   memcpy(data+139,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
-  // sign_data
-  if (sign_data(data) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
-  }
-
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
@@ -951,12 +945,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
   memcpy(data+137,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
-  // sign_data
-  if (sign_data(data) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
-  }
-
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
@@ -1115,12 +1103,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_dat
   memcpy(data+129,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
-  // sign_data
-  if (sign_data(data) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
-  }
-
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
 
@@ -1274,12 +1256,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_da
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"statistics_database\": \"",131);
   memcpy(data+131,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
   memcpy(data+strlen(data),"\",\r\n}",5);
-
-  // sign_data
-  if (sign_data(data) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not sign data");
-  }
 
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");

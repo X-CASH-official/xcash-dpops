@@ -78,8 +78,8 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   string_replace(data2,sizeof(data2),"\r\n","");
   string_replace(data2,sizeof(data2),"\n","");
   string_replace(data2,sizeof(data2),"\" : \"","\":\"");
-  string_replace(data3,sizeof(data2),"\", \"","\",\"");
-  string_replace(data3,sizeof(data2),"\" }","\"}");
+  string_replace(data2,sizeof(data2),"\", \"","\",\"");
+  string_replace(data2,sizeof(data2),"\" }","\"}");
 
   /* get the data hash of the document
   If the database collection is reserve proofs than the id is the public address created reserve proof

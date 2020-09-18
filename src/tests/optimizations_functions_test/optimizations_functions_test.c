@@ -361,8 +361,9 @@ int optimizations_functions_test(void)
     }
   }
   memset(data_test,0,sizeof(data_test));
+  INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST;
   network_block_string_to_blockchain_data(NETWORK_BLOCK,NETWORK_BLOCK_HEIGHT,BLOCK_VERIFIERS_TOTAL_AMOUNT);
-  verify_network_block_data(0,0,NETWORK_BLOCK_HEIGHT,NETWORK_BLOCK,BLOCK_VERIFIERS_TOTAL_AMOUNT);
+  verify_network_block_data(0,0,NETWORK_BLOCK_HEIGHT,BLOCK_VERIFIERS_TOTAL_AMOUNT);
   for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
     VRF_data_verify(NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,BLOCK_VALIDATION_NODE_SIGNATURE,NETWORK_BLOCK);
