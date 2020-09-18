@@ -141,7 +141,7 @@ long long int add_block_to_blocks_found(void)
   // Variables
   char data[SMALL_BUFFER_SIZE];
   char block_height[100];
-  char block_hash[65];  
+  char block_hash[BLOCK_HASH_LENGTH+1];  
   char block_reward[100];
   char block_date_and_time[100];
   long long int number;
@@ -175,6 +175,17 @@ long long int add_block_to_blocks_found(void)
   sscanf(current_block_height, "%lld", &number);
   number--;
   snprintf(block_height,sizeof(block_height)-1,"%lld",number);
+
+  // check if the block is already in the database
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"block_height\":\"",17);
+  memcpy(data+strlen(data),block_height,strnlen(block_height,sizeof(data)));
+  memcpy(data+strlen(data),"\"}",2);
+
+  if (count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,data) >= 1)
+  {
+    ADD_BLOCK_TO_BLOCKS_FOUND_ERROR("The block is already in the database.");
+  }
 
   // add the blocks data
   memset(data,0,sizeof(data));
