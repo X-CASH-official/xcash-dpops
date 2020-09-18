@@ -97,15 +97,12 @@ function check_height(){
                         (( STATUS_COUNT++ ))
                 fi
 
-
-		if (( STATUS_COUNT >= 3 )); then
-			STATUS=${COLOR_PRINT_GREEN}OK${END_COLOR_PRINT}
-		else
-			STATUS=${COLOR_PRINT_RED}FAIL${END_COLOR_PRINT}
-		fi
-
 		echo
-		echo "Blockhain sync status: $STATUS"
+		if (( STATUS_COUNT >= 3 )); then
+			echo -e "Blockhain sync status: ${COLOR_PRINT_GREEN}OK${END_COLOR_PRINT}"
+		else
+			echo -e "Blockhain sync status: ${COLOR_PRINT_RED}FAIL${END_COLOR_PRINT}"
+		fi
 		echo "Blockchain height: $HEIGHT"
 	else
 		echo
