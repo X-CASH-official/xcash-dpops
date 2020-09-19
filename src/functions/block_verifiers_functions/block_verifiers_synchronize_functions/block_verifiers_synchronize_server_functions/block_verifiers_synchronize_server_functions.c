@@ -72,7 +72,7 @@ void server_receive_data_socket_node_to_network_data_nodes_get_previous_current_
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return;
+  ERROR_DATA_MESSAGE;
 
   #define COPY_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_DATA(settings,block_verifiers_data) \
   memcpy(data+strlen(data),"\",\r\n \"",6); \
@@ -589,7 +589,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return;
+  ERROR_DATA_MESSAGE;
 
   memset(message,0,sizeof(message));
   memset(reserve_proofs_database,0,sizeof(reserve_proofs_database));
@@ -599,7 +599,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return;
+    ERROR_DATA_MESSAGE;
   }
 
   // parse the message
@@ -682,7 +682,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return;
+    ERROR_DATA_MESSAGE;
   }
   
   // Variables
@@ -707,7 +707,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
   error_message.total++; \
   } \
   pointer_reset_all; \
-  return;
+  ERROR_DATA_MESSAGE;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -786,7 +786,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return;
+  ERROR_DATA_MESSAGE;
 
   memset(message,0,sizeof(message));
   memset(reserve_bytes_database,0,sizeof(reserve_bytes_database));
@@ -797,7 +797,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return;
+    ERROR_DATA_MESSAGE;
   }
 
   // parse the message
@@ -882,7 +882,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return;
+    ERROR_DATA_MESSAGE;
   }
 
   // Variables
@@ -907,7 +907,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
   error_message.total++; \
   } \
   pointer_reset_all; \
-  return;
+  ERROR_DATA_MESSAGE;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -982,7 +982,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_dat
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return;
+  ERROR_DATA_MESSAGE;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1042,7 +1042,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_dat
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return;
+    ERROR_DATA_MESSAGE;
   }
 
   // check if this node
@@ -1070,7 +1070,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_dat
   error_message.total++; \
   } \
   pointer_reset_all; \
-  return;
+  ERROR_DATA_MESSAGE;
 
   memset(buffer,0,sizeof(buffer));
 
@@ -1141,7 +1141,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_da
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  return;
+  ERROR_DATA_MESSAGE;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1200,7 +1200,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_da
   // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
   if (network_data_nodes_sync_databases_settings == 0)
   {
-    return;
+    ERROR_DATA_MESSAGE;
   }
 
   // Variables
@@ -1226,7 +1226,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_da
     error_message.total++; \
   } \
   pointer_reset_all; \
-  return;
+  ERROR_DATA_MESSAGE;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)

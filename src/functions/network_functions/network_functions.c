@@ -390,7 +390,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
     
   // get the result
   memset(result,0,strlen(result));
-  if (receive_data(network_socket,result,RESULT_LENGTH,1,DATA_TIMEOUT_SETTINGS) < 2)
+  if (receive_data(network_socket,result,RESULT_LENGTH,1,DATA_TIMEOUT_SETTINGS) < 2 || strncmp(result,ERROR_DATA,BUFFER_SIZE) == 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host",1);
   }

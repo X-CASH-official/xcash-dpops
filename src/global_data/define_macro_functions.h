@@ -352,6 +352,23 @@ do \
 
 
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: ERROR_DATA_MESSAGE
+Description: Sends an error message back to the delegate
+Return: Writes the correct code
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define ERROR_DATA_MESSAGE \
+char message_error[BUFFER_SIZE_NETWORK_BLOCK_DATA]; \
+memset(message_error,0,sizeof(message_error)); \
+memcpy(message_error,ERROR_DATA,sizeof(ERROR_DATA)-1); \
+send_data(CLIENT_SOCKET,(unsigned char*)message_error,0,1,""); \
+return;
+
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------
