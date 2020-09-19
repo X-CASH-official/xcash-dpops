@@ -218,6 +218,7 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
   char data_hash[DATA_HASH_LENGTH+1];
   char public_address[XCASH_WALLET_LENGTH+1];
   char data[SMALL_BUFFER_SIZE];
+  int count;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR(settings) \
@@ -245,30 +246,13 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
     SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
   }
 
-  if (strncmp(network_data_nodes_list.network_data_nodes_public_address[0],public_address,XCASH_WALLET_LENGTH) == 0)
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
-    memcpy(network_data_nodes_sync_database_list.network_data_nodes_1_database_data_hash,data_hash,DATA_HASH_LENGTH);
-    network_data_nodes_sync_database_list.network_data_nodes_1_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
-  }
-  else if (strncmp(network_data_nodes_list.network_data_nodes_public_address[1],public_address,XCASH_WALLET_LENGTH) == 0)
-  {
-    memcpy(network_data_nodes_sync_database_list.network_data_nodes_2_database_data_hash,data_hash,DATA_HASH_LENGTH);
-    network_data_nodes_sync_database_list.network_data_nodes_2_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
-  }
-  else if (strncmp(network_data_nodes_list.network_data_nodes_public_address[2],public_address,XCASH_WALLET_LENGTH) == 0)
-  {
-    memcpy(network_data_nodes_sync_database_list.network_data_nodes_3_database_data_hash,data_hash,DATA_HASH_LENGTH);
-    network_data_nodes_sync_database_list.network_data_nodes_3_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
-  }
-  else if (strncmp(network_data_nodes_list.network_data_nodes_public_address[3],public_address,XCASH_WALLET_LENGTH) == 0)
-  {
-    memcpy(network_data_nodes_sync_database_list.network_data_nodes_4_database_data_hash,data_hash,DATA_HASH_LENGTH);
-    network_data_nodes_sync_database_list.network_data_nodes_4_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
-  }
-  else if (strncmp(network_data_nodes_list.network_data_nodes_public_address[4],public_address,XCASH_WALLET_LENGTH) == 0)
-  {
-    memcpy(network_data_nodes_sync_database_list.network_data_nodes_5_database_data_hash,data_hash,DATA_HASH_LENGTH);
-    network_data_nodes_sync_database_list.network_data_nodes_5_previous_block_settings = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+    if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],public_address,BUFFER_SIZE) == 0)
+    {
+      memcpy(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],data_hash,DATA_HASH_LENGTH);
+      network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings[count] = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+    }
   }
   return;
   
