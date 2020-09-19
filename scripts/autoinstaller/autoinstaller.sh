@@ -37,6 +37,8 @@ NODEJS_LATEST_VERSION="node-v14.10.1-linux-x64"
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
+XCASH_CORE_BRANCH="xcash_proof_of_stake"
+XCASH_BLOCKCHAIN_BOOTSTRAP_URL="http://94.130.59.172/xcash-blockchain.7z"
 XCASH_DIR=""
 XCASH_WALLET_DIR=""
 XCASH_SYSTEMPID_DIR=""
@@ -56,8 +58,9 @@ MONGODB_CURRENT_VERSION=""
 MONGOC_DRIVER_URL="https://github.com/mongodb/mongo-c-driver/releases/download/${MONGOC_DRIVER_LATEST_VERSION:15}/${MONGOC_DRIVER_LATEST_VERSION}.tar.gz"
 MONGOC_DRIVER_DIR=""
 MONGOC_DRIVER_CURRENT_VERSION=""
-XCASH_DPOPS_PACKAGES="build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libpcsclite-dev git screen p7zip-full moreutils iptables"
+XCASH_DPOPS_PACKAGES="build-essential cmake pkg-config libboost-all-dev libssl-dev libzmq3-dev libunbound-dev libsodium-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libpcsclite-dev git screen p7zip-full moreutils wget iptables"
 CURRENT_XCASH_WALLET_INFORMATION=""
+PUBLIC_ADDRESS=""
 
 # Files
 FIREWALL=""
@@ -830,7 +833,7 @@ function get_current_xcash_wallet_data()
   echo
   echo -ne "${COLOR_PRINT_YELLOW}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
 
-  systemctl start xcash-daemon &>/dev/null
+  sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
 
   screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_WALLET_DIR}"delegate-wallet --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --trusted-daemon --log-file "${XCASH_LOGS_DIR}"xcash-wallet-rpc.log
@@ -847,15 +850,12 @@ function get_current_xcash_wallet_data()
   VIEW_KEY=$(curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"view_key"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g")
   MNEMONIC_SEED=$(curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"query_key","params":{"key_type":"mnemonic"}}' -H 'Content-Type: application/json' | grep \"key\" | sed s"|    \"key\": ||g" | sed s"|\"||g")
   CURRENT_XCASH_WALLET_INFORMATION="${COLOR_PRINT_GREEN}############################################################\n                 X-CASH Wallet Data  \n############################################################${END_COLOR_PRINT}\n\n${COLOR_PRINT_YELLOW}Public Address: $PUBLIC_ADDRESS\nMnemonic Seed: $MNEMONIC_SEED\nSpend Key: $SPEND_KEY\nView Key: $VIEW_KEY\nWallet Password: $WALLET_PASSWORD\nBlock Verifiers Public Key: $BLOCK_VERIFIER_PUBLIC_KEY\nBlock Verifiers Secret Key: $BLOCK_VERIFIER_SECRET_KEY${END_COLOR_PRINT}"
+  PUBLIC_ADDRESS=${PUBLIC_ADDRESS%?}
 
   curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"stop_wallet"}' -H 'Content-Type: application/json' &>/dev/null
   sleep 10s
-
-  # add the public address and block verifiers secret key to the XCASH_Daemon systemd service file
-  PUBLIC_ADDRESS=${PUBLIC_ADDRESS%?}
-  sed_services "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash-dpops-delegates-public-address $PUBLIC_ADDRESS --xcash-dpops-delegates-secret-key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/xcash-daemon.service
   
-  systemctl stop xcash-daemon &>/dev/null
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 30s
   
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Current X-CASH Wallet Data${END_COLOR_PRINT}"
@@ -1101,6 +1101,7 @@ function build_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building X-CASH (This Might Take A While)${END_COLOR_PRINT}"
   cd "${XCASH_DIR}"
+  git checkout --quiet ${XCASH_CORE_BRANCH}
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
     echo "y" | make clean &>/dev/null
     make release -j "${CPU_THREADS}" &>/dev/null
@@ -1322,7 +1323,7 @@ function sync_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}      Syncing X-CASH Wallet (This Might Take A While)${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
-  systemctl start xcash-daemon &>/dev/null
+  sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
   
   screen -dmS XCASH_RPC_Wallet "${XCASH_DIR}"build/release/bin/xcash-wallet-rpc --wallet-file "${XCASH_WALLET_DIR}"delegate-wallet --password "${WALLET_PASSWORD}" --rpc-bind-port 18288 --confirm-external-bind --disable-rpc-login --trusted-daemon --log-file "${XCASH_LOGS_DIR}"xcash-wallet-rpc.log
@@ -1336,8 +1337,9 @@ function sync_xcash_wallet()
   curl -s -X POST http://127.0.0.1:18288/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"stop_wallet"}' -H 'Content-Type: application/json' &>/dev/null
   sleep 10s
   
-  systemctl stop xcash-daemon &>/dev/null
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 30s
+  echo -e "${COLOR_PRINT_GREEN}Operation Completed${END_COLOR_PRINT}"
 }
 
 function create_xcash_wallet()
@@ -1346,13 +1348,15 @@ function create_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}      Creating X-CASH Wallet (This Might Take A While)  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   
-  systemctl start xcash-daemon &>/dev/null
+  sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
   
   echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --trusted-daemon &>/dev/null
   
-  systemctl stop xcash-daemon &>/dev/null
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 30s
+
+  echo -e "${COLOR_PRINT_GREEN}Operation Completed${END_COLOR_PRINT}"
   
   echo
   echo
@@ -1364,13 +1368,15 @@ function import_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   
-  systemctl start xcash-daemon &>/dev/null
+  sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
   
   (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${WALLET_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --trusted-daemon &>/dev/null
   
-  systemctl stop xcash-daemon &>/dev/null
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 30s
+
+  echo -e "${COLOR_PRINT_GREEN}Operation Completed${END_COLOR_PRINT}"
   
   echo
   echo
@@ -1838,33 +1844,22 @@ function install()
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
     rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet*
     
-    systemctl start xcash-daemon &>/dev/null
+    sudo systemctl start xcash-daemon &>/dev/null
     sleep 30s
   
     (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${MNEMONIC_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --trusted-daemon &>/dev/null
   
-    systemctl stop xcash-daemon &>/dev/null
+    sudo systemctl stop xcash-daemon &>/dev/null
     sleep 30s
+
+    echo -e "${COLOR_PRINT_GREEN}Operation Completed${END_COLOR_PRINT}"
   
     echo
     echo
   fi
 
-  # test change the xcash-core to xcash_proof_of_stake branch
-  sudo systemctl stop xcash-dpops
-  cd "${XCASH_DIR}"
-  git checkout --quiet xcash_proof_of_stake
-  if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
-    echo "y" | make clean &>/dev/null
-    make release -j "${CPU_THREADS}" &>/dev/null
-  else
-    echo "y" | make clean &>/dev/null
-    if [ "$RAM_CPU_RATIO" -eq 0 ]; then
-        make release &>/dev/null
-    else
-        make release -j $((CPU_THREADS / 2)) &>/dev/null
-    fi
-  fi
+  # add the public address and block verifiers secret key to the XCASH_Daemon systemd service file
+  sed_services "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash-dpops-delegates-public-address $PUBLIC_ADDRESS --xcash-dpops-delegates-secret-key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/xcash-daemon.service
 
   # Create a swap file if they don't already have one and have low ram, if not inside container
   if [ ! "$container" == "lxc" ]; then
@@ -1947,17 +1942,22 @@ function configure()
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
     rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet*
     
-    systemctl start xcash-daemon &>/dev/null
+    sudo systemctl start xcash-daemon &>/dev/null
     sleep 30s
   
     (echo -ne "\n"; echo "${WALLET_PASSWORD}"; echo "exit") | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --restore-deterministic-wallet --electrum-seed "${MNEMONIC_SEED}" --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --trusted-daemon &>/dev/null
     
-    systemctl stop xcash-daemon &>/dev/null
+    sudo systemctl stop xcash-daemon &>/dev/null
     sleep 30s
+
+    echo -e "${COLOR_PRINT_GREEN}Operation Completed${END_COLOR_PRINT}"
     
     echo
     echo
   fi
+
+  # add the public address and block verifiers secret key to the XCASH_Daemon systemd service file
+  sed_services "s/xcash-core\/build\/release\/bin\/xcashd/xcash-core\/build\/release\/bin\/xcashd --xcash-dpops-delegates-public-address $PUBLIC_ADDRESS --xcash-dpops-delegates-secret-key $BLOCK_VERIFIER_SECRET_KEY/g" /lib/systemd/system/xcash-daemon.service
 
   # Start the systemd service files
   start_systemd_service_files
@@ -2066,7 +2066,7 @@ function uninstall()
 
   # Restart the X-CASH Daemon and stop the X-CASH Wallet RPC
   echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
-  sudo systemctl restart xcash-daemon
+  sudo systemctl stop xcash-daemon
   sleep 10s
   sudo systemctl stop xcash-rpc-wallet
   sleep 10s
@@ -2266,38 +2266,42 @@ function install_firewall_script_test()
 
 function install_or_update_blockchain()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installing / Updating The BlockChain (This Might Take a While)${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Installing / Updating The BlockChain (This Might Take a While, please follow the progress)${END_COLOR_PRINT}"
   cd $HOME
   XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name ".X-CASH" -print)/
   if [ $XCASH_BLOCKCHAIN_INSTALLATION_DIR = "/" ]; then
   XCASH_BLOCKCHAIN_INSTALLATION_DIR="/root/.X-CASH/"
   fi
   cd && test -f xcash-blockchain.7z && rm -rf xcash-blockchain.7z*
-  wget -q http://94.130.59.172/xcash-blockchain.7z
-  7z x xcash-blockchain.7z -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR} &>/dev/null
+  echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
+  wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
+  echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
+  7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cp -a .X-CASH/* ./
   rm -r .X-CASH
   cd $HOME
   rm xcash-blockchain.7z
-  echo -ne "\r${COLOR_PRINT_GREEN}Installing / Updating The BlockChain (This Might Take a While)${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Installing / Updating The BlockChain Completed${END_COLOR_PRINT}"
   echo
 }
 
 function install_blockchain()
 {
   if [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ] || [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}lmdb/ ]; then
-    echo -ne "${COLOR_PRINT_YELLOW}Installing The BlockChain (This Might Take a While)${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}Installing The BlockChain (This Might Take a While, please follow the progress)${END_COLOR_PRINT}"
     cd $HOME
     cd && test -f xcash-blockchain.7z && rm -rf xcash-blockchain.7z*
-    wget -q http://94.130.59.172/xcash-blockchain.7z
-    7z x xcash-blockchain.7z -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR} &>/dev/null
+    echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
+    wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
+    echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
+    7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cp -a .X-CASH/* ./
     rm -r .X-CASH
     cd $HOME
     rm xcash-blockchain.7z
-    echo -ne "\r${COLOR_PRINT_GREEN}Installing The BlockChain (This Might Take a While)${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}Installing The BlockChain Completed${END_COLOR_PRINT}"
     echo
   fi
 }
