@@ -577,15 +577,6 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   size_t sent;
   long long int bytes = 1;
 
-   /* Set the socket options for sending and receiving data
-  SOL_SOCKET = socket level
-  SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
-  */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDBUF,&(int){8388608}, sizeof(int)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_RCVBUF,&(int){8388608}, sizeof(int)) != 0)
-  {    
-    return 0;
-  }  
-
   if (MESSAGE_SETTINGS == 1)
   {
     // append the SOCKET_END_STRING to the message since this is a socket message
