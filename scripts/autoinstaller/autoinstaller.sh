@@ -2032,7 +2032,7 @@ function update()
     update_npm
   fi
   
-  # Create xcash wallet log hardlink
+  # Create xcash wallet log symlink to old location
   touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
 
   # Start the systemd service files
