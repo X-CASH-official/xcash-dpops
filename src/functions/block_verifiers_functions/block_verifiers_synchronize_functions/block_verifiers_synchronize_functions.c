@@ -159,7 +159,7 @@ void sync_network_data_nodes_database(void)
       {
         if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count3],xcash_wallet_public_address,BUFFER_SIZE) != 0)
         {
-          send_data_socket(network_data_nodes_list.network_data_nodes_IP_address[count3],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+          send_data_socket(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count3],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
         }
       }
     }
