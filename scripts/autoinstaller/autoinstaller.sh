@@ -1413,6 +1413,7 @@ function configure_npm()
 {
   if [ "$EUID" -eq 0 ]; then
     echo -ne "${COLOR_PRINT_YELLOW}Configuring NPM For Root User${END_COLOR_PRINT}"
+    . "${HOME}"/.profile
     npm config set user 0 &>/dev/null
     npm config set unsafe-perm true &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Configuring NPM For Root User${END_COLOR_PRINT}"
@@ -1423,6 +1424,7 @@ function configure_npm()
 function update_npm()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating NPM${END_COLOR_PRINT}"
+  . "${HOME}"/.profile
   npm install -g npm &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NPM${END_COLOR_PRINT}"
   echo
@@ -1846,7 +1848,7 @@ function install()
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-    
+
     rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
     
     sudo systemctl start xcash-daemon &>/dev/null
@@ -2035,6 +2037,7 @@ function update()
     else
       echo -e "${COLOR_PRINT_GREEN}NodeJS Is Already Up To Date${END_COLOR_PRINT}"
     fi
+    configure_npm
     update_npm
   fi
   
