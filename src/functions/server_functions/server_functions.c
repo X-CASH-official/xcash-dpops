@@ -650,10 +650,10 @@ void socket_thread(const int CLIENT_SOCKET)
  } 
  else if (strstr(buffer,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL)
  {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
      server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check((const char*)buffer);
-     server_limit_public_addresses(3,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)

@@ -234,12 +234,6 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
   memset(data_hash,0,sizeof(data_hash));
   memset(public_address,0,sizeof(public_address));
 
-  // verify the message
-  if (verify_data(MESSAGE,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not verify the message");
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash",data_hash,DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"previous_blocks_reserve_bytes",data,sizeof(data)) == 0)
   {
