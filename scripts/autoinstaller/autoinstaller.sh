@@ -1347,7 +1347,9 @@ function create_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}      Creating X-CASH Wallet (This Might Take A While)  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  
+
+  rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
+
   sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
   
@@ -1367,7 +1369,9 @@ function import_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  
+
+  rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
+
   sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
   
@@ -1842,7 +1846,8 @@ function install()
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-    rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet*
+    
+    rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
     
     sudo systemctl start xcash-daemon &>/dev/null
     sleep 30s
@@ -1940,7 +1945,8 @@ function configure()
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-    rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet*
+
+    rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
     
     sudo systemctl start xcash-daemon &>/dev/null
     sleep 30s
