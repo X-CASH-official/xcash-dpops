@@ -95,6 +95,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
   char reserve_proof[BUFFER_SIZE_RESERVE_PROOF];  
   char data3[MAXIMUM_NUMBER_SIZE];
   size_t count3;
+  int count;
   int settings = 1;
 
   // define macros
@@ -135,18 +136,23 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
   
   if (settings == 1)
   {
-    // check if the reserve proof is valid
-    if (check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) != 1)
+    // check if the reserve proof is valid. check a few times to make sure it does not error since were already checking reserve proofs
+    for (count = 0; count < 5; count++)
     {
-      invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-      invalid_reserve_proofs.public_address_created_reserve_proof[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-      invalid_reserve_proofs.public_address_voted_for[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
-      invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
-      sscanf(data3,"%zu", &count3);     
-      memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],public_address,XCASH_WALLET_LENGTH);
-      memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
-      invalid_reserve_proofs.count++;
-    }    
+      if (check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) == 0)
+      {
+        invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+        invalid_reserve_proofs.public_address_created_reserve_proof[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+        invalid_reserve_proofs.public_address_voted_for[invalid_reserve_proofs.count] = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+        invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count] = (char*)calloc(BUFFER_SIZE_RESERVE_PROOF,sizeof(char));
+        sscanf(data3,"%zu", &count3);     
+        memcpy(invalid_reserve_proofs.block_verifier_public_address[invalid_reserve_proofs.count],public_address,XCASH_WALLET_LENGTH);
+        memcpy(invalid_reserve_proofs.reserve_proof[invalid_reserve_proofs.count],reserve_proof,strnlen(reserve_proof,BUFFER_SIZE_RESERVE_PROOF));
+        invalid_reserve_proofs.count++;
+        break;
+      }
+      sleep(1);
+    }  
   }
   return;
   
