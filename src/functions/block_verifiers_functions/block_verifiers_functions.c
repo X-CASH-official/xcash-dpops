@@ -1785,7 +1785,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the sockets to connect
-  sleep(2);
+  sleep(CONNECTION_TIMEOUT_SETTINGS);
 
   // get the total amount of sockets that are ready
   number = epoll_wait(epoll_fd_copy, events, TOTAL_BLOCK_VERIFIERS, 0);
