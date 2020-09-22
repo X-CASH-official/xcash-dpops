@@ -233,7 +233,7 @@ void* current_block_height_timer_thread(void* parameters)
         if (registration_settings == 0)
         {
           // wait for the reserve proof checking before displaying the message
-          sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,(BLOCK_TIME-1),45);
+          sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),45);
 
           memset(data,0,strlen(data));
           memcpy(data,"Network Block ",14);
@@ -855,7 +855,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
 
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
-      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2);
+      sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2);
 
       color_print("Part 2 - Send all invalid reserve proofs to all block verifiers","yellow");
 
@@ -872,7 +872,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       }
 
       // wait for the block verifiers to process the votes
-      sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3);
+      sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3);
 
       color_print("Part 3 - Check if the valid amount of block verifiers had the same invalid reserve proofs","yellow");
 

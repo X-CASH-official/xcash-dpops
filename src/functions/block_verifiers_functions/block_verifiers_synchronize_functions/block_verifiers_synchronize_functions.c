@@ -103,7 +103,7 @@ void sync_network_data_nodes_database(void)
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
 
   // wait so all network data nodes start at the same time, this way one is not reseting the variables as another one is sending them data
-  sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,25);
+  sync_block_verifiers_minutes_and_seconds(0,25);
 
   // get if the network data node has the previous blocks reserve bytes, because if not this network data node should not be synced from
   memcpy(data2,"{\"block_height\":\"",17);
