@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <sys/sysinfo.h>
+#include <time.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 

@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
+#include <time.h>
 #include <mongoc/mongoc.h>
 #include <bson/bson.h>
 
