@@ -1324,6 +1324,8 @@ function sync_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}      Syncing X-CASH Wallet (This Might Take A While)${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
+  sudo systemctl stop xcash-daemon &>/dev/null
+  sleep 5
   sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
   
