@@ -1349,8 +1349,11 @@ function create_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}      Creating X-CASH Wallet (This Might Take A While)  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"
   rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
 
+  sudo systemctl stop xcash-daemon &>/dev/null
+  sleep 5
   sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
   
@@ -1371,8 +1374,11 @@ function import_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"
   rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
 
+  sudo systemctl stop xcash-daemon &>/dev/null
+  sleep 5
   sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
   
@@ -1750,9 +1756,10 @@ function uninstall_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Uninstall Systemd Service Files${END_COLOR_PRINT}"
   if [ "$container" == "lxc" ]; then
-    sudo truncate --size 0 /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service
+    sudo truncate --size 0 /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service 
+    sudo rm -f /lib/systemd/system/xcash-dpops.timer /lib/systemd/system/xcash-rpc-wallet.timer ${HOME}/firewall_script.sh
   else
-    sudo rm /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service
+    sudo rm -f /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service /lib/systemd/system/xcash-dpops.timer /lib/systemd/system/xcash-rpc-wallet.timer ${HOME}/firewall_script.sh
   fi
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstall Systemd Service Files${END_COLOR_PRINT}"
@@ -1850,8 +1857,11 @@ function install()
     echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
+    cd "${XCASH_DPOPS_INSTALLATION_DIR}"
     rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
     
+    sudo systemctl stop xcash-daemon &>/dev/null
+    sleep 5
     sudo systemctl start xcash-daemon &>/dev/null
     sleep 30s
   
@@ -1949,8 +1959,11 @@ function configure()
     echo -e "${COLOR_PRINT_GREEN}     Importing X-CASH Wallet (This Might Take A While) ${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
+    cd "${XCASH_DPOPS_INSTALLATION_DIR}"
     rm "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
     
+    sudo systemctl stop xcash-daemon &>/dev/null
+    sleep 5
     sudo systemctl start xcash-daemon &>/dev/null
     sleep 30s
   
