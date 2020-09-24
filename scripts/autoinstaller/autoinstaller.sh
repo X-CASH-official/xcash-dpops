@@ -1379,8 +1379,6 @@ function create_xcash_wallet()
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Stopping local daemon${END_COLOR_PRINT}"
   echo
-
-  echo
 }
 
 function import_xcash_wallet()
@@ -1397,7 +1395,7 @@ function import_xcash_wallet()
   sleep 10s
   sudo systemctl start xcash-daemon &>/dev/null
   sleep 20s
-  echo -ne "/r${COLOR_PRINT_GREEN}Starting local daemon${END_COLOR_PRINT}"
+  echo -ne "\r${COLOR_PRINT_GREEN}Starting local daemon${END_COLOR_PRINT}"
   echo
   
   echo -e "${COLOR_PRINT_GREEN}Starting Wallet Refresh${END_COLOR_PRINT}"
