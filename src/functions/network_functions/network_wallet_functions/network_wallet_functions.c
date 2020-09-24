@@ -8,6 +8,8 @@
 #include "define_macros.h"
 #include "variables.h"
 
+#include "count_database_functions.h"
+#include "read_database_functions.h"
 #include "network_functions.h"
 #include "network_wallet_functions.h"
 #include "string_functions.h"
@@ -133,10 +135,13 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
 
   // Variables
   char data[BUFFER_SIZE];
-  char data2[SMALL_BUFFER_SIZE];  
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
+  int count;
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // create the message
   memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"check_reserve_proof\",\"params\":{\"address\":\"",78);
@@ -156,5 +161,30 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   { 
     return 0;
   }
-  return parse_json_data(data2,"total",result, BUFFER_SIZE) == 0 ? -1 : 1;
+
+  // parse the message
+  if (parse_json_data(data2,"total",result, BUFFER_SIZE) == 0)
+  {
+    return 0;
+  }
+
+  // Check if the reserve proof is returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
+  memcpy(data3,"{\"reserve_proof\":\"",18);
+  memcpy(data3+strlen(data3),RESERVE_PROOF,strnlen(RESERVE_PROOF,sizeof(data3)));
+  memcpy(data3+strlen(data3),"\"}",2);
+
+  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  {
+    memset(data,0,sizeof(data));
+    memset(data2,0,sizeof(data2));
+    memcpy(data,"reserve_proofs_",15);
+    snprintf(data+15,sizeof(data)-16,"%d",count);
+
+    if (count_documents_in_collection(database_name,data,data3) == 1)
+    {
+      return read_document_field_from_collection(database_name,data,data3,"total",data2) == 0 || strncmp(data2,result,BUFFER_SIZE) != 0 ? 0 : 1;
+    }
+  }
+
+  return 0;
 }

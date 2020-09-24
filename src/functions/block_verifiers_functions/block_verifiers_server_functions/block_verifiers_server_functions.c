@@ -92,7 +92,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
   // Variables
   char block_verifiers_public_address[XCASH_WALLET_LENGTH+1];
   char public_address[XCASH_WALLET_LENGTH+1];
-  char reserve_proof[BUFFER_SIZE_RESERVE_PROOF];  
+  char reserve_proof[BUFFER_SIZE_RESERVE_PROOF+1];  
   char data3[MAXIMUM_NUMBER_SIZE];
   size_t count3;
   int count;
@@ -137,7 +137,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
   if (settings == 1)
   {
     // check if the reserve proof is valid. check a few times to make sure it does not error since were already checking reserve proofs
-    for (count = 0; count < 5; count++)
+    for (count = 0; count < INVALID_RESERVE_PROOFS_SETTINGS; count++)
     {
       if (check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) == 0)
       {
@@ -151,7 +151,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
         invalid_reserve_proofs.count++;
         break;
       }
-      sleep(1);
+      sleep(2);
     }  
   }
   return;

@@ -840,7 +840,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   for (;;)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == BLOCK_TIME-1)
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == (BLOCK_TIME-1))
     {
       // check if there was any invalid reserve proofs found
       if (invalid_reserve_proofs.count <= 0)
@@ -848,11 +848,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         color_print("No invalid reserve proofs were found","yellow");
         RESET_INVALID_RESERVE_PROOFS_DATA;
       }
-
-      // reset the network_data_node_valid_amount
-      pthread_mutex_lock(&network_data_nodes_valid_count_lock);
-      network_data_node_valid_amount = network_data_node_settings;
-      pthread_mutex_unlock(&network_data_nodes_valid_count_lock);
 
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
       sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2);
@@ -881,10 +876,6 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       {
         fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
       }
-      else if (network_data_node_valid_amount >= NETWORK_DATA_NODES_AMOUNT-2)
-      {
-        fprintf(stderr,"\033[1;32m%d / %d network data nodes have the same invalid reserve proofs\033[0m\n\n",network_data_node_valid_amount,NETWORK_DATA_NODES_AMOUNT-1);      
-      }
       else
       {
         fprintf(stderr,"\033[1;31m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
@@ -902,17 +893,13 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       RESET_INVALID_RESERVE_PROOFS_DATA;
     }
     
-    // check if the reserve proof is valid, or if its valid but its returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
+    // check if the reserve proof is invalid
     memset(data,0,strlen(data));
-    if (select_random_unique_reserve_proof(&reserve_proof) == 1)
-    { 
-      count = check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof);
-      if (count == 0 || (count == 1 && strncmp(data,reserve_proof.reserve_proof_amount,BUFFER_SIZE) != 0))
-      {
-        send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
-      }
+    if (select_random_unique_reserve_proof(&reserve_proof) == 1 && check_reserve_proofs(data,reserve_proof.public_address_created_reserve_proof,reserve_proof.reserve_proof) == 0)
+    {
+      send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
     }
-    sleep(INVALID_RESERVE_PROOFS_SETTINGS);
+    sleep(3);
   }
 }
 

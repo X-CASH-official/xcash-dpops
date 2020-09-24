@@ -738,6 +738,7 @@ void socket_thread(const int CLIENT_SOCKET)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
+     // since this function will allocate memory to the invalid reserve proof struct, only add one invalid reserve proof at a time
      pthread_mutex_lock(&invalid_reserve_proof_lock);
      server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
      pthread_mutex_unlock(&invalid_reserve_proof_lock);
