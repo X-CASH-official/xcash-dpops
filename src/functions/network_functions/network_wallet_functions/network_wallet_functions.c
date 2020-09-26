@@ -163,28 +163,5 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   }
 
   // parse the message
-  if (parse_json_data(data2,"total",result, BUFFER_SIZE) == 0)
-  {
-    return 0;
-  }
-
-  // Check if the reserve proof is returning a different amount then the amount in the database. This would mean a user changed their database to increase the total
-  memcpy(data3,"{\"reserve_proof\":\"",18);
-  memcpy(data3+strlen(data3),RESERVE_PROOF,strnlen(RESERVE_PROOF,sizeof(data3)));
-  memcpy(data3+strlen(data3),"\"}",2);
-
-  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
-  {
-    memset(data,0,sizeof(data));
-    memset(data2,0,sizeof(data2));
-    memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",count);
-
-    if (count_documents_in_collection(database_name,data,data3) == 1)
-    {
-      return read_document_field_from_collection(database_name,data,data3,"total",data2) == 0 || strncmp(data2,result,BUFFER_SIZE) != 0 ? 0 : 1;
-    }
-  }
-
-  return 0;
+  return parse_json_data(data2,"total",result, BUFFER_SIZE) == 0 ? 0 : 1;
 }
