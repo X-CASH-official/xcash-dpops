@@ -47,6 +47,92 @@ Functions
 -----------------------------------------------------------------------------------------------------------
 */
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_current_block_height
+Description: Runs the code when the server receives the GET_CURRENT_BLOCK_HEIGHT message
+Parameters:
+  CLIENT_IP_ADDRESS - The IP address to send the data to
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_get_current_block_height(const char* CLIENT_IP_ADDRESS)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+
+  memset(data,0,sizeof(data));
+
+  // create the message
+  memcpy(data,"{\r\n \"message_settings\": \"SEND_CURRENT_BLOCK_HEIGHT\",\r\n \"block_height\": \"",72);
+  memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
+  memcpy(data+strlen(data),"\",\r\n}",5);
+  
+  // sign_data
+  if (sign_data(data) == 0)
+  { 
+    return;
+  }
+
+  send_data_socket(CLIENT_IP_ADDRESS,SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  return;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_send_current_block_height
+Description: Runs the code when the server receives the SEND_CURRENT_BLOCK_HEIGHT message
+Parameters:
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_send_current_block_height(const char* MESSAGE)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char public_address[XCASH_WALLET_LENGTH+1];
+  char block_height[100];
+  int count;
+  size_t count2;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_SEND_CURRENT_BLOCK_HEIGHT_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_send_current_block_height",52); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  } \
+  return;
+
+  memset(data,0,sizeof(data));
+  memset(public_address,0,sizeof(public_address));
+  memset(block_height,0,sizeof(block_height));
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"block_height",block_height,sizeof(block_height)) == 0 || parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_SEND_CURRENT_BLOCK_HEIGHT_ERROR("Could not parse the data");
+  }
+
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,BUFFER_SIZE) == 0)
+    {
+      sscanf(block_height,"%zu",&count2);
+      block_verifiers_current_block_height[count] = count2;
+      break;
+    }
+  }
+  return;
+
+  #undef SERVER_RECEIVE_DATA_SOCKET_SEND_CURRENT_BLOCK_HEIGHT_ERROR
+}
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -167,6 +253,8 @@ void server_receive_data_socket_node_to_network_data_nodes_get_current_block_ver
     }
   }
 
+
+
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"",129);
   for (count = 0; count < total_delegates; count++)
@@ -222,6 +310,7 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR(settings) \
+  color_print(settings,"red"); \
   if (debug_settings == 1) \
   { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",87); \
@@ -240,12 +329,13 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
     SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
   }
 
-  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],public_address,BUFFER_SIZE) == 0)
+    if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,BUFFER_SIZE) == 0)
     {
-      memcpy(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],data_hash,DATA_HASH_LENGTH);
-      network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings[count] = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+      memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count]));
+      memcpy(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count],data_hash,DATA_HASH_LENGTH);
+      block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
     }
   }
   return;

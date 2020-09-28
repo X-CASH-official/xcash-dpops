@@ -71,11 +71,11 @@ struct current_round_part_vote_data {
     int vote_results_invalid; // The current part of the round vote count for a invalid vote.
 };
 
-struct network_data_nodes_sync_database_list {
-    char network_data_node_public_address[NETWORK_DATA_NODES_AMOUNT][XCASH_WALLET_LENGTH+1];
-    char network_data_nodes_IP_address[NETWORK_DATA_NODES_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
-    char network_data_nodes_database_data_hash[NETWORK_DATA_NODES_AMOUNT][DATA_HASH_LENGTH+1];
-    int network_data_nodes_previous_block_settings[NETWORK_DATA_NODES_AMOUNT];
+struct block_verifiers_sync_database_list {
+    char block_verifiers_public_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][XCASH_WALLET_LENGTH+1];
+    char block_verifiers_IP_address[BLOCK_VERIFIERS_TOTAL_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];
+    char block_verifiers_database_data_hash[BLOCK_VERIFIERS_TOTAL_AMOUNT][DATA_HASH_LENGTH+1];
+    int block_verifiers_previous_block_settings[BLOCK_VERIFIERS_TOTAL_AMOUNT];
 };
 
 struct VRF_data { 

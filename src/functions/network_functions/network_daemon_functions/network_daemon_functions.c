@@ -9,6 +9,7 @@
 #include "structures.h"
 #include "variables.h"
 
+#include "block_verifiers_functions.h"
 #include "read_database_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
@@ -31,236 +32,38 @@ Return: 1 if fully synced, 0 if not or an error
 
 int check_if_blockchain_is_fully_synced(void)
 {
-  // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-
   // Variables
   char data[SMALL_BUFFER_SIZE];
-  char network_data_node_1_current_block_height[SMALL_BUFFER_SIZE];
-  char network_data_node_2_current_block_height[SMALL_BUFFER_SIZE];
-  char network_data_node_3_current_block_height[SMALL_BUFFER_SIZE];
-  char network_data_node_4_current_block_height[SMALL_BUFFER_SIZE];
-  char network_data_node_5_current_block_height[SMALL_BUFFER_SIZE];
-  char message[SMALL_BUFFER_SIZE];
-  char block_verifiers_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
-  size_t count;
-  size_t count2 = NETWORK_DATA_NODES_AMOUNT;
-  size_t network_data_node_1_current_block_height_count;
-  size_t network_data_node_2_current_block_height_count;
-  size_t network_data_node_3_current_block_height_count;
-  size_t network_data_node_4_current_block_height_count;
-  size_t network_data_node_5_current_block_height_count;
-
-  // define macros
-  #define CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"check_if_blockchain_is_fully_synced",35); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  return 0;
+  int count;
+  int count2;
+  size_t block_height;
   
   memset(data,0,sizeof(data));
-  memset(network_data_node_1_current_block_height,0,sizeof(network_data_node_1_current_block_height));
-  memset(network_data_node_2_current_block_height,0,sizeof(network_data_node_2_current_block_height));
-  memset(network_data_node_3_current_block_height,0,sizeof(network_data_node_3_current_block_height));
-  memset(network_data_node_4_current_block_height,0,sizeof(network_data_node_4_current_block_height));
-  memset(network_data_node_5_current_block_height,0,sizeof(network_data_node_5_current_block_height));
-  memset(message,0,sizeof(message));
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
 
-  // get the current block height
-  if (send_http_request(data,XCASH_DPOPS_delegates_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",message, BUFFER_SIZE) == 0)
+  // reset the block_verifiers_current_block_height
+  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
-    CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR("Could not get the current block height");
+    block_verifiers_current_block_height[count2] = 0;
   }
 
-  // get the current block height from each network data node
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[0],strnlen(network_data_nodes_list.network_data_nodes_IP_address[0],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_1_current_block_height, BUFFER_SIZE) == 0)
+  sscanf(current_block_height,"%zu",&block_height);
+
+  // get the current block height from each block verifier
+  memcpy(data,"{\r\n \"message_settings\": \"GET_CURRENT_BLOCK_HEIGHT\",\r\n}",54);
+
+  // send the message to all block verifiers. This function will wait until all messages have arrived
+  block_verifiers_send_data_socket((const char*)data);
+
+  // check if the blockchain is fully synced
+  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    memset(network_data_node_1_current_block_height,0,sizeof(network_data_node_1_current_block_height));
-    memcpy(network_data_node_1_current_block_height,"0",sizeof(char));
+    if (block_height < block_verifiers_current_block_height[count])
+    {
+      count2++;
+    }
   }
 
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[1],strnlen(network_data_nodes_list.network_data_nodes_IP_address[1],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_2_current_block_height, BUFFER_SIZE) == 0)
-  {
-    memset(network_data_node_2_current_block_height,0,sizeof(network_data_node_2_current_block_height));
-    memcpy(network_data_node_2_current_block_height,"0",sizeof(char));
-  }
-
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[2],strnlen(network_data_nodes_list.network_data_nodes_IP_address[2],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_3_current_block_height, BUFFER_SIZE) == 0)
-  {
-    memset(network_data_node_3_current_block_height,0,sizeof(network_data_node_3_current_block_height));
-    memcpy(network_data_node_3_current_block_height,"0",sizeof(char));
-  }
-
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[3],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_4_current_block_height, BUFFER_SIZE) == 0)
-  {
-    memset(network_data_node_4_current_block_height,0,sizeof(network_data_node_4_current_block_height));
-    memcpy(network_data_node_4_current_block_height,"0",sizeof(char));
-  }
-
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[4],strnlen(network_data_nodes_list.network_data_nodes_IP_address[4],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_5_current_block_height, BUFFER_SIZE) == 0)
-  {
-    memset(network_data_node_5_current_block_height,0,sizeof(network_data_node_5_current_block_height));
-    memcpy(network_data_node_5_current_block_height,"0",sizeof(char));
-  }
-  
-  sscanf(message,"%zu",&count);
-  sscanf(network_data_node_1_current_block_height,"%zu",&network_data_node_1_current_block_height_count);
-  sscanf(network_data_node_2_current_block_height,"%zu",&network_data_node_2_current_block_height_count);
-  sscanf(network_data_node_3_current_block_height,"%zu",&network_data_node_3_current_block_height_count);
-  sscanf(network_data_node_4_current_block_height,"%zu",&network_data_node_4_current_block_height_count);
-  sscanf(network_data_node_5_current_block_height,"%zu",&network_data_node_5_current_block_height_count);
-
-  if (count < network_data_node_1_current_block_height_count)
-  {
-    count2--;
-  }
-  if (count < network_data_node_2_current_block_height_count)
-  {
-    count2--;
-  }
-  if (count < network_data_node_3_current_block_height_count)
-  {
-    count2--;
-  }
-  if (count < network_data_node_4_current_block_height_count)
-  {
-    count2--;
-  }
-  if (count < network_data_node_5_current_block_height_count)
-  {
-    count2--;
-  }
-
-  return count2 < NETWORK_DATA_NODES_VALID_AMOUNT ? 0 : 1;
-  
-  #undef CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: get_current_block_height_network_data_nodes
-Description: gets the current block height from other network data nodes
-Return: 1 if fully synced, 0 if not or an error
------------------------------------------------------------------------------------------------------------
-*/
-
-int get_current_block_height_network_data_nodes(void)
-{
-  // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-
-  // Variables
-  char data[SMALL_BUFFER_SIZE];
-  char network_data_node_1_current_block_height[SMALL_BUFFER_SIZE];
-  char network_data_node_2_current_block_height[SMALL_BUFFER_SIZE];
-  char network_data_node_3_current_block_height[SMALL_BUFFER_SIZE];
-  char network_data_node_4_current_block_height[SMALL_BUFFER_SIZE];
-  char network_data_node_5_current_block_height[SMALL_BUFFER_SIZE];
-  char message[SMALL_BUFFER_SIZE];
-  char block_verifiers_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
-  long long int count;
-  long long int network_data_node_1_current_block_height_count;
-  long long int network_data_node_2_current_block_height_count;
-  long long int network_data_node_3_current_block_height_count;
-  long long int network_data_node_4_current_block_height_count;
-  long long int network_data_node_5_current_block_height_count;
-
-  // define macros
-  #define CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR(settings) \
-  memcpy(error_message.function[error_message.total],"check_if_blockchain_is_fully_synced",35); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  return 0;
-  
-  memset(data,0,sizeof(data));
-  memset(network_data_node_1_current_block_height,0,sizeof(network_data_node_1_current_block_height));
-  memset(network_data_node_2_current_block_height,0,sizeof(network_data_node_2_current_block_height));
-  memset(network_data_node_3_current_block_height,0,sizeof(network_data_node_3_current_block_height));
-  memset(network_data_node_4_current_block_height,0,sizeof(network_data_node_4_current_block_height));
-  memset(network_data_node_5_current_block_height,0,sizeof(network_data_node_5_current_block_height));
-  memset(message,0,sizeof(message));
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-
-  // get the current block height from each network data node
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[0],strnlen(network_data_nodes_list.network_data_nodes_IP_address[0],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_1_current_block_height, BUFFER_SIZE) == 0)
-  {
-    memset(network_data_node_1_current_block_height,0,sizeof(network_data_node_1_current_block_height));
-    memcpy(network_data_node_1_current_block_height,"0",sizeof(char));
-  }
-
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[1],strnlen(network_data_nodes_list.network_data_nodes_IP_address[1],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_2_current_block_height, BUFFER_SIZE) == 0)
-  {
-    memset(network_data_node_2_current_block_height,0,sizeof(network_data_node_2_current_block_height));
-    memcpy(network_data_node_2_current_block_height,"0",sizeof(char));
-  }
-
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[2],strnlen(network_data_nodes_list.network_data_nodes_IP_address[2],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_3_current_block_height, BUFFER_SIZE) == 0)
-  {
-    memset(network_data_node_3_current_block_height,0,sizeof(network_data_node_3_current_block_height));
-    memcpy(network_data_node_3_current_block_height,"0",sizeof(char));
-  }
-
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[3],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_4_current_block_height, BUFFER_SIZE) == 0)
-  {
-    memset(network_data_node_4_current_block_height,0,sizeof(network_data_node_4_current_block_height));
-    memcpy(network_data_node_4_current_block_height,"0",sizeof(char));
-  }
-
-  memset(block_verifiers_IP_address,0,sizeof(block_verifiers_IP_address));
-  memcpy(block_verifiers_IP_address,network_data_nodes_list.network_data_nodes_IP_address[4],strnlen(network_data_nodes_list.network_data_nodes_IP_address[4],sizeof(block_verifiers_IP_address)));
-  memset(data,0,sizeof(data));
-  if (send_http_request(data,block_verifiers_IP_address,"/json_rpc",XCASH_DAEMON_PORT,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_block_count\"}",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"count",network_data_node_5_current_block_height, BUFFER_SIZE) == 0)
-  {
-    memset(network_data_node_5_current_block_height,0,sizeof(network_data_node_5_current_block_height));
-    memcpy(network_data_node_5_current_block_height,"0",sizeof(char));
-  }
-  
-  sscanf(current_block_height,"%lld",&count);
-  sscanf(network_data_node_1_current_block_height,"%lld",&network_data_node_1_current_block_height_count);
-  sscanf(network_data_node_2_current_block_height,"%lld",&network_data_node_2_current_block_height_count);
-  sscanf(network_data_node_3_current_block_height,"%lld",&network_data_node_3_current_block_height_count);
-  sscanf(network_data_node_4_current_block_height,"%lld",&network_data_node_4_current_block_height_count);
-  sscanf(network_data_node_5_current_block_height,"%lld",&network_data_node_5_current_block_height_count);
-
-  if (count - network_data_node_1_current_block_height_count < 0 || count - network_data_node_2_current_block_height_count < 0 || count - network_data_node_3_current_block_height_count < 0 || count - network_data_node_4_current_block_height_count < 0 || count - network_data_node_5_current_block_height_count < 0)
-  {
-    return 0;
-  }
-  return 1;
-  
-  #undef CHECK_IF_BLOCKCHAIN_IS_FULLY_SYNCED_ERROR
+  return count2 >= BLOCK_VERIFIERS_VALID_AMOUNT ? 0 : 1;
 }
 
 

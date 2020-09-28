@@ -25,6 +25,7 @@ extern char secret_key[VRF_SECRET_KEY_LENGTH+1]; // Holds the secret key text fo
 extern struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 extern struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round
 extern struct next_block_verifiers_list next_block_verifiers_list; // The list of block verifiers name, public address and IP address for the next round
+struct current_block_verifiers_list current_block_verifiers_list_database_syncing; // The current_block_verifiers_list for database syncing that sorts delegates by only vote count
 extern struct synced_block_verifiers synced_block_verifiers; // The list of block verifiers for syncing the databases
 extern struct main_nodes_list main_nodes_list; // The list of main nodes public address and IP address
 extern struct network_data_nodes_list network_data_nodes_list; // The network data nodes
@@ -33,7 +34,7 @@ extern struct VRF_data VRF_data; // The list of all of the VRF data to send to t
 extern struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
 extern struct error_message error_message; // holds all of the error messages and the functions for an error.
 extern struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
-extern struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
+extern struct block_verifiers_sync_database_list block_verifiers_sync_database_list; // Holds the block verifiers data and database hash for syncing the block verifiers
 extern struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 extern struct block_height_start_time block_height_start_time; // Holds the block height start time data
 extern char current_round_part[2]; // The current round part (1-4)
@@ -47,7 +48,6 @@ extern pthread_mutex_t vote_lock;
 extern pthread_mutex_t add_reserve_proof_lock;
 extern pthread_mutex_t invalid_reserve_proof_lock;
 extern pthread_mutex_t database_data_IP_address_lock;
-extern pthread_mutex_t network_data_nodes_valid_count_lock;
 
 extern pthread_t server_threads[100];
 extern int epoll_fd;
@@ -72,10 +72,10 @@ extern int network_functions_test_settings;
 extern int network_functions_test_error_settings; // 1 to display errors, 0 to not display errors when running the reset variables allocated on the heap test
 extern int network_functions_test_server_messages_settings; // 1 to display server messages, 0 to not display server messages when running the test
 extern int test_settings; // 1 when the test are running, 0 if not
-extern int vrf_data_verify_count; // holds the amount of block verifiers signatures that are verified for the current network block
 extern int debug_settings; // 1 to show all incoming and outgoing message from the server
 extern int registration_settings; // 1 when the registration mode is running, 0 when it is not
-extern int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
+extern int synced_network_data_nodes[BLOCK_VERIFIERS_AMOUNT]; // the synced network data nodes
+extern size_t block_verifiers_current_block_height[BLOCK_VERIFIERS_AMOUNT]; // holds the block verifiers current block heights
 extern int production_settings; // 1 for production, 0 for test
 extern int production_settings_database_data_settings; // The initialize the database settings
 extern char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
