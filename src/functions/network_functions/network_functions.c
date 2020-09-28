@@ -390,7 +390,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
     
   // get the result
   memset(result,0,strlen(result));
-  if (receive_data(network_socket,result,RESULT_LENGTH,1,DATA_TIMEOUT_SETTINGS) < 2)
+  if (receive_data(network_socket,result,RESULT_LENGTH,1,DATA_TIMEOUT_SETTINGS) < 2 || strncmp(result,ERROR_DATA,BUFFER_SIZE) == 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host",1);
   }
@@ -576,15 +576,6 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   size_t total;
   size_t sent;
   long long int bytes = 1;
-
-   /* Set the socket options for sending and receiving data
-  SOL_SOCKET = socket level
-  SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
-  */
-  if (setsockopt(SOCKET, SOL_SOCKET, SO_SNDBUF,&(int){8388608}, sizeof(int)) != 0 || setsockopt(SOCKET, SOL_SOCKET, SO_RCVBUF,&(int){8388608}, sizeof(int)) != 0)
-  {    
-    return 0;
-  }  
 
   if (MESSAGE_SETTINGS == 1)
   {

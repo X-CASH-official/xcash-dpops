@@ -21,6 +21,7 @@ The **[X-Cash](https://github.com/X-Cash-Official/xcash-core)** Public Network i
   - [Documentation](#documentation)
   - [Security](#security)
   - [Installation](#installation)
+  - [Maintenance](#maintenance)
 
 ## Features
 
@@ -107,3 +108,15 @@ bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpo
 ```
 
 > To build everything from source, follow our **[manual installation](https://docs.xcash.foundation/dpops/installation-process#manual-installation-process)** guide.
+
+### Maintenance
+
+All delegates will be able to use the [maintenance script](https://github.com/X-CASH-official/xcash-dpops/blob/master/scripts/management/xcash-maintenance) to easily view there statistics and to check there system.
+
+```shell
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/management/xcash-maintenance.sh)"
+```
+
+If you choose to setup the delegate as a shared delegate, you will be able to view additional statistics by using the IP of the delegate in any web browser, as the [Delegates Pool Website](https://github.com/X-CASH-official/delegates-pool-website) is automatically installed.
+
+If you choose to setup the delegate as a solo delegate, you have the option of installing the [Delegates Supervisor](https://github.com/X-CASH-official/delegates-supervisor)

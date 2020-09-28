@@ -520,28 +520,7 @@ void socket_thread(const int CLIENT_SOCKET)
     pointer_reset(buffer);
     return;
   }
-  pthread_mutex_unlock(&lock); 
-  
-  // get the current time
-  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-
-  // dont display the message if the message came from the test wallet, or your own wallet
-  if (debug_settings == 1 && test_settings == 0)
-  {  
-    memcpy(message,"Received ",9);
-    memcpy(message+9,data2,strnlen(data2,sizeof(message)));
-    memcpy(message+strlen(message),"\n",sizeof(char));
-    memcpy(message+strlen(message),client_IP_address,strnlen(client_IP_address,sizeof(message)));
-    memcpy(message+strlen(message)," on port ",9);
-    memcpy(message+strlen(message),buffer2,strnlen(buffer2,sizeof(message)));
-    memcpy(message+strlen(message),"\n",sizeof(char));
-    memset(data2,0,sizeof(data2));
-    strftime(data2,sizeof(data2),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
-    memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
-    color_print(message,"green");
-  }
- 
-
+  pthread_mutex_unlock(&lock);
 
  // check if a certain type of message has been received 
  if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)
@@ -650,10 +629,10 @@ void socket_thread(const int CLIENT_SOCKET)
  } 
  else if (strstr(buffer,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL)
  {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
      server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check((const char*)buffer);
-     server_limit_public_addresses(3,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
@@ -759,6 +738,7 @@ void socket_thread(const int CLIENT_SOCKET)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
+     // since this function will allocate memory to the invalid reserve proof struct, only add one invalid reserve proof at a time
      pthread_mutex_lock(&invalid_reserve_proof_lock);
      server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reserve_proofs((const char*)buffer);
      pthread_mutex_unlock(&invalid_reserve_proof_lock);
@@ -813,7 +793,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL && ((network_functions_test_error_settings != 2 && current_UTC_date_and_time.tm_sec >= START_TIME_SECONDS_NETWORK_BLOCK_PART_2 && current_UTC_date_and_time.tm_sec < START_TIME_SECONDS_NETWORK_BLOCK_PART_3) || (network_functions_test_error_settings == 2)))
+ else if (strstr(buffer,"\"message_settings\": \"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK\"") != NULL)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
@@ -821,7 +801,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }         
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL && ((network_functions_test_error_settings != 2 && current_UTC_date_and_time.tm_sec < START_TIME_SECONDS_NETWORK_BLOCK_PART_2) || (network_functions_test_error_settings == 2)))
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA\"") != NULL)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
@@ -829,7 +809,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }  
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL && ((network_functions_test_error_settings != 2 && current_UTC_date_and_time.tm_sec >= START_TIME_SECONDS_NETWORK_BLOCK_PART_3 && current_UTC_date_and_time.tm_sec < START_TIME_SECONDS_NETWORK_BLOCK_PART_4) || (network_functions_test_error_settings == 2)))
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\"") != NULL)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
@@ -837,7 +817,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }  
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL && ((current_UTC_date_and_time.tm_sec >= SEND_DATA_TIME_SECONDS_NETWORK_BLOCK_PART_4 && current_UTC_date_and_time.tm_sec < START_TIME_SECONDS_NETWORK_BLOCK_PART_5) || (current_UTC_date_and_time.tm_min % BLOCK_TIME == 4 && current_UTC_date_and_time.tm_sec >= START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2 && current_UTC_date_and_time.tm_sec < START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3) || (network_functions_test_error_settings == 2)))
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {

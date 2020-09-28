@@ -293,62 +293,18 @@ gmtime_r(&current_date_and_time,&current_UTC_date_and_time);
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: sync_block_verifiers_minutes
-Description: Syncs the block verifiers to a specific minute
-Parameters:
-  current_date_and_time -  The current date and time
-  current_UTC_date_and_time - The current UTC date and time
-  minutes - The minutes
+Name: ERROR_DATA_MESSAGE
+Description: Sends an error message back to the delegate
+Return: Writes the correct code
 -----------------------------------------------------------------------------------------------------------
 */
 
-#define sync_block_verifiers_minutes(current_date_and_time,current_UTC_date_and_time,minutes) \
-do \
-{ \
-  nanosleep((const struct timespec[]){{0, 200000000L}}, NULL); \
-  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
-} while (current_UTC_date_and_time.tm_min % BLOCK_TIME != minutes); 
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: sync_block_verifiers_seconds
-Description: Syncs the block verifiers to a specific second
-Parameters:
-  current_date_and_time -  The current date and time
-  current_UTC_date_and_time - The current UTC date and time
-  seconds - The seconds
------------------------------------------------------------------------------------------------------------
-*/
-
-#define sync_block_verifiers_seconds(current_date_and_time,current_UTC_date_and_time,seconds) \
-do \
-{ \
-  nanosleep((const struct timespec[]){{0, 200000000L}}, NULL); \
-  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
-} while (current_UTC_date_and_time.tm_sec != seconds);
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: sync_block_verifiers_minutes_and_seconds
-Description: Syncs the block verifiers to a specific minute and second
-Parameters:
-  current_date_and_time -  The current date and time
-  current_UTC_date_and_time - The current UTC date and time
-  minutes - The minutes
-  seconds - The seconds
------------------------------------------------------------------------------------------------------------
-*/
-
-#define sync_block_verifiers_minutes_and_seconds(current_date_and_time,current_UTC_date_and_time,minutes,seconds) \
-do \
-{ \
-  nanosleep((const struct timespec[]){{0, 200000000L}}, NULL); \
-  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time); \
-} while (current_UTC_date_and_time.tm_min % BLOCK_TIME != minutes || current_UTC_date_and_time.tm_sec != seconds);
+#define ERROR_DATA_MESSAGE \
+char message_error[BUFFER_SIZE_NETWORK_BLOCK_DATA]; \
+memset(message_error,0,sizeof(message_error)); \
+memcpy(message_error,ERROR_DATA,sizeof(ERROR_DATA)-1); \
+send_data(CLIENT_SOCKET,(unsigned char*)message_error,0,1,""); \
+return;
 
 
 

@@ -8,6 +8,8 @@
 #include "define_macros.h"
 #include "variables.h"
 
+#include "count_database_functions.h"
+#include "read_database_functions.h"
 #include "network_functions.h"
 #include "network_wallet_functions.h"
 #include "string_functions.h"
@@ -133,10 +135,13 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
 
   // Variables
   char data[BUFFER_SIZE];
-  char data2[SMALL_BUFFER_SIZE];  
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
+  int count;
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
 
   // create the message
   memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"check_reserve_proof\",\"params\":{\"address\":\"",78);
@@ -147,7 +152,8 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
 
   if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || strstr(data2,"\"good\"") == NULL || strstr(data2,"\"spent\"") == NULL)
   { 
-    return -1;
+    // if the transaction failed then its an overload error and should be ignored, but any other error should be considered an invalid reserve proof
+    return strstr(data2,"\"Failed\"") != NULL && strstr(data2,"\"transaction\"") != NULL ? -1 : 0;
   }
 
   // check if the reserve proof is valid
@@ -155,5 +161,7 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   { 
     return 0;
   }
-  return parse_json_data(data2,"total",result, BUFFER_SIZE) == 0 ? -1 : 1;
+
+  // parse the message
+  return parse_json_data(data2,"total",result, BUFFER_SIZE) == 0 ? 0 : 1;
 }
