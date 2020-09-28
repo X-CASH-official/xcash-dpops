@@ -213,6 +213,7 @@ config:
       - cron
       - rsyslog
       - python2.7-minimal
+      - iproute2
     # Set the locale
     locale: en_US.UTF-8
     # Set the timezone (eg. Europe/Rome or UTC)
@@ -266,6 +267,8 @@ config:
           # hostname resolution (www.website.com)
           systemctl enable systemd-resolved
           systemctl start systemd-resolved
+          ln -fs /run/systemd/resolve/resolv.conf /etc/resolv.conf
+          systemctl restart systemd-resolved
           # Cron service
           systemctl enable cron
           systemctl start cron
@@ -365,8 +368,9 @@ function configure_init_lxc()
         sleep 1
       fi
     else
-      if ! sudo lxc storage list | grep -q "default "; then
-        # Default pool not in LXD storage
+      # Default pool not present on system
+      if sudo lxc storage list | grep -q "default "; then
+        # Default pool present LXD storage
         echo
         echo -e "${COLOR_PRINT_RED}ERROR: there is a default ZFS pool in the LXD database, but there is no default pool in your system (verified with zpool tool). Something is wrong with your installation. You need to reboot your system and then purge LXD with 'sudo snap remove --purge lxd' and then retry the installation.${END_COLOR_PRINT}"
         echo
@@ -1127,12 +1131,25 @@ function stop_xcash_container()
 }
 
 
+function update_container_autoinstaller_script()
+{
+  lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "rm -f ${XCASH_AUTOINSTALLER_NAME} 2&> /dev/null && wget ${XCASH_AUTOINSTALLER_SCRIPT_SCRATCH_URL} && chmod +x ${XCASH_AUTOINSTALLER_NAME}" 2&> /dev/null
+}
+
+
+function update_container_maintenance_script()
+{
+  lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "rm -f ${XCASH_MAINTENANCE_SCRIPT_NAME} 2&> /dev/null && wget ${XCASH_MAINTENANCE_SCRIPT_SCRATCH_URL} && chmod +x ${XCASH_MAINTENANCE_SCRIPT_NAME}" 2&> /dev/null  
+}
+
+
 function launch_xcash_configurator()
 {
+  update_container_autoinstaller_script
   if lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "ls -l" | grep -q "${XCASH_AUTOINSTALLER_NAME}"; then
     lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "(echo '${XCASH_AUTOINSTALLER_CONFIGURATOR_OPTION_NUMBER}'; cat) | ./${XCASH_AUTOINSTALLER_NAME}" 
   else
-    # Autoinstaller script not exists
+    # Autoinstaller script not exists. This should never occur
     echo
     echo -e "${COLOR_PRINT_RED}Error: Autoinstaller script does not exists inside the container! Exiting.${END_COLOR_PRINT}"
     exit
@@ -1141,10 +1158,11 @@ function launch_xcash_configurator()
 
 function launch_xcash_install_autoinstaller()
 {
+  update_container_autoinstaller_script
   if lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "ls -l" | grep -q "${XCASH_AUTOINSTALLER_NAME}"; then
     lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "(echo '${XCASH_AUTOINSTALLER_INSTALL_OPTION_NUMBER}'; cat) | ./${XCASH_AUTOINSTALLER_NAME}" 
   else
-    # Autoinstaller script not exists
+    # Autoinstaller script not exists. This should never occur
     echo
     echo -e "${COLOR_PRINT_RED}Error: Autoinstaller script does not exists inside the container! Exiting.${END_COLOR_PRINT}"
     exit
@@ -1153,10 +1171,11 @@ function launch_xcash_install_autoinstaller()
 
 function launch_xcash_register_delegate()
 {
+  update_container_autoinstaller_script
   if lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "ls -l" | grep -q "${XCASH_AUTOINSTALLER_NAME}"; then
     lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "(echo '${XCASH_AUTOINSTALLER_REGISTER_DELEGATE_OPTION_NUMBER}'; cat) | ./${XCASH_AUTOINSTALLER_NAME}" 
   else
-    # Autoinstaller script not exists
+    # Autoinstaller script not exists. This should never occur
     echo
     echo -e "${COLOR_PRINT_RED}Error: Autoinstaller script does not exists inside the container! Exiting.${END_COLOR_PRINT}"
     exit
@@ -1198,6 +1217,8 @@ function run_xcash_container_autoinstaller()
       echo -e "${COLOR_PRINT_RED}Container is not Running. Please start it before using this option!${END_COLOR_PRINT}"
       exit
     elif lxc info ${XCASH_LXC_CONTAINER_NAME} | grep -q "Status: Running"; then
+      # Use last version of the autoinstaller
+      update_container_autoinstaller_script
       # Check if autoinstaller script is present
       if lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "ls -l" | grep -q "${XCASH_AUTOINSTALLER_NAME}"; then
         echo
@@ -1205,7 +1226,7 @@ function run_xcash_container_autoinstaller()
         echo
         lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "./${XCASH_AUTOINSTALLER_NAME}"  
       else
-        # Autoinstaller script not exists
+        # Autoinstaller script not exists. This should never occur
         echo
         echo -e "${COLOR_PRINT_RED}Error: Autoinstaller script does not exists inside the container! Exiting.${END_COLOR_PRINT}"
         exit
@@ -1230,6 +1251,11 @@ function run_xcash_container_maintenance_script()
       echo -e "${COLOR_PRINT_RED}Container is not Running. Please start it before using this option!${END_COLOR_PRINT}"
       exit
     elif lxc info ${XCASH_LXC_CONTAINER_NAME} | grep -q "Status: Running"; then
+      # Use the last version of the maintenance script (or update it), but not when running the --overvirew
+      # So if you need to open the maintenance script to update it
+      if [ ! "$1" == "overview" ]; then
+        update_container_maintenance_script
+      fi
       # Check if maintenance script is present
       if lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "ls -l" | grep -q "${XCASH_MAINTENANCE_SCRIPT_NAME}"; then
         echo
@@ -1243,7 +1269,7 @@ function run_xcash_container_maintenance_script()
           lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "./${XCASH_MAINTENANCE_SCRIPT_NAME}" 
         fi         
       else
-        # Maintenance script not exists
+        # Maintenance script not exists. This should never occur
         echo
         echo -e "${COLOR_PRINT_RED}Error: Maintenance script does not exists inside the container! Exiting.${END_COLOR_PRINT}"
         exit
