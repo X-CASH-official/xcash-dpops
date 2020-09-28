@@ -44,14 +44,15 @@ options=(
 	"Get node balance"
 	"Check services status"
 	"Start stopped services"
-    "Stop all services"
+  "Stop all services"
 	"Restart all services"
-    "Enable services autostart"
-    "Disable services autostart"
-    "Get X-Cash DPoPS log"
-    "Get X-Cash Daemon log"
-    "Get X-Cash RPC Wallet log"
-    "Quit"
+  "Enable services autostart"
+  "Disable services autostart"
+  "Get X-Cash DPoPS log"
+  "Get X-Cash Daemon log"
+  "Get X-Cash RPC Wallet log"
+	"Check if repositories are up to date"
+  "Quit"
 )
 
 function check_height(){
@@ -76,7 +77,7 @@ function check_height(){
 		HEIGHT=$(echo "$DATA" | grep '"count"' | awk '{print $2}' | sed s'|,||g' | tr -d $'\r')
 		STATUS_COUNT=0
 
-		if (( HEIGHT >= SEED_NODE1_HEIGHT && SEED_NODE1_HEIGHT != 0 )); then 
+		if (( HEIGHT >= SEED_NODE1_HEIGHT && SEED_NODE1_HEIGHT != 0 )); then
 			(( STATUS_COUNT++ ))
 		fi
 
@@ -96,15 +97,12 @@ function check_height(){
                         (( STATUS_COUNT++ ))
                 fi
 
-
-		if (( STATUS_COUNT >= 3 )); then
-			STATUS=${COLOR_PRINT_GREEN}OK${END_COLOR_PRINT}
-		else 
-			STATUS=${COLOR_PRINT_RED}FAIL${END_COLOR_PRINT}
-		fi
-
 		echo
-		echo "Blockhain sync status: $STATUS"
+		if (( STATUS_COUNT >= 3 )); then
+			echo -e "Blockhain sync status: ${COLOR_PRINT_GREEN}OK${END_COLOR_PRINT}"
+		else
+			echo -e "Blockhain sync status: ${COLOR_PRINT_RED}FAIL${END_COLOR_PRINT}"
+		fi
 		echo "Blockchain height: $HEIGHT"
 	else
 		echo
@@ -116,7 +114,7 @@ function check_height(){
 function get_node_balance(){
 	if lsof -Pi :18285 -sTCP:LISTEN -t >/dev/null ; then
 		DATA=$($CURL GET $WALLET_URL -d '{"jsonrpc":"2.0","id":"0","method":"get_balance","params":{"account_index":0,"address_indices":[0]}}')
-		
+
 		ADDR=$(echo "$DATA" | grep '"address"' | awk '{print $2}' | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
 		UNSPENT_OUTPUTS=$(echo "$DATA" | grep '"num_unspent_outputs"' | awk '{print $2}' | sed s'|"||g' | sed s'|,||g' | head -1 | tr -d $'\r')
 
@@ -129,7 +127,7 @@ function get_node_balance(){
 		echo "Public address:   $ADDR"
 		echo "Unspent outputs:  $UNSPENT_OUTPUTS"
 		echo "Total balance:    $TOTAL_BALANCE XCASH"
-		echo "Unlocked balance: $UNLOCKED_BALANCE XCASH" 
+		echo "Unlocked balance: $UNLOCKED_BALANCE XCASH"
 	else
 		echo
 		echo "X-Cash RCP Wallet service is not running...."
@@ -220,7 +218,7 @@ function start_stopped_services(){
         echo -e "${COLOR_PRINT_GREEN}"\\u2714 X-Cash Daemon service is running since........."$XCASH_DAEMON_UP_SINCE""${END_COLOR_PRINT}"
     else
         echo -en "${COLOR_PRINT_RED}"\\u2716 X-Cash Daemon service is not running, starting it......."${END_COLOR_PRINT}"
-        systemctl start $XCASH_DAEMON_SRV && sleep 3 
+        systemctl start $XCASH_DAEMON_SRV && sleep 3
         systemctl is-active $XCASH_DAEMON_SRV --quiet \
 		&& echo -e "${COLOR_PRINT_GREEN}"\\u2714"${END_COLOR_PRINT}" || echo -e "${COLOR_PRINT_RED}"\\u2716"${END_COLOR_PRINT}"
     fi
@@ -304,7 +302,7 @@ function enable_services_autostart(){
 
 	ENABLED_SERVICES=$(systemctl list-unit-files --state=enabled | grep -wc "${MONGODB_SRV}.service\|${XCASH_DAEMON_SRV}.service\|${XCASH_WALLET_SRV}.timer\|${XCASH_DPOPS_SRV}.timer")
 	DISABLED_SERVICES=$(systemctl list-unit-files --state=disabled | grep -wc "${XCASH_WALLET_SRV}.service\|${XCASH_DPOPS_SRV}.service")
-    
+
 	if (( ENABLED_SERVICES == 4 )) && (( DISABLED_SERVICES == 2 )); then
         echo -e "${COLOR_PRINT_GREEN}done${END_COLOR_PRINT}"
     else
@@ -327,13 +325,25 @@ function disable_services_autostart(){
 
 }
 
+function check_repositories_status(){
+	XHOME=$(eval echo "~$USER")
+	echo
+  echo "Check if repos are up to date:"
+	(cd $XHOME/xcash-official/xcash-dpops && [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] \
+	&& echo -e ${COLOR_PRINT_GREEN}xcash-dpops is up to date${END_COLOR_PRINT} || echo -e ${COLOR_PRINT_RED}xcash-dpops is not up to date${END_COLOR_PRINT}  \
+	&& cd $XHOME/xcash-official/xcash-core && [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\// /g') | cut -f1) ] \
+	&& echo -e ${COLOR_PRINT_GREEN}xcash-core is up to date${END_COLOR_PRINT} || echo -e ${COLOR_PRINT_RED}xcash-core is not up to date${END_COLOR_PRINT})
+	echo
+}
+
 
 function get_overview(){
 	check_services_status
 	check_height
 	get_node_balance
 	shared_delegates_website_statistics
-	echo 
+	check_repositories_status
+	echo
 }
 
 
@@ -352,14 +362,15 @@ select opt in "${options[@]}"; do
 		"Get node balance") get_node_balance ;;
 		"Get node statistics") shared_delegates_website_statistics;;
 		"Check services status") check_services_status ;;
-       	"Start stopped services") start_stopped_services ;;
+   	"Start stopped services") start_stopped_services ;;
 		"Stop all services") stop_all_services ;;
-       	"Restart all services") restart_all_services ;;
-        "Enable services autostart") enable_services_autostart ;;
-        "Disable services autostart") disable_services_autostart ;;
-        "Get X-Cash DPoPS log") get_xcash_dpops_log ;;
-       	"Get X-Cash Daemon log") get_xcash_daemon_log ;;
-       	"Get X-Cash RPC Wallet log") get_xcash_wallet_log ;;
+   	"Restart all services") restart_all_services ;;
+    "Enable services autostart") enable_services_autostart ;;
+    "Disable services autostart") disable_services_autostart ;;
+    "Get X-Cash DPoPS log") get_xcash_dpops_log ;;
+   	"Get X-Cash Daemon log") get_xcash_daemon_log ;;
+   	"Get X-Cash RPC Wallet log") get_xcash_wallet_log ;;
+		"Check if repositories are up to date") check_repositories_status ;;
 		"Quit") break ;;
 
 		*) echo && echo "Invalid option \"$REPLY\"";;
