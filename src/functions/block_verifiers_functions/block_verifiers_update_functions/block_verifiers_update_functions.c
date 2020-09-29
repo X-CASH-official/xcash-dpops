@@ -139,7 +139,7 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
     {
       memset(data2,0,sizeof(data2));
       memcpy(data2,&data[count2],2);
-      data3[count3] = (int)strtol(data2, NULL, 16);
+      data3[count3] = (char)strtol(data2, NULL, 16);
     }
     SETTINGS == 0 ? memcpy(current_block_verifiers_list.block_verifiers_public_key[count],data3,strnlen(data3,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]))) : memcpy(previous_block_verifiers_list.block_verifiers_public_key[count],data3,strnlen(data3,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count])));
   }
@@ -1156,7 +1156,7 @@ int get_delegates_online_status(void)
       SOL_SOCKET = socket level
       SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
       */
-      if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_SNDTIMEO,(struct timeval *)&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
+      if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_SNDTIMEO,&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
       { 
         freeaddrinfo(settings);
         continue;

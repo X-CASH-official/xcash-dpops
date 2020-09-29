@@ -525,7 +525,7 @@ void get_delegates_data(void)
 
     file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
 
-    if (fgets(database_path_write+strlen(database_path_write),sizeof(database_path_write)-strlen(database_path_write),file) == NULL)
+    if (fgets(database_path_write+strlen(database_path_write),(int)(sizeof(database_path_write)-strlen(database_path_write)),file) == NULL)
     {
       GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
     }
@@ -536,7 +536,7 @@ void get_delegates_data(void)
 
     file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
 
-    if (fgets(database_path_read+strlen(database_path_read),sizeof(database_path_read)-strlen(database_path_read),file) == NULL)
+    if (fgets(database_path_read+strlen(database_path_read),(int)(sizeof(database_path_read)-strlen(database_path_read)),file) == NULL)
     {
       GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
     }
@@ -657,7 +657,7 @@ int set_parameters(int parameters_count, char* parameters[])
       {
         memset(data2,0,sizeof(data2));
         memcpy(data2,&secret_key[count3],2);
-        secret_key_data[counter] = (int)strtol(data2, NULL, 16);
+        secret_key_data[counter] = (unsigned char)strtol(data2, NULL, 16);
       }
     }
     if (strncmp(parameters[count],"--test",BUFFER_SIZE) == 0)
@@ -1117,7 +1117,7 @@ Return: 0 if an error has occured, 1 if successfull
 int main(int parameters_count, char* parameters[])
 {
   // iniltize the random number generator
-  srand(time(NULL));
+  srand((unsigned int)time(NULL));
 
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -1261,7 +1261,7 @@ int main(int parameters_count, char* parameters[])
     {
       memset(data,0,sizeof(data));
       memcpy(data,&secret_key[count],2);
-      secret_key_data[count2] = (int)strtol(data, NULL, 16);
+      secret_key_data[count2] = (unsigned char)strtol(data, NULL, 16);
     }
   }
 

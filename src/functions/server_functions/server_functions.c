@@ -1017,7 +1017,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
     SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
   }
 
-  send_data(CLIENT_SOCKET,data,(const long)file_size,200,data2);
+  send_data(CLIENT_SOCKET,data,file_size,200,data2);
 
   pointer_reset(data);
   return 1;

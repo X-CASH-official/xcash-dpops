@@ -584,7 +584,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   {
     memset(data,0,sizeof(data));
     memcpy(data,&delegate_public_key[count2],2);
-    delegate_public_key_data[count] = (int)strtol(data, NULL, 16);
+    delegate_public_key_data[count] = (unsigned char)strtol(data, NULL, 16);
   } 
   
   // check if the data is valid

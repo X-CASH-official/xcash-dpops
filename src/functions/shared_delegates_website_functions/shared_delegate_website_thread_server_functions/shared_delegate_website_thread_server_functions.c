@@ -119,7 +119,7 @@ int check_if_previous_block_producer(void)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,&data3[count],2);
-    previous_block_producer[count2] = (int)strtol(data2, NULL, 16);
+    previous_block_producer[count2] = (char)strtol(data2, NULL, 16);
   }
 
   // check if the delegate is the previous block producer

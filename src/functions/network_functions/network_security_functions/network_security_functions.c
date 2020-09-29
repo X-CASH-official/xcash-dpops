@@ -571,19 +571,19 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
     {
       memset(data,0,sizeof(data));
       memcpy(data,&public_key[count],2);
-      public_key_data[count2] = (int)strtol(data, NULL, 16);
+      public_key_data[count2] = (unsigned char)strtol(data, NULL, 16);
     }
     for (count = 0, count2 = 0; count < VRF_PROOF_LENGTH; count2++, count += 2)
     {
       memset(data,0,sizeof(data));
       memcpy(data,&proof[count],2);
-      proof_data[count2] = (int)strtol(data, NULL, 16);
+      proof_data[count2] = (unsigned char)strtol(data, NULL, 16);
     }
     for (count = 0, count2 = 0; count < VRF_BETA_LENGTH; count2++, count += 2)
     {
       memset(data,0,sizeof(data));
       memcpy(data,&beta_string[count],2);
-      beta_string_data[count2] = (int)strtol(data, NULL, 16);
+      beta_string_data[count2] = (unsigned char)strtol(data, NULL, 16);
     }
 
     // verify the message

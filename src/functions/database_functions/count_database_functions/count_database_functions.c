@@ -79,7 +79,7 @@ int count_documents_in_collection(const char* DATABASE, const char* COLLECTION, 
     COUNT_DOCUMENTS_IN_COLLECTION_ERROR("Could not convert the data into a database document");
   }
   
-  const int COUNT = mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
+  const int COUNT = (int)mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
   database_reset_all;
   return COUNT;
 
@@ -144,7 +144,7 @@ int count_all_documents_in_collection(const char* DATABASE, const char* COLLECTI
     COUNT_ALL_DOCUMENTS_IN_COLLECTION_ERROR("Could not convert the data into a database document");
   }
   
-  const int COUNT = mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
+  const int COUNT = (int)mongoc_collection_count_documents(collection, document, NULL, NULL, NULL, &error);
   database_reset_all;
   return COUNT;
 

@@ -655,7 +655,7 @@ int sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SET
       color_print("The database is not in the majority, syncing from a random network data node","red");
     }
     get_random_network_data_node(count);
-    sync_reserve_bytes_database(count+3,RESERVE_BYTES_START_SETTINGS,""); 
+    sync_reserve_bytes_database((int)(count+3),RESERVE_BYTES_START_SETTINGS,""); 
   }
   return 1;
   

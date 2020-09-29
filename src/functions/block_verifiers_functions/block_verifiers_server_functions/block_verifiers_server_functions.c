@@ -590,7 +590,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(cons
   {
     memset(data,0,strlen(data));
     memcpy(data,&vrf_secret_key_data[counter],2);
-    vrf_secret_key[count] = (int)strtol(data, NULL, 16);
+    vrf_secret_key[count] = (unsigned char)strtol(data, NULL, 16);
   } 
 
   // convert the VRF public key string to a VRF public key
@@ -598,7 +598,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(cons
   {
     memset(data,0,strlen(data));
     memcpy(data,&vrf_public_key_data[counter],2);
-    vrf_public_key[count] = (int)strtol(data, NULL, 16);
+    vrf_public_key[count] = (unsigned char)strtol(data, NULL, 16);
   } 
 
   // process the vote data
