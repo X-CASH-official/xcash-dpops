@@ -2200,7 +2200,7 @@ function test_update_reset_delegates()
 function get_ssh_port()
 {
   echo
-  echo -ne "${COLOR_PRINT_YELLOW}Enter the SSH port number to open in the Firewall (press enter for default port: 22): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}What port do you use to connect through SSH with your server (press enter for default port: 22): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
