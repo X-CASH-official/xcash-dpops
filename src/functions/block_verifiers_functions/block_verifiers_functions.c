@@ -1348,6 +1348,7 @@ int block_verifiers_create_block(void)
     else if (count2 == 1)
     {
       // restart the delegate, as it could only verify its own message and not anyone elses message
+      color_print("Restarting, could not process any other block verifiers data","red");
       exit(0);
     }
     else
@@ -1454,6 +1455,7 @@ int block_verifiers_create_block(void)
     else if (count2 == 1)
     {
       // restart the delegate, as it could only verify its own message and not anyone elses message
+      color_print("Restarting, could not process any other block verifiers data","red");
       exit(0);
     }
     else
@@ -1494,6 +1496,7 @@ int block_verifiers_create_block(void)
     else if (current_round_part_vote_data.vote_results_valid == 1)
     {
       // restart the delegate, as it could only verify its own message and not anyone elses message
+      color_print("Restarting, could not process any other block verifiers data","red");
       exit(0);
     }
     else
