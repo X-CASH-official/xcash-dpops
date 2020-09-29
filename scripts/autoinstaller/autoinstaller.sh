@@ -773,7 +773,7 @@ function print_installation_settings()
 {
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}                    Installation/Configuration Settings${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}              Installation/Configuration Settings${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
   echo -e "${COLOR_PRINT_GREEN}Installation Type: ${INSTALLATION_TYPE}${END_COLOR_PRINT}"
@@ -2200,7 +2200,7 @@ function test_update_reset_delegates()
 function get_ssh_port()
 {
   echo
-  echo -ne "${COLOR_PRINT_YELLOW}Enter your SSH port number (press enter for default port: 22): ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}Enter the SSH port number to open in the Firewall (press enter for default port: 22): ${END_COLOR_PRINT}"
   read -r data
   echo -ne "\r"
   echo
