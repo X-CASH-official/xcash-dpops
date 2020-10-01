@@ -75,7 +75,7 @@ Using define statements instead of constants for increased efficiency
 #define INVALID_BLOCK_VERIFIERS_AMOUNT 10 // The maximum amount of times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
 #define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof, 2M xcash
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 1000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet, 20M xcash
-#define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 0 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the xcash-dpops program running to sync in case they move to the top 100, 100M xcash
+#define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 2000000000000 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the xcash-dpops program running to sync in case they move to the top 100, 100M xcash
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
 #define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 10 // the start time in seconds that the block verifiers synchronize the database each round
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 15 // The time to submit the network block
@@ -105,6 +105,7 @@ Using define statements instead of constants for increased efficiency
 #define SHARED_DELEGATES_WEBSITE_PATH "delegates-pool-website/" // The shared delegates website path
 #define XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING "}\r\n}" // End string for the xcash daemon or xcash wallet
 #define XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING "\"code\":" // End string for the xcash daemon or xcash wallet when an error occurs
+#define SYNCED_NETWORK_DATA_NODES_STRING "synced_network_data_nodes" // The synced network data nodes string
 #define SYNCED_BLOCK_VERIFIER_STRING "synced_block_verifiers" // The synced block verifiers string
 #define ERROR_DATA "ERROR" // The data to send the delegate when there is an error
 #define GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS BLOCK_TIME * 60 // The time in seconds to refresh the synced block verifiers
@@ -159,6 +160,8 @@ Using define statements instead of constants for increased efficiency
 
 // Network data nodes
 #define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
+#define NETWORK_DATA_NODES_VALID_AMOUNT 3 // The amount of network data nodes need to reach a consensus on the database data
+#define NETWORK_DATA_NODES_VALID_AMOUNT_PERCENTAGE 0.60 // The percentage of network data nodes need to reach a consensus on the database data
 
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1a9usG2UKajV1Dqzp8fL1BbN3hzuaaJMYjCo7qDoC4C3Vvc5owiLAqKbVw2cRbwRqx3mgrau1Z7LkX6cxR2NC4ZmFBLe2Mf"

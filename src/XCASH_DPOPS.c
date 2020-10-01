@@ -62,6 +62,7 @@ struct VRF_data VRF_data; // The list of all of the VRF data to send to the bloc
 struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
 struct error_message error_message; // holds all of the error messages and the functions for an error.
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
+struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
 struct block_verifiers_sync_database_list block_verifiers_sync_database_list; // Holds the block verifiers data and database hash for syncing the block verifiers
 struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 struct block_height_start_time block_height_start_time; // Holds the block height start time data
@@ -981,8 +982,9 @@ void database_sync_check(void)
   // check if the database is synced, unless this is the main network data node
   if ((network_data_node_settings == 1 && get_network_data_nodes_online_status() == 1) || (network_data_node_settings == 0))
   {
-    // check if all of the databases are synced from a random network data node
-    if (check_if_databases_are_synced(1,0) == 0)
+    // check if all of the databases are synced
+    sscanf(current_block_height,"%zu", &count);
+    if ((count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(3,0) == 0) || (count > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(1,0) == 0))
     {
       DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
     }
@@ -1280,6 +1282,12 @@ int main(int parameters_count, char* parameters[])
 
   // check if the block verifier is a network data node
   CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE; 
+
+  // only network data nodes can use the registration mode
+  if (registration_settings == 1 && network_data_node_settings == 0)
+  {
+    registration_settings = 0;
+  }
  
   if (settings != 2)
   {

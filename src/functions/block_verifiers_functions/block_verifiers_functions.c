@@ -141,8 +141,29 @@ int start_new_round(void)
     sync_previous_current_next_block_verifiers_settings = 0;
     sync_all_block_verifiers_list(0);
   }
+
+  // check if it is running in registration mode only
+  if (registration_settings == 1)
+  {
+    color_print("Registration mode is on, checking to make sure all network data nodes databases are synced","yellow");
+    sync_network_data_nodes_database();
+
+    // update the previous, current and next block verifiers after syncing the database
+    if (update_block_verifiers_list() == 0)
+    {
+      START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
+    }
+    
+    // start the reserve proofs timer
+    pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
+    pthread_detach(thread_id);
+    sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS); 
+    return 2;
+  }
+
   
-  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && registration_settings == 0)
+
+  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
     // this is the first block of the network
     color_print("The current block is the first block on the network, meaning that the main network node will create this block","yellow");
@@ -159,7 +180,7 @@ int start_new_round(void)
   else
   {
     // this is a X-CASH proof of stake block so this is not the start blocks of the network
-    if (strncmp(VRF_data.block_blob,"",1) != 0 && registration_settings == 0)
+    if (strncmp(VRF_data.block_blob,"",1) != 0)
     {
       // update all of the databases 
       color_print("Updating the previous rounds data in the databases","blue");

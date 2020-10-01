@@ -52,6 +52,225 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: sync_network_data_nodes_database
+Description: Sync all of the network data nodes to the same database data
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void sync_network_data_nodes_database(void)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char database_data_hash_majority[DATA_HASH_LENGTH+1];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  int count3;
+  size_t count2;
+  double network_data_nodes_valid_count;
+
+  // define macros
+  #define SYNC_NETWORK_DATA_NODES(NETWORK_DATA_NODE); \
+  sleep(BLOCK_VERIFIERS_SETTINGS); \
+  color_print("Syncing the reserve proofs database","yellow"); \
+  sync_reserve_proofs_database(0,NETWORK_DATA_NODE); \
+  color_print("Syncing the reserve bytes database","yellow"); \
+  sync_reserve_bytes_database(0,1,NETWORK_DATA_NODE); \
+  color_print("Syncing the delegates database","yellow"); \
+  sync_delegates_database(0,NETWORK_DATA_NODE); \
+  color_print("Syncing the statistics database","yellow"); \
+  sync_statistics_database(0,NETWORK_DATA_NODE); \
+  color_print("Successfully synced all databases","yellow"); \
+  network_data_nodes_sync_databases_settings = 1; \
+  return;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(database_data_hash_majority,0,sizeof(database_data_hash_majority));
+
+  // reset the synced_network_data_nodes nad the struct network_data_nodes_sync_database_list
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    synced_network_data_nodes[count] = -1;
+    memset(network_data_nodes_sync_database_list.network_data_node_public_address[count],0,sizeof(network_data_nodes_sync_database_list.network_data_node_public_address[count]));
+    memset(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count],0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count]));
+    memset(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count]));
+    
+    memcpy(network_data_nodes_sync_database_list.network_data_node_public_address[count],network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(network_data_nodes_sync_database_list.network_data_node_public_address[count])));
+    memcpy(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count])));
+  }
+  
+  print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
+
+  // wait so all network data nodes start at the same time, this way one is not reseting the variables as another one is sending them data
+  sync_block_verifiers_minutes_and_seconds(0,25);
+
+  // get if the network data node has the previous blocks reserve bytes, because if not this network data node should not be synced from
+  memcpy(data2,"{\"block_height\":\"",17);
+  sscanf(current_block_height, "%zu", &count2);
+  count2--;
+  snprintf(data2+strlen(data2),sizeof(data2)-18,"%zu",count2);
+  memcpy(data2+strlen(data2),"\"}",2);
+  get_reserve_bytes_database(count2,1);
+  memcpy(data,"reserve_bytes_",14);
+  snprintf(data+strlen(data),sizeof(data)-15,"%zu",count2);
+  if (count_documents_in_collection(database_name,data,data2) == 1 && get_current_block_height_network_data_nodes() == 1)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"true",4);
+  }
+  else
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"false",5);
+  }
+  memset(data,0,sizeof(data));
+
+
+  // get the data and send it to the other network data nodes
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],xcash_wallet_public_address,BUFFER_SIZE) == 0)
+    {
+      // set your own network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings
+      network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings[count] = strncmp(data2,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+
+      // get the database data hash and send it to all other network data nodes
+      if (get_database_data_hash(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],database_name,"ALL") == 0)
+      {
+        return;
+      }
+
+      // create the message
+      memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash\": \"",104);
+      memcpy(data+strlen(data),network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],DATA_HASH_LENGTH);
+      memcpy(data+strlen(data),"\",\r\n \"previous_blocks_reserve_bytes\": \"",39);
+      memcpy(data+strlen(data),data2,strnlen(data2,sizeof(data)));
+      memcpy(data+strlen(data),"\",\r\n}",5);
+
+      // sign_data
+      if (sign_data(data) == 0)
+      { 
+        return;
+      }
+
+      // send the data to the other network data nodes
+      for (count3 = 0; count3 < NETWORK_DATA_NODES_AMOUNT; count3++)
+      {
+        if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count3],xcash_wallet_public_address,BUFFER_SIZE) != 0)
+        {
+          send_data_socket(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count3],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+        }
+      }
+    }
+  }
+
+  // wait for the network data nodes to process the data
+  sleep(NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS);
+
+  // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
+  network_data_nodes_sync_databases_settings = 0;
+
+  // check if a consensus was reached and get the majority database data hash
+  for (network_data_nodes_valid_count = 0, count2 = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
+  {
+    for (count = 0, count3 = 0; count3 < NETWORK_DATA_NODES_AMOUNT; count3++)
+    {
+      if (strncmp(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count2],network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count3],DATA_HASH_LENGTH) == 0)
+      {
+        network_data_nodes_valid_count++;
+        count++;
+      }
+    }
+    if (count >= NETWORK_DATA_NODES_VALID_AMOUNT)
+    {
+      memcpy(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count2],DATA_HASH_LENGTH);
+      synced_network_data_nodes[count2] = 0;
+    }
+  }
+
+  // if a majority could not be reached, or a majority was reached but the database_data_hash_majority is empty
+  if ((network_data_nodes_valid_count / (NETWORK_DATA_NODES_AMOUNT*(NETWORK_DATA_NODES_AMOUNT-1)) < NETWORK_DATA_NODES_VALID_AMOUNT_PERCENTAGE) || (strncmp(database_data_hash_majority,"",1) == 0))
+  {
+    color_print("A majority could not be reached between network data nodes for the database sync. Syncing the database from the main network data node\n","yellow");
+
+    // if all previous block settings are false then sync from the main network data node. This should not happen unless its the first block of the network
+    for (count2 = 0, count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      if (network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings[count] == 1)
+      {
+        count2 = 1;
+        if (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+        {
+          SYNC_NETWORK_DATA_NODES(network_data_nodes_list.network_data_nodes_IP_address[count]);
+        }
+        else
+        {
+          network_data_nodes_sync_databases_settings = 1;
+          color_print("Successfully synced all databases","yellow");
+          return;
+        }      
+      }
+    }
+
+    if (count2 == 0)
+    { 
+      if (strncmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+      {      
+        SYNC_NETWORK_DATA_NODES(network_data_nodes_list.network_data_nodes_IP_address[0]);
+      }
+      else
+      {
+        network_data_nodes_sync_databases_settings = 1;
+        color_print("Successfully synced all databases","yellow");
+        return;
+      }
+    }
+  }
+
+  // check if the network data node is in the majority
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],xcash_wallet_public_address,BUFFER_SIZE) == 0 && strncmp(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],DATA_HASH_LENGTH) == 0)
+    {
+      // the network data node is in the majority
+      color_print("A majority has been reached and the network data node is already synced with the majority\n","yellow");
+      network_data_nodes_sync_databases_settings = 1;
+      return;
+    }
+  }
+
+  // the network data node is not in the majority, sync the database from a network data node that is in the majority
+  color_print("The database is not synced with the majority of network data nodes, syncing the database from a random network data node that is in the majority","yellow");
+  do
+  {
+    count = ((rand() % NETWORK_DATA_NODES_AMOUNT));
+  } while (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || synced_network_data_nodes[count] == -1);
+  
+  sleep(BLOCK_VERIFIERS_SETTINGS);
+
+  // sync the databses from one of the synced network data nodes
+  color_print("Syncing the reserve proofs database","yellow");
+  sync_reserve_proofs_database(0,SYNCED_NETWORK_DATA_NODES_STRING);
+  color_print("Syncing the reserve bytes database","yellow");
+  sync_reserve_bytes_database(0,1,SYNCED_NETWORK_DATA_NODES_STRING);
+  color_print("Syncing the delegates database","yellow");
+  sync_delegates_database(0,SYNCED_NETWORK_DATA_NODES_STRING);
+  color_print("Syncing the statistics database","yellow");
+  sync_statistics_database(0,SYNCED_NETWORK_DATA_NODES_STRING);
+  color_print("Successfully synced all databases","yellow");
+
+  network_data_nodes_sync_databases_settings = 1;
+  return;
+
+  #undef SYNC_NETWORK_DATA_NODES
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: sync_block_verifiers_database
 Description: Sync all of the block verifiers to the same database data
 -----------------------------------------------------------------------------------------------------------
@@ -665,6 +884,15 @@ void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES
         count = ((rand() % BLOCK_VERIFIERS_AMOUNT));
       } while (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || synced_network_data_nodes[count] == -1);
       memcpy(block_verifiers_ip_address,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    }
+    else if (strncmp(DELEGATES_IP_ADDRESS,SYNCED_NETWORK_DATA_NODES_STRING,BUFFER_SIZE) == 0)
+    {
+      // get a random network data node that is a synced network data node
+      do
+      {
+        count = ((rand() % NETWORK_DATA_NODES_AMOUNT));
+      } while (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 || synced_network_data_nodes[count] == -1);
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     }
     else
     {

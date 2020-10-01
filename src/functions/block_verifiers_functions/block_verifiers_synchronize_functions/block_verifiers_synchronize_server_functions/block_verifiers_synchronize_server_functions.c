@@ -329,15 +329,31 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
     SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
   }
 
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  if (registration_settings == 0)
   {
-    if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,BUFFER_SIZE) == 0)
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count]));
-      memcpy(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count],data_hash,DATA_HASH_LENGTH);
-      block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+      if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,BUFFER_SIZE) == 0)
+      {
+        memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count]));
+        memcpy(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count],data_hash,DATA_HASH_LENGTH);
+        block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+      }
     }
   }
+  else
+  {
+    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],public_address,BUFFER_SIZE) == 0)
+      {
+        memset(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count]));
+        memcpy(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],data_hash,DATA_HASH_LENGTH);
+        network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings[count] = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
+      }
+    }
+  }
+  
   return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR

@@ -34,6 +34,7 @@ extern struct VRF_data VRF_data; // The list of all of the VRF data to send to t
 extern struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
 extern struct error_message error_message; // holds all of the error messages and the functions for an error.
 extern struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
+extern struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
 extern struct block_verifiers_sync_database_list block_verifiers_sync_database_list; // Holds the block verifiers data and database hash for syncing the block verifiers
 extern struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 extern struct block_height_start_time block_height_start_time; // Holds the block height start time data

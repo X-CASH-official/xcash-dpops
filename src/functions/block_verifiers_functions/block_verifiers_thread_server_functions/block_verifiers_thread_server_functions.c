@@ -872,7 +872,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       color_print("Part 3 - Check if the valid amount of block verifiers had the same invalid reserve proofs","yellow");
 
       // process the vote results
-      if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT)
+      if ((registration_settings == 0 && current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT) || (registration_settings == 1 && current_round_part_vote_data.vote_results_valid >= NETWORK_DATA_NODES_VALID_AMOUNT))
       {
         fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
       }
