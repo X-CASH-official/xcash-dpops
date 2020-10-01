@@ -252,7 +252,7 @@ void sync_block_verifiers_database(void)
         settings = 1;
         if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
         {
-          SYNC_BLOCK_VERIFIERS_FROM_SPECIFIC_BLOCK_VERIFIER(network_data_nodes_list.network_data_nodes_IP_address[count]);
+          SYNC_BLOCK_VERIFIERS_FROM_SPECIFIC_BLOCK_VERIFIER(block_verifiers_sync_database_list.block_verifiers_IP_address[count]);
           network_data_nodes_sync_databases_settings = 1;
           return;
         }
