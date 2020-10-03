@@ -111,7 +111,7 @@ int start_new_round(void)
   // get the current block height
   sscanf(current_block_height,"%zu", &count);
 
-  color_print("getting the delegates online status","blue");
+  color_print("Getting the delegates online status","blue");
 
   // get the delegates online status
   if (registration_settings != 1)
@@ -202,7 +202,7 @@ int start_new_round(void)
     sync_block_verifiers_database();
 
     // wait for all block verifiers to sync
-    sync_block_verifiers_minutes_and_seconds(1,20);
+    sync_block_verifiers_minutes_and_seconds(1,30);
 
     // update the previous, current and next block verifiers after syncing the database
     if (update_block_verifiers_list() == 0)
@@ -221,7 +221,7 @@ int start_new_round(void)
     }
 
     // wait for all block verifiers to sync, as this will ensure when we calculate the main node roles we have the same buffer
-    sync_block_verifiers_minutes_and_seconds(1,25);
+    sync_block_verifiers_minutes_and_seconds(1,35);
 
     if (calculate_main_nodes_roles() == 0)
     {
@@ -1303,7 +1303,7 @@ int block_verifiers_create_block(void)
     color_print("both the block producer and backup block producer failed, waiting for the next round to begin","red"); \
     return 0; \
   } \
-  sync_block_verifiers_minutes_and_seconds(2,50); \
+  sync_block_verifiers_minutes_and_seconds(3,0); \
   goto start; 
 
   memset(data,0,sizeof(data));
@@ -1313,7 +1313,7 @@ int block_verifiers_create_block(void)
   main_network_data_node_create_block = 0;
   
   // wait for all block verifiers to sync
-  sync_block_verifiers_minutes_and_seconds(1,30);
+  sync_block_verifiers_minutes_and_seconds(1,40);
 
   if (get_previous_block_hash(previous_block_hash) == 0)
   {
@@ -1345,7 +1345,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(1,45) : sync_block_verifiers_minutes_and_seconds(3,5);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(1,55) : sync_block_verifiers_minutes_and_seconds(3,10);
 
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1427,7 +1427,7 @@ int block_verifiers_create_block(void)
     }
     
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,5) : sync_block_verifiers_minutes_and_seconds(3,25);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,15) : sync_block_verifiers_minutes_and_seconds(3,25);
 
 
 
@@ -1453,7 +1453,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,20) : sync_block_verifiers_minutes_and_seconds(3,40);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,30) : sync_block_verifiers_minutes_and_seconds(3,35);
 
 
 
@@ -1506,7 +1506,7 @@ int block_verifiers_create_block(void)
     }    
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,30) : sync_block_verifiers_minutes_and_seconds(3,50);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,40) : sync_block_verifiers_minutes_and_seconds(3,40);
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
@@ -1515,7 +1515,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,45) : sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),5);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,55) : sync_block_verifiers_minutes_and_seconds(3,55);
 
     // process the vote results
     if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT)
@@ -1820,7 +1820,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  sleep(8);
+  strncmp(current_round_part_backup_node,"0",1) == 0 ? sleep(8) : sleep(BLOCK_VERIFIERS_SETTINGS);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
