@@ -99,12 +99,6 @@ int start_new_round(void)
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
-
-  // start a new round
-  if (get_current_block_height(current_block_height) == 0)
-  {
-    START_NEW_ROUND_ERROR("Could not get the current block height");
-  }
   
   // check if it is running in registration mode only
   if (registration_settings != 1)
@@ -1089,6 +1083,21 @@ int block_verifiers_create_block_and_update_database(void)
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
+  // remove any database data if its a replayed round
+  get_reserve_bytes_database(count,0); 
+  memcpy(data,"reserve_bytes_",14);
+  snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",count);  
+  memcpy(data2,"{\"block_height\":\"",17);
+  memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+  memcpy(data2+strlen(data2),"\"}",2);
+  if (count_documents_in_collection(database_name,data,data2) >= 1)
+  { 
+    delete_document_from_collection(database_name,data,data2);
+  }
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
   // add the data hash to the network block string
   if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
   {
@@ -1106,9 +1115,8 @@ int block_verifiers_create_block_and_update_database(void)
   memcpy(data2+strlen(data2),"\"}",2);
 
   // add the network block string to the database
-  get_reserve_bytes_database(count,0);
   memcpy(data3,"reserve_bytes_",14);
-  snprintf(data3+14,sizeof(data3)-15,"%zu",count);
+  snprintf(data3+14,MAXIMUM_NUMBER_SIZE,"%zu",count);
   if (insert_document_into_collection_json(database_name,data3,data2) == 0)
   {
     BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the new block to the database");
