@@ -196,8 +196,6 @@ void* current_block_height_timer_thread(void* parameters)
         continue;
       }
 
-      sleep(5);
-
       get_current_block_height(current_block_height);
       get_previous_block_hash(previous_block_hash);
 

@@ -99,6 +99,12 @@ int start_new_round(void)
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
+
+  // start a new round
+  if (get_current_block_height(current_block_height) == 0)
+  {
+    START_NEW_ROUND_ERROR("Could not get the current block height");
+  }
   
   // check if it is running in registration mode only
   if (registration_settings != 1)
@@ -1083,7 +1089,7 @@ int block_verifiers_create_block_and_update_database(void)
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
-  // remove any database data if its a replayed round
+  // remove any database data if its a replayed round, since this is not a false positive since that was checked at the start of the round
   get_reserve_bytes_database(count,0); 
   memcpy(data,"reserve_bytes_",14);
   snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",count);  
@@ -1300,7 +1306,7 @@ int block_verifiers_create_block(void)
   } \
   else if (strncmp(current_round_part_backup_node,"1",1) == 0) \
   { \
-    color_print("both the block producer and backup block producer failed, waiting for the next round to begin","red"); \
+    color_print("Both the block producer and backup block producer failed, waiting for the next round to begin","red"); \
     return 0; \
   } \
   sync_block_verifiers_minutes_and_seconds(3,0); \
@@ -1314,6 +1320,15 @@ int block_verifiers_create_block(void)
   
   // wait for all block verifiers to sync
   sync_block_verifiers_minutes_and_seconds(1,40);
+
+  // check if this is a false postive replayed round and sit out the round, this way the block verifier does not remove a valid blocks data from the database
+  if (get_current_block_height(data) == 1 && strncmp(current_block_height,data,BUFFER_SIZE) != 0)
+  {
+    color_print("Your block height is not synced correctly, waiting for the next round to begin","red");
+    return 0;
+  }
+
+  memset(data,0,sizeof(data));
 
   if (get_previous_block_hash(previous_block_hash) == 0)
   {
