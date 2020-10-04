@@ -571,19 +571,19 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
     {
       memset(data,0,sizeof(data));
       memcpy(data,&public_key[count],2);
-      public_key_data[count2] = (int)strtol(data, NULL, 16);
+      public_key_data[count2] = (unsigned char)strtol(data, NULL, 16);
     }
     for (count = 0, count2 = 0; count < VRF_PROOF_LENGTH; count2++, count += 2)
     {
       memset(data,0,sizeof(data));
       memcpy(data,&proof[count],2);
-      proof_data[count2] = (int)strtol(data, NULL, 16);
+      proof_data[count2] = (unsigned char)strtol(data, NULL, 16);
     }
     for (count = 0, count2 = 0; count < VRF_BETA_LENGTH; count2++, count += 2)
     {
       memset(data,0,sizeof(data));
       memcpy(data,&beta_string[count],2);
-      beta_string_data[count2] = (int)strtol(data, NULL, 16);
+      beta_string_data[count2] = (unsigned char)strtol(data, NULL, 16);
     }
 
     // verify the message
@@ -668,6 +668,20 @@ int validate_data(const char* MESSAGE)
   if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || strncmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0 || strncmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
   {
     return 1;
+  }
+  else if (strstr(MESSAGE,"GET_CURRENT_BLOCK_HEIGHT") != NULL)
+  {
+    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"GET_CURRENT_BLOCK_HEIGHT",sizeof(data)) != 0)
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
+    }
+  }
+  else if (strstr(MESSAGE,"SEND_CURRENT_BLOCK_HEIGHT") != NULL)
+  {
+    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"SEND_CURRENT_BLOCK_HEIGHT",sizeof(data)) != 0 || parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 0 || strlen(data) != XCASH_WALLET_LENGTH || strncmp(data,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"previous_block_hash",data,sizeof(data)) == 0 || strlen(data) != BLOCK_HASH_LENGTH || parse_json_data(MESSAGE,"current_round_part",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"current_round_part_backup_node",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"data",data,sizeof(data)) == 0 || strlen(data) != RANDOM_STRING_LENGTH || parse_json_data(MESSAGE,"XCASH_DPOPS_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_BETA_LENGTH+VRF_PROOF_LENGTH)
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
+    }
   }
   else if (strstr(MESSAGE,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK") != NULL)
   {

@@ -137,7 +137,6 @@ int check_reserve_proofs(char *result, const char* PUBLIC_ADDRESS, const char* R
   char data[BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
   char data3[SMALL_BUFFER_SIZE];
-  int count;
   
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));

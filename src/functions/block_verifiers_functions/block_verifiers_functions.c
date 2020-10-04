@@ -117,7 +117,7 @@ int start_new_round(void)
   // get the current block height
   sscanf(current_block_height,"%zu", &count);
 
-  color_print("getting the delegates online status","blue");
+  color_print("Getting the delegates online status","blue");
 
   // get the delegates online status
   if (registration_settings != 1)
@@ -141,8 +141,29 @@ int start_new_round(void)
     sync_previous_current_next_block_verifiers_settings = 0;
     sync_all_block_verifiers_list(0);
   }
+
+  // check if it is running in registration mode only
+  if (registration_settings == 1)
+  {
+    color_print("Registration mode is on, checking to make sure all network data nodes databases are synced","yellow");
+    sync_network_data_nodes_database();
+
+    // update the previous, current and next block verifiers after syncing the database
+    if (update_block_verifiers_list() == 0)
+    {
+      START_NEW_ROUND_ERROR("Could not update the previous, current and next block verifiers list");
+    }
+    
+    // start the reserve proofs timer
+    pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
+    pthread_detach(thread_id);
+    sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS); 
+    return 2;
+  }
+
   
-  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && registration_settings == 0)
+
+  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
     // this is the first block of the network
     color_print("The current block is the first block on the network, meaning that the main network node will create this block","yellow");
@@ -159,7 +180,7 @@ int start_new_round(void)
   else
   {
     // this is a X-CASH proof of stake block so this is not the start blocks of the network
-    if (strncmp(VRF_data.block_blob,"",1) != 0 && registration_settings == 0)
+    if (strncmp(VRF_data.block_blob,"",1) != 0)
     {
       // update all of the databases 
       color_print("Updating the previous rounds data in the databases","blue");
@@ -178,68 +199,16 @@ int start_new_round(void)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_hour == 23 && current_UTC_date_and_time.tm_min < BLOCK_TIME)
     {
-      color_print("Removing inactive delegates\n","yellow");
+      color_print("Removing inactive delegates\n","blue");
       //remove_inactive_delegates();
     }
 
-    color_print("Waiting for all network data nodes to sync the databases\n","blue");
+    // all block verifiers will sync and make sure they have the same database
+    color_print("\nChecking to make sure all block verifiers databases are synced","blue");
+    sync_block_verifiers_database();
 
-    // all network data nodes will sync and make sure they have the same database, before the block verifiers sync from them
-    if (network_data_node_settings == 1)
-    {
-      color_print("Your block verifier is a network data node, checking to make sure all network data nodes databases are synced","yellow");
-      sync_network_data_nodes_database();
-    }
-
-    sync_block_verifiers_minutes_and_seconds(START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE,START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE);
-
-    // wait for all block verifiers to sync the database
-    color_print("Waiting for all block verifiers to sync the databases\n","blue");
-
-    // check if it should create the default database data
-    memset(data,0,sizeof(data));
-    if ((read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","username",data) == 0) || (read_document_field_from_collection(database_name,"statistics","{\"username\":\"XCASH\"}","username",data) == 1 && count_all_documents_in_collection(database_name,"delegates") < NETWORK_DATA_NODES_AMOUNT))
-    {
-      delete_collection_from_database(database_name,"reserve_proofs_1");
-      delete_collection_from_database(database_name,"delegates");
-      delete_collection_from_database(database_name,"statistics");
-      RESET_ERROR_MESSAGES;
-      INITIALIZE_DATABASE_DATA(0);
-    }
-
-    if (network_data_node_settings != 1)
-    {
-      color_print("Your block verifier is not a network data node, checking to make sure the databases are synced","yellow");
-      color_print("Syncing the reserve proofs database","yellow");
-      if (sync_reserve_proofs_database(2,"") == 0)
-      {
-        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
-        sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-        return 2;
-      }
-      color_print("Syncing the reserve bytes database","yellow");
-      if (sync_reserve_bytes_database(2,1,"") == 0)
-      {
-        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
-        sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-        return 2;
-      }
-      color_print("Syncing the delegates database","yellow");
-      if (sync_delegates_database(2,"") == 0)
-      {
-        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
-        sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-        return 2;
-      }
-      color_print("Syncing the statistics database","yellow");
-      if (sync_statistics_database(2,"") == 0)
-      {
-        color_print("Your block verifier took longer to sync and the next round has already started, so your block verifier will sit out for the remainder of the round\n","yellow");
-        sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
-        return 2;
-      }
-      color_print("Successfully synced all databases\n","yellow");
-    }
+    // wait for all block verifiers to sync
+    sync_block_verifiers_minutes_and_seconds(1,30);
 
     // update the previous, current and next block verifiers after syncing the database
     if (update_block_verifiers_list() == 0)
@@ -250,7 +219,6 @@ int start_new_round(void)
     // check if it is running in registration mode only
     if (registration_settings == 1)
     {
-      sync_block_verifiers_minutes_and_seconds(START_TIME_MINUTE_NETWORK_BLOCK_ROUND,0);
       // start the reserve proofs timer
       pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
       pthread_detach(thread_id);
@@ -259,7 +227,7 @@ int start_new_round(void)
     }
 
     // wait for all block verifiers to sync, as this will ensure when we calculate the main node roles we have the same buffer
-    sync_block_verifiers_minutes_and_seconds(1,55);
+    sync_block_verifiers_minutes_and_seconds(1,35);
 
     if (calculate_main_nodes_roles() == 0)
     {
@@ -1121,6 +1089,21 @@ int block_verifiers_create_block_and_update_database(void)
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
+  // remove any database data if its a replayed round, since this is not a false positive since that was checked at the start of the round
+  get_reserve_bytes_database(count,0); 
+  memcpy(data,"reserve_bytes_",14);
+  snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",count);  
+  memcpy(data2,"{\"block_height\":\"",17);
+  memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+  memcpy(data2+strlen(data2),"\"}",2);
+  if (count_documents_in_collection(database_name,data,data2) >= 1)
+  { 
+    delete_document_from_collection(database_name,data,data2);
+  }
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
   // add the data hash to the network block string
   if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
   {
@@ -1138,9 +1121,8 @@ int block_verifiers_create_block_and_update_database(void)
   memcpy(data2+strlen(data2),"\"}",2);
 
   // add the network block string to the database
-  get_reserve_bytes_database(count,0);
   memcpy(data3,"reserve_bytes_",14);
-  snprintf(data3+14,sizeof(data3)-15,"%zu",count);
+  snprintf(data3+14,MAXIMUM_NUMBER_SIZE,"%zu",count);
   if (insert_document_into_collection_json(database_name,data3,data2) == 0)
   {
     BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the new block to the database");
@@ -1324,7 +1306,7 @@ int block_verifiers_create_block(void)
   } \
   else if (strncmp(current_round_part_backup_node,"1",1) == 0) \
   { \
-    color_print("both the block producer and backup block producer failed, waiting for the next round to begin","red"); \
+    color_print("Both the block producer and backup block producer failed, waiting for the next round to begin","red"); \
     return 0; \
   } \
   sync_block_verifiers_minutes_and_seconds(3,0); \
@@ -1337,7 +1319,16 @@ int block_verifiers_create_block(void)
   main_network_data_node_create_block = 0;
   
   // wait for all block verifiers to sync
-  sync_block_verifiers_minutes_and_seconds(START_TIME_MINUTE_NETWORK_BLOCK_ROUND,0);
+  sync_block_verifiers_minutes_and_seconds(1,40);
+
+  // check if this is a false postive replayed round and sit out the round, this way the block verifier does not remove a valid blocks data from the database
+  if (get_current_block_height(data) == 1 && strncmp(current_block_height,data,BUFFER_SIZE) != 0)
+  {
+    color_print("Your block height is not synced correctly, waiting for the next round to begin","red");
+    return 0;
+  }
+
+  memset(data,0,sizeof(data));
 
   if (get_previous_block_hash(previous_block_hash) == 0)
   {
@@ -1369,7 +1360,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,START_TIME_SECONDS_NETWORK_BLOCK_PART_2) : sync_block_verifiers_minutes_and_seconds(3,START_TIME_SECONDS_NETWORK_BLOCK_PART_2);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(1,55) : sync_block_verifiers_minutes_and_seconds(3,10);
 
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1401,6 +1392,7 @@ int block_verifiers_create_block(void)
     else if (count2 == 1)
     {
       // restart the delegate, as it could only verify its own message and not anyone elses message
+      color_print("Restarting, could not process any other block verifiers data","red");
       exit(0);
     }
     else
@@ -1450,7 +1442,7 @@ int block_verifiers_create_block(void)
     }
     
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,START_TIME_SECONDS_NETWORK_BLOCK_PART_3) : sync_block_verifiers_minutes_and_seconds(3,START_TIME_SECONDS_NETWORK_BLOCK_PART_3);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,15) : sync_block_verifiers_minutes_and_seconds(3,25);
 
 
 
@@ -1476,7 +1468,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,START_TIME_SECONDS_NETWORK_BLOCK_PART_4) : sync_block_verifiers_minutes_and_seconds(3,START_TIME_SECONDS_NETWORK_BLOCK_PART_4);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,30) : sync_block_verifiers_minutes_and_seconds(3,35);
 
 
 
@@ -1507,6 +1499,7 @@ int block_verifiers_create_block(void)
     else if (count2 == 1)
     {
       // restart the delegate, as it could only verify its own message and not anyone elses message
+      color_print("Restarting, could not process any other block verifiers data","red");
       exit(0);
     }
     else
@@ -1528,7 +1521,7 @@ int block_verifiers_create_block(void)
     }    
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,SEND_DATA_TIME_SECONDS_NETWORK_BLOCK_PART_4) : sync_block_verifiers_minutes_and_seconds(3,SEND_DATA_TIME_SECONDS_NETWORK_BLOCK_PART_4);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,40) : sync_block_verifiers_minutes_and_seconds(3,40);
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
@@ -1537,7 +1530,7 @@ int block_verifiers_create_block(void)
     }
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,START_TIME_SECONDS_NETWORK_BLOCK_PART_5) : sync_block_verifiers_minutes_and_seconds(3,START_TIME_SECONDS_NETWORK_BLOCK_PART_5);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,55) : sync_block_verifiers_minutes_and_seconds(3,55);
 
     // process the vote results
     if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT)
@@ -1547,6 +1540,7 @@ int block_verifiers_create_block(void)
     else if (current_round_part_vote_data.vote_results_valid == 1)
     {
       // restart the delegate, as it could only verify its own message and not anyone elses message
+      color_print("Restarting, could not process any other block verifiers data","red");
       exit(0);
     }
     else
@@ -1570,8 +1564,6 @@ int block_verifiers_create_block(void)
     
     #undef RESTART_ROUND
 }
-
-
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -1843,7 +1835,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  sleep(4);
+  strncmp(current_round_part_backup_node,"0",1) == 0 ? sleep(8) : sleep(BLOCK_VERIFIERS_SETTINGS);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)

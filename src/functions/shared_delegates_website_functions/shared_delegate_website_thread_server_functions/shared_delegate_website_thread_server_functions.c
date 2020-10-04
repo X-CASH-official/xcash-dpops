@@ -119,7 +119,7 @@ int check_if_previous_block_producer(void)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,&data3[count],2);
-    previous_block_producer[count2] = (int)strtol(data2, NULL, 16);
+    previous_block_producer[count2] = (char)strtol(data2, NULL, 16);
   }
 
   // check if the delegate is the previous block producer
@@ -483,7 +483,7 @@ void* block_height_timer_thread(void* parameters)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
     // check if you found the previous block in the network
-    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == START_TIME_MINUTE_NETWORK_BLOCK_ROUND && current_UTC_date_and_time.tm_sec == 0 && check_if_previous_block_producer() == 1)
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 1 && current_UTC_date_and_time.tm_sec == 30 && check_if_previous_block_producer() == 1)
     {
       // make sure the round is not replayed
       if (replayed_round_settings == 1)
@@ -738,7 +738,7 @@ void* payment_timer_thread(void* parameters)
     start:
     // check if it is time to send the payments
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_min == BLOCK_TIME-1)
+    if (current_UTC_date_and_time.tm_min == (BLOCK_TIME-1))
     {
       color_print("Sending the hourly payments","yellow");
 

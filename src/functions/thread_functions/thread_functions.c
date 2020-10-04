@@ -47,7 +47,7 @@ Return: 0 if an error has occured, 1 if successfull
 void* read_file_thread(void* parameters)
 {
   struct read_file_thread_parameters* data = parameters;
-  int settings = read_file(data->result, data->FILE_NAME);
+  int settings = (int)read_file(data->result, data->FILE_NAME);
   pthread_exit((void *)(intptr_t)settings);
 }
 

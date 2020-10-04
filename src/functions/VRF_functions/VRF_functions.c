@@ -214,19 +214,19 @@ int VRF_data_verify(const char* BLOCK_VERIFIERS_PUBLIC_KEY, const char* BLOCK_VE
   {
     memset(data,0,sizeof(data));
     memcpy(data,&BLOCK_VERIFIERS_PUBLIC_KEY[count],2);
-    public_key_data[count2] = (int)strtol(data, NULL, 16);
+    public_key_data[count2] = (unsigned char)strtol(data, NULL, 16);
   }
   for (count = 0, count2 = 0; count < VRF_PROOF_LENGTH; count2++, count += 2)
   {
     memset(data,0,sizeof(data));
     memcpy(data,&BLOCK_VERIFIERS_DATA_SIGNATURE[count],2);
-    proof_data[count2] = (int)strtol(data, NULL, 16);
+    proof_data[count2] = (unsigned char)strtol(data, NULL, 16);
   }
   for (count = VRF_PROOF_LENGTH, count2 = 0; count < VRF_BETA_LENGTH; count2++, count += 2)
   {
     memset(data,0,sizeof(data));
     memcpy(data,&BLOCK_VERIFIERS_DATA_SIGNATURE[count],2);
-    beta_string_data[count2] = (int)strtol(data, NULL, 16);
+    beta_string_data[count2] = (unsigned char)strtol(data, NULL, 16);
   }
 
   return crypto_vrf_verify((unsigned char*)beta_string_data,(const unsigned char*)public_key_data,(const unsigned char*)proof_data,(const unsigned char*)DATA,(unsigned long long)strlen(DATA)) != 0 ? 0 : 1;

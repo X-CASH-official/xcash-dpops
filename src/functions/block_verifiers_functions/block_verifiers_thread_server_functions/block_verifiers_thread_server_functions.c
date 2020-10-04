@@ -202,21 +202,6 @@ void* current_block_height_timer_thread(void* parameters)
       // check if this round is a replayed round
       replayed_round_settings = check_if_replayed_round();
 
-      // remove any database data if its a replayed round
-      if (replayed_round_settings == 1)
-      {
-        memset(data,0,sizeof(data));
-        memset(data2,0,sizeof(data2));
-        get_reserve_bytes_database(count,0); 
-        memcpy(data,"reserve_bytes_",14);
-        snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",count);  
-        memcpy(data2,"{\"block_height\":\"",17);
-        memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
-        memcpy(data2+strlen(data2),"\"}",2);   
-        delete_document_from_collection(database_name,data,data2);
-        RESET_ERROR_MESSAGES;
-      }
-
       if ((block_verifier_settings = start_new_round()) == 0)
       {
         print_error_message(current_date_and_time,current_UTC_date_and_time,data);
@@ -872,7 +857,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       color_print("Part 3 - Check if the valid amount of block verifiers had the same invalid reserve proofs","yellow");
 
       // process the vote results
-      if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT)
+      if ((registration_settings == 0 && current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT) || (registration_settings == 1 && current_round_part_vote_data.vote_results_valid >= NETWORK_DATA_NODES_VALID_AMOUNT))
       {
         fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
       }

@@ -63,6 +63,7 @@ struct blockchain_data blockchain_data; // The data for a new block to be added 
 struct error_message error_message; // holds all of the error messages and the functions for an error.
 struct invalid_reserve_proofs invalid_reserve_proofs; // The invalid reserve proofs that the block verifier finds every round
 struct network_data_nodes_sync_database_list network_data_nodes_sync_database_list; // Holds the network data nodes data and database hash for syncing network data nodes
+struct block_verifiers_sync_database_list block_verifiers_sync_database_list; // Holds the block verifiers data and database hash for syncing the block verifiers
 struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 struct block_height_start_time block_height_start_time; // Holds the block height start time data
 char current_round_part[2]; // The current round part (1-4)
@@ -76,7 +77,6 @@ pthread_mutex_t vote_lock;
 pthread_mutex_t add_reserve_proof_lock;
 pthread_mutex_t invalid_reserve_proof_lock;
 pthread_mutex_t database_data_IP_address_lock;
-pthread_mutex_t network_data_nodes_valid_count_lock;
 
 pthread_t server_threads[100];
 int epoll_fd;
@@ -101,10 +101,10 @@ int network_functions_test_settings;
 int network_functions_test_error_settings; // 1 to display errors, 0 to not display errors when running the reset variables allocated on the heap test
 int network_functions_test_server_messages_settings; // 1 to display server messages, 0 to not display server messages when running the test
 int test_settings; // 1 when the test are running, 0 if not
-int vrf_data_verify_count; // holds the amount of block verifiers signatures that are verified for the current network block
 int debug_settings; // 1 to show all incoming and outgoing message from the server
 int registration_settings; // 1 when the registration mode is running, 0 when it is not
-int synced_network_data_nodes[NETWORK_DATA_NODES_AMOUNT]; // the synced network data nodes
+int synced_network_data_nodes[BLOCK_VERIFIERS_AMOUNT]; // the synced network data nodes
+size_t block_verifiers_current_block_height[BLOCK_VERIFIERS_AMOUNT]; // holds the block verifiers current block heights
 int production_settings; // 0 for production, 1 for test
 int production_settings_database_data_settings; // The initialize the database settings
 char website_path[1024]; // holds the path to the website if running a delegates explorer or shared delegates pool
@@ -203,7 +203,6 @@ void initialize_data(int parameters_count, char* parameters[])
   pthread_mutex_init(&add_reserve_proof_lock, NULL);
   pthread_mutex_init(&invalid_reserve_proof_lock, NULL);
   pthread_mutex_init(&database_data_IP_address_lock, NULL);
-  pthread_mutex_init(&network_data_nodes_valid_count_lock, NULL);
 
   server_limit_IP_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
   server_limit_public_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
@@ -527,7 +526,7 @@ void get_delegates_data(void)
 
     file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
 
-    if (fgets(database_path_write+strlen(database_path_write),sizeof(database_path_write)-strlen(database_path_write),file) == NULL)
+    if (fgets(database_path_write+strlen(database_path_write),(int)(sizeof(database_path_write)-strlen(database_path_write)),file) == NULL)
     {
       GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
     }
@@ -538,7 +537,7 @@ void get_delegates_data(void)
 
     file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
 
-    if (fgets(database_path_read+strlen(database_path_read),sizeof(database_path_read)-strlen(database_path_read),file) == NULL)
+    if (fgets(database_path_read+strlen(database_path_read),(int)(sizeof(database_path_read)-strlen(database_path_read)),file) == NULL)
     {
       GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
     }
@@ -659,7 +658,7 @@ int set_parameters(int parameters_count, char* parameters[])
       {
         memset(data2,0,sizeof(data2));
         memcpy(data2,&secret_key[count3],2);
-        secret_key_data[counter] = (int)strtol(data2, NULL, 16);
+        secret_key_data[counter] = (unsigned char)strtol(data2, NULL, 16);
       }
     }
     if (strncmp(parameters[count],"--test",BUFFER_SIZE) == 0)
@@ -981,18 +980,11 @@ void database_sync_check(void)
   }
 
   // check if the database is synced, unless this is the main network data node
-  if (network_data_node_settings == 1 && get_network_data_nodes_online_status() == 1)
+  if ((network_data_node_settings == 1 && get_network_data_nodes_online_status() == 1) || (network_data_node_settings == 0))
   {
-    // check if all of the databases are synced from a random network data node
-    if (check_if_databases_are_synced(3,0) == 0)
-    {
-      DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
-    }
-  }
-  else if (network_data_node_settings == 0)
-  {
-    // check if all of the databases are synced from a random block verifier
-    if (check_if_databases_are_synced(3,0) == 0)
+    // check if all of the databases are synced
+    sscanf(current_block_height,"%zu", &count);
+    if ((count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(3,0) == 0) || (count > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(1,0) == 0))
     {
       DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
     }
@@ -1127,7 +1119,7 @@ Return: 0 if an error has occured, 1 if successfull
 int main(int parameters_count, char* parameters[])
 {
   // iniltize the random number generator
-  srand(time(NULL));
+  srand((unsigned int)time(NULL));
 
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -1271,7 +1263,7 @@ int main(int parameters_count, char* parameters[])
     {
       memset(data,0,sizeof(data));
       memcpy(data,&secret_key[count],2);
-      secret_key_data[count2] = (int)strtol(data, NULL, 16);
+      secret_key_data[count2] = (unsigned char)strtol(data, NULL, 16);
     }
   }
 
@@ -1291,15 +1283,11 @@ int main(int parameters_count, char* parameters[])
   // check if the block verifier is a network data node
   CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE; 
 
-  // wait until the blockchain is fully synced
-  if (network_data_node_settings == 0 && check_if_blockchain_is_fully_synced() == 0)
+  // only network data nodes can use the registration mode
+  if (registration_settings == 1 && network_data_node_settings == 0)
   {
-    color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue (This might take a while)","yellow");  
-    do
-    {
-      sleep(600);
-    } while (check_if_blockchain_is_fully_synced() == 0);
-  }  
+    registration_settings = 0;
+  }
  
   if (settings != 2)
   {
@@ -1311,7 +1299,16 @@ int main(int parameters_count, char* parameters[])
   if (create_server(1) == 0)
   {
     MAIN_ERROR("Could not start the server");
-  }  
+  }
+
+  // wait until the blockchain is fully synced
+  color_print("Checking if the blockchain is fully synced","yellow"); 
+  
+  while (check_if_blockchain_is_fully_synced() == 0)
+  {
+    color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue (This might take a while)","yellow"); 
+    sleep(60);
+  }
 
   if (settings != 2)
   {

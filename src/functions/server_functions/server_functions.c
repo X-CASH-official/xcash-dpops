@@ -67,7 +67,6 @@ int create_server(const int MESSAGE_SETTINGS)
   struct tm current_UTC_date_and_time;
   struct sockaddr_in addr; 
   int count;
-  int settings;
 
   #define SERVER_ERROR(message) \
   memcpy(error_message.function[error_message.total],"create_server",13); \
@@ -86,8 +85,9 @@ int create_server(const int MESSAGE_SETTINGS)
   /* Create the socket  
   AF_INET = IPV4 support
   SOCK_STREAM = TCP protocol
+  SOCK_NONBLOCK = Non blocking socket, so it will be able to use a custom timeout
   */
-  if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+  if ((server_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0)) == -1)
   {
     SERVER_ERROR("Error creating the socket");
   }
@@ -130,11 +130,6 @@ int create_server(const int MESSAGE_SETTINGS)
     print_error_message(current_date_and_time,current_UTC_date_and_time,data);
     exit(0);
   } 
-
-  // set the socket to non blocking
-  settings = fcntl(server_socket, F_GETFL, 0);
-  settings |= O_NONBLOCK;
-  fcntl(server_socket, F_SETFL, settings);
 
   // set the maximum simultaneous connections
   if (listen(server_socket, MAXIMUM_CONNECTIONS) != 0)
@@ -520,7 +515,7 @@ void socket_thread(const int CLIENT_SOCKET)
     pointer_reset(buffer);
     return;
   }
-  pthread_mutex_unlock(&lock);
+  pthread_mutex_unlock(&lock); 
 
  // check if a certain type of message has been received 
  if (strstr(buffer,"\"message_settings\": \"XCASH_PROOF_OF_STAKE_TEST_DATA\"") != NULL)
@@ -608,6 +603,22 @@ void socket_thread(const int CLIENT_SOCKET)
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
      server_receive_data_socket_get_public_address_payment_information(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"GET_CURRENT_BLOCK_HEIGHT\"") != NULL)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_get_current_block_height((const char*)client_IP_address);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ } 
+ else if (strstr(buffer,"\"message_settings\": \"SEND_CURRENT_BLOCK_HEIGHT\"") != NULL)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_send_current_block_height((const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -1006,7 +1017,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
     SERVER_RECEIVE_DATA_SOCKET_GET_FILES_ERROR;
   }
 
-  send_data(CLIENT_SOCKET,data,(const long)file_size,200,data2);
+  send_data(CLIENT_SOCKET,data,file_size,200,data2);
 
   pointer_reset(data);
   return 1;

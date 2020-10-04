@@ -1002,6 +1002,30 @@ memset(data_test,0,sizeof(data_test));
 
 // Message Templates
 // Block verifiers verification process messages
+
+/* 
+  The purpose of this message is to get the current block height
+ 
+  message_settings - The type of the message
+  */
+  #define GET_CURRENT_BLOCK_HEIGHT "{\r\n \"message_settings\": \"GET_CURRENT_BLOCK_HEIGHT\",\r\n}"
+
+
+
+/* 
+  The purpose of this message is to send the current block height
+ 
+  message_settings - The type of the message
+  block_height - The block_height.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define SEND_CURRENT_BLOCK_HEIGHT "{\r\n \"message_settings\": \"SEND_CURRENT_BLOCK_HEIGHT\",\r\n \"block_height\": \"DATA\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+
+
  
 /* 
   The purpose of this message is for the block producer to send the created block for the part of the round to the nodes, so they can verify the block.

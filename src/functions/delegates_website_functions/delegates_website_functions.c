@@ -155,7 +155,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   database_data.count++;
 
   // get the XCASH_DPOPS_circulating_percentage
-  generated_supply = get_generated_supply((const size_t)block_height);
+  generated_supply = get_generated_supply(block_height);
   number = ((size_t)((((double)count2) / ((generated_supply - (XCASH_PREMINE_TOTAL_SUPPLY - XCASH_PREMINE_CIRCULATING_SUPPLY)) * XCASH_WALLET_DECIMAL_PLACES_AMOUNT)) * 100) | 0);
 
   memset(data,0,strlen(data));

@@ -69,7 +69,6 @@ Using define statements instead of constants for increased efficiency
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
 #define BLOCK_VERIFIERS_AMOUNT 50 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_VALID_AMOUNT 27 // The amount of block verifiers that need to vote true for the part of the round to be valid
-#define BLOCK_VERIFIERS_VALID_AMOUNT_NETWORK_DATA_NODE 5 // The amount of block verifiers that need to vote true with at least NETOWRK_DATA_NODES_AMOUNT-1 of the network data nodes for the part of the round to be valid.
 #define MAXIMUM_AMOUNT_OF_DELEGATES 500 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 1000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
@@ -78,14 +77,8 @@ Using define statements instead of constants for increased efficiency
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 1000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet, 20M xcash
 #define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 0 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the xcash-dpops program running to sync in case they move to the top 100, 100M xcash
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
-#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 15 // the start time in seconds that the block verifiers synchronize the database each round
-#define START_TIME_MINUTE_NETWORK_BLOCK_ROUND 2 // the start time that the block verifiers start to create the network block
+#define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 10 // the start time in seconds that the block verifiers synchronize the database each round
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 5 // The time to submit the network block
-#define START_TIME_SECONDS_NETWORK_BLOCK_PART_2 10 // the start time of part 2 of the network block round
-#define START_TIME_SECONDS_NETWORK_BLOCK_PART_3 25 // the start time of part 3 of the network block round
-#define START_TIME_SECONDS_NETWORK_BLOCK_PART_4 35 // the start time of part 4 of the network block round
-#define SEND_DATA_TIME_SECONDS_NETWORK_BLOCK_PART_4 45 // the send data time of part 4 of the network block round
-#define START_TIME_SECONDS_NETWORK_BLOCK_PART_5 55 // the start time of part 5 of the network block round
 #define START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2 10 // the start time of part 2 of the invalid reserve proofs
 #define START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3 25 // the start time of part 3 of the invalid reserve proofs
 #define INVALID_RESERVE_PROOFS_SETTINGS 5 // The amount of times to check if a received reserve proof is invalid
@@ -112,6 +105,8 @@ Using define statements instead of constants for increased efficiency
 #define SHARED_DELEGATES_WEBSITE_PATH "delegates-pool-website/" // The shared delegates website path
 #define XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING "}\r\n}" // End string for the xcash daemon or xcash wallet
 #define XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING "\"code\":" // End string for the xcash daemon or xcash wallet when an error occurs
+#define SYNCED_NETWORK_DATA_NODES_STRING "synced_network_data_nodes" // The synced network data nodes string
+#define SYNCED_BLOCK_VERIFIER_STRING "synced_block_verifiers" // The synced block verifiers string
 #define ERROR_DATA "ERROR" // The data to send the delegate when there is an error
 #define GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS BLOCK_TIME * 60 // The time in seconds to refresh the synced block verifiers
 
@@ -167,7 +162,6 @@ Using define statements instead of constants for increased efficiency
 #define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
 #define NETWORK_DATA_NODES_VALID_AMOUNT 3 // The amount of network data nodes need to reach a consensus on the database data
 #define NETWORK_DATA_NODES_VALID_AMOUNT_PERCENTAGE 0.60 // The percentage of network data nodes need to reach a consensus on the database data
-
 
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1a9usG2UKajV1Dqzp8fL1BbN3hzuaaJMYjCo7qDoC4C3Vvc5owiLAqKbVw2cRbwRqx3mgrau1Z7LkX6cxR2NC4ZmFBLe2Mf"
