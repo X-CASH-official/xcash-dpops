@@ -88,6 +88,27 @@ regex_DPOPS_FEE="\b(^[1-9]{1}[0-9]{0,1}.?[0-9]{0,6}$)\b$" # between 1 and 99 wit
 regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 10000000-1
 
 
+# Disable script execution with sudo and warns the user if root install
+if [ $SUDO_USER ] ; then
+  # execution with sudo not allowed
+  echo -e "\n${COLOR_PRINT_RED}Please don't use sudo with this script!${END_COLOR_PRINT}"
+  exit 1
+else
+  # If not inside a LXC container (isolated, with official LXC installer) 
+  if [ ! "$container" == "lxc" ]; then
+    if [ $UID -eq 0 ] ; then
+      echo -e "\n${COLOR_PRINT_RED}WARNING: You are running the script with a root user! This is NOT secure and NOT suggested. Please use a dedicated xcash user following the documentation. If you want to proceed with root and you know what you are doing press ENTER, otherwise press CTRL+C to exit.${END_COLOR_PRINT}"
+      read -r data
+      echo -ne "\r"
+      echo
+      if [ ! "${data}" == "" ]; then
+        exit 1
+      fi
+    fi
+  fi
+fi
+
+
 
 # Functions
 
@@ -773,7 +794,7 @@ function print_installation_settings()
 {
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}              Installation/Configuration Settings${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}             Installation/Configuration Settings${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
   echo -e "${COLOR_PRINT_GREEN}Installation Type: ${INSTALLATION_TYPE}${END_COLOR_PRINT}"
@@ -1359,7 +1380,7 @@ function create_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
+  sudo rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
 
   echo -ne "${COLOR_PRINT_YELLOW}Starting local daemon${END_COLOR_PRINT}"
   sudo systemctl stop xcash-daemon &>/dev/null
@@ -1388,7 +1409,7 @@ function import_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
+  sudo rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
 
   echo -ne "${COLOR_PRINT_YELLOW}Starting local daemon${END_COLOR_PRINT}"
   sudo systemctl stop xcash-daemon &>/dev/null
@@ -1599,6 +1620,12 @@ function update_packages()
     echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages${END_COLOR_PRINT}"
     echo
 }
+
+function set_installation_dir_owner()
+{
+  sudo chown -R "$USER":"$USER" ${XCASH_DPOPS_INSTALLATION_DIR}
+}
+
 
 function update_xcash()
 {
@@ -1885,7 +1912,7 @@ function install()
   fi
   
   # Create xcash wallet log symlink to old location
-  touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
+  touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && sudo rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
  
 
   # Start the systemd service files
@@ -1923,6 +1950,9 @@ function configure()
 
   # Remove shared website if solo 
   check_if_remove_shared_delegate_configure_install
+
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
 
   # Ask if use already present blockchain or use bootstrap file
   echo -ne "${COLOR_PRINT_YELLOW}Download and use the blockchain bootstrap? Leave empty for YES, write N for NO: ${END_COLOR_PRINT}"
@@ -2000,6 +2030,9 @@ function update()
   # Update all system packages that are xcash-dpops dependencies
   update_packages
 
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
+
   # Update all repositories
   update_xcash
   update_xcash_dpops
@@ -2030,7 +2063,7 @@ function update()
   fi
   
   # Create xcash wallet log symlink to old location
-  touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
+  touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && sudo rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
 
   # Start the systemd service files
   start_systemd_service_files
@@ -2060,6 +2093,9 @@ function uninstall()
 
   # Get the installation directory
   get_installation_directory
+
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
 
   # Restart the X-CASH Daemon and stop the X-CASH Wallet RPC
   echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
@@ -2141,6 +2177,8 @@ function change_solo_or_shared_delegate()
 
 function test_update()
 {
+  # Source profile to fix some strange "edge" behaviors
+  . "${HOME}"/.profile
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
@@ -2166,11 +2204,14 @@ function test_update()
   (echo "use XCASH_PROOF_OF_STAKE_DELEGATES"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Database${END_COLOR_PRINT}"
   echo
+  echo
   update
 }
 
 function test_update_reset_delegates()
 {
+  # Source profile to fix some strange "edge" behaviors
+  . "${HOME}"/.profile
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
@@ -2181,9 +2222,6 @@ function test_update_reset_delegates()
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
   sudo systemctl stop xcash-daemon
   sleep 30s
-  echo "${XCASH_DIR}"
-  echo "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}"
-  echo ${data}
   if [ $data -ne 0 ]; then
     "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
   fi
@@ -2193,6 +2231,7 @@ function test_update_reset_delegates()
   (echo "use XCASH_PROOF_OF_STAKE"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
   (echo "use XCASH_PROOF_OF_STAKE_DELEGATES"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Database${END_COLOR_PRINT}"
+  echo
   echo
   update
 }
@@ -2269,16 +2308,16 @@ function install_or_update_blockchain()
   if [ $XCASH_BLOCKCHAIN_INSTALLATION_DIR = "/" ]; then
   XCASH_BLOCKCHAIN_INSTALLATION_DIR="/root/.X-CASH/"
   fi
-  cd && test -f xcash-blockchain.7z && rm -rf xcash-blockchain.7z*
+  cd && test -f xcash-blockchain.7z && sudo rm -rf xcash-blockchain.7z*
   echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
   wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
   echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
   7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cp -a .X-CASH/* ./
-  rm -r .X-CASH
+  sudo rm -r .X-CASH
   cd $HOME
-  rm xcash-blockchain.7z
+  sudo rm xcash-blockchain.7z
   echo -e "${COLOR_PRINT_GREEN}Installing / Updating The BlockChain Completed${END_COLOR_PRINT}"
   echo
 }
@@ -2288,16 +2327,16 @@ function install_blockchain()
   if [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ] || [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}lmdb/ ]; then
     echo -e "${COLOR_PRINT_GREEN}Installing The BlockChain (This Might Take a While, please follow the progress)${END_COLOR_PRINT}"
     cd $HOME
-    cd && test -f xcash-blockchain.7z && rm -rf xcash-blockchain.7z*
+    cd && test -f xcash-blockchain.7z && sudo rm -rf xcash-blockchain.7z*
     echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
     wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
     echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
     7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cp -a .X-CASH/* ./
-    rm -r .X-CASH
+    sudo rm -r .X-CASH
     cd $HOME
-    rm xcash-blockchain.7z
+    sudo rm xcash-blockchain.7z
     echo -e "${COLOR_PRINT_GREEN}Installing The BlockChain Completed${END_COLOR_PRINT}"
     echo
   fi
