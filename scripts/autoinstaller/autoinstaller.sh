@@ -1245,6 +1245,7 @@ function install_mongodb()
   wget -q ${MONGODB_URL}
   tar -xf mongodb-linux-x86_64-*.tgz &>/dev/null
   sudo rm mongodb-linux-x86_64-*.tgz &>/dev/null
+  sudo chown -R "$USER":"$USER" ${MONGODB_DIR}
   echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
   . "${HOME}"/.profile
@@ -1259,6 +1260,7 @@ function install_mongoc_driver()
   wget -q ${MONGOC_DRIVER_URL}
   tar -xf mongo-c-driver-*.tar.gz &>/dev/null
   sudo rm mongo-c-driver-*.tar.gz &>/dev/null
+  sudo chown -R "$USER":"$USER" mongo-c-driver-*
   cd mongo-c-driver-*
   mkdir cmake-build &>/dev/null
   cd cmake-build &>/dev/null
@@ -1450,6 +1452,7 @@ function install_nodejs()
   wget -q ${NODEJS_URL}
   tar -xf node*.tar.xz &>/dev/null
   sudo rm node*.tar.xz &>/dev/null
+  sudo chown -R "$USER":"$USER" ${NODEJS_DIR}
   echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
   . "${HOME}"/.profile
@@ -1719,6 +1722,7 @@ function update_mongodb()
   tar -xf mongodb-linux-x86_64-*.tgz &>/dev/null
   sudo rm mongodb-linux-x86_64-*.tgz &>/dev/null
   MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -print)/
+  sudo chown -R "$USER":"$USER" ${MONGODB_DIR}
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
   sudo systemctl daemon-reload
@@ -1740,6 +1744,7 @@ function update_mongoc_driver()
   wget -q ${MONGOC_DRIVER_URL}
   tar -xf mongo-c-driver-*.tar.gz &>/dev/null
   sudo rm mongo-c-driver-*.tar.gz &>/dev/null
+  sudo chown -R "$USER":"$USER" mongo-c-driver-*
   cd mongo-c-driver-*
   mkdir cmake-build
   cd cmake-build
@@ -1761,6 +1766,7 @@ function update_nodejs()
   tar -xf node*.tar.xz &>/dev/null
   sudo rm node*.tar.xz &>/dev/null
   NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "node-*-linux-x64" -print)/
+  sudo chown -R "$USER":"$USER" ${NODEJS_DIR}
   sudo sed '/node-v/d' -i "${HOME}"/.profile
   sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
