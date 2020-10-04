@@ -104,7 +104,7 @@ To install the `xcash-dpops` program and the related services to set up a delega
 
 Then, run the `autoinstaller.sh` script and follow [our guide](https://docs.xcash.foundation/dpops/installation-process#installer-script).
 ```shell
-bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh)"
+source <(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh)
 ```
 
 > To build everything from source, follow our **[manual installation](https://docs.xcash.foundation/dpops/installation-process#manual-installation-process)** guide.
@@ -114,7 +114,7 @@ bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpo
 All delegates will be able to use the [maintenance script](https://github.com/X-CASH-official/xcash-dpops/blob/master/scripts/management/xcash-maintenance) to easily view there statistics and to check there system.
 
 ```shell
-bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/management/xcash-maintenance.sh)"
+bash -c "$(curl -sSL https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/management/xcash-maintenance)"
 ```
 
 If you choose to setup the delegate as a shared delegate, you will be able to view additional statistics by using the IP of the delegate in any web browser, as the [Delegates Pool Website](https://github.com/X-CASH-official/delegates-pool-website) is automatically installed.
