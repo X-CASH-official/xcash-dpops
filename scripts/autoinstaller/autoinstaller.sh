@@ -2105,9 +2105,9 @@ function uninstall()
 
   # Restart the X-CASH Daemon and stop the X-CASH Wallet RPC
   echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
-  sudo systemctl stop xcash-daemon
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 10s
-  sudo systemctl stop xcash-rpc-wallet
+  sudo systemctl stop xcash-rpc-wallet &>/dev/null
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   echo
@@ -2188,13 +2188,13 @@ function test_update()
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
-  sudo systemctl start xcash-daemon mongodb
+  sudo systemctl start xcash-daemon mongodb &>/dev/null
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data="${data%,*}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  sudo systemctl stop xcash-daemon
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 30s
   if [ $data -ne 0 ]; then
     "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
@@ -2221,12 +2221,12 @@ function test_update_reset_delegates()
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
-  sudo systemctl start xcash-daemon mongodb
+  sudo systemctl start xcash-daemon mongodb &>/dev/null
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  sudo systemctl stop xcash-daemon
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 30s
   if [ $data -ne 0 ]; then
     "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
@@ -2399,7 +2399,7 @@ function register_update_delegate()
     echo -ne "\r"
     echo
     # Stop the rpc wallet service
-    sudo systemctl stop xcash-rpc-wallet
+    sudo systemctl stop xcash-rpc-wallet &>/dev/null
     # Get required information
     get_installation_directory
     # get the block verifiers secret key from the systemd service file
@@ -2410,7 +2410,7 @@ function register_update_delegate()
     # Run the wallet passing the registration information  
     (echo "delegate_register ${XCASH_DELEGATE_NAME} ${XCASH_DELEGATE_DOMAIN} ${BLOCK_VERIFIER_PUBLIC_KEY}"; echo "${WALLET_PASSWORD}"; echo "exit" ) | ${XCASH_DIR}build/release/bin/xcash-wallet-cli --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
     # Start the rpc wallet service
-    sudo systemctl start xcash-rpc-wallet
+    sudo systemctl start xcash-rpc-wallet &>/dev/null
   fi
   echo
   echo -ne "${COLOR_PRINT_YELLOW}Do you want to update the delegate information? Leave empty for YES, write N for NO: ${END_COLOR_PRINT}"
@@ -2457,7 +2457,7 @@ function register_update_delegate()
     echo -ne "\r"
     echo
     # Stop the rpc wallet service
-    sudo systemctl stop xcash-rpc-wallet
+    sudo systemctl stop xcash-rpc-wallet &>/dev/null
     # Disable ask-password inside the wallet (will be re-enabled at the end of the configuration)
     COMMAND_STRING="${COMMAND_STRING}set ask-password 0\n${WALLET_PASSWORD}\n"
     (echo -ne ${COMMAND_STRING}; echo "exit" ) | ${XCASH_DIR}build/release/bin/xcash-wallet-cli --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
@@ -2475,7 +2475,7 @@ function register_update_delegate()
     # Run the wallet passing the registration information  
     (echo -ne ${COMMAND_STRING}; echo "exit" ) | ${XCASH_DIR}build/release/bin/xcash-wallet-cli --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
     # Start the rpc wallet service
-    sudo systemctl start xcash-rpc-wallet
+    sudo systemctl start xcash-rpc-wallet &>/dev/null
   fi
   echo
   echo -e "${COLOR_PRINT_GREEN}Operation completed!${END_COLOR_PRINT}"
