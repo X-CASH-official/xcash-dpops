@@ -100,17 +100,17 @@ int start_new_round(void)
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  color_print("Getting the delegates online status","blue");
-
   // get the delegates online status
   if (registration_settings != 1)
   {
+    color_print("Getting the delegates online status","blue");
     get_delegates_online_status();
   }
 
   // save a copy of the database
   if (production_settings == 1 && network_data_node_settings == 1)
   {
+    color_print("Saving a copy of the database","blue");
     count2 = system(database_path_write);
   }  
 
