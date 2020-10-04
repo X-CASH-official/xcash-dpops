@@ -88,9 +88,9 @@ iptables -A INPUT -p tcp --dport 18280 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18281 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
  
-# Allow ssh (allow 10 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
+# Allow ssh (allow 20 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
 iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 3600 --hitcount 10 --name DEFAULT --rsource -j DROP
+iptables -A INPUT -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 3600 --hitcount 20 --name DEFAULT --rsource -j DROP
 iptables -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
  
 # Redirect HTTP to port 18283
