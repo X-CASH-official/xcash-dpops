@@ -1834,7 +1834,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  strncmp(current_round_part_backup_node,"0",1) == 0 ? sleep(8) : sleep(BLOCK_VERIFIERS_SETTINGS);
+  strstr(MESSAGE,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL ? sleep(18) : strncmp(current_round_part_backup_node,"0",1) == 0 ? sleep(8) : sleep(BLOCK_VERIFIERS_SETTINGS);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)

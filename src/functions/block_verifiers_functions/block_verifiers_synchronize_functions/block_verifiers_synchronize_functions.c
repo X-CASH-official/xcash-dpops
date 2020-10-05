@@ -166,8 +166,8 @@ void sync_network_data_nodes_database(void)
     }
   }
 
-  // wait for the network data nodes to process the data
-  sleep(NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS);
+  // wait for all of the network data nodes to process the data
+  sync_block_verifiers_minutes_and_seconds(1,0);
 
   // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
   network_data_nodes_sync_databases_settings = 0;
@@ -396,7 +396,8 @@ void sync_block_verifiers_database(void)
     }
   }
 
-  sleep(10);
+  // wait for all of the block verifiers to process the data
+  sync_block_verifiers_minutes_and_seconds(1,0);
 
   // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
   network_data_nodes_sync_databases_settings = 0;
