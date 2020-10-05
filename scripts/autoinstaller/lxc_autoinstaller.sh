@@ -1418,6 +1418,26 @@ function main_menu_selection()
 
 ### RUN THE SCRIPT
 
+# Disable script execution with sudo and warns the user if root install
+if [ $SUDO_USER ] ; then
+  # execution with sudo not allowed
+  echo -e "\n${COLOR_PRINT_RED}Please don't use sudo with this script!${END_COLOR_PRINT}"
+  exit 1
+else
+  # If not inside a LXC container (isolated, with official LXC installer) 
+  if [ ! "$container" == "lxc" ]; then
+    if [ $UID -eq 0 ] ; then
+      echo -e "\n${COLOR_PRINT_RED}WARNING: You are running the script with a root user! This is NOT secure and NOT suggested. Please use a dedicated xcash user following the documentation. If you want to proceed with root and you know what you are doing press ENTER, otherwise press CTRL+C to exit.${END_COLOR_PRINT}"
+      read -r data
+      echo -ne "\r"
+      echo
+      if [ ! "${data}" == "" ]; then
+        exit 1
+      fi
+    fi
+  fi
+fi
+
 # Check for a compatible OS
 check_ubuntu_version
 

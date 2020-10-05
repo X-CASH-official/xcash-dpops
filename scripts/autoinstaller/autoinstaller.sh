@@ -88,6 +88,27 @@ regex_DPOPS_FEE="\b(^[1-9]{1}[0-9]{0,1}.?[0-9]{0,6}$)\b$" # between 1 and 99 wit
 regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 10000000-1
 
 
+# Disable script execution with sudo and warns the user if root install
+if [ $SUDO_USER ] ; then
+  # execution with sudo not allowed
+  echo -e "\n${COLOR_PRINT_RED}Please don't use sudo with this script!${END_COLOR_PRINT}"
+  exit 1
+else
+  # If not inside a LXC container (isolated, with official LXC installer) 
+  if [ ! "$container" == "lxc" ]; then
+    if [ $UID -eq 0 ] ; then
+      echo -e "\n${COLOR_PRINT_RED}WARNING: You are running the script with a root user! This is NOT secure and NOT suggested. Please use a dedicated xcash user following the documentation. If you want to proceed with root and you know what you are doing press ENTER, otherwise press CTRL+C to exit.${END_COLOR_PRINT}"
+      read -r data
+      echo -ne "\r"
+      echo
+      if [ ! "${data}" == "" ]; then
+        exit 1
+      fi
+    fi
+  fi
+fi
+
+
 
 # Functions
 
@@ -335,9 +356,9 @@ iptables -A INPUT -p tcp --dport 18280 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18281 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
  
-# Allow ssh (allow 100 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
+# Allow ssh (allow 20 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
 iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 100 --name DEFAULT --rsource -j DROP
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 20 --name DEFAULT --rsource -j DROP
 iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -j ACCEPT
  
 # DROP all INPUT and FORWARD packets if they have reached this point
@@ -436,9 +457,9 @@ iptables -A INPUT -p tcp --dport 18280 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18281 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
  
-# Allow ssh (allow 100 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
+# Allow ssh (allow 20 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
 iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 100 --name DEFAULT --rsource -j DROP
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 20 --name DEFAULT --rsource -j DROP
 iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -j ACCEPT
  
 # Redirect HTTP to port 18283
@@ -540,9 +561,9 @@ iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.16
 iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.169.59,54.255.223.94,136.243.102.93,78.46.213.190,88.198.90.83,116.202.180.102,116.203.71.44,116.203.71.47,116.203.71.60,116.203.71.36,116.203.71.48,116.203.71.45 --dport 18281 -j ACCEPT
 iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.169.59,54.255.223.94,136.243.102.93,78.46.213.190,88.198.90.83,116.202.180.102,116.203.71.44,116.203.71.47,116.203.71.60,116.203.71.36,116.203.71.48,116.203.71.45 --dport 18283 -j ACCEPT
  
-# Allow ssh (allow 100 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
+# Allow ssh (allow 20 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
 iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 100 --name DEFAULT --rsource -j DROP
+iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 20 --name DEFAULT --rsource -j DROP
 iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -j ACCEPT
  
 # DROP all INPUT and FORWARD packets if they have reached this point
@@ -773,7 +794,7 @@ function print_installation_settings()
 {
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo -e "${COLOR_PRINT_GREEN}              Installation/Configuration Settings${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}             Installation/Configuration Settings${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
   echo -e "${COLOR_PRINT_GREEN}Installation Type: ${INSTALLATION_TYPE}${END_COLOR_PRINT}"
@@ -1224,6 +1245,7 @@ function install_mongodb()
   wget -q ${MONGODB_URL}
   tar -xf mongodb-linux-x86_64-*.tgz &>/dev/null
   sudo rm mongodb-linux-x86_64-*.tgz &>/dev/null
+  sudo chown -R "$USER":"$USER" ${MONGODB_DIR}
   echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
   . "${HOME}"/.profile
@@ -1238,6 +1260,7 @@ function install_mongoc_driver()
   wget -q ${MONGOC_DRIVER_URL}
   tar -xf mongo-c-driver-*.tar.gz &>/dev/null
   sudo rm mongo-c-driver-*.tar.gz &>/dev/null
+  sudo chown -R "$USER":"$USER" mongo-c-driver-*
   cd mongo-c-driver-*
   mkdir cmake-build &>/dev/null
   cd cmake-build &>/dev/null
@@ -1359,7 +1382,7 @@ function create_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
+  sudo rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
 
   echo -ne "${COLOR_PRINT_YELLOW}Starting local daemon${END_COLOR_PRINT}"
   sudo systemctl stop xcash-daemon &>/dev/null
@@ -1388,7 +1411,7 @@ function import_xcash_wallet()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 
   cd "${XCASH_DPOPS_INSTALLATION_DIR}"
-  rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
+  sudo rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/delegate-wallet* 2&> /dev/null
 
   echo -ne "${COLOR_PRINT_YELLOW}Starting local daemon${END_COLOR_PRINT}"
   sudo systemctl stop xcash-daemon &>/dev/null
@@ -1429,6 +1452,7 @@ function install_nodejs()
   wget -q ${NODEJS_URL}
   tar -xf node*.tar.xz &>/dev/null
   sudo rm node*.tar.xz &>/dev/null
+  sudo chown -R "$USER":"$USER" ${NODEJS_DIR}
   echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
   . "${HOME}"/.profile
@@ -1600,6 +1624,12 @@ function update_packages()
     echo
 }
 
+function set_installation_dir_owner()
+{
+  sudo chown -R "$USER":"$USER" ${XCASH_DPOPS_INSTALLATION_DIR}
+}
+
+
 function update_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
@@ -1692,6 +1722,7 @@ function update_mongodb()
   tar -xf mongodb-linux-x86_64-*.tgz &>/dev/null
   sudo rm mongodb-linux-x86_64-*.tgz &>/dev/null
   MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -print)/
+  sudo chown -R "$USER":"$USER" ${MONGODB_DIR}
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
   sudo systemctl daemon-reload
@@ -1713,6 +1744,7 @@ function update_mongoc_driver()
   wget -q ${MONGOC_DRIVER_URL}
   tar -xf mongo-c-driver-*.tar.gz &>/dev/null
   sudo rm mongo-c-driver-*.tar.gz &>/dev/null
+  sudo chown -R "$USER":"$USER" mongo-c-driver-*
   cd mongo-c-driver-*
   mkdir cmake-build
   cd cmake-build
@@ -1734,6 +1766,7 @@ function update_nodejs()
   tar -xf node*.tar.xz &>/dev/null
   sudo rm node*.tar.xz &>/dev/null
   NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "node-*-linux-x64" -print)/
+  sudo chown -R "$USER":"$USER" ${NODEJS_DIR}
   sudo sed '/node-v/d' -i "${HOME}"/.profile
   sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
@@ -1885,7 +1918,7 @@ function install()
   fi
   
   # Create xcash wallet log symlink to old location
-  touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
+  touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && sudo rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
  
 
   # Start the systemd service files
@@ -1923,6 +1956,9 @@ function configure()
 
   # Remove shared website if solo 
   check_if_remove_shared_delegate_configure_install
+
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
 
   # Ask if use already present blockchain or use bootstrap file
   echo -ne "${COLOR_PRINT_YELLOW}Download and use the blockchain bootstrap? Leave empty for YES, write N for NO: ${END_COLOR_PRINT}"
@@ -2000,6 +2036,9 @@ function update()
   # Update all system packages that are xcash-dpops dependencies
   update_packages
 
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
+
   # Update all repositories
   update_xcash
   update_xcash_dpops
@@ -2030,7 +2069,7 @@ function update()
   fi
   
   # Create xcash wallet log symlink to old location
-  touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
+  touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && sudo rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
 
   # Start the systemd service files
   start_systemd_service_files
@@ -2061,11 +2100,14 @@ function uninstall()
   # Get the installation directory
   get_installation_directory
 
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
+
   # Restart the X-CASH Daemon and stop the X-CASH Wallet RPC
   echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
-  sudo systemctl stop xcash-daemon
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 10s
-  sudo systemctl stop xcash-rpc-wallet
+  sudo systemctl stop xcash-rpc-wallet &>/dev/null
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   echo
@@ -2141,16 +2183,18 @@ function change_solo_or_shared_delegate()
 
 function test_update()
 {
+  # Source profile to fix some strange "edge" behaviors
+  . "${HOME}"/.profile
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
-  sudo systemctl start xcash-daemon mongodb
+  sudo systemctl start xcash-daemon mongodb &>/dev/null
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data="${data%,*}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  sudo systemctl stop xcash-daemon
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 30s
   if [ $data -ne 0 ]; then
     "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
@@ -2166,24 +2210,24 @@ function test_update()
   (echo "use XCASH_PROOF_OF_STAKE_DELEGATES"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Database${END_COLOR_PRINT}"
   echo
+  echo
   update
 }
 
 function test_update_reset_delegates()
 {
+  # Source profile to fix some strange "edge" behaviors
+  . "${HOME}"/.profile
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
-  sudo systemctl start xcash-daemon mongodb
+  sudo systemctl start xcash-daemon mongodb &>/dev/null
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  sudo systemctl stop xcash-daemon
+  sudo systemctl stop xcash-daemon &>/dev/null
   sleep 30s
-  echo "${XCASH_DIR}"
-  echo "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}"
-  echo ${data}
   if [ $data -ne 0 ]; then
     "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
   fi
@@ -2193,6 +2237,7 @@ function test_update_reset_delegates()
   (echo "use XCASH_PROOF_OF_STAKE"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
   (echo "use XCASH_PROOF_OF_STAKE_DELEGATES"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Database${END_COLOR_PRINT}"
+  echo
   echo
   update
 }
@@ -2269,16 +2314,16 @@ function install_or_update_blockchain()
   if [ $XCASH_BLOCKCHAIN_INSTALLATION_DIR = "/" ]; then
   XCASH_BLOCKCHAIN_INSTALLATION_DIR="/root/.X-CASH/"
   fi
-  cd && test -f xcash-blockchain.7z && rm -rf xcash-blockchain.7z*
+  cd && test -f xcash-blockchain.7z && sudo rm -rf xcash-blockchain.7z*
   echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
   wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
   echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
   7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cp -a .X-CASH/* ./
-  rm -r .X-CASH
+  sudo rm -r .X-CASH
   cd $HOME
-  rm xcash-blockchain.7z
+  sudo rm xcash-blockchain.7z
   echo -e "${COLOR_PRINT_GREEN}Installing / Updating The BlockChain Completed${END_COLOR_PRINT}"
   echo
 }
@@ -2288,16 +2333,16 @@ function install_blockchain()
   if [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ] || [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}lmdb/ ]; then
     echo -e "${COLOR_PRINT_GREEN}Installing The BlockChain (This Might Take a While, please follow the progress)${END_COLOR_PRINT}"
     cd $HOME
-    cd && test -f xcash-blockchain.7z && rm -rf xcash-blockchain.7z*
+    cd && test -f xcash-blockchain.7z && sudo rm -rf xcash-blockchain.7z*
     echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
     wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
     echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
     7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cp -a .X-CASH/* ./
-    rm -r .X-CASH
+    sudo rm -r .X-CASH
     cd $HOME
-    rm xcash-blockchain.7z
+    sudo rm xcash-blockchain.7z
     echo -e "${COLOR_PRINT_GREEN}Installing The BlockChain Completed${END_COLOR_PRINT}"
     echo
   fi
@@ -2354,7 +2399,7 @@ function register_update_delegate()
     echo -ne "\r"
     echo
     # Stop the rpc wallet service
-    sudo systemctl stop xcash-rpc-wallet
+    sudo systemctl stop xcash-rpc-wallet &>/dev/null
     # Get required information
     get_installation_directory
     # get the block verifiers secret key from the systemd service file
@@ -2365,7 +2410,7 @@ function register_update_delegate()
     # Run the wallet passing the registration information  
     (echo "delegate_register ${XCASH_DELEGATE_NAME} ${XCASH_DELEGATE_DOMAIN} ${BLOCK_VERIFIER_PUBLIC_KEY}"; echo "${WALLET_PASSWORD}"; echo "exit" ) | ${XCASH_DIR}build/release/bin/xcash-wallet-cli --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
     # Start the rpc wallet service
-    sudo systemctl start xcash-rpc-wallet
+    sudo systemctl start xcash-rpc-wallet &>/dev/null
   fi
   echo
   echo -ne "${COLOR_PRINT_YELLOW}Do you want to update the delegate information? Leave empty for YES, write N for NO: ${END_COLOR_PRINT}"
@@ -2412,7 +2457,7 @@ function register_update_delegate()
     echo -ne "\r"
     echo
     # Stop the rpc wallet service
-    sudo systemctl stop xcash-rpc-wallet
+    sudo systemctl stop xcash-rpc-wallet &>/dev/null
     # Disable ask-password inside the wallet (will be re-enabled at the end of the configuration)
     COMMAND_STRING="${COMMAND_STRING}set ask-password 0\n${WALLET_PASSWORD}\n"
     (echo -ne ${COMMAND_STRING}; echo "exit" ) | ${XCASH_DIR}build/release/bin/xcash-wallet-cli --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
@@ -2430,7 +2475,7 @@ function register_update_delegate()
     # Run the wallet passing the registration information  
     (echo -ne ${COMMAND_STRING}; echo "exit" ) | ${XCASH_DIR}build/release/bin/xcash-wallet-cli --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
     # Start the rpc wallet service
-    sudo systemctl start xcash-rpc-wallet
+    sudo systemctl start xcash-rpc-wallet &>/dev/null
   fi
   echo
   echo -e "${COLOR_PRINT_GREEN}Operation completed!${END_COLOR_PRINT}"
