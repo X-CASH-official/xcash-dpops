@@ -10,8 +10,7 @@ COLOR_PRINT_YELLOW="\033[1;33m"
 END_COLOR_PRINT="\033[0m"
 
 # Configuration settings
-INSTALLATION_TYPE_SETTINGS=1 # 1 = Install, 2 = Update, 3 = Uninstall, 4 = Install / Update BlockChain, 5 = Change Solo Delegate or Shared Delegate, 6 = Edit Shared Delegate Settings, 7 = Restart Programs, 8 = Stop Programs, 9 = Test Update, 10 = Test Update Reset Delegates, 11 = Configure Installation, 12 = Register/Update Delegate, 13 = Firewall, 14 = Shared Delegates Firewall
-INSTALLATION_TYPE="Installation"
+INSTALLATION_TYPE_SETTINGS=1
 XCASH_DPOPS_INSTALLATION_DIR="$HOME/xcash-official/"
 XCASH_BLOCKCHAIN_INSTALLATION_DIR="$HOME/.X-CASH/"
 MONGODB_INSTALLATION_DIR="/data/db/"
@@ -74,6 +73,18 @@ SYSTEMD_SERVICE_FILE_XCASH_WALLET=""
 SYSTEMD_TIMER_FILE_XCASH_DPOPS=""
 SYSTEMD_TIMER_FILE_XCASH_WALLET=""
 
+# File URLs
+FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/firewall/firewall_script.sh"
+FIREWALL_SHARED_DELEGATES_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/firewall/firewall_shared_delegates_script.sh"
+SYSTEMD_SERVICE_FILE_FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/firewall.service"
+SYSTEMD_SERVICE_FILE_MONGODB_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/MongoDB.service"
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-daemon.service"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-dpops.service"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-dpops-shared-delegate.service"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-rpc-wallet.service"
+SYSTEMD_TIMER_FILE_XCASH_DPOPS_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-dpops.timer"
+SYSTEMD_TIMER_FILE_XCASH_WALLET_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-rpc-wallet.timer"
+
 # System settings
 CPU_THREADS=$(nproc)
 DEFAULT_NETWORK_DEVICE=$(ip route | grep default | sed -e "s/^.*dev.//" -e "s/.proto.*//")
@@ -86,6 +97,7 @@ regex_XCASH_DPOPS_INSTALLATION_DIR="(^\/(.*?)\/$)|(^$)" # anything that starts w
 regex_MNEMONIC_SEED="^\b([a-z]+\s+){24}\b([a-z]+)$" # 25 words exactly
 regex_DPOPS_FEE="\b(^[1-9]{1}[0-9]{0,1}.?[0-9]{0,6}$)\b$" # between 1 and 99 with up to 6 decimal places
 regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 10000000-1
+
 
 
 # Disable script execution with sudo and warns the user if root install
@@ -125,39 +137,23 @@ function sed_services()
 
 function get_installation_settings()
 {
-  echo -ne "${COLOR_PRINT_YELLOW}Installation Type (Install)\n1 = Install\n2 = Update\n3 = Uninstall\n4 = Install / Update Blockchain\n5 = Change Solo Delegate or Shared Delegate\n6 = Edit Shared Delegate Settings\n7 = Restart Programs\n8 = Stop Programs\n9 = Test Update\n10 = Test Update Reset Delegates\n11 = Configure Installation\n12 = Register/Update Delegate\n13 = Firewall\n14 = Shared Delegates Firewall\nEnter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Installation Settings\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}1 = Install\n2 = Update\n3 = Uninstall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}X-Cash Node Installation Settings\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}4 = Install\n5 = Update\n6 = Uninstall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}X-Cash Blockchain Management\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}7 = Install / Update Blockchain\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Delegate Configuration\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}8 = Change Solo Delegate or Shared Delegate\n9 = Edit Shared Delegate Settings\n10 = Register / Update Delegate\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Delegate Management\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}11 = Restart Programs\n12 = Stop Programs\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Testing\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}13 = Test Update\n14 = Test Update Reset Delegates\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}Miscellaneous\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}15 = Configure Installation\n16 = Firewall\n17 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}Enter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
   INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] && echo "$data" || echo "1")
-  case $INSTALLATION_TYPE_SETTINGS in
-    1)
-      INSTALLATION_TYPE="Installation";;
-    2)
-      INSTALLATION_TYPE="Update";;
-    3)
-      INSTALLATION_TYPE="Uninstall";;
-    4)
-      INSTALLATION_TYPE="Blockchain Install/Update";;
-    5)
-      INSTALLATION_TYPE="Change Solo/Shared Delegate";;
-    6)
-      INSTALLATION_TYPE="Edit Shared Delegate Settings";;
-    7)
-      INSTALLATION_TYPE="Restart Services";;
-    8)
-      INSTALLATION_TYPE="Stop Services";;
-    9)
-      INSTALLATION_TYPE="Test Update";;
-    10)
-      INSTALLATION_TYPE="Test Update Reset Delegates";;
-    11)
-      INSTALLATION_TYPE="Configure Installation";;
-    12)
-      INSTALLATION_TYPE="Register/Update Delegate";;
-    13)
-      INSTALLATION_TYPE="Firewall Installation";;
-    14)
-      INSTALLATION_TYPE="Shared Delegate Firewall Installation";;
-  esac
   echo -ne "\r"
   echo
   # Check if xcash-dpops is already installed, if the user choose to install
@@ -172,11 +168,11 @@ function get_installation_settings()
     echo
   fi
 
-  # Check if xcash-dpops is not installed, if the user choose to update or uninstall or configure...
-  if [ "$INSTALLATION_TYPE_SETTINGS" -ne "1" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "4" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "13" ] && [ "$INSTALLATION_TYPE_SETTINGS" -ne "14" ]; then
+  # Check if xcash-dpops is not installed, and if the user choose an option where xcash-dpops needed to be installed
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
-      echo -e "\n${COLOR_PRINT_RED}xcash-dpops is not installed. Please install xcash-dpops before running update, configure or uninstall${END_COLOR_PRINT}"
+      echo -e "\n${COLOR_PRINT_RED}This is an invalid option since xcash-dpops is not installed${END_COLOR_PRINT}"
       exit 1
     fi
     echo -ne "\r                                                     "
@@ -265,445 +261,54 @@ function get_shared_delegate_installation_settings()
 function update_systemd_service_files()
 {
 # Files
-FIREWALL="$(cat << EOF
-#!/bin/sh
-# iptables script for server
-# if you changed any default ports change them in the firewall as well
- 
-# ACCEPT all packets at the top so each packet runs through the firewall rules, then DROP all INPUT and FORWARD if they dont use any of the firewall settings
-iptables -P INPUT ACCEPT
-iptables -P FORWARD ACCEPT
-iptables -P OUTPUT ACCEPT
-# remove all existing IP tables
-iptables -t nat -F
-iptables -t mangle -F
-iptables -t mangle -X
-iptables -t mangle -F
-iptables -t raw -F
-iptables -t raw -X
-iptables -F
-iptables -X
- 
-# ip table prerouting data (this is where you want to block ddos attacks)
-# Drop all invalid packets
-iptables -t mangle -A PREROUTING -m conntrack --ctstate INVALID -j DROP
-# Prevent syn flood
-iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
-iptables -t mangle -A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,FIN FIN -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
- 
-# filter data for INPUT, FORWARD, and OUTPUT
-# Accept any packets coming or going on localhost
-iptables -I INPUT -i lo -j ACCEPT
-# keep already established connections running
-iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
- 
-# block ip spoofing. these are the ranges of local IP address.
-iptables -A INPUT -s 45.76.169.83 -j DROP
-iptables -A INPUT -s 10.12.242.0/24 -j ACCEPT
-iptables -A INPUT -s 10.0.0.0/8 -j DROP
-iptables -A INPUT -s 169.254.0.0/16 -j DROP
-iptables -A INPUT -s 172.16.0.0/12 -j DROP
-iptables -A INPUT -s 127.0.0.0/8 -j DROP
-iptables -A INPUT -s 192.168.0.0/24 -j DROP
-iptables -A INPUT -s 224.0.0.0/4 -j DROP
-iptables -A INPUT -d 224.0.0.0/4 -j DROP
-iptables -A INPUT -s 240.0.0.0/5 -j DROP
-iptables -A INPUT -d 240.0.0.0/5 -j DROP
-iptables -A INPUT -s 0.0.0.0/8 -j DROP
-iptables -A INPUT -d 0.0.0.0/8 -j DROP
-iptables -A INPUT -d 239.255.255.0/24 -j DROP
-iptables -A INPUT -d 255.255.255.255 -j DROP
- 
-# block all traffic from ip address (iptables -A INPUT -s ipaddress -j DROP)
-#unblock them using iptables -D INPUT -s ipaddress -j DROP
- 
-# Block different attacks
-# block one computer from opening too many connections (100 simultaneous connections) if this gives trouble with post remove this or increase the limit
-# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
-iptables -t filter -I INPUT -p tcp --syn --dport 18283 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
-# block port scans
-# this will lock the IP out for 1 day
-iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A INPUT -m recent --name portscan --remove
-iptables -A FORWARD -m recent --name portscan --remove
-iptables -A INPUT   -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP 
-iptables -A FORWARD -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP
- 
-# Accept specific packets
-# Accept ICMP
-iptables -A INPUT -p icmp -j ACCEPT
- 
-# Accept HTTP
-# iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+FIREWALL=`cat <(curl -sSL $FIREWALL_URL)`
+FIREWALL="${FIREWALL//'${SSH_PORT_NUMBER}'/$SSH_PORT_NUMBER}"
 
- 
-# Accept XCASH
-iptables -A INPUT -p tcp --dport 18280 -j ACCEPT
-iptables -A INPUT -p tcp --dport 18281 -j ACCEPT
-iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
- 
-# Allow ssh (allow 20 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 20 --name DEFAULT --rsource -j DROP
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -j ACCEPT
- 
-# DROP all INPUT and FORWARD packets if they have reached this point
-iptables -A INPUT -j DROP
-iptables -A FORWARD -j DROP
-EOF
-)"
-FIREWALL_SHARED_DELEGATES="$(cat << EOF
-#!/bin/sh
-# iptables script for server
-# if you changed any default ports change them in the firewall as well
- 
-# ACCEPT all packets at the top so each packet runs through the firewall rules, then DROP all INPUT and FORWARD if they dont use any of the firewall settings
-iptables -P INPUT ACCEPT
-iptables -P FORWARD ACCEPT
-iptables -P OUTPUT ACCEPT
-# remove all existing IP tables
-iptables -t nat -F
-iptables -t mangle -F
-iptables -t mangle -X
-iptables -t mangle -F
-iptables -t raw -F
-iptables -t raw -X
-iptables -F
-iptables -X
- 
-# ip table prerouting data (this is where you want to block ddos attacks)
-# Drop all invalid packets
-iptables -t mangle -A PREROUTING -m conntrack --ctstate INVALID -j DROP
-# Prevent syn flood
-iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
-iptables -t mangle -A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,FIN FIN -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
- 
-# filter data for INPUT, FORWARD, and OUTPUT
-# Accept any packets coming or going on localhost
-iptables -I INPUT -i lo -j ACCEPT
-# keep already established connections running
-iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
- 
-# block ip spoofing. these are the ranges of local IP address.
-iptables -A INPUT -s 45.76.169.83 -j DROP
-iptables -A INPUT -s 10.12.242.0/24 -j ACCEPT
-iptables -A INPUT -s 10.0.0.0/8 -j DROP
-iptables -A INPUT -s 169.254.0.0/16 -j DROP
-iptables -A INPUT -s 172.16.0.0/12 -j DROP
-iptables -A INPUT -s 127.0.0.0/8 -j DROP
-iptables -A INPUT -s 192.168.0.0/24 -j DROP
-iptables -A INPUT -s 224.0.0.0/4 -j DROP
-iptables -A INPUT -d 224.0.0.0/4 -j DROP
-iptables -A INPUT -s 240.0.0.0/5 -j DROP
-iptables -A INPUT -d 240.0.0.0/5 -j DROP
-iptables -A INPUT -s 0.0.0.0/8 -j DROP
-iptables -A INPUT -d 0.0.0.0/8 -j DROP
-iptables -A INPUT -d 239.255.255.0/24 -j DROP
-iptables -A INPUT -d 255.255.255.255 -j DROP
- 
-# block all traffic from ip address (iptables -A INPUT -s ipaddress -j DROP)
-#unblock them using iptables -D INPUT -s ipaddress -j DROP
- 
-# Block different attacks
-# block one computer from opening too many connections (100 simultaneous connections) if this gives trouble with post remove this or increase the limit
-iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
-iptables -t filter -I INPUT -p tcp --syn --dport 18283 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
-# block port scans
-# this will lock the IP out for 1 day
-iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A INPUT -m recent --name portscan --remove
-iptables -A FORWARD -m recent --name portscan --remove
-iptables -A INPUT   -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP 
-iptables -A FORWARD -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP
- 
-# Accept specific packets
-# Accept ICMP
-iptables -A INPUT -p icmp -j ACCEPT
- 
-# Accept HTTP
-iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+FIREWALL_SHARED_DELEGATES=`cat <(curl -sSL $FIREWALL_SHARED_DELEGATES_URL)`
+FIREWALL_SHARED_DELEGATES="${FIREWALL_SHARED_DELEGATES//'${SSH_PORT_NUMBER}'/$SSH_PORT_NUMBER}"
+FIREWALL_SHARED_DELEGATES="${FIREWALL_SHARED_DELEGATES//'${DEFAULT_NETWORK_DEVICE}'/$DEFAULT_NETWORK_DEVICE}"
 
- 
-# Accept XCASH
-iptables -A INPUT -p tcp --dport 18280 -j ACCEPT
-iptables -A INPUT -p tcp --dport 18281 -j ACCEPT
-iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
- 
-# Allow ssh (allow 20 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 20 --name DEFAULT --rsource -j DROP
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -j ACCEPT
- 
-# Redirect HTTP to port 18283
-iptables -A PREROUTING -t nat -i ${DEFAULT_NETWORK_DEVICE} -p tcp --dport 80 -j REDIRECT --to-ports 18283
- 
-# DROP all INPUT and FORWARD packets if they have reached this point
-iptables -A INPUT -j DROP
-iptables -A FORWARD -j DROP
-EOF
-)"
-FIREWALL_TEST="$(cat << EOF
-#!/bin/sh
-# iptables script for server
-# if you changed any default ports change them in the firewall as well
- 
-# ACCEPT all packets at the top so each packet runs through the firewall rules, then DROP all INPUT and FORWARD if they dont use any of the firewall settings
-iptables -P INPUT ACCEPT
-iptables -P FORWARD ACCEPT
-iptables -P OUTPUT ACCEPT
-# remove all existing IP tables
-iptables -t nat -F
-iptables -t mangle -F
-iptables -t mangle -X
-iptables -t mangle -F
-iptables -t raw -F
-iptables -t raw -X
-iptables -F
-iptables -X
- 
-# ip table prerouting data (this is where you want to block ddos attacks)
-# Drop all invalid packets
-iptables -t mangle -A PREROUTING -m conntrack --ctstate INVALID -j DROP
-# Prevent syn flood
-iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
-iptables -t mangle -A PREROUTING -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,FIN FIN -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
-iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
- 
-# filter data for INPUT, FORWARD, and OUTPUT
-# Accept any packets coming or going on localhost
-iptables -I INPUT -i lo -j ACCEPT
-# keep already established connections running
-iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
- 
-# block ip spoofing. these are the ranges of local IP address.
-iptables -A INPUT -s 45.76.169.83 -j DROP
-iptables -A INPUT -s 10.12.242.0/24 -j ACCEPT
-iptables -A INPUT -s 10.0.0.0/8 -j DROP
-iptables -A INPUT -s 169.254.0.0/16 -j DROP
-iptables -A INPUT -s 172.16.0.0/12 -j DROP
-iptables -A INPUT -s 127.0.0.0/8 -j DROP
-iptables -A INPUT -s 192.168.0.0/24 -j DROP
-iptables -A INPUT -s 224.0.0.0/4 -j DROP
-iptables -A INPUT -d 224.0.0.0/4 -j DROP
-iptables -A INPUT -s 240.0.0.0/5 -j DROP
-iptables -A INPUT -d 240.0.0.0/5 -j DROP
-iptables -A INPUT -s 0.0.0.0/8 -j DROP
-iptables -A INPUT -d 0.0.0.0/8 -j DROP
-iptables -A INPUT -d 239.255.255.0/24 -j DROP
-iptables -A INPUT -d 255.255.255.255 -j DROP
- 
-# block all traffic from ip address (iptables -A INPUT -s ipaddress -j DROP)
-#unblock them using iptables -D INPUT -s ipaddress -j DROP
- 
-# Block different attacks
-# block one computer from opening too many connections (100 simultaneous connections) if this gives trouble with post remove this or increase the limit
-# iptables -t filter -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
-iptables -t filter -I INPUT -p tcp --syn --dport 18283 -m connlimit --connlimit-above 100 --connlimit-mask 32 -j DROP
-# block port scans
-# this will lock the IP out for 1 day
-iptables -A INPUT -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A FORWARD -m recent --name portscan --rcheck --seconds 86400 -j DROP
-iptables -A INPUT -m recent --name portscan --remove
-iptables -A FORWARD -m recent --name portscan --remove
-iptables -A INPUT   -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP 
-iptables -A FORWARD -p tcp -m tcp -m multiport --destination-ports 21,25,110,135,139,143,445,1433,3306,3389 -m recent --name portscan --set -j DROP
- 
-# Accept specific packets
-# Accept ICMP
-iptables -A INPUT -p icmp -j ACCEPT
- 
-# Accept HTTP
-# iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+SYSTEMD_SERVICE_FILE_FIREWALL=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_FIREWALL_URL)`
+SYSTEMD_SERVICE_FILE_FIREWALL="${SYSTEMD_SERVICE_FILE_FIREWALL//'${HOME}'/$HOME}"
 
- 
-# Accept XCASH
-iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.169.59,54.255.223.94,136.243.102.93,78.46.213.190,88.198.90.83,116.202.180.102,116.203.71.44,116.203.71.47,116.203.71.60,116.203.71.36,116.203.71.48,116.203.71.45 --dport 18280 -j ACCEPT
-iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.169.59,54.255.223.94,136.243.102.93,78.46.213.190,88.198.90.83,116.202.180.102,116.203.71.44,116.203.71.47,116.203.71.60,116.203.71.36,116.203.71.48,116.203.71.45 --dport 18281 -j ACCEPT
-iptables -A INPUT -p tcp -s 147.135.68.247,54.36.63.49,195.201.169.57,195.201.169.59,54.255.223.94,136.243.102.93,78.46.213.190,88.198.90.83,116.202.180.102,116.203.71.44,116.203.71.47,116.203.71.60,116.203.71.36,116.203.71.48,116.203.71.45 --dport 18283 -j ACCEPT
- 
-# Allow ssh (allow 20 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --update --seconds 3600 --hitcount 20 --name DEFAULT --rsource -j DROP
-iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -j ACCEPT
- 
-# DROP all INPUT and FORWARD packets if they have reached this point
-iptables -A INPUT -j DROP
-iptables -A FORWARD -j DROP
-EOF
-)"
-SYSTEMD_SERVICE_FILE_FIREWALL="$(cat << EOF
-[Unit]
-Description=firewall
-Before=network-pre.target
-Wants=network-pre.target
- 
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-User=root
-ExecStart=${HOME}/firewall_script.sh
- 
-[Install]
-WantedBy=network.target
-EOF
-)"
-SYSTEMD_SERVICE_FILE_MONGODB="$(cat << EOF
-[Unit]
-Description=MongoDB X-Cash Database Server
-After=network.target
+SYSTEMD_SERVICE_FILE_MONGODB=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_MONGODB_URL)`
+SYSTEMD_SERVICE_FILE_MONGODB="${SYSTEMD_SERVICE_FILE_MONGODB//'${USER}'/$USER}"
+SYSTEMD_SERVICE_FILE_MONGODB="${SYSTEMD_SERVICE_FILE_MONGODB//'${XCASH_DPOPS_INSTALLATION_DIR}'/$XCASH_DPOPS_INSTALLATION_DIR}"
+SYSTEMD_SERVICE_FILE_MONGODB="${SYSTEMD_SERVICE_FILE_MONGODB//'${MONGODB_DIR}'/$MONGODB_DIR}"
+SYSTEMD_SERVICE_FILE_MONGODB="${SYSTEMD_SERVICE_FILE_MONGODB//'${MONGODB_INSTALLATION_DIR}'/$MONGODB_INSTALLATION_DIR}"
 
-[Service]
-Type=forking
-User=${USER}
-Type=oneshot
-RemainAfterExit=yes
-PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/mongod.pid
-ExecStart=${MONGODB_DIR}bin/mongod --fork --syslog --dbpath ${MONGODB_INSTALLATION_DIR}
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DAEMON_URL)`
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${USER}'/$USER}"
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_DPOPS_INSTALLATION_DIR}'/$XCASH_DPOPS_INSTALLATION_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_DIR}'/$XCASH_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_BLOCKCHAIN_INSTALLATION_DIR}'/$XCASH_BLOCKCHAIN_INSTALLATION_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_LOGS_DIR}'/$XCASH_LOGS_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_SYSTEMPID_DIR}'/$XCASH_SYSTEMPID_DIR}"
 
-LimitFSIZE=infinity
-LimitCPU=infinity
-LimitAS=infinity
-LimitNOFILE=64000
-LimitNPROC=64000
-LimitMEMLOCK=infinity
-TasksMax=infinity
-TasksAccounting=false
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE_URL)`
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE//'${USER}'/$USER}"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE//'${XCASH_DPOPS_DIR}'/$XCASH_DPOPS_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE//'${BLOCK_VERIFIER_SECRET_KEY}'/$BLOCK_VERIFIER_SECRET_KEY}"
 
-[Install]
-WantedBy=multi-user.target
-EOF
-)"
-SYSTEMD_SERVICE_FILE_XCASH_DAEMON="$(cat << EOF
-[Unit]
-Description=X-Cash Daemon background process
-After=network.target
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE_URL)`
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${USER}'/$USER}"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${XCASH_DPOPS_DIR}'/$XCASH_DPOPS_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${BLOCK_VERIFIER_SECRET_KEY}'/$BLOCK_VERIFIER_SECRET_KEY}"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${BLOCK_VERIFIER_SECRET_KEY}'/$BLOCK_VERIFIER_SECRET_KEY}"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${DPOPS_MINIMUM_AMOUNT}'/$DPOPS_MINIMUM_AMOUNT}"
 
-[Service]
-Type=forking
-User=${USER}
-PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash-daemon.pid
-ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --p2p-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}xcash-daemon-log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash-daemon.pid
-RuntimeMaxSec=15d
-Restart=always
- 
-[Install]
-WantedBy=multi-user.target
-EOF
-)"
-SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="$(cat << EOF
-[Unit]
-Description=X-Cash DPOPS Program background process
-After=network.target xcash-daemon.service xcash-rpc-wallet.service mongodb.service
+SYSTEMD_TIMER_FILE_XCASH_DPOPS=`cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_DPOPS_URL)`
 
-[Service]
-Type=simple
-LimitNOFILE=infinity
-User=${USER}
-WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/xcash-dpops --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY}
-Restart=always
-RestartSec=5
- 
-[Install]
-WantedBy=multi-user.target
-EOF
-)"
-SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="$(cat << EOF
-[Unit]
-Description=X-Cash DPOPS Program background process
-After=network.target xcash-daemon.service xcash-rpc-wallet.service mongodb.service
+SYSTEMD_SERVICE_FILE_XCASH_WALLET=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_WALLET_URL)`
+SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${USER}'/$USER}"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${XCASH_DIR}'/$XCASH_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${XCASH_WALLET_DIR}'/$XCASH_WALLET_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${WALLET_PASSWORD}'/$WALLET_PASSWORD}"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${XCASH_LOGS_DIR}'/$XCASH_LOGS_DIR}"
 
-[Service]
-Type=simple
-LimitNOFILE=infinity
-User=${USER}
-WorkingDirectory=${XCASH_DPOPS_DIR}build
-ExecStart=${XCASH_DPOPS_DIR}build/xcash-dpops --block-verifiers-secret-key ${BLOCK_VERIFIER_SECRET_KEY} --shared-delegates-website --fee ${DPOPS_FEE} --minimum-amount ${DPOPS_MINIMUM_AMOUNT}
-Restart=always
-RestartSec=5
- 
-[Install]
-WantedBy=multi-user.target
-EOF
-)"
-SYSTEMD_TIMER_FILE_XCASH_DPOPS="$(cat << EOF
-[Unit]
-Description=xcash-dpops timer
+SYSTEMD_TIMER_FILE_XCASH_WALLET=`cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_WALLET_URL)`
 
-[Timer]
-OnBootSec=30sec
-
-[Install]
-WantedBy=timers.target
-EOF
-)"
-SYSTEMD_SERVICE_FILE_XCASH_WALLET="$(cat << EOF
-[Unit]
-Description=X-Cash RPC wallet background process
-After=network.target xcash-daemon.service
- 
-[Service]
-Type=simple
-User=${USER}
-ExecStart=${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLET_DIR}delegate-wallet --password ${WALLET_PASSWORD} --rpc-bind-port 18285 --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon --log-file ${XCASH_LOGS_DIR}xcash-wallet-rpc.log
-Restart=always
-RestartSec=5
- 
-[Install]
-WantedBy=multi-user.target
-EOF
-)"
-SYSTEMD_TIMER_FILE_XCASH_WALLET="$(cat << EOF
-[Unit]
-Description=xcash-rpc-wallet timer
-
-[Timer]
-OnBootSec=20sec
-
-[Install]
-WantedBy=timers.target
-EOF
-)"
+sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
 }
 
 function setup_lxc_container_profile()
@@ -711,7 +316,7 @@ function setup_lxc_container_profile()
   if [ "$container" == "lxc" ]; then
     sudo sed '/mesg n/d' -i "${HOME}"/.profile
     sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
-    . "${HOME}"/.profile
+    source ~/.profile || true
   fi
 }
 
@@ -797,7 +402,7 @@ function print_installation_settings()
   echo -e "${COLOR_PRINT_GREEN}             Installation/Configuration Settings${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
-  echo -e "${COLOR_PRINT_GREEN}Installation Type: ${INSTALLATION_TYPE}${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}Installation Type: Installation${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}Installation Directory: ${XCASH_DPOPS_INSTALLATION_DIR} ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}X-CASH Blockchain Installation Directory: ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}MongoDB Installation Directory: ${MONGODB_INSTALLATION_DIR} ${END_COLOR_PRINT}"
@@ -832,7 +437,7 @@ function installation_settings()
   echo -e "${COLOR_PRINT_GREEN}         Welcome to X-Cash DPoPS auto-install script  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
-  echo -e "${COLOR_PRINT_YELLOW}Installation configuration (Press ENTER for default)${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_YELLOW}Installation Configuration${END_COLOR_PRINT}"
   echo
   get_password
   get_installation_settings
@@ -983,12 +588,13 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
       uninstall_shared_delegates_website
       update_systemd_service_files
       sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
+      sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.service
       sudo systemctl daemon-reload
       sudo sed '/node-v/d' -i "${HOME}"/.profile
       sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
       sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
       sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
-      . "${HOME}"/.profile
+      source ~/.profile || true
       get_installation_directory
       get_dependencies_current_version
     fi
@@ -1028,11 +634,12 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
       get_installation_directory
       install_shared_delegates_website_npm_packages
       build_shared_delegates_website
-      . "${HOME}"/.profile
+      source ~/.profile || true
       echo
       echo
       update_systemd_service_files
       sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
+      sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.service
       sudo systemctl daemon-reload
       get_installation_directory
       get_dependencies_current_version
@@ -1049,12 +656,13 @@ function check_if_remove_shared_delegate_configure_install()
     uninstall_shared_delegates_website
     update_systemd_service_files
     sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
+    sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.service
     sudo systemctl daemon-reload
     sudo sed '/node-v/d' -i "${HOME}"/.profile
     sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
     sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
     sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
-    . "${HOME}"/.profile
+    source ~/.profile || true
     get_installation_directory
     get_dependencies_current_version
   fi
@@ -1233,6 +841,15 @@ function create_systemd_service_files()
   fi
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.service"
   sudo bash -c "echo '${SYSTEMD_TIMER_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.timer"
+
+  sudo sed -i 's/\r$//g' /lib/systemd/system/firewall.service
+  sudo sed -i 's/\r$//g' /lib/systemd/system/mongodb.service
+  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-daemon.service
+  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.timer
+  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.service
+  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet.service
+  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet.timer
+
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
   echo
@@ -1248,7 +865,7 @@ function install_mongodb()
   sudo chown -R "$USER":"$USER" ${MONGODB_DIR}
   echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
-  . "${HOME}"/.profile
+  source ~/.profile || true
   echo -ne "\r${COLOR_PRINT_GREEN}Installing MongoDB${END_COLOR_PRINT}"
   echo
 }
@@ -1322,6 +939,7 @@ function install_firewall()
   else
     echo "$FIREWALL" > ${HOME}/firewall_script.sh
   fi
+  sudo sed -i 's/\r$//g' ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
   sudo ${HOME}/firewall_script.sh
   sudo systemctl enable firewall &>/dev/null
@@ -1455,7 +1073,7 @@ function install_nodejs()
   sudo chown -R "$USER":"$USER" ${NODEJS_DIR}
   echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
-  . "${HOME}"/.profile
+  source ~/.profile || true
   echo -ne "\r${COLOR_PRINT_GREEN}Installing Node.js${END_COLOR_PRINT}"
   echo
 }
@@ -1464,7 +1082,7 @@ function configure_npm()
 {
   if [ "$EUID" -eq 0 ]; then
     echo -ne "${COLOR_PRINT_YELLOW}Configuring NPM For Root User${END_COLOR_PRINT}"
-    . "${HOME}"/.profile
+    source ~/.profile || true
     npm config set user 0 &>/dev/null
     npm config set unsafe-perm true &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Configuring NPM For Root User${END_COLOR_PRINT}"
@@ -1475,7 +1093,7 @@ function configure_npm()
 function update_npm()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating NPM${END_COLOR_PRINT}"
-  . "${HOME}"/.profile
+  source ~/.profile || true
   npm install -g npm &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NPM${END_COLOR_PRINT}"
   echo
@@ -1511,7 +1129,7 @@ function build_shared_delegates_website()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building shared delegates website${END_COLOR_PRINT}"
   cd "${SHARED_DELEGATES_WEBSITE_DIR}"
-  . "${HOME}"/.profile
+  source ~/.profile || true
   npm run build &>/dev/null
   cd dist
   for f in *.js; do uglifyjs "$f" --compress --mangle --output "{$f}min"; rm "$f"; mv "{$f}min" "$f"; done
@@ -1536,7 +1154,7 @@ function install_shared_delegates_website()
   download_shared_delegate_website
   install_shared_delegates_website_npm_packages
   build_shared_delegates_website
-  . "${HOME}"/.profile
+  source ~/.profile || true
   echo
   echo
 }
@@ -1629,7 +1247,6 @@ function set_installation_dir_owner()
   sudo chown -R "$USER":"$USER" ${XCASH_DPOPS_INSTALLATION_DIR}
 }
 
-
 function update_xcash()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating X-CASH (This Might Take A While)${END_COLOR_PRINT}"
@@ -1699,7 +1316,7 @@ function update_shared_delegates_website()
     git reset --hard HEAD --quiet
     git pull --quiet
     npm update &>/dev/null
-    . "${HOME}"/.profile
+    source ~/.profile || true
     npm run build &>/dev/null
     cd dist
     for f in *.js; do uglifyjs "$f" --compress --mangle --output "{$f}min"; rm "$f"; mv "{$f}min" "$f"; done
@@ -1725,13 +1342,14 @@ function update_mongodb()
   sudo chown -R "$USER":"$USER" ${MONGODB_DIR}
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
+  sudo sed -i 's/\r$//g' /lib/systemd/system/mongodb.service
   sudo systemctl daemon-reload
   sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
   echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
   sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
-  . "${HOME}"/.profile
+  source ~/.profile || true
   echo -ne "\r${COLOR_PRINT_GREEN}Updating MongoDB${END_COLOR_PRINT}"
   echo
 }
@@ -1773,7 +1391,7 @@ function update_nodejs()
   echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
   echo -ne '$PATH' >> "${HOME}"/.profile
   sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
-  . "${HOME}"/.profile
+  source ~/.profile || true
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NodeJS${END_COLOR_PRINT}"
   echo
 }
@@ -1843,7 +1461,7 @@ function uninstall_shared_delegates_website()
   sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
   sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
-  . "${HOME}"/.profile
+  source ~/.profile || true
   echo
   echo
 }
@@ -1919,7 +1537,6 @@ function install()
   
   # Create xcash wallet log symlink to old location
   touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && sudo rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
- 
 
   # Start the systemd service files
   start_systemd_service_files
@@ -1928,6 +1545,8 @@ function install()
   if [ "${AUTOSTART_SETTINGS^^}" == "YES" ]; then
     enable_service_files_at_startup
   fi
+
+  cd ~
 
   # Display X-CASH current wallet data  
   echo
@@ -1938,9 +1557,6 @@ function install()
   echo
   echo
   echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
-  echo
-  echo
-  echo -e "${COLOR_PRINT_YELLOW}Make sure to run source ~/.profile in your terminal${END_COLOR_PRINT}"
 }
 
 
@@ -2074,14 +1690,13 @@ function update()
   # Start the systemd service files
   start_systemd_service_files
 
+  cd ~
+
   echo
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}          Update Has Completed Successfully  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo
-  echo
-  echo -e "${COLOR_PRINT_YELLOW}Make sure to run source ~/.profile in your terminal${END_COLOR_PRINT}"
 }
 
 function uninstall()
@@ -2155,24 +1770,28 @@ function uninstall()
   sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
   sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
-  . "${HOME}"/.profile
+  source ~/.profile || true
   echo -ne "\r${COLOR_PRINT_GREEN}Updating Profile${END_COLOR_PRINT}"
   echo
+
+  cd ~
 
   echo
   echo
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}          Uninstall Has Completed Successfully  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
-  echo
-  echo
-  echo -e "${COLOR_PRINT_YELLOW}Make sure to run source ~/.profile in your terminal${END_COLOR_PRINT}"
   
   # Display X-CASH current wallet data  
   echo
   echo
   echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
 }
+
+
+
+
+
 
 function change_solo_or_shared_delegate()
 {
@@ -2183,18 +1802,16 @@ function change_solo_or_shared_delegate()
 
 function test_update()
 {
-  # Source profile to fix some strange "edge" behaviors
-  . "${HOME}"/.profile
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
-  sudo systemctl start xcash-daemon mongodb &>/dev/null
+  sudo systemctl start xcash-daemon mongodb
   sleep 30s
   data=$(curl -s -X POST http://127.0.0.1:18281/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_block_count"}' -H 'Content-Type: application/json')
   data="${data:66:6}"
   data="${data%,*}"
   data=$((data-XCASH_DPOPS_BLOCK_HEIGHT))
-  sudo systemctl stop xcash-daemon &>/dev/null
+  sudo systemctl stop xcash-daemon
   sleep 30s
   if [ $data -ne 0 ]; then
     "${XCASH_DIR}"build/release/bin/xcash-blockchain-import --data-dir "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" --pop-blocks ${data} &>/dev/null
@@ -2210,14 +1827,13 @@ function test_update()
   (echo "use XCASH_PROOF_OF_STAKE_DELEGATES"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Database${END_COLOR_PRINT}"
   echo
-  echo
   update
 }
 
 function test_update_reset_delegates()
 {
   # Source profile to fix some strange "edge" behaviors
-  . "${HOME}"/.profile
+  source ~/.profile || true
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
@@ -2260,6 +1876,7 @@ function install_firewall_script()
   sudo apt-get install --reinstall iptables &>/dev/null
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
+  sudo sed -i 's/\r$//g' /lib/systemd/system/firewall.service
   sudo systemctl daemon-reload
   echo "$FIREWALL" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
@@ -2278,26 +1895,9 @@ function install_firewall_script_shared_delegates()
   sudo apt-get install --reinstall iptables &>/dev/null
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
+  sudo sed -i 's/\r$//g' /lib/systemd/system/firewall.service
   sudo systemctl daemon-reload
   echo "$FIREWALL_SHARED_DELEGATES" > ${HOME}/firewall_script.sh
-  sudo chmod +x ${HOME}/firewall_script.sh
-  sudo ${HOME}/firewall_script.sh
-  sudo systemctl enable firewall &>/dev/null
-  sudo systemctl start firewall &>/dev/null
-  echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
-  echo
-}
-
-function install_firewall_script_test()
-{
-  get_ssh_port
-  echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
-  # Reinstall iptables (solves some issues with some VPS)
-  sudo apt-get install --reinstall iptables &>/dev/null
-  update_systemd_service_files
-  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
-  sudo systemctl daemon-reload
-  echo "$FIREWALL_TEST" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
   sudo ${HOME}/firewall_script.sh
   sudo systemctl enable firewall &>/dev/null
@@ -2513,27 +2113,33 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ]; then
   uninstall
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ]; then
-  install_or_update_blockchain
+  install_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
-  change_solo_or_shared_delegate
+  update_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
-  edit_shared_delegate_settings
+  uninstall_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
+  install_or_update_blockchain
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ]; then
+  change_solo_or_shared_delegate
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ]; then
+  edit_shared_delegate_settings
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ]; then
+  register_update_delegate
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then
   stop_systemd_service_files
   start_systemd_service_files
-elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ]; then
-  stop_systemd_service_files
-elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ]; then
-  test_update
-elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ]; then
-  test_update_reset_delegates
-elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then
-  configure
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ]; then
-  register_update_delegate
+  stop_systemd_service_files
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ]; then
-  install_firewall_script
+  test_update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ]; then
+  test_update_reset_delegates
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ]; then
+  configure
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ]; then
+  install_firewall_script
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "17" ]; then
   install_firewall_script_shared_delegates
 fi
 
