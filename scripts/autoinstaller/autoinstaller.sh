@@ -11,6 +11,7 @@ END_COLOR_PRINT="\033[0m"
 
 # Configuration settings
 INSTALLATION_TYPE_SETTINGS=1
+INSTALLATION_TYPE=""
 XCASH_DPOPS_INSTALLATION_DIR="$HOME/xcash-official/"
 XCASH_BLOCKCHAIN_INSTALLATION_DIR="$HOME/.X-CASH/"
 MONGODB_INSTALLATION_DIR="/data/db/"
@@ -140,7 +141,7 @@ function get_installation_settings()
 {
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Installation Settings\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_YELLOW}1 = Install\n2 = Update\n3 = Uninstall\n\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_GREEN}X-Cash Node Installation Settings\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}X-Cash Node (Daemon Only) Installation Settings\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_YELLOW}4 = Install\n5 = Update\n6 = Uninstall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash Blockchain Management\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_YELLOW}7 = Install / Update Blockchain\n\n${END_COLOR_PRINT}"
@@ -152,7 +153,7 @@ function get_installation_settings()
   echo -ne "${COLOR_PRINT_YELLOW}13 = Test Update\n14 = Test Update Reset Delegates\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Miscellaneous\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_YELLOW}15 = Configure Installation\n16 = Firewall\n17 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_GREEN}Enter the number of the installation type: ${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}Enter the number of the chosen option (default 1): ${END_COLOR_PRINT}"
   read -r data
   INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] && echo "$data" || echo "1")
   echo -ne "\r"
@@ -169,7 +170,7 @@ function get_installation_settings()
   fi
 
   # Check if xcash-dpops is not installed, and if the user choose an option where xcash-dpops needed to be installed
-  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ]; then
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}This is an invalid option since xcash-dpops is not installed${END_COLOR_PRINT}"
@@ -437,7 +438,7 @@ function installation_settings()
   echo -e "${COLOR_PRINT_GREEN}         Welcome to X-Cash DPoPS auto-install script  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo
-  echo -e "${COLOR_PRINT_YELLOW}Installation Configuration${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_YELLOW}The available options of the script are:${END_COLOR_PRINT}"
   echo
   get_password
   get_installation_settings
@@ -457,6 +458,7 @@ function installation_settings()
       get_autostart_services_settings
       get_ssh_port
     fi
+    INSTALLATION_TYPE="Installation"
     print_installation_settings
   fi
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ]; then 
@@ -478,6 +480,7 @@ function installation_settings()
     else
       get_autostart_services_settings
     fi
+    INSTALLATION_TYPE="Configuration"
     print_installation_settings
   fi
 }
@@ -588,7 +591,7 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
       uninstall_shared_delegates_website
       update_systemd_service_files
       sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
-      sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.service
+      sed_services 's/\r$//g' /lib/systemd/system/xcash-dpops.service
       sudo systemctl daemon-reload
       sudo sed '/node-v/d' -i "${HOME}"/.profile
       sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
@@ -639,7 +642,7 @@ function check_if_upgrade_solo_delegate_and_shared_delegate()
       echo
       update_systemd_service_files
       sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
-      sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.service
+      sed_services 's/\r$//g' /lib/systemd/system/xcash-dpops.service
       sudo systemctl daemon-reload
       get_installation_directory
       get_dependencies_current_version
@@ -656,7 +659,7 @@ function check_if_remove_shared_delegate_configure_install()
     uninstall_shared_delegates_website
     update_systemd_service_files
     sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE}' > /lib/systemd/system/xcash-dpops.service"
-    sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.service
+    sed_services 's/\r$//g' /lib/systemd/system/xcash-dpops.service
     sudo systemctl daemon-reload
     sudo sed '/node-v/d' -i "${HOME}"/.profile
     sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
@@ -842,13 +845,13 @@ function create_systemd_service_files()
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.service"
   sudo bash -c "echo '${SYSTEMD_TIMER_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.timer"
 
-  sudo sed -i 's/\r$//g' /lib/systemd/system/firewall.service
-  sudo sed -i 's/\r$//g' /lib/systemd/system/mongodb.service
-  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-daemon.service
-  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.timer
-  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-dpops.service
-  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet.service
-  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet.timer
+  sed_services 's/\r$//g' /lib/systemd/system/firewall.service
+  sed_services 's/\r$//g' /lib/systemd/system/mongodb.service
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-daemon.service
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-dpops.timer
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-dpops.service
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet.service
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet.timer
 
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
@@ -1342,7 +1345,7 @@ function update_mongodb()
   sudo chown -R "$USER":"$USER" ${MONGODB_DIR}
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
-  sudo sed -i 's/\r$//g' /lib/systemd/system/mongodb.service
+  sed_services 's/\r$//g' /lib/systemd/system/mongodb.service
   sudo systemctl daemon-reload
   sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
   sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
@@ -1742,7 +1745,7 @@ function uninstall()
   # Uninstall packages
   uninstall_packages
 
-  # Uninstall Systemd Service Files
+  # Uninstall Systemd Service Files (and remove firewall script from home)
   uninstall_systemd_service_files
 
   # Uninstall the Mongo C Driver  
@@ -1753,15 +1756,18 @@ function uninstall()
   echo
 
 
-  # Uninstall the installation folder
+  # Uninstall the installation folder and the blockchain folder
   echo -ne "${COLOR_PRINT_YELLOW}Uninstalling xcash-dpops Installation Directory${END_COLOR_PRINT}"
   sudo rm -rf "${XCASH_DPOPS_INSTALLATION_DIR}" 2&> /dev/null || true
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling xcash-dpops Installation Directory${END_COLOR_PRINT}"
   echo
+  echo -ne "${COLOR_PRINT_YELLOW}Removing the blockchain folder${END_COLOR_PRINT}"
+  sudo rm -rf "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" 2&> /dev/null || true
+  echo -ne "\r${COLOR_PRINT_GREEN}Removing the blockchain folder${END_COLOR_PRINT}"
+  echo
   if [ "$container" == "lxc" ]; then
     echo -e "${COLOR_PRINT_YELLOW}This is a container installation, please remove the container and also the host data files (bind mounts) to complete the uninstall${END_COLOR_PRINT}"
   fi
-  sudo rm ${HOME}/firewall_script.sh || true
 
 
   # Update profile
@@ -1797,6 +1803,8 @@ function install_node()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}                  Starting Installation${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  get_ssh_port
 
   # Update global variables
   XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
@@ -1837,6 +1845,7 @@ function install_node()
   echo -ne "${COLOR_PRINT_YELLOW}Creating Systemd Service Files${END_COLOR_PRINT}"
 
   FIREWALL=$(cat <(curl -sSL $FIREWALL_XCASH_NODE_URL))
+  FIREWALL="${FIREWALL//'${SSH_PORT_NUMBER}'/$SSH_PORT_NUMBER}"
   SYSTEMD_SERVICE_FILE_FIREWALL=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_FIREWALL_URL))
   SYSTEMD_SERVICE_FILE_FIREWALL="${SYSTEMD_SERVICE_FILE_FIREWALL//'${HOME}'/$HOME}"
   SYSTEMD_SERVICE_FILE_XCASH_DAEMON=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DAEMON_URL))
@@ -1850,8 +1859,8 @@ function install_node()
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/xcash-daemon.service"
 
-  sudo sed -i 's/\r$//g' /lib/systemd/system/firewall.service
-  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-daemon.service
+  sed_services 's/\r$//g' /lib/systemd/system/firewall.service
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-daemon.service
 
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
@@ -1944,14 +1953,21 @@ function uninstall_node()
   # Uninstall packages
   uninstall_packages
 
-  # Uninstall Systemd Service Files
-  sudo rm -f /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service
+  # Uninstall Systemd Service Files (and remove firewall script from home)
+  if [ "$container" == "lxc" ]; then
+    sudo truncate --size 0 /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service
+    sudo rm -f ${HOME}/firewall_script.sh
+  else
+    sudo rm -f /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service ${HOME}/firewall_script.sh
+  fi
   sudo systemctl daemon-reload
 
   # Uninstall the installation folder and blockchain folder
   sudo rm -rf "${XCASH_DPOPS_INSTALLATION_DIR}" 2&> /dev/null || true
   sudo rm -rf "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" 2&> /dev/null || true
-  sudo rm ${HOME}/firewall_script.sh || true
+  if [ "$container" == "lxc" ]; then
+    echo -e "${COLOR_PRINT_YELLOW}This is a container installation, please remove the container and also the host data files (bind mounts) to complete the uninstall${END_COLOR_PRINT}"
+  fi
 
   cd ~
 
@@ -1992,6 +2008,7 @@ function test_update()
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Blockchain${END_COLOR_PRINT}"
   echo
+  source ~/.profile || true
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Database${END_COLOR_PRINT}"
   (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_1.drop()"; echo "exit";) | mongo &>/dev/null
   (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_2.drop()"; echo "exit";) | mongo &>/dev/null
@@ -2006,8 +2023,6 @@ function test_update()
 
 function test_update_reset_delegates()
 {
-  # Source profile to fix some strange "edge" behaviors
-  source ~/.profile || true
   get_installation_directory
   stop_systemd_service_files
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Blockchain${END_COLOR_PRINT}"
@@ -2023,6 +2038,8 @@ function test_update_reset_delegates()
   fi
   echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Blockchain${END_COLOR_PRINT}"
   echo
+  # Source profile to fix some strange "edge" behaviors
+  source ~/.profile || true
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Database${END_COLOR_PRINT}"
   (echo "use XCASH_PROOF_OF_STAKE"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
   (echo "use XCASH_PROOF_OF_STAKE_DELEGATES"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
@@ -2050,7 +2067,7 @@ function install_firewall_script()
   sudo apt-get install --reinstall iptables &>/dev/null
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
-  sudo sed -i 's/\r$//g' /lib/systemd/system/firewall.service
+  sed_services 's/\r$//g' /lib/systemd/system/firewall.service
   sudo systemctl daemon-reload
   echo "$FIREWALL" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
@@ -2069,7 +2086,7 @@ function install_firewall_script_shared_delegates()
   sudo apt-get install --reinstall iptables &>/dev/null
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
-  sudo sed -i 's/\r$//g' /lib/systemd/system/firewall.service
+  sed_services 's/\r$//g' /lib/systemd/system/firewall.service
   sudo systemctl daemon-reload
   echo "$FIREWALL_SHARED_DELEGATES" > ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
@@ -2086,7 +2103,7 @@ function install_or_update_blockchain()
   cd $HOME
   XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name ".X-CASH" -print)/
   if [ $XCASH_BLOCKCHAIN_INSTALLATION_DIR = "/" ]; then
-  XCASH_BLOCKCHAIN_INSTALLATION_DIR="/root/.X-CASH/"
+    XCASH_BLOCKCHAIN_INSTALLATION_DIR="${HOME}/.X-CASH/"
   fi
   cd && test -f xcash-blockchain.7z && sudo rm -rf xcash-blockchain.7z*
   echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
