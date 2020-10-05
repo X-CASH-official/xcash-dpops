@@ -154,9 +154,8 @@ function get_installation_settings()
   echo -ne "${COLOR_PRINT_YELLOW}15 = Configure Installation\n16 = Firewall\n17 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Enter the number of the installation type: ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] && echo "$data" || echo "1")
   echo -ne "\r"
-  echo
   # Check if xcash-dpops is already installed, if the user choose to install
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
     echo -ne "${COLOR_PRINT_YELLOW}Checking if xcash-dpops is already installed${END_COLOR_PRINT}"
@@ -460,7 +459,7 @@ function installation_settings()
     fi
     print_installation_settings
   fi
-  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then 
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ]; then 
     echo
     echo -e "${COLOR_PRINT_RED}WARNING: Old wallet, old block verifier key and old settings (service files)${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_RED}will be overwritten if already existent! Please make a backup if required!${END_COLOR_PRINT}"
