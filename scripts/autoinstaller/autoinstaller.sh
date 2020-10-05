@@ -76,6 +76,7 @@ SYSTEMD_TIMER_FILE_XCASH_WALLET=""
 # File URLs
 FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/firewall/firewall_script.sh"
 FIREWALL_SHARED_DELEGATES_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/firewall/firewall_shared_delegates_script.sh"
+FIREWALL_XCASH_NODE_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/firewall/firewall_script_xcash_node.sh"
 SYSTEMD_SERVICE_FILE_FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/firewall.service"
 SYSTEMD_SERVICE_FILE_MONGODB_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/MongoDB.service"
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-daemon.service"
@@ -261,23 +262,23 @@ function get_shared_delegate_installation_settings()
 function update_systemd_service_files()
 {
 # Files
-FIREWALL=`cat <(curl -sSL $FIREWALL_URL)`
+FIREWALL=$(cat <(curl -sSL $FIREWALL_URL))
 FIREWALL="${FIREWALL//'${SSH_PORT_NUMBER}'/$SSH_PORT_NUMBER}"
 
-FIREWALL_SHARED_DELEGATES=`cat <(curl -sSL $FIREWALL_SHARED_DELEGATES_URL)`
+FIREWALL_SHARED_DELEGATES=$(cat <(curl -sSL $FIREWALL_SHARED_DELEGATES_URL))
 FIREWALL_SHARED_DELEGATES="${FIREWALL_SHARED_DELEGATES//'${SSH_PORT_NUMBER}'/$SSH_PORT_NUMBER}"
 FIREWALL_SHARED_DELEGATES="${FIREWALL_SHARED_DELEGATES//'${DEFAULT_NETWORK_DEVICE}'/$DEFAULT_NETWORK_DEVICE}"
 
-SYSTEMD_SERVICE_FILE_FIREWALL=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_FIREWALL_URL)`
+SYSTEMD_SERVICE_FILE_FIREWALL=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_FIREWALL_URL))
 SYSTEMD_SERVICE_FILE_FIREWALL="${SYSTEMD_SERVICE_FILE_FIREWALL//'${HOME}'/$HOME}"
 
-SYSTEMD_SERVICE_FILE_MONGODB=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_MONGODB_URL)`
+SYSTEMD_SERVICE_FILE_MONGODB=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_MONGODB_URL))
 SYSTEMD_SERVICE_FILE_MONGODB="${SYSTEMD_SERVICE_FILE_MONGODB//'${USER}'/$USER}"
 SYSTEMD_SERVICE_FILE_MONGODB="${SYSTEMD_SERVICE_FILE_MONGODB//'${XCASH_DPOPS_INSTALLATION_DIR}'/$XCASH_DPOPS_INSTALLATION_DIR}"
 SYSTEMD_SERVICE_FILE_MONGODB="${SYSTEMD_SERVICE_FILE_MONGODB//'${MONGODB_DIR}'/$MONGODB_DIR}"
 SYSTEMD_SERVICE_FILE_MONGODB="${SYSTEMD_SERVICE_FILE_MONGODB//'${MONGODB_INSTALLATION_DIR}'/$MONGODB_INSTALLATION_DIR}"
 
-SYSTEMD_SERVICE_FILE_XCASH_DAEMON=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DAEMON_URL)`
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DAEMON_URL))
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${USER}'/$USER}"
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_DPOPS_INSTALLATION_DIR}'/$XCASH_DPOPS_INSTALLATION_DIR}"
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_DIR}'/$XCASH_DIR}"
@@ -285,28 +286,28 @@ SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_LOGS_DIR}'/$XCASH_LOGS_DIR}"
 SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_SYSTEMPID_DIR}'/$XCASH_SYSTEMPID_DIR}"
 
-SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE_URL)`
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE_URL))
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE//'${USER}'/$USER}"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE//'${XCASH_DPOPS_DIR}'/$XCASH_DPOPS_DIR}"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE//'${BLOCK_VERIFIER_SECRET_KEY}'/$BLOCK_VERIFIER_SECRET_KEY}"
 
-SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE_URL)`
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE_URL))
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${USER}'/$USER}"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${XCASH_DPOPS_DIR}'/$XCASH_DPOPS_DIR}"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${BLOCK_VERIFIER_SECRET_KEY}'/$BLOCK_VERIFIER_SECRET_KEY}"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${BLOCK_VERIFIER_SECRET_KEY}'/$BLOCK_VERIFIER_SECRET_KEY}"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${DPOPS_MINIMUM_AMOUNT}'/$DPOPS_MINIMUM_AMOUNT}"
 
-SYSTEMD_TIMER_FILE_XCASH_DPOPS=`cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_DPOPS_URL)`
+SYSTEMD_TIMER_FILE_XCASH_DPOPS=$(cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_DPOPS_URL))
 
-SYSTEMD_SERVICE_FILE_XCASH_WALLET=`cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_WALLET_URL)`
+SYSTEMD_SERVICE_FILE_XCASH_WALLET=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_WALLET_URL))
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${USER}'/$USER}"
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${XCASH_DIR}'/$XCASH_DIR}"
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${XCASH_WALLET_DIR}'/$XCASH_WALLET_DIR}"
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${WALLET_PASSWORD}'/$WALLET_PASSWORD}"
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${XCASH_LOGS_DIR}'/$XCASH_LOGS_DIR}"
 
-SYSTEMD_TIMER_FILE_XCASH_WALLET=`cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_WALLET_URL)`
+SYSTEMD_TIMER_FILE_XCASH_WALLET=$(cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_WALLET_URL))
 
 sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
 }
@@ -1761,6 +1762,7 @@ function uninstall()
   if [ "$container" == "lxc" ]; then
     echo -e "${COLOR_PRINT_YELLOW}This is a container installation, please remove the container and also the host data files (bind mounts) to complete the uninstall${END_COLOR_PRINT}"
   fi
+  sudo rm ${HOME}/firewall_script.sh || true
 
 
   # Update profile
@@ -1786,6 +1788,179 @@ function uninstall()
   echo
   echo
   echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
+}
+
+
+
+function install_node()
+{
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Starting Installation${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  # Update global variables
+  XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
+  XCASH_SYSTEMPID_DIR=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/
+  XCASH_LOGS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}logs/
+
+  # Create directories
+  echo -ne "${COLOR_PRINT_YELLOW}Creating Directories${END_COLOR_PRINT}"
+  cd ~
+  if [ ! -d "$XCASH_DPOPS_INSTALLATION_DIR" ]; then
+    mkdir -p "${XCASH_DPOPS_INSTALLATION_DIR}"
+  fi
+  if [ ! -d "$XCASH_SYSTEMPID_DIR" ]; then
+    mkdir -p "${XCASH_SYSTEMPID_DIR}"
+  fi
+  if [ ! -d "$XCASH_LOGS_DIR" ]; then
+    mkdir -p "${XCASH_LOGS_DIR}"
+  fi
+  echo -ne "\r${COLOR_PRINT_GREEN}Creating Directories${END_COLOR_PRINT}"
+  echo
+
+  # Create files
+  touch $HOME/xcash-official/systemdpid/xcash-daemon.pid
+
+  # Update the package list
+  update_packages_list
+ 
+  # Install packages
+  install_packages
+
+  # Install the blockchain
+  install_blockchain
+
+  # Install X-CASH
+  install_xcash
+
+  # install the systemd service files
+  echo -ne "${COLOR_PRINT_YELLOW}Creating Systemd Service Files${END_COLOR_PRINT}"
+
+  FIREWALL=$(cat <(curl -sSL $FIREWALL_XCASH_NODE_URL))
+  SYSTEMD_SERVICE_FILE_FIREWALL=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_FIREWALL_URL))
+  SYSTEMD_SERVICE_FILE_FIREWALL="${SYSTEMD_SERVICE_FILE_FIREWALL//'${HOME}'/$HOME}"
+  SYSTEMD_SERVICE_FILE_XCASH_DAEMON=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_DAEMON_URL))
+  SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${USER}'/$USER}"
+  SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_DPOPS_INSTALLATION_DIR}'/$XCASH_DPOPS_INSTALLATION_DIR}"
+  SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_DIR}'/$XCASH_DIR}"
+  SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_BLOCKCHAIN_INSTALLATION_DIR}'/$XCASH_BLOCKCHAIN_INSTALLATION_DIR}"
+  SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_LOGS_DIR}'/$XCASH_LOGS_DIR}"
+  SYSTEMD_SERVICE_FILE_XCASH_DAEMON="${SYSTEMD_SERVICE_FILE_XCASH_DAEMON//'${XCASH_SYSTEMPID_DIR}'/$XCASH_SYSTEMPID_DIR}"
+
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_DAEMON}' > /lib/systemd/system/xcash-daemon.service"
+
+  sudo sed -i 's/\r$//g' /lib/systemd/system/firewall.service
+  sudo sed -i 's/\r$//g' /lib/systemd/system/xcash-daemon.service
+
+  sudo systemctl daemon-reload
+  echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
+  echo
+
+  # Install the firewall
+  echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
+  # Reinstall iptables (solves some issues with some VPS)
+  sudo apt-get install --reinstall iptables &>/dev/null
+  echo "$FIREWALL" > ${HOME}/firewall_script.sh
+  sudo sed -i 's/\r$//g' ${HOME}/firewall_script.sh
+  sudo chmod +x ${HOME}/firewall_script.sh
+  sudo ${HOME}/firewall_script.sh
+  sudo systemctl enable firewall &>/dev/null
+  sudo systemctl start firewall &>/dev/null
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing The Firewall${END_COLOR_PRINT}"
+  echo
+  
+  # Start the systemd service files and enable them at startup
+  sudo systemctl enable xcash-daemon &>/dev/null
+  sudo systemctl start xcash-daemon &>/dev/null
+
+  cd ~
+
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Installation Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+}
+
+function update_node()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Updating xcash node${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+
+  # Update global variables
+  XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
+
+  # Stop the systemd service files
+  sudo systemctl stop xcash-daemon
+
+  # Update the package list
+  update_packages_list
+
+  # Update all system packages that are xcash-dpops dependencies
+  update_packages
+
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
+
+  # Update all repositories
+  update_xcash
+
+  # Start the systemd service files
+  sudo systemctl start xcash-daemon
+
+  cd ~
+
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Update Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+}
+
+function uninstall_node()
+{
+  echo -ne "${COLOR_PRINT_RED}Please Confirm You Want To Uninstall By Typing \"Uninstall\":${END_COLOR_PRINT}"
+  read -r data
+  if [ ! "$data" == "Uninstall" ]; then
+    exit
+  fi
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                Uninstalling xcash node${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+
+  sudo systemctl stop xcash-daemon &>/dev/null
+
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
+
+  # Uninstall packages
+  uninstall_packages
+
+  # Uninstall Systemd Service Files
+  sudo rm -f /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service
+  sudo systemctl daemon-reload
+
+  # Uninstall the installation folder and blockchain folder
+  sudo rm -rf "${XCASH_DPOPS_INSTALLATION_DIR}" 2&> /dev/null || true
+  sudo rm -rf "${XCASH_BLOCKCHAIN_INSTALLATION_DIR}" 2&> /dev/null || true
+  sudo rm ${HOME}/firewall_script.sh || true
+
+  cd ~
+
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Uninstall Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 }
 
 
