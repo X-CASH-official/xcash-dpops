@@ -100,6 +100,23 @@ int start_new_round(void)
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
+  // get the delegates online status
+  if (registration_settings != 1)
+  {
+    color_print("Getting the delegates online status","blue");
+    get_delegates_online_status();
+  }
+
+  // save a copy of the database
+  if (production_settings == 1 && network_data_node_settings == 1)
+  {
+    color_print("Saving a copy of the database","blue");
+    count2 = system(database_path_write);
+  }  
+
+  // wait so everyone has got the online status
+  sync_block_verifiers_minutes_and_seconds(0,15);
+
   // start a new round
   if (get_current_block_height(current_block_height) == 0)
   {
@@ -116,24 +133,6 @@ int start_new_round(void)
 
   // get the current block height
   sscanf(current_block_height,"%zu", &count);
-
-  color_print("Getting the delegates online status","blue");
-
-  // get the delegates online status
-  if (registration_settings != 1)
-  {
-    get_delegates_online_status();
-  }
-
-  // save a copy of the database
-  if (production_settings == 1 && network_data_node_settings == 1)
-  {
-    count2 = system(database_path_write);
-  }
-  
-
-  // wait so everyone has got the online status
-  sync_block_verifiers_minutes_and_seconds(0,15);
 
   // reload the initial previous, current and next block verifiers list if its the first block or if you had to restart
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
@@ -199,8 +198,8 @@ int start_new_round(void)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_hour == 23 && current_UTC_date_and_time.tm_min < BLOCK_TIME)
     {
-      color_print("Removing inactive delegates\n","blue");
-      //remove_inactive_delegates();
+      /*color_print("Removing inactive delegates\n","blue");
+      remove_inactive_delegates();*/
     }
 
     // all block verifiers will sync and make sure they have the same database

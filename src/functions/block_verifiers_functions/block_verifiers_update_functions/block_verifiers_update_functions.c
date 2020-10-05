@@ -1082,10 +1082,6 @@ int get_delegates_online_status(void)
 
   // create the message
   memcpy(data,MESSAGE,sizeof(MESSAGE)-1);
-  if (sign_data(data) == 0)
-  {
-    GET_DELEGATES_ONLINE_STATUS_ERROR("Could not sign the message");
-  }
   memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
   total = strnlen(data,BUFFER_SIZE);
   

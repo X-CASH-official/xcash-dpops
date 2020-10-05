@@ -522,7 +522,7 @@ void get_delegates_data(void)
   if (production_settings == 1 && network_data_node_settings == 1)
   {
     // get the database_path_write
-    memcpy(database_path_write,"cd ~ && rm -r dump ; ",21);
+    memcpy(database_path_write,"cd ~ && rm -r dump_copy ; mv dump dump_copy ; ",46);
 
     file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
 

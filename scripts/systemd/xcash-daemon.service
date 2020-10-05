@@ -1,12 +1,12 @@
 [Unit]
 Description=X-Cash Daemon background process
 After=network.target
- 
+
 [Service]
 Type=forking
-User=root
-PIDFile=/root/xcash-official/systemdpid/xcash-daemon.pid
-ExecStart=/root/xcash-official/xcash-core/build/release/bin/xcashd --rpc-bind-ip 0.0.0.0 --p2p-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file /root/xcash-official/logs/xcash-daemon-log.txt --max-log-file-size 0 --detach --pidfile /root/xcash-official/systemdpid/xcash-daemon.pid
+User=${USER}
+PIDFile=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/xcash-daemon.pid
+ExecStart=${XCASH_DIR}build/release/bin/xcashd --data-dir ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} --rpc-bind-ip 0.0.0.0 --p2p-bind-ip 0.0.0.0 --rpc-bind-port 18281 --restricted-rpc --confirm-external-bind --log-file ${XCASH_LOGS_DIR}xcash-daemon-log.txt --max-log-file-size 0 --detach --pidfile ${XCASH_SYSTEMPID_DIR}xcash-daemon.pid
 RuntimeMaxSec=15d
 Restart=always
  
