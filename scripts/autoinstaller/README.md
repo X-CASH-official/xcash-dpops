@@ -36,7 +36,7 @@ Run the LXC autoinstaller again with `./lxc_autoinstaller.sh` and select the opt
 
 After the installation you can also, optionally, run the delegate registration procedure. If you need to register your new delegate and fill all the extra info (ip, team, server specs, website, about...) follow the procedure when asked. You'll simply have to enter your delegate name, the domain name (or IP) of the delegate and wait! Then you can fill also the exra information. Simply wait the end of the procedure.
 
-> You can modify your info using the option (10) of the LXC autoinstaller and then selection the option (12) of the internal autoinstaller.
+> You can modify your info using the option (10) of the LXC autoinstaller and then selection the option (10) of the internal autoinstaller.
 
 After the installation, if you want to check the status of your X-Cash node you can select the option (9) to get an overview (status if the services, wallet balance, blockchain height, delegate statistics). If you want to access more maintenance options, for example to check the logs (wallet, daemon, DPOPS services) you can enter the maintenace script with the option (8).
 
@@ -52,13 +52,15 @@ If you want to update your node you have 2 options:
 
 ## Creating the X-Cash container from scratch
 
-If you want to create the container from scratch, so start from an empty Ubuntu 18.04 container (preconfigured for installing/running X-Cash node) you can select the option (14). In this case the X-Cash `autoinstaller.sh` (version modified by n3me5is to support the installation/configuration inside the LXC container) is used to install the X-Cash node in the traditional way. After the installation you can create an image from the container with option (15), export it with option (16) and redistribute the file (pre-built image)
+If you want to create the container from scratch, so start from an empty Ubuntu 18.04 container (preconfigured for installing/running X-Cash node) you can select the option (14). In this case the X-Cash `autoinstaller.sh` is used to install the X-Cash node in the traditional way. After the installation you can create an image from the container with option (15), export it with option (16) and redistribute the file (pre-built image)
 
 > See the script for detailed operations if you want to install all manually
 
 ## Animated procedure
 
 In the following GIFs you can see some procedures like installing your node from pre-built image, do maintenance, update delegate information and create your container from scratch to genereate a pre-built image.
+
+**NOTE: The internal autoinstaller can change, so some printed messages/colors could be different in the future. There could be also new features added both in the `autoinstaller.sh` and in the `xcash-maintenance` scripts. Please use the following animated procedures as a guidance. The procedures will always be more or less the same. Always read carefully the autoinstaller warnings and questions if you are using it for the first time.**
 
 ### 1,2,3, GO! Install LXC, Download the image, configure the delegate
 
