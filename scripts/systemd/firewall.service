@@ -7,7 +7,7 @@ Wants=network-pre.target
 Type=oneshot
 RemainAfterExit=yes
 User=root
-ExecStart=/root/firewall_script.sh
+ExecStart=${HOME}/firewall_script.sh
  
 [Install]
 WantedBy=network.target
