@@ -253,8 +253,6 @@ void server_receive_data_socket_node_to_network_data_nodes_get_current_block_ver
     }
   }
 
-
-
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"",129);
   for (count = 0; count < total_delegates; count++)
@@ -281,7 +279,7 @@ void server_receive_data_socket_node_to_network_data_nodes_get_current_block_ver
   { 
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data");
   }
-
+  
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
   return;

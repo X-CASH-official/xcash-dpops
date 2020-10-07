@@ -9,7 +9,7 @@ Function prototypes
 
 void sync_network_data_nodes_database(void);
 void sync_block_verifiers_database(void);
-int sync_all_block_verifiers_list(const int SETTINGS);
+int sync_all_block_verifiers_list(const int SETTINGS, const int NETWORK_DATA_NODES_ONLINE_SETTINGS);
 int get_synced_block_verifiers(void);
 void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES_IP_ADDRESS, char *block_verifiers_ip_address);
 int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const char* BLOCK_VERIFIERS_IP_ADDRESS);

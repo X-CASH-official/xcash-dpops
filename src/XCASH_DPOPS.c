@@ -736,7 +736,7 @@ int set_parameters(int parameters_count, char* parameters[])
     if (strncmp(parameters[count],"--synchronize-database-from-specific-delegate",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       color_print("Syncing the block verifiers list","yellow");
-      sync_all_block_verifiers_list(1);
+      sync_all_block_verifiers_list(1,1);
       color_print("Syncing the reserve bytes database","yellow");
       sync_reserve_bytes_database(0,0,parameters[count+1]);
       color_print("Syncing the reserve proofs database","yellow");
@@ -973,23 +973,31 @@ void database_sync_check(void)
   mongoc_cleanup(); \
   exit(0);
 
+  // check if all network data nodes are offline
+  if (get_network_data_nodes_online_status() == 0)
+  {
+    // this is the first network data node on the network, or none of the network data nodes are on the network. load the current block verifiers from your database and skip the database syncing and skip the check the block verifiers current time
+    if (sync_all_block_verifiers_list(1,0) == 0)
+    {
+      DATABASE_SYNC_CHECK_ERROR("Could not sync the previous, current and next block verifiers list");
+    }
+    color_print("Started the sync all block verifiers list timer thread","green");
+    return;
+  }
+
   // sync the block verifiers list
-  if (sync_all_block_verifiers_list(1) == 0)
+  if (sync_all_block_verifiers_list(1,1) == 0)
   {
     DATABASE_SYNC_CHECK_ERROR("Could not sync the previous, current and next block verifiers list");
   }
 
-  // check if the database is synced, unless this is the main network data node
-  if ((network_data_node_settings == 1 && get_network_data_nodes_online_status() == 1) || (network_data_node_settings == 0))
+  // check if all of the databases are synced
+  sscanf(current_block_height,"%zu", &count);
+  if ((count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(3,0) == 0) || (count > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(1,0) == 0))
   {
-    // check if all of the databases are synced
-    sscanf(current_block_height,"%zu", &count);
-    if ((count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(3,0) == 0) || (count > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(1,0) == 0))
-    {
-      DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
-    }
+    DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
   }
-
+  
   // check the block verifiers current time, if it is not a network data node
   if (network_data_node_settings == 0)
   {

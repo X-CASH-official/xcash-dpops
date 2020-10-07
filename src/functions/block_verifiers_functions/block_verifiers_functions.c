@@ -138,7 +138,8 @@ int start_new_round(void)
   if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
   {
     sync_previous_current_next_block_verifiers_settings = 0;
-    sync_all_block_verifiers_list(0);
+    count2 = get_network_data_nodes_online_status();
+    sync_all_block_verifiers_list(0,count2);
   }
 
   // check if it is running in registration mode only

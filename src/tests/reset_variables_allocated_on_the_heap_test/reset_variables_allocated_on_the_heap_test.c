@@ -530,9 +530,9 @@ int reset_variables_allocated_on_the_heap_test(void)
 
   #define SYNC_STATISTICS_DATABASE_CODE sync_statistics_database(0,XCASH_DPOPS_delegates_IP_address);
 
-  #define SYNC_ALL_BLOCK_VERIFIERS_LIST_FOR_BLOCK_VERIFIERS_CODE sync_all_block_verifiers_list(1);
+  #define SYNC_ALL_BLOCK_VERIFIERS_LIST_FOR_BLOCK_VERIFIERS_CODE sync_all_block_verifiers_list(1,1);
 
-  #define SYNC_ALL_BLOCK_VERIFIERS_LIST_FOR_NETWORK_DATA_NODES_CODE sync_all_block_verifiers_list(1);
+  #define SYNC_ALL_BLOCK_VERIFIERS_LIST_FOR_NETWORK_DATA_NODES_CODE sync_all_block_verifiers_list(1,1);
 
   #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST_CODE \
   memset(result_test,0,sizeof(result_test)); \

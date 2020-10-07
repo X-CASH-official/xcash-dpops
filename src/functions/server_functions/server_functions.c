@@ -630,10 +630,10 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  } 
- else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL && (network_data_node_settings == 1 || test_settings == 1))
+ else if (strstr(buffer,"\"message_settings\": \"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST\"") != NULL)
  {
    if ((strstr(buffer,"\"public_address\"") != NULL && server_limit_public_addresses(1,(const char*)buffer) == 1) || (strstr(buffer,"\"public_address\"") == NULL && server_limit_IP_addresses(1,(const char*)client_IP_address) == 1))
-   { 
+   {
      server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list(CLIENT_SOCKET);
      strstr(buffer,"\"public_address\"") != NULL ? server_limit_public_addresses(3,(const char*)buffer) : server_limit_IP_addresses(0,(const char*)client_IP_address);
    }   
