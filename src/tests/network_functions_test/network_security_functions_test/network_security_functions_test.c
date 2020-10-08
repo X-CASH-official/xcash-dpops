@@ -127,24 +127,6 @@ int network_security_functions_test(void)
   {
     color_print("FAILED! Test for validate_data for MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_START_BLOCK","red");
   }
-  if (validate_data(MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK) == 1)
-  {   
-    color_print("PASSED! Test for validate_data for MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for validate_data for MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK","red");
-  }
-  if (validate_data(BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK) == 1)
-  {   
-    color_print("PASSED! Test for validate_data for BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for validate_data for BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK","red");
-  }
   if (validate_data(BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA) == 1)
   {   
     color_print("PASSED! Test for validate_data for BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA","green");
@@ -297,15 +279,6 @@ int network_security_functions_test(void)
   else
   {
     color_print("FAILED! Test for validate_data for BLOCK_VERIFIERS_TO_NODE_SEND_RESERVE_BYTES","red");
-  }
-  if (validate_data(NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE) == 1)
-  {   
-    color_print("PASSED! Test for validate_data for NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for validate_data for NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE","red");
   }
   if (validate_data(BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD) == 1)
   {   

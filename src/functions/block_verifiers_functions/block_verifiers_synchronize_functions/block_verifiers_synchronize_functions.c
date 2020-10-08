@@ -166,8 +166,8 @@ void sync_network_data_nodes_database(void)
     }
   }
 
-  // wait for the network data nodes to process the data
-  sleep(NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS);
+  // wait for all of the network data nodes to process the data
+  sync_block_verifiers_minutes_and_seconds(1,0);
 
   // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
   network_data_nodes_sync_databases_settings = 0;
@@ -396,7 +396,8 @@ void sync_block_verifiers_database(void)
     }
   }
 
-  sleep(10);
+  // wait for all of the block verifiers to process the data
+  sync_block_verifiers_minutes_and_seconds(1,0);
 
   // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
   network_data_nodes_sync_databases_settings = 0;
@@ -506,11 +507,12 @@ Name: sync_all_block_verifiers_list
 Description: Sync the previous, current and next block verifiers from a network data node. This function is only run at startup, since after that the database is used to get the block verifiers list
 Paramters:
   SETTINGS - 1 to sync immediately, 0 to wait for the network data nodes to sync
+  NETWORK_DATA_NODES_ONLINE_SETTINGS - 0 if no network data nodes are online, otherwise 1
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int sync_all_block_verifiers_list(const int SETTINGS)
+int sync_all_block_verifiers_list(const int SETTINGS, const int NETWORK_DATA_NODES_ONLINE_SETTINGS)
 {
   // Variables
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
@@ -569,7 +571,7 @@ int sync_all_block_verifiers_list(const int SETTINGS)
     memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
   }
 
-  if (network_data_node_settings == 0)
+  if (network_data_node_settings == 0 && NETWORK_DATA_NODES_ONLINE_SETTINGS == 1)
   {
     // wait for the network data nodes to load the previous, current and next block verifiers list, before trying to sync them
     if (SETTINGS == 0)

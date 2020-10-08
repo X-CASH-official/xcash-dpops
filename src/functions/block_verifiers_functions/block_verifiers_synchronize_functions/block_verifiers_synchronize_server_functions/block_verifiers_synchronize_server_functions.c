@@ -253,8 +253,6 @@ void server_receive_data_socket_node_to_network_data_nodes_get_current_block_ver
     }
   }
 
-
-
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"",129);
   for (count = 0; count < total_delegates; count++)
@@ -281,7 +279,7 @@ void server_receive_data_socket_node_to_network_data_nodes_get_current_block_ver
   { 
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST_ERROR("Could not sign data");
   }
-
+  
   // send the data
   send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
   return;
@@ -363,105 +361,6 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_node_to_network_data_nodes_get_current_block_verifiers_list
-Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE message
-Parameters:
-  CLIENT_SOCKET - The socket to send data to
------------------------------------------------------------------------------------------------------------
-*/
-
-void server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(const int CLIENT_SOCKET)
-{
-   // Constants
-  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
-  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
-
-  // Variables
-  char data[BUFFER_SIZE];
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char message[BUFFER_SIZE];
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-
-  // define macros
-  #define DATABASE_COLLECTION "reserve_bytes"
-  #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR(settings) \
-  if (debug_settings == 1) \
-  { \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  } \
-  pointer_reset(data2); \
-  send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the reserve bytes data hash}",0,0,""); \
-  return;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data2 == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update",96);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data);  
-    exit(0);
-  }
-
-  memset(data,0,sizeof(data));
-  memset(message,0,sizeof(message));
-
-  // get the database data hash for the reserve bytes database
-  if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
-  }
-
-  // create the message
-  memcpy(data,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD|",72);
-  memcpy(data+72,data2,DATA_HASH_LENGTH);
-  memcpy(data+200,"|",sizeof(char));
-  
-  // sign_data
-  memset(data2,0,strlen(data2));
-  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"sign\",\"params\":{\"data\":\"",60);
-  memcpy(message+60,data,strnlen(data,sizeof(message)));
-  memcpy(message+strlen(message),"\"}}",3);
-
-  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
-  {  
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not create the message");
-  } 
-
-  memset(message,0,strlen(message));
-
-  if (parse_json_data(data2,"signature",message,sizeof(message)) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not create the message");
-  }
-
-  // check if the returned data is valid
-  if (strlen(message) != XCASH_SIGN_DATA_LENGTH && strncmp(message,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not create the message");
-  }
-
-  memcpy(data+strlen(data),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-  memcpy(data+strlen(data),"|",sizeof(char));
-  memcpy(data+strlen(data),message,XCASH_SIGN_DATA_LENGTH);
-  memcpy(data+strlen(data),"|}",2);
-
-  // send the data
-  test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)data,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
-  pointer_reset(data2);
-  return;
-
-  #undef DATABASE_COLLECTION
-  #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash
 Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH message
 Parameters:
@@ -473,9 +372,9 @@ Parameters:
 void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(const int CLIENT_SOCKET, const char* MESSAGE)
 {  
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char message[SMALL_BUFFER_SIZE];
   char* message2 = (char*)calloc(1500000,sizeof(char)); // 1.5 MB
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -623,7 +522,7 @@ Parameters:
 void server_receive_data_socket_node_to_block_verifiers_check_if_current_block_verifier(const int CLIENT_SOCKET)
 {  
   // Variables
-  char data[SMALL_BUFFER_SIZE];
+  char data[10];
   int count;
 
   memset(data,0,sizeof(data));
@@ -770,19 +669,11 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
   }
   
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   if (debug_settings == 1) \
   { \
@@ -790,8 +681,33 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  pointer_reset_all; \
   ERROR_DATA_MESSAGE;
+
+  memset(buffer,0,sizeof(buffer));
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"file",buffer,sizeof(buffer)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
+  }
+
+  // get the size of the database and allocate the amount of memory
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,buffer);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
+
+  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -811,15 +727,10 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
     exit(0);
   }
 
-  // parse the message
-  if (parse_json_data(MESSAGE,"file",data,MAXIMUM_BUFFER_SIZE) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
-  }
-
   // get the database data for the reserve proofs database
-  if (get_database_data(data2,database_name,data) == 0)
+  if (get_database_data(data2,database_name,buffer) == 0)
   {
+    pointer_reset_all;
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
   }
 
@@ -970,19 +881,11 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
   }
 
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
   // define macros
-  #define pointer_reset_all \
-  free(data); \
-  data = NULL; \
-  free(data2); \
-  data2 = NULL;
-
   #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
   if (debug_settings == 1) \
   { \
@@ -990,8 +893,33 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  pointer_reset_all; \
   ERROR_DATA_MESSAGE;
+
+  memset(buffer,0,sizeof(buffer));
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"file",buffer,sizeof(buffer)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
+  }
+
+  // get the size of the database and allocate the amount of memory
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,buffer);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
+
+  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL || data2 == NULL)
@@ -1011,15 +939,10 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
     exit(0);
   }
 
-  // parse the message
-  if (parse_json_data(MESSAGE,"file",data,MAXIMUM_BUFFER_SIZE) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
-  }
-
   // get the database data for the reserve bytes database
-  if (get_database_data(data2,database_name,data) == 0)
+  if (get_database_data(data2,database_name,buffer) == 0)
   {
+    pointer_reset_all;
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");
   }
 
@@ -1129,17 +1052,25 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_dat
     ERROR_DATA_MESSAGE;
   }
 
-  // check if this node
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  
+  // Constants
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,DATABASE_COLLECTION);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
 
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
   // define macros
-  #define DATABASE_COLLECTION "delegates"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
@@ -1287,15 +1218,25 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_da
     ERROR_DATA_MESSAGE;
   }
 
+  // define macros
+  #define DATABASE_COLLECTION "statistics"
+  
+  // Constants
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,DATABASE_COLLECTION);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
+
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
   // define macros
-  #define DATABASE_COLLECTION "statistics"
   #define pointer_reset_all \
   free(data); \
   data = NULL; \
