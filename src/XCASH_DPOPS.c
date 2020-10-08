@@ -1306,8 +1306,6 @@ int main(int parameters_count, char* parameters[])
     MAIN_ERROR("Could not start the server");
   }
 
-  get_delegates_data();
-
   // wait until the blockchain is fully synced
   color_print("Checking if the blockchain is fully synced","yellow"); 
   
