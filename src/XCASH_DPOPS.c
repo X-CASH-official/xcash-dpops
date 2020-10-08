@@ -493,10 +493,7 @@ void get_delegates_data(void)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  mongoc_client_pool_destroy(database_client_thread_pool); \
-  mongoc_uri_destroy(uri_thread_pool); \
-  mongoc_cleanup(); \
-  exit(0);
+  return
 
   memset(data,0,sizeof(data));
 
@@ -1308,6 +1305,8 @@ int main(int parameters_count, char* parameters[])
   {
     MAIN_ERROR("Could not start the server");
   }
+
+  get_delegates_data();
 
   // wait until the blockchain is fully synced
   color_print("Checking if the blockchain is fully synced","yellow"); 
