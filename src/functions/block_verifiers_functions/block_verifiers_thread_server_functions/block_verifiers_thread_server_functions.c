@@ -64,8 +64,8 @@ Return: 0 if an error has occured or the round is not a replayed round, 1 if the
 int check_if_replayed_round(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   size_t count;
   size_t count2;
@@ -94,7 +94,7 @@ int check_if_replayed_round(void)
   snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",count2);
   memcpy(data+strlen(data),"\"}",2);
 
-  // get the block verifiers score
+  // get the blocks reserve bytes
   if (read_document_field_from_collection(database_name,data2,data,"reserve_bytes",data3) == 0)
   {
     return 0;

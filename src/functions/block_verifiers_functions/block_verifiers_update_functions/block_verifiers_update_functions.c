@@ -1026,9 +1026,9 @@ Return: 0 if an error has occured, otherwise the amount of online delegates
 int get_delegates_online_status(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
@@ -1206,25 +1206,6 @@ int get_delegates_online_status(void)
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
       delegates_online_status[count].settings = 1;
-
-      // send the message  
-      if (debug_settings == 1 && test_settings == 0)
-      {  
-        memset(data2,0,sizeof(data2));   
-        memcpy(data2,"Sending ",8);
-        memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
-        memcpy(data2+strlen(data2),"\n",sizeof(char));
-        memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
-        memcpy(data2+strlen(data2)," on port ",9);
-        memset(data3,0,sizeof(data3));
-        snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
-        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
-        memcpy(data2+strlen(data2),"\n",sizeof(char));
-        memset(data3,0,sizeof(data3));
-        strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
-        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
-        color_print(data2,"green");
-      }
       
       for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
       {

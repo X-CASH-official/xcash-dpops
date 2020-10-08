@@ -56,8 +56,8 @@ Functions
 int start_new_round(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t count;
@@ -582,7 +582,7 @@ Return: 0 if an error has occured, 1 if successfull
 int block_verifiers_create_VRF_secret_key_and_VRF_public_key(char* message)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   size_t count;
   size_t counter;
 
@@ -660,8 +660,8 @@ Return: 0 if an error has occured, 1 if successfull
 int block_verifiers_create_VRF_data(void)
 {
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
   size_t count;
   size_t count2;
   size_t counter;
@@ -697,9 +697,7 @@ int block_verifiers_create_VRF_data(void)
   {
     snprintf(VRF_data.vrf_alpha_string_data+count,BUFFER_SIZE-1,"%02x",VRF_data.vrf_alpha_string[count2] & 0xFF);
   }
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
+  
   crypto_hash_sha512((unsigned char*)data,(const unsigned char*)VRF_data.vrf_alpha_string_data,strlen(VRF_data.vrf_alpha_string_data));
 
   // convert the SHA512 data hash to a string
@@ -720,7 +718,7 @@ int block_verifiers_create_VRF_data(void)
        This is so block verifiers in specific spots do not have more of a chance to be the block producer than others
        The goal is to use as many bytes as possible, since the more unused bytes, the more chance that it will run out of bytes when selecting the block producer
     */
-    if (counter != 0 && counter <= 250)
+    if (counter >= MINIMUM_BYTE_RANGE && counter <= MAXIMUM_BYTE_RANGE)
     {
       counter = counter % BLOCK_VERIFIERS_AMOUNT;
 
@@ -994,8 +992,8 @@ int block_verifiers_create_vote_results(char* message)
 {
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
   size_t count;
   size_t count2;
 
@@ -1649,8 +1647,8 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 
   // Variables
   char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int epoll_fd_copy;
@@ -1805,25 +1803,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   {
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
-      // send the message  
-      if (debug_settings == 1 && test_settings == 0)
-      {  
-        memset(data2,0,sizeof(data2));   
-        memcpy(data2,"Sending ",8);
-        memcpy(data2+8,&data[25],strlen(data) - strlen(strstr(data,"\",\r\n")) - 25);
-        memcpy(data2+strlen(data2),"\n",sizeof(char));
-        memcpy(data2+strlen(data2),block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data2)));
-        memcpy(data2+strlen(data2)," on port ",9);
-        memset(data3,0,sizeof(data3));
-        snprintf(data3,sizeof(data3)-1,"%d",SEND_DATA_PORT);
-        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
-        memcpy(data2+strlen(data2),"\n",sizeof(char));
-        memset(data3,0,sizeof(data3));
-        strftime(data3,sizeof(data3),"%a %d %b %Y %H:%M:%S UTC\n",&current_UTC_date_and_time);
-        memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data3)));
-        color_print(data2,"green");
-      }
-      
       for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)

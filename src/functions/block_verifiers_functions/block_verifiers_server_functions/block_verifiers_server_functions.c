@@ -113,12 +113,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
   memset(reserve_proof,0,sizeof(reserve_proof));
   memset(data3,0,sizeof(data3));
 
-  // verify the message
-  if (verify_data(MESSAGE,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS_ERROR("Could not verify the message");
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"public_address_that_created_the_reserve_proof",block_verifiers_public_address,sizeof(block_verifiers_public_address)) == 0 || strlen(block_verifiers_public_address) != XCASH_WALLET_LENGTH || strncmp(block_verifiers_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"reserve_proof",reserve_proof,sizeof(reserve_proof)) == 0)
   {
@@ -235,12 +229,6 @@ void server_receive_data_socket_main_network_data_node_to_block_verifier_start_b
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  // verify the message
-  if (verify_data(MESSAGE,0) == 0)
-  {   
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not verify the message");
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"database_data",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
   {
@@ -267,151 +255,6 @@ void server_receive_data_socket_main_network_data_node_to_block_verifier_start_b
   return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block
-Description: Runs the code when the server receives the MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK message
-Parameters:
-  MESSAGE - The message
------------------------------------------------------------------------------------------------------------
-*/
-
-void server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block(const char* MESSAGE)
-{
-  // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-
-  // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK(settings) \
-  if (debug_settings == 1) \
-  { \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block",84); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  } \
-  return;
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-
-  // verify the data
-  if (verify_data(MESSAGE,1) == 0 || strncmp(current_round_part_backup_node,"1",1) != 0 || main_network_data_node_create_block != 1)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not verify data");
-  }
-
-  main_network_data_node_receive_block = 1;
-
-  // parse the message
-  if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not parse the data");
-  }
-
-  // make sure the message is coming from the main network data node
-  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH) != 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Invalid message");
-  }
-
-  memset(data2,0,sizeof(data2));
-
-  // sign the network block string
-  if (sign_network_block_string(data2,data) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not sign the network block string");
-  }
-
-  // create the message
-  memset(data,0,strlen(data));
-  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK\",\r\n \"block_blob_signature\": \"",113);
-  memcpy(data+113,data2,strnlen(data2,sizeof(data)));
-  memcpy(data+strlen(data),"\",\r\n}",5);
-
-  // sign_data
-  if (sign_data(data) == 0)
-  { 
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK("Could not sign_data");
-  }
-  
-  // send the network block signature to the main network data node
-  send_data_socket(network_data_nodes_list.network_data_nodes_IP_address[backup_network_data_node_settings],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
-  return;
-  
-  #undef SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_CREATE_NEW_BLOCK
-}
-
-
-
-/*
------------------------------------------------------------------------------------------------------------
-Name: server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block
-Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK message
-Parameters:
-  MESSAGE - The message
------------------------------------------------------------------------------------------------------------
-*/
-
-void server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block(const char* MESSAGE)
-{
-  // Variables
-  char data[VRF_PROOF_LENGTH+VRF_BETA_LENGTH+1];
-  char data2[XCASH_WALLET_LENGTH+1];
-  int count;
-
-  // define macros
-  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK(settings) \
-  if (debug_settings == 1) \
-  { \
-  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block",84); \
-  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
-  error_message.total++; \
-  } \
-  return;
-
-  memset(data,0,sizeof(data));
-  memset(data2,0,sizeof(data2));
-
-  // verify the data
-  if (verify_data(MESSAGE,1) == 0 || strncmp(current_round_part_backup_node,"1",1) != 0 || main_network_data_node_create_block != 1)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK("Could not verify data");
-  }
-
-  // parse the message
-  if (parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_PROOF_LENGTH+VRF_BETA_LENGTH || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK("Could not parse the data");
-  }
-
-  // process the vote data
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
-    {
-      memcpy(VRF_data.block_blob_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
-    }
-  } 
-
-  // add the block verifiers signature to the network block string
-  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
-  {
-    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0)
-    {
-      memset(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],0,strlen(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count]));
-      memset(VRF_data.block_blob_signature[count],0,strlen(VRF_data.block_blob_signature[count]));
-      memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
-      memcpy(VRF_data.block_blob_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
-    }
-  }
-  return;
-  
-  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIER_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK
 }
 
 
@@ -445,12 +288,6 @@ void server_receive_data_socket_main_node_to_node_message_part_4(const char* MES
   memset(data2,0,sizeof(data2));
 
   memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
-
-  // verify the data
-  if (verify_data(MESSAGE,1) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_MAIN_NODE_TO_NODE_MESSAGE_PART_4_ERROR("Could not verify data");
-  }
   
   // parse the message
   if (parse_json_data(MESSAGE,"block_blob",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
@@ -503,12 +340,6 @@ void server_receive_data_socket_node_to_node(const char* MESSAGE)
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  // verify the data
-  if (verify_data(MESSAGE,1) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_ERROR("Could not verify data");
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"vote_settings",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"vote_data",data2,sizeof(data2)) == 0 || strlen(data2) != DATA_HASH_LENGTH)
   {
@@ -549,7 +380,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(cons
   char vrf_secret_key_data[VRF_SECRET_KEY_LENGTH+1];
   char vrf_public_key_data[VRF_PUBLIC_KEY_LENGTH+1];
   char random_data[RANDOM_STRING_LENGTH+1];
-  char data[BUFFER_SIZE];
+  char data[MAXIMUM_NUMBER_SIZE];
   unsigned char vrf_public_key[crypto_vrf_PUBLICKEYBYTES];
   unsigned char vrf_secret_key[crypto_vrf_SECRETKEYBYTES];
   int count;
@@ -572,12 +403,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(cons
   memset(data,0,sizeof(data));  
   memset(vrf_public_key,0,sizeof(vrf_public_key));
   memset(vrf_secret_key,0,sizeof(vrf_secret_key));
-
-  // verify the data
-  if (verify_data(MESSAGE,1) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA_ERROR("Could not verify data");
-  }
 
   // parse the message
   if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || strlen(public_address) != XCASH_WALLET_LENGTH || strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"vrf_secret_key",vrf_secret_key_data,sizeof(vrf_secret_key_data)) == 0 || strlen(vrf_secret_key_data) != VRF_SECRET_KEY_LENGTH || parse_json_data(MESSAGE,"vrf_public_key",vrf_public_key_data,sizeof(vrf_public_key_data)) == 0 || strlen(vrf_public_key_data) != VRF_PUBLIC_KEY_LENGTH || parse_json_data(MESSAGE,"random_data",random_data,sizeof(random_data)) == 0 || strlen(random_data) != RANDOM_STRING_LENGTH)
@@ -648,12 +473,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_si
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
-
-  // verify the data
-  if (verify_data(MESSAGE,1) == 0)
-  {
-    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR("Could not verify data");
-  }
 
   // parse the message
   if (parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_PROOF_LENGTH+VRF_BETA_LENGTH || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)

@@ -39,7 +39,7 @@ Return: 1 if successfull, otherwise 0
 int varint_encode(long long int number, char *result, const size_t RESULT_TOTAL_LENGTH)
 {
   // Variables
-  char data[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   size_t length;
   size_t count = 0;
   size_t count2 = 0;

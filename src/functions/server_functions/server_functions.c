@@ -303,7 +303,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
   if (SETTINGS == 1 || SETTINGS == 2)
   {
     // verify the message
-    if ((SETTINGS == 1 && verify_data(MESSAGE,0) == 0) || (SETTINGS == 2 && verify_data(MESSAGE,0) == 0))
+    if (verify_data(MESSAGE,0) == 0)
     { 
       return 0;
     }
@@ -441,9 +441,8 @@ void socket_thread(const int CLIENT_SOCKET)
 
   // Variables
   char* buffer = (char*)calloc(MAXIMUM_AMOUNT+1,sizeof(char));
-  char buffer2[BUFFER_SIZE];
+  char buffer2[MAXIMUM_NUMBER_SIZE];
   char data2[BUFFER_SIZE];
-  char message[BUFFER_SIZE];
   char client_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -452,7 +451,6 @@ void socket_thread(const int CLIENT_SOCKET)
   
   memset(buffer2,0,sizeof(buffer2));
   memset(data2,0,sizeof(data2));
-  memset(message,0,sizeof(message));
   memset(client_IP_address,0,sizeof(client_IP_address));
 
   // convert the port to a string
@@ -646,14 +644,6 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE\"") != NULL)
- {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
-   {
-     server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update(CLIENT_SOCKET);
-     server_limit_public_addresses(3,(const char*)buffer);
-   }
- }
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\"") != NULL || strstr(buffer,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH|") != NULL)
  {
    if ((strstr(buffer,"|") != NULL && server_limit_public_addresses(2,(const char*)buffer) == 1) || (strstr(buffer,"|") == NULL && server_limit_IP_addresses(1,(const char*)client_IP_address) == 1))
@@ -785,22 +775,6 @@ void socket_thread(const int CLIENT_SOCKET)
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
      server_receive_data_socket_main_network_data_node_to_block_verifier_start_block((const char*)buffer);
-     server_limit_public_addresses(3,(const char*)buffer);
-   }
- } 
- else if (strstr(buffer,"\"message_settings\": \"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK\"") != NULL)
- {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
-   {
-     server_receive_data_socket_main_network_data_node_to_block_verifier_create_new_block((const char*)buffer);
-     server_limit_public_addresses(3,(const char*)buffer);
-   }
- } 
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_MAIN_NETWORK_DATA_NODE_CREATE_NEW_BLOCK\"") != NULL)
- {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
-   {
-     server_receive_data_socket_block_verifier_to_main_network_data_node_create_new_block((const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }

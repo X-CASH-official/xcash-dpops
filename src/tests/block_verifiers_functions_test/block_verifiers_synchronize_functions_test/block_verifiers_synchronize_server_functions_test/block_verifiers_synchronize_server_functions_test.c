@@ -98,23 +98,6 @@ int block_verifiers_synchronize_server_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_TEST_DATA);
-  
-  memset(result_test,0,sizeof(result_test));
-  memset(data_test,0,sizeof(data_test));
-  delete_database(database_name);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
-  RESET_ERROR_MESSAGES;
-  memcpy(data_test,SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA,sizeof(SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_TEST_DATA)-1);
-  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strstr(result_test,RESERVE_BYTES_SYNC_CHECK_ALL_UPDATE_TEST_DATA) != NULL)
-  {
-    color_print("PASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_reserve_bytes_database_sync_check_all_update","red");
-  }
-  RESET_ERROR_MESSAGES;
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));

@@ -269,3 +269,90 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
   #undef database_reset_all
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: get_database_collection_size
+Description: Gets the database collection size
+Parameters:
+  DATABASE - The database name
+  COLLECTION - The collection name. If reserve_proofs or reserve_bytes without a number it will get a database hash of all of the reserve_proofs or reserve_bytes
+Return: 0 if an error has occured, otherwise the database collection size in bytes
+-----------------------------------------------------------------------------------------------------------
+*/
+
+size_t get_database_collection_size(const char* DATABASE, const char* COLLECTION)
+{
+  if (check_if_database_collection_exist(DATABASE,COLLECTION) == 0)
+  {
+    return 0;
+  }
+
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char* message;
+  char* message2;
+  char* message3;
+  size_t count;
+  mongoc_client_t* database_client_thread = NULL;
+  mongoc_collection_t* collection;
+  bson_error_t error;
+  bson_t* command;
+  bson_t document;
+
+  // define macros
+  #define database_reset_all \
+  bson_destroy(command); \
+  bson_destroy(&document); \
+  mongoc_collection_destroy(collection); \
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
+  {
+    return 0;
+  }
+
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
+  
+  command = BCON_NEW("collStats",BCON_UTF8(COLLECTION));
+
+  if (!command)
+  {
+    database_reset_all;
+    return 0;
+  }
+
+  if (!mongoc_collection_command_simple(collection, command, NULL, &document, &error))
+  {
+    database_reset_all;
+    return 0;
+  }
+
+  if ((message = bson_as_json(&document, NULL)) == NULL)
+  {
+    database_reset_all;
+    return 0;
+  }
+  
+  memcpy(data,message,strnlen(message,sizeof(data)));
+  bson_free(message);
+
+  message2 = strstr(data,"\"size\"");
+  message3 = strstr(message2,",");
+  memcpy(data2,&message2[9],(strlen(message2) - strlen(message3)) - 9);
+  
+  sscanf(data2, "%zu", &count);
+
+  database_reset_all;  
+  return count;
+
+  #undef database_reset_all
+}
