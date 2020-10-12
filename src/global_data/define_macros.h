@@ -79,8 +79,8 @@ Using define statements instead of constants for increased efficiency
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
 #define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 10 // the start time in seconds that the block verifiers synchronize the database each round
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 5 // The time to submit the network block
-#define START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2 10 // the start time of part 2 of the invalid reserve proofs
-#define START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3 25 // the start time of part 3 of the invalid reserve proofs
+#define START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2 20 // the start time of part 2 of the invalid reserve proofs
+#define START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3 35 // the start time of part 3 of the invalid reserve proofs
 #define INVALID_RESERVE_PROOFS_SETTINGS 5 // The amount of times to check if a received reserve proof is invalid
 #define MAXIMUM_NUMBER_SIZE 20 // The maximum amount of bytes a number could take up in X-CASH
 #define MINIMUM_BYTE_RANGE 1 // The minimum byte range to use when calculating the next block producer
