@@ -1288,6 +1288,12 @@ int main(int parameters_count, char* parameters[])
   // check if the block verifier is a network data node
   CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE; 
 
+  // check if the wallets public address is loaded
+  if (network_data_node_settings == 0 && strlen(xcash_wallet_public_address) != XCASH_WALLET_LENGTH)
+  {
+    MAIN_ERROR("Could not get the wallets public address");
+  }
+
   // only network data nodes can use the registration mode
   if (registration_settings == 1 && network_data_node_settings == 0)
   {
