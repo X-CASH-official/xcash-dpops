@@ -296,6 +296,7 @@ SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_D
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${XCASH_DPOPS_DIR}'/$XCASH_DPOPS_DIR}"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${BLOCK_VERIFIER_SECRET_KEY}'/$BLOCK_VERIFIER_SECRET_KEY}"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${BLOCK_VERIFIER_SECRET_KEY}'/$BLOCK_VERIFIER_SECRET_KEY}"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${DPOPS_FEE}'/$DPOPS_FEE}"
 SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE="${SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE//'${DPOPS_MINIMUM_AMOUNT}'/$DPOPS_MINIMUM_AMOUNT}"
 
 SYSTEMD_TIMER_FILE_XCASH_DPOPS=$(cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_DPOPS_URL))
@@ -309,7 +310,6 @@ SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${XCASH
 
 SYSTEMD_TIMER_FILE_XCASH_WALLET=$(cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_WALLET_URL))
 
-sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
 }
 
 function setup_lxc_container_profile()
@@ -361,6 +361,14 @@ function get_password()
     sudo echo
   fi
 }
+
+function relogin_user()
+{
+  # This will force profile reload for the current user shell
+  get_password
+  exec sudo su -l $USER
+}
+
 
 function get_block_verifier_key_settings()
 {
@@ -437,6 +445,8 @@ function installation_settings()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}         Welcome to X-Cash DPoPS auto-install script  ${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo -e "${COLOR_PRINT_GREEN}SUGGESTION: if your are running the script through SSH, it's suggested the use of a terminal multiplexer like 'byobu'. You can install it with 'sudo apt install byobu' and then enter the session with 'byobu' command. If your SSH connection crashes you can reconnect to your byobu session using the same command. Please consider running this script inside the byobu session to prevent corrupted installations due to SSH disconnection.${END_COLOR_PRINT}"
   echo
   echo -e "${COLOR_PRINT_YELLOW}The available options of the script are:${END_COLOR_PRINT}"
   echo
@@ -1247,7 +1257,8 @@ function update_packages()
 
 function set_installation_dir_owner()
 {
-  sudo chown -R "$USER":"$USER" ${XCASH_DPOPS_INSTALLATION_DIR}
+  sudo chown -R "$USER":"$USER" ${XCASH_DPOPS_INSTALLATION_DIR} 2&> /dev/null
+  sudo chown -R "$USER":"$USER" ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} 2&> /dev/null
 }
 
 function update_xcash()
@@ -1560,6 +1571,12 @@ function install()
   echo
   echo
   echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
+  echo
+  echo -e "${COLOR_PRINT_YELLOW}Please make sure to save the above information in a secure place and press enter when done${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  relogin_user
 }
 
 
@@ -1627,6 +1644,11 @@ function configure()
   echo
   echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
   echo
+  echo -e "${COLOR_PRINT_YELLOW}Please make sure to save the above information in a secure place and press enter when done${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  relogin_user
 }
 
 function update()
@@ -1793,6 +1815,12 @@ function uninstall()
   echo
   echo
   echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
+  echo
+  echo -e "${COLOR_PRINT_YELLOW}Please make sure to save (if needed) the above information in a secure place and press enter when done${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+  relogin_user
 }
 
 
@@ -2105,11 +2133,13 @@ function install_or_update_blockchain()
   if [ $XCASH_BLOCKCHAIN_INSTALLATION_DIR = "/" ]; then
     XCASH_BLOCKCHAIN_INSTALLATION_DIR="${HOME}/.X-CASH/"
   fi
+  # Install 7z and wget if not already installed
+  sudo apt install -y p7zip-full wget &>/dev/null
   cd && test -f xcash-blockchain.7z && sudo rm -rf xcash-blockchain.7z*
   echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
   wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
   echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
-  7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
+  7z x xcash-blockchain.7z -bso0 -bse0 -o ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cp -a .X-CASH/* ./
   sudo rm -r .X-CASH
@@ -2128,7 +2158,7 @@ function install_blockchain()
     echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
     wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
     echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
-    7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
+    7z x xcash-blockchain.7z -bso0 -bse0 -o ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cp -a .X-CASH/* ./
     sudo rm -r .X-CASH
