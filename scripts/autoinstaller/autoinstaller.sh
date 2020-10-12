@@ -2139,7 +2139,7 @@ function install_or_update_blockchain()
   echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
   wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
   echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
-  7z x xcash-blockchain.7z -bso0 -bse0 -o ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
+  7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
   cp -a .X-CASH/* ./
   sudo rm -r .X-CASH
@@ -2158,7 +2158,7 @@ function install_blockchain()
     echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
     wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
     echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
-    7z x xcash-blockchain.7z -bso0 -bse0 -o ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
+    7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cd ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}
     cp -a .X-CASH/* ./
     sudo rm -r .X-CASH
