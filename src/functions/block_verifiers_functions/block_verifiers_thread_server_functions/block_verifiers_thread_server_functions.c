@@ -854,6 +854,8 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
       sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2);
 
+      /* disable this part for now
+
       color_print("Part 2 - Send all invalid reserve proofs to all block verifiers","yellow");
 
       // create the data to send to the block verifiers
@@ -884,7 +886,9 @@ void* check_reserve_proofs_timer_thread(void* parameters)
         RESET_INVALID_RESERVE_PROOFS_DATA;
       }      
 
-      color_print("Part 4 - Remove the invalid reserve proofs from the database","yellow");
+      color_print("Part 4 - Remove the invalid reserve proofs from the database","yellow");*/
+
+      color_print("Part 2 - Remove the invalid reserve proofs from the database","yellow");
 
       // update the database
       check_reserve_proofs_timer_update_database();
