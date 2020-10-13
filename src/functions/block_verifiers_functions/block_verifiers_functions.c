@@ -101,7 +101,7 @@ int start_new_round(void)
   memset(data2,0,sizeof(data2));
 
   // get the delegates online status
-  if (registration_settings != 1)
+  if (registration_settings == 0)
   {
     color_print("Getting the delegates online status","blue");
     get_delegates_online_status();
@@ -124,7 +124,7 @@ int start_new_round(void)
   }
   
   // check if it is running in registration mode only
-  if (registration_settings != 1)
+  if (registration_settings == 0)
   {
     memcpy(data,"A new round is starting for block ",34);
     memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
@@ -158,6 +158,15 @@ int start_new_round(void)
     pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
     pthread_detach(thread_id);
     sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS); 
+
+    // check if the start time is 1 hour away
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time.block_height_start_time_hour-1 && abs(current_UTC_date_and_time.tm_min - block_height_start_time.block_height_start_time_minute) <= 5)
+    {
+      color_print("Stoping registration mode","green");
+      registration_settings = 0;
+      return 10;
+    }
     return 2;
   }
 

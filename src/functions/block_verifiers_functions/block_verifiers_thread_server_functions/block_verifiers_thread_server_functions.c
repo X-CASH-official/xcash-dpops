@@ -141,13 +141,22 @@ void* current_block_height_timer_thread(void* parameters)
   (void)parameters;
 
   // wait for the specific start time if the block_height_start_time is on
-  if (block_height_start_time.block_height_start_time == 1)
+  if (block_height_start_time.block_height_start_time == 1 && registration_settings == 0)
   {
+    start_time:
     color_print("Waiting for the specific start time","yellow");
     do
     {
       get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
       nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);  
+
+      // check if it is 30 minutes before the start time and restart, this way non network data nodes get an up to date copy of the database
+      if (network_data_node_settings == 0 && current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time.block_height_start_time_hour && block_height_start_time.block_height_start_time_minute - current_UTC_date_and_time.tm_min == 30)
+      {
+        sleep(60);
+        color_print("Restarting to get a up to date copy of the database","green");
+        exit(0);
+      }
     } while (current_UTC_date_and_time.tm_mon != block_height_start_time.block_height_start_time_month || current_UTC_date_and_time.tm_mday != block_height_start_time.block_height_start_time_day || current_UTC_date_and_time.tm_hour != block_height_start_time.block_height_start_time_hour || current_UTC_date_and_time.tm_min != block_height_start_time.block_height_start_time_minute);
   }
   
@@ -181,6 +190,10 @@ void* current_block_height_timer_thread(void* parameters)
           memcpy(data+56,current_block_height,strnlen(current_block_height,sizeof(data)));
           color_print(data,"red");
         }
+        else if (block_verifier_settings == 10)
+        {
+          goto start_time;
+        }
         else
         {
           if (registration_settings == 0)
@@ -212,6 +225,10 @@ void* current_block_height_timer_thread(void* parameters)
         memcpy(data,"Your delegate is not a block verifier for network block ",56);
         memcpy(data+56,current_block_height,strnlen(current_block_height,sizeof(data)));
         color_print(data,"red");
+      }
+      else if (block_verifier_settings == 10)
+      {
+        goto start_time;
       }
       else
       {
@@ -859,7 +876,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       // process the vote results
       if ((registration_settings == 0 && current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT) || (registration_settings == 1 && current_round_part_vote_data.vote_results_valid >= NETWORK_DATA_NODES_VALID_AMOUNT))
       {
-        fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+        registration_settings == 0 ? fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT) : fprintf(stderr,"\033[1;32m%d / %d network data nodes have the same invalid reserve proofs\033[0m\n\n",current_round_part_vote_data.vote_results_valid,NETWORK_DATA_NODES_VALID_AMOUNT);
       }
       else
       {

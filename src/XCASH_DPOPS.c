@@ -493,7 +493,7 @@ void get_delegates_data(void)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
-  return
+  return;
 
   memset(data,0,sizeof(data));
 
@@ -821,10 +821,12 @@ int set_parameters(int parameters_count, char* parameters[])
     if (strncmp(parameters[count],"--registration-mode",BUFFER_SIZE) == 0)
     {
       registration_settings = 1;
+      goto start_time;
       return 3;
     }
     if (strncmp(parameters[count],"--start-time",BUFFER_SIZE) == 0)
     {
+      start_time:
       sscanf(parameters[count+1], "%d", &block_height_start_time.block_height_start_time_month);
       sscanf(parameters[count+2], "%d", &block_height_start_time.block_height_start_time_day);
       sscanf(parameters[count+3], "%d", &block_height_start_time.block_height_start_time_hour);
@@ -834,6 +836,7 @@ int set_parameters(int parameters_count, char* parameters[])
       get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
       if ((current_UTC_date_and_time.tm_mon > block_height_start_time.block_height_start_time_month) || (current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday > block_height_start_time.block_height_start_time_day) || (current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour > block_height_start_time.block_height_start_time_hour) || (current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time.block_height_start_time_hour && current_UTC_date_and_time.tm_min > block_height_start_time.block_height_start_time_minute))
       {
+        registration_settings = 0;
         block_height_start_time.block_height_start_time = 0;
       }
       else
