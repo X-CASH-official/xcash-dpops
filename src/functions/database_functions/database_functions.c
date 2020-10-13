@@ -172,6 +172,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 {
   // Variables
   char data[BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
   char* message;
   char* message2;
   size_t count;
@@ -190,6 +191,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
 
   memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // get a temporary connection
   if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
@@ -223,10 +225,18 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     {
       memcpy(data+strlen(data),"reserve_proofs_",15);
       snprintf(data+strlen(data),sizeof(data)-16,"%zu",count);
-      if (count != TOTAL_RESERVE_PROOFS_DATABASES)
+
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,"reserve_proofs_",15);
+      snprintf(data2+strlen(data2),sizeof(data2)-16,"%zu",count+1);
+      if (check_if_database_collection_exist(database_name,data2) == 1)
       {
         memcpy(data+strlen(data),",",sizeof(char));
       }
+      else
+      {
+        break;
+      }      
     }
   }
   else
