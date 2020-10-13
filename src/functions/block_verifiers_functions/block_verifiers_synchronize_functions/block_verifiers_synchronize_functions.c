@@ -106,27 +106,9 @@ void sync_network_data_nodes_database(void)
   // wait so all network data nodes start at the same time, this way one is not reseting the variables as another one is sending them data
   sync_block_verifiers_minutes_and_seconds(0,25);
 
-  // get if the network data node has the previous blocks reserve bytes, because if not this network data node should not be synced from
-  memcpy(data2,"{\"block_height\":\"",17);
-  sscanf(current_block_height, "%zu", &count2);
-  count2--;
-  snprintf(data2+strlen(data2),sizeof(data2)-18,"%zu",count2);
-  memcpy(data2+strlen(data2),"\"}",2);
-  get_reserve_bytes_database(count2,1);
-  memcpy(data,"reserve_bytes_",14);
-  snprintf(data+strlen(data),sizeof(data)-15,"%zu",count2);
-  if (count_documents_in_collection(database_name,data,data2) == 1 && get_current_block_height_network_data_nodes() == 1)
-  {
-    memset(data2,0,sizeof(data2));
-    memcpy(data2,"true",4);
-  }
-  else
-  {
-    memset(data2,0,sizeof(data2));
-    memcpy(data2,"false",5);
-  }
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"true",4);
   memset(data,0,sizeof(data));
-
 
   // get the data and send it to the other network data nodes
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
