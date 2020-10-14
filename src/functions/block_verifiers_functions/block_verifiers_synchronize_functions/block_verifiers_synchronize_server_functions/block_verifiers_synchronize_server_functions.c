@@ -301,14 +301,14 @@ Parameters:
 void server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check(const char* MESSAGE)
 {
   // Variables
-  char data_hash[DATA_HASH_LENGTH+1];
+  char data_hash[DATABASE_TOTAL][DATA_HASH_LENGTH+1];
   char public_address[XCASH_WALLET_LENGTH+1];
   char data[SMALL_BUFFER_SIZE];
   int count;
+  int count2;
 
   // define macros
   #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR(settings) \
-  color_print(settings,"red"); \
   if (debug_settings == 1) \
   { \
   memcpy(error_message.function[error_message.total],"server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",87); \
@@ -318,14 +318,28 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
   return;
 
   memset(data,0,sizeof(data));
-  memset(data_hash,0,sizeof(data_hash));
   memset(public_address,0,sizeof(public_address));
 
-  // parse the message
-  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash",data_hash,DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"previous_blocks_reserve_bytes",data,sizeof(data)) == 0)
+  for (count = 0; count < DATABASE_TOTAL; count++)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
+    memset(data_hash[count],0,sizeof(data_hash[count]));
   }
+
+  // parse the message
+  if (registration_settings == 0)
+  {
+    if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash_reserve_proofs",data_hash[0],DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"data_hash_reserve_bytes",data_hash[1],DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"data_hash_delegates",data_hash[2],DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"data_hash_statistics",data_hash[3],DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"previous_blocks_reserve_bytes",data,sizeof(data)) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
+    }
+  }
+  else
+  {
+    if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash",data_hash[0],DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"previous_blocks_reserve_bytes",data,sizeof(data)) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_ERROR("Could not parse the message");
+    }
+  }  
 
   if (registration_settings == 0)
   {
@@ -333,8 +347,11 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
     {
       if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,BUFFER_SIZE) == 0)
       {
-        memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count]));
-        memcpy(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count],data_hash,DATA_HASH_LENGTH);
+        for (count2 = 0; count2 < DATABASE_TOTAL; count2++)
+        {
+          memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count]));
+          memcpy(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],data_hash[count2],DATA_HASH_LENGTH);
+        }
         block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
       }
     }
@@ -346,7 +363,7 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
       if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],public_address,BUFFER_SIZE) == 0)
       {
         memset(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count]));
-        memcpy(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],data_hash,DATA_HASH_LENGTH);
+        memcpy(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],data_hash[0],DATA_HASH_LENGTH);
         network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings[count] = strncmp(data,"true",BUFFER_SIZE) == 0 ? 1 : 0;
       }
     }

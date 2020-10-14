@@ -104,6 +104,7 @@ int test_settings; // 1 when the test are running, 0 if not
 int debug_settings; // 1 to show all incoming and outgoing message from the server
 int registration_settings; // 1 when the registration mode is running, 0 when it is not
 int synced_network_data_nodes[BLOCK_VERIFIERS_AMOUNT]; // the synced network data nodes
+int synced_block_verifiers_nodes[DATABASE_TOTAL][BLOCK_VERIFIERS_AMOUNT]; // the synced block verifiers nodes
 size_t block_verifiers_current_block_height[BLOCK_VERIFIERS_AMOUNT]; // holds the block verifiers current block heights
 int production_settings; // 0 for production, 1 for test
 int production_settings_database_data_settings; // The initialize the database settings

@@ -1337,7 +1337,10 @@ memset(data_test,0,sizeof(data_test));
   The purpose of this message is for the network data nodes to get the database data hash from the other network data nodes to check if there is a majority
  
   message_settings - The type of the message
-  data_hash - The data hash of the database
+  data_hash_reserve_proofs - The data hash of the reserve proofs database
+  data_hash_reserve_bytes - The data hash of the reserve bytes database
+  data_hash_delegates - The data hash of the delegates database
+  data_hash_statistics - The data hash of the statistics database
   previous_blocks_reserve_bytes - true if the network data node has the previous blocks reserve bytes, false if not
   public_address - The public address of the node that is sending the data.
   previous_block_hash - The previous block hash.
@@ -1346,7 +1349,7 @@ memset(data_test,0,sizeof(data_test));
   data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
   XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
   */
-  #define NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK "{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"previous_blocks_reserve_bytes\": \"true\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+  #define NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK "{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\",\r\n \"data_hash_reserve_proofs\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"data_hash_reserve_bytes\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"data_hash_delegates\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"data_hash_statistics\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"previous_blocks_reserve_bytes\": \"true\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
  
 
  

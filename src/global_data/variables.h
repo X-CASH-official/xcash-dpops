@@ -76,6 +76,7 @@ extern int test_settings; // 1 when the test are running, 0 if not
 extern int debug_settings; // 1 to show all incoming and outgoing message from the server
 extern int registration_settings; // 1 when the registration mode is running, 0 when it is not
 extern int synced_network_data_nodes[BLOCK_VERIFIERS_AMOUNT]; // the synced network data nodes
+extern int synced_block_verifiers_nodes[DATABASE_TOTAL][BLOCK_VERIFIERS_AMOUNT]; // the synced block verifiers nodes
 extern size_t block_verifiers_current_block_height[BLOCK_VERIFIERS_AMOUNT]; // holds the block verifiers current block heights
 extern int production_settings; // 1 for production, 0 for test
 extern int production_settings_database_data_settings; // The initialize the database settings

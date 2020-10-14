@@ -146,6 +146,7 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_NAME_DELEGATES "XCASH_PROOF_OF_STAKE_DELEGATES" // The name of the database for the delegates
 #define DATABASE_EMPTY_STRING "empty_database_collection" // The database data to give when the database collection is empty
 #define MAXIMUM_DATABASE_WRITE_SIZE 48000000 // The maximum database write size
+#define DATABASE_TOTAL 4 // The amount of databases
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
 #define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The reserve bytes database fields
 #define TOTAL_RESERVE_PROOFS_DATABASE_FIELDS 4 // The reserve proofs database fields
@@ -738,8 +739,8 @@ sleep(BLOCK_VERIFIERS_SETTINGS);
 "--synchronize-database-from-network-data-node - Synchronize the database from a network data node.\n" \
 "--synchronize-database-from-specific-delegate <delegates_IP_address> - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nShould only be used in specific circumstances.\n" \
 "--disable-synchronizing-databases-and-starting-timers - Disables synchronizing the databases and starting the timers. Used for testing. Parameter needs to be passed last.\n" \
-"--registration-mode - Runs the registration mode only. Parameter needs to be passed last.\n" \
-"--start-time <month> <day> <hour> <minute> - Starts the current block height timer at a specific time. <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (0-23), <minute> is the minute (0-59)\n" \
+"--registration-mode <month> <day> <hour> <minute> - Runs the registration mode for network data nodes. Used to keep a majority for the database before the block producing starts <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (1-23), <minute> is the minute (31-59). Parameter needs to be passed last.\n" \
+"--start-time <month> <day> <hour> <minute> - Starts the current block height timer at a specific time. <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (1-23), <minute> is the minute (31-59). Parameter needs to be passed last.\n" \
 "--test-data-add - Add test data to the databases.\n" \
 "--test-data-remove - Remove test data from the databases.\n"
 #endif

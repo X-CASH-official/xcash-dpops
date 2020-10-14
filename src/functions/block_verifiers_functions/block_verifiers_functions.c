@@ -213,7 +213,7 @@ int start_new_round(void)
     }
 
     // all block verifiers will sync and make sure they have the same database
-    color_print("\nChecking to make sure all block verifiers databases are synced","blue");
+    color_print("\nChecking to make sure all block verifiers databases are synced\n","blue");
     sync_block_verifiers_database();
 
     // wait for all block verifiers to sync

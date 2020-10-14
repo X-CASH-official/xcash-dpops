@@ -11,7 +11,7 @@ void sync_network_data_nodes_database(void);
 void sync_block_verifiers_database(void);
 int sync_all_block_verifiers_list(const int SETTINGS, const int NETWORK_DATA_NODES_ONLINE_SETTINGS);
 int get_synced_block_verifiers(void);
-void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES_IP_ADDRESS, char *block_verifiers_ip_address);
+void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES_IP_ADDRESS, char *block_verifiers_ip_address, const int DATABASE_SETTINGS);
 int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const char* BLOCK_VERIFIERS_IP_ADDRESS);
 int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const char* BLOCK_VERIFIERS_IP_ADDRESS, size_t starting_reserve_bytes_database, const size_t CURRENT_RESERVE_BYTES_DATABASE);
 int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS);
