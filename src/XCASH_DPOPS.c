@@ -1315,15 +1315,15 @@ int main(int parameters_count, char* parameters[])
   {
     MAIN_ERROR("Could not start the server");
   }
-
-  // wait until the blockchain is fully synced
-  color_print("Checking if the blockchain is fully synced","yellow"); 
   
+  /*// wait until the blockchain is fully synced
+  color_print("Checking if the blockchain is fully synced","yellow");
+
   while (check_if_blockchain_is_fully_synced() == 0)
   {
     color_print("The blockchain is not fully synced.\nWaiting until it is fully synced to continue (This might take a while)","yellow"); 
     sleep(60);
-  }
+  }*/
 
   if (settings != 2)
   {
