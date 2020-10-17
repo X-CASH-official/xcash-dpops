@@ -2128,6 +2128,15 @@ function install_firewall_script_shared_delegates()
 function install_or_update_blockchain()
 {
   echo -e "${COLOR_PRINT_GREEN}Installing / Updating The BlockChain (This Might Take a While, please follow the progress)${END_COLOR_PRINT}"
+
+  # wait for the blockchain file to be created
+  hour=$(date +"%H")
+  while [ $hour == 0 ]
+  do
+    sleep 60s
+    hour=$(date +"%H")
+  done
+
   cd $HOME
   XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name ".X-CASH" -print)/
   if [ $XCASH_BLOCKCHAIN_INSTALLATION_DIR = "/" ]; then
@@ -2153,6 +2162,15 @@ function install_blockchain()
 {
   if [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} ] || [ ! -d ${XCASH_BLOCKCHAIN_INSTALLATION_DIR}lmdb/ ]; then
     echo -e "${COLOR_PRINT_GREEN}Installing The BlockChain (This Might Take a While, please follow the progress)${END_COLOR_PRINT}"
+    
+    # wait for the blockchain file to be created
+    hour=$(date +"%H")
+    while [ $hour == 0 ]
+    do
+      sleep 60s
+      hour=$(date +"%H")
+    done
+
     cd $HOME
     cd && test -f xcash-blockchain.7z && sudo rm -rf xcash-blockchain.7z*
     echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
