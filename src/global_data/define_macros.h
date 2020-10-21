@@ -92,6 +92,7 @@ Using define statements instead of constants for increased efficiency
 #define SEND_DATA_PORT 18283 // The port that is used by all nodes to send and receive data
 #define MAXIMUM_CONNECTIONS 1000 // The maximum connections a node can have at one time
 #define MAXIMUM_CONNECTIONS_IP_ADDRESS_OR_PUBLIC_ADDRESS 20 // The maximum connections a specific IP address or specific public address can have at one time
+#define MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS 15 // The maximum database sync connections attempts
 #define BLOCK_VERIFIERS_SETTINGS 3 // The time in seconds to wait to send data to the block verifiers
 #define MAIN_NETWORK_DATA_NODE_SEND_BLOCK_SETTINGS 10 // The time in seconds that the main network data node waits for the block verifiers signatures
 #define NETWORK_DATA_NODES_SYNCHRONIZE_DATABASE_SETTINGS 15 // the time in seconds that the network data nodes wait to see if the database is synced

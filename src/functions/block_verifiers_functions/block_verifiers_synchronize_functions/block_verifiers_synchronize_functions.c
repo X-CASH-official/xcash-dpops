@@ -1320,37 +1320,24 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   char database_data[BUFFER_SIZE];
   char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   int count;
-  int reset_count = 0;
+  int reset_count = 1;
   
   // define macros
-  #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0 || (strncmp(DELEGATES_IP_ADDRESS,"",1) != 0 && strncmp(DELEGATES_IP_ADDRESS,SYNCED_BLOCK_VERIFIER_STRING,1) != 0)) \
+  #define SYNC_RESERVE_PROOFS_DATABASE_ERROR(message) \
+  memset(data,0,strlen(data)); \
+  memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
+  memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+  memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
+  color_print(data,"red"); \
+  if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
   { \
-    memcpy(error_message.function[error_message.total],"sync_reserve_proofs_database",28); \
-    memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(error_message.data[error_message.total]+strlen(error_message.data[error_message.total]),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
-    error_message.total++; \
     return 0; \
   } \
   else \
   { \
-    memset(data,0,strlen(data)); \
-    memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
-    color_print(data,"red"); \
-    get_random_network_data_node(settings); \
-    settings += 3; \
-    if (reset_count >= 15) \
-    { \
-      return 0; \
-    } \
-    else \
-    { \
-      reset_count++; \
-      goto start; \
-    } \
-  } 
+    reset_count++; \
+    goto start; \
+  }
 
   start:
 
@@ -1374,7 +1361,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
   if (get_database_data_hash(data,database_name,"reserve_proofs") == 0)
   {
-    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
+    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ");
   }
 
   // create the message
@@ -1395,7 +1382,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
     snprintf(data2+15,sizeof(data2)-16,"%d",count);
     if (get_database_data_hash(data,database_name,data2) == 0)
     {
-      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ",1);
+      SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ");
     }
     memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
     memcpy(data3+strlen(data3),"\",\r\n ",5);
@@ -1405,24 +1392,24 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   // sign_data
   if (sign_data(data3) == 0)
   { 
-    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data",0);
+    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not sign_data");
   }
 
   // connect to the block verifier and get the database data
   if (send_and_receive_data_socket(database_data,sizeof(database_data),block_verifiers_ip_address,SEND_DATA_PORT,data3,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
   {
-    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ",1);
+    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not receive data from ");
   }
 
   if (verify_data(database_data,0) == 0)
   {
-    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not verify data from ",1);
+    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not verify data from ");
   }
 
   // check if the block verifier needs to sync any of the reserve proof databases and sync them if needed
   if (sync_check_reserve_proofs_specific_database(database_data,(const char*)block_verifiers_ip_address) == 0)
   {
-    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not check if any of the specific databases needed to be synced, from ",1);
+    SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not check if any of the specific databases needed to be synced, from ");
   }
 
   return 1;
@@ -1455,37 +1442,24 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   size_t count;
   size_t count2;
   size_t current_reserve_bytes_database;
-  int reset_count = 0;
+  int reset_count = 1;
   
   // define macros
-  #define SYNC_RESERVE_BYTES_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0 || (strncmp(DELEGATES_IP_ADDRESS,"",1) != 0 && strncmp(DELEGATES_IP_ADDRESS,SYNCED_BLOCK_VERIFIER_STRING,1) != 0)) \
+  #define SYNC_RESERVE_BYTES_DATABASE_ERROR(message) \
+  memset(data,0,strlen(data)); \
+  memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
+  memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+  memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
+  color_print(data,"red"); \
+  if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
   { \
-    memcpy(error_message.function[error_message.total],"sync_reserve_bytes_database",27); \
-    memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(error_message.data[error_message.total]+strlen(error_message.data[error_message.total]),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
-    error_message.total++; \
     return 0; \
   } \
   else \
   { \
-    memset(data,0,strlen(data)); \
-    memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
-    color_print(data,"red"); \
-    get_random_network_data_node(settings); \
-    settings += 3; \
-    if (reset_count >= 15) \
-    { \
-      return 0; \
-    } \
-    else \
-    { \
-      reset_count++; \
-      goto start; \
-    } \
-  } 
+    reset_count++; \
+    goto start; \
+  }
   
   start:
 
@@ -1512,7 +1486,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   }
   if (get_database_data_hash(data,database_name,"reserve_bytes") == 0)
   {
-    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database from ",1);
+    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database from ");
   }
 
   // create the message
@@ -1541,7 +1515,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
     snprintf(data2+14,sizeof(data2)-15,"%zu",count);
     if (get_database_data_hash(data,database_name,data2) == 0)
     {
-      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database from ",1);
+      SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database from ");
     }
     memcpy(data3+strlen(data3),data,DATA_HASH_LENGTH);
     memcpy(data3+strlen(data3),"\",\r\n ",5);
@@ -1551,18 +1525,18 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   // sign_data
   if (sign_data(data3) == 0)
   { 
-    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data",0);
+    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not sign_data");
   }
 
   // connect to the block verifier and get the database data
   if (send_and_receive_data_socket(database_data,sizeof(database_data),block_verifiers_ip_address,SEND_DATA_PORT,data3,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
   {
-    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ",1);
+    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not receive data from ");
   }
 
   if (verify_data(database_data,0) == 0)
   {
-    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not verify data from ",1);
+    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not verify data from ");
   }
 
   count2 = RESERVE_BYTES_START_SETTINGS == 0 ? 1 : current_reserve_bytes_database - 1;
@@ -1575,7 +1549,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   // check if the block verifier needs to sync any of the reserve bytes databases and sync them if needed
   if (sync_check_reserve_bytes_specific_database(database_data,(const char*)block_verifiers_ip_address,count2,current_reserve_bytes_database) == 0)
   {
-    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not check if any of the specific databases needed to be synced, from ",1);
+    SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not check if any of the specific databases needed to be synced, from ");
   }
   return 1;
   
@@ -1605,41 +1579,27 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  int reset_count = 0;
+  int reset_count = 1;
   
   // define macros
   #define DATABASE_COLLECTION "delegates"
   #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
-  #define SYNC_DELEGATES_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0 || (strncmp(DELEGATES_IP_ADDRESS,"",1) != 0 && strncmp(DELEGATES_IP_ADDRESS,SYNCED_BLOCK_VERIFIER_STRING,1) != 0)) \
+  #define SYNC_DELEGATES_DATABASE_ERROR(message) \
+  memset(data,0,strlen(data)); \
+  memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
+  memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+  memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
+  color_print(data,"red"); \
+  if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
   { \
-    memcpy(error_message.function[error_message.total],"sync_delegates_database",23); \
-    memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(error_message.data[error_message.total]+strlen(error_message.data[error_message.total]),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
-    error_message.total++; \
     pointer_reset(data); \
     return 0; \
   } \
   else \
   { \
-    memset(data,0,strlen(data)); \
-    memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
-    color_print(data,"red"); \
-    get_random_network_data_node(settings); \
-    settings += 3; \
-    if (reset_count >= 15) \
-    { \
-      pointer_reset(data); \
-      return 0; \
-    } \
-    else \
-    { \
-      reset_count++; \
-      goto start; \
-    } \
-  } 
+    reset_count++; \
+    goto start; \
+  }
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
@@ -1673,7 +1633,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
   if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
   {
-    SYNC_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database from ",1);
+    SYNC_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database from ");
   }
 
   // create the message
@@ -1683,7 +1643,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   // sign_data
   if (sign_data(data2) == 0)
   { 
-    SYNC_DELEGATES_DATABASE_ERROR("Could not sign_data",0);
+    SYNC_DELEGATES_DATABASE_ERROR("Could not sign_data");
   }     
   memset(data,0,strlen(data));
 
@@ -1693,7 +1653,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
   {
     database_data_socket_settings = 0;
-    SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
+    SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ");
   }
   database_data_socket_settings = 0;
 
@@ -1701,7 +1661,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   memset(data2,0,strlen(data2));
   if (parse_json_data(data,"delegates_database",data2,sizeof(data2)) == 0)
   {
-    SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ",1);
+    SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ");
   }
 
   // delete the collection from the database
@@ -1748,41 +1708,27 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
-  int reset_count = 0;
+  int reset_count = 1;
   
   // define macros
   #define DATABASE_COLLECTION "statistics"
   #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
-  #define SYNC_STATISTICS_DATABASE_ERROR(message,data_settings) \
-  if ((data_settings) == 0 || (strncmp(DELEGATES_IP_ADDRESS,"",1) != 0 && strncmp(DELEGATES_IP_ADDRESS,SYNCED_BLOCK_VERIFIER_STRING,1) != 0)) \
+  #define SYNC_STATISTICS_DATABASE_ERROR(message) \
+  memset(data,0,strlen(data)); \
+  memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
+  memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+  memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
+  color_print(data,"red"); \
+  if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
   { \
-    memcpy(error_message.function[error_message.total],"sync_statistics_database",24); \
-    memcpy(error_message.data[error_message.total],message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(error_message.data[error_message.total]+strlen(error_message.data[error_message.total]),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
-    error_message.total++; \
     pointer_reset(data); \
     return 0; \
   } \
   else \
   { \
-    memset(data,0,strlen(data)); \
-    memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
-    memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
-    memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
-    color_print(data,"red"); \
-    get_random_network_data_node(settings); \
-    settings += 3; \
-    if (reset_count >= 15) \
-    { \
-      pointer_reset(data); \
-      return 0; \
-    } \
-    else \
-    { \
-      reset_count++; \
-      goto start; \
-    } \
-  } 
+    reset_count++; \
+    goto start; \
+  }
 
   // check if the memory needed was allocated on the heap successfully
   if (data == NULL)
@@ -1816,7 +1762,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
   if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
   {
-    SYNC_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database from ",1);
+    SYNC_STATISTICS_DATABASE_ERROR("Could not get the database data hash for the statistics database from ");
   }
 
   // create the message
@@ -1826,7 +1772,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   // sign_data
   if (sign_data(data2) == 0)
   { 
-    SYNC_STATISTICS_DATABASE_ERROR("Could not sign_data",0);
+    SYNC_STATISTICS_DATABASE_ERROR("Could not sign_data");
   }
   memset(data,0,strlen(data));
 
@@ -1836,7 +1782,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 0)
   {
     database_data_socket_settings = 0;
-    SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
+    SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ");
   }
   database_data_socket_settings = 0;
 
@@ -1844,7 +1790,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   memset(data2,0,strlen(data2));
   if (parse_json_data(data,"statistics_database",data2,sizeof(data2)) == 0)
   {
-    SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ",1);
+    SYNC_STATISTICS_DATABASE_ERROR("Could not receive data from ");
   }
 
   // delete the collection from the database
