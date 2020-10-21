@@ -269,6 +269,7 @@ void sync_block_verifiers_database(void)
   size_t count2;
   int database_count;
   int settings = 0;
+  int reset_count = 1;
 
   // define macros
   #define SYNC_BLOCK_VERIFIERS \
@@ -453,7 +454,7 @@ void sync_block_verifiers_database(void)
   }
 
   // check if there is a majority
-  for (database_count = 0; database_count < DATABASE_TOTAL; database_count++)
+  for (database_count = 0, reset_count = 1; database_count < DATABASE_TOTAL; database_count++)
   {
     if (database_count == 0)
     {
@@ -508,9 +509,18 @@ void sync_block_verifiers_database(void)
 
           // check if you received the same database data as the database_data_hash_majority, otherwise sync from a different block verifier
           memset(data,0,sizeof(data));
+
+          if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS)
+          {
+            color_print("Could not sync the database, maximum connection attempts has been reached\n","red");
+            goto start2;
+          }
+          reset_count++;
         } while ((database_count == 0 && (get_database_data_hash(data,database_name,"reserve_proofs") == 0 || strncmp(data,database_data_hash_majority[database_count],BUFFER_SIZE) != 0)) || (database_count == 1 && (get_database_data_hash(data,database_name,"reserve_bytes") == 0 || strncmp(data,database_data_hash_majority[database_count],BUFFER_SIZE) != 0)) || (database_count == 2 && (get_database_data_hash(data,database_name,"delegates") == 0 || strncmp(data,database_data_hash_majority[database_count],BUFFER_SIZE) != 0)) || (database_count == 3 && (get_database_data_hash(data,database_name,"statistics") == 0 || strncmp(data,database_data_hash_majority[database_count],BUFFER_SIZE) != 0)));      
       
         color_print("Successfully synced the database\n","yellow");
+
+        start2:
         network_data_nodes_sync_databases_settings = 1;
         if (database_count == DATABASE_TOTAL-1)
         {
