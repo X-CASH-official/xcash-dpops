@@ -77,6 +77,7 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
   int count2;
   int count3;
   size_t block_height;
+  int reset_counter = 1;
 
   // define macros
   #define GET_BLOCK_VERIFIERS_FROM_NETWORK_BLOCK_ERROR(settings) \
@@ -84,6 +85,8 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   return 0;
+
+  start:
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -116,10 +119,24 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
     // restore the database from the backup
     if (production_settings == 1 && network_data_node_settings == 1)
     {
+      color_print("Could not get the previous blocks reserve bytes, restoring the database from the backup","red");
       count = system(database_path_read);
+      exit(0);
     }
-    color_print("Could not get the previous blocks reserve bytes, restoring the database from the backup","red");
-    exit(0);
+    else if (production_settings == 1 && network_data_node_settings == 0)
+    {
+      color_print("Could not get the previous blocks reserve bytes, syncing from a random network data node","red");
+      sync_reserve_bytes_database(2,1,"");
+      if (reset_counter >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS)
+      {
+        exit(0);
+      }
+      else
+      {
+        reset_counter++;
+        goto start;
+      }      
+    }
   }
   
   // get the next block verifiers public keys from the previous network blocks reserve bytes
