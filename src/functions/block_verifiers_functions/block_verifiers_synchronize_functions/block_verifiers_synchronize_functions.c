@@ -1342,7 +1342,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   color_print(data,"red"); \
   if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
   { \
-    return 0; \
+    exit(0); \
   } \
   else \
   { \
@@ -1464,7 +1464,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   color_print(data,"red"); \
   if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
   { \
-    return 0; \
+    exit(0); \
   } \
   else \
   { \
@@ -1604,7 +1604,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
   { \
     pointer_reset(data); \
-    return 0; \
+    exit(0); \
   } \
   else \
   { \
@@ -1733,7 +1733,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
   { \
     pointer_reset(data); \
-    return 0; \
+    exit(0); \
   } \
   else \
   { \
