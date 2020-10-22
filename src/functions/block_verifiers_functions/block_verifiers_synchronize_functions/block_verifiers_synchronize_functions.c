@@ -580,6 +580,7 @@ void sync_block_verifiers_database(void)
     }
     start: ;
   }
+  color_print("Syncing databases is complete","yellow");
   return;
 
   #undef SYNC_BLOCK_VERIFIERS
